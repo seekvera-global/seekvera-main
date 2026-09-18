@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://seekveraglobal.com/</loc>
-    <lastmod>2026-09-17</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
+    <loc>https://seekvera-main.seekvera-global.workers.dev/</loc>
+  </url>
+  <url>
+    <loc>https://seekvera-main.seekvera-global.workers.dev/travel.html</loc>
+  </url>
+  <url>
+    <loc>https://seekvera-main.seekvera-global.workers.dev/shopping.html</loc>
+  </url>
+  <url>
+    <loc>https://seekvera-main.seekvera-global.workers.dev/jobs.html</loc>
+  </url>
+  <url>
+    <loc>https://seekvera-main.seekvera-global.workers.dev/import-export.html</loc>
+  </url>
+  <url>
+    <loc>https://seekvera-main.seekvera-global.workers.dev/contact.html</loc>
   </url>
 </urlset>
