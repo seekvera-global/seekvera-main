@@ -5,4 +5,3 @@ User-agent: OAI-SearchBot
 Allow: /
 
 Sitemap: https://seekvera-main.seekvera-global.workers.dev/sitemap.xml
-
