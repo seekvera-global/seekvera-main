@@ -1,0 +1,59 @@
+name: Fix official domain URLs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-official-domain.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-domain:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Replace old public URLs with official domain
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          replacements = [
+              ('https://seekvera-main.seekvera-global.workers.dev', 'https://seekveraglobal.com'),
+              ('https://seekvera-global.github.io/seekvera-main/', 'https://seekveraglobal.com/'),
+              ('https://seekvera-global.github.io/seekvera-main', 'https://seekveraglobal.com'),
+          ]
+
+          files = list(Path('.').glob('*.html')) + list(Path('.').glob('*.xml')) + list(Path('.').glob('*.txt'))
+          changed = []
+          for path in files:
+              try:
+                  text = path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              new = text
+              for old, official in replacements:
+                  new = new.replace(old, official)
+              if new != text:
+                  path.write_text(new, encoding='utf-8')
+                  changed.append(str(path))
+
+          print('Updated:', ', '.join(changed) if changed else 'nothing to change')
+          PY
+
+      - name: Commit corrected URLs
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No changes needed"
+            exit 0
+          fi
+          git config user.name "seekvera-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add '*.html' '*.xml' '*.txt'
+          git commit -m "Use seekveraglobal.com as official site URL"
+          git push
