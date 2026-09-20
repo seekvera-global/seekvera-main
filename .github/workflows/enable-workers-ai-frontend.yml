@@ -1,0 +1,54 @@
+name: Enable Workers AI frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/enable-workers-ai-frontend.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-ai:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Connect assistant to Workers AI with local fallback
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+          old = 'function aiSend(text){if(!text.trim())return;aiAdd(text,"user");setTimeout(()=>aiAdd(aiReply(text)),180)}'
+          new = '''async function aiSend(text){
+ const clean=text.trim();if(!clean)return;aiAdd(clean,"user");
+ const country=document.getElementById("country"),lang=document.getElementById("lang");
+ const countryName=country.options[country.selectedIndex]?.text||"",languageName=lang.options[lang.selectedIndex]?.text||document.documentElement.lang||"";
+ try{
+  const res=await fetch("/api/ai",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({message:clean,country:countryName,language:languageName})});
+  if(!res.ok)throw new Error("AI endpoint unavailable");
+  const data=await res.json();
+  if(!data||typeof data.response!=="string"||!data.response.trim())throw new Error("Empty AI response");
+  aiAdd(data.response.trim());
+  const matched=detectCategory(clean);if(matched)runSearch(clean);
+ }catch(err){
+  console.warn("SEEKVERA AI fallback",err);setTimeout(()=>aiAdd(aiReply(clean)),120);
+ }
+}'''
+          if old not in text:
+              raise SystemExit('Expected aiSend code not found; refusing unsafe patch')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
+      - name: Commit AI frontend integration
+        shell: bash
+        run: |
+          git config user.name "seekvera-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html
+          git commit -m "Connect Ask SEEKVERA to Workers AI with fallback"
+          git push
