@@ -212,6 +212,13 @@ html[dir="rtl"] body{text-align:right}
 <section class="section">
  <div class="eyebrow" data-t="explore">EXPLORE</div><h2 data-t="catsTitle">High-demand categories</h2>
  <div class="grid" id="cats"></div>
+ <div class="grid" style="margin-top:12px">
+  <a class="card link-card" href="cars-auto.html"><h3>🚗 Cars & Auto</h3><p>Cars, rentals, parts and repair services.</p></a>
+  <a class="card link-card" href="restaurants-food.html"><h3>🍽️ Restaurants & Food</h3><p>Dining, delivery, cafes and catering.</p></a>
+  <a class="card link-card" href="shipping-logistics.html"><h3>🚢 Shipping & Logistics</h3><p>Freight, courier, cargo and warehousing.</p></a>
+  <a class="card link-card" href="local-services.html"><h3>🧰 Local Services</h3><p>Home, professional and everyday services.</p></a>
+  <a class="card link-card" href="money-insurance.html"><h3>💳 Money & Insurance</h3><p>Payments, banking and insurance discovery.</p></a>
+ </div>
 </section>
 
 
@@ -238,7 +245,7 @@ html[dir="rtl"] body{text-align:right}
     <input id="requestContact" placeholder="Email or phone (optional)">
     <textarea id="requestDescription" required placeholder="Describe exactly what you need. You may write in any language."></textarea>
    </div>
-   <div class="request-actions"><button class="primary">Prepare my request</button><span class="request-note">No payment is required. Submission routing activates when the Requests service opens.</span><span class="success" id="requestSuccess">Request prepared. Your email app will open so you can send it.</span></div>
+   <div class="request-actions"><button class="primary">Prepare my request</button><span class="request-note">No payment is required. SEEKVERA will save the request when secure storage is connected; email fallback remains available.</span><span class="success" id="requestSuccess">Request saved.</span></div>
   </form>
  </div>
 </section>
@@ -416,14 +423,31 @@ document.getElementById("aiLaunch").addEventListener("click",()=>{aiChat.classLi
 document.getElementById("aiClose").addEventListener("click",()=>aiChat.classList.remove("open"));
 document.getElementById("aiForm").addEventListener("submit",e=>{e.preventDefault();const v=aiInput.value;aiInput.value="";aiSend(v)});
 document.querySelectorAll("[data-ai]").forEach(b=>b.addEventListener("click",()=>aiSend(b.dataset.ai)));
-document.getElementById("requestForm").addEventListener("submit",e=>{
+document.getElementById("requestForm").addEventListener("submit",async e=>{
  e.preventDefault();
- const request={country:requestCountry.value,city:requestCity.value,type:requestType.value,budget:requestBudget.value,date:requestDate.value,contact:requestContact.value,description:requestDescription.value,created:new Date().toISOString()};
+ const request={country:requestCountry.value.trim(),city:requestCity.value.trim(),type:requestType.value,budget:requestBudget.value.trim(),date:requestDate.value,contact:requestContact.value.trim(),description:requestDescription.value.trim(),website:"",created:new Date().toISOString()};
  localStorage.setItem("seekvera_last_request",JSON.stringify(request));
- document.getElementById("requestSuccess").classList.add("show");
- const subject=encodeURIComponent(`SEEKVERA request: ${request.type} - ${request.country}`);
- const body=encodeURIComponent(`Country: ${request.country}\nCity/Area: ${request.city}\nType: ${request.type}\nBudget: ${request.budget}\nDate: ${request.date}\nContact: ${request.contact}\n\nRequest:\n${request.description}`);
- window.location.href=`mailto:seekvera.global@gmail.com?subject=${subject}&body=${body}`;
+ const success=document.getElementById("requestSuccess");
+ const submit=e.currentTarget.querySelector("button[type=submit],button.primary");
+ const oldLabel=submit.textContent;submit.disabled=true;submit.textContent="Saving...";
+ try{
+  const apiBase=location.hostname.endsWith("workers.dev")?"":"https://seekvera-main.seekvera-global.workers.dev";
+  const res=await fetch(`${apiBase}/api/request`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(request)});
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok||!data.ok||!data.id)throw new Error(data.error||"Storage unavailable");
+  success.textContent=`Request saved securely. Reference: ${data.id}`;
+  success.classList.add("show");
+  e.currentTarget.reset();
+ }catch(err){
+  console.warn("SEEKVERA request storage unavailable; using email fallback",err);
+  success.textContent="Secure storage is not connected yet. Your email app will open so the request is not lost.";
+  success.classList.add("show");
+  const subject=encodeURIComponent(`SEEKVERA request: ${request.type} - ${request.country}`);
+  const body=encodeURIComponent(`Country: ${request.country}\nCity/Area: ${request.city}\nType: ${request.type}\nBudget: ${request.budget}\nDate: ${request.date}\nContact: ${request.contact}\n\nRequest:\n${request.description}`);
+  window.location.href=`mailto:seekvera.global@gmail.com?subject=${subject}&body=${body}`;
+ }finally{
+  submit.disabled=false;submit.textContent=oldLabel;
+ }
 });
 </script>
 </body></html>
