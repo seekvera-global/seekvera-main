@@ -1,0 +1,47 @@
+name: Fix SEEKVERA assistant routing
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-assistant-routing.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-assistant:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Patch assistant category matching
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+
+          old1 = ''' const q=input.toLowerCase().trim(),ar=aiIsArabic(input),country=document.getElementById("country"),countryName=country.options[country.selectedIndex]?.text||"your country",found=detectCategory(q);let reply;'''
+          new1 = ''' const q=input.toLowerCase().trim(),ar=aiIsArabic(input),country=document.getElementById("country"),countryName=country.options[country.selectedIndex]?.text||"your country",c=detectCategory(q),nq=normalize(q),found=c&&(c.keys.some(k=>nq.includes(normalize(k)))||nq.includes(normalize(c.name)));let reply;'''
+
+          old2 = ''' else if(found){const c=cats.find(x=>x.id===found);reply=ar?`وجدت قسم ${c?.name||found} في ${countryName}. سأفتح لك أفضل المسارات المتاحة الآن.`:`I found the ${c?.name||found} category for ${countryName}. I’ll open the best available routes now.`;runSearch(input);document.getElementById("results").scrollIntoView({behavior:"smooth",block:"start"})}'''
+          new2 = ''' else if(found){reply=ar?`وجدت قسم ${c.name} في ${countryName}. سأفتح لك أفضل المسارات المتاحة الآن.`:`I found the ${c.name} category for ${countryName}. I’ll open the best available routes now.`;runSearch(input);document.getElementById("results").scrollIntoView({behavior:"smooth",block:"start"})}'''
+
+          if old1 not in text or old2 not in text:
+              raise SystemExit('Expected assistant code was not found; refusing unsafe patch')
+
+          text = text.replace(old1, new1, 1).replace(old2, new2, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit assistant fix
+        shell: bash
+        run: |
+          git config user.name "seekvera-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html
+          git commit -m "Fix smart assistant category routing"
+          git push
