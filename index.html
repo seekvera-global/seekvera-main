@@ -326,10 +326,10 @@ const aiChat=document.getElementById("aiChat"),aiMessages=document.getElementByI
 function aiAdd(text,who="bot"){const m=document.createElement("div");m.className="ai-msg "+who;m.textContent=text;aiMessages.appendChild(m);aiMessages.scrollTop=aiMessages.scrollHeight}
 function aiIsArabic(text){return /[\u0600-\u06ff]/.test(text)}
 function aiReply(input){
- const q=input.toLowerCase().trim(),ar=aiIsArabic(input),country=document.getElementById("country"),countryName=country.options[country.selectedIndex]?.text||"your country",found=detectCategory(q);let reply;
+ const q=input.toLowerCase().trim(),ar=aiIsArabic(input),country=document.getElementById("country"),countryName=country.options[country.selectedIndex]?.text||"your country",c=detectCategory(q),nq=normalize(q),found=c&&(c.keys.some(k=>nq.includes(normalize(k)))||nq.includes(normalize(c.name)));let reply;
  if(/hello|hi|hey|مرحبا|سلام|اهلا/.test(q))reply=ar?"أهلاً! قل لي ماذا تريد أن تشتري أو تحجز، وفي أي مدينة.":"Hello! Tell me what you want to buy or book, and your city.";
  else if(/commission|affiliate|عمول|ربح/.test(q))reply=ar?"استخدام SEEKVERA مجاني. قد نحصل على عمولة من الشركة الشريكة من دون تكلفة إضافية عليك.":"SEEKVERA is free to use. A partner may pay us a commission at no extra cost to you.";
- else if(found){const c=cats.find(x=>x.id===found);reply=ar?`وجدت قسم ${c?.name||found} في ${countryName}. سأفتح لك أفضل المسارات المتاحة الآن.`:`I found the ${c?.name||found} category for ${countryName}. I’ll open the best available routes now.`;runSearch(input);document.getElementById("results").scrollIntoView({behavior:"smooth",block:"start"})}
+ else if(found){reply=ar?`وجدت قسم ${c.name} في ${countryName}. سأفتح لك أفضل المسارات المتاحة الآن.`:`I found the ${c.name} category for ${countryName}. I’ll open the best available routes now.`;runSearch(input);document.getElementById("results").scrollIntoView({behavior:"smooth",block:"start"})}
  else reply=ar?`فهمت طلبك في ${countryName}. اكتب تفاصيل أكثر مثل المدينة والميزانية، وسأوجهك للقسم المناسب.`:`I understand your request for ${countryName}. Add a city and budget so I can guide you to the best category.`;
  return reply
 }
