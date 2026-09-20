@@ -325,9 +325,24 @@ function applyLang(l){
  document.querySelectorAll("[data-ph]").forEach(el=>{const k=el.dataset.ph;if(tr[k])el.placeholder=tr[k]});
  document.documentElement.dir=["ar","ur"].includes(l)?"rtl":"ltr";document.documentElement.lang=l;localStorage.setItem("seekvera_lang",l);renderCountryPopular();
 }
-document.getElementById("lang").addEventListener("change",e=>applyLang(e.target.value));
-document.getElementById("country").addEventListener("change",renderCountryPopular);
-const saved=localStorage.getItem("seekvera_lang")||"en";document.getElementById("lang").value=saved;applyLang(saved);
+const langEl=document.getElementById("lang"),countryEl=document.getElementById("country"),requestCountryEl=document.getElementById("requestCountry");
+function detectLocaleCountry(){
+ const tag=(navigator.language||"").replace("_","-").split("-");
+ const region=(tag.length>1?tag[tag.length-1]:"").toUpperCase();
+ return region&&countryEl.querySelector(`option[value="${region}"]`)?region:"NG";
+}
+const savedCountry=localStorage.getItem("seekvera_country")||detectLocaleCountry();
+if(countryEl.querySelector(`option[value="${savedCountry}"]`))countryEl.value=savedCountry;
+if(requestCountryEl)requestCountryEl.value=countryEl.options[countryEl.selectedIndex].text;
+langEl.addEventListener("change",e=>applyLang(e.target.value));
+countryEl.addEventListener("change",()=>{
+ localStorage.setItem("seekvera_country",countryEl.value);
+ if(requestCountryEl)requestCountryEl.value=countryEl.options[countryEl.selectedIndex].text;
+ renderCountryPopular();
+});
+const supportedLangs=[...langEl.options].map(o=>o.value),browserLang=(navigator.language||"en").toLowerCase().split("-")[0],storedLang=localStorage.getItem("seekvera_lang");
+const saved=(storedLang&&supportedLangs.includes(storedLang))?storedLang:(supportedLangs.includes(browserLang)?browserLang:"en");
+langEl.value=saved;applyLang(saved);
 const params=new URLSearchParams(location.search);if(params.get("q")){document.getElementById("q").value=params.get("q");runSearch(params.get("q"))}
 const aiChat=document.getElementById("aiChat"),aiMessages=document.getElementById("aiMessages"),aiInput=document.getElementById("aiInput");
 function aiAdd(text,who="bot"){const m=document.createElement("div");m.className="ai-msg "+who;m.textContent=text;aiMessages.appendChild(m);aiMessages.scrollTop=aiMessages.scrollHeight}
