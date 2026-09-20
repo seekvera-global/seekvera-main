@@ -9,7 +9,7 @@
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="theme-color" content="#07111f">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://seekvera-main.seekvera-global.workers.dev https://text.pollinations.ai; form-action 'self' mailto:; base-uri 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://seekvera-main.seekvera-global.workers.dev https://text.pollinations.ai https://nrdpyydfrpmqedtzmbyw.supabase.co; form-action 'self' mailto:; base-uri 'self'; object-src 'none'">
 <meta property="og:title" content="SEEKVERA Universal Global — Find, compare, choose">
 <meta property="og:description" content="One global place to search common needs and route to eligible providers by country.">
 <meta property="og:type" content="website">
@@ -245,7 +245,7 @@ html[dir="rtl"] body{text-align:right}
     <input id="requestContact" placeholder="Email or phone (optional)">
     <textarea id="requestDescription" required placeholder="Describe exactly what you need. You may write in any language."></textarea>
    </div>
-   <div class="request-actions"><button class="primary">Prepare my request</button><span class="request-note">No payment is required. SEEKVERA will save the request when secure storage is connected; email fallback remains available.</span><span class="success" id="requestSuccess">Request saved.</span></div>
+   <div class="request-actions"><button class="primary">Prepare my request</button><span class="request-note">No payment is required. Your request is saved securely and receives a reference number.</span><span class="success" id="requestSuccess">Request saved.</span></div>
   </form>
  </div>
 </section>
@@ -425,26 +425,24 @@ document.getElementById("aiForm").addEventListener("submit",e=>{e.preventDefault
 document.querySelectorAll("[data-ai]").forEach(b=>b.addEventListener("click",()=>aiSend(b.dataset.ai)));
 document.getElementById("requestForm").addEventListener("submit",async e=>{
  e.preventDefault();
- const request={country:requestCountry.value.trim(),city:requestCity.value.trim(),type:requestType.value,budget:requestBudget.value.trim(),date:requestDate.value,contact:requestContact.value.trim(),description:requestDescription.value.trim(),website:"",created:new Date().toISOString()};
+ const reference=`SV-${new Date().toISOString().slice(0,10).replaceAll("-","")}-${crypto.getRandomValues(new Uint32Array(1))[0].toString(16).toUpperCase().padStart(8,"0")}`;
+ const request={reference,country:requestCountry.value.trim(),city:requestCity.value.trim(),request_type:requestType.value,budget:requestBudget.value.trim(),needed_date:requestDate.value||null,contact:requestContact.value.trim(),description:requestDescription.value.trim(),source:"seekvera-web"};
  localStorage.setItem("seekvera_last_request",JSON.stringify(request));
  const success=document.getElementById("requestSuccess");
  const submit=e.currentTarget.querySelector("button[type=submit],button.primary");
  const oldLabel=submit.textContent;submit.disabled=true;submit.textContent="Saving...";
  try{
-  const apiBase=location.hostname.endsWith("workers.dev")?"":"https://seekvera-main.seekvera-global.workers.dev";
-  const res=await fetch(`${apiBase}/api/request`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(request)});
-  const data=await res.json().catch(()=>({}));
-  if(!res.ok||!data.ok||!data.id)throw new Error(data.error||"Storage unavailable");
-  success.textContent=`Request saved securely. Reference: ${data.id}`;
+  const endpoint="https://nrdpyydfrpmqedtzmbyw.supabase.co/rest/v1/seekvera_requests";
+  const key="sb_publishable_tqqPQxqdNowIsSlJz4bW5w_kHOC905o";
+  const res=await fetch(endpoint,{method:"POST",headers:{"content-type":"application/json","apikey":key,"Authorization":`Bearer ${key}`,"Prefer":"return=minimal"},body:JSON.stringify(request)});
+  if(!res.ok){const detail=await res.text();throw new Error(detail||`HTTP ${res.status}`)}
+  success.textContent=`Request saved securely. Reference: ${reference}`;
   success.classList.add("show");
   e.currentTarget.reset();
  }catch(err){
-  console.warn("SEEKVERA request storage unavailable; using email fallback",err);
-  success.textContent="Secure storage is not connected yet. Your email app will open so the request is not lost.";
+  console.error("SEEKVERA request save failed",err);
+  success.textContent="We could not save this request right now. Please try again.";
   success.classList.add("show");
-  const subject=encodeURIComponent(`SEEKVERA request: ${request.type} - ${request.country}`);
-  const body=encodeURIComponent(`Country: ${request.country}\nCity/Area: ${request.city}\nType: ${request.type}\nBudget: ${request.budget}\nDate: ${request.date}\nContact: ${request.contact}\n\nRequest:\n${request.description}`);
-  window.location.href=`mailto:seekvera.global@gmail.com?subject=${subject}&body=${body}`;
  }finally{
   submit.disabled=false;submit.textContent=oldLabel;
  }
