@@ -75,7 +75,7 @@ main{max-width:1180px;margin:auto;padding:0 18px}
 .request-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
 .primary{border:0;border-radius:11px;background:var(--accent);color:#07111f;padding:13px 18px;font-weight:900;cursor:pointer}
 .request-note{color:var(--muted);font-size:.84rem}.success{display:none;color:var(--accent);font-weight:800}.success.show{display:block}
-.ai-launch{position:fixed;right:18px;bottom:18px;z-index:50;border:0;border-radius:999px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#07111f;padding:14px 18px;font-weight:900;box-shadow:0 12px 38px rgba(0,0,0,.4);cursor:pointer}
+.ai-launch{position:fixed;right:18px;bottom:18px;z-index:50;border:0;border-radius:999px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#07111f;padding:9px 13px;font-size:.86rem;font-weight:900;box-shadow:0 12px 38px rgba(0,0,0,.4);cursor:pointer}
 .ai-chat{position:fixed;right:18px;bottom:78px;z-index:49;width:min(390px,calc(100vw - 28px));height:520px;max-height:72vh;display:none;flex-direction:column;background:#0b1828;border:1px solid #315073;border-radius:20px;box-shadow:0 22px 60px rgba(0,0,0,.5);overflow:hidden}.ai-chat.open{display:flex}
 .ai-head{display:flex;align-items:center;gap:10px;padding:14px 16px;background:#10243a;border-bottom:1px solid var(--line)}.ai-head b{flex:1}.ai-head small{display:block;color:var(--muted);font-weight:400}.ai-close{border:0;background:transparent;color:#fff;font-size:1.4rem;cursor:pointer}
 .ai-messages{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px}.ai-msg{max-width:88%;padding:10px 12px;border-radius:14px;white-space:pre-wrap}.ai-msg.bot{align-self:flex-start;background:#132943}.ai-msg.user{align-self:flex-end;background:#1b5e4a}
@@ -112,7 +112,7 @@ html[dir="rtl"] body{text-align:right}
 <link rel="canonical" href="https://seekvera-global.github.io/seekvera-main/">
 <meta property="og:image" content="https://seekvera-global.github.io/seekvera-main/social-card.png">
 </head>
-<body data-build="worldwide-20260920-v2">
+<body data-build="worldwide-20260920-v3">
 <header class="top">
  <a class="brand" href="index.html"><span class="mark">S</span><span>SEEKVERA UNIVERSAL GLOBAL</span></a>
  <div class="controls">
@@ -253,9 +253,9 @@ html[dir="rtl"] body{text-align:right}
  </div>
 </section>
 
-<button class="ai-launch" id="aiLaunch" aria-label="Open SEEKVERA Universal Assistant">✨ Ask SEEKVERA</button>
+<button class="ai-launch" id="aiLaunch" aria-label="Open SEEKVERA Universal Assistant">✨ Ask Anything</button>
 <section class="ai-chat" id="aiChat" aria-label="SEEKVERA Universal Assistant">
- <div class="ai-head"><span>✨</span><b>SEEKVERA Universal Assistant<small>Multilingual global guide • no account needed</small></b><button class="ai-close" id="aiClose" aria-label="Close">×</button></div>
+ <div class="ai-head"><span>✨</span><b>SEEKVERA AI<small>Ask anything • worldwide</small></b><button class="ai-close" id="aiClose" aria-label="Close">×</button></div>
  <div class="ai-messages" id="aiMessages" role="log" aria-live="polite" aria-relevant="additions"></div>
  <div class="ai-quick"><button data-ai="cheap hotel">🏨 Hotel</button><button data-ai="cheap flights">✈️ Flights</button><button data-ai="jobs">💼 Jobs</button><button data-ai="property">🏠 Property</button><button data-ai="solar">☀️ Solar</button></div>
  <div class="ai-privacy">Do not enter passwords, payment details or sensitive personal data. AI requests may be processed by external AI providers.</div>
