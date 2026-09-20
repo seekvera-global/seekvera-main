@@ -1,10 +1,10 @@
 {
-  "name": "SEEKVERA",
+  "name": "SEEKVERA — One Global Marketplace",
   "short_name": "SEEKVERA",
-  "start_url": "./",
+  "start_url": "./app.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#07111f",
-  "theme_color": "#07111f",
-  "description": "Everything you need. One search. Find, compare and choose worldwide."
+  "background_color": "#f4f6f8",
+  "theme_color": "#ffffff",
+  "description": "SEEKVERA in one app: global search, AI, marketplace ads, free ad posting, promotions, business plans and payments."
 }
