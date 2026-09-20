@@ -1,0 +1,59 @@
+name: SEEKVERA memorable brand message
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/brand-message.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  message:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Make SEEKVERA instantly understandable
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          replacements=[
+            ('<title>SEEKVERA — Find, compare, choose worldwide</title>','<title>SEEKVERA — Everything You Need, One Search</title>'),
+            ('<meta name="description" content="SEEKVERA helps people search, discover and compare lawful products, services and providers across countries, languages and categories.">','<meta name="description" content="SEEKVERA helps you find, compare and choose hotels, homes, cars, jobs, shopping, services and more worldwide — all from one search.">'),
+            ('<meta property="og:title" content="SEEKVERA — Find, compare, choose">','<meta property="og:title" content="SEEKVERA — Everything You Need, One Search">'),
+            ('<meta property="og:description" content="One global place to search common needs and route to eligible providers by country.">','<meta property="og:description" content="Find, compare and choose hotels, homes, cars, jobs, shopping, services and more — worldwide.">'),
+            ('<meta name="twitter:title" content="SEEKVERA — Find, compare, choose">','<meta name="twitter:title" content="SEEKVERA — Everything You Need, One Search">'),
+            ('<meta name="twitter:description" content="One global place to search common needs and route to eligible providers by country.">','<meta name="twitter:description" content="Find, compare and choose hotels, homes, cars, jobs, shopping, services and more — worldwide.">'),
+            ('<meta property="og:image:alt" content="SEEKVERA — Find, compare, choose worldwide">','<meta property="og:image:alt" content="SEEKVERA — Everything You Need, One Search">'),
+            ('"alternateName":"Find, compare, choose worldwide"','"alternateName":"Everything You Need, One Search"'),
+            ('<h1 data-t="headline">Search anything lawful, anywhere.</h1>','<h1 data-t="headline">Everything you need. One search.</h1>'),
+            ('<p class="lead" data-t="sub">Tell SEEKVERA what you need. We compare relevant providers and route you to an eligible option for your country.</p>','<p class="lead" data-t="sub">Find, compare and choose hotels, homes, cars, jobs, shopping, services and more — worldwide.</p>'),
+            ('"headline": "Find the right place to buy, book or subscribe."','"headline": "Everything you need. One search."'),
+            ('"sub": "Tell SEEKVERA what you need. We compare relevant providers and route you to an eligible option for your country."','"sub": "Find, compare and choose hotels, homes, cars, jobs, shopping, services and more — worldwide."')
+          ]
+          for old,new in replacements:
+              if old in s:
+                  s=s.replace(old,new,1)
+              elif new not in s:
+                  raise SystemExit('Missing expected branding marker: '+old[:80])
+          p.write_text(s,encoding='utf-8')
+      - name: Validate memorable message
+        run: |
+          set -e
+          grep -q 'Everything you need. One search.' index.html
+          grep -q 'Everything You Need, One Search' index.html
+          grep -q 'hotels, homes, cars, jobs, shopping, services and more' index.html
+      - name: Commit
+        run: |
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add index.html
+          if ! git diff --cached --quiet; then
+            git commit -m 'Make SEEKVERA instantly understandable and memorable'
+            git pull --rebase origin main
+            git push
+          fi
