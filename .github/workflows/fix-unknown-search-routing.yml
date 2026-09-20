@@ -1,0 +1,70 @@
+name: Fix unknown search routing
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-unknown-search-routing.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-search:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Patch unknown-query handling
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+
+          old1 = '''function detectCategory(query){
+ const q=normalize(query); let best=cats[0],bestScore=0;
+ cats.forEach(c=>{let score=0;c.keys.forEach(k=>{const nk=normalize(k);if(q.includes(nk))score+=nk.includes("hotel")?5:2});
+ if(q.includes(normalize(c.name)))score+=4;if(score>bestScore){best=c;bestScore=score}});
+ return best;
+}'''
+          new1 = '''function detectCategory(query){
+ const q=normalize(query); let best=null,bestScore=0;
+ cats.forEach(c=>{let score=0;c.keys.forEach(k=>{const nk=normalize(k);if(q.includes(nk))score+=nk.includes("hotel")?5:2});
+ if(q.includes(normalize(c.name)))score+=4;if(score>bestScore){best=c;bestScore=score}});
+ return best;
+}'''
+
+          old2 = ''' document.getElementById("results").classList.add("show");
+ document.getElementById("resultTitle").textContent=(c.id==="travel"&&normalize(q).includes("hotel"))?"✈️ Travel → Hotels":c.icon+" "+c.name;
+ document.getElementById("resultSummary").textContent=`${tr.countryText}: ${countryName}. ${tr.routeFound}: ${c.desc}.`;
+ let h=card(c.icon+" "+c.name,c.desc,`${tr.countryText}: ${countryName}`,"ROUTE",c.page);'''
+          new2 = ''' document.getElementById("results").classList.add("show");
+ if(!c){
+  document.getElementById("resultTitle").textContent="🌍 Request anything";
+  document.getElementById("resultSummary").textContent=`${tr.countryText}: ${countryName}. We do not have a verified route for this request yet.`;
+  document.getElementById("resultGrid").innerHTML=card("Tell SEEKVERA what you need","Add your city, budget and details so the request can be classified.","No payment required.","REQUEST","#request-anything");
+  document.getElementById("results").scrollIntoView({behavior:"smooth",block:"start"});
+  return;
+ }
+ document.getElementById("resultTitle").textContent=(c.id==="travel"&&normalize(q).includes("hotel"))?"✈️ Travel → Hotels":c.icon+" "+c.name;
+ document.getElementById("resultSummary").textContent=`${tr.countryText}: ${countryName}. ${tr.routeFound}: ${c.desc}.`;
+ let h=card(c.icon+" "+c.name,c.desc,`${tr.countryText}: ${countryName}`,"ROUTE",c.page);'''
+
+          if old1 not in text or old2 not in text:
+              raise SystemExit('Expected search code was not found; refusing unsafe patch')
+
+          text = text.replace(old1, new1, 1).replace(old2, new2, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit search fix
+        shell: bash
+        run: |
+          git config user.name "seekvera-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html
+          git commit -m "Route unknown searches to request form"
+          git push
