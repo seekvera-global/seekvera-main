@@ -14,7 +14,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://seekvera-main.seekvera-global.workers.dev https://text.pollinations.ai https://nrdpyydfrpmqedtzmbyw.supabase.co; form-action 'self' mailto:; base-uri 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://*.puter.com; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://js.puter.com; connect-src 'self' https://seekvera-main.seekvera-global.workers.dev https://text.pollinations.ai https://*.puter.com https://nrdpyydfrpmqedtzmbyw.supabase.co; frame-src https://*.puter.com; form-action 'self' mailto:; base-uri 'self'; object-src 'none'">
 <meta property="og:title" content="SEEKVERA — Everything You Need. One Search.">
 <meta property="og:description" content="Find, compare and choose hotels, homes, cars, jobs, shopping, services and more — worldwide.">
 <meta property="og:type" content="website">
@@ -22,6 +22,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script defer src="https://js.puter.com/v2/"></script>
 <style>
 :root{
   --bg:#07111f;--panel:#0e1b2d;--panel2:#12243a;--line:#20324b;--text:#f4f7fb;
@@ -450,8 +451,26 @@ async function aiSend(text){
    aiAdd(backupText.slice(0,1600));
    const matched=detectCategory(clean);if(matched)runSearch(clean);
   }catch(backupErr){
-   console.warn("SEEKVERA backup AI unavailable",backupErr);
-   setTimeout(()=>aiAdd(aiReply(clean)),120);
+   console.warn("SEEKVERA public AI unavailable",backupErr);
+   try{
+    if(!window.puter?.ai?.chat)throw new Error("Puter AI unavailable");
+    const puterPrompt=[
+     "You are SEEKVERA AI, a concise multilingual global discovery assistant.",
+     "Reply in the same language as the user. Keep the answer under 120 words.",
+     "Never invent live prices, availability, bookings, jobs, diagnoses, guarantees, providers or affiliations.",
+     "Give useful comparison criteria, verification steps and safe search suggestions.",
+     `Selected country: ${countryName||"not specified"}.`,
+     `User request: ${clean.slice(0,700)}`
+    ].join(" ");
+    const puterRes=await window.puter.ai.chat(puterPrompt,{model:"gpt-5-nano",normalize:true,max_tokens:350});
+    const puterText=(puterRes?.message?.content||puterRes?.text||"").trim();
+    if(!puterText)throw new Error("Empty Puter AI response");
+    aiAdd(puterText.slice(0,1600));
+    const matched=detectCategory(clean);if(matched)runSearch(clean);
+   }catch(puterErr){
+    console.warn("SEEKVERA secondary AI unavailable",puterErr);
+    setTimeout(()=>aiAdd(aiReply(clean)),120);
+   }
   }
  }
 }
