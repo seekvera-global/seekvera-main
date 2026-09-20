@@ -1,0 +1,9 @@
+.git
+.github
+worker.js
+wrangler.jsonc
+README.md
+index-old.html
+node_modules
+package.json
+package-lock.json
