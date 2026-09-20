@@ -26,12 +26,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          base='https://seekvera-global.github.io/seekvera-main'
           markers=('SEEKVERA' 'Ask SEEKVERA' 'Request anything' 'id="country"' 'id="lang"')
           ready=0
           for attempt in $(seq 1 12); do
             echo "Homepage check attempt $attempt/12"
             if curl --fail --location --silent --show-error --retry 3 --retry-delay 5 --retry-all-errors \
-              https://seekveraglobal.com/ -o /tmp/home.html; then
+              "$base/" -o /tmp/home.html; then
               missing=0
               for marker in "${markers[@]}"; do
                 if grep -Fq "$marker" /tmp/home.html; then
@@ -58,6 +59,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          base='https://seekvera-global.github.io/seekvera-main'
           pages=(
             travel.html shopping.html property.html business-software.html education.html
             solar.html health.html web-hosting.html jobs.html import-export.html about.html
@@ -66,22 +68,18 @@ jobs:
           for page in "${pages[@]}"; do
             echo "Checking $page"
             curl --fail --location --silent --show-error --retry 6 --retry-delay 10 --retry-all-errors \
-              "https://seekveraglobal.com/$page" -o "/tmp/${page//\//_}"
+              "$base/$page" -o "/tmp/${page//\//_}"
           done
 
-      - name: Verify official-domain SEO signals
+      - name: Verify official zero-cost SEO signals
         shell: bash
         run: |
           set -euo pipefail
-          grep -q 'https://seekveraglobal.com/sitemap.xml' /tmp/robots.txt
-          grep -q 'https://seekveraglobal.com/' /tmp/sitemap.xml
-          grep -q '<link rel="canonical" href="https://seekveraglobal.com/">' /tmp/home.html
-          grep -q '<meta property="og:url" content="https://seekveraglobal.com/">' /tmp/home.html
-          if grep -q 'seekvera-global.github.io/seekvera-main' /tmp/home.html; then
-            echo 'Old GitHub Pages URL still present in live homepage'
-            exit 1
-          fi
-          echo 'Official-domain SEO signals are correct. Workers endpoint references are allowed for AI routing.'
+          grep -q 'https://seekvera-global.github.io/seekvera-main/sitemap.xml' /tmp/robots.txt
+          grep -q 'https://seekvera-global.github.io/seekvera-main/' /tmp/sitemap.xml
+          grep -q '<link rel="canonical" href="https://seekvera-global.github.io/seekvera-main/">' /tmp/home.html
+          grep -q '<meta property="og:url" content="https://seekvera-global.github.io/seekvera-main/">' /tmp/home.html
+          echo 'Official zero-cost GitHub Pages SEO signals are correct. Workers endpoint references are allowed for AI routing.'
 
       - name: Check repository page references
         shell: bash
