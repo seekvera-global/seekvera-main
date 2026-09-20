@@ -22,21 +22,37 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Wait briefly for deployment
-        if: github.event_name == 'push'
-        run: sleep 45
-
-      - name: Check homepage and core features
+      - name: Check homepage and wait for latest deployment
         shell: bash
         run: |
           set -euo pipefail
-          curl --fail --location --silent --show-error --retry 10 --retry-delay 12 --retry-all-errors \
-            https://seekveraglobal.com/ -o /tmp/home.html
-          grep -q 'SEEKVERA' /tmp/home.html
-          grep -q 'Ask SEEKVERA' /tmp/home.html
-          grep -q 'Request anything' /tmp/home.html
-          grep -q 'id="country"' /tmp/home.html
-          grep -q 'id="lang"' /tmp/home.html
+          markers=('SEEKVERA' 'Ask SEEKVERA' 'Request anything' 'id="country"' 'id="lang"')
+          ready=0
+          for attempt in $(seq 1 12); do
+            echo "Homepage check attempt $attempt/12"
+            if curl --fail --location --silent --show-error --retry 3 --retry-delay 5 --retry-all-errors \
+              https://seekveraglobal.com/ -o /tmp/home.html; then
+              missing=0
+              for marker in "${markers[@]}"; do
+                if grep -Fq "$marker" /tmp/home.html; then
+                  echo "OK: $marker"
+                else
+                  echo "WAITING: $marker"
+                  missing=1
+                fi
+              done
+              if [ "$missing" -eq 0 ]; then
+                ready=1
+                break
+              fi
+            fi
+            sleep 15
+          done
+          if [ "$ready" -ne 1 ]; then
+            echo 'Live homepage did not reach the expected current version.'
+            grep -Eo '<title>[^<]*</title>' /tmp/home.html || true
+            exit 1
+          fi
 
       - name: Check public pages
         shell: bash
