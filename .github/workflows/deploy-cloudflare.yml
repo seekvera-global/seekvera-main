@@ -35,24 +35,31 @@ jobs:
         shell: bash
         run: npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-dry-run
 
-      - name: Verify Cloudflare deployment credentials
+      - name: Detect Cloudflare deployment credentials
+        id: cf
         shell: bash
         env:
           CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          if [ -z "$CF_TOKEN" ]; then
-            echo '::error::Missing GitHub secret CLOUDFLARE_API_TOKEN'
-            exit 1
-          fi
-          if [ -z "$CF_ACCOUNT" ]; then
-            echo '::error::Missing GitHub secret CLOUDFLARE_ACCOUNT_ID'
-            exit 1
+          if [ -n "$CF_TOKEN" ] && [ -n "$CF_ACCOUNT" ]; then
+            echo 'ready=true' >> "$GITHUB_OUTPUT"
+            echo 'Cloudflare credentials found; deployment will run.'
+          else
+            echo 'ready=false' >> "$GITHUB_OUTPUT"
+            echo 'Cloudflare credentials are not configured. Skipping Worker deployment safely.'
+            echo 'GitHub Pages and the zero-cost browser AI fallback remain active.'
           fi
 
       - name: Deploy to Cloudflare Workers
+        if: steps.cf.outputs.ready == 'true'
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
+
+      - name: Confirm resilient deployment mode
+        if: steps.cf.outputs.ready != 'true'
+        shell: bash
+        run: echo 'SEEKVERA remains live through GitHub Pages with backup AI; Cloudflare Worker deployment is optional.'
