@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="Homes & Property">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#5a65d6"/><stop offset="1" stop-color="#9873d7"/></linearGradient></defs>
+<rect width="640" height="360" rx="28" fill="url(#g)"/>
+<circle cx="530" cy="80" r="95" fill="#fff" opacity=".12"/><circle cx="70" cy="315" r="120" fill="#fff" opacity=".08"/>
+<path d="M305 170 L420 82 L545 170 V245 H305 Z" fill="#fff" opacity=".94"/><path d="M286 174 L421 66 L566 174" fill="none" stroke="#fff" stroke-width="18" stroke-linecap="round"/><rect x="410" y="184" width="54" height="61" rx="5" fill="#625fc2"/>
+<text x="34" y="62" font-family="Arial,sans-serif" font-size="54">🏠</text>
+<text x="34" y="292" fill="#fff" font-family="Arial,sans-serif" font-weight="700" font-size="30">Homes & Property</text>
+<text x="34" y="324" fill="#fff" opacity=".82" font-family="Arial,sans-serif" font-size="18">Rent • Buy • Invest</text>
+</svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="Hotels & Travel">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0b7fab"/><stop offset="1" stop-color="#31b78a"/></linearGradient></defs>
+<rect width="640" height="360" rx="28" fill="url(#g)"/>
+<circle cx="530" cy="80" r="95" fill="#fff" opacity=".12"/><circle cx="70" cy="315" r="120" fill="#fff" opacity=".08"/>
+<rect x="300" y="105" width="250" height="128" rx="12" fill="#fff" opacity=".92"/><rect x="325" y="132" width="42" height="42" rx="6" fill="#b9e8dd"/><rect x="382" y="132" width="42" height="42" rx="6" fill="#b9e8dd"/><rect x="439" y="132" width="42" height="42" rx="6" fill="#b9e8dd"/><rect x="496" y="132" width="30" height="101" fill="#123b58" opacity=".8"/>
+<text x="34" y="62" font-family="Arial,sans-serif" font-size="54">🏨</text>
+<text x="34" y="292" fill="#fff" font-family="Arial,sans-serif" font-weight="700" font-size="30">Hotels & Travel</text>
+<text x="34" y="324" fill="#fff" opacity=".82" font-family="Arial,sans-serif" font-size="18">Stay • Fly • Explore</text>
+</svg>
