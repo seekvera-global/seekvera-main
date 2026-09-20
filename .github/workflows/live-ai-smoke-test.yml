@@ -1,0 +1,51 @@
+name: SEEKVERA live AI smoke test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/live-ai-smoke-test.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Cloudflare AI health
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS --max-time 25 https://seekvera-main.seekvera-global.workers.dev/api/health | tee /tmp/health.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/health.json'))
+          assert d.get('ok') is True, d
+          assert d.get('aiBinding') is True, d
+          print('Health OK:', d)
+          PY
+
+      - name: Check live AI reply
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS --max-time 45 \
+            -H 'content-type: application/json' \
+            --data '{"message":"Reply with only: SEEKVERA AI OK","country":"Nigeria","language":"English"}' \
+            https://seekvera-main.seekvera-global.workers.dev/api/ai | tee /tmp/ai.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/ai.json'))
+          assert d.get('ok') is True, d
+          assert isinstance(d.get('response'), str) and d['response'].strip(), d
+          print('AI OK:', d['response'])
+          PY
+
+      - name: Check GitHub Pages frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS --max-time 25 https://seekvera-global.github.io/seekvera-main/ | grep -q 'SEEKVERA'
+          echo 'GitHub Pages frontend OK'
