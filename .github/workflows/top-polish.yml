@@ -1,0 +1,125 @@
+name: Final SEEKVERA Universal Global polish
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/top-polish.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  polish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Polish homepage, privacy and official SEO URLs
+        shell: python
+        run: |
+          from pathlib import Path
+
+          home = Path('index.html')
+          text = home.read_text(encoding='utf-8')
+
+          # Official public URL for SEO/social metadata only. Keep Workers URL where it is used as an API endpoint.
+          text = text.replace('https://seekvera-global.github.io/seekvera-main/social-card.png', 'https://seekveraglobal.com/social-card.png')
+          text = text.replace('<meta property="og:url" content="https://seekvera-global.github.io/seekvera-main/">', '<meta property="og:url" content="https://seekveraglobal.com/">')
+          text = text.replace('<link rel="canonical" href="https://seekvera-global.github.io/seekvera-main/">', '<link rel="canonical" href="https://seekveraglobal.com/">')
+          text = text.replace('"url":"https://seekvera-global.github.io/seekvera-main/"', '"url":"https://seekveraglobal.com/"')
+          text = text.replace('"target":"https://seekvera-global.github.io/seekvera-main/?q={search_term_string}"', '"target":"https://seekveraglobal.com/?q={search_term_string}"')
+          text = text.replace('<meta name="twitter:card" content="summary">', '<meta name="twitter:card" content="summary_large_image">')
+
+          # Better accessibility and polished search input.
+          text = text.replace(
+              '<input id="q" data-ph="placeholder" placeholder="Try: cheap hotel in Abuja, POS software, solar...">',
+              '<input id="q" data-ph="placeholder" aria-label="Search SEEKVERA" autocomplete="off" enterkeymode="search" maxlength="700" placeholder="Try: cheap hotel in Abuja, POS software, solar...">'
+          )
+          text = text.replace(
+              '<div class="ai-messages" id="aiMessages"></div>',
+              '<div class="ai-messages" id="aiMessages" role="log" aria-live="polite" aria-relevant="additions"></div>'
+          )
+          text = text.replace(
+              '<form class="ai-form" id="aiForm"><input id="aiInput" autocomplete="off" placeholder="Ask in any language..."><button>Send</button></form>',
+              '<div class="ai-privacy">Do not enter passwords, payment details or sensitive personal data. AI requests may be processed by external AI providers.</div>\n <form class="ai-form" id="aiForm"><input id="aiInput" autocomplete="off" aria-label="Ask SEEKVERA AI" maxlength="700" enterkeymode="send" placeholder="Ask in any language..."><button type="submit">Send</button></form>'
+          )
+
+          # Remove internal/unfinished commercial labels from user-facing results.
+          text = text.replace('"PARTNER CANDIDATE"', '"SEARCH SOURCE"')
+          text = text.replace('"Partner route","This category is searchable, but its earning partner is still being verified.","No tracked earning link is active yet.","VERIFY"',
+                              '"Search route","This category is searchable across relevant public sources.","Add your city, budget or destination for better results.","SEARCH"')
+          text = text.replace('Some future tracked links may earn us a commission at no extra cost to you.',
+                              'SEEKVERA is free to search. Some tracked partner links may earn us a commission at no extra cost to you.')
+
+          # Add focus styles and privacy-note styling once.
+          marker = '.links{display:flex;gap:14px;flex-wrap:wrap}.note{font-size:.86rem;color:var(--muted);margin-top:12px}'
+          if marker in text and '.ai-privacy{' not in text:
+              text = text.replace(marker, marker + '\n.ai-privacy{padding:8px 12px;color:var(--muted);font-size:.72rem;border-top:1px solid rgba(255,255,255,.06)}\nbutton:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--accent2);outline-offset:2px}')
+
+          home.write_text(text, encoding='utf-8')
+
+          # Privacy disclosure: explain AI processing and avoid overclaiming.
+          privacy = Path('privacy.html')
+          p = privacy.read_text(encoding='utf-8')
+          old = '<p class="lead">This zero-cost MVP does not require user accounts and does not intentionally collect sensitive personal information. Future tracked partner links may use cookies or attribution technologies under the destination provider or affiliate network privacy policy.</p>'
+          new = '''<p class="lead">SEEKVERA does not require an account for basic search and discovery. Do not submit passwords, payment-card details, government ID numbers or other highly sensitive information through search, Request Anything or the AI assistant.</p>
+<h2>AI assistant</h2><p>Messages sent to the SEEKVERA AI assistant may be processed by external AI infrastructure used to generate a response. Only send information you are comfortable sharing for that purpose.</p>
+<h2>Partner links</h2><p>Some current or future tracked links may use cookies or attribution technologies under the destination provider or affiliate-network privacy policy. SEEKVERA may receive a commission without increasing the price charged to you by the destination provider.</p>
+<h2>Local browser storage</h2><p>The site may save non-sensitive preferences such as selected country, language and the latest request details in your browser so the experience works across visits.</p>'''
+          if old in p:
+              p = p.replace(old, new)
+          p = p.replace('https://seekvera-global.github.io/seekvera-main/privacy.html', 'https://seekveraglobal.com/privacy.html')
+          p = p.replace('https://seekvera-global.github.io/seekvera-main/social-card.png', 'https://seekveraglobal.com/social-card.png')
+          privacy.write_text(p, encoding='utf-8')
+
+          # Make robots and sitemap point at the official public domain.
+          robots = Path('robots.txt')
+          r = robots.read_text(encoding='utf-8').replace('https://seekvera-global.github.io/seekvera-main/sitemap.xml', 'https://seekveraglobal.com/sitemap.xml')
+          robots.write_text(r, encoding='utf-8')
+
+          sitemap = Path('sitemap.xml')
+          s = sitemap.read_text(encoding='utf-8').replace('https://seekvera-global.github.io/seekvera-main/', 'https://seekveraglobal.com/')
+          sitemap.write_text(s, encoding='utf-8')
+
+          # Align canonical/social URLs across all public HTML pages without touching Workers API endpoints.
+          for path in Path('.').glob('*.html'):
+              if path.name == 'index.html':
+                  continue
+              t = path.read_text(encoding='utf-8', errors='ignore')
+              t = t.replace('https://seekvera-global.github.io/seekvera-main/', 'https://seekveraglobal.com/')
+              path.write_text(t, encoding='utf-8')
+
+      - name: Validate final polish
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'https://seekveraglobal.com/sitemap.xml' robots.txt
+          grep -q 'https://seekveraglobal.com/' sitemap.xml
+          grep -q 'SEARCH SOURCE' index.html
+          grep -q 'external AI providers' index.html
+          grep -q 'role="log"' index.html
+          if grep -q 'PARTNER CANDIDATE' index.html; then
+            echo 'Internal partner label still visible'
+            exit 1
+          fi
+          if grep -q 'seekvera-global.github.io/seekvera-main' robots.txt sitemap.xml; then
+            echo 'Old public URL remains in SEO files'
+            exit 1
+          fi
+          echo 'Final Universal Global polish validation passed.'
+
+      - name: Commit final polish
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo 'No changes needed.'
+            exit 0
+          fi
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add index.html privacy.html robots.txt sitemap.xml '*.html'
+          git commit -m 'Polish Universal Global UX privacy and official SEO URLs'
+          git push
