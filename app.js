@@ -8,7 +8,7 @@ const UI={"en": {"headline": "Find, compare, choose — worldwide.", "lead": "Se
 function norm(s){return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
 function safeStore(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 function safeGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
-function getCountry(){const e=document.getElementById('country');return e?e.value:(safeGet('seekvera_country')||'Nigeria')}
+function getCountry(){const e=document.getElementById('country');return e?e.value:(safeGet('seekvera_country')||'Worldwide')}
 function detectCategory(q){
   const n=norm(q); let best='general', bestScore=0;
   for(const [cat,words] of Object.entries(KEYWORDS)){
