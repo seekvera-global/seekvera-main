@@ -1,3 +1,7 @@
 User-agent: *
 Allow: /
-Sitemap: https://seekvera-main.seekvera-global.workers.dev/sitemap.xml
+
+User-agent: OAI-SearchBot
+Allow: /
+
+Sitemap: https://seekveraglobal.com/sitemap.xml

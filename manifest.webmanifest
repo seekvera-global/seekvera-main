@@ -1,9 +1,10 @@
 {
   "name": "SEEKVERA",
   "short_name": "SEEKVERA",
-  "start_url": "./index.html",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#07111f",
   "theme_color": "#07111f",
-  "description": "Find, compare, choose."
+  "description": "Global discovery and comparison platform."
 }
