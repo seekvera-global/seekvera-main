@@ -25,6 +25,8 @@ jobs:
           grep -q '🌍 Worldwide • Global' index.html
           grep -q 'Popular worldwide' index.html
           grep -q 'cheap hotel anywhere in the world' index.html
+          grep -q 'في أي مكان في العالم' index.html
+          grep -q '世界任何地方' index.html
           grep -q 'https://seekvera-global.github.io/seekvera-main/' index.html
           grep -q 'https://seekvera-global.github.io/seekvera-main/sitemap.xml' robots.txt
           grep -q 'cars-auto.html' sitemap.xml
@@ -33,7 +35,15 @@ jobs:
           grep -q 'local-services.html' sitemap.xml
           grep -q 'money-insurance.html' sitemap.xml
           if grep -q 'cheap hotel in Abuja' index.html; then
-            echo 'Abuja-specific default remains'
+            echo 'Abuja-specific English default remains'
+            exit 1
+          fi
+          if grep -q 'أبوجا' index.html; then
+            echo 'Abuja-specific Arabic default remains'
+            exit 1
+          fi
+          if grep -q '阿布贾' index.html; then
+            echo 'Abuja-specific Chinese default remains'
             exit 1
           fi
           if grep -q 'Popular in Nigeria' index.html; then
@@ -48,4 +58,4 @@ jobs:
             echo 'Nigeria-specific curated data remains'
             exit 1
           fi
-          echo 'SEEKVERA worldwide-neutral polish validated.'
+          echo 'SEEKVERA worldwide-neutral polish validated in all checked languages.'
