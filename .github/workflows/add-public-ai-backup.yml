@@ -22,49 +22,42 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
-
           p = Path('index.html')
           text = p.read_text(encoding='utf-8')
-
           text = text.replace(
-            "connect-src 'self' https://seekvera-main.seekvera-global.workers.dev; form-action",
-            "connect-src 'self' https://seekvera-main.seekvera-global.workers.dev https://text.pollinations.ai; form-action",
-            1
+              "connect-src 'self' https://seekvera-main.seekvera-global.workers.dev; form-action",
+              "connect-src 'self' https://seekvera-main.seekvera-global.workers.dev https://text.pollinations.ai; form-action",
+              1,
           )
-
-          old = ''' }catch(err){
-  console.warn("SEEKVERA AI fallback",err);setTimeout(()=>aiAdd(aiReply(clean)),120);
- }
-}'''
-
-          new = ''' }catch(err){
-  console.warn("SEEKVERA primary AI unavailable",err);
-  try{
-   const backupPrompt=[
-    "You are SEEKVERA AI, a concise multilingual global discovery assistant.",
-    "Reply in the same language as the user.",
-    "Never invent live prices, availability, bookings, jobs, medical diagnoses, guarantees or affiliate relationships.",
-    `Selected country: ${countryName||"not specified"}.`,
-    `Interface language: ${languageName||"not specified"}.`,
-    `User request: ${clean.slice(0,700)}`
-   ].join(" ");
-   const backupUrl=`https://text.pollinations.ai/${encodeURIComponent(backupPrompt)}?model=openai&private=true`;
-   const backupRes=await fetch(backupUrl,{headers:{"accept":"text/plain"}});
-   if(!backupRes.ok)throw new Error("Backup AI unavailable");
-   const backupText=(await backupRes.text()).trim();
-   if(!backupText)throw new Error("Empty backup AI response");
-   aiAdd(backupText.slice(0,2200));
-   const matched=detectCategory(clean);if(matched)runSearch(clean);
-  }catch(backupErr){
-   console.warn("SEEKVERA backup AI unavailable",backupErr);
-   setTimeout(()=>aiAdd(aiReply(clean)),120);
-  }
- }
-}'''
-
+          old = " }catch(err){\n  console.warn(\"SEEKVERA AI fallback\",err);setTimeout(()=>aiAdd(aiReply(clean)),120);\n }\n}"
+          new = (
+              " }catch(err){\n"
+              "  console.warn(\"SEEKVERA primary AI unavailable\",err);\n"
+              "  try{\n"
+              "   const backupPrompt=[\n"
+              "    \"You are SEEKVERA AI, a concise multilingual global discovery assistant.\",\n"
+              "    \"Reply in the same language as the user.\",\n"
+              "    \"Never invent live prices, availability, bookings, jobs, medical diagnoses, guarantees or affiliate relationships.\",\n"
+              "    `Selected country: ${countryName||\"not specified\"}.`,\n"
+              "    `Interface language: ${languageName||\"not specified\"}.`,\n"
+              "    `User request: ${clean.slice(0,700)}`\n"
+              "   ].join(\" \");\n"
+              "   const backupUrl=`https://text.pollinations.ai/${encodeURIComponent(backupPrompt)}?model=openai&private=true`;\n"
+              "   const backupRes=await fetch(backupUrl,{headers:{\"accept\":\"text/plain\"}});\n"
+              "   if(!backupRes.ok)throw new Error(\"Backup AI unavailable\");\n"
+              "   const backupText=(await backupRes.text()).trim();\n"
+              "   if(!backupText)throw new Error(\"Empty backup AI response\");\n"
+              "   aiAdd(backupText.slice(0,2200));\n"
+              "   const matched=detectCategory(clean);if(matched)runSearch(clean);\n"
+              "  }catch(backupErr){\n"
+              "   console.warn(\"SEEKVERA backup AI unavailable\",backupErr);\n"
+              "   setTimeout(()=>aiAdd(aiReply(clean)),120);\n"
+              "  }\n"
+              " }\n"
+              "}"
+          )
           if old in text:
               text = text.replace(old, new, 1)
-
           p.write_text(text, encoding='utf-8')
 
       - name: Commit if changed
