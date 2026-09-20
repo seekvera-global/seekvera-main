@@ -1,0 +1,193 @@
+name: SEEKVERA Marketplace Redesign
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/marketplace-redesign.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  redesign:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build visual marketplace homepage
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+
+          # Always preserve SEO, search logic, AI logic, country list and multilingual data.
+          text = text.replace('data-build="seekvera-one-search-v4"', 'data-build="seekvera-marketplace-v5"')
+
+          css = r'''
+          /* SEEKVERA marketplace-v5: visual, above-the-fold marketplace layout */
+          body{background:#f4f6f8!important;color:#142033!important}
+          .top{position:sticky;top:0;z-index:80;background:#fff!important;border-bottom:1px solid #e1e6ec!important;box-shadow:0 2px 12px rgba(20,32,51,.06);padding:12px 18px!important}
+          .brand{color:#13233a!important;font-size:1.05rem}.mark{background:linear-gradient(135deg,#30d08b,#5fa5ff)!important}
+          .controls select{background:#fff!important;color:#142033!important;border:1px solid #d7dde5!important;min-width:150px}
+          main.market-main{max-width:1440px!important;padding:0 16px 42px!important}
+          .market-shell{display:grid;grid-template-columns:230px minmax(0,1fr) 290px;gap:18px;align-items:start;padding:18px 0 8px}
+          .market-left,.market-right,.market-hero,.market-section{background:#fff;border:1px solid #e2e7ed;border-radius:18px;box-shadow:0 7px 24px rgba(20,32,51,.055)}
+          .market-left{position:sticky;top:79px;padding:14px}.market-left h3,.market-right h3{margin:4px 6px 12px;color:#152238;font-size:1rem}
+          .category-list{display:grid;gap:3px}.category-list a{display:flex;align-items:center;gap:10px;padding:10px 9px;border-radius:11px;color:#334155;font-weight:700;font-size:.9rem}
+          .category-list a:hover{background:#eef7f3;color:#087a4f}.cat-ico{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:#f0f3f7;font-size:1.02rem}
+          .market-center{min-width:0}.market-hero{padding:19px;background:linear-gradient(135deg,#fff 0%,#f7fffb 58%,#edf5ff 100%)}
+          .market-kicker{display:flex;gap:8px;align-items:center;flex-wrap:wrap;color:#087a4f;font-weight:900;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase}
+          .market-hero h1{margin:8px 0 4px;font-size:clamp(1.65rem,3.6vw,3.2rem);line-height:1.02;letter-spacing:-.035em;color:#13233a}
+          .market-hero .lead{margin:0;color:#667085!important;font-size:.98rem}
+          .search.market-search{margin-top:16px!important;border:2px solid #21ad74;background:#fff!important;border-radius:14px!important;padding:5px!important;box-shadow:0 5px 16px rgba(33,173,116,.08)}
+          .search.market-search input{padding:13px!important;color:#152238!important;background:#fff!important}.search.market-search button{background:#152a45!important;color:#fff!important}.search.market-search button[type=submit]{background:#20ad74!important}
+          .market-chips{display:flex;gap:7px;overflow:auto;padding:11px 1px 2px;scrollbar-width:none}.market-chips::-webkit-scrollbar{display:none}.market-chips a{white-space:nowrap;border:1px solid #dfe5eb;background:#fff;color:#344054;border-radius:999px;padding:7px 11px;font-size:.78rem;font-weight:800}.market-chips a:hover{border-color:#20ad74;color:#087a4f}
+          .market-section{margin-top:15px;padding:16px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.section-head h2{margin:0;color:#162337;font-size:1.2rem}.section-head span{font-size:.78rem;color:#7b8798}
+          .market-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}.market-card{display:block;background:#fff;border:1px solid #e1e6ec;border-radius:15px;overflow:hidden;transition:.16s;min-width:0}.market-card:hover{transform:translateY(-2px);box-shadow:0 9px 26px rgba(20,32,51,.1);border-color:#cbd5df}
+          .market-thumb{height:118px;background:#eef2f6;overflow:hidden;position:relative}.market-thumb img{width:100%;height:100%;object-fit:cover;display:block}.market-card-body{padding:10px 11px 12px}.market-card h3{margin:0 0 3px;color:#17253a;font-size:.94rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.market-card p{margin:0;color:#748095;font-size:.76rem;line-height:1.35}.market-meta{display:flex;justify-content:space-between;gap:5px;margin-top:8px;color:#087a4f;font-size:.7rem;font-weight:900}
+          .market-right{position:sticky;top:79px;padding:14px}.ai-market{background:linear-gradient(135deg,#10243e,#17395b);color:#fff;border-radius:15px;padding:16px;margin-bottom:12px}.ai-market h3{color:#fff!important;margin:0 0 7px}.ai-market p{font-size:.82rem;color:#c8d5e5;margin:0 0 12px}.ai-market button{width:100%;border:0;border-radius:11px;background:#6ee7b7;color:#0b2230;padding:11px;font-weight:900;cursor:pointer}
+          .quick-box{border-top:1px solid #edf0f3;padding-top:12px}.quick-box a{display:flex;justify-content:space-between;gap:8px;padding:9px 3px;color:#475467;font-size:.84rem;font-weight:700;border-bottom:1px solid #f0f2f5}.quick-box a:last-child{border-bottom:0}
+          .country-feature{margin-top:15px!important;background:#fff!important;border:1px solid #e1e6ec!important;border-radius:18px!important;padding:15px!important}.country-badge{background:#eef7f3!important;border-color:#d2eadf!important;color:#176448!important}.popular-item{background:#fff!important;border-color:#e1e6ec!important;color:#17253a!important}.popular-item small{color:#748095!important}.popular-item:hover{background:#f7fbf9!important;border-color:#a9dac4!important}
+          .section{padding:24px 0!important}.section h2{color:#17253a}.card{background:#fff!important;border-color:#e1e6ec!important;color:#17253a!important;box-shadow:0 4px 14px rgba(20,32,51,.035)}.card p{color:#748095!important}.link-card:hover{background:#fbfdfc!important;border-color:#b7dccc!important}
+          #common-searches,#everything{display:none!important}.results.show{display:block!important}.resultHero{background:#fff!important;border-color:#dfe5eb!important}.resultHero h2{color:#17253a}.resultHero p{color:#667085!important}
+          .request-box{background:#fff!important;border-color:#e1e6ec!important;box-shadow:0 6px 20px rgba(20,32,51,.05)}.request-box h2{color:#17253a}.request-grid input,.request-grid select,.request-grid textarea{background:#fff!important;color:#17253a!important;border-color:#d9e0e7!important}.request-note{color:#748095!important}
+          .foot{color:#748095!important;border-color:#dfe5eb!important}.foot a{color:#475467}
+          .note{color:#7a8594!important}.eyebrow{color:#0b8a5c!important}
+          .ai-chat{background:#fff!important;border-color:#cbd5df!important;color:#17253a!important}.ai-head{background:#10243e!important;color:#fff!important}.ai-msg.bot{background:#edf4fb!important;color:#17253a!important}.ai-msg.user{background:#dff7ec!important;color:#17253a!important}.ai-form input{background:#fff!important;color:#17253a!important;border-color:#d6dde5!important}.ai-privacy{color:#748095!important;border-color:#edf0f3!important}
+          .ai-launch{background:linear-gradient(135deg,#20ad74,#69a8ff)!important;color:#092031!important}
+          @media(max-width:1120px){.market-shell{grid-template-columns:210px minmax(0,1fr)}.market-right{display:none}.market-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+          @media(max-width:780px){main.market-main{padding:0 10px 34px!important}.market-shell{grid-template-columns:1fr;padding-top:10px}.market-left{position:static;display:block;overflow:hidden;padding:9px}.market-left h3{display:none}.category-list{display:flex;overflow:auto;gap:6px;scrollbar-width:none}.category-list::-webkit-scrollbar{display:none}.category-list a{white-space:nowrap;background:#f4f6f8;padding:8px 10px}.cat-ico{display:none}.market-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.market-thumb{height:108px}.controls{width:100%;margin-left:0}.controls select{flex:1;min-width:0;max-width:none}.top{flex-wrap:wrap}.market-hero{padding:15px}.market-hero h1{font-size:1.8rem}.country-feature-head{align-items:flex-start!important;flex-direction:column}.popular-grid{grid-template-columns:repeat(2,1fr)!important}}
+          @media(max-width:430px){.market-grid{gap:8px}.market-thumb{height:94px}.market-card-body{padding:8px 9px 10px}.market-card h3{font-size:.86rem}.market-card p{font-size:.7rem}.market-meta{font-size:.65rem}.search.market-search{flex-direction:row!important}.search.market-search .voice{display:none}.search.market-search button[type=submit]{padding:0 12px!important}.market-kicker{font-size:.66rem}}
+          html[dir="rtl"] .market-meta,html[dir="rtl"] .section-head{direction:rtl}
+          '''
+
+          if 'SEEKVERA marketplace-v5' not in text:
+              text = text.replace('</style>', css + '\n</style>', 1)
+
+          new_hero = r'''<main class="market-main">
+          <section class="market-shell" aria-label="SEEKVERA marketplace">
+            <aside class="market-left">
+              <h3>Browse categories</h3>
+              <nav class="category-list">
+                <a href="travel.html"><span class="cat-ico">🏨</span>Hotels & Travel</a>
+                <a href="property.html"><span class="cat-ico">🏠</span>Property</a>
+                <a href="cars-auto.html"><span class="cat-ico">🚗</span>Cars & Auto</a>
+                <a href="jobs.html"><span class="cat-ico">💼</span>Jobs</a>
+                <a href="shopping.html"><span class="cat-ico">🛍️</span>Shopping</a>
+                <a href="import-export.html"><span class="cat-ico">🚢</span>Import & Export</a>
+                <a href="business-software.html"><span class="cat-ico">📊</span>Business Software</a>
+                <a href="solar.html"><span class="cat-ico">☀️</span>Solar & Energy</a>
+                <a href="health.html"><span class="cat-ico">🏥</span>Health</a>
+                <a href="education.html"><span class="cat-ico">🎓</span>Education</a>
+                <a href="local-services.html"><span class="cat-ico">🧰</span>Local Services</a>
+              </nav>
+            </aside>
+
+            <div class="market-center">
+              <div class="market-hero">
+                <div class="market-kicker"><span>🌍 Worldwide marketplace</span><span>•</span><span>AI assisted</span><span>•</span><span>Free search</span></div>
+                <h1>Find it faster. Compare it better.</h1>
+                <p class="lead">Hotels, homes, cars, jobs, products, suppliers and services — all from one global search.</p>
+                <form class="search market-search" id="searchForm">
+                  <input id="q" data-ph="placeholder" aria-label="Search SEEKVERA" autocomplete="off" enterkeymode="search" maxlength="700" placeholder="What are you looking for?">
+                  <button type="button" class="voice" id="voiceSearch" aria-label="Voice search" title="Voice search">🎙️</button>
+                  <button type="submit" data-t="search">Search</button>
+                </form>
+                <div class="market-chips">
+                  <a href="?q=cheap+hotels">🏨 Hotels</a><a href="?q=flights">✈️ Flights</a><a href="?q=houses+for+sale">🏠 Homes</a><a href="?q=cars+for+sale">🚗 Cars</a><a href="?q=jobs">💼 Jobs</a><a href="?q=suppliers+in+China">🏭 Suppliers</a>
+                </div>
+              </div>
+
+              <div class="market-section">
+                <div class="section-head"><h2>Explore the marketplace</h2><span>Popular categories worldwide</span></div>
+                <div class="market-grid">
+                  <a class="market-card" href="travel.html"><div class="market-thumb"><img src="market-hotel.svg" alt="Hotels and travel"></div><div class="market-card-body"><h3>Hotels & Travel</h3><p>Stays, flights and trips</p><div class="market-meta"><span>Worldwide</span><span>Explore →</span></div></div></a>
+                  <a class="market-card" href="property.html"><div class="market-thumb"><img src="market-property.svg" alt="Homes and property"></div><div class="market-card-body"><h3>Homes & Property</h3><p>Rent, buy, land, shortlets</p><div class="market-meta"><span>Local + Global</span><span>Explore →</span></div></div></a>
+                  <a class="market-card" href="cars-auto.html"><div class="market-thumb"><img src="market-car.svg" alt="Cars and auto"></div><div class="market-card-body"><h3>Cars & Auto</h3><p>Cars, rentals, parts, repairs</p><div class="market-meta"><span>New + Used</span><span>Explore →</span></div></div></a>
+                  <a class="market-card" href="shopping.html"><div class="market-thumb"><img src="market-shopping.svg" alt="Shopping"></div><div class="market-card-body"><h3>Shopping</h3><p>Phones, electronics and more</p><div class="market-meta"><span>Compare</span><span>Explore →</span></div></div></a>
+                  <a class="market-card" href="jobs.html"><div class="market-thumb"><img src="market-jobs.svg" alt="Jobs"></div><div class="market-card-body"><h3>Jobs & Careers</h3><p>Local, global and remote</p><div class="market-meta"><span>Opportunities</span><span>Explore →</span></div></div></a>
+                  <a class="market-card" href="import-export.html"><div class="market-thumb"><img src="market-trade.svg" alt="Import and export"></div><div class="market-card-body"><h3>Import & Export</h3><p>Suppliers, sourcing, freight</p><div class="market-meta"><span>Cross-border</span><span>Explore →</span></div></div></a>
+                  <a class="market-card" href="solar.html"><div class="market-thumb"><img src="market-solar.svg" alt="Solar and energy"></div><div class="market-card-body"><h3>Solar & Energy</h3><p>Panels, batteries, inverters</p><div class="market-meta"><span>Energy</span><span>Explore →</span></div></div></a>
+                  <a class="market-card" href="local-services.html"><div class="market-thumb"><img src="market-services.svg" alt="Local services"></div><div class="market-card-body"><h3>Local Services</h3><p>Professionals and everyday help</p><div class="market-meta"><span>Nearby</span><span>Explore →</span></div></div></a>
+                </div>
+              </div>
+
+              <div class="country-feature">
+                <div class="country-feature-head">
+                  <div><div class="country-badge" id="countryBadge">🌍 Worldwide • Global</div><h3 id="popularTitle">Popular worldwide</h3></div>
+                  <p id="popularSub">Quick routes to common needs in your selected country.</p>
+                </div>
+                <div class="popular-grid" id="popularGrid"></div>
+              </div>
+              <div class="note" data-t="note">SEEKVERA is free to search. Some tracked partner links may earn us a commission at no extra cost to you.</div>
+            </div>
+
+            <aside class="market-right">
+              <div class="ai-market">
+                <h3>✨ SEEKVERA AI</h3>
+                <p>Tell the AI what you need in any language. It can guide you to the right category and search route.</p>
+                <button type="button" onclick="document.getElementById('aiLaunch').click()">Ask SEEKVERA AI</button>
+              </div>
+              <div class="quick-box">
+                <h3>Quick searches</h3>
+                <a href="?q=cheap+hotel+near+me"><span>Cheap hotels</span><span>›</span></a>
+                <a href="?q=car+for+sale"><span>Cars for sale</span><span>›</span></a>
+                <a href="?q=house+for+rent"><span>House for rent</span><span>›</span></a>
+                <a href="?q=jobs+near+me"><span>Jobs near me</span><span>›</span></a>
+                <a href="?q=China+supplier"><span>China suppliers</span><span>›</span></a>
+              </div>
+            </aside>
+          </section>
+          '''
+
+          pattern = re.compile(r'<main>\s*<section class="hero">.*?</section>\s*(?=<section class="section results")', re.S)
+          text, n = pattern.subn(new_hero, text, count=1)
+          if n != 1 and 'class="market-shell"' not in text:
+              raise SystemExit('Could not locate homepage hero safely')
+
+          p.write_text(text, encoding='utf-8')
+
+          # Self-contained visual category art: no third-party image hosting required.
+          def svg(title, subtitle, bg1, bg2, icon, scene):
+              return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="{title}">
+          <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="{bg1}"/><stop offset="1" stop-color="{bg2}"/></linearGradient></defs>
+          <rect width="640" height="360" rx="28" fill="url(#g)"/>
+          <circle cx="530" cy="80" r="95" fill="#fff" opacity=".12"/><circle cx="70" cy="315" r="120" fill="#fff" opacity=".08"/>
+          {scene}
+          <text x="34" y="62" font-family="Arial,sans-serif" font-size="54">{icon}</text>
+          <text x="34" y="292" fill="#fff" font-family="Arial,sans-serif" font-weight="700" font-size="30">{title}</text>
+          <text x="34" y="324" fill="#fff" opacity=".82" font-family="Arial,sans-serif" font-size="18">{subtitle}</text>
+          </svg>'''
+
+          art = {
+            'market-hotel.svg': svg('Hotels & Travel','Stay • Fly • Explore','#0b7fab','#31b78a','🏨','<rect x="300" y="105" width="250" height="128" rx="12" fill="#fff" opacity=".92"/><rect x="325" y="132" width="42" height="42" rx="6" fill="#b9e8dd"/><rect x="382" y="132" width="42" height="42" rx="6" fill="#b9e8dd"/><rect x="439" y="132" width="42" height="42" rx="6" fill="#b9e8dd"/><rect x="496" y="132" width="30" height="101" fill="#123b58" opacity=".8"/>'),
+            'market-property.svg': svg('Homes & Property','Rent • Buy • Invest','#5a65d6','#9873d7','🏠','<path d="M305 170 L420 82 L545 170 V245 H305 Z" fill="#fff" opacity=".94"/><path d="M286 174 L421 66 L566 174" fill="none" stroke="#fff" stroke-width="18" stroke-linecap="round"/><rect x="410" y="184" width="54" height="61" rx="5" fill="#625fc2"/>'),
+            'market-car.svg': svg('Cars & Auto','Buy • Rent • Repair','#e16c43','#dfb43c','🚗','<path d="M292 208 h255 l-28-72 c-8-19-22-28-43-28h-104c-20 0-34 8-45 27z" fill="#fff" opacity=".94"/><circle cx="350" cy="218" r="28" fill="#26364a"/><circle cx="492" cy="218" r="28" fill="#26364a"/><rect x="367" y="130" width="116" height="48" rx="12" fill="#d9f4ff"/>'),
+            'market-shopping.svg': svg('Shopping','Compare • Choose • Save','#d64c8c','#ef8c66','🛍️','<path d="M338 126h170l22 126H316z" fill="#fff" opacity=".94"/><path d="M360 131c0-54 126-54 126 0" fill="none" stroke="#fff" stroke-width="18"/><circle cx="378" cy="186" r="9" fill="#d85891"/><circle cx="465" cy="186" r="9" fill="#d85891"/>'),
+            'market-jobs.svg': svg('Jobs & Careers','Local • Global • Remote','#2970b8','#4ba6a1','💼','<rect x="318" y="119" width="218" height="132" rx="18" fill="#fff" opacity=".94"/><path d="M385 119v-24h84v24" fill="none" stroke="#fff" stroke-width="15"/><rect x="405" y="166" width="45" height="24" rx="6" fill="#3d8ea5"/>'),
+            'market-trade.svg': svg('Import & Export','Source • Ship • Trade','#147a83','#5b9f63','🚢','<path d="M286 209h292l-38 54H331z" fill="#fff" opacity=".94"/><rect x="350" y="126" width="63" height="75" fill="#f5c66a"/><rect x="418" y="126" width="63" height="75" fill="#e97962"/><rect x="486" y="126" width="63" height="75" fill="#7ec8c8"/><path d="M335 278c48 22 98 22 150 0 36-15 70-15 106 0" fill="none" stroke="#fff" stroke-width="11" opacity=".7"/>'),
+            'market-solar.svg': svg('Solar & Energy','Panels • Batteries • Power','#2b8b72','#d7a92f','☀️','<polygon points="320,135 520,135 555,240 286,240" fill="#133954" opacity=".92"/><path d="M330 155h178M315 185h204M301 215h232M374 137l-18 101M430 137l0 101M486 137l18 101" stroke="#76c6e5" stroke-width="5"/><circle cx="535" cy="82" r="28" fill="#ffe884"/>'),
+            'market-services.svg': svg('Local Services','Find trusted help nearby','#4f67a4','#4aa29a','🧰','<circle cx="397" cy="166" r="63" fill="#fff" opacity=".94"/><path d="M397 115v102M346 166h102" stroke="#5574a5" stroke-width="20" stroke-linecap="round"/><rect x="493" y="137" width="68" height="72" rx="14" fill="#fff" opacity=".86"/>')
+          }
+          for name, body in art.items():
+              Path(name).write_text(body, encoding='utf-8')
+
+      - name: Commit redesigned marketplace
+        shell: bash
+        run: |
+          set -e
+          git config user.name "seekvera-global"
+          git config user.email "seekvera.global@gmail.com"
+          git add index.html market-*.svg
+          if git diff --cached --quiet; then
+            echo "Marketplace redesign already applied."
+            exit 0
+          fi
+          git commit -m "Apply visual marketplace homepage layout"
+          git push
