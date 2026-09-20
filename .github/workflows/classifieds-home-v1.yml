@@ -1,0 +1,44 @@
+name: Integrate SEEKVERA Classifieds Home
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/classifieds-home-v1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add marketplace entry points
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          marker='SEEKVERA classifieds-home-v1'
+          if marker in s:
+              raise SystemExit(0)
+          css='''\n/* SEEKVERA classifieds-home-v1 */\n.classified-nav{max-width:1440px;margin:10px auto 0;padding:0 16px;display:flex;gap:8px;overflow:auto}.classified-nav a{white-space:nowrap;border:1px solid #dbe2e9;background:#fff;color:#23324a;border-radius:10px;padding:9px 13px;font-size:.82rem;font-weight:900;box-shadow:0 3px 12px rgba(20,32,51,.04)}.classified-nav a.post{background:#20ad74;color:#fff;border-color:#20ad74}.classified-fab{position:fixed;left:16px;bottom:16px;z-index:49;background:#20ad74;color:#fff!important;border-radius:999px;padding:11px 15px;font-weight:900;box-shadow:0 10px 28px rgba(0,0,0,.18)}@media(max-width:560px){.classified-nav{padding:0 10px}.classified-nav a{padding:8px 10px;font-size:.76rem}.classified-fab{left:10px;bottom:12px;padding:10px 13px;font-size:.8rem}}\n'''
+          s=s.replace('</style>',css+'</style>',1)
+          nav='''\n<nav class="classified-nav" aria-label="Marketplace advertising"><a href="marketplace.html">🛒 Marketplace Ads</a><a class="post" href="post-ad.html">＋ Post an Ad — Free</a><a href="seller-plans.html">🚀 Promote / Business Plans</a></nav>\n'''
+          s=s.replace('</header>','</header>'+nav,1)
+          s=s.replace('<nav class="category-list">','<nav class="category-list">\n      <a href="marketplace.html"><span class="cat-ico">📣</span>Marketplace Ads</a>\n      <a href="post-ad.html"><span class="cat-ico">＋</span>Post an Ad</a>',1)
+          s=s.replace('<div class="market-chips">','<div class="market-chips"><a href="marketplace.html">📣 Browse Ads</a><a href="post-ad.html">＋ Sell / Advertise</a>',1)
+          s=s.replace('</body>','<a class="classified-fab" href="post-ad.html">＋ Post Ad</a>\n</body>',1)
+          s=s.replace('seekvera-marketplace-v5','seekvera-marketplace-classifieds-v6')
+          p.write_text(s,encoding='utf-8')
+      - name: Commit integration
+        shell: bash
+        run: |
+          if git diff --quiet; then exit 0; fi
+          git config user.name "seekvera-global"
+          git config user.email "seekvera.global@gmail.com"
+          git add index.html
+          git commit -m "Add marketplace ads and Post Ad entry points"
+          git push
