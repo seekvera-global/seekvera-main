@@ -1,0 +1,66 @@
+name: SEEKVERA social preview
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/social-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  polish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add consistent social metadata
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+          image='https://seekvera-global.github.io/seekvera-main/social-card.png'
+          for p in Path('.').glob('*.html'):
+              s=p.read_text(encoding='utf-8')
+              if '<head' not in s or '</head>' not in s:
+                  continue
+              def meta(prop):
+                  m=re.search(rf'<meta property="{re.escape(prop)}" content="([^"]*)"',s)
+                  return m.group(1) if m else ''
+              title=meta('og:title')
+              desc=meta('og:description')
+              additions=[]
+              if 'property="og:site_name"' not in s:
+                  additions.append('<meta property="og:site_name" content="SEEKVERA">')
+              if 'property="og:image"' not in s:
+                  additions.append(f'<meta property="og:image" content="{image}">')
+              if 'property="og:image:alt"' not in s:
+                  additions.append('<meta property="og:image:alt" content="SEEKVERA — Find, compare, choose worldwide">')
+              if 'name="twitter:card"' not in s:
+                  additions.append('<meta name="twitter:card" content="summary_large_image">')
+              if 'name="twitter:title"' not in s and title:
+                  additions.append(f'<meta name="twitter:title" content="{title}">')
+              if 'name="twitter:description"' not in s and desc:
+                  additions.append(f'<meta name="twitter:description" content="{desc}">')
+              if 'name="twitter:image"' not in s:
+                  additions.append(f'<meta name="twitter:image" content="{image}">')
+              if additions:
+                  s=s.replace('</head>', '\n'+'\n'.join(additions)+'\n</head>',1)
+                  p.write_text(s,encoding='utf-8')
+      - name: Validate homepage preview
+        run: |
+          set -e
+          grep -q 'og:site_name" content="SEEKVERA' index.html
+          grep -q 'twitter:image' index.html
+          grep -q 'social-card.png' index.html
+      - name: Commit
+        run: |
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add '*.html'
+          if ! git diff --cached --quiet; then
+            git commit -m 'Polish SEEKVERA social previews'
+            git pull --rebase origin main
+            git push
+          fi
