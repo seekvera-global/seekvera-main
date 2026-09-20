@@ -21,7 +21,6 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
-          import re
 
           official = 'https://seekvera-global.github.io/seekvera-main'
           old = 'https://seekveraglobal.com'
@@ -32,14 +31,6 @@ jobs:
               text = path.read_text(encoding='utf-8', errors='ignore')
               path.write_text(text.replace(old, official), encoding='utf-8')
 
-          health = Path('.github/workflows/site-health.yml')
-          text = health.read_text(encoding='utf-8')
-          text = text.replace(old, official)
-          pattern = r"\s*if grep -q 'seekvera-global\.github\.io/seekvera-main' /tmp/home\.html; then\n\s*echo 'Old GitHub Pages URL still present in live homepage'\n\s*exit 1\n\s*fi\n"
-          text = re.sub(pattern, '\n', text)
-          text = text.replace('Official-domain SEO signals are correct.', 'Official zero-cost GitHub Pages SEO signals are correct.')
-          health.write_text(text, encoding='utf-8')
-
       - name: Validate official URL consistency
         shell: bash
         run: |
@@ -48,7 +39,7 @@ jobs:
           grep -q 'https://seekvera-global.github.io/seekvera-main/' sitemap.xml
           grep -q '<link rel="canonical" href="https://seekvera-global.github.io/seekvera-main/">' index.html
           grep -q '<meta property="og:url" content="https://seekvera-global.github.io/seekvera-main/">' index.html
-          if grep -R -n 'https://seekveraglobal.com' -- *.html robots.txt sitemap.xml .github/workflows/site-health.yml; then
+          if grep -R -n 'https://seekveraglobal.com' -- *.html robots.txt sitemap.xml; then
             echo 'Inactive custom-domain reference remains'
             exit 1
           fi
@@ -63,6 +54,6 @@ jobs:
           fi
           git config user.name 'seekvera-global'
           git config user.email 'seekvera.global@gmail.com'
-          git add '*.html' robots.txt sitemap.xml .github/workflows/site-health.yml
+          git add '*.html' robots.txt sitemap.xml
           git commit -m 'Use live GitHub Pages URL as official zero-cost site'
           git push
