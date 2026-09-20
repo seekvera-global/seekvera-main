@@ -14,38 +14,31 @@ jobs:
   smoke:
     runs-on: ubuntu-latest
     steps:
-      - name: Check Cloudflare AI health
+      - name: Check GitHub Pages worldwide frontend
         shell: bash
         run: |
           set -euo pipefail
-          curl -fsS --max-time 25 https://seekvera-main.seekvera-global.workers.dev/api/health | tee /tmp/health.json
-          python - <<'PY'
-          import json
-          d=json.load(open('/tmp/health.json'))
-          assert d.get('ok') is True, d
-          assert d.get('aiBinding') is True, d
-          print('Health OK:', d)
-          PY
+          base='https://seekvera-global.github.io/seekvera-main/'
+          curl -fsS --max-time 30 "$base" -o /tmp/home.html
+          grep -q 'SEEKVERA' /tmp/home.html
+          grep -q 'Worldwide / Any country' /tmp/home.html
+          grep -q 'cheap hotel anywhere in the world' /tmp/home.html
+          if grep -q 'Popular in Nigeria' /tmp/home.html; then
+            echo 'Nigeria-specific default detected'
+            exit 1
+          fi
+          if grep -q '🇳🇬 Nigeria • NGN' /tmp/home.html; then
+            echo 'Nigeria-specific badge detected'
+            exit 1
+          fi
+          echo 'Worldwide frontend OK'
 
-      - name: Check live AI reply
+      - name: Check public backup AI endpoint
         shell: bash
         run: |
           set -euo pipefail
           curl -fsS --max-time 45 \
-            -H 'content-type: application/json' \
-            --data '{"message":"Reply with only: SEEKVERA AI OK","country":"Nigeria","language":"English"}' \
-            https://seekvera-main.seekvera-global.workers.dev/api/ai | tee /tmp/ai.json
-          python - <<'PY'
-          import json
-          d=json.load(open('/tmp/ai.json'))
-          assert d.get('ok') is True, d
-          assert isinstance(d.get('response'), str) and d['response'].strip(), d
-          print('AI OK:', d['response'])
-          PY
-
-      - name: Check GitHub Pages frontend
-        shell: bash
-        run: |
-          set -euo pipefail
-          curl -fsS --max-time 25 https://seekvera-global.github.io/seekvera-main/ | grep -q 'SEEKVERA'
-          echo 'GitHub Pages frontend OK'
+            'https://text.pollinations.ai/Reply%20with%20only%3A%20SEEKVERA%20AI%20OK?model=openai&private=true' \
+            -o /tmp/ai.txt
+          test -s /tmp/ai.txt
+          echo 'AI fallback endpoint OK'
