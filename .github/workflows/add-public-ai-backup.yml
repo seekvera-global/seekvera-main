@@ -1,0 +1,81 @@
+name: Add resilient SEEKVERA AI backup
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - '.github/workflows/add-public-ai-backup.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Add public AI backup and CSP permission
+        shell: python
+        run: |
+          from pathlib import Path
+
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+
+          text = text.replace(
+            "connect-src 'self' https://seekvera-main.seekvera-global.workers.dev; form-action",
+            "connect-src 'self' https://seekvera-main.seekvera-global.workers.dev https://text.pollinations.ai; form-action",
+            1
+          )
+
+          old = ''' }catch(err){
+  console.warn("SEEKVERA AI fallback",err);setTimeout(()=>aiAdd(aiReply(clean)),120);
+ }
+}'''
+
+          new = ''' }catch(err){
+  console.warn("SEEKVERA primary AI unavailable",err);
+  try{
+   const backupPrompt=[
+    "You are SEEKVERA AI, a concise multilingual global discovery assistant.",
+    "Reply in the same language as the user.",
+    "Never invent live prices, availability, bookings, jobs, medical diagnoses, guarantees or affiliate relationships.",
+    `Selected country: ${countryName||"not specified"}.`,
+    `Interface language: ${languageName||"not specified"}.`,
+    `User request: ${clean.slice(0,700)}`
+   ].join(" ");
+   const backupUrl=`https://text.pollinations.ai/${encodeURIComponent(backupPrompt)}?model=openai&private=true`;
+   const backupRes=await fetch(backupUrl,{headers:{"accept":"text/plain"}});
+   if(!backupRes.ok)throw new Error("Backup AI unavailable");
+   const backupText=(await backupRes.text()).trim();
+   if(!backupText)throw new Error("Empty backup AI response");
+   aiAdd(backupText.slice(0,2200));
+   const matched=detectCategory(clean);if(matched)runSearch(clean);
+  }catch(backupErr){
+   console.warn("SEEKVERA backup AI unavailable",backupErr);
+   setTimeout(()=>aiAdd(aiReply(clean)),120);
+  }
+ }
+}'''
+
+          if old in text:
+              text = text.replace(old, new, 1)
+
+          p.write_text(text, encoding='utf-8')
+
+      - name: Commit if changed
+        shell: bash
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'AI backup already installed.'
+            exit 0
+          fi
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add index.html
+          git commit -m 'Add zero-cost backup AI so SEEKVERA stays available'
+          git push
