@@ -1,0 +1,52 @@
+name: Diagnose live SEEKVERA source
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/diagnose-live-source.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compare live endpoints
+        shell: bash
+        run: |
+          set -u
+          echo '=== DNS ==='
+          dig +short seekveraglobal.com A || true
+          dig +short seekveraglobal.com CNAME || true
+          echo
+          echo '=== LOCAL FILE HASHES ==='
+          sha256sum index.html index-old.html || true
+          echo
+          urls=(
+            'https://seekveraglobal.com/'
+            'https://seekvera-global.github.io/seekvera-main/'
+            'https://seekvera-main.seekvera-global.workers.dev/'
+          )
+          n=0
+          for url in "${urls[@]}"; do
+            n=$((n+1))
+            file="/tmp/site$n.html"
+            echo
+            echo "=== $url ==="
+            curl -sSIL --max-time 20 "$url" | sed -n '1,25p' || true
+            if curl -fsSL --max-time 30 "$url" -o "$file"; then
+              echo -n 'sha256: '; sha256sum "$file" | cut -d' ' -f1
+              echo -n 'size: '; wc -c < "$file"
+              echo -n 'Ask SEEKVERA: '; grep -Fq 'Ask SEEKVERA' "$file" && echo YES || echo NO
+              echo -n 'Request anything: '; grep -Fq 'Request anything' "$file" && echo YES || echo NO
+              echo -n 'country selector: '; grep -Fq 'id="country"' "$file" && echo YES || echo NO
+              echo -n 'language selector: '; grep -Fq 'id="lang"' "$file" && echo YES || echo NO
+              echo -n 'official canonical: '; grep -Fq 'https://seekveraglobal.com/' "$file" && echo YES || echo NO
+            else
+              echo 'FETCH FAILED'
+            fi
+          done
