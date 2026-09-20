@@ -20,25 +20,10 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-
           path = Path('index.html')
           text = path.read_text(encoding='utf-8')
           old = 'function aiSend(text){if(!text.trim())return;aiAdd(text,"user");setTimeout(()=>aiAdd(aiReply(text)),180)}'
-          new = '''async function aiSend(text){
- const clean=text.trim();if(!clean)return;aiAdd(clean,"user");
- const country=document.getElementById("country"),lang=document.getElementById("lang");
- const countryName=country.options[country.selectedIndex]?.text||"",languageName=lang.options[lang.selectedIndex]?.text||document.documentElement.lang||"";
- try{
-  const res=await fetch("/api/ai",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({message:clean,country:countryName,language:languageName})});
-  if(!res.ok)throw new Error("AI endpoint unavailable");
-  const data=await res.json();
-  if(!data||typeof data.response!=="string"||!data.response.trim())throw new Error("Empty AI response");
-  aiAdd(data.response.trim());
-  const matched=detectCategory(clean);if(matched)runSearch(clean);
- }catch(err){
-  console.warn("SEEKVERA AI fallback",err);setTimeout(()=>aiAdd(aiReply(clean)),120);
- }
-}'''
+          new = 'async function aiSend(text){\n const clean=text.trim();if(!clean)return;aiAdd(clean,"user");\n const country=document.getElementById("country"),lang=document.getElementById("lang");\n const countryName=country.options[country.selectedIndex]?.text||"",languageName=lang.options[lang.selectedIndex]?.text||document.documentElement.lang||"";\n try{\n  const res=await fetch("/api/ai",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({message:clean,country:countryName,language:languageName})});\n  if(!res.ok)throw new Error("AI endpoint unavailable");\n  const data=await res.json();\n  if(!data||typeof data.response!=="string"||!data.response.trim())throw new Error("Empty AI response");\n  aiAdd(data.response.trim());\n  const matched=detectCategory(clean);if(matched)runSearch(clean);\n }catch(err){\n  console.warn("SEEKVERA AI fallback",err);setTimeout(()=>aiAdd(aiReply(clean)),120);\n }\n}'
           if old not in text:
               raise SystemExit('Expected aiSend code not found; refusing unsafe patch')
           path.write_text(text.replace(old, new, 1), encoding='utf-8')
