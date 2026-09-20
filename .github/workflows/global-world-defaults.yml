@@ -37,6 +37,8 @@ jobs:
               text=text.replace('Popular in Nigeria','Popular worldwide')
               text=text.replace('Try: cheap hotel in Abuja, POS software, solar...','Try: cheap hotel anywhere in the world, flights, cars, software...')
               text=text.replace('Ex. hôtel pas cher à Abuja, logiciel POS, solaire...','Ex. hôtel pas cher partout dans le monde, vols, voitures, logiciels...')
+              text=text.replace('مثال: فندق رخيص في أبوجا، نظام POS، سولار...','مثال: فندق رخيص في أي مكان في العالم، رحلات، سيارات، برامج...')
+              text=text.replace('例如：阿布贾便宜酒店、POS 软件、太阳能...','例如：世界任何地方的便宜酒店、航班、汽车、软件...')
 
               # Remove Nigeria-only curated defaults from embedded data. Nigeria then uses the same generic logic as other countries.
               m=re.search(r'const DATA=(\{.*?\});\nconst T=', text, re.S)
@@ -46,17 +48,22 @@ jobs:
                   cp.pop('NG', None)
                   data['countryPopular']=cp
                   t=data.get('T') or {}
-                  if isinstance(t.get('en'), dict):
-                      t['en']['placeholder']='Try: cheap hotel anywhere in the world, flights, cars, software...'
-                  if isinstance(t.get('fr'), dict):
-                      t['fr']['placeholder']='Ex. hôtel pas cher partout dans le monde, vols, voitures, logiciels...'
+                  placeholders={
+                      'en':'Try: cheap hotel anywhere in the world, flights, cars, software...',
+                      'ar':'مثال: فندق رخيص في أي مكان في العالم، رحلات، سيارات، برامج...',
+                      'fr':'Ex. hôtel pas cher partout dans le monde, vols, voitures, logiciels...',
+                      'zh':'例如：世界任何地方的便宜酒店、航班、汽车、软件...'
+                  }
+                  for lang,value in placeholders.items():
+                      if isinstance(t.get(lang), dict):
+                          t[lang]['placeholder']=value
                   data['T']=t
                   packed=json.dumps(data, ensure_ascii=False)
                   text=text[:m.start(1)] + packed + text[m.end(1):]
 
               p.write_text(text,encoding='utf-8')
 
-      - name: Validate global defaults
+      - name: Validate global defaults in every translated example
         shell: bash
         run: |
           set -euo pipefail
@@ -64,11 +71,15 @@ jobs:
           grep -q '🌍 Worldwide • Global' index.html
           grep -q 'Popular worldwide' index.html
           grep -q 'cheap hotel anywhere in the world' index.html
+          grep -q 'في أي مكان في العالم' index.html
+          grep -q '世界任何地方' index.html
           if grep -q '🇳🇬 Nigeria • NGN' index.html; then exit 1; fi
           if grep -q 'Popular in Nigeria' index.html; then exit 1; fi
           if grep -q 'cheap hotel in Abuja' index.html; then exit 1; fi
+          if grep -q 'أبوجا' index.html; then exit 1; fi
+          if grep -q '阿布贾' index.html; then exit 1; fi
           if grep -q '"countryPopular": {"NG"' index.html; then exit 1; fi
-          echo 'Worldwide neutral defaults validated.'
+          echo 'Worldwide neutral defaults validated in all translated examples.'
 
       - name: Commit global defaults
         shell: bash
@@ -80,5 +91,5 @@ jobs:
           git config user.name 'seekvera-global'
           git config user.email 'seekvera.global@gmail.com'
           git add index.html index-old.html
-          git commit -m 'Make SEEKVERA worldwide by default'
+          git commit -m 'Globalize all translated SEEKVERA examples'
           git push
