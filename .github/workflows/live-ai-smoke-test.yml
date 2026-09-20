@@ -1,4 +1,4 @@
-name: SEEKVERA live AI smoke test
+name: SEEKVERA global live audit
 
 on:
   push:
@@ -8,37 +8,100 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  smoke:
+  audit:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     steps:
-      - name: Check GitHub Pages worldwide frontend
-        shell: bash
-        run: |
-          set -euo pipefail
-          base='https://seekvera-global.github.io/seekvera-main/'
-          curl -fsS --max-time 30 "$base" -o /tmp/home.html
-          grep -q 'SEEKVERA' /tmp/home.html
-          grep -q 'Worldwide / Any country' /tmp/home.html
-          grep -q 'cheap hotel anywhere in the world' /tmp/home.html
-          if grep -q 'Popular in Nigeria' /tmp/home.html; then
-            echo 'Nigeria-specific default detected'
-            exit 1
-          fi
-          if grep -q '🇳🇬 Nigeria • NGN' /tmp/home.html; then
-            echo 'Nigeria-specific badge detected'
-            exit 1
-          fi
-          echo 'Worldwide frontend OK'
+      - uses: actions/checkout@v4
 
-      - name: Check public backup AI endpoint
+      - name: Compact AI control
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          changes=[
+            ('padding:14px 18px;font-weight:900;box-shadow:0 12px 38px','padding:9px 13px;font-size:.86rem;font-weight:900;box-shadow:0 12px 38px'),
+            ('✨ Ask SEEKVERA</button>','✨ Ask Anything</button>'),
+            ('<b>SEEKVERA Universal Assistant<small>Multilingual global guide • no account needed</small></b>','<b>SEEKVERA AI<small>Ask anything • worldwide</small></b>'),
+            ('data-build="worldwide-20260920-v2"','data-build="worldwide-20260920-v3"')
+          ]
+          for old,new in changes:
+            if old in s:
+              s=s.replace(old,new,1)
+            elif new not in s:
+              raise SystemExit('Missing expected marker: '+old[:50])
+          p.write_text(s,encoding='utf-8')
+
+      - name: Commit compact AI
         shell: bash
         run: |
           set -euo pipefail
-          curl -fsS --max-time 45 \
-            'https://text.pollinations.ai/Reply%20with%20only%3A%20SEEKVERA%20AI%20OK?model=openai&private=true' \
-            -o /tmp/ai.txt
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add index.html
+          if ! git diff --cached --quiet; then
+            git commit -m 'Compact AI control for global mobile UI'
+            git pull --rebase origin main
+            git push
+          fi
+
+      - name: Wait for live audited build
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://seekvera-global.github.io/seekvera-main/?audit=v3'
+          ok=0
+          for i in $(seq 1 72); do
+            if curl -fsS --max-time 25 "$url" -o /tmp/home.html && grep -q 'data-build="worldwide-20260920-v3"' /tmp/home.html && grep -q 'Ask Anything' /tmp/home.html; then
+              ok=1
+              break
+            fi
+            sleep 5
+          done
+          test "$ok" -eq 1
+
+      - name: Audit global homepage and pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://seekvera-global.github.io/seekvera-main'
+          curl -fsS --max-time 30 "$base/?audit=final" -o /tmp/home.html
+          grep -q 'Worldwide / Any country' /tmp/home.html
+          grep -q 'Popular worldwide' /tmp/home.html
+          grep -q 'cheap hotel anywhere in the world' /tmp/home.html
+          grep -q 'countryEl.value="ZZ"' /tmp/home.html
+          grep -q 'Ask Anything' /tmp/home.html
+          ! grep -q 'cheap hotel in Abuja' /tmp/home.html
+          ! grep -q 'Popular in Nigeria' /tmp/home.html
+          ! grep -q 'Nigeria • NGN' /tmp/home.html
+          pages='travel.html shopping.html property.html software.html education.html solar.html health.html hosting.html jobs.html import-export.html cars-auto.html restaurants-food.html shipping-logistics.html local-services.html money-insurance.html about.html privacy.html terms.html affiliate-disclosure.html contact.html'
+          for page in $pages; do
+            curl -fsS --max-time 30 "$base/$page" -o /dev/null
+          done
+          curl -fsS --max-time 30 "$base/robots.txt" -o /tmp/robots.txt
+          curl -fsS --max-time 30 "$base/sitemap.xml" -o /tmp/sitemap.xml
+          grep -q "$base/sitemap.xml" /tmp/robots.txt
+          grep -q "$base/property.html" /tmp/sitemap.xml
+          python - <<'PY'
+          import re
+          s=open('/tmp/home.html',encoding='utf-8').read()
+          m=re.search(r'<select id="country".*?</select>',s,re.S)
+          assert m
+          count=len(re.findall(r'<option value=',m.group(0)))
+          assert count>=190,count
+          for code in ('GB','LB','US','NG','CN','AE'):
+            assert f'value="{code}"' in m.group(0)
+          print('Country options:',count)
+          PY
+
+      - name: Check public AI fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS --max-time 60 'https://text.pollinations.ai/Reply%20with%20only%3A%20SEEKVERA%20AI%20OK?model=openai&private=true' -o /tmp/ai.txt
           test -s /tmp/ai.txt
-          echo 'AI fallback endpoint OK'
+          echo 'AI fallback endpoint responded successfully.'
