@@ -1,3 +1,4 @@
+// Native Cloudflare Workers Builds retry: 2026-09-20
 {
   "name": "seekvera-main",
   "main": "./worker.js",
