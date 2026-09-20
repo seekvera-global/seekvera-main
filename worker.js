@@ -3,6 +3,9 @@ const ALLOWED_ORIGINS = new Set([
   "https://seekvera-main.seekvera-global.workers.dev"
 ]);
 
+const PRIMARY_AI_MODEL = "@cf/google/gemma-4-26b-a4b-it";
+const FALLBACK_AI_MODEL = "@cf/zai-org/glm-4.7-flash";
+
 function corsHeaders(request) {
   const origin = request.headers.get("origin") || "";
   const allowed = ALLOWED_ORIGINS.has(origin) ? origin : "";
@@ -46,6 +49,47 @@ function requestId() {
   return `SV-${date}-${token}`;
 }
 
+function extractAIText(result) {
+  if (typeof result?.response === "string") return result.response.trim();
+  if (typeof result?.result?.response === "string") return result.result.response.trim();
+  if (typeof result?.choices?.[0]?.message?.content === "string") return result.choices[0].message.content.trim();
+  if (Array.isArray(result?.choices?.[0]?.message?.content)) {
+    return result.choices[0].message.content.map(x => x?.text || "").join("\n").trim();
+  }
+  return "";
+}
+
+async function runSeekveraAI(env, messages) {
+  let primaryError;
+  try {
+    const result = await env.AI.run(PRIMARY_AI_MODEL, {
+      messages,
+      max_completion_tokens: 320,
+      temperature: 0.2
+    });
+    const response = extractAIText(result);
+    if (response) return { response, model: PRIMARY_AI_MODEL };
+    primaryError = new Error("Empty primary AI response");
+  } catch (error) {
+    primaryError = error;
+    console.warn("SEEKVERA primary AI unavailable; trying Cloudflare fallback", error);
+  }
+
+  try {
+    const result = await env.AI.run(FALLBACK_AI_MODEL, {
+      messages,
+      max_completion_tokens: 300,
+      temperature: 0.22
+    });
+    const response = extractAIText(result);
+    if (response) return { response, model: FALLBACK_AI_MODEL };
+    throw new Error("Empty fallback AI response");
+  } catch (fallbackError) {
+    console.error("SEEKVERA Cloudflare AI models unavailable", { primaryError, fallbackError });
+    throw fallbackError;
+  }
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -61,7 +105,8 @@ export default {
           service: "SEEKVERA",
           aiBinding: Boolean(env.AI),
           requestsDbBinding: Boolean(env.REQUESTS_DB),
-          model: "@cf/zai-org/glm-4.7-flash"
+          primaryModel: PRIMARY_AI_MODEL,
+          fallbackModel: FALLBACK_AI_MODEL
         });
       }
 
@@ -135,37 +180,30 @@ export default {
           }
 
           const system = [
-            "You are SEEKVERA AI, a concise multilingual guide inside a global discovery and comparison website.",
+            "You are SEEKVERA AI, a high-quality multilingual guide inside a worldwide discovery and comparison platform.",
             "Reply in the same language as the user unless they clearly ask for another language.",
+            "Understand cross-border intent naturally: a user may live in one country and want a product, property, hotel, supplier or service in another country.",
             "Help classify what they need and give practical next steps for travel, hotels, shopping, property, business software, education, solar, health services, web hosting, jobs, import/export, cars and other lawful marketplace needs.",
             "Never invent a live price, availability, provider approval, discount, booking, job opening, medical diagnosis, legal guarantee, or affiliate relationship.",
-            "When the user asks for a product or service from another country, explain the best search route and the details they should provide, including destination, budget, quantity or dates when relevant.",
-            "If current provider data is not available, say that clearly and tell the user what details to enter in SEEKVERA search or Request Anything.",
-            "Keep normal answers short and useful: usually 2 to 5 sentences. Ask at most one useful follow-up question when necessary.",
-            `Selected country: ${country || "not specified"}.`,
-            `Selected interface language: ${language || "not specified"}.`
+            "Do not call any provider a SEEKVERA partner unless verified partner data is actually supplied to you.",
+            "When current provider data is unavailable, say that clearly and guide the user to SEEKVERA search, live web search, maps, or Request Anything.",
+            "For location-sensitive requests, distinguish the user's current location from the destination they are asking about.",
+            "Keep normal answers concise and useful. Ask at most one follow-up question only when necessary to produce a better result.",
+            `Selected country: ${country || "Worldwide / not specified"}.`,
+            `Selected interface language: ${language || "auto"}.`
           ].join(" ");
 
-          const result = await env.AI.run("@cf/zai-org/glm-4.7-flash", {
-            messages: [
-              { role: "system", content: system },
-              { role: "user", content: message }
-            ],
-            max_completion_tokens: 260,
-            temperature: 0.25
+          const ai = await runSeekveraAI(env, [
+            { role: "system", content: system },
+            { role: "user", content: message }
+          ]);
+
+          return json(request, {
+            ok: true,
+            response: ai.response,
+            model: ai.model,
+            provider: "Cloudflare Workers AI"
           });
-
-          const response = typeof result?.response === "string"
-            ? result.response.trim()
-            : typeof result?.result?.response === "string"
-              ? result.result.response.trim()
-              : "";
-
-          if (!response) {
-            return json(request, { ok: false, error: "AI response unavailable", retryable: true }, 503);
-          }
-
-          return json(request, { ok: true, response, model: "glm-4.7-flash" });
         } catch (error) {
           console.error("SEEKVERA AI error", error);
           return json(request, { ok: false, error: "AI is temporarily unavailable", retryable: true }, 503);
