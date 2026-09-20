@@ -355,7 +355,21 @@ function aiReply(input){
  else reply=ar?`فهمت طلبك في ${countryName}. اكتب تفاصيل أكثر مثل المدينة والميزانية، وسأوجهك للقسم المناسب.`:`I understand your request for ${countryName}. Add a city and budget so I can guide you to the best category.`;
  return reply
 }
-function aiSend(text){if(!text.trim())return;aiAdd(text,"user");setTimeout(()=>aiAdd(aiReply(text)),180)}
+async function aiSend(text){
+ const clean=text.trim();if(!clean)return;aiAdd(clean,"user");
+ const country=document.getElementById("country"),lang=document.getElementById("lang");
+ const countryName=country.options[country.selectedIndex]?.text||"",languageName=lang.options[lang.selectedIndex]?.text||document.documentElement.lang||"";
+ try{
+  const res=await fetch("/api/ai",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({message:clean,country:countryName,language:languageName})});
+  if(!res.ok)throw new Error("AI endpoint unavailable");
+  const data=await res.json();
+  if(!data||typeof data.response!=="string"||!data.response.trim())throw new Error("Empty AI response");
+  aiAdd(data.response.trim());
+  const matched=detectCategory(clean);if(matched)runSearch(clean);
+ }catch(err){
+  console.warn("SEEKVERA AI fallback",err);setTimeout(()=>aiAdd(aiReply(clean)),120);
+ }
+}
 document.getElementById("aiLaunch").addEventListener("click",()=>{aiChat.classList.add("open");if(!aiMessages.children.length)aiAdd("Hello! I’m the free SEEKVERA guide. What do you want to find today?\nمرحباً! ماذا تريد أن تجد اليوم؟");aiInput.focus()});
 document.getElementById("aiClose").addEventListener("click",()=>aiChat.classList.remove("open"));
 document.getElementById("aiForm").addEventListener("submit",e=>{e.preventDefault();const v=aiInput.value;aiInput.value="";aiSend(v)});
