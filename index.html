@@ -411,12 +411,12 @@ async function aiSend(text){
   try{
    const backupPrompt=[
     "You are SEEKVERA AI, a concise multilingual global discovery assistant.",
-    "Reply in the same language as the user.",
+    "Reply in the same language as the user's message even when the interface is set to another language.",
+    "Keep the answer under 120 words.",
     "Never invent live prices, availability, bookings, jobs, medical diagnoses, guarantees or affiliate relationships.",
     "Never invent or recommend a named company, association, authority, port, certification, supplier or local organization. Treat all providers as unverified unless verified data is supplied.",
     "Prefer safe search terms, comparison criteria and practical verification steps over unsupported names or claims.",
     `Selected country: ${countryName||"not specified"}.`,
-    `Interface language: ${languageName||"not specified"}.`,
     `User request: ${clean.slice(0,700)}`
    ].join(" ");
    const backupUrl=`https://text.pollinations.ai/${encodeURIComponent(backupPrompt)}?model=openai&private=true`;
@@ -424,7 +424,7 @@ async function aiSend(text){
    if(!backupRes.ok)throw new Error("Backup AI unavailable");
    const backupText=(await backupRes.text()).trim();
    if(!backupText)throw new Error("Empty backup AI response");
-   aiAdd(backupText.slice(0,2200));
+   aiAdd(backupText.slice(0,1600));
    const matched=detectCategory(clean);if(matched)runSearch(clean);
   }catch(backupErr){
    console.warn("SEEKVERA backup AI unavailable",backupErr);
