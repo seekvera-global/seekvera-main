@@ -17,7 +17,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Polish homepage privacy and official SEO URLs
+      - name: Polish homepage privacy search routing and official SEO URLs
         shell: python
         run: |
           from pathlib import Path
@@ -47,13 +47,34 @@ jobs:
 
           text = text.replace('"PARTNER CANDIDATE"', '"SEARCH SOURCE"')
           text = text.replace(
-              '"Partner route","This category is searchable, but its earning partner is still being verified.","No tracked earning link is active yet.","VERIFY"',
-              '"Search route","This category is searchable across relevant public sources.","Add your city, budget or destination for better results.","SEARCH"'
-          )
-          text = text.replace(
               'Some future tracked links may earn us a commission at no extra cost to you.',
               'SEEKVERA is free to search. Some tracked partner links may earn us a commission at no extra cost to you.'
           )
+
+          # Remove the unfinished partner-activation section from the public homepage.
+          partner_section_start = text.find('<section class="section">\n <div class="eyebrow" data-t="phase1">')
+          if partner_section_start != -1:
+              partner_section_end = text.find('</section>', partner_section_start)
+              if partner_section_end != -1:
+                  text = text[:partner_section_start] + text[partner_section_end + len('</section>'):]
+
+          # Replace candidate affiliate cards with useful live search routes.
+          route_start = text.find(' const ps=partnerMap[c.id]||[];')
+          route_end = text.find(' document.getElementById("resultGrid").innerHTML=h;', route_start)
+          if route_start != -1 and route_end != -1:
+              replacement = (
+                  ' const liveQ=encodeURIComponent(`${q} ${countryName}`.trim());\n'
+                  ' h+=card("Live web search","Find current providers, prices and availability from public web results.","Current results","LIVE SEARCH",`https://www.google.com/search?q=${liveQ}`);\n'
+                  ' h+=card("Local map search","Explore nearby businesses and services for this request.","Google Maps","MAP",`https://www.google.com/maps/search/${liveQ}`);\n'
+              )
+              text = text[:route_start] + replacement + text[route_end:]
+
+          # Remove unpublished affiliate-candidate names, approval notes and commission rates from public JS.
+          partner_data_start = text.find(', "partnerMap": {')
+          partner_data_end = text.find(', "countryPopular":', partner_data_start)
+          if partner_data_start != -1 and partner_data_end != -1:
+              text = text[:partner_data_start] + ', "partnerMap": {}' + text[partner_data_end:]
+          text = text.replace('const T=DATA.T,cats=DATA.cats,partnerMap=DATA.partnerMap,countryPopular=DATA.countryPopular;', 'const T=DATA.T,cats=DATA.cats,countryPopular=DATA.countryPopular;')
 
           marker = '.links{display:flex;gap:14px;flex-wrap:wrap}.note{font-size:.86rem;color:var(--muted);margin-top:12px}'
           if marker in text and '.ai-privacy{' not in text:
@@ -98,11 +119,16 @@ jobs:
           set -euo pipefail
           grep -q 'https://seekveraglobal.com/sitemap.xml' robots.txt
           grep -q 'https://seekveraglobal.com/' sitemap.xml
-          grep -q 'SEARCH SOURCE' index.html
+          grep -q 'LIVE SEARCH' index.html
+          grep -q 'Local map search' index.html
           grep -q 'external AI providers' index.html
           grep -q 'role="log"' index.html
           if grep -q 'PARTNER CANDIDATE' index.html; then
             echo 'Internal partner label still visible'
+            exit 1
+          fi
+          if grep -q 'partnerMap\[c.id\]' index.html; then
+            echo 'Old candidate partner routing remains'
             exit 1
           fi
           if grep -q 'seekvera-global.github.io/seekvera-main' robots.txt sitemap.xml; then
@@ -121,5 +147,5 @@ jobs:
           git config user.name 'seekvera-global'
           git config user.email 'seekvera.global@gmail.com'
           git add index.html privacy.html robots.txt sitemap.xml '*.html'
-          git commit -m 'Polish Universal Global UX privacy and official SEO URLs'
+          git commit -m 'Replace unfinished partner internals with live search routes'
           git push
