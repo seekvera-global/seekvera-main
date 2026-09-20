@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="google-site-verification" content="uJ5FDBhKm512-nzgVJ0xjBlXkrfpito_J2VIwAGCutk" />
-<title>SEEKVERA — Find, compare, choose</title>
-<meta name="description" content="SEEKVERA helps people discover and compare providers for travel, shopping, property, business software, education, solar, health, hosting, jobs and import/export.">
+<title>SEEKVERA Universal Global — Find, compare, choose</title>
+<meta name="description" content="SEEKVERA Universal Global helps people search, discover and compare lawful products, services and providers across countries, languages and categories.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="theme-color" content="#07111f">
-<meta property="og:title" content="SEEKVERA — Find, compare, choose">
+<meta property="og:title" content="SEEKVERA Universal Global — Find, compare, choose">
 <meta property="og:description" content="One global place to search common needs and route to eligible providers by country.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://seekveraglobal.com/">
@@ -37,7 +37,8 @@ main{max-width:1180px;margin:auto;padding:0 18px}
 .lead{color:var(--muted);font-size:1.08rem;max-width:780px}
 .search{display:flex;gap:8px;background:white;padding:8px;border-radius:16px;margin-top:24px}
 .search input{flex:1;padding:14px;border:0;outline:0;font-size:1rem;min-width:0;color:#0d1826}
-.search button{border:0;background:#10243e;color:white;border-radius:12px;padding:0 20px;font-weight:800}
+.search button{border:0;background:#10243e;color:white;border-radius:12px;padding:0 20px;font-weight:800;cursor:pointer}
+.search .voice{padding:0 15px;background:#193452;font-size:1.1rem}
 .panel{background:linear-gradient(180deg,#13233a,#0c1929);border:1px solid var(--line);border-radius:22px;padding:24px}
 .route{padding:14px 0;border-top:1px solid rgba(255,255,255,.08)}
 .route:first-child{border-top:0}.route b{display:block}.route small{color:var(--muted)}
@@ -92,7 +93,7 @@ html[dir="rtl"] body{text-align:right}
 <script type="application/ld+json">{
  "@context":"https://schema.org",
  "@type":"WebSite",
- "name":"SEEKVERA",
+ "name":"SEEKVERA Universal Global",
  "url":"https://seekveraglobal.com/",
  "description":"Global discovery and comparison platform for products and services.",
  "potentialAction":{
@@ -106,10 +107,10 @@ html[dir="rtl"] body{text-align:right}
 </head>
 <body>
 <header class="top">
- <a class="brand" href="index.html"><span class="mark">S</span><span>SEEKVERA</span></a>
+ <a class="brand" href="index.html"><span class="mark">S</span><span>SEEKVERA UNIVERSAL GLOBAL</span></a>
  <div class="controls">
   <select id="country" aria-label="Country">
-    <option value="NG">Nigeria</option><option value="AF">Afghanistan</option><option value="AL">Albania</option><option value="DZ">Algeria</option>
+    <option value="ZZ">Worldwide / Any country</option><option value="NG">Nigeria</option><option value="AF">Afghanistan</option><option value="AL">Albania</option><option value="DZ">Algeria</option>
     <option value="AD">Andorra</option><option value="AO">Angola</option><option value="AG">Antigua and Barbuda</option><option value="AR">Argentina</option>
     <option value="AM">Armenia</option><option value="AU">Australia</option><option value="AT">Austria</option><option value="AZ">Azerbaijan</option>
     <option value="BS">Bahamas</option><option value="BH">Bahrain</option><option value="BD">Bangladesh</option><option value="BB">Barbados</option>
@@ -174,12 +175,13 @@ html[dir="rtl"] body{text-align:right}
 <main>
 <section class="hero">
  <div>
-  <div class="eyebrow" data-t="eyebrow">GLOBAL SEARCH • SMART MATCHING • FREE TO USE</div>
-  <h1 data-t="headline">Find the right place to buy, book or subscribe.</h1>
+  <div class="eyebrow" data-t="eyebrow">UNIVERSAL GLOBAL SEARCH • SMART MATCHING • FREE TO USE</div>
+  <h1 data-t="headline">Search anything lawful, anywhere.</h1>
   <p class="lead" data-t="sub">Tell SEEKVERA what you need. We compare relevant providers and route you to an eligible option for your country.</p>
   <form class="search" id="searchForm">
    <input id="q" data-ph="placeholder" placeholder="Try: cheap hotel in Abuja, POS software, solar...">
-   <button data-t="search">Search</button>
+   <button type="button" class="voice" id="voiceSearch" aria-label="Voice search" title="Voice search">🎙️</button>
+   <button type="submit" data-t="search">Search</button>
   </form>
   <div class="note" data-t="note">Some future tracked links may earn us a commission at no extra cost to you.</div>
   <div class="country-feature">
@@ -241,15 +243,15 @@ html[dir="rtl"] body{text-align:right}
  </div>
 </section>
 
-<button class="ai-launch" id="aiLaunch" aria-label="Open SEEKVERA Assistant">✨ Ask SEEKVERA</button>
-<section class="ai-chat" id="aiChat" aria-label="SEEKVERA Assistant">
- <div class="ai-head"><span>✨</span><b>SEEKVERA Assistant<small>Free smart guide • no account needed</small></b><button class="ai-close" id="aiClose" aria-label="Close">×</button></div>
+<button class="ai-launch" id="aiLaunch" aria-label="Open SEEKVERA Universal Assistant">✨ Ask SEEKVERA</button>
+<section class="ai-chat" id="aiChat" aria-label="SEEKVERA Universal Assistant">
+ <div class="ai-head"><span>✨</span><b>SEEKVERA Universal Assistant<small>Multilingual global guide • no account needed</small></b><button class="ai-close" id="aiClose" aria-label="Close">×</button></div>
  <div class="ai-messages" id="aiMessages"></div>
  <div class="ai-quick"><button data-ai="cheap hotel">🏨 Hotel</button><button data-ai="cheap flights">✈️ Flights</button><button data-ai="jobs">💼 Jobs</button><button data-ai="property">🏠 Property</button><button data-ai="solar">☀️ Solar</button></div>
  <form class="ai-form" id="aiForm"><input id="aiInput" autocomplete="off" placeholder="Ask in any language..."><button>Send</button></form>
 </section>
 <footer class="foot">
- <div>© SEEKVERA — zero-cost MVP</div>
+ <div>© SEEKVERA Universal Global</div>
  <div class="links"><a href="about.html">About</a><a href="disclosure.html">Disclosure</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></div>
 </footer>
 </main>
@@ -262,10 +264,12 @@ const universe=[
  ["💳","Money & insurance"],["☀️","Solar & energy"],["🏗️","Construction"],["🏭","Industry & machinery"],["🚢","Import, export & freight"],
  ["🍽️","Food & restaurants"],["🌐","Web, apps & AI"],["🔧","Home services"],["🌾","Agriculture"],["🎭","Entertainment & events"],
  ["💄","Beauty & wellness"],["👶","Family & childcare"],["🐾","Pets & animals"],["⚖️","Legal & professional"],["♿","Accessibility services"],
- ["🤝","Community & social"],["🔞","Age-restricted legal products"],["📦","Other / Request anything"]
+ ["🤝","Community & social"],["🔞","Age-restricted legal products"],["🛥️","Boats & marine"],["📷","Cameras & security"],
+ ["📡","Telecom & connectivity"],["🚚","Logistics & delivery"],["👗","Fashion & clothing"],["🏋️","Sports & fitness"],
+ ["🏛️","Public & government services"],["🕌","Faith & community services"],["📦","Other / Request anything"]
 ];
 const universeGrid=document.getElementById("universe");
-universe.forEach(x=>universeGrid.innerHTML+=`<div class="card"><div style="font-size:1.45rem">${x[0]}</div><h3>${x[1]}</h3><span class="status">READY FOR PARTNER ACTIVATION</span></div>`);
+universe.forEach(x=>{const d=document.createElement("button");d.type="button";d.className="card";d.style.color="inherit";d.style.textAlign="inherit";d.style.cursor="pointer";d.innerHTML=`<div style="font-size:1.45rem">${x[0]}</div><h3>${x[1]}</h3><span class="status">SEARCH & REQUEST</span>`;d.addEventListener("click",()=>{document.getElementById("q").value=x[1];runSearch(x[1])});universeGrid.appendChild(d)});
 function merged(l){return Object.assign({},T.en,T[l]||{})}
 function card(title,p1,p2,tag,href){
  const inner=`<div class="tag">${tag||""}</div><h3>${title}</h3><p>${p1||""}</p><p>${p2||""}</p>`;
@@ -305,6 +309,22 @@ function runSearch(q){
  document.getElementById("results").scrollIntoView({behavior:"smooth",block:"start"});
 }
 document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDefault();runSearch(document.getElementById("q").value)});
+const voiceSearch=document.getElementById("voiceSearch");
+const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(SpeechRecognition){
+ voiceSearch.addEventListener("click",()=>{
+  const recognition=new SpeechRecognition();
+  recognition.lang=document.getElementById("lang").value==="ar"?"ar":navigator.language||"en";
+  recognition.interimResults=false;
+  voiceSearch.textContent="⏺️";
+  recognition.onresult=e=>{const text=e.results[0][0].transcript;document.getElementById("q").value=text;runSearch(text)};
+  recognition.onerror=()=>{voiceSearch.textContent="🎙️"};
+  recognition.onend=()=>{voiceSearch.textContent="🎙️"};
+  recognition.start();
+ });
+}else{
+ voiceSearch.hidden=true;
+}
 
 function getCountryPack(){
  const c=document.getElementById("country").value;
@@ -329,7 +349,7 @@ const langEl=document.getElementById("lang"),countryEl=document.getElementById("
 function detectLocaleCountry(){
  const tag=(navigator.language||"").replace("_","-").split("-");
  const region=(tag.length>1?tag[tag.length-1]:"").toUpperCase();
- return region&&countryEl.querySelector(`option[value="${region}"]`)?region:"NG";
+ return region&&countryEl.querySelector(`option[value="${region}"]`)?region:"ZZ";
 }
 const savedCountry=localStorage.getItem("seekvera_country")||detectLocaleCountry();
 if(countryEl.querySelector(`option[value="${savedCountry}"]`))countryEl.value=savedCountry;

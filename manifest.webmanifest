@@ -1,10 +1,10 @@
 {
-  "name": "SEEKVERA",
+  "name": "SEEKVERA Universal Global",
   "short_name": "SEEKVERA",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#07111f",
   "theme_color": "#07111f",
-  "description": "Global discovery and comparison platform."
+  "description": "Universal global discovery, search and comparison platform."
 }

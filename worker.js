@@ -7,6 +7,17 @@ const json = (data, status = 200) => new Response(JSON.stringify(data), {
   }
 });
 
+const secure = (response) => {
+  const secured = new Response(response.body, response);
+  secured.headers.set("x-content-type-options", "nosniff");
+  secured.headers.set("referrer-policy", "strict-origin-when-cross-origin");
+  secured.headers.set("permissions-policy", "camera=(), geolocation=(), payment=(), usb=()");
+  secured.headers.set("x-frame-options", "DENY");
+  secured.headers.set("cross-origin-opener-policy", "same-origin");
+  secured.headers.set("content-security-policy", "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; form-action 'self' mailto:; base-uri 'self'; frame-ancestors 'none'");
+  return secured;
+};
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -68,6 +79,6 @@ export default {
       }
     }
 
-    return env.ASSETS.fetch(request);
+    return secure(await env.ASSETS.fetch(request));
   }
 };
