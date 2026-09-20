@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="google-site-verification" content="uJ5FDBhKm512-nzgVJ0xjBlXkrfpito_J2VIwAGCutk" />
-<title>SEEKVERA — Everything You Need, One Search</title>
+<title>SEEKVERA — Everything You Need. One Search.</title>
 <meta name="description" content="Everything you need in one search. Find, compare and choose hotels, homes, cars, jobs, shopping, services and more worldwide with SEEKVERA.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="theme-color" content="#07111f">
@@ -15,7 +15,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://seekvera-main.seekvera-global.workers.dev https://text.pollinations.ai https://nrdpyydfrpmqedtzmbyw.supabase.co; form-action 'self' mailto:; base-uri 'self'; object-src 'none'">
-<meta property="og:title" content="SEEKVERA — Everything You Need, One Search">
+<meta property="og:title" content="SEEKVERA — Everything You Need. One Search.">
 <meta property="og:description" content="Find, compare and choose hotels, homes, cars, jobs, shopping, services and more — worldwide.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://seekvera-global.github.io/seekvera-main/">
@@ -103,7 +103,7 @@ html[dir="rtl"] body{text-align:right}
  "@context":"https://schema.org",
  "@type":"WebSite",
  "name":"SEEKVERA",
- "alternateName":"Everything You Need, One Search",
+ "alternateName":"Everything You Need. One Search.",
  "url":"https://seekvera-global.github.io/seekvera-main/",
  "description":"Global discovery and comparison platform for products and services.",
  "potentialAction":{
@@ -112,12 +112,21 @@ html[dir="rtl"] body{text-align:right}
    "query-input":"required name=search_term_string"
  }
 }</script>
+<script type="application/ld+json">{
+ "@context":"https://schema.org",
+ "@type":"FAQPage",
+ "mainEntity":[
+  {"@type":"Question","name":"I need a home. Can SEEKVERA help?","acceptedAnswer":{"@type":"Answer","text":"Yes. Select a country and search for a home, apartment, rental, shortlet, land or commercial property. SEEKVERA routes the request to relevant live search sources."}},
+  {"@type":"Question","name":"I need a car. Can SEEKVERA help?","acceptedAnswer":{"@type":"Answer","text":"Yes. Search for a new or used car, rental, spare part or repair service and include the country, city and budget."}},
+  {"@type":"Question","name":"Can I search for any product or service worldwide?","acceptedAnswer":{"@type":"Answer","text":"Yes. SEEKVERA supports worldwide searches for hotels, flights, homes, cars, jobs, shopping, suppliers, services and other lawful needs."}}
+ ]
+}</script>
 <link rel="canonical" href="https://seekvera-global.github.io/seekvera-main/">
 <meta property="og:image" content="https://seekvera-global.github.io/seekvera-main/social-card.png">
 
 <meta property="og:site_name" content="SEEKVERA">
-<meta property="og:image:alt" content="SEEKVERA — Everything You Need, One Search">
-<meta name="twitter:title" content="SEEKVERA — Everything You Need, One Search">
+<meta property="og:image:alt" content="SEEKVERA — Everything You Need. One Search.">
+<meta name="twitter:title" content="SEEKVERA — Everything You Need. One Search.">
 <meta name="twitter:description" content="Find, compare and choose hotels, homes, cars, jobs, shopping, services and more — worldwide.">
 <meta name="twitter:image" content="https://seekvera-global.github.io/seekvera-main/social-card.png">
 </head>
@@ -233,7 +242,21 @@ html[dir="rtl"] body{text-align:right}
  </div>
 </section>
 
-
+<section class="section" id="common-searches">
+ <div class="eyebrow">TELL SEEKVERA WHAT YOU NEED</div>
+ <h2>Start with the words already in your mind</h2>
+ <p class="lead">Search naturally. Choose your country, add a city or budget when useful, and SEEKVERA will guide you to the closest available category and live search route.</p>
+ <div class="grid">
+  <a class="card link-card" href="?q=I+need+a+home"><h3>I need a home</h3><p>Homes, apartments, rentals, shortlets and land.</p></a>
+  <a class="card link-card" href="?q=I+need+a+car"><h3>I need a car</h3><p>New or used cars, rentals, parts and repairs.</p></a>
+  <a class="card link-card" href="?q=I+need+a+hotel"><h3>I need a hotel</h3><p>Hotels and stays by country, city and budget.</p></a>
+  <a class="card link-card" href="?q=I+need+a+job"><h3>I need a job</h3><p>Local, international and remote opportunities.</p></a>
+  <a class="card link-card" href="?q=I+need+a+supplier"><h3>I need a supplier</h3><p>Manufacturers, wholesalers and cross-border sourcing.</p></a>
+  <a class="card link-card" href="?q=I+need+a+service"><h3>I need a service</h3><p>Business, professional, home and local services.</p></a>
+  <a class="card link-card" href="?q=I+want+to+buy+something"><h3>I want to buy something</h3><p>Products, shopping routes and comparison sources.</p></a>
+  <a class="card link-card" href="#request-anything"><h3>I need something else</h3><p>Describe any lawful request in your own language.</p></a>
+ </div>
+</section>
 
 <section class="section" id="everything">
  <div class="eyebrow">GLOBAL DIRECTORY</div>
@@ -262,8 +285,8 @@ html[dir="rtl"] body{text-align:right}
  </div>
 </section>
 
-<button class="ai-launch" id="aiLaunch" aria-label="Open SEEKVERA Universal Assistant">✨ Ask Anything</button>
-<section class="ai-chat" id="aiChat" aria-label="SEEKVERA Universal Assistant">
+<button class="ai-launch" id="aiLaunch" aria-label="Open SEEKVERA Assistant">✨ Ask Anything</button>
+<section class="ai-chat" id="aiChat" aria-label="SEEKVERA Assistant">
  <div class="ai-head"><span>✨</span><b>SEEKVERA AI<small>Ask anything • worldwide</small></b><button class="ai-close" id="aiClose" aria-label="Close">×</button></div>
  <div class="ai-messages" id="aiMessages" role="log" aria-live="polite" aria-relevant="additions"></div>
  <div class="ai-quick"><button data-ai="cheap hotel">🏨 Hotel</button><button data-ai="cheap flights">✈️ Flights</button><button data-ai="jobs">💼 Jobs</button><button data-ai="property">🏠 Property</button><button data-ai="solar">☀️ Solar</button></div>
