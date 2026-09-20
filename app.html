@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>SEEKVERA App — One Global Marketplace</title>
+<meta name="description" content="SEEKVERA in one app: global search, AI, marketplace ads, free ad posting, promotions, business plans and payments.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+*{box-sizing:border-box}html,body{height:100%;margin:0;font-family:Arial,Helvetica,sans-serif;background:#eef2f5;color:#17253a}body{overflow:hidden}.app{height:100%;display:grid;grid-template-rows:auto auto 1fr}.top{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border-bottom:1px solid #e1e6ec;box-shadow:0 2px 12px rgba(20,32,51,.06);z-index:5}.brand{display:flex;align-items:center;gap:9px;font-weight:900;letter-spacing:.07em}.mark{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,#30d08b,#5fa5ff);color:#07111f}.title small{display:block;color:#7b8798;font-size:.69rem;font-weight:700;letter-spacing:0}.status{margin-left:auto;display:flex;gap:7px;align-items:center;color:#087a4f;font-size:.76rem;font-weight:800}.dot{width:8px;height:8px;border-radius:50%;background:#20ad74}.nav{display:flex;gap:7px;padding:8px 10px;background:#f7f9fb;border-bottom:1px solid #e1e6ec;overflow:auto;scrollbar-width:none;z-index:4}.nav::-webkit-scrollbar{display:none}.nav button{white-space:nowrap;border:1px solid #d9e0e7;background:#fff;color:#344054;border-radius:11px;padding:9px 13px;font-weight:800;cursor:pointer}.nav button.active{background:#17324f;color:#fff;border-color:#17324f}.nav button.post{background:#20ad74;color:#fff;border-color:#20ad74}.framewrap{position:relative;min-height:0}.view{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}.loading{position:absolute;inset:0;display:grid;place-items:center;background:#f4f6f8;color:#667085;font-weight:800;z-index:2}.loading.hide{display:none}.bottom{display:none}.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 7px;background:#edf8f3;border-radius:999px;color:#087a4f;font-size:.7rem;font-weight:900}
+@media(max-width:700px){.app{grid-template-rows:auto 1fr auto}.top{padding:8px 10px}.title{font-size:.95rem}.title small{font-size:.63rem}.status{display:none}.nav{display:none}.bottom{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;padding:6px max(6px,env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));background:#fff;border-top:1px solid #dde3ea;z-index:6}.bottom button{border:0;background:transparent;color:#667085;padding:6px 3px;font-size:.68rem;font-weight:800;cursor:pointer;border-radius:10px}.bottom button span{display:block;font-size:1.18rem;margin-bottom:1px}.bottom button.active{background:#edf7f2;color:#087a4f}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div class="brand"><span class="mark">S</span><div class="title">SEEKVERA<small>Worldwide • One App</small></div></div>
+  <span class="badge">AI + Marketplace</span>
+  <div class="status"><span class="dot"></span>Unified Web App</div>
+</header>
+<nav class="nav" aria-label="SEEKVERA app navigation">
+  <button class="active" data-page="index.html">🏠 Home & AI</button>
+  <button data-page="marketplace.html">🛒 Marketplace</button>
+  <button class="post" data-page="post-ad.html">＋ Post an Ad</button>
+  <button data-page="seller-plans.html">🚀 Promote / Business / Pay</button>
+</nav>
+<div class="framewrap">
+  <div class="loading" id="loading">Opening SEEKVERA…</div>
+  <iframe class="view" id="view" title="SEEKVERA" src="index.html"></iframe>
+</div>
+<nav class="bottom" aria-label="Mobile navigation">
+  <button class="active" data-page="index.html"><span>🏠</span>Home</button>
+  <button data-page="marketplace.html"><span>🛒</span>Market</button>
+  <button data-page="post-ad.html"><span>＋</span>Post Ad</button>
+  <button data-page="seller-plans.html"><span>🚀</span>Promote</button>
+</nav>
+</div>
+<script>
+const view=document.getElementById('view'),loading=document.getElementById('loading');
+const buttons=[...document.querySelectorAll('[data-page]')];
+function openPage(page,push=true){
+  loading.classList.remove('hide');
+  view.src=page;
+  buttons.forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+  if(push) history.replaceState(null,'','#'+page.replace('.html',''));
+}
+buttons.forEach(b=>b.addEventListener('click',()=>openPage(b.dataset.page)));
+view.addEventListener('load',()=>loading.classList.add('hide'));
+const hash=location.hash.replace('#','');
+const map={home:'index.html',index:'index.html',marketplace:'marketplace.html','post-ad':'post-ad.html','seller-plans':'seller-plans.html',promote:'seller-plans.html'};
+if(hash&&map[hash]) openPage(map[hash],false);
+</script>
+</body>
+</html>
