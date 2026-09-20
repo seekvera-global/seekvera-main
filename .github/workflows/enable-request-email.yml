@@ -1,0 +1,47 @@
+name: Enable request email handoff
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/enable-request-email.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-request:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Make Request Anything sendable at zero cost
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+
+          old_success = 'Request prepared on this device.'
+          new_success = 'Request prepared. Your email app will open so you can send it.'
+          if old_success not in text:
+              raise SystemExit('Expected success text not found; refusing unsafe patch')
+          text = text.replace(old_success, new_success, 1)
+
+          old_line = ' document.getElementById("requestSuccess").classList.add("show");'
+          new_line = ' document.getElementById("requestSuccess").classList.add("show");\n const subject=encodeURIComponent(`SEEKVERA request: ${request.type} - ${request.country}`);\n const body=encodeURIComponent(`Country: ${request.country}\\nCity/Area: ${request.city}\\nType: ${request.type}\\nBudget: ${request.budget}\\nDate: ${request.date}\\nContact: ${request.contact}\\n\\nRequest:\\n${request.description}`);\n window.location.href=`mailto:seekvera.global@gmail.com?subject=${subject}&body=${body}`;'
+          if old_line not in text:
+              raise SystemExit('Expected request submit line not found; refusing unsafe patch')
+          text = text.replace(old_line, new_line, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit request email handoff
+        shell: bash
+        run: |
+          git config user.name "seekvera-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html
+          git commit -m "Enable zero-cost request email handoff"
+          git push
