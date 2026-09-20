@@ -1,0 +1,103 @@
+name: SEEKVERA final live production audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/final-live-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for final GitHub Pages release
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://seekvera-global.github.io/seekvera-main/?final-audit=1'
+          ok=0
+          for i in $(seq 1 72); do
+            if curl -fsS --max-time 25 "$url" -o /tmp/home.html \
+              && grep -q 'data-build="seekvera-one-search-v4"' /tmp/home.html \
+              && grep -q 'Everything you need. One search.' /tmp/home.html; then
+              ok=1
+              break
+            fi
+            sleep 5
+          done
+          test "$ok" -eq 1
+
+      - name: Verify brand, countries, search and AI UI
+        shell: python
+        run: |
+          import re
+          s=open('/tmp/home.html',encoding='utf-8').read()
+          assert '<title>SEEKVERA — Everything You Need, One Search</title>' in s
+          assert 'Everything you need. One search.' in s
+          assert 'hotels, homes, cars, jobs, shopping, services and more' in s
+          assert 'Worldwide / Any country' in s
+          assert '🌍 Worldwide • Global' in s
+          assert 'Ask Anything' in s
+          assert 'text.pollinations.ai' in s
+          assert 'supabase.co/rest/v1/seekvera_requests' in s
+          assert 'google.com/search' in s
+          assert 'google.com/maps/search' in s
+          assert 'Popular in Nigeria' not in s
+          assert 'Nigeria • NGN' not in s
+          m=re.search(r'<select id="country".*?</select>',s,re.S)
+          assert m
+          count=len(re.findall(r'<option value=',m.group(0)))
+          assert count>=190,count
+          print('Country choices:',count)
+
+      - name: Verify all public pages and compatibility routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://seekvera-global.github.io/seekvera-main'
+          pages='travel.html shopping.html property.html business-software.html education.html solar.html health.html web-hosting.html jobs.html import-export.html cars-auto.html restaurants-food.html shipping-logistics.html local-services.html money-insurance.html about.html contact.html privacy.html terms.html disclosure.html software.html affiliate-disclosure.html'
+          for page in $pages; do
+            code=$(curl -L -sS -o /tmp/page -w '%{http_code}' --max-time 30 "$base/$page")
+            echo "$page $code"
+            test "$code" = '200'
+          done
+          curl -fsS --max-time 30 "$base/robots.txt" -o /tmp/robots.txt
+          curl -fsS --max-time 30 "$base/sitemap.xml" -o /tmp/sitemap.xml
+          grep -q "$base/sitemap.xml" /tmp/robots.txt
+          grep -q "$base/property.html" /tmp/sitemap.xml
+          grep -q "$base/travel.html" /tmp/sitemap.xml
+          test "$(grep -o '<loc>' /tmp/sitemap.xml | wc -l)" -ge 20
+
+      - name: Verify public AI fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS --max-time 45 \
+            'https://text.pollinations.ai/Reply%20with%20only%3A%20SEEKVERA%20AI%20OK?model=openai&private=true' \
+            -o /tmp/ai.txt
+          test -s /tmp/ai.txt
+          echo "Fallback AI response: $(head -c 160 /tmp/ai.txt)"
+
+      - name: Verify IndexNow ownership key
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS --max-time 30 'https://seekvera-global.github.io/seekvera-main/15ae2ee9fb6577fed951a6a9cee172bc.txt' -o /tmp/indexnow-key.txt
+          grep -q '15ae2ee9fb6577fed951a6a9cee172bc' /tmp/indexnow-key.txt
+
+      - name: Check Cloudflare Workers AI health
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://seekvera-main.seekvera-global.workers.dev/api/health'
+          code=$(curl -L -sS -o /tmp/cf-health -w '%{http_code}' --max-time 30 "$url" || true)
+          echo "Cloudflare health HTTP: $code"
+          cat /tmp/cf-health 2>/dev/null || true
+          echo
+          test "$code" = '200'
+          grep -q '"ok":true' /tmp/cf-health
+          grep -q 'gemma-4-26b-a4b-it' /tmp/cf-health
