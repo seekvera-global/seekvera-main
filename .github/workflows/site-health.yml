@@ -11,6 +11,7 @@ on:
       - 'robots.txt'
       - 'sitemap.xml'
       - 'wrangler.jsonc'
+      - '.github/workflows/site-health.yml'
 
 permissions:
   contents: read
