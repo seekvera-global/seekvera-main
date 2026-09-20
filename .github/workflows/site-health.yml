@@ -1,0 +1,93 @@
+name: SEEKVERA live site health
+
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '*.html'
+      - 'robots.txt'
+      - 'sitemap.xml'
+      - 'wrangler.jsonc'
+
+permissions:
+  contents: read
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wait briefly for deployment
+        if: github.event_name == 'push'
+        run: sleep 45
+
+      - name: Check homepage and core features
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 10 --retry-delay 12 --retry-all-errors \
+            https://seekveraglobal.com/ -o /tmp/home.html
+          grep -q 'SEEKVERA' /tmp/home.html
+          grep -q 'Ask SEEKVERA' /tmp/home.html
+          grep -q 'Request anything' /tmp/home.html
+          grep -q 'id="country"' /tmp/home.html
+          grep -q 'id="lang"' /tmp/home.html
+
+      - name: Check public pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          pages=(
+            travel.html shopping.html property.html business-software.html education.html
+            solar.html health.html web-hosting.html jobs.html import-export.html about.html
+            contact.html privacy.html terms.html disclosure.html robots.txt sitemap.xml
+          )
+          for page in "${pages[@]}"; do
+            echo "Checking $page"
+            curl --fail --location --silent --show-error --retry 6 --retry-delay 10 --retry-all-errors \
+              "https://seekveraglobal.com/$page" -o "/tmp/${page//\//_}"
+          done
+
+      - name: Verify official-domain SEO signals
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'https://seekveraglobal.com/sitemap.xml' /tmp/robots.txt
+          grep -q 'https://seekveraglobal.com/' /tmp/sitemap.xml
+          if grep -q 'seekvera-global.github.io/seekvera-main' /tmp/home.html; then
+            echo 'Old GitHub Pages URL still present in live homepage'
+            exit 1
+          fi
+          if grep -q 'seekvera-main.seekvera-global.workers.dev' /tmp/home.html; then
+            echo 'Old Workers URL still present in live homepage'
+            exit 1
+          fi
+
+      - name: Check repository page references
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          root = Path('.')
+          html = list(root.glob('*.html'))
+          existing = {p.name for p in html}
+          missing = []
+          for p in html:
+              text = p.read_text(encoding='utf-8', errors='ignore')
+              for href in re.findall(r'href=["\']([^"\']+)["\']', text):
+                  if href.startswith(('http://','https://','mailto:','#','/')):
+                      continue
+                  target = href.split('?',1)[0].split('#',1)[0]
+                  if target.endswith('.html') and target not in existing:
+                      missing.append((p.name, target))
+          if missing:
+              raise SystemExit('Missing local page links: ' + repr(missing))
+          print(f'Checked {len(html)} HTML files; local page links are present.')
+          PY
