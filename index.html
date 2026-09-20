@@ -9,7 +9,7 @@
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="theme-color" content="#07111f">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; form-action 'self' mailto:; base-uri 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://seekvera-main.seekvera-global.workers.dev; form-action 'self' mailto:; base-uri 'self'; object-src 'none'">
 <meta property="og:title" content="SEEKVERA Universal Global — Find, compare, choose">
 <meta property="og:description" content="One global place to search common needs and route to eligible providers by country.">
 <meta property="og:type" content="website">
@@ -382,7 +382,8 @@ async function aiSend(text){
  const country=document.getElementById("country"),lang=document.getElementById("lang");
  const countryName=country.options[country.selectedIndex]?.text||"",languageName=lang.options[lang.selectedIndex]?.text||document.documentElement.lang||"";
  try{
-  const res=await fetch("/api/ai",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({message:clean,country:countryName,language:languageName})});
+  const aiBase=location.hostname.endsWith("workers.dev")?"":"https://seekvera-main.seekvera-global.workers.dev";
+  const res=await fetch(`${aiBase}/api/ai`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({message:clean,country:countryName,language:languageName})});
   if(!res.ok)throw new Error("AI endpoint unavailable");
   const data=await res.json();
   if(!data||typeof data.response!=="string"||!data.response.trim())throw new Error("Empty AI response");
