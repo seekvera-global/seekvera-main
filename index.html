@@ -69,6 +69,12 @@ main{max-width:1180px;margin:auto;padding:0 18px}
 .request-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
 .primary{border:0;border-radius:11px;background:var(--accent);color:#07111f;padding:13px 18px;font-weight:900;cursor:pointer}
 .request-note{color:var(--muted);font-size:.84rem}.success{display:none;color:var(--accent);font-weight:800}.success.show{display:block}
+.ai-launch{position:fixed;right:18px;bottom:18px;z-index:50;border:0;border-radius:999px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#07111f;padding:14px 18px;font-weight:900;box-shadow:0 12px 38px rgba(0,0,0,.4);cursor:pointer}
+.ai-chat{position:fixed;right:18px;bottom:78px;z-index:49;width:min(390px,calc(100vw - 28px));height:520px;max-height:72vh;display:none;flex-direction:column;background:#0b1828;border:1px solid #315073;border-radius:20px;box-shadow:0 22px 60px rgba(0,0,0,.5);overflow:hidden}.ai-chat.open{display:flex}
+.ai-head{display:flex;align-items:center;gap:10px;padding:14px 16px;background:#10243a;border-bottom:1px solid var(--line)}.ai-head b{flex:1}.ai-head small{display:block;color:var(--muted);font-weight:400}.ai-close{border:0;background:transparent;color:#fff;font-size:1.4rem;cursor:pointer}
+.ai-messages{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px}.ai-msg{max-width:88%;padding:10px 12px;border-radius:14px;white-space:pre-wrap}.ai-msg.bot{align-self:flex-start;background:#132943}.ai-msg.user{align-self:flex-end;background:#1b5e4a}
+.ai-quick{display:flex;gap:6px;overflow:auto;padding:0 12px 10px}.ai-quick button{white-space:nowrap;background:#10243a;color:#dbe7f5;border:1px solid #294665;border-radius:999px;padding:7px 10px;cursor:pointer}
+.ai-form{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line)}.ai-form input{flex:1;min-width:0;background:#07111f;color:#fff;border:1px solid var(--line);border-radius:11px;padding:12px}.ai-form button{border:0;border-radius:11px;background:var(--accent);color:#07111f;padding:0 15px;font-weight:900;cursor:pointer}
 .foot{border-top:1px solid var(--line);padding:28px 0 50px;color:var(--muted);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .links{display:flex;gap:14px;flex-wrap:wrap}.note{font-size:.86rem;color:var(--muted);margin-top:12px}
 @media(max-width:900px){.popular-grid{grid-template-columns:repeat(3,1fr)}}
@@ -235,6 +241,13 @@ html[dir="rtl"] body{text-align:right}
  </div>
 </section>
 
+<button class="ai-launch" id="aiLaunch" aria-label="Open SEEKVERA Assistant">✨ Ask SEEKVERA</button>
+<section class="ai-chat" id="aiChat" aria-label="SEEKVERA Assistant">
+ <div class="ai-head"><span>✨</span><b>SEEKVERA Assistant<small>Free smart guide • no account needed</small></b><button class="ai-close" id="aiClose" aria-label="Close">×</button></div>
+ <div class="ai-messages" id="aiMessages"></div>
+ <div class="ai-quick"><button data-ai="cheap hotel">🏨 Hotel</button><button data-ai="cheap flights">✈️ Flights</button><button data-ai="jobs">💼 Jobs</button><button data-ai="property">🏠 Property</button><button data-ai="solar">☀️ Solar</button></div>
+ <form class="ai-form" id="aiForm"><input id="aiInput" autocomplete="off" placeholder="Ask in any language..."><button>Send</button></form>
+</section>
 <footer class="foot">
  <div>© SEEKVERA — zero-cost MVP</div>
  <div class="links"><a href="about.html">About</a><a href="disclosure.html">Disclosure</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></div>
@@ -309,6 +322,22 @@ document.getElementById("lang").addEventListener("change",e=>applyLang(e.target.
 document.getElementById("country").addEventListener("change",renderCountryPopular);
 const saved=localStorage.getItem("seekvera_lang")||"en";document.getElementById("lang").value=saved;applyLang(saved);
 const params=new URLSearchParams(location.search);if(params.get("q")){document.getElementById("q").value=params.get("q");runSearch(params.get("q"))}
+const aiChat=document.getElementById("aiChat"),aiMessages=document.getElementById("aiMessages"),aiInput=document.getElementById("aiInput");
+function aiAdd(text,who="bot"){const m=document.createElement("div");m.className="ai-msg "+who;m.textContent=text;aiMessages.appendChild(m);aiMessages.scrollTop=aiMessages.scrollHeight}
+function aiIsArabic(text){return /[\u0600-\u06ff]/.test(text)}
+function aiReply(input){
+ const q=input.toLowerCase().trim(),ar=aiIsArabic(input),country=document.getElementById("country"),countryName=country.options[country.selectedIndex]?.text||"your country",found=detectCategory(q);let reply;
+ if(/hello|hi|hey|مرحبا|سلام|اهلا/.test(q))reply=ar?"أهلاً! قل لي ماذا تريد أن تشتري أو تحجز، وفي أي مدينة.":"Hello! Tell me what you want to buy or book, and your city.";
+ else if(/commission|affiliate|عمول|ربح/.test(q))reply=ar?"استخدام SEEKVERA مجاني. قد نحصل على عمولة من الشركة الشريكة من دون تكلفة إضافية عليك.":"SEEKVERA is free to use. A partner may pay us a commission at no extra cost to you.";
+ else if(found){const c=cats.find(x=>x.id===found);reply=ar?`وجدت قسم ${c?.name||found} في ${countryName}. سأفتح لك أفضل المسارات المتاحة الآن.`:`I found the ${c?.name||found} category for ${countryName}. I’ll open the best available routes now.`;runSearch(input);document.getElementById("results").scrollIntoView({behavior:"smooth",block:"start"})}
+ else reply=ar?`فهمت طلبك في ${countryName}. اكتب تفاصيل أكثر مثل المدينة والميزانية، وسأوجهك للقسم المناسب.`:`I understand your request for ${countryName}. Add a city and budget so I can guide you to the best category.`;
+ return reply
+}
+function aiSend(text){if(!text.trim())return;aiAdd(text,"user");setTimeout(()=>aiAdd(aiReply(text)),180)}
+document.getElementById("aiLaunch").addEventListener("click",()=>{aiChat.classList.add("open");if(!aiMessages.children.length)aiAdd("Hello! I’m the free SEEKVERA guide. What do you want to find today?\nمرحباً! ماذا تريد أن تجد اليوم؟");aiInput.focus()});
+document.getElementById("aiClose").addEventListener("click",()=>aiChat.classList.remove("open"));
+document.getElementById("aiForm").addEventListener("submit",e=>{e.preventDefault();const v=aiInput.value;aiInput.value="";aiSend(v)});
+document.querySelectorAll("[data-ai]").forEach(b=>b.addEventListener("click",()=>aiSend(b.dataset.ai)));
 document.getElementById("requestForm").addEventListener("submit",e=>{
  e.preventDefault();
  const request={country:requestCountry.value,city:requestCity.value,type:requestType.value,budget:requestBudget.value,date:requestDate.value,contact:requestContact.value,description:requestDescription.value,created:new Date().toISOString()};
