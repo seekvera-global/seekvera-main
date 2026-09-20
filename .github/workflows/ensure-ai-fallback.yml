@@ -1,0 +1,53 @@
+name: Ensure SEEKVERA AI frontend fallback
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'worker.js'
+      - '.github/workflows/ensure-ai-fallback.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Ensure cross-origin AI fallback
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+
+          old_csp = "connect-src 'self'; form-action"
+          new_csp = "connect-src 'self' https://seekvera-main.seekvera-global.workers.dev; form-action"
+          if old_csp in text:
+              text = text.replace(old_csp, new_csp, 1)
+
+          old = 'const res=await fetch("/api/ai",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({message:clean,country:countryName,language:languageName})});'
+          new = 'const aiBase=location.hostname.endsWith("workers.dev")?"":"https://seekvera-main.seekvera-global.workers.dev";\n  const res=await fetch(`${aiBase}/api/ai`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({message:clean,country:countryName,language:languageName})});'
+          if old in text:
+              text = text.replace(old, new, 1)
+
+          path.write_text(text, encoding='utf-8')
+
+      - name: Commit frontend fallback if needed
+        shell: bash
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "SEEKVERA AI frontend already current."
+            exit 0
+          fi
+          git config user.name "seekvera-global"
+          git config user.email "seekvera.global@gmail.com"
+          git add index.html
+          git commit -m "Make SEEKVERA AI work across GitHub and Cloudflare origins"
+          git push
