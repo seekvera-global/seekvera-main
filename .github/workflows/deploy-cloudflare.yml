@@ -1,17 +1,10 @@
-name: Deploy SEEKVERA to Cloudflare
+name: Validate SEEKVERA Cloudflare Worker
 
 on:
   push:
     branches: [main]
     paths:
-      - '*.html'
-      - '*.js'
-      - '*.css'
-      - '*.svg'
-      - '*.png'
-      - '*.webmanifest'
-      - 'robots.txt'
-      - 'sitemap.xml'
+      - 'worker.js'
       - 'wrangler.jsonc'
       - '.assetsignore'
       - '.github/workflows/deploy-cloudflare.yml'
@@ -21,45 +14,28 @@ permissions:
   contents: read
 
 concurrency:
-  group: seekvera-cloudflare-production
+  group: seekvera-cloudflare-validation
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate Worker build
+      - name: Validate Worker build and bindings
         shell: bash
-        run: npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-dry-run
-
-      - name: Detect Cloudflare deployment credentials
-        id: cf
-        shell: bash
-        env:
-          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          if [ -n "$CF_TOKEN" ] && [ -n "$CF_ACCOUNT" ]; then
-            echo 'ready=true' >> "$GITHUB_OUTPUT"
-            echo 'Cloudflare credentials found; deployment will run.'
-          else
-            echo 'ready=false' >> "$GITHUB_OUTPUT"
-            echo 'Cloudflare credentials are not configured. Skipping Worker deployment safely.'
-            echo 'GitHub Pages and the zero-cost browser AI fallback remain active.'
-          fi
+          set -euo pipefail
+          npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-dry-run
+          grep -q '"binding": "AI"' wrangler.jsonc
+          grep -q '@cf/google/gemma-4-26b-a4b-it' worker.js
+          grep -q '@cf/zai-org/glm-4.7-flash' worker.js
+          echo 'SEEKVERA Worker source is valid.'
 
-      - name: Deploy to Cloudflare Workers
-        if: steps.cf.outputs.ready == 'true'
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy
-
-      - name: Confirm resilient deployment mode
-        if: steps.cf.outputs.ready != 'true'
+      - name: Deployment architecture
         shell: bash
-        run: echo 'SEEKVERA remains live through GitHub Pages with backup AI; Cloudflare Worker deployment is optional.'
+        run: |
+          echo 'Production deployment is handled by Cloudflare Workers Builds after the GitHub repository is connected in Cloudflare.'
+          echo 'No Cloudflare API token is stored in GitHub.'
