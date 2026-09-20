@@ -278,7 +278,7 @@ Object.values(partnerMap).flat().forEach(p=>partnerGrid.innerHTML+=card(p[0],p[1
 
 function normalize(s){return (s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
 function detectCategory(query){
- const q=normalize(query); let best=cats[0],bestScore=0;
+ const q=normalize(query); let best=null,bestScore=0;
  cats.forEach(c=>{let score=0;c.keys.forEach(k=>{const nk=normalize(k);if(q.includes(nk))score+=nk.includes("hotel")?5:2});
  if(q.includes(normalize(c.name)))score+=4;if(score>bestScore){best=c;bestScore=score}});
  return best;
@@ -288,6 +288,13 @@ function runSearch(q){
  const c=detectCategory(q),countrySel=document.getElementById("country"),
  countryName=countrySel.options[countrySel.selectedIndex].text,lang=document.getElementById("lang").value,tr=merged(lang);
  document.getElementById("results").classList.add("show");
+ if(!c){
+  document.getElementById("resultTitle").textContent="🌍 Request anything";
+  document.getElementById("resultSummary").textContent=`${tr.countryText}: ${countryName}. We do not have a verified route for this request yet.`;
+  document.getElementById("resultGrid").innerHTML=card("Tell SEEKVERA what you need","Add your city, budget and details so the request can be classified.","No payment required.","REQUEST","#request-anything");
+  document.getElementById("results").scrollIntoView({behavior:"smooth",block:"start"});
+  return;
+ }
  document.getElementById("resultTitle").textContent=(c.id==="travel"&&normalize(q).includes("hotel"))?"✈️ Travel → Hotels":c.icon+" "+c.name;
  document.getElementById("resultSummary").textContent=`${tr.countryText}: ${countryName}. ${tr.routeFound}: ${c.desc}.`;
  let h=card(c.icon+" "+c.name,c.desc,`${tr.countryText}: ${countryName}`,"ROUTE",c.page);
