@@ -1,0 +1,84 @@
+name: Globalize SEEKVERA defaults
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/global-world-defaults.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  globalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Remove Nigeria-specific defaults and make worldwide neutral
+        shell: python
+        run: |
+          from pathlib import Path
+          import json, re
+
+          for filename in ['index.html','index-old.html']:
+              p=Path(filename)
+              if not p.exists():
+                  continue
+              text=p.read_text(encoding='utf-8')
+
+              # Worldwide is the only special/default location. Nigeria remains an ordinary country.
+              text=text.replace('<option value="ZZ">Worldwide / Any country</option><option value="NG">Nigeria</option>', '<option value="ZZ">Worldwide / Any country</option>')
+              if '<option value="NG">Nigeria</option>' not in text:
+                  text=text.replace('<option value="NI">Nicaragua</option><option value="NE">Niger</option>', '<option value="NI">Nicaragua</option><option value="NE">Niger</option><option value="NG">Nigeria</option>')
+
+              text=text.replace('🇳🇬 Nigeria • NGN','🌍 Worldwide • Global')
+              text=text.replace('Popular in Nigeria','Popular worldwide')
+              text=text.replace('Try: cheap hotel in Abuja, POS software, solar...','Try: cheap hotel anywhere in the world, flights, cars, software...')
+              text=text.replace('Ex. hôtel pas cher à Abuja, logiciel POS, solaire...','Ex. hôtel pas cher partout dans le monde, vols, voitures, logiciels...')
+
+              # Remove Nigeria-only curated defaults from embedded data. Nigeria then uses the same generic logic as other countries.
+              m=re.search(r'const DATA=(\{.*?\});\nconst T=', text, re.S)
+              if m:
+                  data=json.loads(m.group(1))
+                  cp=data.get('countryPopular') or {}
+                  cp.pop('NG', None)
+                  data['countryPopular']=cp
+                  t=data.get('T') or {}
+                  if isinstance(t.get('en'), dict):
+                      t['en']['placeholder']='Try: cheap hotel anywhere in the world, flights, cars, software...'
+                  if isinstance(t.get('fr'), dict):
+                      t['fr']['placeholder']='Ex. hôtel pas cher partout dans le monde, vols, voitures, logiciels...'
+                  data['T']=t
+                  packed=json.dumps(data, ensure_ascii=False)
+                  text=text[:m.start(1)] + packed + text[m.end(1):]
+
+              p.write_text(text,encoding='utf-8')
+
+      - name: Validate global defaults
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'Worldwide / Any country' index.html
+          grep -q '🌍 Worldwide • Global' index.html
+          grep -q 'Popular worldwide' index.html
+          grep -q 'cheap hotel anywhere in the world' index.html
+          if grep -q '🇳🇬 Nigeria • NGN' index.html; then exit 1; fi
+          if grep -q 'Popular in Nigeria' index.html; then exit 1; fi
+          if grep -q 'cheap hotel in Abuja' index.html; then exit 1; fi
+          if grep -q '"countryPopular": {"NG"' index.html; then exit 1; fi
+          echo 'Worldwide neutral defaults validated.'
+
+      - name: Commit global defaults
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo 'No changes needed.'
+            exit 0
+          fi
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add index.html index-old.html
+          git commit -m 'Make SEEKVERA worldwide by default'
+          git push
