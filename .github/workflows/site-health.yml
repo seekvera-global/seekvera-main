@@ -75,14 +75,13 @@ jobs:
           set -euo pipefail
           grep -q 'https://seekveraglobal.com/sitemap.xml' /tmp/robots.txt
           grep -q 'https://seekveraglobal.com/' /tmp/sitemap.xml
+          grep -q '<link rel="canonical" href="https://seekveraglobal.com/">' /tmp/home.html
+          grep -q '<meta property="og:url" content="https://seekveraglobal.com/">' /tmp/home.html
           if grep -q 'seekvera-global.github.io/seekvera-main' /tmp/home.html; then
             echo 'Old GitHub Pages URL still present in live homepage'
             exit 1
           fi
-          if grep -q 'seekvera-main.seekvera-global.workers.dev' /tmp/home.html; then
-            echo 'Old Workers URL still present in live homepage'
-            exit 1
-          fi
+          echo 'Official-domain SEO signals are correct. Workers endpoint references are allowed for AI routing.'
 
       - name: Check repository page references
         shell: bash
