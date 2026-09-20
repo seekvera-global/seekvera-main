@@ -1,0 +1,111 @@
+name: Upgrade SEEKVERA requests and guide links
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/upgrade-requests-guides.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  upgrade:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upgrade homepage request flow and guide links
+        shell: python
+        run: |
+          from pathlib import Path
+
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+
+          guides_marker = '<div class="grid" id="cats"></div>'
+          guides = '''<div class="grid" id="cats"></div>
+ <div class="grid" style="margin-top:12px">
+  <a class="card link-card" href="cars-auto.html"><h3>🚗 Cars & Auto</h3><p>Cars, rentals, parts and repair services.</p></a>
+  <a class="card link-card" href="restaurants-food.html"><h3>🍽️ Restaurants & Food</h3><p>Dining, delivery, cafes and catering.</p></a>
+  <a class="card link-card" href="shipping-logistics.html"><h3>🚢 Shipping & Logistics</h3><p>Freight, courier, cargo and warehousing.</p></a>
+  <a class="card link-card" href="local-services.html"><h3>🧰 Local Services</h3><p>Home, professional and everyday services.</p></a>
+  <a class="card link-card" href="money-insurance.html"><h3>💳 Money & Insurance</h3><p>Payments, banking and insurance discovery.</p></a>
+ </div>'''
+          if 'href="cars-auto.html"' not in text:
+              text = text.replace(guides_marker, guides, 1)
+
+          text = text.replace(
+              '<span class="request-note">No payment is required. Submission routing activates when the Requests service opens.</span>',
+              '<span class="request-note">No payment is required. SEEKVERA will save the request when secure storage is connected; email fallback remains available.</span>'
+          )
+          text = text.replace(
+              '<span class="success" id="requestSuccess">Request prepared. Your email app will open so you can send it.</span>',
+              '<span class="success" id="requestSuccess">Request saved.</span>'
+          )
+
+          old = '''document.getElementById("requestForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const request={country:requestCountry.value,city:requestCity.value,type:requestType.value,budget:requestBudget.value,date:requestDate.value,contact:requestContact.value,description:requestDescription.value,created:new Date().toISOString()};
+ localStorage.setItem("seekvera_last_request",JSON.stringify(request));
+ document.getElementById("requestSuccess").classList.add("show");
+ const subject=encodeURIComponent(`SEEKVERA request: ${request.type} - ${request.country}`);
+ const body=encodeURIComponent(`Country: ${request.country}\\nCity/Area: ${request.city}\\nType: ${request.type}\\nBudget: ${request.budget}\\nDate: ${request.date}\\nContact: ${request.contact}\\n\\nRequest:\\n${request.description}`);
+ window.location.href=`mailto:seekvera.global@gmail.com?subject=${subject}&body=${body}`;
+});'''
+
+          new = '''document.getElementById("requestForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const request={country:requestCountry.value.trim(),city:requestCity.value.trim(),type:requestType.value,budget:requestBudget.value.trim(),date:requestDate.value,contact:requestContact.value.trim(),description:requestDescription.value.trim(),website:"",created:new Date().toISOString()};
+ localStorage.setItem("seekvera_last_request",JSON.stringify(request));
+ const success=document.getElementById("requestSuccess");
+ const submit=e.currentTarget.querySelector("button[type=submit],button.primary");
+ const oldLabel=submit.textContent;submit.disabled=true;submit.textContent="Saving...";
+ try{
+  const apiBase=location.hostname.endsWith("workers.dev")?"":"https://seekvera-main.seekvera-global.workers.dev";
+  const res=await fetch(`${apiBase}/api/request`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(request)});
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok||!data.ok||!data.id)throw new Error(data.error||"Storage unavailable");
+  success.textContent=`Request saved securely. Reference: ${data.id}`;
+  success.classList.add("show");
+  e.currentTarget.reset();
+ }catch(err){
+  console.warn("SEEKVERA request storage unavailable; using email fallback",err);
+  success.textContent="Secure storage is not connected yet. Your email app will open so the request is not lost.";
+  success.classList.add("show");
+  const subject=encodeURIComponent(`SEEKVERA request: ${request.type} - ${request.country}`);
+  const body=encodeURIComponent(`Country: ${request.country}\\nCity/Area: ${request.city}\\nType: ${request.type}\\nBudget: ${request.budget}\\nDate: ${request.date}\\nContact: ${request.contact}\\n\\nRequest:\\n${request.description}`);
+  window.location.href=`mailto:seekvera.global@gmail.com?subject=${subject}&body=${body}`;
+ }finally{
+  submit.disabled=false;submit.textContent=oldLabel;
+ }
+});'''
+
+          if old not in text:
+              raise SystemExit('Existing Request Anything handler not found; refusing unsafe patch')
+          text = text.replace(old, new, 1)
+          p.write_text(text, encoding='utf-8')
+
+      - name: Validate homepage upgrade
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'href="cars-auto.html"' index.html
+          grep -q '/api/request' index.html
+          grep -q 'Request saved securely' index.html
+          grep -q 'email fallback' index.html
+          echo 'Homepage request and SEO guide upgrade validated.'
+
+      - name: Commit homepage upgrade
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo 'No changes needed.'
+            exit 0
+          fi
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add index.html
+          git commit -m 'Connect Request Anything API and expose new SEO guides'
+          git push
