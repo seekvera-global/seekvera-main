@@ -1,0 +1,27 @@
+name: Test public AI fallback
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/test-public-ai-fallback.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check free text endpoint and CORS
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL='https://text.pollinations.ai/Reply%20with%20only%20SEEKVERA%20AI%20OK?model=openai&private=true'
+          curl -sS -D /tmp/headers.txt --max-time 45 "$URL" -o /tmp/body.txt
+          cat /tmp/headers.txt
+          cat /tmp/body.txt
+          grep -qi 'access-control-allow-origin' /tmp/headers.txt
+          grep -qi 'SEEKVERA' /tmp/body.txt
+          echo 'PUBLIC_AI_FALLBACK_OK'
