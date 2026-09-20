@@ -1,0 +1,54 @@
+name: Short SEEKVERA brand
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/short-brand.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  brand:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Make SEEKVERA the visible brand everywhere
+        shell: python
+        run: |
+          from pathlib import Path
+          for p in Path('.').glob('*.html'):
+              s=p.read_text(encoding='utf-8')
+              s=s.replace('SEEKVERA UNIVERSAL GLOBAL','SEEKVERA')
+              s=s.replace('SEEKVERA Universal Global','SEEKVERA')
+              if p.name=='index.html':
+                  s=s.replace('<title>SEEKVERA — Find, compare, choose</title>','<title>SEEKVERA — Find, compare, choose worldwide</title>')
+                  if '<meta name="application-name" content="SEEKVERA">' not in s:
+                      s=s.replace('<meta name="theme-color" content="#07111f">','<meta name="theme-color" content="#07111f">\n<meta name="application-name" content="SEEKVERA">\n<meta name="apple-mobile-web-app-title" content="SEEKVERA">')
+                  s=s.replace('"name":"SEEKVERA",\n "url"','"name":"SEEKVERA",\n "alternateName":"Find, compare, choose worldwide",\n "url"')
+              p.write_text(s,encoding='utf-8')
+          m=Path('manifest.webmanifest')
+          if m.exists():
+              s=m.read_text(encoding='utf-8')
+              s=s.replace('"name": "SEEKVERA Universal Global"','"name": "SEEKVERA"')
+              s=s.replace('"short_name": "SEEKVERA"','"short_name": "SEEKVERA"')
+              m.write_text(s,encoding='utf-8')
+      - name: Validate short brand
+        run: |
+          set -e
+          grep -q '<span>SEEKVERA</span>' index.html
+          grep -q '<meta name="application-name" content="SEEKVERA">' index.html
+          grep -q '"name": "SEEKVERA"' manifest.webmanifest
+          ! grep -q 'SEEKVERA UNIVERSAL GLOBAL' index.html
+      - name: Commit
+        run: |
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add '*.html' manifest.webmanifest
+          if ! git diff --cached --quiet; then
+            git commit -m 'Simplify public brand to SEEKVERA'
+            git pull --rebase origin main
+            git push
+          fi
