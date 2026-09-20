@@ -25,27 +25,9 @@ jobs:
           cache='<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">\n<meta http-equiv="Pragma" content="no-cache">\n<meta http-equiv="Expires" content="0">'
           if cache not in text:
               text=text.replace(marker, marker+'\n'+cache, 1)
-
-          old='''const savedCountry=localStorage.getItem("seekvera_country")||detectLocaleCountry();
-if(countryEl.querySelector(`option[value="${savedCountry}"]`))countryEl.value=savedCountry;
-if(requestCountryEl)requestCountryEl.value=countryEl.options[countryEl.selectedIndex].text;
-langEl.addEventListener("change",e=>applyLang(e.target.value));
-countryEl.addEventListener("change",()=>{
- localStorage.setItem("seekvera_country",countryEl.value);
- if(requestCountryEl)requestCountryEl.value=countryEl.options[countryEl.selectedIndex].text;
- renderCountryPopular();
-});'''
-          new='''localStorage.removeItem("seekvera_country");
-countryEl.value="ZZ";
-if(requestCountryEl)requestCountryEl.value=countryEl.options[countryEl.selectedIndex].text;
-langEl.addEventListener("change",e=>applyLang(e.target.value));
-countryEl.addEventListener("change",()=>{
- if(requestCountryEl)requestCountryEl.value=countryEl.options[countryEl.selectedIndex].text;
- renderCountryPopular();
-});'''
-          if old not in text:
-              raise SystemExit('Expected country persistence block not found')
-          text=text.replace(old,new,1)
+          text=text.replace('const savedCountry=localStorage.getItem("seekvera_country")||detectLocaleCountry();', 'localStorage.removeItem("seekvera_country");\ncountryEl.value="ZZ";', 1)
+          text=text.replace('if(countryEl.querySelector(`option[value="${savedCountry}"]`))countryEl.value=savedCountry;\n', '', 1)
+          text=text.replace(' localStorage.setItem("seekvera_country",countryEl.value);\n', '', 1)
           if 'data-build="worldwide-20260920-v2"' not in text:
               text=text.replace('<body>', '<body data-build="worldwide-20260920-v2">', 1)
           p.write_text(text,encoding='utf-8')
@@ -58,7 +40,8 @@ countryEl.addEventListener("change",()=>{
           grep -q 'localStorage.removeItem("seekvera_country")' index.html
           grep -q 'data-build="worldwide-20260920-v2"' index.html
           grep -q 'cheap hotel anywhere in the world' index.html
-          ! grep -q 'const savedCountry=localStorage.getItem("seekvera_country")' index.html
+          if grep -q 'const savedCountry=localStorage.getItem("seekvera_country")' index.html; then exit 1; fi
+          if grep -q 'localStorage.setItem("seekvera_country"' index.html; then exit 1; fi
           echo 'Fresh worldwide startup validated.'
 
       - name: Commit worldwide startup fix
