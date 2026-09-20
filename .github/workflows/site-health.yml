@@ -1,4 +1,5 @@
 name: SEEKVERA live site health
+# Health validation target: current zero-cost Universal Global release
 
 on:
   schedule:
