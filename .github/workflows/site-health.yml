@@ -28,7 +28,7 @@ jobs:
         run: |
           set -euo pipefail
           base='https://seekvera-global.github.io/seekvera-main'
-          markers=('SEEKVERA' 'Ask SEEKVERA' 'Request anything' 'id="country"' 'id="lang"')
+          markers=('SEEKVERA' 'Ask SEEKVERA' 'Request anything' 'id="country"' 'id="lang"' 'cars-auto.html' 'restaurants-food.html' 'shipping-logistics.html' 'local-services.html' 'money-insurance.html')
           ready=0
           for attempt in $(seq 1 12); do
             echo "Homepage check attempt $attempt/12"
@@ -63,8 +63,9 @@ jobs:
           base='https://seekvera-global.github.io/seekvera-main'
           pages=(
             travel.html shopping.html property.html business-software.html education.html
-            solar.html health.html web-hosting.html jobs.html import-export.html about.html
-            contact.html privacy.html terms.html disclosure.html robots.txt sitemap.xml
+            solar.html health.html web-hosting.html jobs.html import-export.html
+            cars-auto.html restaurants-food.html shipping-logistics.html local-services.html money-insurance.html
+            about.html contact.html privacy.html terms.html disclosure.html robots.txt sitemap.xml
           )
           for page in "${pages[@]}"; do
             echo "Checking $page"
@@ -78,9 +79,14 @@ jobs:
           set -euo pipefail
           grep -q 'https://seekvera-global.github.io/seekvera-main/sitemap.xml' /tmp/robots.txt
           grep -q 'https://seekvera-global.github.io/seekvera-main/' /tmp/sitemap.xml
+          grep -q 'cars-auto.html' /tmp/sitemap.xml
+          grep -q 'restaurants-food.html' /tmp/sitemap.xml
+          grep -q 'shipping-logistics.html' /tmp/sitemap.xml
+          grep -q 'local-services.html' /tmp/sitemap.xml
+          grep -q 'money-insurance.html' /tmp/sitemap.xml
           grep -q '<link rel="canonical" href="https://seekvera-global.github.io/seekvera-main/">' /tmp/home.html
           grep -q '<meta property="og:url" content="https://seekvera-global.github.io/seekvera-main/">' /tmp/home.html
-          echo 'Official zero-cost GitHub Pages SEO signals are correct. Workers endpoint references are allowed for AI routing.'
+          echo 'Official zero-cost GitHub Pages SEO signals and all Universal Global guide pages are correct.'
 
       - name: Check repository page references
         shell: bash
