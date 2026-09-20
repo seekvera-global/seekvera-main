@@ -4,4 +4,4 @@ Allow: /
 User-agent: OAI-SearchBot
 Allow: /
 
-Sitemap: https://seekveraglobal.com/sitemap.xml
+Sitemap: https://seekvera-global.github.io/seekvera-main/sitemap.xml
