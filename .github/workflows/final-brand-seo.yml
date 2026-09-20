@@ -1,0 +1,94 @@
+name: Final SEEKVERA brand and SEO polish
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/final-brand-seo.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  polish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Normalize public brand and metadata
+        shell: python
+        run: |
+          from pathlib import Path
+          import re, json
+
+          html_files=list(Path('.').glob('*.html'))
+          for p in html_files:
+              s=p.read_text(encoding='utf-8')
+              # SEEKVERA is the brand; Worldwide/Global is positioning, not part of the name.
+              s=s.replace('SEEKVERA UNIVERSAL GLOBAL','SEEKVERA')
+              s=s.replace('SEEKVERA Universal Global','SEEKVERA')
+              s=s.replace(' — SEEKVERA Universal Global',' — SEEKVERA')
+              s=s.replace('SEEKVERA Universal Global — ','SEEKVERA — ')
+              # Ensure social site-name where a head exists.
+              if '<head' in s and 'property="og:site_name"' not in s:
+                  s=s.replace('</head>','<meta property="og:site_name" content="SEEKVERA">\n</head>',1)
+              if '<head' in s and 'name="twitter:card"' not in s:
+                  s=s.replace('</head>','<meta name="twitter:card" content="summary_large_image">\n</head>',1)
+              p.write_text(s,encoding='utf-8')
+
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          # Memorable, instantly understandable brand message.
+          s=re.sub(r'<div class="eyebrow" data-t="eyebrow">.*?</div>',
+                   '<div class="eyebrow">WORLDWIDE • SMART SEARCH • FREE TO USE</div>',s,count=1,flags=re.S)
+          s=re.sub(r'<h1(?: data-t="headline")?>.*?</h1>',
+                   '<h1>Everything you need. One search.</h1>',s,count=1,flags=re.S)
+          s=re.sub(r'<p class="lead"(?: data-t="sub")?>.*?</p>',
+                   '<p class="lead">Find, compare and choose hotels, homes, cars, jobs, shopping, services and more — worldwide.</p>',s,count=1,flags=re.S)
+          # Search/browser/social copy.
+          s=re.sub(r'<title>.*?</title>','<title>SEEKVERA — Everything You Need, One Search</title>',s,count=1,flags=re.S)
+          s=re.sub(r'<meta name="description" content="[^"]*">','<meta name="description" content="Everything you need in one search. Find, compare and choose hotels, homes, cars, jobs, shopping, services and more worldwide with SEEKVERA.">',s,count=1)
+          s=re.sub(r'<meta property="og:title" content="[^"]*">','<meta property="og:title" content="SEEKVERA — Everything You Need, One Search">',s,count=1)
+          s=re.sub(r'<meta property="og:description" content="[^"]*">','<meta property="og:description" content="Find, compare and choose hotels, homes, cars, jobs, shopping, services and more — worldwide.">',s,count=1)
+          s=re.sub(r'<meta name="twitter:title" content="[^"]*">','<meta name="twitter:title" content="SEEKVERA — Everything You Need, One Search">',s,count=1)
+          s=re.sub(r'<meta name="twitter:description" content="[^"]*">','<meta name="twitter:description" content="Find, compare and choose hotels, homes, cars, jobs, shopping, services and more — worldwide.">',s,count=1)
+          s=s.replace('data-build="worldwide-20260920-v3"','data-build="seekvera-one-search-v4"')
+          p.write_text(s,encoding='utf-8')
+
+          # App/install name stays short and memorable.
+          mp=Path('manifest.webmanifest')
+          if mp.exists():
+              try:
+                  data=json.loads(mp.read_text(encoding='utf-8'))
+                  data['name']='SEEKVERA'
+                  data['short_name']='SEEKVERA'
+                  data['description']='Everything you need. One search. Find, compare and choose worldwide.'
+                  mp.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              except Exception as e:
+                  raise SystemExit(f'manifest update failed: {e}')
+
+      - name: Validate public messaging
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q '<title>SEEKVERA — Everything You Need, One Search</title>' index.html
+          grep -q 'Everything you need. One search.' index.html
+          grep -q 'hotels, homes, cars, jobs, shopping, services and more' index.html
+          grep -q 'og:site_name' index.html
+          grep -q '"name": "SEEKVERA"' manifest.webmanifest
+          if grep -R --include='*.html' -n 'SEEKVERA Universal Global\|SEEKVERA UNIVERSAL GLOBAL' .; then
+            echo 'Old public brand wording still exists'
+            exit 1
+          fi
+      - name: Commit final public polish
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add '*.html' manifest.webmanifest
+          if ! git diff --cached --quiet; then
+            git commit -m 'Finalize SEEKVERA one-search brand across public pages'
+            git pull --rebase origin main
+            git push
+          fi
