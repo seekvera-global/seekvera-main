@@ -18,6 +18,7 @@ jobs:
       - name: Refresh app cache tag
         shell: bash
         run: |
+          echo 'Refreshing SEEKVERA safety build'
           python - <<'PY'
           from pathlib import Path
           p=Path('app.html')
