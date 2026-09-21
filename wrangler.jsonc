@@ -1,4 +1,4 @@
-// Native Cloudflare Workers Builds retry: 2026-09-21 full safety release
+// Trigger Cloudflare deploy: 2026-09-21 Safety Gate v2 + AI Vision
 {
   "name": "seekvera-main",
   "main": "./worker.js",
