@@ -3,8 +3,8 @@ const ALLOWED_ORIGINS = new Set([
   "https://seekvera-main.seekvera-global.workers.dev"
 ]);
 
-const PRIMARY_AI_MODEL = "@cf/google/gemma-4-26b-a4b-it";
-const FALLBACK_AI_MODEL = "@cf/zai-org/glm-4.7-flash";
+const PRIMARY_AI_MODEL = "@cf/meta/llama-3.1-8b-instruct-fast";
+const FALLBACK_AI_MODEL = "@cf/google/gemma-4-26b-a4b-it";
 
 const SUPABASE_URL = "https://nrdpyydfrpmqedtzmbyw.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_tqqPQxqdNowIsSlJz4bW5w_kHOC905o";
@@ -81,7 +81,7 @@ async function runSeekveraAI(env, messages) {
       PRIMARY_AI_MODEL,
       {
         messages,
-        max_completion_tokens: 320,
+        max_completion_tokens: 220,
         temperature: 0.2
       },
       { rejectIfBusy: true }
@@ -98,7 +98,7 @@ async function runSeekveraAI(env, messages) {
   try {
     const result = await env.AI.run(FALLBACK_AI_MODEL, {
       messages,
-      max_completion_tokens: 300,
+      max_completion_tokens: 280,
       temperature: 0.22
     });
 
