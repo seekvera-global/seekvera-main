@@ -6,6 +6,9 @@ const ALLOWED_ORIGINS = new Set([
 const PRIMARY_AI_MODEL = "@cf/google/gemma-4-26b-a4b-it";
 const FALLBACK_AI_MODEL = "@cf/zai-org/glm-4.7-flash";
 
+const SUPABASE_URL = "https://nrdpyydfrpmqedtzmbyw.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_tqqPQxqdNowIsSlJz4bW5w_kHOC905o";
+
 function corsHeaders(request) {
   const origin = request.headers.get("origin") || "";
   const allowed = ALLOWED_ORIGINS.has(origin) ? origin : "";
@@ -35,12 +38,21 @@ const secure = (response) => {
   secured.headers.set("permissions-policy", "camera=(), geolocation=(), payment=(), usb=()");
   secured.headers.set("x-frame-options", "DENY");
   secured.headers.set("cross-origin-opener-policy", "same-origin");
-  secured.headers.set("content-security-policy", "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://seekvera-main.seekvera-global.workers.dev; form-action 'self' mailto:; base-uri 'self'; frame-ancestors 'none'");
+  secured.headers.set(
+    "content-security-policy",
+    "default-src 'self'; img-src 'self' data: https://*.puter.com; " +
+    "style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://js.puter.com; " +
+    "connect-src 'self' https://seekvera-main.seekvera-global.workers.dev https://text.pollinations.ai https://*.puter.com https://nrdpyydfrpmqedtzmbyw.supabase.co; " +
+    "frame-src https://*.puter.com; form-action 'self' mailto:; base-uri 'self'; object-src 'none'; frame-ancestors 'none'"
+  );
   return secured;
 };
 
 function clean(value, max = 300) {
-  return String(value ?? "").replace(/[\u0000-\u001F\u007F]/g, " ").trim().slice(0, max);
+  return String(value ?? "")
+    .replace(/[\u0000-\u001F\u007F]/g, " ")
+    .trim()
+    .slice(0, max);
 }
 
 function requestId() {
@@ -52,7 +64,9 @@ function requestId() {
 function extractAIText(result) {
   if (typeof result?.response === "string") return result.response.trim();
   if (typeof result?.result?.response === "string") return result.result.response.trim();
-  if (typeof result?.choices?.[0]?.message?.content === "string") return result.choices[0].message.content.trim();
+  if (typeof result?.choices?.[0]?.message?.content === "string") {
+    return result.choices[0].message.content.trim();
+  }
   if (Array.isArray(result?.choices?.[0]?.message?.content)) {
     return result.choices[0].message.content.map(x => x?.text || "").join("\n").trim();
   }
@@ -61,12 +75,18 @@ function extractAIText(result) {
 
 async function runSeekveraAI(env, messages) {
   let primaryError;
+
   try {
-    const result = await env.AI.run(PRIMARY_AI_MODEL, {
-      messages,
-      max_completion_tokens: 320,
-      temperature: 0.2
-    });
+    const result = await env.AI.run(
+      PRIMARY_AI_MODEL,
+      {
+        messages,
+        max_completion_tokens: 320,
+        temperature: 0.2
+      },
+      { rejectIfBusy: true }
+    );
+
     const response = extractAIText(result);
     if (response) return { response, model: PRIMARY_AI_MODEL };
     primaryError = new Error("Empty primary AI response");
@@ -81,12 +101,31 @@ async function runSeekveraAI(env, messages) {
       max_completion_tokens: 300,
       temperature: 0.22
     });
+
     const response = extractAIText(result);
     if (response) return { response, model: FALLBACK_AI_MODEL };
     throw new Error("Empty fallback AI response");
   } catch (fallbackError) {
     console.error("SEEKVERA Cloudflare AI models unavailable", { primaryError, fallbackError });
     throw fallbackError;
+  }
+}
+
+async function saveRequestToSupabase(payload) {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/seekvera_requests`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "apikey": SUPABASE_PUBLISHABLE_KEY,
+      "authorization": `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+      "prefer": "return=minimal"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    const detail = (await response.text()).slice(0, 500);
+    throw new Error(`Supabase request storage failed (${response.status}): ${detail}`);
   }
 }
 
@@ -104,7 +143,8 @@ export default {
           ok: true,
           service: "SEEKVERA",
           aiBinding: Boolean(env.AI),
-          requestsDbBinding: Boolean(env.REQUESTS_DB),
+          requestStorage: "supabase",
+          requestStorageReady: true,
           primaryModel: PRIMARY_AI_MODEL,
           fallbackModel: FALLBACK_AI_MODEL
         });
@@ -122,36 +162,53 @@ export default {
           }
 
           const body = await request.json();
-          const country = clean(body?.country, 100);
+          const country = clean(body?.country, 120);
           const city = clean(body?.city, 120);
-          const type = clean(body?.type, 60) || "Other";
+          const type = clean(body?.type ?? body?.request_type, 80) || "Other";
           const budget = clean(body?.budget, 120);
-          const requestedDate = clean(body?.date, 30);
-          const contact = clean(body?.contact, 180);
-          const description = clean(body?.description, 2500);
+          const requestedDate = clean(body?.date ?? body?.needed_date, 30);
+          const contact = clean(body?.contact, 240);
+          const description = clean(body?.description, 4000);
           const honeypot = clean(body?.website, 200);
 
           if (honeypot) {
             return json(request, { ok: true, accepted: true });
           }
-          if (!country || !description) {
-            return json(request, { ok: false, error: "Country and description are required" }, 400);
-          }
-          if (!env.REQUESTS_DB) {
-            return json(request, { ok: false, error: "Request storage is not connected yet", storageReady: false }, 503);
+
+          if (!country || description.length < 3) {
+            return json(request, {
+              ok: false,
+              error: "Country and description are required"
+            }, 400);
           }
 
           const id = requestId();
-          const createdAt = new Date().toISOString();
-          await env.REQUESTS_DB.prepare(
-            `INSERT INTO requests (id, created_at, country, city, request_type, budget, requested_date, contact, description, status, source)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, 'new', 'web')`
-          ).bind(id, createdAt, country, city, type, budget, requestedDate, contact, description).run();
+          const neededDate = /^\d{4}-\d{2}-\d{2}$/.test(requestedDate) ? requestedDate : null;
 
-          return json(request, { ok: true, id, createdAt });
+          await saveRequestToSupabase({
+            reference: id,
+            country,
+            city,
+            request_type: type,
+            budget,
+            needed_date: neededDate,
+            contact,
+            description,
+            source: "seekvera-worker"
+          });
+
+          return json(request, {
+            ok: true,
+            id,
+            createdAt: new Date().toISOString()
+          });
         } catch (error) {
           console.error("SEEKVERA request storage error", error);
-          return json(request, { ok: false, error: "Unable to save request right now", retryable: true }, 503);
+          return json(request, {
+            ok: false,
+            error: "Unable to save request right now",
+            retryable: true
+          }, 503);
         }
       }
 
@@ -167,9 +224,9 @@ export default {
           }
 
           const body = await request.json();
-          const message = String(body?.message || "").trim().slice(0, 1800);
-          const country = String(body?.country || "").trim().slice(0, 80);
-          const language = String(body?.language || "").trim().slice(0, 40);
+          const message = clean(body?.message, 1800);
+          const country = clean(body?.country, 80);
+          const language = clean(body?.language, 40);
 
           if (!message) {
             return json(request, { ok: false, error: "Message is required" }, 400);
@@ -206,7 +263,11 @@ export default {
           });
         } catch (error) {
           console.error("SEEKVERA AI error", error);
-          return json(request, { ok: false, error: "AI is temporarily unavailable", retryable: true }, 503);
+          return json(request, {
+            ok: false,
+            error: "AI is temporarily unavailable",
+            retryable: true
+          }, 503);
         }
       }
 
