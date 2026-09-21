@@ -1,5 +1,5 @@
 name: Deploy SEEKVERA to Cloudflare
-# Fresh production deployment check: 2026-09-21
+# Production deployment: latest Safety Gate v2 + AI Vision
 
 on:
   push:
@@ -31,8 +31,11 @@ jobs:
           set -euo pipefail
           npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-dry-run
           grep -q '"binding": "AI"' wrangler.jsonc
-          grep -q '@cf/meta/llama-3.1-8b-instruct-fast' worker.js
           grep -q '@cf/google/gemma-4-26b-a4b-it' worker.js
+          grep -q '@cf/zai-org/glm-4.7-flash' worker.js
+          grep -q '@cf/meta/llama-3.2-11b-vision-instruct' worker.js
+          grep -q 'safetyGateVersion' worker.js
+          grep -q '/api/vision' worker.js
           echo 'SEEKVERA Worker source is valid.'
 
       - name: Detect Cloudflare deployment credentials
