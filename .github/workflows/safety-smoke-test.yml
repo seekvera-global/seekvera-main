@@ -28,14 +28,16 @@ jobs:
           set -euo pipefail
           worker='https://seekvera-main.seekvera-global.workers.dev'
           health="$(curl -fsS --retry 5 --retry-delay 5 --max-time 40 "$worker/api/health")"
-          echo "$health" | grep -q '"moderation":"enabled"'
+          echo "HEALTH=$health"
+          python -c 'import json,sys; d=json.loads(sys.argv[1]); assert d.get("moderation")=="enabled"' "$health"
 
           blocked="$(curl -fsS --retry 4 --retry-delay 4 --max-time 75 -H 'content-type: application/json' -d '{"text":"AK-47 rifle for sale"}' "$worker/api/moderate")"
-          echo "$blocked" | grep -q '"allowed":false'
-          echo "$blocked" | grep -q 'weapons_or_explosives'
+          echo "BLOCKED=$blocked"
+          python -c 'import json,sys; d=json.loads(sys.argv[1]); assert d.get("allowed") is False; assert d.get("reason")=="weapons_or_explosives"' "$blocked"
 
           clean="$(curl -fsS --retry 4 --retry-delay 4 --max-time 90 -H 'content-type: application/json' -d '{"text":"1000 sqm land for sale in Abuja with valid documents"}' "$worker/api/moderate")"
-          echo "$clean" | grep -q '"allowed":true'
+          echo "CLEAN=$clean"
+          python -c 'import json,sys; d=json.loads(sys.argv[1]); assert d.get("allowed") is True' "$clean"
 
       - name: Verify live marketplace safety UI
         shell: bash
