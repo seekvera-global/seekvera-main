@@ -1,0 +1,46 @@
+name: Apply SEEKVERA moderation fallback once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-moderation-fallback-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Patch marketplace moderation path
+        run: python3 tools/patch_moderation_fallback.py
+      - name: Validate page source
+        run: |
+          set -euo pipefail
+          grep -q "marketplace-moderate" post-ad.html
+          grep -q "fail-closed" post-ad.html
+          python3 - <<'PY'
+          from pathlib import Path
+          import re, subprocess
+          t=Path('post-ad.html').read_text(encoding='utf-8')
+          for i,s in enumerate(re.findall(r'<script[^>]*>(.*?)</script>',t,re.S|re.I),1):
+              p=Path('/tmp')/f'post-ad-{i}.js'; p.write_text(s,encoding='utf-8'); subprocess.run(['node','--check',str(p)],check=True)
+          print('post-ad JavaScript syntax passed')
+          PY
+      - name: Commit patched page
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- post-ad.html; then
+            echo 'No changes needed.'
+            exit 0
+          fi
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add post-ad.html
+          git commit -m 'Use fail-closed Supabase safety moderation fallback'
+          git push
