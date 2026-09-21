@@ -38,6 +38,34 @@
 </nav>
 </div>
 <script>
+
+const labels={
+ en:['Worldwide • One App','AI + Marketplace','Unified Web App','Home & AI','Marketplace','Post an Ad','Promote / Business / Pay','Home','Market','Post Ad','Promote','Opening SEEKVERA…'],
+ ar:['عالمي • تطبيق واحد','الذكاء الاصطناعي + السوق','تطبيق عالمي','الرئيسية والذكاء الاصطناعي','السوق','أضف إعلاناً','الترويج والأعمال والدفع','الرئيسية','السوق','إعلان','الترويج','جارٍ فتح التطبيق…'],
+ zh:['全球 • 一个应用','AI + 市场','全球应用','首页与 AI','市场','发布广告','推广 / 商务 / 支付','首页','市场','发布','推广','正在打开应用…'],
+ ja:['世界中 • ひとつのアプリ','AI とマーケット','グローバルアプリ','ホームと AI','マーケット','広告を掲載','宣伝 / ビジネス / 支払い','ホーム','市場','掲載','宣伝','アプリを開いています…'],
+ fr:['Monde entier • Une appli','IA + Marché','Application mondiale','Accueil et IA','Marché','Publier une annonce','Promotion / Entreprises / Paiement','Accueil','Marché','Publier','Promouvoir','Ouverture de l’application…'],
+ es:['Mundo • Una aplicación','IA + Mercado','Aplicación global','Inicio e IA','Mercado','Publicar anuncio','Promoción / Negocios / Pago','Inicio','Mercado','Publicar','Promocionar','Abriendo la aplicación…'],
+ hi:['दुनिया भर में • एक ऐप','AI + बाज़ार','वैश्विक ऐप','होम और AI','बाज़ार','विज्ञापन डालें','प्रचार / व्यवसाय / भुगतान','होम','बाज़ार','पोस्ट','प्रचार','ऐप खुल रहा है…']
+};
+function appLanguage(){
+ const saved=localStorage.getItem('seekvera_lang');
+ const available=new Set(Object.keys(labels));
+ if(saved && available.has(saved)) return saved;
+ const preferred=navigator.languages?.length?navigator.languages:[navigator.language||'en'];
+ for(const locale of preferred){const code=locale.toLowerCase().split('-')[0];if(available.has(code))return code}
+ return 'en';
+}
+function translateApp(){
+ const code=appLanguage(), t=labels[code];
+ document.documentElement.lang=code;document.documentElement.dir=code==='ar'?'rtl':'ltr';
+ document.querySelector('.title small').textContent=t[0];document.querySelector('.badge').textContent=t[1];
+ document.querySelector('.status').lastChild.textContent=t[2];document.getElementById('loading').textContent=t[11];
+ document.querySelectorAll('.nav button').forEach((b,i)=>b.textContent=['🏠 ','🛒 ','＋ ','🚀 '][i]+t[3+i]);
+ document.querySelectorAll('.bottom button').forEach((b,i)=>b.lastChild.textContent=t[7+i]);
+}
+translateApp();window.addEventListener('storage',e=>{if(e.key==='seekvera_lang')translateApp()});
+
 const view=document.getElementById('view'),loading=document.getElementById('loading');
 const buttons=[...document.querySelectorAll('[data-page]')];
 function openPage(page,push=true){
