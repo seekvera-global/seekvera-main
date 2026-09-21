@@ -32,7 +32,7 @@
 </nav>
 <div class="framewrap">
   <div class="loading" id="loading">Opening SEEKVERA…</div>
-  <iframe class="view" id="view" title="SEEKVERA" src="index.html?v=voice3" allow="microphone"></iframe>
+  <iframe class="view" id="view" title="SEEKVERA" src="index.html?v=20260921-superapp2" allow="microphone"></iframe>
 </div>
 <nav class="bottom" aria-label="Mobile navigation">
   <button class="active" data-page="index.html"><span>🏠</span>Home</button>
@@ -83,7 +83,7 @@ translateApp();window.addEventListener('storage',e=>{if(e.key==='seekvera_lang')
 
 const view=document.getElementById('view'),loading=document.getElementById('loading'),voiceFloat=document.getElementById('voiceFloat');
 const buttons=[...document.querySelectorAll('[data-page]')];
-const buildTag='20260921-oneapp1';
+const buildTag='20260921-superapp2';
 function versioned(page){return page+(page.includes('?')?'&':'?')+'v='+buildTag}
 function openPage(page,push=true){
   loading.classList.remove('hide');
