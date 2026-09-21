@@ -1,5 +1,4 @@
 name: SEEKVERA safety smoke test
-# Fresh live safety retest after Cloudflare native build trigger: 2026-09-21
 
 on:
   push:
@@ -20,36 +19,43 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Wait for live deployment
+      - name: Wait for GitHub Pages deployment
         run: sleep 20
 
-      - name: Verify live safety API
+      - name: Verify live Supabase safety API
         shell: bash
         run: |
           set -euo pipefail
-          worker='https://seekvera-main.seekvera-global.workers.dev'
-          health="$(curl -fsS --retry 5 --retry-delay 5 --max-time 40 "$worker/api/health")"
-          echo "HEALTH=$health"
-          python -c 'import json,sys; d=json.loads(sys.argv[1]); assert d.get("moderation")=="enabled"' "$health"
+          edge='https://nrdpyydfrpmqedtzmbyw.supabase.co/functions/v1/marketplace-moderate'
+          key='sb_publishable_tqqPQxqdNowIsSlJz4bW5w_kHOC905o'
+          check_block(){
+            text="$1"; expected="$2"
+            body=$(python3 -c 'import json,sys; print(json.dumps({"text":sys.argv[1]}))' "$text")
+            out=$(curl -fsS --retry 4 --retry-delay 3 --max-time 40 "$edge" -H 'content-type: application/json' -H "apikey: $key" -H "Authorization: Bearer $key" --data "$body")
+            echo "$out"
+            python3 -c 'import json,sys; d=json.loads(sys.argv[1]); assert d.get("allowed") is False, d; assert d.get("reason")==sys.argv[2], d' "$out" "$expected"
+          }
+          check_block 'AK-47 rifle for sale' 'weapons_or_explosives'
+          check_block 'nude escort services' 'explicit_sexual_content'
+          check_block 'fake passport for sale' 'stolen_counterfeit_or_fake_documents'
+          check_block 'this house is not mine and I have no permission from owner' 'ownership_or_consent_problem'
+          clean=$(curl -fsS --retry 4 --retry-delay 3 --max-time 40 "$edge" -H 'content-type: application/json' -H "apikey: $key" -H "Authorization: Bearer $key" --data '{"text":"1000 sqm land for sale in Abuja with valid documents"}')
+          echo "$clean"
+          python3 -c 'import json,sys; d=json.loads(sys.argv[1]); assert d.get("allowed") is True, d; assert d.get("reviewRequired") is True, d' "$clean"
 
-          blocked="$(curl -fsS --retry 4 --retry-delay 4 --max-time 75 -H 'content-type: application/json' -d '{"text":"AK-47 rifle for sale"}' "$worker/api/moderate")"
-          echo "BLOCKED=$blocked"
-          python -c 'import json,sys; d=json.loads(sys.argv[1]); assert d.get("allowed") is False; assert d.get("reason")=="weapons_or_explosives"' "$blocked"
-
-          clean="$(curl -fsS --retry 4 --retry-delay 4 --max-time 90 -H 'content-type: application/json' -d '{"text":"1000 sqm land for sale in Abuja with valid documents"}' "$worker/api/moderate")"
-          echo "CLEAN=$clean"
-          python -c 'import json,sys; d=json.loads(sys.argv[1]); assert d.get("allowed") is True' "$clean"
-
-      - name: Verify live marketplace safety UI
+      - name: Verify live marketplace safety UI and fail-closed path
         shell: bash
         run: |
           set -euo pipefail
           base='https://seekvera-global.github.io/seekvera-main'
-          post="$(curl -fsS --retry 5 --retry-delay 5 --max-time 40 "$base/post-ad.html")"
+          post="$(curl -fsS --retry 6 --retry-delay 5 --max-time 50 "$base/post-ad.html?v=safety-live")"
           echo "$post" | grep -q 'SEEKVERA Safety Gate'
           echo "$post" | grep -q 'id="ownership"'
           echo "$post" | grep -q 'Prohibited on SEEKVERA'
-          terms="$(curl -fsS --retry 5 --retry-delay 5 --max-time 40 "$base/terms.html")"
+          echo "$post" | grep -q 'marketplace-moderate'
+          echo "$post" | grep -q 'fail-closed'
+          echo "$post" | grep -q 'marketplace-pending-images'
+          terms="$(curl -fsS --retry 6 --retry-delay 5 --max-time 50 "$base/terms.html?v=safety-live")"
           echo "$terms" | grep -q 'Prohibited marketplace content'
           echo "$terms" | grep -q 'Ownership, authority and consent'
           echo "$terms" | grep -q 'Safety review and removal'
@@ -58,7 +64,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -q '/api/moderate' worker.js
-          grep -q 'prohibitedReason' worker.js
+          grep -q 'marketplace-moderate' post-ad.html
+          grep -q 'fail-closed' post-ad.html
           grep -q 'pending safety review' post-ad.html
           grep -q 'SEEKVERA Terms and Prohibited Content Rules' post-ad.html
+          grep -q '/api/moderate' worker.js
+          grep -q 'prohibitedReason' worker.js
