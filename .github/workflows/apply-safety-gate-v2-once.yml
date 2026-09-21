@@ -1,0 +1,49 @@
+name: Apply SEEKVERA Safety Gate v2 once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/patch_safety_gate_v2.py'
+      - '.github/workflows/apply-safety-gate-v2-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-safety-gate-v2-once
+  cancel-in-progress: false
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply Safety Gate v2 source patch
+        run: python tools/patch_safety_gate_v2.py
+
+      - name: Validate Worker
+        run: |
+          set -euo pipefail
+          git diff --check
+          grep -q '/api/vision' worker.js
+          grep -q 'marketplace-review' post-ad.html
+          npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-safety-v2
+
+      - name: Commit patched production source
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- worker.js post-ad.html; then
+            echo 'No source changes required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add worker.js post-ad.html
+          git commit -m 'Enable automatic AI Vision Safety Gate v2'
+          git push origin HEAD:main
