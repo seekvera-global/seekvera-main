@@ -1,0 +1,70 @@
+name: Unify SEEKVERA into one app
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/unify-one-app-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  unify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch installed app shell
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('app.html')
+          s=p.read_text()
+          reps={
+            '<button data-page="seller-plans.html">🚀 Promote / Business / Pay</button>':'<button data-page="travel.html">✈️ Travel</button>',
+            '<button data-page="scan.html">📲 Scan / Share</button>':'<button data-page="hub.html">☰ More</button>',
+            '<button data-page="seller-plans.html"><span>🚀</span>Promote</button>':'<button data-page="travel.html"><span>✈️</span>Travel</button>',
+            '<button data-page="scan.html"><span>📲</span>Scan</button>':'<button data-page="hub.html"><span>☰</span>More</button>',
+            "const buildTag='20260921-safety3';":"const buildTag='20260921-oneapp1';",
+            "const map={home:'index.html',index:'index.html',marketplace:'marketplace.html','post-ad':'post-ad.html','seller-plans':'seller-plans.html',promote:'seller-plans.html',scan:'scan.html'};":"const map={home:'index.html',index:'index.html',marketplace:'marketplace.html','post-ad':'post-ad.html',travel:'travel.html',hub:'hub.html',more:'hub.html','seller-plans':'seller-plans.html',promote:'seller-plans.html',scan:'scan.html',tourism:'tourism.html',wifi:'wifi.html'};"
+          }
+          for old,new in reps.items():
+              if old in s: s=s.replace(old,new,1)
+          line_reps={
+          " en:['Worldwide • One App','AI + Marketplace','Unified Web App','Home & AI','Marketplace','Post an Ad','Promote / Business / Pay','Home','Market','Post Ad','Promote','Opening SEEKVERA…'],":" en:['Worldwide • One App','AI + Marketplace','Unified Web App','Home & AI','Marketplace','Post an Ad','Travel','Home','Market','Post Ad','Travel','Opening SEEKVERA…'],",
+          " ar:['عالمي • تطبيق واحد','الذكاء الاصطناعي + السوق','تطبيق عالمي','الرئيسية والذكاء الاصطناعي','السوق','أضف إعلاناً','الترويج والأعمال والدفع','الرئيسية','السوق','إعلان','الترويج','جارٍ فتح التطبيق…'],":" ar:['عالمي • تطبيق واحد','الذكاء الاصطناعي + السوق','تطبيق عالمي','الرئيسية والذكاء الاصطناعي','السوق','أضف إعلاناً','السفر','الرئيسية','السوق','إعلان','السفر','جارٍ فتح التطبيق…'],",
+          " zh:['全球 • 一个应用','AI + 市场','全球应用','首页与 AI','市场','发布广告','推广 / 商务 / 支付','首页','市场','发布','推广','正在打开应用…'],":" zh:['全球 • 一个应用','AI + 市场','全球应用','首页与 AI','市场','发布广告','旅行','首页','市场','发布','旅行','正在打开应用…'],",
+          " ja:['世界中 • ひとつのアプリ','AI とマーケット','グローバルアプリ','ホームと AI','マーケット','広告を掲載','宣伝 / ビジネス / 支払い','ホーム','市場','掲載','宣伝','アプリを開いています…'],":" ja:['世界中 • ひとつのアプリ','AI とマーケット','グローバルアプリ','ホームと AI','マーケット','広告を掲載','旅行','ホーム','市場','掲載','旅行','アプリを開いています…'],",
+          " fr:['Monde entier • Une appli','IA + Marché','Application mondiale','Accueil et IA','Marché','Publier une annonce','Promotion / Entreprises / Paiement','Accueil','Marché','Publier','Promouvoir','Ouverture de l’application…'],":" fr:['Monde entier • Une appli','IA + Marché','Application mondiale','Accueil et IA','Marché','Publier une annonce','Voyage','Accueil','Marché','Publier','Voyage','Ouverture de l’application…'],",
+          " es:['Mundo • Una aplicación','IA + Mercado','Aplicación global','Inicio e IA','Mercado','Publicar anuncio','Promoción / Negocios / Pago','Inicio','Mercado','Publicar','Promocionar','Abriendo la aplicación…'],":" es:['Mundo • Una aplicación','IA + Mercado','Aplicación global','Inicio e IA','Mercado','Publicar anuncio','Viajes','Inicio','Mercado','Publicar','Viajes','Abriendo la aplicación…'],",
+          " hi:['दुनिया भर में • एक ऐप','AI + बाज़ार','वैश्विक ऐप','होम और AI','बाज़ार','विज्ञापन डालें','प्रचार / व्यवसाय / भुगतान','होम','बाज़ार','पोस्ट','प्रचार','ऐप खुल रहा है…']":" hi:['दुनिया भर में • एक ऐप','AI + बाज़ार','वैश्विक ऐप','होम और AI','बाज़ार','विज्ञापन डालें','यात्रा','होम','बाज़ार','पोस्ट','यात्रा','ऐप खुल रहा है…']"
+          }
+          for old,new in line_reps.items():
+              if old in s: s=s.replace(old,new,1)
+          scan_reps={
+            " en:['Scan / Share','Scan']":" en:['More','More']",
+            " ar:['مسح / مشاركة','مسح']":" ar:['المزيد','المزيد']",
+            " zh:['扫码 / 分享','扫码']":" zh:['更多','更多']",
+            " ja:['スキャン / 共有','スキャン']":" ja:['その他','その他']",
+            " fr:['Scanner / Partager','Scanner']":" fr:['Plus','Plus']",
+            " es:['Escanear / Compartir','Escanear']":" es:['Más','Más']",
+            " hi:['स्कैन / शेयर','स्कैन']":" hi:['और','और']"
+          }
+          for old,new in scan_reps.items():
+              if old in s: s=s.replace(old,new,1)
+          s=s.replace("icons=['🏠 ','🛒 ','＋ ','🚀 ','📲 ']","icons=['🏠 ','🛒 ','＋ ','✈️ ','☰ ']",1)
+          if "navigator.serviceWorker.register('sw.js')" not in s:
+              s=s.replace('</body>',"<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script></body>",1)
+          p.write_text(s)
+          PY
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add app.html
+          if git diff --cached --quiet; then
+            echo 'App shell already unified.'
+          else
+            git commit -m 'Unify SEEKVERA navigation into one installed app'
+            git push
+          fi
