@@ -44,3 +44,4 @@ jobs:
           git add post-ad.html
           git commit -m 'Use fail-closed Supabase safety moderation fallback'
           git push
+# trigger 2026-09-21
