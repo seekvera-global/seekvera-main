@@ -1,4 +1,5 @@
 name: Deploy SEEKVERA to Cloudflare
+# Fresh production deployment check: 2026-09-21
 
 on:
   push:
