@@ -27,8 +27,8 @@
   <button class="active" data-page="index.html">🏠 Home & AI</button>
   <button data-page="marketplace.html">🛒 Marketplace</button>
   <button class="post" data-page="post-ad.html">＋ Post an Ad</button>
-  <button data-page="seller-plans.html">🚀 Promote / Business / Pay</button>
-  <button data-page="scan.html">📲 Scan / Share</button>
+  <button data-page="travel.html">✈️ Travel</button>
+  <button data-page="hub.html">☰ More</button>
 </nav>
 <div class="framewrap">
   <div class="loading" id="loading">Opening SEEKVERA…</div>
@@ -38,30 +38,30 @@
   <button class="active" data-page="index.html"><span>🏠</span>Home</button>
   <button data-page="marketplace.html"><span>🛒</span>Market</button>
   <button data-page="post-ad.html"><span>＋</span>Post Ad</button>
-  <button data-page="seller-plans.html"><span>🚀</span>Promote</button>
-  <button data-page="scan.html"><span>📲</span>Scan</button>
+  <button data-page="travel.html"><span>✈️</span>Travel</button>
+  <button data-page="hub.html"><span>☰</span>More</button>
 </nav>
 <button class="voice-float" id="voiceFloat" type="button" aria-label="Voice input" title="Speak to SEEKVERA">🎤</button>
 </div>
 <script>
 const labels={
- en:['Worldwide • One App','AI + Marketplace','Unified Web App','Home & AI','Marketplace','Post an Ad','Promote / Business / Pay','Home','Market','Post Ad','Promote','Opening SEEKVERA…'],
- ar:['عالمي • تطبيق واحد','الذكاء الاصطناعي + السوق','تطبيق عالمي','الرئيسية والذكاء الاصطناعي','السوق','أضف إعلاناً','الترويج والأعمال والدفع','الرئيسية','السوق','إعلان','الترويج','جارٍ فتح التطبيق…'],
- zh:['全球 • 一个应用','AI + 市场','全球应用','首页与 AI','市场','发布广告','推广 / 商务 / 支付','首页','市场','发布','推广','正在打开应用…'],
- ja:['世界中 • ひとつのアプリ','AI とマーケット','グローバルアプリ','ホームと AI','マーケット','広告を掲載','宣伝 / ビジネス / 支払い','ホーム','市場','掲載','宣伝','アプリを開いています…'],
- fr:['Monde entier • Une appli','IA + Marché','Application mondiale','Accueil et IA','Marché','Publier une annonce','Promotion / Entreprises / Paiement','Accueil','Marché','Publier','Promouvoir','Ouverture de l’application…'],
- es:['Mundo • Una aplicación','IA + Mercado','Aplicación global','Inicio e IA','Mercado','Publicar anuncio','Promoción / Negocios / Pago','Inicio','Mercado','Publicar','Promocionar','Abriendo la aplicación…'],
- hi:['दुनिया भर में • एक ऐप','AI + बाज़ार','वैश्विक ऐप','होम और AI','बाज़ार','विज्ञापन डालें','प्रचार / व्यवसाय / भुगतान','होम','बाज़ार','पोस्ट','प्रचार','ऐप खुल रहा है…']
+ en:['Worldwide • One App','AI + Marketplace','Unified Web App','Home & AI','Marketplace','Post an Ad','Travel','Home','Market','Post Ad','Travel','Opening SEEKVERA…'],
+ ar:['عالمي • تطبيق واحد','الذكاء الاصطناعي + السوق','تطبيق عالمي','الرئيسية والذكاء الاصطناعي','السوق','أضف إعلاناً','السفر','الرئيسية','السوق','إعلان','السفر','جارٍ فتح التطبيق…'],
+ zh:['全球 • 一个应用','AI + 市场','全球应用','首页与 AI','市场','发布广告','旅行','首页','市场','发布','旅行','正在打开应用…'],
+ ja:['世界中 • ひとつのアプリ','AI とマーケット','グローバルアプリ','ホームと AI','マーケット','広告を掲載','旅行','ホーム','市場','掲載','旅行','アプリを開いています…'],
+ fr:['Monde entier • Une appli','IA + Marché','Application mondiale','Accueil et IA','Marché','Publier une annonce','Voyage','Accueil','Marché','Publier','Voyage','Ouverture de l’application…'],
+ es:['Mundo • Una aplicación','IA + Mercado','Aplicación global','Inicio e IA','Mercado','Publicar anuncio','Viajes','Inicio','Mercado','Publicar','Viajes','Abriendo la aplicación…'],
+ hi:['दुनिया भर में • एक ऐप','AI + बाज़ार','वैश्विक ऐप','होम और AI','बाज़ार','विज्ञापन डालें','यात्रा','होम','बाज़ार','पोस्ट','यात्रा','ऐप खुल रहा है…']
 
 };
 const scanLabels={
- en:['Scan / Share','Scan'],
- ar:['مسح / مشاركة','مسح'],
- zh:['扫码 / 分享','扫码'],
- ja:['スキャン / 共有','スキャン'],
- fr:['Scanner / Partager','Scanner'],
- es:['Escanear / Compartir','Escanear'],
- hi:['स्कैन / शेयर','स्कैन']
+ en:['More','More'],
+ ar:['المزيد','المزيد'],
+ zh:['更多','更多'],
+ ja:['その他','その他'],
+ fr:['Plus','Plus'],
+ es:['Más','Más'],
+ hi:['और','और']
 };
 function appLanguage(){
  const saved=localStorage.getItem('seekvera_lang');
@@ -76,14 +76,14 @@ function translateApp(){
  document.documentElement.lang=code;document.documentElement.dir=code==='ar'?'rtl':'ltr';
  document.querySelector('.title small').textContent=t[0];document.querySelector('.badge').textContent=t[1];
  document.querySelector('.status').lastChild.textContent=t[2];document.getElementById('loading').textContent=t[11];
- document.querySelectorAll('.nav button').forEach((b,i)=>{const names=[t[3],t[4],t[5],t[6],s[0]],icons=['🏠 ','🛒 ','＋ ','🚀 ','📲 '];b.textContent=icons[i]+names[i]});
+ document.querySelectorAll('.nav button').forEach((b,i)=>{const names=[t[3],t[4],t[5],t[6],s[0]],icons=['🏠 ','🛒 ','＋ ','✈️ ','☰ '];b.textContent=icons[i]+names[i]});
  document.querySelectorAll('.bottom button').forEach((b,i)=>{const names=[t[7],t[8],t[9],t[10],s[1]];b.lastChild.textContent=names[i]});
 }
 translateApp();window.addEventListener('storage',e=>{if(e.key==='seekvera_lang')translateApp()});
 
 const view=document.getElementById('view'),loading=document.getElementById('loading'),voiceFloat=document.getElementById('voiceFloat');
 const buttons=[...document.querySelectorAll('[data-page]')];
-const buildTag='20260921-safety3';
+const buildTag='20260921-oneapp1';
 function versioned(page){return page+(page.includes('?')?'&':'?')+'v='+buildTag}
 function openPage(page,push=true){
   loading.classList.remove('hide');
@@ -176,8 +176,8 @@ function optimizeAI(){
 
 view.addEventListener('load',()=>{loading.classList.add('hide');injectVoice();optimizeAI();setTimeout(injectVoice,350);setTimeout(optimizeAI,350);setTimeout(injectVoice,1200)});
 const hash=location.hash.replace('#','');
-const map={home:'index.html',index:'index.html',marketplace:'marketplace.html','post-ad':'post-ad.html','seller-plans':'seller-plans.html',promote:'seller-plans.html',scan:'scan.html'};
+const map={home:'index.html',index:'index.html',marketplace:'marketplace.html','post-ad':'post-ad.html',travel:'travel.html',hub:'hub.html',more:'hub.html','seller-plans':'seller-plans.html',promote:'seller-plans.html',scan:'scan.html',tourism:'tourism.html',wifi:'wifi.html'};
 if(hash&&map[hash]) openPage(map[hash],false);
 </script>
-</body>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script></body>
 </html>
