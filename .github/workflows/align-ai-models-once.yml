@@ -1,0 +1,48 @@
+name: Align SEEKVERA AI models once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/align-ai-models-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Keep live AI quality and add Vision
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('worker.js')
+          s=p.read_text()
+          s=s.replace('const PRIMARY_AI_MODEL = "@cf/meta/llama-3.1-8b-instruct-fast";','const PRIMARY_AI_MODEL = "@cf/google/gemma-4-26b-a4b-it";')
+          s=s.replace('const FALLBACK_AI_MODEL = "@cf/google/gemma-4-26b-a4b-it";','const FALLBACK_AI_MODEL = "@cf/zai-org/glm-4.7-flash";')
+          p.write_text(s)
+          q=Path('.github/workflows/deploy-cloudflare.yml')
+          t=q.read_text()
+          t=t.replace("grep -q '@cf/meta/llama-3.1-8b-instruct-fast' worker.js\n          grep -q '@cf/google/gemma-4-26b-a4b-it' worker.js", "grep -q '@cf/google/gemma-4-26b-a4b-it' worker.js\n          grep -q '@cf/zai-org/glm-4.7-flash' worker.js\n          grep -q '@cf/meta/llama-3.2-11b-vision-instruct' worker.js")
+          q.write_text(t)
+          PY
+          node --check worker.js
+          grep -q '@cf/google/gemma-4-26b-a4b-it' worker.js
+          grep -q '@cf/zai-org/glm-4.7-flash' worker.js
+          grep -q '@cf/meta/llama-3.2-11b-vision-instruct' worker.js
+      - name: Commit aligned production source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add worker.js .github/workflows/deploy-cloudflare.yml
+          git diff --cached --quiet && exit 0
+          git commit -m 'Keep live AI models with Safety Gate v2 Vision'
+          git push
