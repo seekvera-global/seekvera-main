@@ -5,6 +5,7 @@ const ALLOWED_ORIGINS = new Set([
 
 const PRIMARY_AI_MODEL = "@cf/meta/llama-3.1-8b-instruct-fast";
 const FALLBACK_AI_MODEL = "@cf/google/gemma-4-26b-a4b-it";
+const VISION_AI_MODEL = "@cf/meta/llama-3.2-11b-vision-instruct";
 
 const SUPABASE_URL = "https://nrdpyydfrpmqedtzmbyw.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_tqqPQxqdNowIsSlJz4bW5w_kHOC905o";
@@ -71,7 +72,7 @@ function prohibitedReason(value) {
 
 function requestId() {
   const date = new Date().toISOString().slice(0, 10).replaceAll("-", "");
-  const token = crypto.randomUUID().replaceAll("-", "").slice(0, 8).toUpperCase();
+  const token = crypto.randomUUID().replaceAll("-", "").slice(0, 16).toUpperCase();
   return `SV-${date}-${token}`;
 }
 
@@ -138,7 +139,9 @@ export default {
           requestStorage: "supabase",
           requestStorageReady: true,
           primaryModel: PRIMARY_AI_MODEL,
-          fallbackModel: FALLBACK_AI_MODEL
+          fallbackModel: FALLBACK_AI_MODEL,
+          visionModel: VISION_AI_MODEL,
+          safetyGateVersion: "2026-09-21-v2"
         });
       }
 
@@ -154,7 +157,7 @@ export default {
           const deterministic = prohibitedReason(text);
           if (deterministic) return json(request, { ok: true, allowed: false, reviewRequired: true, reason: deterministic, source: "rules" });
 
-          if (!env.AI) return json(request, { ok: true, allowed: true, reviewRequired: true, reason: "ai_unavailable_manual_review_required", source: "rules" });
+          if (!env.AI) return json(request, { ok: true, allowed: false, reviewRequired: true, reason: "ai_unavailable_hold", source: "fail-closed" });
 
           const system = [
             "You are SEEKVERA marketplace safety moderation.",
@@ -162,15 +165,60 @@ export default {
             "Block weapons, ammunition, explosives, military or police uniforms/gear, armored combat vehicles, explicit nudity or pornography, sexual services, controlled or recreational drugs, stolen or counterfeit goods, fake identity documents, scams or fraud, human trafficking, child sexual content, extremist or terrorist merchandise/propaganda, doxxing/private personal data, and clearly illegal goods or services.",
             "If the text claims an item/property belongs to someone else, is posted without permission, or shows private people without consent, block it.",
             "If ownership/permission simply cannot be verified from text, do not block solely for that; require human review.",
-            "Return exactly one line in this format: ALLOW|REVIEW or BLOCK|short_reason."
+            "Return exactly one line: ALLOW|safe, REVIEW|short_reason, or BLOCK|short_reason. Use REVIEW when uncertain, suspicious, or needing human verification."
           ].join(" ");
           const ai = await runSeekveraAI(env, [{ role: "system", content: system }, { role: "user", content: text }]);
           const out = ai.response.replace(/\s+/g, " ").trim();
-          if (/^BLOCK\|/i.test(out)) return json(request, { ok: true, allowed: false, reviewRequired: true, reason: out.split("|").slice(1).join("|").slice(0, 120) || "ai_safety_block", source: "ai" });
-          return json(request, { ok: true, allowed: true, reviewRequired: true, reason: "pending_human_review", source: "ai" });
+          if (/^BLOCK\|/i.test(out)) return json(request, { ok: true, allowed: false, reviewRequired: true, reason: out.split("|").slice(1).join("|").slice(0, 120) || "ai_safety_block", source: "ai", model: ai.model });
+          if (/^REVIEW\|/i.test(out)) return json(request, { ok: true, allowed: true, reviewRequired: true, reason: out.split("|").slice(1).join("|").slice(0, 120) || "ai_review_required", source: "ai", model: ai.model });
+          if (/^ALLOW\|/i.test(out)) return json(request, { ok: true, allowed: true, reviewRequired: false, reason: "safe", source: "ai", model: ai.model });
+          return json(request, { ok: true, allowed: false, reviewRequired: true, reason: "unrecognized_ai_moderation_result", source: "fail-closed", model: ai.model });
         } catch (error) {
           console.error("SEEKVERA moderation error", error);
-          return json(request, { ok: true, allowed: true, reviewRequired: true, reason: "moderation_unavailable_manual_review_required", source: "fallback" });
+          return json(request, { ok: true, allowed: false, reviewRequired: true, reason: "moderation_unavailable_hold", source: "fail-closed" });
+        }
+      }
+
+      if (url.pathname === "/api/vision") {
+        if (request.method !== "POST") return json(request, { ok: false, error: "Method not allowed" }, 405);
+        try {
+          const contentLength = Number(request.headers.get("content-length") || 0);
+          if (contentLength > 8 * 1024 * 1024) return json(request, { ok: false, error: "Request too large" }, 413);
+          const body = await request.json();
+          const image = String(body?.image || "");
+          const context = clean(body?.context, 1500);
+          const match = image.match(/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/);
+          if (!match) return json(request, { ok: false, error: "Valid JPG, PNG or WebP image data is required" }, 400);
+          const estimatedBytes = Math.floor(match[2].length * 3 / 4);
+          if (estimatedBytes < 32 || estimatedBytes > 5 * 1024 * 1024) return json(request, { ok: false, error: "Image size is invalid" }, 413);
+          if (!env.AI) return json(request, { ok: true, allowed: false, reviewRequired: true, reason: "vision_ai_unavailable_hold", source: "fail-closed" });
+
+          const system = [
+            "You are SEEKVERA marketplace image safety moderation.",
+            "Inspect the uploaded marketplace image and decide if it may be published.",
+            "BLOCK images showing weapons, ammunition, explosives, military/police operational gear, explicit nudity or pornography, controlled drugs, fake identity documents, extremist/terrorist material, graphic exploitation, clearly stolen-goods evidence, or exposed private identity/financial documents.",
+            "REVIEW images that are ambiguous, suspicious, unreadable, heavily obscured, or where safety cannot be determined confidently.",
+            "ALLOW ordinary lawful products, property, vehicles, hotels, food, services, landscapes, and normal people when no prohibited content is visible.",
+            "Do not rely only on the accompanying text; inspect the image itself.",
+            "Return exactly one line: ALLOW|safe, REVIEW|short_reason, or BLOCK|short_reason."
+          ].join(" ");
+          const result = await env.AI.run(VISION_AI_MODEL, {
+            messages: [
+              { role: "system", content: system },
+              { role: "user", content: context ? `Listing context: ${context}` : "Review this marketplace image." }
+            ],
+            image,
+            max_tokens: 100,
+            temperature: 0
+          }, { rejectIfBusy: true });
+          const out = extractAIText(result).replace(/\s+/g, " ").trim();
+          if (/^BLOCK\|/i.test(out)) return json(request, { ok: true, allowed: false, reviewRequired: true, reason: out.split("|").slice(1).join("|").slice(0, 160) || "vision_safety_block", source: "ai-vision", model: VISION_AI_MODEL });
+          if (/^REVIEW\|/i.test(out)) return json(request, { ok: true, allowed: true, reviewRequired: true, reason: out.split("|").slice(1).join("|").slice(0, 160) || "vision_review_required", source: "ai-vision", model: VISION_AI_MODEL });
+          if (/^ALLOW\|/i.test(out)) return json(request, { ok: true, allowed: true, reviewRequired: false, reason: "safe", source: "ai-vision", model: VISION_AI_MODEL });
+          return json(request, { ok: true, allowed: false, reviewRequired: true, reason: "unrecognized_vision_result", source: "fail-closed", model: VISION_AI_MODEL });
+        } catch (error) {
+          console.error("SEEKVERA vision moderation error", error);
+          return json(request, { ok: true, allowed: false, reviewRequired: true, reason: "vision_moderation_unavailable_hold", source: "fail-closed" });
         }
       }
 
