@@ -1,0 +1,159 @@
+name: SEEKVERA full production smoke test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/full-production-smoke-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  full-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate source syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check worker.js
+          node --check app.js
+          python3 - <<'PY'
+          from pathlib import Path
+          import re, subprocess
+          for name in ['app.html','hub.html','marketplace.html','post-ad.html','travel.html','tourism.html','wifi.html','scan.html','seller-plans.html']:
+              text=Path(name).read_text(encoding='utf-8', errors='ignore')
+              scripts=re.findall(r'<script[^>]*>(.*?)</script>', text, re.S|re.I)
+              for i, script in enumerate(scripts,1):
+                  p=Path('/tmp')/f'{name}.{i}.js'
+                  p.write_text(script, encoding='utf-8')
+                  subprocess.run(['node','--check',str(p)],check=True)
+          print('Source syntax checks passed.')
+          PY
+
+      - name: Check live GitHub Pages app and all major pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://seekvera-global.github.io/seekvera-main'
+          pages='app.html hub.html index.html marketplace.html post-ad.html seller-plans.html travel.html tourism.html wifi.html scan.html property.html cars-auto.html shopping.html jobs.html business-software.html education.html solar.html health.html web-hosting.html import-export.html restaurants-food.html shipping-logistics.html local-services.html money-insurance.html about.html contact.html privacy.html terms.html disclosure.html manifest.webmanifest sw.js seekvera-qr.svg robots.txt sitemap.xml'
+          for page in $pages; do
+            code=$(curl -L -sS --retry 4 --retry-delay 4 --max-time 40 -o "/tmp/${page//\//_}" -w '%{http_code}' "$base/$page")
+            test "$code" = '200' || { echo "FAIL $page HTTP $code"; exit 1; }
+            echo "PASS $page"
+          done
+
+      - name: Verify one-app navigation and PWA wiring
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'data-page="travel.html"' /tmp/app.html
+          grep -q 'data-page="hub.html"' /tmp/app.html
+          grep -q "serviceWorker.register('sw.js')" /tmp/app.html
+          grep -q 'Free / Public Wi-Fi' /tmp/hub.html
+          grep -q 'Worldwide Tourism AI' /tmp/hub.html
+          grep -q 'SEEKVERA Safety' /tmp/hub.html
+          python3 - <<'PY'
+          import json
+          d=json.load(open('/tmp/manifest.webmanifest',encoding='utf-8'))
+          assert d.get('start_url')=='./app.html', d
+          assert d.get('display')=='standalone', d
+          print('PWA manifest passed.')
+          PY
+          grep -q "'./app.html'" /tmp/sw.js
+          grep -q "'./hub.html'" /tmp/sw.js
+          grep -q "'./tourism.html'" /tmp/sw.js
+          grep -q "'./wifi.html'" /tmp/sw.js
+          grep -q "'./scan.html'" /tmp/sw.js
+
+      - name: Test live Worker health and AI
+        shell: bash
+        run: |
+          set -euo pipefail
+          worker='https://seekvera-main.seekvera-global.workers.dev'
+          curl -fsS --retry 4 --retry-delay 4 --max-time 40 "$worker/api/health" -o /tmp/health.json
+          python3 - <<'PY'
+          import json
+          d=json.load(open('/tmp/health.json',encoding='utf-8'))
+          assert d.get('ok') is True, d
+          assert d.get('aiBinding') is True, d
+          assert d.get('moderation')=='enabled', d
+          assert d.get('requestStorage')=='supabase', d
+          print('Worker health passed:', d)
+          PY
+          ok=0
+          for i in $(seq 1 4); do
+            if curl -fsS --max-time 80 "$worker/api/ai" -H 'content-type: application/json' --data '{"message":"Reply with one short sentence confirming SEEKVERA AI is online.","country":"Worldwide","language":"English"}' -o /tmp/ai.json; then
+              if python3 - <<'PY'
+          import json
+          d=json.load(open('/tmp/ai.json',encoding='utf-8'))
+          assert d.get('ok') is True, d
+          assert isinstance(d.get('response'),str) and d['response'].strip(), d
+          assert d.get('provider')=='Cloudflare Workers AI', d
+          print('AI response passed:', d.get('model'), d['response'][:200])
+          PY
+              then ok=1; break; fi
+            fi
+            sleep 6
+          done
+          test "$ok" -eq 1
+
+      - name: Test live safety moderation
+        shell: bash
+        run: |
+          set -euo pipefail
+          worker='https://seekvera-main.seekvera-global.workers.dev'
+          check_block(){
+            text="$1"; expected="$2"
+            body=$(python3 -c 'import json,sys; print(json.dumps({"text":sys.argv[1]}))' "$text")
+            out=$(curl -fsS --retry 3 --retry-delay 3 --max-time 75 -H 'content-type: application/json' --data "$body" "$worker/api/moderate")
+            echo "$out"
+            python3 -c 'import json,sys; d=json.loads(sys.argv[1]); assert d.get("allowed") is False, d; assert d.get("reason")==sys.argv[2], d' "$out" "$expected"
+          }
+          check_block 'AK-47 rifle for sale' 'weapons_or_explosives'
+          check_block 'sexual services for sale' 'explicit_sexual_content'
+          check_block 'cocaine for sale' 'controlled_drugs'
+          check_block 'fake passport for sale' 'stolen_counterfeit_or_fake_documents'
+          clean=$(curl -fsS --retry 3 --retry-delay 3 --max-time 90 -H 'content-type: application/json' --data '{"text":"1000 sqm land for sale in Abuja with valid documents"}' "$worker/api/moderate")
+          echo "$clean"
+          python3 -c 'import json,sys; d=json.loads(sys.argv[1]); assert d.get("allowed") is True, d; assert d.get("reviewRequired") is True, d' "$clean"
+
+      - name: Verify marketplace safety gate and travel safety UI
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'SEEKVERA Safety Gate' /tmp/post-ad.html
+          grep -q 'id="ownership"' /tmp/post-ad.html
+          grep -q 'id="consent"' /tmp/post-ad.html
+          grep -q 'id="terms_accept"' /tmp/post-ad.html
+          grep -q 'Prohibited on SEEKVERA' /tmp/post-ad.html
+          grep -q '/api/moderate' /tmp/post-ad.html
+          grep -q 'Safety review required' /tmp/post-ad.html
+          grep -q 'Travel check:' /tmp/tourism.html
+          grep -q 'Use public Wi-Fi carefully' /tmp/wifi.html
+          grep -q 'Maps & Safety' /tmp/scan.html
+
+      - name: Test marketplace data backend
+        shell: bash
+        run: |
+          set -euo pipefail
+          sb='https://nrdpyydfrpmqedtzmbyw.supabase.co'
+          key='sb_publishable_tqqPQxqdNowIsSlJz4bW5w_kHOC905o'
+          curl -fsS --max-time 30 "$sb/rest/v1/marketplace_listings?select=ad_ref,status&status=eq.approved&limit=1" -H "apikey: $key" -H "Authorization: Bearer $key" -o /tmp/listings.json
+          curl -fsS --max-time 30 "$sb/rest/v1/marketplace_plans?select=code,name&limit=3" -H "apikey: $key" -H "Authorization: Bearer $key" -o /tmp/plans.json
+          python3 - <<'PY'
+          import json
+          a=json.load(open('/tmp/listings.json',encoding='utf-8'))
+          p=json.load(open('/tmp/plans.json',encoding='utf-8'))
+          assert isinstance(a,list), a
+          assert isinstance(p,list), p
+          print('Marketplace backend passed; approved sample rows:',len(a),'plan rows:',len(p))
+          PY
+
+      - name: Final result
+        run: echo 'SEEKVERA FULL PRODUCTION + SAFETY SMOKE TEST PASSED'
