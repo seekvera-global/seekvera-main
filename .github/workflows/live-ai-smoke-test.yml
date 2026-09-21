@@ -1,107 +1,134 @@
-name: SEEKVERA global live audit
+name: SEEKVERA live production smoke test
 
 on:
   push:
     branches: [main]
     paths:
+      - 'worker.js'
+      - 'wrangler.jsonc'
+      - 'index.html'
       - '.github/workflows/live-ai-smoke-test.yml'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: seekvera-live-production-smoke
+  cancel-in-progress: true
 
 jobs:
-  audit:
+  smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
 
-      - name: Compact AI control
-        shell: python
-        run: |
-          from pathlib import Path
-          p=Path('index.html')
-          s=p.read_text(encoding='utf-8')
-          changes=[
-            ('padding:14px 18px;font-weight:900;box-shadow:0 12px 38px','padding:9px 13px;font-size:.86rem;font-weight:900;box-shadow:0 12px 38px'),
-            ('✨ Ask SEEKVERA</button>','✨ Ask Anything</button>'),
-            ('<b>SEEKVERA Universal Assistant<small>Multilingual global guide • no account needed</small></b>','<b>SEEKVERA AI<small>Ask anything • worldwide</small></b>'),
-            ('data-build="worldwide-20260920-v2"','data-build="worldwide-20260920-v3"')
-          ]
-          for old,new in changes:
-            if old in s:
-              s=s.replace(old,new,1)
-            elif new not in s:
-              raise SystemExit('Missing expected marker: '+old[:50])
-          p.write_text(s,encoding='utf-8')
-
-      - name: Commit compact AI
+      - name: Validate Worker source and bindings
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'seekvera-global'
-          git config user.email 'seekvera.global@gmail.com'
-          git add index.html
-          if ! git diff --cached --quiet; then
-            git commit -m 'Compact AI control for global mobile UI'
-            git pull --rebase origin main
-            git push
-          fi
+          npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-dry-run
+          grep -q '"binding": "AI"' wrangler.jsonc
+          grep -q '@cf/google/gemma-4-26b-a4b-it' worker.js
+          grep -q '@cf/zai-org/glm-4.7-flash' worker.js
+          grep -q 'requestStorage: "supabase"' worker.js
+          echo 'Worker source validation passed.'
 
-      - name: Wait for live audited build
+      - name: Wait for latest Worker deployment
         shell: bash
         run: |
           set -euo pipefail
-          url='https://seekvera-global.github.io/seekvera-main/?audit=v3'
-          ok=0
-          for i in $(seq 1 72); do
-            if curl -fsS --max-time 25 "$url" -o /tmp/home.html && grep -q 'data-build="worldwide-20260920-v3"' /tmp/home.html && grep -q 'Ask Anything' /tmp/home.html; then
-              ok=1
-              break
+          health='https://seekvera-main.seekvera-global.workers.dev/api/health'
+          ready=0
+          for i in $(seq 1 36); do
+            if curl -fsS --max-time 20 "$health" -o /tmp/health.json; then
+              if python - <<'PY'
+          import json
+          try:
+              d=json.load(open('/tmp/health.json', encoding='utf-8'))
+              assert d.get('ok') is True
+              assert d.get('aiBinding') is True
+              assert d.get('requestStorage') == 'supabase'
+              assert d.get('requestStorageReady') is True
+              print('Worker health:', d)
+          except Exception as e:
+              raise SystemExit(1)
+          PY
+              then
+                ready=1
+                break
+              fi
             fi
-            sleep 5
+            sleep 10
+          done
+          test "$ready" -eq 1
+
+      - name: Test live Workers AI response
+        shell: bash
+        run: |
+          set -euo pipefail
+          endpoint='https://seekvera-main.seekvera-global.workers.dev/api/ai'
+          ok=0
+          for i in $(seq 1 5); do
+            if curl -fsS --max-time 75 "$endpoint" \
+              -H 'content-type: application/json' \
+              --data '{"message":"Reply with a short sentence confirming SEEKVERA AI is online.","country":"Worldwide","language":"English"}' \
+              -o /tmp/ai.json; then
+              if python - <<'PY'
+          import json
+          d=json.load(open('/tmp/ai.json', encoding='utf-8'))
+          assert d.get('ok') is True, d
+          assert isinstance(d.get('response'), str) and d['response'].strip(), d
+          assert d.get('provider') == 'Cloudflare Workers AI', d
+          print('AI model:', d.get('model'))
+          print('AI response:', d['response'][:300])
+          PY
+              then
+                ok=1
+                break
+              fi
+            fi
+            sleep 8
           done
           test "$ok" -eq 1
 
-      - name: Audit global homepage and pages
+      - name: Test live request storage
         shell: bash
         run: |
           set -euo pipefail
-          base='https://seekvera-global.github.io/seekvera-main'
-          curl -fsS --max-time 30 "$base/?audit=final" -o /tmp/home.html
-          grep -q 'Worldwide / Any country' /tmp/home.html
-          grep -q 'Popular worldwide' /tmp/home.html
-          grep -q 'cheap hotel anywhere in the world' /tmp/home.html
-          grep -q 'countryEl.value="ZZ"' /tmp/home.html
-          grep -q 'Ask Anything' /tmp/home.html
-          ! grep -q 'cheap hotel in Abuja' /tmp/home.html
-          ! grep -q 'Popular in Nigeria' /tmp/home.html
-          ! grep -q 'Nigeria • NGN' /tmp/home.html
-          pages='travel.html shopping.html property.html software.html education.html solar.html health.html hosting.html jobs.html import-export.html cars-auto.html restaurants-food.html shipping-logistics.html local-services.html money-insurance.html about.html privacy.html terms.html affiliate-disclosure.html contact.html'
-          for page in $pages; do
-            curl -fsS --max-time 30 "$base/$page" -o /dev/null
-          done
-          curl -fsS --max-time 30 "$base/robots.txt" -o /tmp/robots.txt
-          curl -fsS --max-time 30 "$base/sitemap.xml" -o /tmp/sitemap.xml
-          grep -q "$base/sitemap.xml" /tmp/robots.txt
-          grep -q "$base/property.html" /tmp/sitemap.xml
+          curl -fsS --max-time 30 'https://seekvera-main.seekvera-global.workers.dev/api/request' \
+            -H 'content-type: application/json' \
+            --data '{"country":"Worldwide","city":"","type":"Other","budget":"","contact":"","description":"SEEKVERA automated live smoke test"}' \
+            -o /tmp/request.json
           python - <<'PY'
-          import re
-          s=open('/tmp/home.html',encoding='utf-8').read()
-          m=re.search(r'<select id="country".*?</select>',s,re.S)
-          assert m
-          count=len(re.findall(r'<option value=',m.group(0)))
-          assert count>=190,count
-          for code in ('GB','LB','US','NG','CN','AE'):
-            assert f'value="{code}"' in m.group(0)
-          print('Country options:',count)
+          import json
+          d=json.load(open('/tmp/request.json', encoding='utf-8'))
+          assert d.get('ok') is True and d.get('id'), d
+          print('Stored request test reference:', d['id'])
           PY
 
-      - name: Check public AI fallback
+      - name: Test public pages and marketplace
         shell: bash
         run: |
           set -euo pipefail
-          curl -fsS --max-time 60 'https://text.pollinations.ai/Reply%20with%20only%3A%20SEEKVERA%20AI%20OK?model=openai&private=true' -o /tmp/ai.txt
-          test -s /tmp/ai.txt
-          echo 'AI fallback endpoint responded successfully.'
+          worker='https://seekvera-main.seekvera-global.workers.dev'
+          pages='index.html marketplace.html post-ad.html seller-plans.html travel.html property.html cars-auto.html jobs.html shopping.html import-export.html business-software.html solar.html health.html education.html local-services.html privacy.html terms.html contact.html robots.txt sitemap.xml'
+          for page in $pages; do
+            curl -fsS --max-time 30 "$worker/$page" -o /dev/null
+          done
+          curl -fsS --max-time 30 "$worker/" -o /tmp/home.html
+          grep -q 'SEEKVERA' /tmp/home.html
+          grep -q 'Ask Anything' /tmp/home.html
+          grep -q 'Marketplace Ads' /tmp/home.html
+          echo 'Public Worker pages passed.'
+
+      - name: Verify GitHub Pages mirror
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://seekvera-global.github.io/seekvera-main/'
+          curl -fsS --max-time 30 "$url" -o /tmp/gh-home.html
+          grep -q 'SEEKVERA' /tmp/gh-home.html
+          grep -q 'Marketplace Ads' /tmp/gh-home.html
+          echo 'GitHub Pages mirror passed.'
