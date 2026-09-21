@@ -1,4 +1,4 @@
-name: Validate SEEKVERA Cloudflare Worker
+name: Deploy SEEKVERA to Cloudflare
 
 on:
   push:
@@ -14,11 +14,11 @@ permissions:
   contents: read
 
 concurrency:
-  group: seekvera-cloudflare-validation
+  group: seekvera-cloudflare-production
   cancel-in-progress: true
 
 jobs:
-  validate:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -34,8 +34,32 @@ jobs:
           grep -q '@cf/google/gemma-4-26b-a4b-it' worker.js
           echo 'SEEKVERA Worker source is valid.'
 
+      - name: Detect Cloudflare deployment credentials
+        id: cf
+        shell: bash
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "$CF_TOKEN" ] && [ -n "$CF_ACCOUNT" ]; then
+            echo 'ready=true' >> "$GITHUB_OUTPUT"
+            echo 'Cloudflare credentials found; production deployment will run.'
+          else
+            echo 'ready=false' >> "$GITHUB_OUTPUT"
+            echo 'Cloudflare GitHub secrets are not configured; native Cloudflare Workers Builds remains the deployment path.'
+          fi
+
+      - name: Deploy to Cloudflare Workers
+        if: steps.cf.outputs.ready == 'true'
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
       - name: Deployment architecture
+        if: steps.cf.outputs.ready != 'true'
         shell: bash
         run: |
-          echo 'Production deployment is handled by Cloudflare Workers Builds after the GitHub repository is connected in Cloudflare.'
-          echo 'No Cloudflare API token is stored in GitHub.'
+          echo 'No GitHub Cloudflare credentials were found.'
+          echo 'Production deployment must be completed by the connected Cloudflare Workers Build.'
