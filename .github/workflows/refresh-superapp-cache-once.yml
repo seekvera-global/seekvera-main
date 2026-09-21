@@ -1,0 +1,39 @@
+name: Refresh SEEKVERA super-app cache once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/refresh-superapp-cache-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Force latest app build tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('app.html')
+          s=p.read_text()
+          s=s.replace("const buildTag='20260921-oneapp1';", "const buildTag='20260921-superapp2';")
+          s=s.replace('src="index.html?v=voice3"', 'src="index.html?v=20260921-superapp2"')
+          p.write_text(s)
+          PY
+          grep -q "20260921-superapp2" app.html
+      - name: Commit app cache refresh
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'Force fresh super-app pages on mobile'
+          git push
