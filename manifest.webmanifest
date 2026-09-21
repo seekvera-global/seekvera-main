@@ -1,10 +1,22 @@
 {
-  "name": "SEEKVERA — One Global Marketplace",
+  "id": "./app.html",
+  "name": "SEEKVERA — One Global App",
   "short_name": "SEEKVERA",
   "start_url": "./app.html",
   "scope": "./",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#f4f6f8",
   "theme_color": "#ffffff",
-  "description": "SEEKVERA in one app: global search, AI, marketplace ads, free ad posting, promotions, business plans and payments."
+  "description": "One SEEKVERA app for AI search, marketplace, safe ad posting, travel, tourism, public Wi-Fi finder, property, cars, jobs, shopping, business tools, education, solar, health, hosting and import/export.",
+  "categories": ["shopping", "travel", "business", "utilities"],
+  "icons": [
+    {"src":"favicon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}
+  ],
+  "shortcuts": [
+    {"name":"AI & Search","short_name":"AI","url":"./app.html#home"},
+    {"name":"Marketplace","short_name":"Market","url":"./app.html#marketplace"},
+    {"name":"Travel","short_name":"Travel","url":"./app.html#travel"},
+    {"name":"All Services","short_name":"More","url":"./app.html#hub"}
+  ]
 }
