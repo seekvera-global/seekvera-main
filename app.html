@@ -28,7 +28,7 @@
 </nav>
 <div class="framewrap">
   <div class="loading" id="loading">Opening SEEKVERA…</div>
-  <iframe class="view" id="view" title="SEEKVERA" src="index.html"></iframe>
+  <iframe class="view" id="view" title="SEEKVERA" src="index.html" allow="microphone"></iframe>
 </div>
 <nav class="bottom" aria-label="Mobile navigation">
   <button class="active" data-page="index.html"><span>🏠</span>Home</button>
@@ -75,7 +75,40 @@ function openPage(page,push=true){
   if(push) history.replaceState(null,'','#'+page.replace('.html',''));
 }
 buttons.forEach(b=>b.addEventListener('click',()=>openPage(b.dataset.page)));
-view.addEventListener('load',()=>loading.classList.add('hide'));
+
+const voiceLangMap={en:'en-US',ar:'ar-SA',fr:'fr-FR',zh:'zh-CN',es:'es-ES',hi:'hi-IN',pt:'pt-BR',de:'de-DE',ja:'ja-JP',ko:'ko-KR',id:'id-ID',tr:'tr-TR',ru:'ru-RU',ur:'ur-PK',bn:'bn-BD',vi:'vi-VN',it:'it-IT',sw:'sw-KE',th:'th-TH'};
+function injectVoice(){
+  try{
+    const doc=view.contentDocument,win=view.contentWindow;
+    if(!doc||!win)return;
+    const form=doc.getElementById('aiForm'),input=doc.getElementById('aiInput');
+    if(!form||!input||doc.getElementById('seekveraVoiceBtn'))return;
+    if(!doc.getElementById('seekveraVoiceStyle')){
+      const style=doc.createElement('style');style.id='seekveraVoiceStyle';
+      style.textContent='#seekveraVoiceBtn{width:46px;min-width:46px;padding:0!important;background:#17324f!important;color:#fff!important;font-size:1.15rem!important;border-radius:11px!important;display:grid!important;place-items:center!important}#seekveraVoiceBtn.listening{background:#d92d20!important;animation:seekveraPulse 1s infinite}#seekveraVoiceBtn:disabled{opacity:.55}@keyframes seekveraPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}';
+      doc.head.appendChild(style);
+    }
+    const btn=doc.createElement('button');btn.type='button';btn.id='seekveraVoiceBtn';btn.textContent='🎤';btn.title='Speak / Voice input';btn.setAttribute('aria-label','Speak to SEEKVERA AI');
+    const send=form.querySelector('button[type="submit"]');if(send)form.insertBefore(btn,send);else form.appendChild(btn);
+    let recognition=null,baseText='';
+    const Recognition=win.SpeechRecognition||win.webkitSpeechRecognition;
+    function reset(){btn.classList.remove('listening');btn.textContent='🎤';btn.title='Speak / Voice input';recognition=null}
+    btn.addEventListener('click',()=>{
+      if(recognition){try{recognition.stop()}catch(e){}return}
+      if(!Recognition){win.alert('Voice input is not supported in this browser. Please open SEEKVERA in Google Chrome on Android or desktop.');return}
+      recognition=new Recognition();
+      const selected=doc.getElementById('lang')?.value||localStorage.getItem('seekvera_lang')||'en';
+      recognition.lang=voiceLangMap[selected]||navigator.language||'en-US';
+      recognition.interimResults=true;recognition.continuous=false;recognition.maxAlternatives=1;baseText=input.value.trim();
+      recognition.onstart=()=>{btn.classList.add('listening');btn.textContent='⏹';btn.title='Listening… tap to stop';input.focus()};
+      recognition.onresult=e=>{let speech='';for(let i=0;i<e.results.length;i++)speech+=e.results[i][0].transcript+' ';input.value=(baseText?baseText+' ':'')+speech.trim();input.dispatchEvent(new Event('input',{bubbles:true}))};
+      recognition.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed')win.alert('Microphone permission is blocked. Allow microphone access for SEEKVERA in Chrome, then tap the microphone again.');else if(e.error!=='aborted'&&e.error!=='no-speech')win.alert('Voice input could not start. Please try again.');reset()};
+      recognition.onend=reset;
+      try{recognition.start()}catch(e){reset();win.alert('Voice input could not start. Please try again.')}
+    });
+  }catch(e){console.warn('SEEKVERA voice injection unavailable',e)}
+}
+view.addEventListener('load',()=>{loading.classList.add('hide');injectVoice();setTimeout(injectVoice,350)});
 const hash=location.hash.replace('#','');
 const map={home:'index.html',index:'index.html',marketplace:'marketplace.html','post-ad':'post-ad.html','seller-plans':'seller-plans.html',promote:'seller-plans.html'};
 if(hash&&map[hash]) openPage(map[hash],false);
