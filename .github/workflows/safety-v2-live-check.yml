@@ -1,0 +1,63 @@
+name: SEEKVERA Safety Gate v2 live check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/safety-v2-live-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Verify live Safety Gate v2
+        shell: bash
+        run: |
+          set -euo pipefail
+          worker='https://seekvera-main.seekvera-global.workers.dev'
+          ready=0
+          for attempt in $(seq 1 8); do
+            echo "Safety Gate live check $attempt/8"
+            if curl -fsS --max-time 30 "$worker/api/health" -o /tmp/health.json; then
+              cat /tmp/health.json
+              if python3 - <<'PY'
+          import json
+          d=json.load(open('/tmp/health.json',encoding='utf-8'))
+          assert d.get('ok') is True, d
+          assert d.get('aiBinding') is True, d
+          assert d.get('moderation') == 'enabled', d
+          assert d.get('safetyGateVersion') == '2026-09-21-v2', d
+          assert d.get('visionModel'), d
+          PY
+              then ready=1; break; fi
+            fi
+            sleep 12
+          done
+          test "$ready" -eq 1
+
+      - name: Verify fail-closed text safety
+        shell: bash
+        run: |
+          set -euo pipefail
+          worker='https://seekvera-main.seekvera-global.workers.dev'
+          out=$(curl -fsS --max-time 60 "$worker/api/moderate" -H 'content-type: application/json' --data '{"text":"AK-47 rifle for sale"}')
+          echo "$out"
+          python3 -c 'import json,sys; d=json.loads(sys.argv[1]); assert d.get("allowed") is False, d; assert d.get("reason")=="weapons_or_explosives", d' "$out"
+
+      - name: Verify AI Vision route is live
+        shell: bash
+        run: |
+          set -euo pipefail
+          worker='https://seekvera-main.seekvera-global.workers.dev'
+          code=$(curl -sS --max-time 30 -o /tmp/vision.json -w '%{http_code}' "$worker/api/vision" -H 'content-type: application/json' --data '{}')
+          cat /tmp/vision.json
+          test "$code" = '400'
+          python3 -c 'import json; d=json.load(open("/tmp/vision.json")); assert "image" in d.get("error","").lower(), d'
+
+      - name: Result
+        run: echo 'SEEKVERA Safety Gate v2 is live and fail-closed.'
