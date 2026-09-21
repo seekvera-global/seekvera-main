@@ -3,8 +3,8 @@ const ALLOWED_ORIGINS = new Set([
   "https://seekvera-main.seekvera-global.workers.dev"
 ]);
 
-const PRIMARY_AI_MODEL = "@cf/meta/llama-3.1-8b-instruct-fast";
-const FALLBACK_AI_MODEL = "@cf/google/gemma-4-26b-a4b-it";
+const PRIMARY_AI_MODEL = "@cf/google/gemma-4-26b-a4b-it";
+const FALLBACK_AI_MODEL = "@cf/zai-org/glm-4.7-flash";
 const VISION_AI_MODEL = "@cf/meta/llama-3.2-11b-vision-instruct";
 
 const SUPABASE_URL = "https://nrdpyydfrpmqedtzmbyw.supabase.co";
