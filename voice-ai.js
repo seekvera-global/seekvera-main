@@ -68,9 +68,17 @@ async function askAI(text){
   const clean=escText(text); if(!clean)return;
   showPanel(true);setTranscript(clean);setAnswer('…');setState('thinking','SEEKVERA AI…');
   try{
-    const res=await fetch(`${API_BASE}/api/ai`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message:clean,country:currentCountry(),language:languageName(),voice:true})});
-    const data=await res.json().catch(()=>({}));
-    if(!res.ok||!data?.response)throw new Error(data?.error||'AI unavailable');
+    let data=null,lastError='AI unavailable';
+    for(let attempt=1;attempt<=3;attempt++){
+      try{
+        const res=await fetch(`${API_BASE}/api/ai`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message:clean,country:currentCountry(),language:languageName(),voice:true})});
+        data=await res.json().catch(()=>({}));
+        if(res.ok&&data?.response)break;
+        lastError=data?.error||('AI HTTP '+res.status);
+      }catch(e){lastError=e?.message||'AI unavailable'}
+      if(attempt<3)await new Promise(r=>setTimeout(r,700*attempt));
+    }
+    if(!data?.response)throw new Error(lastError);
     const answer=String(data.response).trim(); setAnswer(answer);setState('idle','');
     const locale=detectSpeechLocale(answer); speak(answer,locale);
     try{

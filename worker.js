@@ -1,7 +1,7 @@
 const RELEASE='2026-09-22-premium-r1',BASELINE='886a24516ab393c54b8379ad5b6163129932add8';
 const PRIMARY='@cf/google/gemma-4-26b-a4b-it',FALLBACK='@cf/zai-org/glm-4.7-flash',LIGHT='@cf/qwen/qwen3-30b-a3b-fp8',VISION='@cf/meta/llama-3.2-11b-vision-instruct';
 const SB='https://nrdpyydfrpmqedtzmbyw.supabase.co',SBK='sb_publishable_tqqPQxqdNowIsSlJz4bW5w_kHOC905o';
-const ORIGINS=new Set(['https://seekvera-global.github.io','https://seekvera-main.seekvera-global.workers.dev']);
+const ORIGINS=new Set(['https://seekvera-global.github.io','https://seekvera-main.seekvera-global.workers.dev','https://seekveraglobal.com','https://www.seekveraglobal.com']);
 const clean=(v,n=400)=>String(v??'').replace(/[\u0000-\u001F\u007F]/g,' ').trim().slice(0,n);
 function cors(r){const o=r.headers.get('origin')||'';return{...(ORIGINS.has(o)?{'access-control-allow-origin':o}:{}),'access-control-allow-methods':'POST,GET,OPTIONS','access-control-allow-headers':'content-type,authorization,apikey','access-control-max-age':'86400','vary':'Origin'}}
 function j(r,d,s=200){return new Response(JSON.stringify(d),{status:s,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff',...cors(r)}})}
