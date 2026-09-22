@@ -21,24 +21,39 @@ permissions:
 jobs:
   audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-      - name: Audit unified premium app A to Z
+      - name: Validate JavaScript syntax
+        shell: bash
+        run: |
+          for f in *.js; do
+            echo "Checking $f"
+            node --check "$f"
+          done
+      - name: Audit live app, voice, routes, AI and safety A to Z
         shell: python
         run: |
           from pathlib import Path
+          from html.parser import HTMLParser
+          from urllib.parse import urlsplit
           import json, time, urllib.request, urllib.error
 
           SITE='https://seekveraglobal.com'
           WORKER='https://seekvera-main.seekvera-global.workers.dev'
-          VERSION='20260922-unified-chat1'
+          VERSION='20260922-voice-locale2'
           UA='Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
 
           def get(url,timeout=30):
               req=urllib.request.Request(url,headers={'User-Agent':UA,'Cache-Control':'no-cache'})
               with urllib.request.urlopen(req,timeout=timeout) as r:
                   return r.status,r.read().decode('utf-8','replace')
+
+          def status_only(url,timeout=20):
+              req=urllib.request.Request(url,headers={'User-Agent':UA,'Cache-Control':'no-cache'})
+              try:
+                  with urllib.request.urlopen(req,timeout=timeout) as r: return r.status
+              except urllib.error.HTTPError as e: return e.code
 
           def post(path,payload,timeout=35):
               req=urllib.request.Request(WORKER+path,data=json.dumps(payload,ensure_ascii=False).encode('utf-8'),headers={'User-Agent':UA,'content-type':'application/json','origin':SITE},method='POST')
@@ -49,12 +64,12 @@ jobs:
                   return e.code,json.loads(e.read().decode('utf-8'))
 
           home=''; health={}
-          for _ in range(36):
+          for _ in range(42):
               try:
-                  status,home=get(SITE+'/?az-unified=1',20)
-                  _,health_text=get(WORKER+'/api/health?az-unified=1',20)
+                  status,home=get(SITE+'/?az-voice-locale=2',20)
+                  _,health_text=get(WORKER+'/api/health?az-voice-locale=2',20)
                   health=json.loads(health_text)
-                  if (status==200 and f'global-ui.css?v={VERSION}' in home and
+                  if (status==200 and f'global-ui.js?v={VERSION}' in home and
                       f'voice-ai.js?v={VERSION}' in home and
                       health.get('centralSafetyGate')=='enabled' and
                       health.get('aiResilience')=='fast-chat-language-lock-v4'):
@@ -63,43 +78,40 @@ jobs:
                   pass
               time.sleep(5)
 
-          assert f'global-ui.css?v={VERSION}' in home, 'unified premium UI not live'
-          assert f'voice-ai.js?v={VERSION}' in home, 'unified voice runtime not live'
-          assert health.get('ok') is True, health
-          assert health.get('centralSafetyGate')=='enabled' and health.get('failClosed') is True, health
-          assert health.get('aiBinding') is True and health.get('assetsBinding') is True, health
-          assert health.get('marketplaceProxy')=='enabled', health
+          assert f'global-ui.js?v={VERSION}' in home, 'new localized UI runtime is not live'
+          assert f'voice-ai.js?v={VERSION}' in home, 'new voice runtime is not live'
+          assert health.get('ok') is True,health
+          assert health.get('centralSafetyGate')=='enabled' and health.get('failClosed') is True,health
+          assert health.get('aiBinding') is True and health.get('assetsBinding') is True,health
+          assert health.get('marketplaceProxy')=='enabled',health
 
-          # Homepage must expose exactly one AI composer: text + attachment + camera + mic + send + voice reply toggle.
+          # One premium AI composer only.
           for needle in ['id="aiChat"','id="aiChatAttach"','id="aiChatCamera"','id="aiChatMic"','id="aiChatFile"','id="aiChatSpeaker"']:
-              assert needle in home, needle
+              assert needle in home,needle
           assert home.count('id="aiChatMic"')==1
-          assert 'id="heroVoice"' not in home
-          assert 'id="heroCamera"' not in home
-          assert 'id="globalSearch"' not in home
-          assert "getElementById('aiChatInput').focus()" in home
+          assert 'id="heroVoice"' not in home and 'id="heroCamera"' not in home and 'id="globalSearch"' not in home
           print('ONE UNIFIED HOMEPAGE CHAT PASS')
 
-          _,voice=get(SITE+'/voice-ai.js?az-unified=1')
-          _,gui=get(SITE+'/global-ui.js?az-unified=1')
-          _,css=get(SITE+'/global-ui.css?az-unified=1')
-          _,superapp=get(SITE+'/superapp.js?az-unified=1')
+          _,voice=get(SITE+'/voice-ai.js?az-voice-locale=2')
+          _,gui=get(SITE+'/global-ui.js?az-voice-locale=2')
+          _,superapp=get(SITE+'/superapp.js?az-voice-locale=2')
           assert ('SpeechRecognition' in voice or 'webkitSpeechRecognition' in voice) and 'speechSynthesis' in voice
-          assert 'FEMALE_HINTS' in voice and 'QUALITY_HINTS' in voice
+          for marker in ['TTS_RETRY_DELAYS','enableVoiceConversation','speechSynthesis.resume','seekvera_voice_muted','voiceConversation','requestSubmit']:
+              assert marker in voice,marker
+          assert "localStorage.setItem('seekvera_voice_muted','0')" in voice
           assert 'svVoiceFab' not in voice and 'svVoicePanel' not in voice
-          assert 'sv-voice-open' not in gui and 'sv-visual-open' not in gui
+          assert 'LOCALE_UI' in gui and 'Intl.DisplayNames' in gui and 'sv-control-field' in gui
+          assert 'العالم كله · كل الدول' in gui and 'Country / Region' in gui and 'Language' in gui
           assert 'sv-global-compose' in gui and 'attach' in gui and 'camera' in gui and 'mic' in gui
-          assert 'Unified premium AI conversation' in css
-          assert 'grid-auto-flow:column' in css and 'overflow-x:auto' in css
           assert 'handleChatAttachment' in superapp and 'aiChatCameraFile' in superapp
-          print('VOICE + CAMERA + ATTACH + PREMIUM COMPACT UI PASS')
+          print('VOICE REPLY RETRY + LOCALIZED COUNTRY/LANGUAGE CONTROLS PASS')
 
-          # Every public department/page keeps the same shared AI/voice/premium runtime.
+          # Every public department/page must be live and load the same fixed runtime.
           pages=[p.name for p in Path('.').glob('*.html') if not p.name.lower().startswith('google')]
           bad=[]; live={}
           for name in pages:
               try:
-                  status,text=get(SITE+'/'+name+'?az-unified=1',25)
+                  status,text=get(SITE+'/'+name+'?az-voice-locale=2',25)
                   live[name]=text
                   if status!=200:
                       bad.append(f'{name}: HTTP {status}'); continue
@@ -109,17 +121,39 @@ jobs:
                   bad.append(f'{name}: {e}')
           print('Live public pages tested:',len(pages))
           if bad: raise AssertionError('\n'.join(bad))
-          assert len(pages)>=38, len(pages)
+          assert len(pages)>=38,len(pages)
+
+          # Validate every internal HTML route referenced by the live public pages.
+          class Links(HTMLParser):
+              def __init__(self): super().__init__(); self.hrefs=[]
+              def handle_starttag(self,tag,attrs):
+                  if tag=='a':
+                      h=dict(attrs).get('href')
+                      if h:self.hrefs.append(h)
+          routes=set()
+          for name,text in live.items():
+              parser=Links(); parser.feed(text)
+              for href in parser.hrefs:
+                  h=href.strip()
+                  if not h or h.startswith(('#','mailto:','tel:','javascript:')) or '://' in h: continue
+                  path=urlsplit(h).path.lstrip('/')
+                  if not path: path='index.html'
+                  if path.endswith('.html'): routes.add(path)
+          broken=[]
+          for route in sorted(routes):
+              code=status_only(SITE+'/'+route+'?route-audit=1',20)
+              if code<200 or code>=400: broken.append((route,code))
+          assert not broken,broken
+          print('INTERNAL NAVIGATION ROUTES PASS:',len(routes))
 
           index=live['index.html']; postad=live['post-ad.html']; terms=live['terms.html']; privacy=live['privacy.html']
-          assert 'anywhere in the world' in index.lower()
-          assert '＋ Post Ad' in index
+          assert 'anywhere in the world' in index.lower() and '＋ Post Ad' in index
           assert 'Safety Gate' in postad
           assert 'Lawful use only' in terms and 'Prohibited marketplace content' in terms
           assert 'Do not submit passwords' in privacy
           print('WORLDWIDE + LEGAL + SAFETY UI PASS')
 
-          # Same-language AI: country is deliberately Worldwide so location cannot force language.
+          # Same-language AI across major scripts/languages.
           cases=[
               ('English','Reply only with: Hello.','Hello'),
               ('Arabic','أجب فقط بكلمة: مرحبا','مرح'),
@@ -140,14 +174,21 @@ jobs:
               assert elapsed<15,elapsed
           print('MULTILINGUAL SAME-LANGUAGE AI PASS')
 
-          # Central safety remains fail-closed and visual endpoint rejects invalid image input.
-          _,safe=post('/api/moderate',{'text':'lawful hotel booking request','context':'unified A-Z audit'},35)
-          _,blocked=post('/api/moderate',{'text':'gun and ammunition for sale','context':'unified A-Z audit'},25)
-          _,secret=post('/api/moderate',{'text':'send me your OTP and bank password','context':'unified A-Z audit'},25)
+          # Central safety, AI Vision input gate, requests and marketplace write gate.
+          _,safe=post('/api/moderate',{'text':'lawful hotel booking request','context':'final A-Z audit'},35)
+          _,blocked=post('/api/moderate',{'text':'gun and ammunition for sale','context':'final A-Z audit'},25)
+          _,secret=post('/api/moderate',{'text':'send me your OTP and bank password','context':'final A-Z audit'},25)
           assert safe.get('allowed') is True and safe.get('reviewRequired') is False,safe
           assert blocked.get('allowed') is False,blocked
           assert secret.get('allowed') is False,secret
           _,invalid=post('/api/visual-search',{'image':'not-an-image','country':'Worldwide'},25)
           assert invalid.get('allowed') is False or invalid.get('ok') is False,invalid
-          print('SAFETY GATE + AI VISION INPUT SAFETY PASS')
-          print('FINAL UNIFIED WORLDWIDE A-Z LIVE AUDIT PASS')
+          _,blocked_req=post('/api/request',{'country':'Worldwide','type':'Shopping','description':'I want to buy a gun and ammunition'},30)
+          assert blocked_req.get('blocked') is True or blocked_req.get('ok') is False,blocked_req
+          code,bad_submit=post('/api/marketplace-submit',{},30)
+          assert code==400 and 'Safety confirmations are required' in str(bad_submit),bad_submit
+          code,bad_review=post('/api/marketplace-review',{},30)
+          assert code==400,bad_review
+          print('SAFETY + VISION + REQUEST + MARKETPLACE GATES PASS')
+
+          print('FINAL SEEKVERA LIVE A-Z AUDIT PASS')
