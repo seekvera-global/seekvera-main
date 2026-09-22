@@ -36,9 +36,11 @@ jobs:
           grep -q '"binding": "AI"' wrangler.jsonc
           grep -q '@cf/google/gemma-4-26b-a4b-it' worker.js
           grep -q '@cf/zai-org/glm-4.7-flash' worker.js
+          grep -q '@cf/qwen/qwen3-30b-a3b-fp8' worker.js
           grep -q '@cf/meta/llama-3.2-11b-vision-instruct' worker.js
           grep -q '/api/visual-search' worker.js
           grep -q '2026-09-22-premium-r1' worker.js
+          grep -q "aiResilience:'queued-three-model-v1'" worker.js
           node --check worker.js
           node --check superapp.js
           node --check voice-ai.js
@@ -50,8 +52,8 @@ jobs:
           set -euo pipefail
           health='https://seekvera-main.seekvera-global.workers.dev/api/health'
           ready=0
-          for i in $(seq 1 15); do
-            echo "Worker release check $i/15"
+          for i in $(seq 1 18); do
+            echo "Worker release check $i/18"
             if curl -fsS --max-time 30 "$health" -o /tmp/health.json; then
               if python - <<'PY'
           import json
@@ -62,11 +64,13 @@ jobs:
           assert d.get('sourceBaseline') == '886a24516ab393c54b8379ad5b6163129932add8', d
           assert d.get('centralSafetyGate') == 'enabled', d
           assert d.get('failClosed') is True, d
-          print('Live Worker exact release:', d)
+          assert d.get('aiResilience') == 'queued-three-model-v1', d
+          assert d.get('lightModel') == '@cf/qwen/qwen3-30b-a3b-fp8', d
+          print('Live Worker exact resilience release:', d)
           PY
               then ready=1; break; fi
             fi
-            sleep 20
+            sleep 15
           done
           test "$ready" -eq 1
 
@@ -75,24 +79,38 @@ jobs:
         run: |
           set -euo pipefail
           python - <<'PY'
-          import json, subprocess, sys
+          import json, subprocess, sys, time, os
+          models={
+            '@cf/google/gemma-4-26b-a4b-it',
+            '@cf/zai-org/glm-4.7-flash',
+            '@cf/qwen/qwen3-30b-a3b-fp8'
+          }
           cases=[
             {"message":"I am in Nigeria and need a furniture supplier in China. Explain the next step briefly.","country":"Nigeria","language":"English","scope":"worldwide"},
             {"message":"أنا في لبنان وأريد فندقاً في أبوجا. أعطني الخطوة التالية باختصار.","country":"Lebanon","language":"Arabic","scope":"worldwide"}
           ]
           for i,case in enumerate(cases,1):
-            out=f'/tmp/ai-{i}.json'
-            p=subprocess.run(['curl','-sS','--max-time','90','-o',out,'-w','%{http_code}','https://seekvera-main.seekvera-global.workers.dev/api/ai','-H','content-type: application/json','--data',json.dumps(case)],capture_output=True,text=True)
-            status=p.stdout.strip()
-            body=open(out,encoding='utf-8').read() if __import__('os').path.exists(out) else ''
-            print('AI HTTP status:',status)
-            if not status.startswith('2'):
-              print('AI error body:',body[:1200])
+            success=False
+            last=''
+            for attempt in range(1,4):
+              out=f'/tmp/ai-{i}-{attempt}.json'
+              p=subprocess.run(['curl','-sS','--max-time','90','-o',out,'-w','%{http_code}','https://seekvera-main.seekvera-global.workers.dev/api/ai','-H','content-type: application/json','--data',json.dumps(case)],capture_output=True,text=True)
+              status=p.stdout.strip()
+              body=open(out,encoding='utf-8').read() if os.path.exists(out) else ''
+              print(f'AI case {i} attempt {attempt} HTTP status:',status)
+              if status.startswith('2'):
+                d=json.loads(body)
+                assert d.get('ok') is True and str(d.get('response','')).strip(), d
+                assert d.get('model') in models, d
+                print(d.get('category'), d.get('model'), d['response'][:180])
+                success=True
+                break
+              last=body[:1200]
+              print('AI error body:',last)
+              time.sleep(8)
+            if not success:
+              print('AI case failed after retries:',last)
               sys.exit(1)
-            d=json.loads(body)
-            assert d.get('ok') is True and str(d.get('response','')).strip(), d
-            assert d.get('model') in ['@cf/google/gemma-4-26b-a4b-it','@cf/zai-org/glm-4.7-flash'], d
-            print(d.get('category'), d.get('model'), d['response'][:180])
           PY
 
       - name: Test live Safety Gate decisions
