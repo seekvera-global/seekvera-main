@@ -6,6 +6,9 @@ const API_BASE=location.hostname.endsWith('workers.dev')?'':'https://seekvera-ma
 const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
 const LANGS={en:'en-US',ar:'ar-SA',fr:'fr-FR',zh:'zh-CN',es:'es-ES',hi:'hi-IN',pt:'pt-BR',de:'de-DE',ja:'ja-JP',ko:'ko-KR',id:'id-ID',tr:'tr-TR',ru:'ru-RU',ur:'ur-PK',bn:'bn-BD',vi:'vi-VN',it:'it-IT',sw:'sw-KE',th:'th-TH',fa:'fa-IR',pl:'pl-PL',nl:'nl-NL',ms:'ms-MY',fil:'fil-PH',ha:'ha-NG',yo:'yo-NG',ig:'ig-NG',am:'am-ET'};
 const RTL=/^(ar|fa|ur)(-|$)/i;
+const FEMALE_HINTS=/aria|jenny|zira|samantha|victoria|karen|moira|tessa|ava|allison|susan|hazel|fiona|serena|veena|heera|lekha|monica|amelie|audrey|julie|celine|hortense|laila|layla|salma|hoda|farah|mariam|maryam|amira|zahra|female|woman/i;
+const MALE_HINTS=/david|mark|george|daniel|fred|ralph|bruce|hammad|hamed|majed|maged|male|man/i;
+const QUALITY_HINTS=/neural|natural|enhanced|premium|online|google|microsoft|siri/i;
 let recognition=null,listenTimer=null,lastAnswer='',lastLang='',muted=localStorage.getItem('seekvera_voice_muted')==='1';
 
 function currentLocale(){
@@ -41,9 +44,11 @@ function detectSpeechLocale(text){
 function escText(v){return String(v??'').replace(/[\u0000-\u001F\u007F]/g,' ').trim().slice(0,1800)}
 function stopSpeech(){try{speechSynthesis.cancel()}catch(_){}}
 function pickVoice(locale){
-  const voices=speechSynthesis.getVoices?.()||[]; if(!voices.length)return null;
-  const exact=voices.find(v=>v.lang?.toLowerCase()===locale.toLowerCase()); if(exact)return exact;
-  const base=locale.split('-')[0].toLowerCase(); return voices.find(v=>v.lang?.toLowerCase().startsWith(base))||null;
+  const voices=window.speechSynthesis?.getVoices?.()||[]; if(!voices.length)return null;
+  const wanted=String(locale||'en-US').toLowerCase(),base=wanted.split('-')[0];
+  let candidates=voices.filter(v=>String(v.lang||'').toLowerCase().startsWith(base)); if(!candidates.length)candidates=voices;
+  const score=v=>{const name=(v.name||'')+' '+(v.voiceURI||''),vl=String(v.lang||'').toLowerCase();let n=0;if(vl===wanted)n+=120;else if(vl.startsWith(base))n+=75;if(QUALITY_HINTS.test(name))n+=38;if(FEMALE_HINTS.test(name))n+=45;if(MALE_HINTS.test(name))n-=55;if(v.default)n+=8;if(v.localService===false)n+=8;return n};
+  return [...candidates].sort((a,b)=>score(b)-score(a))[0]||null;
 }
 function spokenText(text){return String(text||'').replace(/```[\s\S]*?```/g,' ').replace(/https?:\/\/\S+/g,' ').replace(/[*_#>`~|]/g,' ').replace(/(?:^|\s)[•▪◦◆◇▶►]+/g,' ').replace(/\s+/g,' ').trim()}
 function speechChunks(text,max=220){const s=spokenText(text);if(!s)return[];const parts=s.split(/(?<=[.!?؟。！？])\s+/);const out=[];let cur='';for(const part of parts){if((cur+' '+part).trim().length<=max)cur=(cur+' '+part).trim();else{if(cur)out.push(cur);if(part.length<=max)cur=part;else{for(let i=0;i<part.length;i+=max)out.push(part.slice(i,i+max));cur=''}}}if(cur)out.push(cur);return out}
@@ -51,7 +56,7 @@ function speak(text,locale){
   lastAnswer=String(text||''); lastLang=locale||detectSpeechLocale(text); if(muted||!lastAnswer||!('speechSynthesis'in window))return;
   stopSpeech();
   const chunks=speechChunks(lastAnswer).slice(0,12);let i=0;
-  const next=()=>{if(muted||i>=chunks.length)return;const u=new SpeechSynthesisUtterance(chunks[i++]);u.lang=lastLang;const v=pickVoice(lastLang);if(v)u.voice=v;u.rate=/^(ar|fa|ur)(-|$)/i.test(lastLang)?.90:.94;u.pitch=1;u.onend=next;u.onerror=()=>{};speechSynthesis.speak(u)};
+  const next=()=>{if(muted||i>=chunks.length)return;const u=new SpeechSynthesisUtterance(chunks[i++]);u.lang=lastLang;const v=pickVoice(lastLang);if(v)u.voice=v;const rtl=/^(ar|fa|ur)(-|$)/i.test(lastLang);u.rate=rtl?.98:1.02;u.pitch=rtl?1.06:1.09;u.volume=1;u.onend=next;u.onerror=()=>{};speechSynthesis.speak(u)};
   next();
 }
 function setState(state,msg){
@@ -83,10 +88,9 @@ async function askAI(text){
     const locale=detectSpeechLocale(answer); speak(answer,locale);
     try{
       const msgs=document.getElementById('aiMessages');
-      if(msgs){
-        const u=document.createElement('div');u.className='ai-msg user';u.textContent=clean;msgs.appendChild(u);
-        const b=document.createElement('div');b.className='ai-msg bot';b.textContent=answer;msgs.appendChild(b);msgs.scrollTop=msgs.scrollHeight;
-      }
+      if(msgs){const u=document.createElement('div');u.className='ai-msg user';u.textContent=clean;msgs.appendChild(u);const b=document.createElement('div');b.className='ai-msg bot';b.textContent=answer;msgs.appendChild(b);msgs.scrollTop=msgs.scrollHeight;}
+      const globalMsgs=document.getElementById('svGlobalMessages');
+      if(globalMsgs){const u=document.createElement('div');u.className='sv-global-msg user';u.textContent=clean;globalMsgs.appendChild(u);const b=document.createElement('div');b.className='sv-global-msg bot';b.textContent=answer;globalMsgs.appendChild(b);globalMsgs.scrollTop=globalMsgs.scrollHeight;}
     }catch(_){ }
   }catch(err){setAnswer('SEEKVERA AI is temporarily unavailable. Please try again.');setState('idle','');}
 }
@@ -112,7 +116,6 @@ function startListening(){
 
 function build(){
   const old=document.getElementById('voiceFloat'); if(old&&location.pathname.endsWith('/app.html'))old.style.display='none';
-  if(location.pathname.endsWith('/app.html'))return;
   if(document.getElementById('svVoiceFab'))return;
   const style=document.createElement('style');style.id='svVoiceStyle';style.textContent=`
 #svVoiceFab{position:fixed;right:18px;bottom:88px;z-index:2147483000;width:54px;height:54px;border:0;border-radius:50%;display:grid;place-items:center;background:#152a45;color:#fff;font-size:23px;box-shadow:0 10px 30px rgba(0,0,0,.28);cursor:pointer}#svVoiceFab.listening{background:#d92d20;animation:svp .9s infinite}#svVoiceFab.thinking{background:#20ad74}@keyframes svp{50%{transform:scale(1.08)}}
@@ -129,5 +132,6 @@ function build(){
   document.getElementById('svMute').addEventListener('click',e=>{muted=!muted;localStorage.setItem('seekvera_voice_muted',muted?'1':'0');e.currentTarget.textContent=muted?'🔇':'🔊';if(muted)stopSpeech();else if(lastAnswer)speak(lastAnswer,lastLang)});
 }
 
+window.addEventListener('seekvera:voice',()=>{if(document.getElementById('svVoiceFab'))startListening()});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build,{once:true});else build();
 })();
