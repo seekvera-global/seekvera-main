@@ -1,0 +1,55 @@
+name: Apply full multilingual premium UI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'i18n-ui.js'
+      - 'i18n-premium.css'
+      - '.github/scripts/apply_i18n_premium.py'
+      - '.github/workflows/apply-i18n-premium.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply full multilingual premium UI
+        run: python .github/scripts/apply_i18n_premium.py
+      - name: Validate scripts and page coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check i18n-ui.js
+          node --check global-ui.js
+          node --check voice-ai.js
+          count=0
+          for f in *.html; do
+            case "$f" in google*) continue;; esac
+            grep -q 'i18n-premium.css?v=20260922-i18n-premium1' "$f"
+            grep -q 'i18n-ui.js?v=20260922-i18n-premium1' "$f"
+            grep -q 'global-ui.js?v=20260922-i18n-premium1' "$f"
+            grep -q 'voice-ai.js?v=20260922-i18n-premium1' "$f"
+            count=$((count+1))
+          done
+          test "$count" -ge 38
+          grep -q "'Country / Region':'الدولة / المنطقة'" i18n-ui.js
+          grep -q "'Everything you need. One intelligent global search.':'كل ما تحتاجه. بحث عالمي ذكي واحد.'" i18n-ui.js
+          grep -q 'MutationObserver' i18n-ui.js
+          grep -q 'Intl.DisplayNames' i18n-ui.js
+          grep -q 'html\[dir="rtl"\]' i18n-premium.css
+          echo "Full i18n premium coverage validated on $count pages."
+      - name: Commit multilingual premium UI across app
+        run: |
+          git config user.name "seekvera-global"
+          git config user.email "seekvera.global@gmail.com"
+          git add '*.html'
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Apply full multilingual premium UI across all departments"
+          git push
