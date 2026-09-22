@@ -39,9 +39,10 @@ jobs:
           grep -q 'QUALITY_HINTS' voice-ai.js
       - name: Commit unified premium chat
         run: |
+          git checkout -- .github/workflows/premium-worldwide-live-a-z-final.yml
           git config user.name "seekvera-global"
           git config user.email "seekvera.global@gmail.com"
-          git add index.html superapp.js voice-ai.js global-ui.js global-ui.css '*.html' .github/workflows/premium-worldwide-live-a-z-final.yml
+          git add index.html superapp.js voice-ai.js global-ui.js global-ui.css '*.html'
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "Unify chat voice camera and uploads in one premium composer"
           git push
