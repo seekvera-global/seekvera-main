@@ -1,0 +1,72 @@
+name: Enable Global Voice AI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - voice-ai.js
+      - .github/workflows/enable-global-voice.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  inject-voice:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Add global voice AI to every user-facing HTML page
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          tag = '<script src="voice-ai.js" defer></script>'
+          changed = []
+          for p in sorted(Path('.').glob('*.html')):
+              # Google verification files are intentionally tiny verification artifacts.
+              if p.name.startswith('google'):
+                  continue
+              s = p.read_text(encoding='utf-8')
+              if tag in s:
+                  continue
+              low = s.lower()
+              pos = low.rfind('</body>')
+              if pos == -1:
+                  continue
+              s = s[:pos] + tag + '\n' + s[pos:]
+              p.write_text(s, encoding='utf-8')
+              changed.append(p.name)
+          print('Injected voice AI into:', ', '.join(changed) if changed else 'no new files')
+          PY
+
+      - name: Verify JavaScript and injection
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check voice-ai.js
+          test "$(grep -l 'voice-ai.js' ./*.html | wc -l)" -ge 20
+          grep -q 'voice-ai.js' index.html
+          grep -q 'voice-ai.js' travel.html
+          grep -q 'voice-ai.js' property.html
+          grep -q 'voice-ai.js' jobs.html
+          grep -q 'voice-ai.js' marketplace.html
+
+      - name: Commit injected pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo 'No HTML changes needed.'
+            exit 0
+          fi
+          git config user.name 'seekvera-automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add ./*.html
+          git commit -m 'Enable multilingual voice AI across all SEEKVERA pages'
+          git push
