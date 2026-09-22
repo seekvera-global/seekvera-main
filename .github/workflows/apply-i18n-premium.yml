@@ -32,10 +32,10 @@ jobs:
           count=0
           for f in *.html; do
             case "$f" in google*) continue;; esac
-            grep -q 'i18n-premium.css?v=20260922-i18n-premium1' "$f"
-            grep -q 'i18n-ui.js?v=20260922-i18n-premium1' "$f"
-            grep -q 'global-ui.js?v=20260922-i18n-premium1' "$f"
-            grep -q 'voice-ai.js?v=20260922-i18n-premium1' "$f"
+            grep -q 'i18n-premium.css?v=20260922-i18n-premium2' "$f"
+            grep -q 'i18n-ui.js?v=20260922-i18n-premium2' "$f"
+            grep -q 'global-ui.js?v=20260922-i18n-premium2' "$f"
+            grep -q 'voice-ai.js?v=20260922-i18n-premium2' "$f"
             count=$((count+1))
           done
           test "$count" -ge 38
@@ -51,5 +51,5 @@ jobs:
           git config user.email "seekvera.global@gmail.com"
           git add '*.html'
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Apply full multilingual premium UI across all departments"
+          git commit -m "Apply multilingual premium runtime v2 across all departments"
           git push
