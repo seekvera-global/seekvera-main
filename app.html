@@ -179,5 +179,6 @@ const hash=location.hash.replace('#','');
 const map={home:'index.html',index:'index.html',marketplace:'marketplace.html','post-ad':'post-ad.html',travel:'travel.html',hub:'hub.html',more:'hub.html','seller-plans':'seller-plans.html',promote:'seller-plans.html',scan:'scan.html',tourism:'tourism.html',wifi:'wifi.html'};
 if(hash&&map[hash]) openPage(map[hash],false);
 </script>
-<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script></body>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script><script src="voice-ai.js" defer></script>
+</body>
 </html>

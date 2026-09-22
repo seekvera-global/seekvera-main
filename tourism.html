@@ -18,4 +18,5 @@ async function buildGuide(){const d=dest.value.trim();if(!d)return;syncLinks();t
 document.getElementById('guideForm').addEventListener('submit',e=>{e.preventDefault();buildGuide()});document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{dest.value=b.dataset.d;buildGuide()});
 document.getElementById('shareBtn').onclick=async()=>{const text=title.textContent+'\n\n'+out.textContent;try{if(navigator.share)await navigator.share({title:title.textContent,text,url:location.href});else{await navigator.clipboard.writeText(text+'\n'+location.href);alert('Trip copied for sharing.')}}catch{}};document.getElementById('copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(out.textContent);document.getElementById('copyBtn').textContent='Copied ✓';setTimeout(()=>document.getElementById('copyBtn').textContent='Copy guide',1400)}catch{}};
 const q=new URLSearchParams(location.search).get('destination');if(q){dest.value=q;buildGuide()}else syncLinks();
-</script></body></html>
+</script><script src="voice-ai.js" defer></script>
+</body></html>
