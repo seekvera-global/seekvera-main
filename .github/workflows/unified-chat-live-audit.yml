@@ -1,5 +1,6 @@
 name: SEEKVERA unified chat live audit
 
+# production audit for unified one-chat mobile experience
 on:
   push:
     branches: [main]
@@ -42,7 +43,7 @@ jobs:
           home=''
           for _ in range(30):
               try:
-                  status,home=get(SITE+'/?unified-live=1')
+                  status,home=get(SITE+'/?unified-live=2')
                   if status==200 and f'global-ui.css?v={VERSION}' in home and f'voice-ai.js?v={VERSION}' in home:break
               except Exception:pass
               time.sleep(5)
@@ -53,9 +54,9 @@ jobs:
           assert 'id="heroVoice"' not in home
           assert 'id="heroCamera"' not in home
           assert home.count('id="aiChatMic"')==1
-          _,voice=get(SITE+'/voice-ai.js?unified-live=1')
-          _,gui=get(SITE+'/global-ui.js?unified-live=1')
-          _,css=get(SITE+'/global-ui.css?unified-live=1')
+          _,voice=get(SITE+'/voice-ai.js?unified-live=2')
+          _,gui=get(SITE+'/global-ui.js?unified-live=2')
+          _,css=get(SITE+'/global-ui.css?unified-live=2')
           assert 'SpeechRecognition' in voice and 'speechSynthesis' in voice
           assert 'FEMALE_HINTS' in voice and 'QUALITY_HINTS' in voice
           assert 'svVoiceFab' not in voice and 'svVoicePanel' not in voice
@@ -67,7 +68,7 @@ jobs:
           bad=[]
           for name in pages:
               try:
-                  status,text=get(SITE+'/'+name+'?unified-dept=1')
+                  status,text=get(SITE+'/'+name+'?unified-dept=2')
                   if status!=200:bad.append(f'{name}: HTTP {status}');continue
                   for needle in [f'global-ui.css?v={VERSION}',f'voice-ai.js?v={VERSION}',f'global-ui.js?v={VERSION}']:
                       if needle not in text:bad.append(f'{name}: missing {needle}')
