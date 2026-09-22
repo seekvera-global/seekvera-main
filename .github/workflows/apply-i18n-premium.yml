@@ -1,4 +1,4 @@
-name: Apply full multilingual premium UI
+name: Apply full multilingual final R3 UI
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Apply full multilingual premium UI
+      - name: Apply full multilingual final R3 UI
         run: python .github/scripts/apply_i18n_premium.py
       - name: Validate scripts and page coverage
         shell: bash
@@ -32,10 +32,10 @@ jobs:
           count=0
           for f in *.html; do
             case "$f" in google*) continue;; esac
-            grep -q 'i18n-premium.css?v=20260922-i18n-premium2' "$f"
-            grep -q 'i18n-ui.js?v=20260922-i18n-premium2' "$f"
-            grep -q 'global-ui.js?v=20260922-i18n-premium2' "$f"
-            grep -q 'voice-ai.js?v=20260922-i18n-premium2' "$f"
+            grep -q 'i18n-premium.css?v=20260922-final-r3' "$f"
+            grep -q 'i18n-ui.js?v=20260922-final-r3' "$f"
+            grep -q 'global-ui.js?v=20260922-final-r3' "$f"
+            grep -q 'voice-ai.js?v=20260922-final-r3' "$f"
             count=$((count+1))
           done
           test "$count" -ge 38
@@ -44,12 +44,12 @@ jobs:
           grep -q 'MutationObserver' i18n-ui.js
           grep -q 'Intl.DisplayNames' i18n-ui.js
           grep -q 'html\[dir="rtl"\]' i18n-premium.css
-          echo "Full i18n premium coverage validated on $count pages."
-      - name: Commit multilingual premium UI across app
+          echo "Full final R3 i18n coverage validated on $count pages."
+      - name: Commit multilingual final R3 UI across app
         run: |
           git config user.name "seekvera-global"
           git config user.email "seekvera.global@gmail.com"
           git add '*.html'
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Apply multilingual premium runtime v2 across all departments"
+          git commit -m "Apply multilingual final R3 runtime across all departments"
           git push
