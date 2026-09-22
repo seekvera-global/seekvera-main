@@ -1,0 +1,54 @@
+name: Fix unified chat cleanup
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-unified-chat-cleanup.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Remove final duplicate chat handlers
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('index.html'); s=p.read_text(encoding='utf-8')
+          s=s.replace("document.getElementById('globalSearch').focus()","document.getElementById('aiChatInput').focus()")
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('superapp.js'); s=p.read_text(encoding='utf-8')
+          s=s.replace("$('#aiChatMic')?.addEventListener('click',()=>window.dispatchEvent(new CustomEvent('seekvera:voice',{detail:{targetId:'aiChatInput'}})));","")
+          s=s.replace("$('#visualOpen')?.addEventListener('click',open);","$('#visualOpen')?.addEventListener('click',()=>{$('#aiChat')?.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>$('#aiChatCamera')?.click(),250)});")
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('global-ui.js'); s=p.read_text(encoding='utf-8')
+          s=s.replace("f.querySelector('.mic').addEventListener('click',e=>window.dispatchEvent(new CustomEvent('seekvera:voice',{detail:{targetId:'svGlobalInput',button:e.currentTarget}})));","")
+          p.write_text(s,encoding='utf-8')
+      - name: Validate cleanup
+        shell: bash
+        run: |
+          node --check superapp.js
+          node --check global-ui.js
+          node --check voice-ai.js
+          grep -q "getElementById('aiChatInput').focus()" index.html
+          if grep -q "getElementById('globalSearch').focus()" index.html; then exit 1; fi
+          if grep -q "aiChatMic.*seekvera:voice" superapp.js; then exit 1; fi
+          if grep -q "f.querySelector('.mic').addEventListener" global-ui.js; then exit 1; fi
+          grep -q "aiChatCamera" superapp.js
+      - name: Commit cleanup
+        run: |
+          git config user.name "seekvera-global"
+          git config user.email "seekvera.global@gmail.com"
+          git add index.html superapp.js global-ui.js
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Finish single-chat interaction cleanup"
+          git push
