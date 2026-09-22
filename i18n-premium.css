@@ -1,13 +1,13 @@
 /* SEEKVERA premium multilingual/RTL overrides */
 :root{--svx-navy:#0d223c;--svx-navy2:#163b60;--svx-green:#17b77d;--svx-line:#dfe7ef;--svx-soft:#f7f9fc;--svx-shadow:0 14px 40px rgba(14,34,57,.10)}
-html,body{max-width:100%;overflow-x:hidden}
+html,body{max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;text-rendering:optimizeLegibility}
 .sv-top,.sv-top-inner,.sv-controls,.sv-control-field{overflow:visible!important}
-.sv-top{position:relative;z-index:60;background:rgba(255,255,255,.97)!important;backdrop-filter:blur(18px)}
+.sv-top{position:relative;z-index:60;background:rgba(255,255,255,.97)!important;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
 .sv-top-inner{padding-top:12px!important;padding-bottom:12px!important}
 .sv-controls{align-items:end!important}
 .sv-control-field{display:grid!important;grid-template-rows:auto 48px!important;gap:5px!important;min-width:0!important;align-content:end!important;overflow:visible!important}
 .sv-control-field>.sv-control-caption,.sv-control-field>small{display:block!important;min-height:16px!important;font-size:11px!important;line-height:1.35!important;font-weight:800!important;letter-spacing:0!important;opacity:.78!important;padding-inline:9px!important;white-space:nowrap!important;overflow:visible!important;color:#4b5f74!important}
-.sv-control-field .sv-select{height:48px!important;min-height:48px!important;border-radius:16px!important;padding-inline:14px 34px!important;font-size:16px!important;font-weight:750!important;border:1px solid #d9e2ec!important;box-shadow:0 5px 14px rgba(15,38,64,.035)!important;background:#fff!important}
+.sv-control-field .sv-select{height:48px!important;min-height:48px!important;max-width:100%!important;width:100%!important;border-radius:16px!important;padding-inline:14px 34px!important;font-size:16px!important;font-weight:750!important;border:1px solid #d9e2ec!important;box-shadow:0 5px 14px rgba(15,38,64,.035)!important;background:#fff!important;text-overflow:ellipsis!important;overflow:hidden!important}
 .sv-controls>.sv-pill-btn{height:48px!important;border-radius:16px!important;font-weight:850!important;box-shadow:0 6px 18px rgba(15,38,64,.06)!important}
 .sv-controls>.sv-primary{background:linear-gradient(135deg,#12304f,#1b4a75)!important;color:#fff!important;border:0!important;box-shadow:0 10px 24px rgba(16,49,81,.20)!important}
 .sv-brand{gap:10px!important}.sv-mark{border-radius:18px!important;box-shadow:0 10px 28px rgba(78,140,255,.20)!important}.sv-brand>span:last-child{letter-spacing:.02em}
@@ -24,7 +24,7 @@ html[lang="ar"] body.sv-home-global .sv-kicker::after{content:"🌍 العالم
 .sv-unified-compose .send{background:linear-gradient(135deg,#14b77c,#20c98a)!important;color:#fff!important;box-shadow:0 8px 18px rgba(22,182,122,.22)!important}
 .sv-cat,.sv-feature,.sv-trust,.sv-listing,.sv-request-compact{box-shadow:0 8px 24px rgba(15,38,64,.055)!important;border-color:#e1e8ef!important}
 .sv-cat:hover,.sv-feature:hover{transform:translateY(-1px);box-shadow:0 14px 32px rgba(15,38,64,.10)!important}
-/* Homepage already exposes the full AI composer and top controls; removing the duplicate fixed dock prevents mobile overlap. */
+.sv-cat[href="games.html"]{background:linear-gradient(145deg,#fff,#f5f0ff)!important;border-color:#d9cff5!important}
 body.sv-home-global .sv-global-dock{display:none!important}
 html[dir="rtl"] body{font-family:Tahoma,"Segoe UI",Arial,sans-serif!important}
 html[dir="rtl"] .sv-top-inner,html[dir="rtl"] .sv-controls,html[dir="rtl"] .sv-hero,html[dir="rtl"] .sv-section,html[dir="rtl"] .sv-band,html[dir="rtl"] .sv-foot{text-align:right!important}
@@ -56,24 +56,24 @@ html[dir="rtl"] .sv-global-chat,html[dir="rtl"] .sv-global-safety{right:auto!imp
  html[dir="rtl"] .sv-global-chat,html[dir="rtl"] .sv-global-safety{left:8px!important;right:8px!important}
 }
 @media(max-width:600px){
- .sv-top-inner{gap:8px!important;padding-top:10px!important;padding-bottom:10px!important}
+ .sv-top-inner{gap:8px!important;padding-top:max(10px,env(safe-area-inset-top))!important;padding-bottom:9px!important}
  .sv-brand{font-size:1.02rem!important}.sv-mark{width:46px!important;height:46px!important;border-radius:15px!important}
  .sv-controls{gap:8px!important}
  .sv-control-field{grid-template-rows:18px 46px!important}
  .sv-control-field>.sv-control-caption,.sv-control-field>small{font-size:10px!important;line-height:1.55!important;min-height:18px!important;padding-inline:7px!important}
  .sv-control-field .sv-select,.sv-controls>.sv-pill-btn{height:46px!important;min-height:46px!important;border-radius:15px!important;font-size:15px!important}
- body.sv-home-global .sv-hero{margin-top:4px!important;padding:18px 13px 16px!important;border-radius:24px!important}
- body.sv-home-global .sv-kicker{font-size:.74rem!important;margin-bottom:8px!important}
+ body.sv-home-global .sv-hero{margin-top:4px!important;padding:16px 13px 15px!important;border-radius:24px!important}
+ body.sv-home-global .sv-kicker{font-size:.74rem!important;margin-bottom:7px!important}
  html[lang="ar"] body.sv-home-global .sv-kicker{font-size:0!important}
  html[lang="ar"] body.sv-home-global .sv-kicker::after{font-size:.74rem!important}
- body.sv-home-global .sv-hero h1{font-size:clamp(1.72rem,8.3vw,2.18rem)!important;line-height:1.12!important;margin:.12em 0 .38em!important;overflow:visible!important}
- body.sv-home-global .sv-lead{font-size:.9rem!important;line-height:1.58!important;margin-bottom:10px!important}
+ body.sv-home-global .sv-hero h1{font-size:clamp(1.72rem,8.3vw,2.18rem)!important;line-height:1.12!important;margin:.12em 0 .32em!important;overflow:visible!important}
+ body.sv-home-global .sv-lead{font-size:.9rem!important;line-height:1.54!important;margin-bottom:8px!important}
  .sv-scope{gap:6px!important;flex-wrap:wrap!important}.sv-scope button{min-height:38px!important;border-radius:999px!important;padding:8px 12px!important;font-size:.78rem!important}
- body.sv-home-global .sv-search-note{font-size:.74rem!important;line-height:1.48!important;margin:9px 2px 8px!important}
- .sv-unified-chat{border-radius:22px!important}.sv-unified-chat .sv-chat-head{min-height:58px!important;padding:10px 12px!important}.sv-unified-chat .sv-chat-head>div{gap:5px!important;flex-wrap:wrap!important}.sv-unified-chat .sv-chat-head small{font-size:.62rem!important}
- .sv-chat-messages{min-height:78px!important;max-height:170px!important}.sv-chat-messages .ai-msg{font-size:.84rem!important;line-height:1.5!important}
+ body.sv-home-global .sv-search-note{font-size:.74rem!important;line-height:1.44!important;margin:8px 2px 7px!important}
+ .sv-unified-chat{border-radius:22px!important}.sv-unified-chat .sv-chat-head{min-height:56px!important;padding:9px 11px!important}.sv-unified-chat .sv-chat-head>div{gap:5px!important;flex-wrap:wrap!important}.sv-unified-chat .sv-chat-head small{font-size:.62rem!important}
+ .sv-chat-messages{min-height:72px!important;max-height:165px!important}.sv-chat-messages .ai-msg{font-size:.84rem!important;line-height:1.5!important}
  .sv-unified-compose{grid-template-columns:40px minmax(0,1fr) 40px 40px 44px!important;gap:5px!important;padding:8px!important}.sv-unified-compose input#aiChatInput{min-width:0!important;font-size:14px!important;padding-inline:12px!important}
- .sv-global-dock{max-width:calc(100vw - 24px)!important;overflow:hidden!important}
+ .sv-global-dock{max-width:calc(100vw - 24px)!important;overflow:hidden!important;padding-bottom:max(0px,env(safe-area-inset-bottom))!important}
 }
 @media(max-width:390px){
  .sv-control-field>.sv-control-caption,.sv-control-field>small{font-size:9.5px!important}
