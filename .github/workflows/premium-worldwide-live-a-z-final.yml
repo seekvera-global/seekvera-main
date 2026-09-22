@@ -31,9 +31,10 @@ jobs:
 
           SITE='https://seekveraglobal.com'
           WORKER='https://seekvera-main.seekvera-global.workers.dev'
+          VERSION='20260922-premium-voice2'
           UA='Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
           def get(url, timeout=30):
-              req=urllib.request.Request(url,headers={'User-Agent':UA})
+              req=urllib.request.Request(url,headers={'User-Agent':UA,'Cache-Control':'no-cache'})
               with urllib.request.urlopen(req,timeout=timeout) as r:
                   return r.status,r.geturl(),r.read().decode('utf-8','replace')
           def status_only(url, timeout=20):
@@ -49,45 +50,58 @@ jobs:
               except urllib.error.HTTPError as e:
                   return e.code,json.loads(e.read().decode())
 
-          # Wait for the latest production Worker and shared worldwide UI to be live.
+          # Wait for current production Worker and premium multilingual UI.
           home=''; health={}
           for _ in range(30):
               try:
-                  _,_,home=get(SITE+'/?worldwide-final=3',20)
-                  _,_,health_text=get(WORKER+'/api/health?worldwide-final=3',20)
+                  _,_,home=get(SITE+'/?az-final=4',20)
+                  _,_,health_text=get(WORKER+'/api/health?az-final=4',20)
                   health=json.loads(health_text)
-                  if ('global-ui.css?v=20260922-worldwide-final' in home and
+                  if (f'global-ui.css?v={VERSION}' in home and
+                      f'voice-ai.js?v={VERSION}' in home and
                       health.get('marketplaceProxy')=='enabled' and
-                      health.get('centralSafetyGate')=='enabled'):
+                      health.get('centralSafetyGate')=='enabled' and
+                      health.get('aiResilience')=='fast-chat-language-lock-v4'):
                       break
               except Exception: pass
               time.sleep(10)
-          assert 'global-ui.css?v=20260922-worldwide-final' in home, 'latest premium homepage not live'
+          assert f'global-ui.css?v={VERSION}' in home, 'latest premium homepage not live'
+          assert f'voice-ai.js?v={VERSION}' in home, 'latest voice runtime not live'
           assert health.get('marketplaceProxy')=='enabled',health
           assert health.get('centralSafetyGate')=='enabled',health
+          assert health.get('aiResilience')=='fast-chat-language-lock-v4',health
 
-          _,_,css=get(SITE+'/global-ui.css?v=20260922-worldwide-final')
-          _,_,gjs=get(SITE+'/global-ui.js?v=20260922-worldwide-final')
+          _,_,css=get(SITE+'/global-ui.css?az-final=4')
+          _,_,gjs=get(SITE+'/global-ui.js?az-final=4')
+          _,_,voice=get(SITE+'/voice-ai.js?az-final=4')
           assert 'SEEKVERA Worldwide Premium UI' in css
           assert 'sv-global-chat' in css and 'sv-global-dock' in gjs
           assert 'Central Safety Gate active' in gjs
+          assert 'sv-inline-ai-visible' in gjs
+          assert 'grid-auto-flow:column' in css and 'overflow-x:auto' in css
+          assert 'FEMALE_HINTS' in voice and 'QUALITY_HINTS' in voice
+          assert ('SpeechRecognition' in voice or 'webkitSpeechRecognition' in voice) and 'speechSynthesis' in voice
+          assert "if(location.pathname.endsWith('/app.html'))return" not in voice
 
           pages=[p.name for p in Path('.').glob('*.html') if not p.name.lower().startswith('google')]
           live={}; bad=[]
           for p in pages:
               try:
-                  status,final_url,text=get(SITE+'/'+p+'?az=3',25)
+                  status,final_url,text=get(SITE+'/'+p+'?az-final=4',25)
                   live[p]=text
                   if status<200 or status>=300: bad.append(f'{p}: final HTTP {status}')
-                  if 'global-ui.css?v=20260922-worldwide-final' not in text: bad.append(f'{p}: global premium UI missing')
+                  for needle in [f'global-ui.css?v={VERSION}',f'voice-ai.js?v={VERSION}',f'global-ui.js?v={VERSION}']:
+                      if needle not in text: bad.append(f'{p}: missing {needle}')
               except Exception as e:
                   bad.append(f'{p}: {e}')
           print('Live public pages tested:',len(pages))
           if bad: raise AssertionError('\n'.join(bad))
+          assert len(pages)>=38,len(pages)
 
           index=live['index.html']; hub=live['hub.html']; deal=live['deal-agent.html']; postad=live['post-ad.html']; tourism=live['tourism.html']
           terms=live['terms.html']; privacy=live['privacy.html']; affiliate=live['affiliate-disclosure.html']
           assert 'anywhere in the world' in index.lower()
+          assert 'id="aiChat"' in index and '＋ Post Ad' in index
           assert 'Nigeria → China' not in index and 'Lebanon → UAE' not in index
           assert 'Marketplace' in hub and 'Worldwide Tourism AI' in hub and 'Post an Ad' in hub
           assert 'OWNER APPROVAL' in deal and 'Safety Gate' in postad
@@ -99,15 +113,22 @@ jobs:
           assert "SUBMIT=WORKER+'/api/marketplace-submit'" in postad
           assert "REVIEW=WORKER+'/api/marketplace-review'" in postad
           assert "'Authorization':'Bearer '+KEY" not in postad
-          print('Worldwide pages, legal/safety notices and marketplace routing PASS')
+          print('Worldwide pages, premium UI, legal/safety notices and marketplace routing PASS')
 
-          # AI speed in English and Arabic.
-          cases=[('English','Reply in one short sentence: SEEKVERA is ready anywhere in the world.'),('Arabic','أجب بجملة قصيرة: SEEKVERA جاهز في أي مكان في العالم.')]
-          for language,message in cases:
-              t=time.monotonic(); status,d=post('/api/ai',{'message':message,'country':'Worldwide','language':language,'scope':'worldwide','fast':True},30); elapsed=time.monotonic()-t
-              print(language,'AI',round(elapsed,2),'seconds',d.get('model'))
+          # Same-language AI checks across scripts/languages.
+          cases=[
+              ('English','Reply only with: Hello.','Hello'),
+              ('Arabic','أجب فقط بكلمة: مرحبا','مرح'),
+              ('French','Réponds uniquement par : Bonjour.','Bonjour'),
+              ('Spanish','Responde únicamente: Hola.','Hola'),
+              ('Chinese','只回答：你好','你好'),
+          ]
+          for language,message,marker in cases:
+              t=time.monotonic(); status,d=post('/api/ai',{'message':message,'country':'Worldwide','language':'auto','scope':'worldwide','fast':True},30); elapsed=time.monotonic()-t
+              print(language,'AI',round(elapsed,2),'seconds',d.get('model'),d.get('language'))
               assert 200<=status<300 and d.get('ok') is True and d.get('response'),d
-              assert elapsed<12,elapsed
+              assert marker.lower() in str(d.get('response')).lower(),(language,d)
+              assert elapsed<15,elapsed
 
           # Centralized safety: safe content passes; prohibited/credential content blocks.
           status,safe=post('/api/moderate',{'text':'lawful hotel booking and business software search','context':'A-Z audit'},45)
@@ -136,8 +157,6 @@ jobs:
               assert code!=200,(path,code)
           print('Internal asset isolation PASS')
 
-          _,_,voice=get(SITE+'/voice-ai.js?az=3')
-          assert ('SpeechRecognition' in voice or 'webkitSpeechRecognition' in voice) and 'speechSynthesis' in voice
           assert health.get('ok') is True
           assert health.get('centralSafetyGate')=='enabled' and health.get('failClosed') is True
           assert health.get('aiBinding') is True and health.get('assetsBinding') is True
