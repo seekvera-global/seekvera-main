@@ -1,0 +1,39 @@
+name: SEEKVERA custom domain AI smoke once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/custom-domain-ai-smoke-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Test custom-domain browser origin against live Worker AI
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://seekvera-main.seekvera-global.workers.dev/api/ai'
+          ok=0
+          for i in 1 2 3; do
+            code=$(curl -sS --max-time 90 -D /tmp/h -o /tmp/b -w '%{http_code}' "$url" \
+              -H 'origin: https://seekveraglobal.com' \
+              -H 'content-type: application/json' \
+              --data '{"message":"Reply with one short sentence saying hello.","country":"Worldwide","language":"English","voice":true}')
+            echo "Attempt $i HTTP $code"
+            cat /tmp/b; echo
+            if [ "$code" = 200 ] && grep -qi '^access-control-allow-origin: https://seekveraglobal.com' /tmp/h && python - <<'PY'
+          import json
+          d=json.load(open('/tmp/b'))
+          assert d.get('ok') is True and str(d.get('response','')).strip(), d
+          PY
+            then ok=1; break; fi
+            sleep 5
+          done
+          test "$ok" -eq 1
