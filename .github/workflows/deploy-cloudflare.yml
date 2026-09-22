@@ -1,5 +1,5 @@
 name: Deploy SEEKVERA to Cloudflare
-# Production deployment: latest Safety Gate v2 + AI Vision + global Voice AI
+# Production deployment: Safety Gate v4 + AI Vision + global Voice AI + marketplace server routing
 
 on:
   push:
@@ -9,6 +9,8 @@ on:
       - 'voice-ai.js'
       - '*.html'
       - 'styles.css'
+      - 'global-ui.css'
+      - 'global-ui.js'
       - 'app.js'
       - 'sw.js'
       - 'manifest.webmanifest'
@@ -31,7 +33,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate Worker build and bindings
+      - name: Validate Worker build, safety and asset boundaries
         shell: bash
         run: |
           set -euo pipefail
@@ -39,12 +41,20 @@ jobs:
           grep -q '"binding": "AI"' wrangler.jsonc
           grep -q '@cf/google/gemma-4-26b-a4b-it' worker.js
           grep -q '@cf/zai-org/glm-4.7-flash' worker.js
+          grep -q '@cf/meta/llama-3.1-8b-instruct-fast' worker.js
           grep -q '@cf/meta/llama-3.2-11b-vision-instruct' worker.js
           grep -q 'safetyGateVersion' worker.js
           grep -q '/api/vision' worker.js
+          grep -q '/api/marketplace-submit' worker.js
+          grep -q '/api/marketplace-review' worker.js
+          grep -q "marketplaceProxy:'enabled'" worker.js
+          grep -q '^\.wrangler$' .assetsignore
+          grep -q '^worker.js$' .assetsignore
+          grep -q '^wrangler.jsonc$' .assetsignore
           test -s voice-ai.js
           node --check voice-ai.js
-          echo 'SEEKVERA Worker and Voice AI source are valid.'
+          rm -rf .wrangler-dry-run .wrangler
+          echo 'SEEKVERA Worker, Safety Gate, Marketplace proxy, Voice AI and asset boundaries are valid.'
 
       - name: Detect Cloudflare deployment credentials
         id: cf
@@ -68,6 +78,43 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
+
+      - name: Verify live production security and health
+        if: steps.cf.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE='https://seekvera-main.seekvera-global.workers.dev'
+          SITE='https://seekveraglobal.com'
+
+          for i in $(seq 1 12); do
+            HEALTH="$(curl -fsS --max-time 12 "$BASE/api/health" || true)"
+            if echo "$HEALTH" | grep -q '"marketplaceProxy":"enabled"' && echo "$HEALTH" | grep -q '"centralSafetyGate":"enabled"'; then
+              break
+            fi
+            sleep 5
+          done
+          echo "$HEALTH" | grep -q '"marketplaceProxy":"enabled"'
+          echo "$HEALTH" | grep -q '"centralSafetyGate":"enabled"'
+          echo "$HEALTH" | grep -q '"failClosed":true'
+          curl -fsS --max-time 15 "$SITE/" >/dev/null
+
+          for path in worker.js wrangler.jsonc README.md README-FIRST.txt QA-REPORT.txt PAYMENTS-GLOBAL-NOTES.md package.json package-lock.json; do
+            code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 12 "$BASE/$path")"
+            if [ "$code" = '200' ]; then
+              echo "Internal file unexpectedly public: $path"
+              exit 1
+            fi
+          done
+
+          submit_code="$(curl -sS -o /tmp/submit.json -w '%{http_code}' --max-time 15 -X POST "$BASE/api/marketplace-submit" -H 'Origin: https://seekveraglobal.com' -H 'Content-Type: application/json' --data '{}')"
+          test "$submit_code" = '400'
+          grep -q 'Safety confirmations are required' /tmp/submit.json
+
+          review_code="$(curl -sS -o /tmp/review.json -w '%{http_code}' --max-time 15 -X POST "$BASE/api/marketplace-review" -H 'Origin: https://seekveraglobal.com' -H 'Content-Type: application/json' --data '{}')"
+          test "$review_code" = '400'
+          grep -Eqi 'reference|invalid' /tmp/review.json
+          echo 'Live production health, internal-file isolation and marketplace server routing passed.'
 
       - name: Deployment architecture
         if: steps.cf.outputs.ready != 'true'
