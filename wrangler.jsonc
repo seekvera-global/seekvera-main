@@ -1,4 +1,4 @@
-// Trigger Cloudflare deploy: 2026-09-22 custom-domain AI + voice retry fix
+// Trigger Cloudflare deploy: 2026-09-22 visible chat + faster AI
 {
   "name": "seekvera-main",
   "main": "./worker.js",
