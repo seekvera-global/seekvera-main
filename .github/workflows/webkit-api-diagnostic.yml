@@ -23,7 +23,7 @@ jobs:
           npx playwright install --with-deps webkit
       - name: Probe same-origin and worker APIs from WebKit
         run: |
-          cat > /tmp/webkit-api.js <<'JS'
+          cat > webkit-api.js <<'JS'
           const {webkit}=require('playwright');
           (async()=>{
             const b=await webkit.launch({headless:true});
@@ -34,7 +34,7 @@ jobs:
             p.on('requestfailed',r=>{if(r.url().includes('/api/ai'))console.log('FAILED',r.url(),r.failure())});
             p.on('console',m=>console.log('CONSOLE',m.type(),m.text()));
             p.on('pageerror',e=>console.log('PAGEERROR',e.message));
-            await p.goto('https://seekveraglobal.com/?webkitdiag=1',{waitUntil:'domcontentloaded',timeout:60000});
+            await p.goto('https://seekveraglobal.com/?webkitdiag=2',{waitUntil:'domcontentloaded',timeout:60000});
             console.log('FINAL_URL',p.url());
             const out=await p.evaluate(async()=>{
               const payload={message:'Reply only with: Hello.',country:'Worldwide',language:'English',scope:'worldwide',fast:true};
@@ -45,4 +45,4 @@ jobs:
             await b.close();
           })().catch(e=>{console.error(e);process.exit(1)});
           JS
-          node /tmp/webkit-api.js
+          node webkit-api.js
