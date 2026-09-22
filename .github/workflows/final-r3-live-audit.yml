@@ -1,5 +1,5 @@
 name: SEEKVERA final r3 live audit
-# Final production Android + iPhone audit — retriggered after verified Cloudflare deployment on 2026-09-22
+# Final production Android + iPhone audit — retriggered after same-origin WebKit API deployment on 2026-09-22
 
 on:
   push:
