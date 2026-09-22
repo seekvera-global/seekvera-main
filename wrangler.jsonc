@@ -1,4 +1,4 @@
-// Trigger Cloudflare deploy: 2026-09-22 visible chat + faster AI
+// Trigger Cloudflare deploy: 2026-09-22 fast chat 8b v3
 {
   "name": "seekvera-main",
   "main": "./worker.js",
