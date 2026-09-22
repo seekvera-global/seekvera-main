@@ -1,7 +1,9 @@
 User-agent: *
 Allow: /
+Disallow: /deal-agent.html
 
 User-agent: OAI-SearchBot
 Allow: /
+Disallow: /deal-agent.html
 
 Sitemap: https://seekvera-global.github.io/seekvera-main/sitemap.xml

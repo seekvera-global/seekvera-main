@@ -1,50 +1,5 @@
-const CACHE='seekvera-one-app-v2-20260922-voice';
-const CORE=[
- './','./app.html','./index.html','./hub.html','./marketplace.html','./post-ad.html','./seller-plans.html',
- './travel.html','./tourism.html','./wifi.html','./scan.html','./terms.html','./privacy.html','./about.html',
- './property.html','./cars-auto.html','./shopping.html','./jobs.html','./business-software.html','./education.html',
- './solar.html','./health.html','./web-hosting.html','./import-export.html','./favicon.svg','./manifest.webmanifest','./seekvera-qr.svg','./voice-ai.js'
-];
-self.addEventListener('install',event=>{
- event.waitUntil((async()=>{
-  const cache=await caches.open(CACHE);
-  await Promise.allSettled(CORE.map(url=>cache.add(url)));
-  await self.skipWaiting();
- })());
-});
-self.addEventListener('activate',event=>{
- event.waitUntil((async()=>{
-  const keys=await caches.keys();
-  await Promise.all(keys.filter(k=>k.startsWith('seekvera-one-app-')&&k!==CACHE).map(k=>caches.delete(k)));
-  await self.clients.claim();
- })());
-});
-self.addEventListener('fetch',event=>{
- const req=event.request;
- if(req.method!=='GET')return;
- const url=new URL(req.url);
- if(url.origin!==self.location.origin)return;
- if(url.pathname.includes('/api/'))return;
- if(req.mode==='navigate'){
-  event.respondWith((async()=>{
-   try{
-    const fresh=await fetch(req);
-    const cache=await caches.open(CACHE);
-    cache.put(req,fresh.clone());
-    return fresh;
-   }catch{
-    return (await caches.match(req))||(await caches.match('./app.html'));
-   }
-  })());
-  return;
- }
- event.respondWith((async()=>{
-  const cached=await caches.match(req);
-  if(cached)return cached;
-  try{
-   const fresh=await fetch(req);
-   if(fresh.ok){const cache=await caches.open(CACHE);cache.put(req,fresh.clone())}
-   return fresh;
-  }catch{return new Response('',{status:503,statusText:'Offline'})}
- })());
-});
+const CACHE='seekvera-premium-r1-20260922';
+const CORE=['./','./index.html','./app.html','./premium.css','./superapp.js','./voice-ai.js','./connectivity.html','./deal-agent.html','./deal-agent.js','./marketplace.html','./post-ad.html','./travel.html','./tourism.html','./wifi.html','./scan.html','./hub.html','./manifest.webmanifest','./favicon.svg'];
+self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE).catch(()=>{})).then(()=>self.skipWaiting()))});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
+self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET')return;const u=new URL(r.url);if(u.origin!==self.location.origin)return;if(r.mode==='navigate'||/\.html$/.test(u.pathname)||u.pathname.endsWith('/')){e.respondWith(fetch(r,{cache:'no-store'}).then(resp=>{const copy=resp.clone();caches.open(CACHE).then(c=>c.put(r,copy));return resp}).catch(()=>caches.match(r).then(x=>x||caches.match('./index.html'))));return}e.respondWith(caches.match(r).then(cached=>{const network=fetch(r).then(resp=>{if(resp.ok){const copy=resp.clone();caches.open(CACHE).then(c=>c.put(r,copy))}return resp}).catch(()=>cached);return cached||network}))});
