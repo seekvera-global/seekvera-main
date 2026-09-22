@@ -1,4 +1,4 @@
-name: SEEKVERA final premium2 Cloudflare deploy
+name: SEEKVERA final R3 Cloudflare deploy
 
 on:
   push:
@@ -20,7 +20,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: seekvera-premium2-production
+  group: seekvera-final-r3-production
   cancel-in-progress: true
 
 jobs:
@@ -29,14 +29,14 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Validate final app runtime
+      - name: Validate final R3 app runtime
         shell: bash
         run: |
           set -euo pipefail
           node --check voice-ai.js
           node --check global-ui.js
           node --check i18n-ui.js
-          grep -q '20260922-i18n-premium2' index.html
+          grep -q '20260922-final-r3' index.html
           grep -q 'body.sv-home-global .sv-global-dock{display:none!important}' i18n-premium.css
           grep -q "'Country / Region':'الدولة / المنطقة'" i18n-ui.js
           grep -q 'safetyGateVersion' worker.js
@@ -49,25 +49,25 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
-      - name: Verify premium2 is live
+      - name: Verify final R3 is live
         shell: bash
         run: |
           set -euo pipefail
           SITE='https://seekveraglobal.com'
           BASE='https://seekvera-main.seekvera-global.workers.dev'
           for i in $(seq 1 18); do
-            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/?premium2=$i" -o /tmp/home || true
-            if grep -q 'i18n-premium.css?v=20260922-i18n-premium2' /tmp/home 2>/dev/null && grep -q 'i18n-ui.js?v=20260922-i18n-premium2' /tmp/home 2>/dev/null; then break; fi
+            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/?finalr3=$i" -o /tmp/home || true
+            if grep -q 'i18n-premium.css?v=20260922-final-r3' /tmp/home 2>/dev/null && grep -q 'i18n-ui.js?v=20260922-final-r3' /tmp/home 2>/dev/null; then break; fi
             sleep 4
           done
-          grep -q 'i18n-premium.css?v=20260922-i18n-premium2' /tmp/home
-          grep -q 'i18n-ui.js?v=20260922-i18n-premium2' /tmp/home
-          curl -fsS --max-time 15 "$SITE/i18n-premium.css?v=20260922-i18n-premium2" -o /tmp/css
+          grep -q 'i18n-premium.css?v=20260922-final-r3' /tmp/home
+          grep -q 'i18n-ui.js?v=20260922-final-r3' /tmp/home
+          curl -fsS --max-time 15 "$SITE/i18n-premium.css?v=20260922-final-r3" -o /tmp/css
           grep -q 'body.sv-home-global .sv-global-dock{display:none!important}' /tmp/css
-          curl -fsS --max-time 15 "$SITE/i18n-ui.js?v=20260922-i18n-premium2" -o /tmp/i18n
+          curl -fsS --max-time 15 "$SITE/i18n-ui.js?v=20260922-final-r3" -o /tmp/i18n
           grep -q "'Country / Region':'الدولة / المنطقة'" /tmp/i18n
           curl -fsS --max-time 15 "$BASE/api/health" -o /tmp/health
           grep -q '"centralSafetyGate":"enabled"' /tmp/health
           grep -q '"failClosed":true' /tmp/health
           grep -q '"marketplaceProxy":"enabled"' /tmp/health
-          echo 'PREMIUM2 PRODUCTION DEPLOY PASS'
+          echo 'FINAL R3 PRODUCTION DEPLOY PASS'
