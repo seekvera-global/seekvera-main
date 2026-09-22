@@ -1,7 +1,7 @@
 /* SEEKVERA multilingual UI runtime — final-r3 */
 (()=>{'use strict';
 if(window.__seekveraI18nFinalR3)return;window.__seekveraI18nFinalR3=true;
-const WORKER=location.hostname.endsWith('workers.dev')?'':'https://seekvera-main.seekvera-global.workers.dev';
+const HOST=location.hostname;const WORKER=(HOST==='seekveraglobal.com'||HOST==='www.seekveraglobal.com'||HOST.endsWith('workers.dev'))?'':'https://seekvera-main.seekvera-global.workers.dev';
 const api=p=>`${WORKER}${p}`;
 const SUPPORTED=['en','ar','fr','zh','es','hi','pt','de','ja','ko','id','tr','ru','ur','bn','vi','it','sw','th','fa','pl','nl','ms','fil','ha','yo','ig','am'];
 const RTL=new Set(['ar','fa','ur']);
