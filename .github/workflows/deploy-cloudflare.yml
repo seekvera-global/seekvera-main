@@ -1,11 +1,17 @@
 name: Deploy SEEKVERA to Cloudflare
-# Production deployment: latest Safety Gate v2 + AI Vision
+# Production deployment: latest Safety Gate v2 + AI Vision + global Voice AI
 
 on:
   push:
     branches: [main]
     paths:
       - 'worker.js'
+      - 'voice-ai.js'
+      - '*.html'
+      - 'styles.css'
+      - 'app.js'
+      - 'sw.js'
+      - 'manifest.webmanifest'
       - 'wrangler.jsonc'
       - '.assetsignore'
       - '.github/workflows/deploy-cloudflare.yml'
@@ -36,7 +42,9 @@ jobs:
           grep -q '@cf/meta/llama-3.2-11b-vision-instruct' worker.js
           grep -q 'safetyGateVersion' worker.js
           grep -q '/api/vision' worker.js
-          echo 'SEEKVERA Worker source is valid.'
+          test -s voice-ai.js
+          node --check voice-ai.js
+          echo 'SEEKVERA Worker and Voice AI source are valid.'
 
       - name: Detect Cloudflare deployment credentials
         id: cf
