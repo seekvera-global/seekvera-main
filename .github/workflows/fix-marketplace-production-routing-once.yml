@@ -43,12 +43,11 @@ jobs:
           p=Path('post-ad.html')
           s=p.read_text(encoding='utf-8')
           s=s.replace("SUBMIT=SB+'/functions/v1/marketplace-submit',REVIEW=SB+'/functions/v1/marketplace-review'","SUBMIT=WORKER+'/api/marketplace-submit',REVIEW=WORKER+'/api/marketplace-review'",1)
-          s=s.replace("const H={'apikey':KEY,'Authorization':'Bearer '+KEY};","const H={'apikey':KEY};",1)
           p.write_text(s,encoding='utf-8')
 
           for p in Path('.').glob('*.html'):
               s=p.read_text(encoding='utf-8')
-              ns=s.replace("const H={'apikey':KEY,'Authorization':'Bearer '+KEY};","const H={'apikey':KEY};")
+              ns=s.replace(",'Authorization':'Bearer '+KEY","")
               if ns!=s:
                   p.write_text(ns,encoding='utf-8')
 
@@ -70,7 +69,7 @@ jobs:
           set -euo pipefail
           git config user.name 'seekvera-global'
           git config user.email 'seekvera.global@gmail.com'
-          git add worker.js post-ad.html marketplace.html *.html
+          git add worker.js *.html
           if git diff --cached --quiet; then
             echo 'Already repaired'
           else
