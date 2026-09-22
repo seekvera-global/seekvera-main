@@ -1,0 +1,42 @@
+name: SEEKVERA final r3 live audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'app.html'
+      - 'games.html'
+      - 'games.js'
+      - 'voice-ai.js'
+      - 'global-ui.js'
+      - 'i18n-ui.js'
+      - 'i18n-premium.css'
+      - 'manifest.webmanifest'
+      - 'sw.js'
+      - 'tools/final_r3_live_audit.js'
+      - '.github/workflows/final-r3-live-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Playwright browsers
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@latest --no-save
+          npx playwright install --with-deps chromium webkit
+      - name: Validate JavaScript
+        run: |
+          node --check games.js
+          node --check i18n-ui.js
+          node --check global-ui.js
+          node --check voice-ai.js
+      - name: Run final production audit
+        run: node tools/final_r3_live_audit.js
