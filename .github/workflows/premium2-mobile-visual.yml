@@ -1,0 +1,38 @@
+name: SEEKVERA premium2 Android visual audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'i18n-ui.js'
+      - 'i18n-premium.css'
+      - '*.html'
+      - '.github/workflows/premium2-mobile-visual.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Verify Arabic premium layout on Android 360px
+        shell: bash
+        run: |
+          cat > premium2-visual.js <<'JS'
+          const {chromium}=require('playwright');
+          (async()=>{const b=await chromium.launch({headless:true});const c=await b.newContext({viewport:{width:360,height:800},isMobile:true,hasTouch:true,userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});await c.addInitScript(()=>{localStorage.setItem('seekvera_lang','ar');localStorage.setItem('seekvera_country','WW')});const p=await c.newPage();await p.goto('https://seekveraglobal.com/?premium2visual=1',{waitUntil:'domcontentloaded',timeout:60000});await p.waitForFunction(()=>document.querySelector('script[src*="i18n-ui.js?v=20260922-i18n-premium2"]'),null,{timeout:60000});await p.waitForFunction(()=>document.documentElement.dir==='rtl'&&/كل ما تحتاجه/.test(document.querySelector('.sv-hero h1')?.textContent||''),null,{timeout:60000});await p.waitForTimeout(1200);const s=await p.evaluate(()=>{const cap=[...document.querySelectorAll('.sv-control-caption,.sv-control-field small')].find(x=>(x.textContent||'').includes('الدولة'));const lang=[...document.querySelectorAll('.sv-control-caption,.sv-control-field small')].find(x=>(x.textContent||'').includes('اللغة'));const r=cap?.getBoundingClientRect(),lr=lang?.getBoundingClientRect();return{dir:document.documentElement.dir,h1:document.querySelector('.sv-hero h1')?.textContent.trim(),kicker:document.querySelector('.sv-kicker')&&getComputedStyle(document.querySelector('.sv-kicker'),'::after').content,country:document.querySelector('#country')?.selectedOptions?.[0]?.textContent.trim(),cap:cap?.textContent.trim(),lang:lang?.textContent.trim(),post:[...document.querySelectorAll('a,button')].find(x=>(x.textContent||'').includes('أضف إعلان'))?.textContent.trim(),greeting:document.querySelector('#aiMessages .ai-msg.bot')?.textContent.trim(),overflow:document.documentElement.scrollWidth-innerWidth,dock:getComputedStyle(document.querySelector('.sv-global-dock')).display,r:r&&{left:r.left,right:r.right,top:r.top,bottom:r.bottom,height:r.height},lr:lr&&{left:lr.left,right:lr.right,top:lr.top,bottom:lr.bottom,height:lr.height},vw:innerWidth}});console.log(s);if(s.dir!=='rtl'||!s.h1?.includes('كل ما تحتاجه')||!s.kicker?.includes('العالم كله')||!s.country?.includes('العالم كله')||!s.cap?.includes('الدولة / المنطقة')||!s.lang?.includes('اللغة')||!s.post?.includes('أضف إعلان')||!s.greeting?.includes('مرحب')||s.overflow>2||s.dock!=='none')throw Error('Arabic premium state failed '+JSON.stringify(s));for(const r of [s.r,s.lr])if(!r||r.left<0||r.right>s.vw+1||r.top<0||r.height<11)throw Error('caption clipped '+JSON.stringify(r));await p.screenshot({path:'premium2-arabic-android.png',fullPage:false});await p.selectOption('#lang','en');await p.dispatchEvent('#lang','change');await p.waitForFunction(()=>document.documentElement.dir==='ltr'&&/Everything you need/.test(document.querySelector('.sv-hero h1')?.textContent||''),null,{timeout:30000});console.log('PREMIUM2 ANDROID RTL/LTR VISUAL PASS');await b.close()})().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          node premium2-visual.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: seekvera-premium2-arabic-mobile-proof
+          path: premium2-arabic-android.png
+          if-no-files-found: error
