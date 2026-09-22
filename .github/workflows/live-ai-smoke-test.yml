@@ -7,6 +7,10 @@ on:
       - 'worker.js'
       - 'wrangler.jsonc'
       - 'index.html'
+      - 'premium.css'
+      - 'superapp.js'
+      - 'connectivity.html'
+      - 'deal-agent.html'
       - '.github/workflows/live-ai-smoke-test.yml'
   workflow_dispatch:
 
@@ -20,104 +24,110 @@ concurrency:
 jobs:
   smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate Worker source and bindings
+      - name: Validate current Worker source and bindings
         shell: bash
         run: |
           set -euo pipefail
           npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-dry-run
           grep -q '"binding": "AI"' wrangler.jsonc
-          grep -q '@cf/meta/llama-3.1-8b-instruct-fast' worker.js
           grep -q '@cf/google/gemma-4-26b-a4b-it' worker.js
-          grep -q 'requestStorage: "supabase"' worker.js
-          echo 'Worker source validation passed.'
+          grep -q '@cf/zai-org/glm-4.7-flash' worker.js
+          grep -q '@cf/meta/llama-3.2-11b-vision-instruct' worker.js
+          grep -q '/api/visual-search' worker.js
+          grep -q '2026-09-22-premium-r1' worker.js
+          node --check worker.js
+          node --check superapp.js
+          node --check voice-ai.js
+          echo 'Current Worker and client source validation passed.'
 
-      - name: Test live Worker health
+      - name: Wait for exact live Worker release
         shell: bash
         run: |
           set -euo pipefail
           health='https://seekvera-main.seekvera-global.workers.dev/api/health'
-          curl -fsS --max-time 30 "$health" -o /tmp/health.json
-          python - <<'PY'
+          ready=0
+          for i in $(seq 1 15); do
+            echo "Worker release check $i/15"
+            if curl -fsS --max-time 30 "$health" -o /tmp/health.json; then
+              if python - <<'PY'
           import json
           d=json.load(open('/tmp/health.json', encoding='utf-8'))
           assert d.get('ok') is True, d
           assert d.get('aiBinding') is True, d
-          print('Live Worker health:', d)
-          if d.get('requestStorage') != 'supabase':
-              print('NOTICE: live Worker is an older deployment; frontend request storage still uses Supabase directly.')
+          assert d.get('release') == '2026-09-22-premium-r1', d
+          assert d.get('sourceBaseline') == '886a24516ab393c54b8379ad5b6163129932add8', d
+          assert d.get('centralSafetyGate') == 'enabled', d
+          assert d.get('failClosed') is True, d
+          print('Live Worker exact release:', d)
           PY
+              then ready=1; break; fi
+            fi
+            sleep 20
+          done
+          test "$ready" -eq 1
 
-      - name: Test live Workers AI response
+      - name: Test live AI English Arabic and cross-border
         shell: bash
         run: |
           set -euo pipefail
           endpoint='https://seekvera-main.seekvera-global.workers.dev/api/ai'
-          ok=0
-          for i in $(seq 1 5); do
-            if curl -fsS --max-time 75 "$endpoint" \
-              -H 'content-type: application/json' \
-              --data '{"message":"Reply with a short sentence confirming SEEKVERA AI is online.","country":"Worldwide","language":"English"}' \
-              -o /tmp/ai.json; then
-              if python - <<'PY'
-          import json
-          d=json.load(open('/tmp/ai.json', encoding='utf-8'))
-          assert d.get('ok') is True, d
-          assert isinstance(d.get('response'), str) and d['response'].strip(), d
-          assert d.get('provider') == 'Cloudflare Workers AI', d
-          print('AI model:', d.get('model'))
-          print('AI response:', d['response'][:300])
+          python - <<'PY'
+          import json, subprocess
+          cases=[
+            {"message":"I am in Nigeria and need a furniture supplier in China. Explain the next step briefly.","country":"Nigeria","language":"English","scope":"worldwide"},
+            {"message":"أنا في لبنان وأريد فندقاً في أبوجا. أعطني الخطوة التالية باختصار.","country":"Lebanon","language":"Arabic","scope":"worldwide"}
+          ]
+          for case in cases:
+            p=subprocess.run(['curl','-fsS','--max-time','90', 'https://seekvera-main.seekvera-global.workers.dev/api/ai','-H','content-type: application/json','--data',json.dumps(case)],capture_output=True,text=True,check=True)
+            d=json.loads(p.stdout)
+            assert d.get('ok') is True and str(d.get('response','')).strip(), d
+            assert d.get('model') in ['@cf/google/gemma-4-26b-a4b-it','@cf/zai-org/glm-4.7-flash'], d
+            print(d.get('category'), d.get('model'), d['response'][:180])
           PY
-              then
-                ok=1
-                break
-              fi
-            fi
-            sleep 8
-          done
-          test "$ok" -eq 1
 
-      - name: Test public Supabase request storage
+      - name: Test live Safety Gate decisions
         shell: bash
         run: |
           set -euo pipefail
-          ref="SV-$(date -u +%Y%m%d)-SMK$(printf '%05d' $((RANDOM%100000)))"
-          endpoint='https://nrdpyydfrpmqedtzmbyw.supabase.co/rest/v1/seekvera_requests'
-          key='sb_publishable_tqqPQxqdNowIsSlJz4bW5w_kHOC905o'
-          code=$(curl -sS --max-time 30 -o /tmp/request-body.txt -w '%{http_code}' "$endpoint" \
-            -X POST \
-            -H 'content-type: application/json' \
-            -H "apikey: $key" \
-            -H "Authorization: Bearer $key" \
-            -H 'Prefer: return=minimal' \
-            --data "{\"reference\":\"$ref\",\"country\":\"Worldwide\",\"city\":\"\",\"request_type\":\"Other\",\"budget\":\"\",\"needed_date\":null,\"contact\":\"\",\"description\":\"SEEKVERA automated live smoke test\",\"source\":\"seekvera-smoke\"}")
-          test "$code" = '201'
-          echo "Stored Supabase smoke request: $ref"
+          endpoint='https://seekvera-main.seekvera-global.workers.dev/api/moderate'
+          safe=$(curl -fsS --max-time 75 "$endpoint" -H 'content-type: application/json' --data '{"text":"1000 sqm lawful residential land listing in Abuja","context":"marketplace"}')
+          blocked=$(curl -fsS --max-time 75 "$endpoint" -H 'content-type: application/json' --data '{"text":"rifle ammunition for sale","context":"marketplace"}')
+          review=$(curl -fsS --max-time 75 "$endpoint" -H 'content-type: application/json' --data '{"text":"Payment bank details changed to a new bank account, transfer urgently","context":"deal"}')
+          python - "$safe" "$blocked" "$review" <<'PY'
+          import json,sys
+          s,b,r=map(json.loads,sys.argv[1:4])
+          assert s.get('ok') is True, s
+          assert b.get('allowed') is False and b.get('reviewRequired') is True, b
+          assert r.get('reviewRequired') is True and 'bank_detail' in str(r.get('reason','')), r
+          print('Safety decisions:',s,b,r)
+          PY
 
-      - name: Test public pages and marketplace
+      - name: Test public Worker pages
         shell: bash
         run: |
           set -euo pipefail
-          worker='https://seekvera-main.seekvera-global.workers.dev'
-          pages='index.html marketplace.html post-ad.html seller-plans.html travel.html property.html cars-auto.html jobs.html shopping.html import-export.html business-software.html solar.html health.html education.html local-services.html privacy.html terms.html contact.html robots.txt sitemap.xml'
-          for page in $pages; do
-            curl -fsS --max-time 30 "$worker/$page" -o /dev/null
-          done
-          curl -fsS --max-time 30 "$worker/" -o /tmp/home.html
-          grep -q 'SEEKVERA' /tmp/home.html
-          grep -q 'Ask Anything' /tmp/home.html
-          grep -q 'Marketplace Ads' /tmp/home.html
-          echo 'Public Worker pages passed.'
+          base='https://seekvera-main.seekvera-global.workers.dev'
+          pages='index.html marketplace.html post-ad.html travel.html tourism.html connectivity.html wifi.html property.html cars-auto.html jobs.html import-export.html deal-agent.html privacy.html terms.html robots.txt sitemap.xml'
+          for page in $pages; do curl -fsS --max-time 30 "$base/$page" -o /dev/null; done
+          curl -fsS --max-time 30 "$base/" -o /tmp/home.html
+          grep -q 'Everything you need. One intelligent global search.' /tmp/home.html
+          grep -q '2026‑09‑22 premium r1' /tmp/home.html
+          grep -q 'superapp.js?v=20260922-premium-r1' /tmp/home.html
+          echo 'Current public Worker pages passed.'
 
-      - name: Verify GitHub Pages mirror
+      - name: Verify current GitHub Pages mirror
         shell: bash
         run: |
           set -euo pipefail
           url='https://seekvera-global.github.io/seekvera-main/'
-          curl -fsS --max-time 30 "$url" -o /tmp/gh-home.html
-          grep -q 'SEEKVERA' /tmp/gh-home.html
-          grep -q 'Marketplace Ads' /tmp/gh-home.html
-          echo 'GitHub Pages mirror passed.'
+          ready=0
+          for i in $(seq 1 12); do
+            if curl -fsS --max-time 30 "$url" -o /tmp/gh-home.html && grep -q 'Everything you need. One intelligent global search.' /tmp/gh-home.html && grep -q 'superapp.js?v=20260922-premium-r1' /tmp/gh-home.html; then ready=1; break; fi
+            sleep 15
+          done
+          test "$ready" -eq 1
+          echo 'Current GitHub Pages mirror passed.'
