@@ -1,4 +1,4 @@
-// Trigger Cloudflare deploy: 2026-09-21 Safety Gate v2 + AI Vision
+// Trigger Cloudflare deploy: 2026-09-22 AI resilience repair
 {
   "name": "seekvera-main",
   "main": "./worker.js",
