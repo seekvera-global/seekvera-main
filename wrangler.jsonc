@@ -1,4 +1,4 @@
-// Trigger Cloudflare deploy: 2026-09-22 AI resilience repair
+// Trigger Cloudflare deploy: 2026-09-22 Vision + voice reliability fix
 {
   "name": "seekvera-main",
   "main": "./worker.js",
