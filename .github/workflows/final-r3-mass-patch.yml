@@ -1,0 +1,36 @@
+name: SEEKVERA final r3 mass patch
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/final_r3_mass_patch.py'
+      - '.github/workflows/final-r3-mass-patch.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply final r3 across public pages
+        run: |
+          python tools/final_r3_mass_patch.py
+          node --check i18n-ui.js
+          node --check games.js
+      - name: Commit patched public pages
+        run: |
+          if git diff --quiet; then
+            echo 'No patch changes required'
+            exit 0
+          fi
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add '*.html' sitemap.xml 2>/dev/null || true
+          git commit -m 'Apply final r3 assets and games links across public pages'
+          git push
