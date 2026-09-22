@@ -1,4 +1,4 @@
-// Trigger Cloudflare deploy: 2026-09-22 multilingual chat + natural voice + compact premium v2 syntax-fixed
+// Trigger Cloudflare deploy: 2026-09-22 robust same-language AI lock v4 + natural voice + compact premium
 {
   "name": "seekvera-main",
   "main": "./worker.js",
