@@ -1,0 +1,36 @@
+name: SEEKVERA AI Vision runtime smoke once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/vision-runtime-smoke-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  vision:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Test live image moderation runtime
+        shell: python
+        run: |
+          import base64, json, struct, urllib.request, zlib
+
+          w=h=32
+          raw=b''.join(b'\x00'+b'\xff\xff\xff'*w for _ in range(h))
+          def chunk(t,d):
+              return struct.pack('>I',len(d))+t+d+struct.pack('>I',zlib.crc32(t+d)&0xffffffff)
+          png=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',w,h,8,2,0,0,0))+chunk(b'IDAT',zlib.compress(raw))+chunk(b'IEND',b'')
+          image='data:image/png;base64,'+base64.b64encode(png).decode()
+          payload=json.dumps({'image':image,'context':'plain white test image for runtime health only'}).encode()
+          req=urllib.request.Request('https://seekvera-main.seekvera-global.workers.dev/api/vision',data=payload,headers={'content-type':'application/json'},method='POST')
+          with urllib.request.urlopen(req,timeout=90) as r:
+              d=json.loads(r.read().decode())
+          print('Vision response:',json.dumps(d,ensure_ascii=False))
+          assert d.get('ok') is True, d
+          assert d.get('source') == 'ai-vision', d
+          assert d.get('model') == '@cf/meta/llama-3.2-11b-vision-instruct', d
