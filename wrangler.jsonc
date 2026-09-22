@@ -1,4 +1,4 @@
-// Trigger Cloudflare deploy: 2026-09-22 unified premium AI chat + voice + camera + attachments
+// Trigger Cloudflare deploy: 2026-09-22 final single-chat cleanup + premium mobile UI
 {
   "name": "seekvera-main",
   "main": "./worker.js",
