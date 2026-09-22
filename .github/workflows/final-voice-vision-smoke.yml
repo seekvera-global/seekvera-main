@@ -1,0 +1,92 @@
+name: SEEKVERA final voice and Vision smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/final-voice-vision-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate voice client source
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check voice-ai.js
+          grep -q 'function spokenText' voice-ai.js
+          grep -q 'function speechChunks' voice-ai.js
+          grep -q 'voice:true' voice-ai.js
+          grep -q "\.90:.94" voice-ai.js
+
+      - name: Confirm live voice client is current
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS --max-time 30 'https://seekvera-main.seekvera-global.workers.dev/voice-ai.js' -o /tmp/voice-ai.js
+          grep -q 'function spokenText' /tmp/voice-ai.js
+          grep -q 'function speechChunks' /tmp/voice-ai.js
+          grep -q 'voice:true' /tmp/voice-ai.js
+
+      - name: Test spoken-mode AI English and Arabic
+        shell: python
+        run: |
+          import json, subprocess, time, os, sys
+          url='https://seekvera-main.seekvera-global.workers.dev/api/ai'
+          cases=[
+            {'message':'Tell me briefly how to search for a hotel in Abuja.','language':'English','country':'Nigeria','voice':True},
+            {'message':'اشرح لي باختصار كيف أبحث عن فندق في أبوجا.','language':'العربية','country':'Nigeria','voice':True},
+          ]
+          for n,case in enumerate(cases,1):
+              ok=False
+              for attempt in range(1,4):
+                  out=f'/tmp/voice-{n}-{attempt}.json'
+                  p=subprocess.run(['curl','-sS','--max-time','90','-o',out,'-w','%{http_code}',url,'-H','content-type: application/json','--data',json.dumps(case,ensure_ascii=False)],capture_output=True,text=True)
+                  body=open(out,encoding='utf-8').read() if os.path.exists(out) else ''
+                  if p.stdout.strip().startswith('2'):
+                      d=json.loads(body); text=str(d.get('response','')).strip()
+                      assert d.get('ok') is True and text, d
+                      assert 'http://' not in text and 'https://' not in text, text
+                      assert '```' not in text, text
+                      print('Voice case',n,'model',d.get('model'),'response:',text[:260])
+                      ok=True; break
+                  print('Voice retry',n,attempt,body[:500]); time.sleep(8)
+              if not ok: sys.exit(1)
+
+      - name: Test live AI Vision
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64,json,struct,zlib
+          w=h=32
+          raw=b''.join(b'\x00'+b'\xff\xff\xff'*w for _ in range(h))
+          def chunk(t,d): return struct.pack('>I',len(d))+t+d+struct.pack('>I',zlib.crc32(t+d)&0xffffffff)
+          png=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',w,h,8,2,0,0,0))+chunk(b'IDAT',zlib.compress(raw))+chunk(b'IEND',b'')
+          image='data:image/png;base64,'+base64.b64encode(png).decode()
+          open('/tmp/vision.json','w').write(json.dumps({'image':image,'context':'plain white test image for runtime health only'}))
+          PY
+          success=0
+          for i in 1 2 3; do
+            code=$(curl -sS --max-time 90 -o /tmp/vision-response.json -w '%{http_code}' 'https://seekvera-main.seekvera-global.workers.dev/api/vision' -H 'content-type: application/json' --data-binary @/tmp/vision.json)
+            echo "Vision attempt $i HTTP $code"
+            cat /tmp/vision-response.json; echo
+            if [ "$code" = 200 ] && python - <<'PY'
+          import json
+          d=json.load(open('/tmp/vision-response.json'))
+          assert d.get('ok') is True, d
+          assert d.get('source') == 'ai-vision', d
+          assert d.get('model') == '@cf/meta/llama-3.2-11b-vision-instruct', d
+          PY
+            then success=1; break; fi
+            sleep 8
+          done
+          test "$success" -eq 1
