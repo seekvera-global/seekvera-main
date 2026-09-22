@@ -1,0 +1,48 @@
+name: SEEKVERA WebKit API diagnostic
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/webkit-api-diagnostic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install WebKit
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@latest --no-save
+          npx playwright install --with-deps webkit
+      - name: Probe same-origin and worker APIs from WebKit
+        run: |
+          cat > /tmp/webkit-api.js <<'JS'
+          const {webkit}=require('playwright');
+          (async()=>{
+            const b=await webkit.launch({headless:true});
+            const c=await b.newContext({viewport:{width:390,height:844},userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1'});
+            const p=await c.newPage();
+            p.on('request',r=>{if(r.url().includes('/api/ai'))console.log('REQUEST',r.method(),r.url(),r.headers())});
+            p.on('response',async r=>{if(r.url().includes('/api/ai'))console.log('RESPONSE',r.status(),r.url(),await r.allHeaders())});
+            p.on('requestfailed',r=>{if(r.url().includes('/api/ai'))console.log('FAILED',r.url(),r.failure())});
+            p.on('console',m=>console.log('CONSOLE',m.type(),m.text()));
+            p.on('pageerror',e=>console.log('PAGEERROR',e.message));
+            await p.goto('https://seekveraglobal.com/?webkitdiag=1',{waitUntil:'domcontentloaded',timeout:60000});
+            console.log('FINAL_URL',p.url());
+            const out=await p.evaluate(async()=>{
+              const payload={message:'Reply only with: Hello.',country:'Worldwide',language:'English',scope:'worldwide',fast:true};
+              async function probe(url){try{const r=await fetch(url,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});return {ok:r.ok,status:r.status,url:r.url,type:r.type,headers:[...r.headers.entries()],text:(await r.text()).slice(0,300)}}catch(e){return {error:String(e),name:e?.name,message:e?.message}}}
+              return {same:await probe('/api/ai'),worker:await probe('https://seekvera-main.seekvera-global.workers.dev/api/ai'),origin:location.origin,href:location.href};
+            });
+            console.log('RESULT',JSON.stringify(out,null,2));
+            await b.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          node /tmp/webkit-api.js
