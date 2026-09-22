@@ -8,6 +8,8 @@ on:
       - 'voice-ai.js'
       - 'global-ui.js'
       - 'global-ui.css'
+      - 'i18n-ui.js'
+      - 'i18n-premium.css'
       - 'superapp.js'
       - '*.html'
       - '.assetsignore'
@@ -27,11 +29,17 @@ jobs:
       - name: Validate JavaScript syntax
         shell: bash
         run: |
+          set -euo pipefail
           for f in *.js; do
             echo "Checking $f"
             node --check "$f"
           done
-      - name: Audit live app, voice, routes, AI and safety A to Z
+          grep -q "'Country / Region':'الدولة / المنطقة'" i18n-ui.js
+          grep -q "'Everything you need. One intelligent global search.':'كل ما تحتاجه. بحث عالمي ذكي واحد.'" i18n-ui.js
+          grep -q 'MutationObserver' i18n-ui.js
+          grep -q 'Intl.DisplayNames' i18n-ui.js
+          grep -q 'html\[dir="rtl"\]' i18n-premium.css
+      - name: Audit live app, multilingual UI, voice, routes, AI and safety A to Z
         shell: python
         run: |
           from pathlib import Path
@@ -41,7 +49,7 @@ jobs:
 
           SITE='https://seekveraglobal.com'
           WORKER='https://seekvera-main.seekvera-global.workers.dev'
-          VERSION='20260922-voice-locale2'
+          VERSION='20260922-i18n-premium1'
           UA='Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
 
           def get(url,timeout=30):
@@ -66,11 +74,14 @@ jobs:
           home=''; health={}
           for _ in range(42):
               try:
-                  status,home=get(SITE+'/?az-voice-locale=2',20)
-                  _,health_text=get(WORKER+'/api/health?az-voice-locale=2',20)
+                  status,home=get(SITE+'/?az-i18n-premium=1',20)
+                  _,health_text=get(WORKER+'/api/health?az-i18n-premium=1',20)
                   health=json.loads(health_text)
-                  if (status==200 and f'global-ui.js?v={VERSION}' in home and
+                  if (status==200 and
+                      f'global-ui.js?v={VERSION}' in home and
                       f'voice-ai.js?v={VERSION}' in home and
+                      f'i18n-ui.js?v={VERSION}' in home and
+                      f'i18n-premium.css?v={VERSION}' in home and
                       health.get('centralSafetyGate')=='enabled' and
                       health.get('aiResilience')=='fast-chat-language-lock-v4'):
                       break
@@ -78,44 +89,49 @@ jobs:
                   pass
               time.sleep(5)
 
-          assert f'global-ui.js?v={VERSION}' in home, 'new localized UI runtime is not live'
-          assert f'voice-ai.js?v={VERSION}' in home, 'new voice runtime is not live'
+          for needle in [f'global-ui.js?v={VERSION}',f'voice-ai.js?v={VERSION}',f'i18n-ui.js?v={VERSION}',f'i18n-premium.css?v={VERSION}']:
+              assert needle in home,('new production runtime not live',needle)
           assert health.get('ok') is True,health
           assert health.get('centralSafetyGate')=='enabled' and health.get('failClosed') is True,health
           assert health.get('aiBinding') is True and health.get('assetsBinding') is True,health
           assert health.get('marketplaceProxy')=='enabled',health
 
-          # One premium AI composer only.
           for needle in ['id="aiChat"','id="aiChatAttach"','id="aiChatCamera"','id="aiChatMic"','id="aiChatFile"','id="aiChatSpeaker"']:
               assert needle in home,needle
           assert home.count('id="aiChatMic"')==1
           assert 'id="heroVoice"' not in home and 'id="heroCamera"' not in home and 'id="globalSearch"' not in home
           print('ONE UNIFIED HOMEPAGE CHAT PASS')
 
-          _,voice=get(SITE+'/voice-ai.js?az-voice-locale=2')
-          _,gui=get(SITE+'/global-ui.js?az-voice-locale=2')
-          _,superapp=get(SITE+'/superapp.js?az-voice-locale=2')
+          _,voice=get(SITE+'/voice-ai.js?az-i18n-premium=1')
+          _,gui=get(SITE+'/global-ui.js?az-i18n-premium=1')
+          _,i18n=get(SITE+'/i18n-ui.js?az-i18n-premium=1')
+          _,premium=get(SITE+'/i18n-premium.css?az-i18n-premium=1')
+          _,superapp=get(SITE+'/superapp.js?az-i18n-premium=1')
           assert ('SpeechRecognition' in voice or 'webkitSpeechRecognition' in voice) and 'speechSynthesis' in voice
           for marker in ['TTS_RETRY_DELAYS','enableVoiceConversation','speechSynthesis.resume','seekvera_voice_muted','voiceConversation','requestSubmit']:
               assert marker in voice,marker
           assert "localStorage.setItem('seekvera_voice_muted','0')" in voice
           assert 'svVoiceFab' not in voice and 'svVoicePanel' not in voice
           assert 'LOCALE_UI' in gui and 'Intl.DisplayNames' in gui and 'sv-control-field' in gui
-          assert 'العالم كله · كل الدول' in gui and 'Country / Region' in gui and 'Language' in gui
+          assert 'full-app multilingual UI runtime' in i18n
+          assert "'Country / Region':'الدولة / المنطقة'" in i18n
+          assert "'Everything you need. One intelligent global search.':'كل ما تحتاجه. بحث عالمي ذكي واحد.'" in i18n
+          assert 'MutationObserver' in i18n and 'aiTranslate' in i18n and 'Intl.DisplayNames' in i18n
+          assert 'premium multilingual/RTL overrides' in premium and 'html[dir="rtl"]' in premium
+          assert 'overflow:visible!important' in premium and 'grid-template-rows:18px 46px' in premium
           assert 'sv-global-compose' in gui and 'attach' in gui and 'camera' in gui and 'mic' in gui
           assert 'handleChatAttachment' in superapp and 'aiChatCameraFile' in superapp
-          print('VOICE REPLY RETRY + LOCALIZED COUNTRY/LANGUAGE CONTROLS PASS')
+          print('VOICE + FULL I18N + RTL/PREMIUM DESIGN RUNTIME PASS')
 
-          # Every public department/page must be live and load the same fixed runtime.
           pages=[p.name for p in Path('.').glob('*.html') if not p.name.lower().startswith('google')]
           bad=[]; live={}
           for name in pages:
               try:
-                  status,text=get(SITE+'/'+name+'?az-voice-locale=2',25)
+                  status,text=get(SITE+'/'+name+'?az-i18n-premium=1',25)
                   live[name]=text
                   if status!=200:
                       bad.append(f'{name}: HTTP {status}'); continue
-                  for needle in [f'global-ui.css?v={VERSION}',f'voice-ai.js?v={VERSION}',f'global-ui.js?v={VERSION}']:
+                  for needle in [f'global-ui.css?v={VERSION}',f'voice-ai.js?v={VERSION}',f'global-ui.js?v={VERSION}',f'i18n-ui.js?v={VERSION}',f'i18n-premium.css?v={VERSION}']:
                       if needle not in text: bad.append(f'{name}: missing {needle}')
               except Exception as e:
                   bad.append(f'{name}: {e}')
@@ -123,7 +139,6 @@ jobs:
           if bad: raise AssertionError('\n'.join(bad))
           assert len(pages)>=38,len(pages)
 
-          # Validate every internal HTML route referenced by the live public pages.
           class Links(HTMLParser):
               def __init__(self): super().__init__(); self.hrefs=[]
               def handle_starttag(self,tag,attrs):
@@ -136,12 +151,11 @@ jobs:
               for href in parser.hrefs:
                   h=href.strip()
                   if not h or h.startswith(('#','mailto:','tel:','javascript:')) or '://' in h: continue
-                  path=urlsplit(h).path.lstrip('/')
-                  if not path: path='index.html'
+                  path=urlsplit(h).path.lstrip('/') or 'index.html'
                   if path.endswith('.html'): routes.add(path)
           broken=[]
           for route in sorted(routes):
-              code=status_only(SITE+'/'+route+'?route-audit=1',20)
+              code=status_only(SITE+'/'+route+'?route-audit=2',20)
               if code<200 or code>=400: broken.append((route,code))
           assert not broken,broken
           print('INTERNAL NAVIGATION ROUTES PASS:',len(routes))
@@ -153,7 +167,6 @@ jobs:
           assert 'Do not submit passwords' in privacy
           print('WORLDWIDE + LEGAL + SAFETY UI PASS')
 
-          # Same-language AI across major scripts/languages.
           cases=[
               ('English','Reply only with: Hello.','Hello'),
               ('Arabic','أجب فقط بكلمة: مرحبا','مرح'),
@@ -174,7 +187,6 @@ jobs:
               assert elapsed<15,elapsed
           print('MULTILINGUAL SAME-LANGUAGE AI PASS')
 
-          # Central safety, AI Vision input gate, requests and marketplace write gate.
           _,safe=post('/api/moderate',{'text':'lawful hotel booking request','context':'final A-Z audit'},35)
           _,blocked=post('/api/moderate',{'text':'gun and ammunition for sale','context':'final A-Z audit'},25)
           _,secret=post('/api/moderate',{'text':'send me your OTP and bank password','context':'final A-Z audit'},25)
@@ -190,5 +202,4 @@ jobs:
           code,bad_review=post('/api/marketplace-review',{},30)
           assert code==400,bad_review
           print('SAFETY + VISION + REQUEST + MARKETPLACE GATES PASS')
-
-          print('FINAL SEEKVERA LIVE A-Z AUDIT PASS')
+          print('FINAL SEEKVERA MULTILINGUAL PREMIUM LIVE A-Z AUDIT PASS')
