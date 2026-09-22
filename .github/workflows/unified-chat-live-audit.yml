@@ -1,0 +1,87 @@
+name: SEEKVERA unified chat live audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/unified-chat-live-audit.yml'
+      - 'index.html'
+      - 'superapp.js'
+      - 'voice-ai.js'
+      - 'global-ui.js'
+      - 'global-ui.css'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify one-chat premium experience live
+        shell: python
+        run: |
+          from pathlib import Path
+          import json, time, urllib.request, urllib.error
+          SITE='https://seekveraglobal.com'
+          WORKER='https://seekvera-main.seekvera-global.workers.dev'
+          VERSION='20260922-unified-chat1'
+          UA='Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
+          def get(url,timeout=25):
+              req=urllib.request.Request(url,headers={'User-Agent':UA,'Cache-Control':'no-cache'})
+              with urllib.request.urlopen(req,timeout=timeout) as r:
+                  return r.status,r.read().decode('utf-8','replace')
+          def post(path,payload,timeout=30):
+              req=urllib.request.Request(WORKER+path,data=json.dumps(payload,ensure_ascii=False).encode('utf-8'),headers={'User-Agent':UA,'content-type':'application/json','origin':SITE},method='POST')
+              try:
+                  with urllib.request.urlopen(req,timeout=timeout) as r:return r.status,json.loads(r.read().decode())
+              except urllib.error.HTTPError as e:return e.code,json.loads(e.read().decode())
+          home=''
+          for _ in range(30):
+              try:
+                  status,home=get(SITE+'/?unified-live=1')
+                  if status==200 and f'global-ui.css?v={VERSION}' in home and f'voice-ai.js?v={VERSION}' in home:break
+              except Exception:pass
+              time.sleep(5)
+          assert f'global-ui.css?v={VERSION}' in home,'unified CSS not live'
+          assert f'voice-ai.js?v={VERSION}' in home,'unified voice runtime not live'
+          for needle in ['id="aiChat"','id="aiChatAttach"','id="aiChatCamera"','id="aiChatMic"','id="aiChatFile"','id="aiChatSpeaker"']:
+              assert needle in home,needle
+          assert 'id="heroVoice"' not in home
+          assert 'id="heroCamera"' not in home
+          assert home.count('id="aiChatMic"')==1
+          _,voice=get(SITE+'/voice-ai.js?unified-live=1')
+          _,gui=get(SITE+'/global-ui.js?unified-live=1')
+          _,css=get(SITE+'/global-ui.css?unified-live=1')
+          assert 'SpeechRecognition' in voice and 'speechSynthesis' in voice
+          assert 'FEMALE_HINTS' in voice and 'QUALITY_HINTS' in voice
+          assert 'svVoiceFab' not in voice and 'svVoicePanel' not in voice
+          assert 'sv-voice-open' not in gui and 'sv-visual-open' not in gui
+          assert 'sv-global-compose' in gui and 'attach' in gui and 'camera' in gui and 'mic' in gui
+          assert 'Unified premium AI conversation' in css
+          assert 'grid-template-columns:38px minmax(0,1fr) 38px 38px 40px' in css
+          pages=[p.name for p in Path('.').glob('*.html') if not p.name.lower().startswith('google')]
+          bad=[]
+          for name in pages:
+              try:
+                  status,text=get(SITE+'/'+name+'?unified-dept=1')
+                  if status!=200:bad.append(f'{name}: HTTP {status}');continue
+                  for needle in [f'global-ui.css?v={VERSION}',f'voice-ai.js?v={VERSION}',f'global-ui.js?v={VERSION}']:
+                      if needle not in text:bad.append(f'{name}: missing {needle}')
+              except Exception as e:bad.append(f'{name}: {e}')
+          print('Live pages checked:',len(pages))
+          if bad:raise AssertionError('\n'.join(bad))
+          assert len(pages)>=38
+          cases=[('English','Reply only with: Hello.','Hello'),('Arabic','أجب فقط بكلمة: مرحبا','مرح'),('French','Réponds uniquement par : Bonjour.','Bonjour')]
+          for label,msg,marker in cases:
+              status,d=post('/api/ai',{'message':msg,'country':'Worldwide','language':'auto','scope':'worldwide','fast':True})
+              assert 200<=status<300 and d.get('ok') is True and marker.lower() in str(d.get('response','')).lower(),(label,d)
+          _,safe=post('/api/moderate',{'text':'lawful hotel booking request','context':'unified chat audit'})
+          _,blocked=post('/api/moderate',{'text':'gun and ammunition for sale','context':'unified chat audit'})
+          assert safe.get('allowed') is True and blocked.get('allowed') is False
+          status,invalid=post('/api/visual-search',{'image':'not-an-image','country':'Worldwide'})
+          assert invalid.get('allowed') is False or invalid.get('ok') is False
+          print('UNIFIED CHAT + VOICE + CAMERA + ATTACH + SAFETY LIVE AUDIT PASS')
