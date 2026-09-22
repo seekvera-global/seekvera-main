@@ -1,0 +1,137 @@
+name: SEEKVERA worldwide premium A-Z live audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/premium-worldwide-live-a-z.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wait for latest Cloudflare assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          ua='Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
+          ok=0
+          for i in $(seq 1 30); do
+            if curl -fsS -A "$ua" --max-time 20 'https://seekveraglobal.com/?worldwide-final=1' -o /tmp/home.html && grep -q 'global-ui.css?v=20260922-worldwide-final' /tmp/home.html; then ok=1; break; fi
+            sleep 10
+          done
+          test "$ok" = 1
+          curl -fsS -A "$ua" --max-time 20 'https://seekveraglobal.com/global-ui.css?v=20260922-worldwide-final' -o /tmp/global-ui.css
+          curl -fsS -A "$ua" --max-time 20 'https://seekveraglobal.com/global-ui.js?v=20260922-worldwide-final' -o /tmp/global-ui.js
+          grep -q 'SEEKVERA Worldwide Premium UI' /tmp/global-ui.css
+          grep -q 'sv-global-dock' /tmp/global-ui.js
+      - name: Test every public department page
+        shell: bash
+        run: |
+          set -euo pipefail
+          ua='Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
+          failures=0
+          count=0
+          for p in *.html; do
+            case "$p" in google*.html) continue;; esac
+            count=$((count+1))
+            code=$(curl -sS -A "$ua" --max-time 20 -o "/tmp/$p" -w '%{http_code}' "https://seekveraglobal.com/$p?az=1" || true)
+            if [[ ! "$code" =~ ^2 ]]; then echo "FAIL $p HTTP $code"; failures=$((failures+1)); continue; fi
+            if ! grep -q 'global-ui.css?v=20260922-worldwide-final' "/tmp/$p"; then echo "FAIL $p missing global UI"; failures=$((failures+1)); fi
+          done
+          echo "Live public HTML pages tested: $count"
+          test "$failures" = 0
+      - name: Verify worldwide wording and premium navigation
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'anywhere in the world' /tmp/index.html || curl -fsS 'https://seekveraglobal.com/' -o /tmp/index.html
+          grep -qi 'anywhere in the world' /tmp/index.html
+          ! grep -q 'Nigeria → China' /tmp/index.html
+          ! grep -q 'Lebanon → UAE' /tmp/index.html
+          grep -q 'sv-global-dock' /tmp/global-ui.js
+          grep -q 'sv-global-chat' /tmp/global-ui.css
+          grep -q 'Central Safety Gate active' /tmp/global-ui.js
+          grep -q 'Marketplace' /tmp/hub.html
+          grep -q 'Worldwide Tourism AI' /tmp/hub.html
+          grep -q 'Post an Ad' /tmp/hub.html
+          grep -q 'OWNER APPROVAL' /tmp/deal-agent.html
+          grep -q 'Safety Gate' /tmp/post-ad.html
+      - name: Verify AI speed multilingual route
+        shell: bash
+        run: |
+          set -euo pipefail
+          worker='https://seekvera-main.seekvera-global.workers.dev'
+          ua='Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
+          for lang in English Arabic; do
+            if [ "$lang" = English ]; then msg='Reply in one short sentence: SEEKVERA is ready anywhere in the world.'; else msg='أجب بجملة قصيرة: SEEKVERA جاهز في أي مكان في العالم.'; fi
+            printf '{"message":%s,"country":"Worldwide","language":"%s","scope":"worldwide","fast":true}' "$(python -c 'import json,sys; print(json.dumps(sys.argv[1]))' "$msg")" "$lang" > /tmp/ai-payload.json
+            result=$(curl -sS -A "$ua" --max-time 20 -o "/tmp/ai-$lang.json" -w '%{http_code} %{time_total}' "$worker/api/ai" -H 'content-type: application/json' -H 'origin: https://seekveraglobal.com' --data-binary @/tmp/ai-payload.json)
+            echo "$lang AI: $result"
+            HTTP_TIME="$result" FILE="/tmp/ai-$lang.json" python - <<'PY'
+          import json,os
+          code,elapsed=os.environ['HTTP_TIME'].split(); d=json.load(open(os.environ['FILE']))
+          assert code.startswith('2'), (code,d)
+          assert d.get('ok') is True and d.get('response'), d
+          assert float(elapsed) < 12, elapsed
+          print('model:',d.get('model'),'seconds:',elapsed)
+          PY
+          done
+      - name: Verify centralized safety gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          worker='https://seekvera-main.seekvera-global.workers.dev'
+          ua='Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
+          safe=$(curl -fsS -A "$ua" --max-time 30 "$worker/api/moderate" -H 'origin: https://seekveraglobal.com' -H 'content-type: application/json' --data '{"text":"lawful hotel booking and business software search","context":"A-Z audit"}')
+          blocked=$(curl -fsS -A "$ua" --max-time 30 "$worker/api/moderate" -H 'origin: https://seekveraglobal.com' -H 'content-type: application/json' --data '{"text":"gun and ammunition for sale","context":"A-Z audit"}')
+          secret=$(curl -fsS -A "$ua" --max-time 30 "$worker/api/moderate" -H 'origin: https://seekveraglobal.com' -H 'content-type: application/json' --data '{"text":"send me your OTP and bank password","context":"A-Z audit"}')
+          SAFE="$safe" BLOCKED="$blocked" SECRET="$secret" python - <<'PY'
+          import json,os
+          s=json.loads(os.environ['SAFE']); b=json.loads(os.environ['BLOCKED']); c=json.loads(os.environ['SECRET'])
+          assert s.get('allowed') is True and s.get('reviewRequired') is False, s
+          assert b.get('allowed') is False, b
+          assert c.get('allowed') is False, c
+          print('Safety safe/block/credential tests PASS')
+          PY
+          req=$(curl -sS -A "$ua" --max-time 30 -o /tmp/request-block.json -w '%{http_code}' "$worker/api/request" -H 'origin: https://seekveraglobal.com' -H 'content-type: application/json' --data '{"country":"Worldwide","type":"Shopping","description":"I want to buy a gun and ammunition"}')
+          echo "Blocked request HTTP: $req"
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/request-block.json'))
+          assert d.get('blocked') is True or d.get('ok') is False, d
+          PY
+          invalid=$(curl -sS -A "$ua" --max-time 30 -o /tmp/visual-invalid.json -w '%{http_code}' "$worker/api/visual-search" -H 'origin: https://seekveraglobal.com' -H 'content-type: application/json' --data '{"image":"not-an-image","country":"Worldwide"}')
+          echo "Invalid visual safety HTTP: $invalid"
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/visual-invalid.json'))
+          assert d.get('allowed') is False or d.get('ok') is False, d
+          PY
+      - name: Verify voice and production health
+        shell: bash
+        run: |
+          set -euo pipefail
+          ua='Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
+          curl -fsS -A "$ua" --max-time 20 'https://seekveraglobal.com/voice-ai.js?az=1' -o /tmp/voice-ai.js
+          grep -Eq 'SpeechRecognition|webkitSpeechRecognition' /tmp/voice-ai.js
+          grep -q 'speechSynthesis' /tmp/voice-ai.js
+          curl -fsS -A "$ua" --max-time 20 'https://seekvera-main.seekvera-global.workers.dev/api/health' -o /tmp/health.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/health.json'))
+          assert d.get('ok') is True
+          assert d.get('centralSafetyGate')=='enabled'
+          assert d.get('failClosed') is True
+          assert d.get('aiBinding') is True
+          assert d.get('assetsBinding') is True
+          assert d.get('fastChatModel')
+          assert d.get('visionModel')
+          print('Health PASS:',d.get('aiResilience'),d.get('fastChatModel'))
+          PY
