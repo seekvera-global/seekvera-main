@@ -32,8 +32,7 @@ jobs:
               s=s.replace(anchor,edge,1)
 
           marker="if(u.pathname==='/api/request')"
-          proxy="""if(u.pathname==='/api/marketplace-submit'||u.pathname==='/api/marketplace-review'){try{const target=u.pathname.endsWith('submit')?'marketplace-submit':'marketplace-review',raw=await request.text(),limit=target==='marketplace-submit'?18000:4096;if(raw.length>limit)return j(request,{ok:false,error:'Request too large'},413);const r=await fetch(EDGE+'/'+target,{method:'POST',headers:{'content-type':'application/json','apikey':SBK},body:raw}),text=await r.text();return new Response(text,{status:r.status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff',...cors(request)}})}catch{return j(request,{ok:false,error:'Marketplace server gate unavailable',reviewRequired:true},503)}}
-"""
+          proxy="if(u.pathname==='/api/marketplace-submit'||u.pathname==='/api/marketplace-review'){try{const target=u.pathname.endsWith('submit')?'marketplace-submit':'marketplace-review',raw=await request.text(),limit=target==='marketplace-submit'?18000:4096;if(raw.length>limit)return j(request,{ok:false,error:'Request too large'},413);const r=await fetch(EDGE+'/'+target,{method:'POST',headers:{'content-type':'application/json','apikey':SBK},body:raw}),text=await r.text();return new Response(text,{status:r.status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff',...cors(request)}})}catch{return j(request,{ok:false,error:'Marketplace server gate unavailable',reviewRequired:true},503)}}\n"
           if "/api/marketplace-submit'||u.pathname==='/api/marketplace-review" not in s:
               assert marker in s
               s=s.replace(marker,proxy+marker,1)
@@ -50,7 +49,8 @@ jobs:
           for p in Path('.').glob('*.html'):
               s=p.read_text(encoding='utf-8')
               ns=s.replace("const H={'apikey':KEY,'Authorization':'Bearer '+KEY};","const H={'apikey':KEY};")
-              if ns!=s:p.write_text(ns,encoding='utf-8')
+              if ns!=s:
+                  p.write_text(ns,encoding='utf-8')
 
       - name: Validate production repair
         shell: bash
@@ -61,7 +61,7 @@ jobs:
           grep -q "/api/marketplace-submit" worker.js
           grep -q "SUBMIT=WORKER+'/api/marketplace-submit'" post-ad.html
           grep -q "REVIEW=WORKER+'/api/marketplace-review'" post-ad.html
-          ! grep -R "'Authorization':'Bearer '+KEY" --include='*.html' .
+          if grep -R "'Authorization':'Bearer '+KEY" --include='*.html' .; then exit 1; fi
           npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-marketplace-final
 
       - name: Commit repair
