@@ -26,7 +26,8 @@ function languageName(){
 }
 function detectSpeechLocale(text){
   const t=String(text||'');
-  if(/[\u0600-\u06FF]/.test(t))return /[\u0750-\u077F]/.test(t)?'ur-PK':'ar-SA';
+  const selected=currentLocale();
+  if(/[\u0600-\u06FF]/.test(t)){const b=selected.split('-')[0].toLowerCase();return ['ar','fa','ur'].includes(b)?selected:'ar-SA';}
   if(/[\u4E00-\u9FFF]/.test(t))return 'zh-CN';
   if(/[\u3040-\u30FF]/.test(t))return 'ja-JP';
   if(/[\uAC00-\uD7AF]/.test(t))return 'ko-KR';
@@ -44,12 +45,14 @@ function pickVoice(locale){
   const exact=voices.find(v=>v.lang?.toLowerCase()===locale.toLowerCase()); if(exact)return exact;
   const base=locale.split('-')[0].toLowerCase(); return voices.find(v=>v.lang?.toLowerCase().startsWith(base))||null;
 }
+function spokenText(text){return String(text||'').replace(/```[\s\S]*?```/g,' ').replace(/https?:\/\/\S+/g,' ').replace(/[*_#>`~|]/g,' ').replace(/(?:^|\s)[•▪◦◆◇▶►]+/g,' ').replace(/\s+/g,' ').trim()}
+function speechChunks(text,max=220){const s=spokenText(text);if(!s)return[];const parts=s.split(/(?<=[.!?؟。！？])\s+/);const out=[];let cur='';for(const part of parts){if((cur+' '+part).trim().length<=max)cur=(cur+' '+part).trim();else{if(cur)out.push(cur);if(part.length<=max)cur=part;else{for(let i=0;i<part.length;i+=max)out.push(part.slice(i,i+max));cur=''}}}if(cur)out.push(cur);return out}
 function speak(text,locale){
   lastAnswer=String(text||''); lastLang=locale||detectSpeechLocale(text); if(muted||!lastAnswer||!('speechSynthesis'in window))return;
   stopSpeech();
-  const u=new SpeechSynthesisUtterance(lastAnswer.replace(/https?:\/\/\S+/g,'').slice(0,2200));
-  u.lang=lastLang; const v=pickVoice(lastLang); if(v)u.voice=v; u.rate=1; u.pitch=1;
-  speechSynthesis.speak(u);
+  const chunks=speechChunks(lastAnswer).slice(0,12);let i=0;
+  const next=()=>{if(muted||i>=chunks.length)return;const u=new SpeechSynthesisUtterance(chunks[i++]);u.lang=lastLang;const v=pickVoice(lastLang);if(v)u.voice=v;u.rate=/^(ar|fa|ur)(-|$)/i.test(lastLang)?.90:.94;u.pitch=1;u.onend=next;u.onerror=()=>{};speechSynthesis.speak(u)};
+  next();
 }
 function setState(state,msg){
   const btn=document.getElementById('svVoiceFab'),status=document.getElementById('svVoiceStatus');
@@ -65,7 +68,7 @@ async function askAI(text){
   const clean=escText(text); if(!clean)return;
   showPanel(true);setTranscript(clean);setAnswer('…');setState('thinking','SEEKVERA AI…');
   try{
-    const res=await fetch(`${API_BASE}/api/ai`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message:clean,country:currentCountry(),language:languageName()})});
+    const res=await fetch(`${API_BASE}/api/ai`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message:clean,country:currentCountry(),language:languageName(),voice:true})});
     const data=await res.json().catch(()=>({}));
     if(!res.ok||!data?.response)throw new Error(data?.error||'AI unavailable');
     const answer=String(data.response).trim(); setAnswer(answer);setState('idle','');
