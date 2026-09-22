@@ -1,7 +1,7 @@
 from pathlib import Path
 import re
 
-VERSION='20260922-i18n-premium2'
+VERSION='20260922-final-r3'
 htmls=[p for p in Path('.').glob('*.html') if not p.name.lower().startswith('google')]
 for p in htmls:
     s=p.read_text(encoding='utf-8')
@@ -15,4 +15,4 @@ for p in htmls:
     s=re.sub(r'global-ui\.css\?v=[^"\']+',f'global-ui.css?v={VERSION}',s)
     s=re.sub(r'voice-ai\.js\?v=[^"\']+',f'voice-ai.js?v={VERSION}',s)
     p.write_text(s,encoding='utf-8')
-print('Updated multilingual premium runtime on',len(htmls),'HTML pages')
+print('Updated multilingual final R3 runtime on',len(htmls),'HTML pages')
