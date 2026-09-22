@@ -24,6 +24,8 @@ html[lang="ar"] body.sv-home-global .sv-kicker::after{content:"🌍 العالم
 .sv-unified-compose .send{background:linear-gradient(135deg,#14b77c,#20c98a)!important;color:#fff!important;box-shadow:0 8px 18px rgba(22,182,122,.22)!important}
 .sv-cat,.sv-feature,.sv-trust,.sv-listing,.sv-request-compact{box-shadow:0 8px 24px rgba(15,38,64,.055)!important;border-color:#e1e8ef!important}
 .sv-cat:hover,.sv-feature:hover{transform:translateY(-1px);box-shadow:0 14px 32px rgba(15,38,64,.10)!important}
+/* Homepage already exposes the full AI composer and top controls; removing the duplicate fixed dock prevents mobile overlap. */
+body.sv-home-global .sv-global-dock{display:none!important}
 html[dir="rtl"] body{font-family:Tahoma,"Segoe UI",Arial,sans-serif!important}
 html[dir="rtl"] .sv-top-inner,html[dir="rtl"] .sv-controls,html[dir="rtl"] .sv-hero,html[dir="rtl"] .sv-section,html[dir="rtl"] .sv-band,html[dir="rtl"] .sv-foot{text-align:right!important}
 html[dir="rtl"] .sv-brand{direction:rtl!important;justify-self:end!important}
@@ -43,7 +45,6 @@ html[dir="rtl"] .sv-section-head,html[dir="rtl"] .sv-actions,html[dir="rtl"] .sv
 html[dir="rtl"] .sv-global-dock{direction:rtl!important}
 html[dir="rtl"] .sv-global-tip{right:auto!important;left:58px!important}
 html[dir="rtl"] .sv-global-chat,html[dir="rtl"] .sv-global-safety{right:auto!important;left:74px!important}
-body.sv-home-global:has(#aiChatInput:focus) .sv-global-dock{transform:translateY(calc(100% + 28px))!important;opacity:0!important;pointer-events:none!important;transition:transform .2s ease,opacity .2s ease!important}
 @media(max-width:900px){
  .sv-top-inner{padding-inline:14px!important}
  .sv-controls{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px 8px!important;width:100%!important;padding-top:4px!important}
