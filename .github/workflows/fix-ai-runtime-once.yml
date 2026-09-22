@@ -45,11 +45,6 @@ jobs:
 
           p.write_text(s,encoding='utf-8')
 
-          w=Path('.github/workflows/live-ai-smoke-test.yml')
-          t=w.read_text(encoding='utf-8')
-          t=t.replace("['@cf/google/gemma-4-26b-a4b-it','@cf/zai-org/glm-4.7-flash']","['@cf/google/gemma-4-26b-a4b-it','@cf/zai-org/glm-4.7-flash','@cf/qwen/qwen3-30b-a3b-fp8']")
-          w.write_text(t,encoding='utf-8')
-
       - name: Validate patched source
         shell: bash
         run: |
@@ -63,12 +58,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if git diff --quiet -- worker.js .github/workflows/live-ai-smoke-test.yml; then
+          if git diff --quiet -- worker.js; then
             echo 'AI runtime repair already applied.'
             exit 0
           fi
           git config user.name 'seekvera-global'
           git config user.email 'seekvera.global@gmail.com'
-          git add worker.js .github/workflows/live-ai-smoke-test.yml
+          git add worker.js
           git commit -m 'Harden SEEKVERA Workers AI runtime fallbacks'
           git push
