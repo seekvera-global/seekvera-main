@@ -1,0 +1,137 @@
+name: Finalize SEEKVERA worldwide premium UI once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/premium-worldwide-finalize-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Harmonize every public department
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          css='<link rel="stylesheet" href="global-ui.css?v=20260922-worldwide-final">'
+          js='<script src="global-ui.js?v=20260922-worldwide-final" defer></script>'
+          htmls=list(Path('.').glob('*.html'))
+          existing={p.name for p in htmls}
+
+          replacements={
+            'Search Nigeria → China, Lebanon → UAE, UK → Abuja and more.':'Search, compare and connect anywhere in the world — without country-specific limits.',
+            'placeholder="Country / destination (or Worldwide)"':'placeholder="Anywhere in the world (optional)"',
+            'placeholder="Search ads, e.g. land in Abuja, engineer, Toyota..."':'placeholder="Search products, services, jobs, property and more — anywhere"',
+            'placeholder="Country"':'placeholder="Anywhere in the world"',
+            'placeholder="Example: 1,000 sqm land for sale in Abuja"':'placeholder="Example: clear product, property, vehicle or service title"',
+            'placeholder="Nigeria, Lebanon, UAE..."':'placeholder="Anywhere in the world"',
+            'placeholder="FCT, Lagos, Beirut..."':'placeholder="State / region (optional)"',
+            'placeholder="Abuja, Maitama, Dubai..."':'placeholder="City / area (optional)"',
+            'Choose your country and search a specific need.':'Search for a specific need anywhere in the world.',
+            'placeholder="Country or city"':'placeholder="Destination anywhere in the world"',
+            'Type any country, city or destination.':'Type any destination anywhere in the world.',
+            'Your guide will appear here. Try: “Ghana”, “Dubai”, “Abuja”, “Beirut”, “London” or any destination worldwide.':'Your guide will appear here. Enter any destination anywhere in the world.',
+            'placeholder="Country"':'placeholder="Anywhere in the world"',
+            'placeholder="City (optional)"':'placeholder="City / area (optional)"'
+          }
+
+          for p in htmls:
+            s=p.read_text(encoding='utf-8')
+            if 'global-ui.css?v=20260922-worldwide-final' not in s:
+              s=s.replace('</head>',css+'\n</head>',1)
+            if 'global-ui.js?v=20260922-worldwide-final' not in s:
+              s=s.replace('</body>',js+'\n</body>',1)
+            for a,b in replacements.items():
+              s=s.replace(a,b)
+
+            # Make canonical and social URLs use the official global domain.
+            canonical='https://seekveraglobal.com/'+('' if p.name=='index.html' else p.name)
+            s=re.sub(r'<link rel="canonical" href="[^"]+">',f'<link rel="canonical" href="{canonical}">',s)
+            s=re.sub(r'<meta property="og:url" content="[^"]+">',f'<meta property="og:url" content="{canonical}">',s)
+
+            # Repair local root HTML links that point to files that do not exist.
+            def fix(m):
+              href=m.group(1)
+              if href.startswith(('http://','https://','mailto:','tel:','#','javascript:')): return m.group(0)
+              base=href.split('?',1)[0].split('#',1)[0]
+              if '/' not in base and base.endswith('.html') and base not in existing:
+                return 'href="hub.html"'
+              return m.group(0)
+            s=re.sub(r'href="([^"]+)"',fix,s)
+            p.write_text(s,encoding='utf-8')
+
+          # Tourism must not look like a hand-picked country list.
+          p=Path('tourism.html')
+          if p.exists():
+            s=p.read_text(encoding='utf-8')
+            s=re.sub(r'<div class="chips"><button data-d="Nigeria">.*?</div></section>',
+              '<div class="chips"><button type="button" id="anywhereBtn">🌐 Anywhere in the world</button><button type="button" data-trip="city">🏙️ City break</button><button type="button" data-trip="family">👨‍👩‍👧 Family</button><button type="button" data-trip="business">💼 Business</button><button type="button" data-trip="nature">🌿 Nature</button></div></section>',s,flags=re.S)
+            marker="document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{dest.value=b.dataset.d;buildGuide()});"
+            extra="document.getElementById('anywhereBtn')?.addEventListener('click',()=>dest.focus());document.querySelectorAll('[data-trip]').forEach(b=>b.addEventListener('click',()=>{document.getElementById('interests').value=b.dataset.trip;dest.focus()}));"
+            s=s.replace(marker,marker+extra)
+            p.write_text(s,encoding='utf-8')
+
+          # Generic Deal Agent location wording.
+          p=Path('deal-agent.html')
+          if p.exists():
+            s=p.read_text(encoding='utf-8').replace('id="missionCountry" placeholder="Country"','id="missionCountry" placeholder="Anywhere in the world"')
+            p.write_text(s,encoding='utf-8')
+
+      - name: A to Z static validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re,sys
+          pages=list(Path('.').glob('*.html'))
+          names={p.name for p in pages}
+          bad=[]
+          for p in pages:
+            s=p.read_text(encoding='utf-8')
+            if 'global-ui.css?v=20260922-worldwide-final' not in s or 'global-ui.js?v=20260922-worldwide-final' not in s:
+              bad.append(f'{p}: global UI missing')
+            for h in re.findall(r'href="([^"]+)"',s):
+              if h.startswith(('http://','https://','mailto:','tel:','#')): continue
+              base=h.split('?',1)[0].split('#',1)[0]
+              if '/' not in base and base.endswith('.html') and base not in names:
+                bad.append(f'{p}: broken link {h}')
+          for p in ['index.html','tourism.html','marketplace.html','post-ad.html','shopping.html','deal-agent.html']:
+            s=Path(p).read_text(encoding='utf-8')
+            for local in ['Lebanon','China','Abuja','Beirut','Maitama']:
+              if local in s: bad.append(f'{p}: local example remains: {local}')
+          if bad:
+            print('\n'.join(bad));sys.exit(1)
+          print('A-Z static pages:',len(pages),'PASS')
+          PY
+          node --check global-ui.js
+          node --check superapp.js
+          node --check voice-ai.js
+          grep -q '/api/moderate' worker.js
+          grep -q '/api/visual-search' worker.js
+          grep -q 'failClosed:true' worker.js
+          grep -q 'fastChatModel:FASTCHAT' worker.js
+      - name: Commit final worldwide premium pass
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add -- '*.html'
+          if git diff --cached --quiet; then
+            echo 'No page changes required.'
+          else
+            git commit -m 'Unify all departments with worldwide premium UI'
+            git push origin main
+          fi
