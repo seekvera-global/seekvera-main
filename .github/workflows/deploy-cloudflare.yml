@@ -1,5 +1,6 @@
 name: Deploy SEEKVERA to Cloudflare
 # Production deployment: Safety Gate v4 + AI Vision + global Voice AI + marketplace server routing
+# 2026-09-22: deploy voice-reply reliability + localized country/language controls
 
 on:
   push:
