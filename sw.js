@@ -1,9 +1,9 @@
-const CACHE='seekvera-one-app-v1-20260921';
+const CACHE='seekvera-one-app-v2-20260922-voice';
 const CORE=[
  './','./app.html','./index.html','./hub.html','./marketplace.html','./post-ad.html','./seller-plans.html',
  './travel.html','./tourism.html','./wifi.html','./scan.html','./terms.html','./privacy.html','./about.html',
  './property.html','./cars-auto.html','./shopping.html','./jobs.html','./business-software.html','./education.html',
- './solar.html','./health.html','./web-hosting.html','./import-export.html','./favicon.svg','./manifest.webmanifest','./seekvera-qr.svg'
+ './solar.html','./health.html','./web-hosting.html','./import-export.html','./favicon.svg','./manifest.webmanifest','./seekvera-qr.svg','./voice-ai.js'
 ];
 self.addEventListener('install',event=>{
  event.waitUntil((async()=>{
