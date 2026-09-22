@@ -26,8 +26,9 @@ jobs:
 
           css='<link rel="stylesheet" href="global-ui.css?v=20260922-worldwide-final">'
           js='<script src="global-ui.js?v=20260922-worldwide-final" defer></script>'
-          htmls=list(Path('.').glob('*.html'))
-          existing={p.name for p in htmls}
+          all_html=list(Path('.').glob('*.html'))
+          htmls=[p for p in all_html if not p.name.lower().startswith('google')]
+          existing={p.name for p in all_html}
 
           replacements={
             'Search Nigeria → China, Lebanon → UAE, UK → Abuja and more.':'Search, compare and connect anywhere in the world — without country-specific limits.',
@@ -42,7 +43,6 @@ jobs:
             'placeholder="Country or city"':'placeholder="Destination anywhere in the world"',
             'Type any country, city or destination.':'Type any destination anywhere in the world.',
             'Your guide will appear here. Try: “Ghana”, “Dubai”, “Abuja”, “Beirut”, “London” or any destination worldwide.':'Your guide will appear here. Enter any destination anywhere in the world.',
-            'placeholder="Country"':'placeholder="Anywhere in the world"',
             'placeholder="City (optional)"':'placeholder="City / area (optional)"'
           }
 
@@ -55,12 +55,10 @@ jobs:
             for a,b in replacements.items():
               s=s.replace(a,b)
 
-            # Make canonical and social URLs use the official global domain.
             canonical='https://seekveraglobal.com/'+('' if p.name=='index.html' else p.name)
             s=re.sub(r'<link rel="canonical" href="[^"]+">',f'<link rel="canonical" href="{canonical}">',s)
             s=re.sub(r'<meta property="og:url" content="[^"]+">',f'<meta property="og:url" content="{canonical}">',s)
 
-            # Repair local root HTML links that point to files that do not exist.
             def fix(m):
               href=m.group(1)
               if href.startswith(('http://','https://','mailto:','tel:','#','javascript:')): return m.group(0)
@@ -71,7 +69,6 @@ jobs:
             s=re.sub(r'href="([^"]+)"',fix,s)
             p.write_text(s,encoding='utf-8')
 
-          # Tourism must not look like a hand-picked country list.
           p=Path('tourism.html')
           if p.exists():
             s=p.read_text(encoding='utf-8')
@@ -82,7 +79,6 @@ jobs:
             s=s.replace(marker,marker+extra)
             p.write_text(s,encoding='utf-8')
 
-          # Generic Deal Agent location wording.
           p=Path('deal-agent.html')
           if p.exists():
             s=p.read_text(encoding='utf-8').replace('id="missionCountry" placeholder="Country"','id="missionCountry" placeholder="Anywhere in the world"')
@@ -95,8 +91,9 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           import re,sys
-          pages=list(Path('.').glob('*.html'))
-          names={p.name for p in pages}
+          all_pages=list(Path('.').glob('*.html'))
+          pages=[p for p in all_pages if not p.name.lower().startswith('google')]
+          names={p.name for p in all_pages}
           bad=[]
           for p in pages:
             s=p.read_text(encoding='utf-8')
@@ -113,7 +110,7 @@ jobs:
               if local in s: bad.append(f'{p}: local example remains: {local}')
           if bad:
             print('\n'.join(bad));sys.exit(1)
-          print('A-Z static pages:',len(pages),'PASS')
+          print('A-Z static public pages:',len(pages),'PASS')
           PY
           node --check global-ui.js
           node --check superapp.js
