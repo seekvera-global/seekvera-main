@@ -2,20 +2,21 @@
   "id": "./app.html",
   "name": "SEEKVERA — Premium Global AI Super-App",
   "short_name": "SEEKVERA",
-  "start_url": "./app.html?v=20260922-premium-r1",
+  "start_url": "./app.html?v=20260922-final-r3",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#f4f7fb",
   "theme_color": "#07111f",
-  "description": "Worldwide AI search, voice, visual search, marketplace, travel, connectivity and business tools in one SEEKVERA app.",
-  "categories": ["shopping", "travel", "business", "utilities", "lifestyle"],
+  "description": "Worldwide AI search, voice, visual search, marketplace, travel, games, connectivity and business tools in one SEEKVERA app.",
+  "categories": ["shopping", "travel", "games", "business", "utilities", "lifestyle"],
   "icons": [
     {"src":"favicon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
   ],
   "shortcuts": [
     {"name":"AI Search","short_name":"AI","url":"./app.html#home"},
     {"name":"Marketplace","short_name":"Market","url":"./app.html#marketplace"},
+    {"name":"Free Games","short_name":"Games","url":"./games.html"},
     {"name":"Travel & Connectivity","short_name":"Travel","url":"./app.html#connectivity"},
     {"name":"AI Deal Agent","short_name":"Deals","url":"./app.html#deal-agent"}
   ]
