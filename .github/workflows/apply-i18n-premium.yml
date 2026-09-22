@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'i18n-ui.js'
+      - 'global-ui.js'
       - 'i18n-premium.css'
       - '.github/scripts/apply_i18n_premium.py'
       - '.github/workflows/apply-i18n-premium.yml'
@@ -29,6 +30,8 @@ jobs:
           node --check i18n-ui.js
           node --check global-ui.js
           node --check voice-ai.js
+          grep -q "HOST==='seekveraglobal.com'" i18n-ui.js
+          grep -q "HOST==='seekveraglobal.com'" global-ui.js
           count=0
           for f in *.html; do
             case "$f" in google*) continue;; esac
@@ -49,7 +52,7 @@ jobs:
         run: |
           git config user.name "seekvera-global"
           git config user.email "seekvera.global@gmail.com"
-          git add '*.html'
+          git add '*.html' i18n-ui.js global-ui.js
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Apply multilingual final R3 runtime across all departments"
+          git commit -m "Use same-origin final R3 APIs across all departments"
           git push
