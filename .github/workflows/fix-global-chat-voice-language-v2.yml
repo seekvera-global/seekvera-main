@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/fix-global-chat-voice-language-v2.yml'
+      - '.github/scripts/fix_global_v2.py'
   workflow_dispatch:
 
 permissions:
@@ -18,131 +19,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Apply same-language AI, natural voice and all-department coverage
-        shell: python
-        run: |
-          from pathlib import Path
-          import re
+      - name: Apply global patch
+        run: python .github/scripts/fix_global_v2.py
 
-          def replace_once(path, old, new, label):
-              p=Path(path); s=p.read_text(encoding='utf-8')
-              if old not in s:
-                  raise SystemExit(f'{label}: expected source not found in {path}')
-              p.write_text(s.replace(old,new,1),encoding='utf-8')
-
-          # 1) Server AI: language follows the actual user message, independent of country.
-          p=Path('worker.js'); s=p.read_text(encoding='utf-8')
-          old="Reply in the user language. Understand cross-border intent."
-          new=("Automatically detect the language of the user's latest message and reply in that same language and script, independent of country or location. "
-               "If the user explicitly asks for a different reply language, use that requested language. Never default to English merely because the country, interface or browser is English. "
-               "Understand multilingual and cross-border intent.")
-          if old not in s: raise SystemExit('worker same-language prompt anchor missing')
-          s=s.replace(old,new,1)
-          old_voice=" Voice mode: answer as short natural spoken sentences in the requested language. Do not use markdown, bullet symbols, tables, raw URLs or hard-to-pronounce abbreviations."
-          new_voice=" Voice mode: answer as short natural spoken sentences in the same language the user spoke, unless the user explicitly asks for another language. Do not use markdown, bullet symbols, tables, raw URLs or hard-to-pronounce abbreviations."
-          if old_voice not in s: raise SystemExit('worker voice prompt anchor missing')
-          s=s.replace(old_voice,new_voice,1)
-          p.write_text(s,encoding='utf-8')
-
-          # 2) Voice runtime: enable it on app.html too, prefer natural/female device voices,
-          #    and keep spoken answers mirrored into visible chat.
-          p=Path('voice-ai.js'); s=p.read_text(encoding='utf-8')
-          old="const RTL=/^(ar|fa|ur)(-|$)/i;\nlet recognition=null,listenTimer=null,lastAnswer='',lastLang='',muted=localStorage.getItem('seekvera_voice_muted')==='1';"
-          new="""const RTL=/^(ar|fa|ur)(-|$)/i;
-const FEMALE_HINTS=/aria|jenny|zira|samantha|victoria|karen|moira|tessa|ava|allison|susan|hazel|fiona|serena|veena|heera|lekha|monica|amelie|audrey|julie|celine|hortense|laila|layla|salma|hoda|farah|mariam|maryam|amira|zahra|female|woman/i;
-const MALE_HINTS=/david|mark|george|daniel|fred|ralph|bruce|hammad|hamed|majed|maged|male|man/i;
-const QUALITY_HINTS=/neural|natural|enhanced|premium|online|google|microsoft|siri/i;
-let recognition=null,listenTimer=null,lastAnswer='',lastLang='',muted=localStorage.getItem('seekvera_voice_muted')==='1';"""
-          if old not in s: raise SystemExit('voice constants anchor missing')
-          s=s.replace(old,new,1)
-          old="""function pickVoice(locale){
-  const voices=speechSynthesis.getVoices?.()||[]; if(!voices.length)return null;
-  const exact=voices.find(v=>v.lang?.toLowerCase()===locale.toLowerCase()); if(exact)return exact;
-  const base=locale.split('-')[0].toLowerCase(); return voices.find(v=>v.lang?.toLowerCase().startsWith(base))||null;
-}"""
-          new="""function pickVoice(locale){
-  const voices=window.speechSynthesis?.getVoices?.()||[]; if(!voices.length)return null;
-  const wanted=String(locale||'en-US').toLowerCase(),base=wanted.split('-')[0];
-  let candidates=voices.filter(v=>String(v.lang||'').toLowerCase().startsWith(base)); if(!candidates.length)candidates=voices;
-  const score=v=>{const name=`${v.name||''} ${v.voiceURI||''}`,vl=String(v.lang||'').toLowerCase();let n=0;if(vl===wanted)n+=120;else if(vl.startsWith(base))n+=75;if(QUALITY_HINTS.test(name))n+=38;if(FEMALE_HINTS.test(name))n+=45;if(MALE_HINTS.test(name))n-=55;if(v.default)n+=8;if(v.localService===false)n+=8;return n};
-  return [...candidates].sort((a,b)=>score(b)-score(a))[0]||null;
-}"""
-          if old not in s: raise SystemExit('pickVoice anchor missing')
-          s=s.replace(old,new,1)
-          old="const next=()=>{if(muted||i>=chunks.length)return;const u=new SpeechSynthesisUtterance(chunks[i++]);u.lang=lastLang;const v=pickVoice(lastLang);if(v)u.voice=v;u.rate=/^(ar|fa|ur)(-|$)/i.test(lastLang)?.90:.94;u.pitch=1;u.onend=next;u.onerror=()=>{};speechSynthesis.speak(u)};"
-          new="const next=()=>{if(muted||i>=chunks.length)return;const u=new SpeechSynthesisUtterance(chunks[i++]);u.lang=lastLang;const v=pickVoice(lastLang);if(v)u.voice=v;const rtl=/^(ar|fa|ur)(-|$)/i.test(lastLang);u.rate=rtl?.98:1.02;u.pitch=rtl?1.06:1.09;u.volume=1;u.onend=next;u.onerror=()=>{};speechSynthesis.speak(u)};"
-          if old not in s: raise SystemExit('voice speak anchor missing')
-          s=s.replace(old,new,1)
-          s=s.replace("  if(location.pathname.endsWith('/app.html'))return;\n",'',1)
-          # Mirror voice transcript and answer into both possible chats.
-          old="""    try{
-      const msgs=document.getElementById('aiMessages');
-      if(msgs){
-        const u=document.createElement('div');u.className='ai-msg user';u.textContent=clean;msgs.appendChild(u);
-        const b=document.createElement('div');b.className='ai-msg bot';b.textContent=answer;msgs.appendChild(b);msgs.scrollTop=msgs.scrollHeight;
-      }
-    }catch(_){ }"""
-          new="""    try{
-      const msgs=document.getElementById('aiMessages');
-      if(msgs){const u=document.createElement('div');u.className='ai-msg user';u.textContent=clean;msgs.appendChild(u);const b=document.createElement('div');b.className='ai-msg bot';b.textContent=answer;msgs.appendChild(b);msgs.scrollTop=msgs.scrollHeight;}
-      const globalMsgs=document.getElementById('svGlobalMessages');
-      if(globalMsgs){const u=document.createElement('div');u.className='sv-global-msg user';u.textContent=clean;globalMsgs.appendChild(u);const b=document.createElement('div');b.className='sv-global-msg bot';b.textContent=answer;globalMsgs.appendChild(b);globalMsgs.scrollTop=globalMsgs.scrollHeight;}
-    }catch(_){ }"""
-          if old not in s: raise SystemExit('voice chat mirror anchor missing')
-          s=s.replace(old,new,1)
-          # Give the global UI event a working voice target on every page.
-          anchor="if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build,{once:true});else build();"
-          if anchor not in s: raise SystemExit('voice init anchor missing')
-          s=s.replace(anchor,"window.addEventListener('seekvera:voice',()=>{if(document.getElementById('svVoiceFab'))startListening()});\n"+anchor,1)
-          p.write_text(s,encoding='utf-8')
-
-          # 3) Homepage language selector: Auto is the default for new users; explicit choices remain available.
-          p=Path('superapp.js'); s=p.read_text(encoding='utf-8')
-          old="const LANGS=[['en','English']"
-          new="const LANGS=[['auto','Auto · Same as my language'],['en','English']"
-          if old not in s: raise SystemExit('superapp LANGS anchor missing')
-          s=s.replace(old,new,1)
-          old="const saved=localStorage.getItem('seekvera_lang');if(saved&&LANGS.some(x=>x[0]===saved))el.value=saved;"
-          new="const saved=localStorage.getItem('seekvera_lang');if(saved&&LANGS.some(x=>x[0]===saved))el.value=saved;else el.value='auto';"
-          if old not in s: raise SystemExit('superapp saved language anchor missing')
-          s=s.replace(old,new,1)
-          old="document.documentElement.lang=el.value;document.documentElement.dir=/^(ar|fa|ur)$/.test(el.value)?'rtl':'ltr';"
-          new="document.documentElement.lang=el.value==='auto'?((navigator.language||'en').split('-')[0]):el.value;document.documentElement.dir=/^(ar|fa|ur)$/.test(el.value)?'rtl':'ltr';"
-          if old not in s: raise SystemExit('superapp language DOM anchor missing')
-          s=s.replace(old,new,1)
-          p.write_text(s,encoding='utf-8')
-
-          # 4) Every public HTML page/dept gets the same chat, voice and premium UI.
-          css='<link rel="stylesheet" href="global-ui.css?v=20260922-premium-voice2">'
-          voice='<script src="voice-ai.js?v=20260922-premium-voice2" defer></script>'
-          gui='<script src="global-ui.js?v=20260922-premium-voice2" defer></script>'
-          pages=[]
-          for p in sorted(Path('.').glob('*.html')):
-              if p.name.lower().startswith('google'): continue
-              text=p.read_text(encoding='utf-8')
-              text=re.sub(r'<link rel="stylesheet" href="global-ui\.css\?v=[^"]+">',css,text)
-              if 'global-ui.css' not in text:
-                  text=text.replace('</head>',css+'\n</head>',1)
-              text=re.sub(r'<script src="voice-ai\.js(?:\?v=[^"]+)?" defer></script>',voice,text)
-              if 'voice-ai.js' not in text:
-                  text=text.replace('</body>',voice+'\n</body>',1)
-              text=re.sub(r'<script src="global-ui\.js\?v=[^"]+" defer></script>',gui,text)
-              if 'global-ui.js' not in text:
-                  text=text.replace('</body>',gui+'\n</body>',1)
-              p.write_text(text,encoding='utf-8'); pages.append(p.name)
-
-          # Static guarantees: all departments/pages use the common runtime.
-          bad=[]
-          for name in pages:
-              t=Path(name).read_text(encoding='utf-8')
-              for needle in ['global-ui.css?v=20260922-premium-voice2','voice-ai.js?v=20260922-premium-voice2','global-ui.js?v=20260922-premium-voice2']:
-                  if needle not in t: bad.append(f'{name}: missing {needle}')
-          if bad: raise SystemExit('\n'.join(bad))
-          print('Public pages/departments covered:',len(pages))
-          print('Global multilingual Chat + Voice source update complete.')
-
-      - name: Validate JavaScript and global coverage
-        shell: bash
+      - name: Validate JavaScript and coverage
         run: |
           set -euo pipefail
           node --check worker.js
@@ -151,12 +31,17 @@ let recognition=null,listenTimer=null,lastAnswer='',lastLang='',muted=localStora
           node --check superapp.js
           grep -q "Automatically detect the language of the user's latest message" worker.js
           grep -q 'FEMALE_HINTS' voice-ai.js
-          grep -q "\['auto','Auto · Same as my language'\]" superapp.js
+          grep -q "Auto · Same as my language" superapp.js
           ! grep -q "if(location.pathname.endsWith('/app.html'))return" voice-ai.js
+          for f in *.html; do
+            case "$f" in google*) continue;; esac
+            grep -q 'global-ui.css?v=20260922-premium-voice2' "$f"
+            grep -q 'voice-ai.js?v=20260922-premium-voice2' "$f"
+            grep -q 'global-ui.js?v=20260922-premium-voice2' "$f"
+          done
           echo 'Multilingual chat/voice validation passed.'
 
       - name: Commit global fix
-        shell: bash
         run: |
           set -euo pipefail
           git config user.name 'seekvera-global'
