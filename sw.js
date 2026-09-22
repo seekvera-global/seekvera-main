@@ -1,4 +1,4 @@
-const CACHE='seekvera-premium-r1-20260922';
+const CACHE='seekvera-premium-r1-20260922b';
 const CORE=['./','./index.html','./app.html','./premium.css','./superapp.js','./voice-ai.js','./connectivity.html','./deal-agent.html','./deal-agent.js','./marketplace.html','./post-ad.html','./travel.html','./tourism.html','./wifi.html','./scan.html','./hub.html','./manifest.webmanifest','./favicon.svg'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE).catch(()=>{})).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
