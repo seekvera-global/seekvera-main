@@ -33,16 +33,23 @@ jobs:
               if p.name.startswith('google'):
                   continue
               s = p.read_text(encoding='utf-8')
-              if tag in s:
-                  continue
-              low = s.lower()
-              pos = low.rfind('</body>')
-              if pos == -1:
-                  continue
-              s = s[:pos] + tag + '\n' + s[pos:]
-              p.write_text(s, encoding='utf-8')
-              changed.append(p.name)
-          print('Injected voice AI into:', ', '.join(changed) if changed else 'no new files')
+              original = s
+
+              # The old app-shell microphone only handled home-page voice input.
+              # Keep it hidden so the new global voice assistant is the single microphone UX.
+              if p.name == 'app.html':
+                  s = s.replace("voiceFloat.style.display=page==='index.html'?'grid':'none';", "voiceFloat.style.display='none';")
+
+              if tag not in s:
+                  low = s.lower()
+                  pos = low.rfind('</body>')
+                  if pos != -1:
+                      s = s[:pos] + tag + '\n' + s[pos:]
+
+              if s != original:
+                  p.write_text(s, encoding='utf-8')
+                  changed.append(p.name)
+          print('Updated voice AI pages:', ', '.join(changed) if changed else 'no new files')
           PY
 
       - name: Verify JavaScript and injection
@@ -56,6 +63,7 @@ jobs:
           grep -q 'voice-ai.js' property.html
           grep -q 'voice-ai.js' jobs.html
           grep -q 'voice-ai.js' marketplace.html
+          grep -q "voiceFloat.style.display='none'" app.html
 
       - name: Commit injected pages
         shell: bash
