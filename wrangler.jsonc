@@ -1,4 +1,4 @@
-// Trigger Cloudflare deploy: 2026-09-22 robust same-language AI lock v4 + natural voice + compact premium
+// Trigger Cloudflare deploy: 2026-09-22 unified premium AI chat + voice + camera + attachments
 {
   "name": "seekvera-main",
   "main": "./worker.js",
