@@ -1,4 +1,4 @@
-// Trigger Cloudflare deploy: 2026-09-22 Vision + voice reliability fix
+// Trigger Cloudflare deploy: 2026-09-22 custom-domain AI + voice retry fix
 {
   "name": "seekvera-main",
   "main": "./worker.js",
