@@ -74,16 +74,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          endpoint='https://seekvera-main.seekvera-global.workers.dev/api/ai'
           python - <<'PY'
-          import json, subprocess
+          import json, subprocess, sys
           cases=[
             {"message":"I am in Nigeria and need a furniture supplier in China. Explain the next step briefly.","country":"Nigeria","language":"English","scope":"worldwide"},
             {"message":"أنا في لبنان وأريد فندقاً في أبوجا. أعطني الخطوة التالية باختصار.","country":"Lebanon","language":"Arabic","scope":"worldwide"}
           ]
-          for case in cases:
-            p=subprocess.run(['curl','-fsS','--max-time','90', 'https://seekvera-main.seekvera-global.workers.dev/api/ai','-H','content-type: application/json','--data',json.dumps(case)],capture_output=True,text=True,check=True)
-            d=json.loads(p.stdout)
+          for i,case in enumerate(cases,1):
+            out=f'/tmp/ai-{i}.json'
+            p=subprocess.run(['curl','-sS','--max-time','90','-o',out,'-w','%{http_code}','https://seekvera-main.seekvera-global.workers.dev/api/ai','-H','content-type: application/json','--data',json.dumps(case)],capture_output=True,text=True)
+            status=p.stdout.strip()
+            body=open(out,encoding='utf-8').read() if __import__('os').path.exists(out) else ''
+            print('AI HTTP status:',status)
+            if not status.startswith('2'):
+              print('AI error body:',body[:1200])
+              sys.exit(1)
+            d=json.loads(body)
             assert d.get('ok') is True and str(d.get('response','')).strip(), d
             assert d.get('model') in ['@cf/google/gemma-4-26b-a4b-it','@cf/zai-org/glm-4.7-flash'], d
             print(d.get('category'), d.get('model'), d['response'][:180])
