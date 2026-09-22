@@ -1,0 +1,41 @@
+name: SEEKVERA visible chat and latency smoke once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/chat-speed-smoke-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify live chat assets and AI latency
+        shell: python
+        run: |
+          import json, subprocess, time, urllib.request
+
+          base='https://seekvera-main.seekvera-global.workers.dev'
+          html=urllib.request.urlopen(base+'/?chatfast=2',timeout=30).read().decode('utf-8','replace')
+          assert 'id="aiChatForm"' in html, 'visible chat form missing live'
+          assert 'id="aiMessages"' in html, 'chat messages missing live'
+          js=urllib.request.urlopen(base+'/superapp.js?v=20260922-chatfast2',timeout=30).read().decode('utf-8','replace')
+          assert 'function bindAIChat' in js, 'chat binding missing live'
+          assert 'fast:true' in js, 'fast request flag missing live'
+          health=json.loads(urllib.request.urlopen(base+'/api/health',timeout=30).read().decode())
+          assert health.get('aiResilience')=='fast-chat-glm-first-v2', health
+
+          payload=json.dumps({'message':'Reply only: Hello from SEEKVERA.','country':'Worldwide','language':'English','fast':True}).encode()
+          req=urllib.request.Request(base+'/api/ai',data=payload,headers={'content-type':'application/json','origin':'https://seekveraglobal.com'},method='POST')
+          t=time.monotonic()
+          with urllib.request.urlopen(req,timeout=25) as r:
+              d=json.loads(r.read().decode())
+          elapsed=time.monotonic()-t
+          print('AI latency seconds:',round(elapsed,2),'model:',d.get('model'),'response:',str(d.get('response',''))[:180])
+          assert d.get('ok') is True and d.get('response'), d
+          assert elapsed < 18, f'AI response still too slow: {elapsed:.2f}s'
