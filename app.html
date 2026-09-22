@@ -89,7 +89,7 @@ function openPage(page,push=true){
   loading.classList.remove('hide');
   view.src=versioned(page);
   buttons.forEach(b=>b.classList.toggle('active',b.dataset.page===page));
-  voiceFloat.style.display=page==='index.html'?'grid':'none';
+  voiceFloat.style.display='none';
   if(push) history.replaceState(null,'','#'+page.replace('.html',''));
 }
 buttons.forEach(b=>b.addEventListener('click',()=>openPage(b.dataset.page)));
