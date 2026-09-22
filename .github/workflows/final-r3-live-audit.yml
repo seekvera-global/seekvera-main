@@ -4,9 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'index.html'
-      - 'app.html'
-      - 'games.html'
+      - '*.html'
       - 'games.js'
       - 'voice-ai.js'
       - 'global-ui.js'
