@@ -1,4 +1,4 @@
-// Trigger Cloudflare deploy: 2026-09-22 fast chat 8b v3
+// Trigger Cloudflare deploy: 2026-09-22 worldwide premium A-Z final
 {
   "name": "seekvera-main",
   "main": "./worker.js",
