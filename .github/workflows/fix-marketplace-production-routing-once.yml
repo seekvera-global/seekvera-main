@@ -1,0 +1,79 @@
+name: Fix SEEKVERA marketplace production routing once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-marketplace-production-routing-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Route marketplace writes through trusted Worker
+        shell: python
+        run: |
+          from pathlib import Path
+
+          p=Path('worker.js')
+          s=p.read_text(encoding='utf-8')
+          anchor="const SB='https://nrdpyydfrpmqedtzmbyw.supabase.co',SBK='sb_publishable_tqqPQxqdNowIsSlJz4bW5w_kHOC905o';"
+          edge=anchor+"\nconst EDGE=SB+'/functions/v1';"
+          if "const EDGE=SB+'/functions/v1';" not in s:
+              assert anchor in s
+              s=s.replace(anchor,edge,1)
+
+          marker="if(u.pathname==='/api/request')"
+          proxy="""if(u.pathname==='/api/marketplace-submit'||u.pathname==='/api/marketplace-review'){try{const target=u.pathname.endsWith('submit')?'marketplace-submit':'marketplace-review',raw=await request.text(),limit=target==='marketplace-submit'?18000:4096;if(raw.length>limit)return j(request,{ok:false,error:'Request too large'},413);const r=await fetch(EDGE+'/'+target,{method:'POST',headers:{'content-type':'application/json','apikey':SBK},body:raw}),text=await r.text();return new Response(text,{status:r.status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff',...cors(request)}})}catch{return j(request,{ok:false,error:'Marketplace server gate unavailable',reviewRequired:true},503)}}
+"""
+          if "/api/marketplace-submit'||u.pathname==='/api/marketplace-review" not in s:
+              assert marker in s
+              s=s.replace(marker,proxy+marker,1)
+          if "marketplaceProxy:'enabled'" not in s:
+              s=s.replace("zeroCostFirst:true}","marketplaceProxy:'enabled',zeroCostFirst:true}",1)
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('post-ad.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace("SUBMIT=SB+'/functions/v1/marketplace-submit',REVIEW=SB+'/functions/v1/marketplace-review'","SUBMIT=WORKER+'/api/marketplace-submit',REVIEW=WORKER+'/api/marketplace-review'",1)
+          s=s.replace("const H={'apikey':KEY,'Authorization':'Bearer '+KEY};","const H={'apikey':KEY};",1)
+          p.write_text(s,encoding='utf-8')
+
+          for p in Path('.').glob('*.html'):
+              s=p.read_text(encoding='utf-8')
+              ns=s.replace("const H={'apikey':KEY,'Authorization':'Bearer '+KEY};","const H={'apikey':KEY};")
+              if ns!=s:p.write_text(ns,encoding='utf-8')
+
+      - name: Validate production repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check worker.js
+          grep -q "marketplaceProxy:'enabled'" worker.js
+          grep -q "/api/marketplace-submit" worker.js
+          grep -q "SUBMIT=WORKER+'/api/marketplace-submit'" post-ad.html
+          grep -q "REVIEW=WORKER+'/api/marketplace-review'" post-ad.html
+          ! grep -R "'Authorization':'Bearer '+KEY" --include='*.html' .
+          npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-marketplace-final
+
+      - name: Commit repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add worker.js post-ad.html marketplace.html *.html
+          if git diff --cached --quiet; then
+            echo 'Already repaired'
+          else
+            git commit -m 'Fix marketplace production routing and publishable auth'
+            git push origin main
+          fi
