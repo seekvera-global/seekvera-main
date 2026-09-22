@@ -111,7 +111,7 @@ jobs:
           echo "$HOME" | grep -q 'i18n-ui.js?v=20260922-final-r3'
           echo "$HOME" | grep -q 'i18n-premium.css?v=20260922-final-r3'
           curl -fsS --max-time 15 "$SITE/i18n-ui.js?v=20260922-final-r3" -o /tmp/i18n-ui.js
-          grep -q 'full-app multilingual UI runtime' /tmp/i18n-ui.js
+          grep -q 'SEEKVERA multilingual UI runtime' /tmp/i18n-ui.js
           curl -fsS --max-time 15 "$SITE/i18n-premium.css?v=20260922-final-r3" -o /tmp/i18n-premium.css
           grep -q 'premium multilingual/RTL overrides' /tmp/i18n-premium.css
 
