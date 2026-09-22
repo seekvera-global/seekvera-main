@@ -23,7 +23,7 @@ jobs:
           worker='https://seekvera-main.seekvera-global.workers.dev'
           ua='Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
 
-          curl -fsS -A "$ua" --max-time 30 "$site/?chatfast=2" -o /tmp/index.html
+          curl -fsS -A "$ua" --max-time 30 "$site/?chatfast=3" -o /tmp/index.html
           grep -q 'id="aiChatForm"' /tmp/index.html
           grep -q 'id="aiMessages"' /tmp/index.html
           curl -fsS -A "$ua" --max-time 30 "$site/superapp.js?v=20260922-chatfast2" -o /tmp/superapp.js
@@ -33,8 +33,9 @@ jobs:
           python - <<'PY'
           import json
           d=json.load(open('/tmp/health.json'))
-          assert d.get('aiResilience')=='fast-chat-glm-first-v2', d
-          print('Health fast path:',d.get('aiResilience'))
+          assert d.get('aiResilience')=='fast-chat-8b-first-v3', d
+          assert d.get('fastChatModel')=='@cf/meta/llama-3.1-8b-instruct-fast', d
+          print('Health fast path:',d.get('aiResilience'),d.get('fastChatModel'))
           PY
 
           printf '%s' '{"message":"Reply only: Hello from SEEKVERA.","country":"Worldwide","language":"English","fast":true}' >/tmp/payload.json
@@ -49,5 +50,5 @@ jobs:
           print('AI latency seconds:',round(elapsed,2),'model:',d.get('model'))
           assert code.startswith('2'), (code,d)
           assert d.get('ok') is True and d.get('response'), d
-          assert elapsed < 18, f'AI response still too slow: {elapsed:.2f}s'
+          assert elapsed < 12, f'AI response still too slow: {elapsed:.2f}s'
           PY
