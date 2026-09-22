@@ -1,6 +1,6 @@
 name: Deploy SEEKVERA to Cloudflare
 # Production deployment: Safety Gate v4 + AI Vision + global Voice AI + marketplace server routing
-# 2026-09-22: deploy voice-reply reliability + localized country/language controls
+# 2026-09-22: deploy voice-reply reliability + full multilingual premium UI
 
 on:
   push:
@@ -12,6 +12,8 @@ on:
       - 'styles.css'
       - 'global-ui.css'
       - 'global-ui.js'
+      - 'i18n-ui.js'
+      - 'i18n-premium.css'
       - 'app.js'
       - 'sw.js'
       - 'manifest.webmanifest'
@@ -34,7 +36,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate Worker build, safety and asset boundaries
+      - name: Validate Worker build, safety, multilingual UI and asset boundaries
         shell: bash
         run: |
           set -euo pipefail
@@ -53,9 +55,16 @@ jobs:
           grep -q '^worker.js$' .assetsignore
           grep -q '^wrangler.jsonc$' .assetsignore
           test -s voice-ai.js
+          test -s i18n-ui.js
+          test -s i18n-premium.css
           node --check voice-ai.js
+          node --check i18n-ui.js
+          grep -q "'Country / Region':'الدولة / المنطقة'" i18n-ui.js
+          grep -q 'html\[dir="rtl"\]' i18n-premium.css
+          grep -q 'i18n-ui.js?v=20260922-i18n-premium1' index.html
+          grep -q 'i18n-premium.css?v=20260922-i18n-premium1' index.html
           rm -rf .wrangler-dry-run .wrangler
-          echo 'SEEKVERA Worker, Safety Gate, Marketplace proxy, Voice AI and asset boundaries are valid.'
+          echo 'SEEKVERA Worker, Safety Gate, Voice AI, multilingual UI and asset boundaries are valid.'
 
       - name: Detect Cloudflare deployment credentials
         id: cf
@@ -90,7 +99,8 @@ jobs:
 
           for i in $(seq 1 12); do
             HEALTH="$(curl -fsS --max-time 12 "$BASE/api/health" || true)"
-            if echo "$HEALTH" | grep -q '"marketplaceProxy":"enabled"' && echo "$HEALTH" | grep -q '"centralSafetyGate":"enabled"'; then
+            HOME="$(curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/?i18n-prod=1" || true)"
+            if echo "$HEALTH" | grep -q '"marketplaceProxy":"enabled"' && echo "$HEALTH" | grep -q '"centralSafetyGate":"enabled"' && echo "$HOME" | grep -q 'i18n-ui.js?v=20260922-i18n-premium1'; then
               break
             fi
             sleep 5
@@ -98,7 +108,10 @@ jobs:
           echo "$HEALTH" | grep -q '"marketplaceProxy":"enabled"'
           echo "$HEALTH" | grep -q '"centralSafetyGate":"enabled"'
           echo "$HEALTH" | grep -q '"failClosed":true'
-          curl -fsS --max-time 15 "$SITE/" >/dev/null
+          echo "$HOME" | grep -q 'i18n-ui.js?v=20260922-i18n-premium1'
+          echo "$HOME" | grep -q 'i18n-premium.css?v=20260922-i18n-premium1'
+          curl -fsS --max-time 15 "$SITE/i18n-ui.js?v=20260922-i18n-premium1" | grep -q 'full-app multilingual UI runtime'
+          curl -fsS --max-time 15 "$SITE/i18n-premium.css?v=20260922-i18n-premium1" | grep -q 'premium multilingual/RTL overrides'
 
           for path in worker.js wrangler.jsonc README.md README-FIRST.txt QA-REPORT.txt PAYMENTS-GLOBAL-NOTES.md package.json package-lock.json; do
             code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 12 "$BASE/$path")"
@@ -115,7 +128,7 @@ jobs:
           review_code="$(curl -sS -o /tmp/review.json -w '%{http_code}' --max-time 15 -X POST "$BASE/api/marketplace-review" -H 'Origin: https://seekveraglobal.com' -H 'Content-Type: application/json' --data '{}')"
           test "$review_code" = '400'
           grep -Eqi 'reference|invalid' /tmp/review.json
-          echo 'Live production health, internal-file isolation and marketplace server routing passed.'
+          echo 'Live production multilingual UI, health, internal-file isolation and marketplace server routing passed.'
 
       - name: Deployment architecture
         if: steps.cf.outputs.ready != 'true'
