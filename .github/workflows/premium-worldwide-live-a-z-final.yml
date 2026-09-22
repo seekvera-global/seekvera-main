@@ -4,6 +4,13 @@ on:
   push:
     branches: [main]
     paths:
+      - 'worker.js'
+      - 'voice-ai.js'
+      - 'global-ui.js'
+      - 'global-ui.css'
+      - '*.html'
+      - '.assetsignore'
+      - 'wrangler.jsonc'
       - '.github/workflows/premium-worldwide-live-a-z-final.yml'
   workflow_dispatch:
 
@@ -29,6 +36,11 @@ jobs:
               req=urllib.request.Request(url,headers={'User-Agent':UA})
               with urllib.request.urlopen(req,timeout=timeout) as r:
                   return r.status,r.geturl(),r.read().decode('utf-8','replace')
+          def status_only(url, timeout=20):
+              req=urllib.request.Request(url,headers={'User-Agent':UA})
+              try:
+                  with urllib.request.urlopen(req,timeout=timeout) as r: return r.status
+              except urllib.error.HTTPError as e: return e.code
           def post(path,payload,timeout=40):
               req=urllib.request.Request(WORKER+path,data=json.dumps(payload,ensure_ascii=False).encode(),headers={'User-Agent':UA,'content-type':'application/json','origin':SITE},method='POST')
               try:
@@ -37,15 +49,22 @@ jobs:
               except urllib.error.HTTPError as e:
                   return e.code,json.loads(e.read().decode())
 
-          # Wait for the new premium shared assets to be live.
-          home=''
+          # Wait for the latest production Worker and shared worldwide UI to be live.
+          home=''; health={}
           for _ in range(30):
               try:
-                  _,_,home=get(SITE+'/?worldwide-final=2',20)
-                  if 'global-ui.css?v=20260922-worldwide-final' in home: break
+                  _,_,home=get(SITE+'/?worldwide-final=3',20)
+                  _,_,health_text=get(WORKER+'/api/health?worldwide-final=3',20)
+                  health=json.loads(health_text)
+                  if ('global-ui.css?v=20260922-worldwide-final' in home and
+                      health.get('marketplaceProxy')=='enabled' and
+                      health.get('centralSafetyGate')=='enabled'):
+                      break
               except Exception: pass
               time.sleep(10)
           assert 'global-ui.css?v=20260922-worldwide-final' in home, 'latest premium homepage not live'
+          assert health.get('marketplaceProxy')=='enabled',health
+          assert health.get('centralSafetyGate')=='enabled',health
 
           _,_,css=get(SITE+'/global-ui.css?v=20260922-worldwide-final')
           _,_,gjs=get(SITE+'/global-ui.js?v=20260922-worldwide-final')
@@ -54,11 +73,10 @@ jobs:
           assert 'Central Safety Gate active' in gjs
 
           pages=[p.name for p in Path('.').glob('*.html') if not p.name.lower().startswith('google')]
-          live={}
-          bad=[]
+          live={}; bad=[]
           for p in pages:
               try:
-                  status,final_url,text=get(SITE+'/'+p+'?az=2',25)
+                  status,final_url,text=get(SITE+'/'+p+'?az=3',25)
                   live[p]=text
                   if status<200 or status>=300: bad.append(f'{p}: final HTTP {status}')
                   if 'global-ui.css?v=20260922-worldwide-final' not in text: bad.append(f'{p}: global premium UI missing')
@@ -68,11 +86,20 @@ jobs:
           if bad: raise AssertionError('\n'.join(bad))
 
           index=live['index.html']; hub=live['hub.html']; deal=live['deal-agent.html']; postad=live['post-ad.html']; tourism=live['tourism.html']
+          terms=live['terms.html']; privacy=live['privacy.html']; affiliate=live['affiliate-disclosure.html']
           assert 'anywhere in the world' in index.lower()
           assert 'Nigeria → China' not in index and 'Lebanon → UAE' not in index
           assert 'Marketplace' in hub and 'Worldwide Tourism AI' in hub and 'Post an Ad' in hub
           assert 'OWNER APPROVAL' in deal and 'Safety Gate' in postad
           assert 'Anywhere in the world' in tourism
+          assert 'Lawful use only' in terms and 'Prohibited marketplace content' in terms
+          assert 'local legal advice' in terms and 'legal review' in terms
+          assert 'Do not submit passwords' in privacy
+          assert 'affiliate' in affiliate.lower() or 'commission' in affiliate.lower()
+          assert "SUBMIT=WORKER+'/api/marketplace-submit'" in postad
+          assert "REVIEW=WORKER+'/api/marketplace-review'" in postad
+          assert "'Authorization':'Bearer '+KEY" not in postad
+          print('Worldwide pages, legal/safety notices and marketplace routing PASS')
 
           # AI speed in English and Arabic.
           cases=[('English','Reply in one short sentence: SEEKVERA is ready anywhere in the world.'),('Arabic','أجب بجملة قصيرة: SEEKVERA جاهز في أي مكان في العالم.')]
@@ -96,13 +123,25 @@ jobs:
           status,invalid_visual=post('/api/visual-search',{'image':'not-an-image','country':'Worldwide'},30)
           assert invalid_visual.get('allowed') is False or invalid_visual.get('ok') is False,invalid_visual
 
-          _,_,voice=get(SITE+'/voice-ai.js?az=2')
+          # Marketplace writes must cross the Worker server gate from the custom domain.
+          status,bad_submit=post('/api/marketplace-submit',{},30)
+          assert status==400 and 'Safety confirmations are required' in str(bad_submit),bad_submit
+          status,bad_review=post('/api/marketplace-review',{},30)
+          assert status==400 and ('reference' in str(bad_review).lower() or 'invalid' in str(bad_review).lower()),bad_review
+          print('Marketplace production proxy PASS')
+
+          # Internal source/configuration must never be static public assets.
+          for path in ['worker.js','wrangler.jsonc','README.md','README-FIRST.txt','QA-REPORT.txt','PAYMENTS-GLOBAL-NOTES.md','package.json','package-lock.json']:
+              code=status_only(WORKER+'/'+path)
+              assert code!=200,(path,code)
+          print('Internal asset isolation PASS')
+
+          _,_,voice=get(SITE+'/voice-ai.js?az=3')
           assert ('SpeechRecognition' in voice or 'webkitSpeechRecognition' in voice) and 'speechSynthesis' in voice
-          _,_,health_text=get(WORKER+'/api/health')
-          health=json.loads(health_text)
           assert health.get('ok') is True
           assert health.get('centralSafetyGate')=='enabled' and health.get('failClosed') is True
           assert health.get('aiBinding') is True and health.get('assetsBinding') is True
           assert health.get('fastChatModel') and health.get('visionModel')
+          assert health.get('marketplaceProxy')=='enabled'
           print('Health PASS:',health.get('aiResilience'),health.get('fastChatModel'))
           print('FINAL WORLDWIDE A-Z LIVE AUDIT PASS')
