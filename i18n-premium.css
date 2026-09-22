@@ -1,0 +1,76 @@
+/* SEEKVERA premium multilingual/RTL overrides */
+:root{--svx-navy:#0d223c;--svx-navy2:#163b60;--svx-green:#17b77d;--svx-line:#dfe7ef;--svx-soft:#f7f9fc;--svx-shadow:0 14px 40px rgba(14,34,57,.10)}
+html,body{max-width:100%;overflow-x:hidden}
+.sv-top,.sv-top-inner,.sv-controls,.sv-control-field{overflow:visible!important}
+.sv-top{position:relative;z-index:60;background:rgba(255,255,255,.97)!important;backdrop-filter:blur(18px)}
+.sv-top-inner{padding-top:12px!important;padding-bottom:12px!important}
+.sv-controls{align-items:end!important}
+.sv-control-field{display:grid!important;grid-template-rows:auto 48px!important;gap:5px!important;min-width:0!important;align-content:end!important;overflow:visible!important}
+.sv-control-field>.sv-control-caption,.sv-control-field>small{display:block!important;min-height:16px!important;font-size:11px!important;line-height:1.35!important;font-weight:800!important;letter-spacing:0!important;opacity:.78!important;padding-inline:9px!important;white-space:nowrap!important;overflow:visible!important;color:#4b5f74!important}
+.sv-control-field .sv-select{height:48px!important;min-height:48px!important;border-radius:16px!important;padding-inline:14px 34px!important;font-size:16px!important;font-weight:750!important;border:1px solid #d9e2ec!important;box-shadow:0 5px 14px rgba(15,38,64,.035)!important;background:#fff!important}
+.sv-controls>.sv-pill-btn{height:48px!important;border-radius:16px!important;font-weight:850!important;box-shadow:0 6px 18px rgba(15,38,64,.06)!important}
+.sv-controls>.sv-primary{background:linear-gradient(135deg,#12304f,#1b4a75)!important;color:#fff!important;border:0!important;box-shadow:0 10px 24px rgba(16,49,81,.20)!important}
+.sv-brand{gap:10px!important}.sv-mark{border-radius:18px!important;box-shadow:0 10px 28px rgba(78,140,255,.20)!important}.sv-brand>span:last-child{letter-spacing:.02em}
+body.sv-home-global .sv-hero{background:radial-gradient(circle at 85% 0,rgba(70,151,255,.20),transparent 25%),linear-gradient(145deg,#07192d,#0e2d4c 55%,#12385d)!important;border:1px solid rgba(255,255,255,.12)!important;box-shadow:0 26px 70px rgba(7,25,45,.24)!important}
+body.sv-home-global .sv-hero h1{letter-spacing:-.025em!important;text-wrap:balance}
+body.sv-home-global .sv-lead{max-width:820px;line-height:1.6!important}
+.sv-unified-chat{border-radius:24px!important;overflow:hidden!important;background:#fff!important;box-shadow:0 22px 52px rgba(0,0,0,.20)!important}
+.sv-unified-chat .sv-chat-head{min-height:62px!important;padding:12px 14px!important;background:linear-gradient(135deg,#0b2038,#17446e)!important}
+.sv-unified-chat .sv-chat-head b{font-size:1.03rem!important}.sv-unified-chat .sv-chat-head small{opacity:.82}
+.sv-unified-compose{background:#fff!important;border-top:1px solid #e7edf4!important;padding:10px!important}
+.sv-unified-compose input#aiChatInput{border:1px solid #dde6ef!important;background:#f8fafc!important;box-shadow:inset 0 1px 2px rgba(15,38,64,.03)!important}
+.sv-unified-compose .send{background:linear-gradient(135deg,#14b77c,#20c98a)!important;color:#fff!important;box-shadow:0 8px 18px rgba(22,182,122,.22)!important}
+.sv-cat,.sv-feature,.sv-trust,.sv-listing,.sv-request-compact{box-shadow:0 8px 24px rgba(15,38,64,.055)!important;border-color:#e1e8ef!important}
+.sv-cat:hover,.sv-feature:hover{transform:translateY(-1px);box-shadow:0 14px 32px rgba(15,38,64,.10)!important}
+html[dir="rtl"] body{font-family:Tahoma,"Segoe UI",Arial,sans-serif!important}
+html[dir="rtl"] .sv-top-inner,html[dir="rtl"] .sv-controls,html[dir="rtl"] .sv-hero,html[dir="rtl"] .sv-section,html[dir="rtl"] .sv-band,html[dir="rtl"] .sv-foot{text-align:right!important}
+html[dir="rtl"] .sv-brand{direction:rtl!important;justify-self:end!important}
+html[dir="rtl"] .sv-controls{direction:rtl!important}
+html[dir="rtl"] .sv-control-field{direction:rtl!important;text-align:right!important}
+html[dir="rtl"] .sv-control-field>.sv-control-caption,html[dir="rtl"] .sv-control-field>small{text-align:right!important;padding-right:10px!important;padding-left:4px!important}
+html[dir="rtl"] .sv-select{text-align:right!important;direction:rtl!important}
+html[dir="rtl"] .sv-hero-grid{direction:rtl!important}
+html[dir="rtl"] .sv-scope{justify-content:flex-start!important;direction:rtl!important}
+html[dir="rtl"] .sv-chat-head,html[dir="rtl"] .sv-global-chat-head{direction:rtl!important;text-align:right!important}
+html[dir="rtl"] .sv-chat-messages,html[dir="rtl"] .sv-global-messages{direction:rtl!important;text-align:right!important}
+html[dir="rtl"] .ai-msg.bot,html[dir="rtl"] .sv-global-msg.bot{align-self:flex-start!important;text-align:right!important}
+html[dir="rtl"] .ai-msg.user,html[dir="rtl"] .sv-global-msg.user{align-self:flex-end!important;text-align:right!important}
+html[dir="rtl"] .sv-unified-compose,html[dir="rtl"] .sv-global-compose{direction:rtl!important}
+html[dir="rtl"] #aiChatInput,html[dir="rtl"] #svGlobalInput{text-align:right!important;direction:rtl!important}
+html[dir="rtl"] .sv-section-head,html[dir="rtl"] .sv-actions,html[dir="rtl"] .sv-foot{direction:rtl!important}
+html[dir="rtl"] .sv-global-dock{direction:rtl!important}
+html[dir="rtl"] .sv-global-tip{right:auto!important;left:58px!important}
+html[dir="rtl"] .sv-global-chat,html[dir="rtl"] .sv-global-safety{right:auto!important;left:74px!important}
+@media(max-width:900px){
+ .sv-top-inner{padding-inline:14px!important}
+ .sv-controls{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px 8px!important;width:100%!important;padding-top:4px!important}
+ .sv-control-field{grid-template-rows:17px 48px!important;gap:4px!important}
+ .sv-control-field>.sv-control-caption,.sv-control-field>small{font-size:10.5px!important;line-height:1.45!important;min-height:17px!important;padding-inline:8px!important}
+ .sv-controls>.sv-pill-btn{width:100%!important;min-width:0!important}
+ .sv-brand{margin-bottom:2px!important}
+ html[dir="rtl"] .sv-brand{margin-left:0!important;margin-right:auto!important}
+ html[dir="rtl"] .sv-global-chat,html[dir="rtl"] .sv-global-safety{left:8px!important;right:8px!important}
+}
+@media(max-width:600px){
+ .sv-top-inner{gap:8px!important;padding-top:10px!important;padding-bottom:10px!important}
+ .sv-brand{font-size:1.02rem!important}.sv-mark{width:46px!important;height:46px!important;border-radius:15px!important}
+ .sv-controls{gap:8px!important}
+ .sv-control-field{grid-template-rows:18px 46px!important}
+ .sv-control-field>.sv-control-caption,.sv-control-field>small{font-size:10px!important;line-height:1.55!important;min-height:18px!important;padding-inline:7px!important}
+ .sv-control-field .sv-select,.sv-controls>.sv-pill-btn{height:46px!important;min-height:46px!important;border-radius:15px!important;font-size:15px!important}
+ body.sv-home-global .sv-hero{margin-top:4px!important;padding:18px 13px 16px!important;border-radius:24px!important}
+ body.sv-home-global .sv-kicker{font-size:.74rem!important;margin-bottom:8px!important}
+ body.sv-home-global .sv-hero h1{font-size:clamp(1.72rem,8.3vw,2.18rem)!important;line-height:1.12!important;margin:.12em 0 .38em!important;overflow:visible!important}
+ body.sv-home-global .sv-lead{font-size:.9rem!important;line-height:1.58!important;margin-bottom:10px!important}
+ .sv-scope{gap:6px!important;flex-wrap:wrap!important}.sv-scope button{min-height:38px!important;border-radius:999px!important;padding:8px 12px!important;font-size:.78rem!important}
+ body.sv-home-global .sv-search-note{font-size:.74rem!important;line-height:1.48!important;margin:9px 2px 8px!important}
+ .sv-unified-chat{border-radius:22px!important}.sv-unified-chat .sv-chat-head{min-height:58px!important;padding:10px 12px!important}.sv-unified-chat .sv-chat-head>div{gap:5px!important;flex-wrap:wrap!important}.sv-unified-chat .sv-chat-head small{font-size:.62rem!important}
+ .sv-chat-messages{min-height:78px!important;max-height:170px!important}.sv-chat-messages .ai-msg{font-size:.84rem!important;line-height:1.5!important}
+ .sv-unified-compose{grid-template-columns:40px minmax(0,1fr) 40px 40px 44px!important;gap:5px!important;padding:8px!important}.sv-unified-compose input#aiChatInput{min-width:0!important;font-size:14px!important;padding-inline:12px!important}
+ .sv-global-dock{max-width:calc(100vw - 24px)!important;overflow:hidden!important}
+}
+@media(max-width:390px){
+ .sv-control-field>.sv-control-caption,.sv-control-field>small{font-size:9.5px!important}
+ .sv-control-field .sv-select{font-size:14px!important;padding-inline:10px 30px!important}
+ .sv-unified-compose{grid-template-columns:38px minmax(0,1fr) 38px 38px 42px!important;gap:4px!important}.sv-unified-compose button{width:38px!important;height:38px!important}
+}
