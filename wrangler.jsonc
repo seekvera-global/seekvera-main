@@ -1,4 +1,4 @@
-// Trigger Cloudflare deploy: 2026-09-22 worldwide premium A-Z final
+// Trigger Cloudflare deploy: 2026-09-22 worldwide premium A-Z final + resilient safety v4
 {
   "name": "seekvera-main",
   "main": "./worker.js",
