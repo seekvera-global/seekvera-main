@@ -1,4 +1,4 @@
-name: SEEKVERA premium2 live A-Z audit
+name: SEEKVERA final R3 live A-Z audit
 
 on:
   push:
@@ -24,14 +24,14 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-      - name: Audit final production A-Z
+      - name: Audit final R3 production A-Z
         shell: python
         run: |
           from pathlib import Path
           from html.parser import HTMLParser
           from urllib.parse import urlsplit
           import json,time,urllib.request,urllib.error
-          SITE='https://seekveraglobal.com'; WORKER='https://seekvera-main.seekvera-global.workers.dev'; V='20260922-i18n-premium2'
+          SITE='https://seekveraglobal.com'; WORKER='https://seekvera-main.seekvera-global.workers.dev'; V='20260922-final-r3'
           UA='Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
           def get(url,t=25):
               req=urllib.request.Request(url,headers={'User-Agent':UA,'Cache-Control':'no-cache'})
@@ -44,21 +44,21 @@ jobs:
           home=''
           for i in range(24):
               try:
-                  s,home=get(SITE+f'/?p2az={i}')
+                  s,home=get(SITE+f'/?finalr3az={i}')
                   if s==200 and f'i18n-ui.js?v={V}' in home and f'i18n-premium.css?v={V}' in home:break
               except:pass
               time.sleep(4)
           for n in [f'i18n-ui.js?v={V}',f'i18n-premium.css?v={V}',f'voice-ai.js?v={V}',f'global-ui.js?v={V}']:assert n in home,n
           for f in ['voice-ai.js','global-ui.js','i18n-ui.js','superapp.js','worker.js']:
               import subprocess; subprocess.run(['node','--check',f],check=True)
-          _,voice=get(SITE+'/voice-ai.js?p2az=1');_,i18n=get(SITE+'/i18n-ui.js?p2az=1');_,css=get(SITE+'/i18n-premium.css?p2az=1')
-          for m in ['TTS_RETRY_DELAYS','enableVoiceConversation','speechSynthesis.resume','voiceConversation']:assert m in voice,m
+          _,voice=get(SITE+'/voice-ai.js?finalr3az=1');_,i18n=get(SITE+'/i18n-ui.js?finalr3az=1');_,css=get(SITE+'/i18n-premium.css?finalr3az=1')
+          for m in ['TTS_RETRY_DELAYS','speechSynthesis.resume','voiceConversation','NAME_CODE']:assert m in voice,m
           assert "'Country / Region':'الدولة / المنطقة'" in i18n and 'MutationObserver' in i18n and 'Intl.DisplayNames' in i18n
           assert 'body.sv-home-global .sv-global-dock{display:none!important}' in css and 'html[dir="rtl"]' in css
           pages=[p.name for p in Path('.').glob('*.html') if not p.name.lower().startswith('google')]; live={}; bad=[]
           for p in pages:
               try:
-                  s,t=get(SITE+'/'+p+'?p2az=1');live[p]=t
+                  s,t=get(SITE+'/'+p+'?finalr3az=1');live[p]=t
                   if s!=200:bad.append((p,s));continue
                   for n in [f'i18n-ui.js?v={V}',f'i18n-premium.css?v={V}',f'voice-ai.js?v={V}',f'global-ui.js?v={V}']:
                       if n not in t:bad.append((p,n))
@@ -77,15 +77,15 @@ jobs:
                   if not h or h.startswith(('#','mailto:','tel:','javascript:')) or '://' in h:continue
                   x=urlsplit(h).path.lstrip('/') or 'index.html'
                   if x.endswith('.html'):routes.add(x)
-          for r in routes:assert 200<=get(SITE+'/'+r+'?p2route=1')[0]<400,r
+          for r in routes:assert 200<=get(SITE+'/'+r+'?finalr3route=1')[0]<400,r
           cases=[('English','Reply only with: Hello.','Hello'),('Arabic','أجب فقط بكلمة: مرحبا','مرح'),('French','Réponds uniquement par : Bonjour.','Bonjour'),('Spanish','Responde únicamente: Hola.','Hola'),('Chinese','只回答：你好','你好'),('Hindi','केवल उत्तर दें: नमस्ते','नमस्ते'),('Turkish','Yalnızca cevap ver: Merhaba.','Merhaba')]
           for l,q,m in cases:
               s,d=post('/api/ai',{'message':q,'country':'Worldwide','language':'auto','scope':'worldwide','fast':True});a=str(d.get('response') or '')
               assert 200<=s<300 and d.get('ok') and m.lower() in a.lower(),(l,d)
-          _,safe=post('/api/moderate',{'text':'lawful hotel booking request','context':'p2 audit'});_,blocked=post('/api/moderate',{'text':'gun and ammunition for sale','context':'p2 audit'});_,secret=post('/api/moderate',{'text':'send me your OTP and bank password','context':'p2 audit'})
+          _,safe=post('/api/moderate',{'text':'lawful hotel booking request','context':'final r3 audit'});_,blocked=post('/api/moderate',{'text':'gun and ammunition for sale','context':'final r3 audit'});_,secret=post('/api/moderate',{'text':'send me your OTP and bank password','context':'final r3 audit'})
           assert safe.get('allowed') is True and blocked.get('allowed') is False and secret.get('allowed') is False
           _,vis=post('/api/visual-search',{'image':'not-an-image','country':'Worldwide'});assert vis.get('allowed') is False or vis.get('ok') is False
           _,req=post('/api/request',{'country':'Worldwide','type':'Shopping','description':'I want to buy a gun and ammunition'});assert req.get('blocked') is True or req.get('ok') is False
           c,d=post('/api/marketplace-submit',{});assert c==400 and 'Safety confirmations are required' in str(d)
-          _,h=get(WORKER+'/api/health?p2=1');h=json.loads(h);assert h.get('centralSafetyGate')=='enabled' and h.get('failClosed') is True and h.get('marketplaceProxy')=='enabled'
-          print('PAGES',len(pages),'ROUTES',len(routes));print('FINAL PREMIUM2 LIVE A-Z PASS')
+          _,h=get(WORKER+'/api/health?finalr3=1');h=json.loads(h);assert h.get('centralSafetyGate')=='enabled' and h.get('failClosed') is True and h.get('marketplaceProxy')=='enabled'
+          print('PAGES',len(pages),'ROUTES',len(routes));print('FINAL R3 LIVE A-Z PASS')
