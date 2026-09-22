@@ -25,18 +25,19 @@ jobs:
           npm install --silent playwright@1.55.0
           npx playwright install --with-deps chromium
       - name: Test Arabic Android layout and full UI translation
-        shell: node
+        shell: bash
         run: |
+          cat > /tmp/seekvera-mobile-audit.js <<'JS'
           const { chromium } = require('playwright');
           (async()=>{
             const browser=await chromium.launch({headless:true});
             const context=await browser.newContext({viewport:{width:360,height:800},isMobile:true,hasTouch:true,userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
             await context.addInitScript(()=>{localStorage.setItem('seekvera_lang','ar');localStorage.setItem('seekvera_country','WW');});
             const page=await context.newPage();
-            await page.goto('https://seekveraglobal.com/?visual-rtl-audit=1',{waitUntil:'domcontentloaded',timeout:60000});
+            await page.goto('https://seekveraglobal.com/?visual-rtl-audit=2',{waitUntil:'domcontentloaded',timeout:60000});
             await page.waitForFunction(()=>document.querySelector('script[src*="i18n-ui.js?v=20260922-i18n-premium1"]'),null,{timeout:60000});
             await page.waitForFunction(()=>document.documentElement.dir==='rtl' && /كل ما تحتاجه/.test(document.querySelector('.sv-hero h1')?.textContent||''),null,{timeout:60000});
-            await page.waitForTimeout(1200);
+            await page.waitForTimeout(1500);
             const state=await page.evaluate(()=>{
               const caption=[...document.querySelectorAll('.sv-control-caption,.sv-control-field small')].find(x=>(x.textContent||'').includes('الدولة'));
               const language=[...document.querySelectorAll('.sv-control-caption,.sv-control-field small')].find(x=>(x.textContent||'').includes('اللغة'));
@@ -73,7 +74,6 @@ jobs:
               if(!r||r.height<11||r.top<0||r.left<0||r.right>state.vw+1)throw Error(name+' is clipped: '+JSON.stringify(r));
             }
             await page.screenshot({path:'seekvera-arabic-mobile.png',fullPage:false});
-            // Switch back to English and ensure the whole shell restores, not just the selectors.
             await page.selectOption('#lang','en');
             await page.dispatchEvent('#lang','change');
             await page.waitForFunction(()=>document.documentElement.dir==='ltr' && /Everything you need/.test(document.querySelector('.sv-hero h1')?.textContent||''),null,{timeout:30000});
@@ -83,6 +83,8 @@ jobs:
             await browser.close();
             console.log('ANDROID RTL + FULL ARABIC UI + MOBILE CLIPPING AUDIT PASS');
           })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          node /tmp/seekvera-mobile-audit.js
       - name: Upload visual proof
         uses: actions/upload-artifact@v4
         with:
