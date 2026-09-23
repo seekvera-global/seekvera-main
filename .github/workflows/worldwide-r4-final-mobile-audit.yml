@@ -32,14 +32,17 @@ jobs:
           (async()=>{
             const browser=await chromium.launch({headless:true});
             const context=await browser.newContext({viewport:{width:360,height:800},isMobile:true,hasTouch:true,userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
-            await context.addInitScript(()=>{
+            const page=await context.newPage();
+
+            // Prime same-origin storage, then simulate a real OLD install that was stuck on Portugal/local.
+            await page.goto(SITE+'/?r4-prime=3',{waitUntil:'domcontentloaded',timeout:60000});
+            await page.evaluate(()=>{
               localStorage.setItem('seekvera_country','PT');
               localStorage.setItem('seekvera_scope','local');
               localStorage.setItem('seekvera_lang','en');
               localStorage.removeItem('seekvera_worldwide_default_20260923_r4');
             });
-            const page=await context.newPage();
-            await page.goto(SITE+'/?r4-final-mobile=2',{waitUntil:'domcontentloaded',timeout:60000});
+            await page.reload({waitUntil:'domcontentloaded',timeout:60000});
             await page.waitForFunction(()=>document.querySelector('#country')?.options?.length>240&&document.querySelector('#lang')?.options?.length>=29,null,{timeout:60000});
             await page.waitForFunction(()=>localStorage.getItem('seekvera_worldwide_default_20260923_r4')==='1',null,{timeout:30000});
             await page.waitForTimeout(600);
@@ -52,6 +55,7 @@ jobs:
             ok(/SEEKVERA AI assistant/i.test(s.intro),'English inline AI intro missing');
             ok(s.media,'Media not visible'); ok(s.overflow<=2,'English mobile horizontal overflow');
 
+            // After the one-time migration, deliberate country changes must persist normally.
             await page.selectOption('#country','PT'); await page.dispatchEvent('#country','change'); await page.waitForTimeout(200);
             ok(await page.evaluate(()=>localStorage.getItem('seekvera_country'))==='PT','intentional Portugal selection did not save');
             await page.reload({waitUntil:'domcontentloaded',timeout:60000});
@@ -68,17 +72,17 @@ jobs:
             ok(ar.dir==='rtl'&&/\p{Script=Arabic}/u.test(ar.intro),'Arabic RTL/AI intro failed');
             ok(ar.overflow<=2,'Arabic mobile horizontal overflow');
 
-            const voice=await (await page.request.get(SITE+'/voice-ai.js?v=20260923-worldwide-r4&r4audit=2')).text();
+            const voice=await (await page.request.get(SITE+'/voice-ai.js?v=20260923-worldwide-r4&r4audit=3')).text();
             ok(/SpeechRecognition|webkitSpeechRecognition/.test(voice)&&voice.includes('speechSynthesis'),'voice runtime missing');
             ok(voice.includes('if(!c.length)return null'),'wrong-language voice fallback protection missing');
             for(const c of CODES)ok(voice.includes(c+':')||voice.includes(c+"='")||voice.includes(c+'='),'voice locale missing '+c);
             console.log('VOICE_28_PASS');
 
             const [app,manifest,sw,media]=await Promise.all([
-              page.request.get(SITE+'/app.html?r4audit=2').then(r=>r.text()),
-              page.request.get(SITE+'/manifest.webmanifest?r4audit=2').then(r=>r.text()),
-              page.request.get(SITE+'/sw.js?r4audit=2').then(r=>r.text()),
-              page.request.get(SITE+'/media.html?r4audit=2').then(async r=>({status:r.status(),text:await r.text()}))
+              page.request.get(SITE+'/app.html?r4audit=3').then(r=>r.text()),
+              page.request.get(SITE+'/manifest.webmanifest?r4audit=3').then(r=>r.text()),
+              page.request.get(SITE+'/sw.js?r4audit=3').then(r=>r.text()),
+              page.request.get(SITE+'/media.html?r4audit=3').then(async r=>({status:r.status(),text:await r.text()}))
             ]);
             ok(app.includes('20260923-worldwide-r4')&&app.includes('Worldwide · Premium AI')&&app.includes('media.html'),'app shell not R4/Worldwide/Media');
             ok(manifest.includes('20260923-worldwide-r4'),'manifest stale');
