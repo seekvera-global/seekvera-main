@@ -13,91 +13,61 @@ permissions:
 jobs:
   audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 14
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Verify 28 languages, country-language lock, voice runtime and Media live
+      - name: Final live verification of 28 languages, chat, voice and Media
         shell: python
         run: |
-          import json, time, urllib.request, urllib.error
-
+          import json,time,urllib.request,urllib.error
+          from concurrent.futures import ThreadPoolExecutor,as_completed
           SITE='https://seekveraglobal.com'
           WORKER='https://seekvera-main.seekvera-global.workers.dev'
           UA='Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
-
+          CODES=['en','ar','fr','zh','es','hi','pt','de','ja','ko','id','tr','ru','ur','bn','vi','it','sw','th','fa','pl','nl','ms','fil','ha','yo','ig','am']
           def get(url,timeout=25):
               req=urllib.request.Request(url,headers={'User-Agent':UA,'Cache-Control':'no-cache'})
-              with urllib.request.urlopen(req,timeout=timeout) as r:
-                  return r.status,r.read().decode('utf-8','replace')
-
-          def post(path,payload,timeout=35):
+              with urllib.request.urlopen(req,timeout=timeout) as r:return r.status,r.read().decode('utf-8','replace')
+          def post(path,payload,timeout=40):
               req=urllib.request.Request(WORKER+path,data=json.dumps(payload,ensure_ascii=False).encode('utf-8'),headers={'User-Agent':UA,'content-type':'application/json','origin':SITE},method='POST')
               try:
-                  with urllib.request.urlopen(req,timeout=timeout) as r:
-                      return r.status,json.loads(r.read().decode('utf-8'))
-              except urllib.error.HTTPError as e:
-                  return e.code,json.loads(e.read().decode('utf-8'))
-
-          _,health_text=get(WORKER+'/api/health?ai-media-audit=2')
+                  with urllib.request.urlopen(req,timeout=timeout) as r:return r.status,json.loads(r.read().decode('utf-8'))
+              except urllib.error.HTTPError as e:return e.code,json.loads(e.read().decode('utf-8'))
+          _,health_text=get(WORKER+'/api/health?final-r3-audit=1')
           health=json.loads(health_text)
           assert health.get('ok') is True,health
+          assert health.get('release')=='2026-09-23-ai-media-r3',health
           assert health.get('centralSafetyGate')=='enabled',health
-          _,voice=get(SITE+'/voice-ai.js?ai-media-audit=2')
-          _,gui=get(SITE+'/global-ui.js?ai-media-audit=2')
-          status,media=get(SITE+'/media.html?ai-media-audit=2')
+          _,voice=get(SITE+'/voice-ai.js?final-r3-audit=1')
+          _,gui=get(SITE+'/global-ui.js?final-r3-audit=1')
+          status,media=get(SITE+'/media.html?final-r3-audit=1')
           assert status==200 and 'SEEKVERA MEDIA' in media
-          assert 'if(!c.length)return null' in voice, 'wrong-language voice fallback is still present'
+          assert 'if(!c.length)return null' in voice
           assert ('SpeechRecognition' in voice or 'webkitSpeechRecognition' in voice) and 'speechSynthesis' in voice
-          for code in ['en','ar','fr','zh','es','hi','pt','de','ja','ko','id','tr','ru','ur','bn','vi','it','sw','th','fa','pl','nl','ms','fil','ha','yo','ig','am']:
-              assert code+":" in voice or code+":'" in voice or code+'=' in voice,code
+          for code in CODES:
+              assert (code+":" in voice or code+":'" in voice or code+'=' in voice),('voice locale missing',code)
+              assert code+':' in gui,('localized welcome missing',code)
           assert 'AI_INTRO' in gui
-          print('LIVE VOICE RUNTIME + MEDIA PASS')
-
+          print('LIVE R3 + 28 WELCOME MESSAGES + VOICE RUNTIME + MEDIA PASS')
           cases=[
-            ('English','Nigeria','Reply only with: Hello.','Hello'),
-            ('Arabic','Lebanon','أجب فقط: مرحبا','مرح'),
-            ('French','France','Réponds seulement : Bonjour.','Bonjour'),
-            ('Chinese','China','只回答：你好','你好'),
-            ('Spanish','Spain','Responde solo: Hola.','Hola'),
-            ('Hindi','India','केवल उत्तर दें: नमस्ते','नमस्ते'),
-            ('Portuguese','Brazil','Responda apenas: Olá.','Olá'),
-            ('German','Germany','Antworte nur: Hallo.','Hallo'),
-            ('Japanese','Japan','「こんにちは」だけ答えてください。','こんにちは'),
-            ('Korean','South Korea','다음만 답하세요: 안녕하세요','안녕'),
-            ('Indonesian','Indonesia','Jawab hanya: Halo.','Halo'),
-            ('Turkish','Turkey','Yalnızca cevap ver: Merhaba.','Merhaba'),
-            ('Russian','Russia','Ответь только: Привет.','Привет'),
-            ('Urdu','Pakistan','صرف جواب دیں: سلام','سلام'),
-            ('Bengali','Bangladesh','শুধু উত্তর দিন: নমস্কার','নমস্কার'),
-            ('Vietnamese','Vietnam','Chỉ trả lời: Xin chào.','Xin chào'),
-            ('Italian','Italy','Rispondi solo: Ciao.','Ciao'),
-            ('Swahili','Kenya','Jibu tu: Habari.','Habari'),
-            ('Thai','Thailand','ตอบเพียง: สวัสดี','สวัสดี'),
-            ('Persian','Iran','فقط پاسخ بده: سلام','سلام'),
-            ('Polish','Poland','Odpowiedz tylko: Cześć.','Cześć'),
-            ('Dutch','Netherlands','Antwoord alleen: Hallo.','Hallo'),
-            ('Malay','Malaysia','Jawab sahaja dengan perkataan ini: Halo.','Halo'),
-            ('Filipino','Philippines','Sagutin lamang: Kumusta.','Kumusta'),
-            ('Hausa','Nigeria','Amsa kawai: Sannu.','Sannu'),
-            ('Yoruba','Nigeria','Dáhùn pẹ̀lú gbolohun yìí nìkan, gangan: Pẹlẹ o.','Pẹlẹ'),
-            ('Igbo','Nigeria','Zaa naanị: Ndewo.','Ndewo'),
-            ('Amharic','Ethiopia','ብቻ መልስ፡ ሰላም','ሰላም'),
-          ]
-          failures=[]
-          for label,country,message,marker in cases:
-              started=time.monotonic()
-              status,d=post('/api/ai',{'message':message,'country':country,'language':label,'scope':'worldwide','fast':True},35)
-              elapsed=time.monotonic()-started
-              answer=str(d.get('response') or '')
-              language=str(d.get('language') or '')
+            ('English','Nigeria','Reply only with: Hello.','Hello'),('Arabic','Lebanon','أجب فقط: مرحبا','مرح'),('French','France','Réponds seulement : Bonjour.','Bonjour'),('Chinese','China','只回答：你好','你好'),('Spanish','Spain','Responde solo: Hola.','Hola'),('Hindi','India','केवल उत्तर दें: नमस्ते','नमस्ते'),('Portuguese','Brazil','Responda apenas: Olá.','Olá'),('German','Germany','Antworte nur: Hallo.','Hallo'),('Japanese','Japan','「こんにちは」だけ答えてください。','こんにちは'),('Korean','South Korea','다음만 답하세요: 안녕하세요','안녕'),('Indonesian','Indonesia','Jawab hanya: Halo.','Halo'),('Turkish','Turkey','Yalnızca cevap ver: Merhaba.','Merhaba'),('Russian','Russia','Ответь только: Привет.','Привет'),('Urdu','Pakistan','صرف جواب دیں: سلام','سلام'),('Bengali','Bangladesh','শুধু উত্তর দিন: নমস্কার','নমস্কার'),('Vietnamese','Vietnam','Chỉ trả lời: Xin chào.','Xin chào'),('Italian','Italy','Rispondi solo: Ciao.','Ciao'),('Swahili','Kenya','Jibu tu: Habari.','Habari'),('Thai','Thailand','ตอบเพียง: สวัสดี','สวัสดี'),('Persian','Iran','فقط پاسخ بده: سلام','سلام'),('Polish','Poland','Odpowiedz tylko: Cześć.','Cześć'),('Dutch','Netherlands','Antwoord alleen: Hallo.','Hallo'),('Malay','Malaysia','Jawab sahaja dengan perkataan ini: Halo.','Halo'),('Filipino','Philippines','Sagutin lamang: Kumusta.','Kumusta'),('Hausa','Nigeria','Amsa da wannan kalma kawai: Sannu.','Sannu'),('Yoruba','Nigeria','Dáhùn pẹ̀lú gbolohun yìí nìkan, gangan: Pẹlẹ o.','Pẹlẹ'),('Igbo','Nigeria','Zaa naanị okwu a kpọmkwem: Ndewo.','Ndewo'),('Amharic','Ethiopia','ብቻ መልስ፡ ሰላም','ሰላም')]
+          def run_case(case):
+              label,country,message,marker=case; started=time.monotonic()
+              status,d=post('/api/ai',{'message':message,'country':country,'language':label,'scope':'worldwide','fast':True},40)
+              elapsed=time.monotonic()-started; answer=str(d.get('response') or ''); language=str(d.get('language') or '')
               ok=(200<=status<300 and d.get('ok') is True and marker.lower() in answer.lower() and language.lower()==label.lower())
-              print(label,country,round(elapsed,2),'s','reported=',language,'answer=',answer[:100], 'PASS' if ok else 'FAIL')
-              if not ok: failures.append((label,country,status,language,answer,d))
+              return label,country,round(elapsed,2),language,answer,status,ok,d
+          failures=[]
+          with ThreadPoolExecutor(max_workers=7) as ex:
+              futures=[ex.submit(run_case,c) for c in cases]
+              for f in as_completed(futures):
+                  label,country,elapsed,language,answer,status,ok,d=f.result()
+                  print(label,country,elapsed,'s','reported=',language,'answer=',answer[:110], 'PASS' if ok else 'FAIL')
+                  if not ok: failures.append((label,country,status,language,answer,d))
           assert not failures,failures
           print('ALL 28 SEEKVERA LANGUAGES SAME-LANGUAGE LIVE AI PASS')
-
-          _,safe=post('/api/moderate',{'text':'lawful hotel booking request','context':'28-language production audit'},35)
-          _,blocked=post('/api/moderate',{'text':'gun and ammunition for sale','context':'28-language production audit'},25)
+          _,safe=post('/api/moderate',{'text':'lawful hotel booking request','context':'final 28-language production audit'},35)
+          _,blocked=post('/api/moderate',{'text':'gun and ammunition for sale','context':'final 28-language production audit'},25)
           assert safe.get('allowed') is True and blocked.get('allowed') is False,(safe,blocked)
           print('SAFETY GATE PASS')
-          print('FINAL 28-LANGUAGE COUNTRY + CHAT + VOICE-RUNTIME AUDIT PASS')
+          print('FINAL 28-LANGUAGE COUNTRY + CHAT + VOICE-RUNTIME + MEDIA AUDIT PASS')
