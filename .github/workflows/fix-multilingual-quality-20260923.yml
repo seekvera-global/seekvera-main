@@ -16,47 +16,31 @@ jobs:
     timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
-      - name: Patch language lock and multilingual quality
+      - name: Improve difficult-language routing and exact-answer compliance
         shell: python
         run: |
           from pathlib import Path
-
           p=Path('worker.js')
           s=p.read_text(encoding='utf-8')
-          s=s.replace("const RELEASE='2026-09-23-ai-media-r1'","const RELEASE='2026-09-23-ai-media-r2'",1)
-
-          old="function scriptLanguage(t){t=String(t||'');if(/[\\u0600-\\u06FF]/u.test(t))return'Arabic';if(/[\\u4E00-\\u9FFF]/u.test(t))return'Chinese';if(/[\\u3040-\\u30FF]/u.test(t))return'Japanese';"
-          new="function scriptLanguage(t){t=String(t||'');if(/[\\u3040-\\u30FF]/u.test(t))return'Japanese';"
-          if old not in s: raise SystemExit('scriptLanguage anchor missing')
+          s=s.replace("const RELEASE='2026-09-23-ai-media-r2'","const RELEASE='2026-09-23-ai-media-r3'",1)
+          old="quality=/LANGUAGE LOCK:.*\\b(Japanese|Urdu|Persian|Yoruba|Hausa|Igbo|Amharic|Bengali|Thai|Swahili|Filipino)\\b/i.test(all);const order=/Safety Gate|moderation|safety review/i.test(first)?[PRIMARY,FALLBACK,LIGHT,FASTCHAT]:quality?[PRIMARY,LIGHT,FALLBACK,FASTCHAT]:[FASTCHAT,FALLBACK,LIGHT,PRIMARY]"
+          new="quality=/LANGUAGE LOCK:.*\\b(Japanese|Urdu|Persian|Yoruba|Hausa|Igbo|Amharic|Bengali|Thai|Swahili|Filipino)\\b/i.test(all);const order=/Safety Gate|moderation|safety review/i.test(first)?[PRIMARY,FALLBACK,LIGHT,FASTCHAT]:quality?[FALLBACK,PRIMARY,LIGHT,FASTCHAT]:[FASTCHAT,FALLBACK,LIGHT,PRIMARY]"
+          if old not in s: raise SystemExit('quality routing anchor missing')
           s=s.replace(old,new,1)
-
-          old="async function detectedLanguage(env,text,hint=''){const script=scriptLanguage(text);if(script)return script;const h=clean(hint,50);"
-          new="async function detectedLanguage(env,text,hint=''){const h=clean(hint,50);if(h&&!/^auto$/i.test(h))return h;const script=scriptLanguage(text);if(script)return script;"
-          if old not in s: raise SystemExit('detectedLanguage anchor missing')
-          s=s.replace(old,new,1)
-
-          old="async function ai(env,messages,max=320,temp=.2){const errors=[];const first=String(messages?.[0]?.content||'');const order=/Safety Gate|moderation|safety review/i.test(first)?[PRIMARY,FALLBACK,LIGHT,FASTCHAT]:[FASTCHAT,FALLBACK,LIGHT,PRIMARY];"
-          new="async function ai(env,messages,max=320,temp=.2){const errors=[];const first=String(messages?.[0]?.content||''),all=(messages||[]).map(x=>String(x?.content||'')).join(' '),quality=/LANGUAGE LOCK:.*\\b(Japanese|Urdu|Persian|Yoruba|Hausa|Igbo|Amharic|Bengali|Thai|Swahili|Filipino)\\b/i.test(all);const order=/Safety Gate|moderation|safety review/i.test(first)?[PRIMARY,FALLBACK,LIGHT,FASTCHAT]:quality?[PRIMARY,LIGHT,FALLBACK,FASTCHAT]:[FASTCHAT,FALLBACK,LIGHT,PRIMARY];"
-          if old not in s: raise SystemExit('ai order anchor missing')
-          s=s.replace(old,new,1)
-
-          old="Automatically detect the language of the user\\'s latest message and reply in that same language and script, independent of country or location. If the user explicitly asks for a different reply language, use that requested language."
-          new="Follow the LANGUAGE LOCK supplied below as authoritative. When the app has an explicit selected language, reply in that selected language; when language is Auto, detect the latest user message and reply in that same language and script. Country or location must never override the selected or detected language. If the user explicitly asks inside the message for a different reply language, use that requested language."
-          if old not in s: raise SystemExit('assistant language prompt anchor missing')
+          old="Do not translate into English or any third language. If the user explicitly asks inside the message for a different reply language, follow that explicit request instead."
+          new="Do not translate into English or any third language. If the user asks for an exact word, phrase or format, reproduce it exactly without adding unrelated text. If the user explicitly asks inside the message for a different reply language, follow that explicit request instead."
+          if old not in s: raise SystemExit('language lock exact-answer anchor missing')
           s=s.replace(old,new,1)
           p.write_text(s,encoding='utf-8')
-
       - name: Validate patched runtime
         shell: bash
         run: |
           set -euo pipefail
           node --check worker.js
-          grep -q "2026-09-23-ai-media-r2" worker.js
-          grep -q "if(h&&!/^auto$/i.test(h))return h" worker.js
-          grep -q "quality=/LANGUAGE LOCK" worker.js
-          grep -q "Follow the LANGUAGE LOCK supplied below as authoritative" worker.js
+          grep -q "2026-09-23-ai-media-r3" worker.js
+          grep -Fq "quality?[FALLBACK,PRIMARY,LIGHT,FASTCHAT]" worker.js
+          grep -q "reproduce it exactly" worker.js
           git diff --check
-
       - name: Commit fixes
         shell: bash
         run: |
@@ -65,6 +49,6 @@ jobs:
           git config user.email 'actions@users.noreply.github.com'
           git add worker.js
           if ! git diff --cached --quiet; then
-            git commit -m 'Fix selected-language lock and improve multilingual AI quality'
+            git commit -m 'Improve difficult-language AI quality and exact answers'
             git push origin HEAD:main
           fi
