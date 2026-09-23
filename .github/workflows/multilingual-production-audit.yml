@@ -19,7 +19,6 @@ jobs:
       - name: Verify 28 languages, country-language lock, voice runtime and Media live
         shell: python
         run: |
-          from pathlib import Path
           import json, time, urllib.request, urllib.error
 
           SITE='https://seekveraglobal.com'
@@ -39,14 +38,13 @@ jobs:
               except urllib.error.HTTPError as e:
                   return e.code,json.loads(e.read().decode('utf-8'))
 
-          # Confirm the refreshed production source is actually live.
-          _,health_text=get(WORKER+'/api/health?ai-media-audit=1')
+          _,health_text=get(WORKER+'/api/health?ai-media-audit=2')
           health=json.loads(health_text)
           assert health.get('ok') is True,health
           assert health.get('centralSafetyGate')=='enabled',health
-          _,voice=get(SITE+'/voice-ai.js?ai-media-audit=1')
-          _,gui=get(SITE+'/global-ui.js?ai-media-audit=1')
-          status,media=get(SITE+'/media.html?ai-media-audit=1')
+          _,voice=get(SITE+'/voice-ai.js?ai-media-audit=2')
+          _,gui=get(SITE+'/global-ui.js?ai-media-audit=2')
+          status,media=get(SITE+'/media.html?ai-media-audit=2')
           assert status==200 and 'SEEKVERA MEDIA' in media
           assert 'if(!c.length)return null' in voice, 'wrong-language voice fallback is still present'
           assert ('SpeechRecognition' in voice or 'webkitSpeechRecognition' in voice) and 'speechSynthesis' in voice
@@ -55,8 +53,6 @@ jobs:
           assert 'AI_INTRO' in gui
           print('LIVE VOICE RUNTIME + MEDIA PASS')
 
-          # One live AI test for every language exposed by the SEEKVERA language selector.
-          # Country is intentionally set to a representative country to prove country selection does not override reply language.
           cases=[
             ('English','Nigeria','Reply only with: Hello.','Hello'),
             ('Arabic','Lebanon','أجب فقط: مرحبا','مرح'),
@@ -80,10 +76,10 @@ jobs:
             ('Persian','Iran','فقط پاسخ بده: سلام','سلام'),
             ('Polish','Poland','Odpowiedz tylko: Cześć.','Cześć'),
             ('Dutch','Netherlands','Antwoord alleen: Hallo.','Hallo'),
-            ('Malay','Malaysia','Jawab sahaja: Helo.','Helo'),
+            ('Malay','Malaysia','Jawab sahaja dengan perkataan ini: Halo.','Halo'),
             ('Filipino','Philippines','Sagutin lamang: Kumusta.','Kumusta'),
             ('Hausa','Nigeria','Amsa kawai: Sannu.','Sannu'),
-            ('Yoruba','Nigeria','Dahun nikan: Pẹlẹ o.','Pẹlẹ'),
+            ('Yoruba','Nigeria','Dáhùn pẹ̀lú gbolohun yìí nìkan, gangan: Pẹlẹ o.','Pẹlẹ'),
             ('Igbo','Nigeria','Zaa naanị: Ndewo.','Ndewo'),
             ('Amharic','Ethiopia','ብቻ መልስ፡ ሰላም','ሰላም'),
           ]
@@ -93,13 +89,13 @@ jobs:
               status,d=post('/api/ai',{'message':message,'country':country,'language':label,'scope':'worldwide','fast':True},35)
               elapsed=time.monotonic()-started
               answer=str(d.get('response') or '')
-              ok=(200<=status<300 and d.get('ok') is True and marker.lower() in answer.lower())
-              print(label,country,round(elapsed,2),'s',answer[:100], 'PASS' if ok else 'FAIL')
-              if not ok: failures.append((label,country,status,answer,d))
+              language=str(d.get('language') or '')
+              ok=(200<=status<300 and d.get('ok') is True and marker.lower() in answer.lower() and language.lower()==label.lower())
+              print(label,country,round(elapsed,2),'s','reported=',language,'answer=',answer[:100], 'PASS' if ok else 'FAIL')
+              if not ok: failures.append((label,country,status,language,answer,d))
           assert not failures,failures
           print('ALL 28 SEEKVERA LANGUAGES SAME-LANGUAGE LIVE AI PASS')
 
-          # Verify safety still behaves after AI changes.
           _,safe=post('/api/moderate',{'text':'lawful hotel booking request','context':'28-language production audit'},35)
           _,blocked=post('/api/moderate',{'text':'gun and ammunition for sale','context':'28-language production audit'},25)
           assert safe.get('allowed') is True and blocked.get('allowed') is False,(safe,blocked)
