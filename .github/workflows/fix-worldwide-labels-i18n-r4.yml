@@ -1,0 +1,80 @@
+name: Fix Worldwide labels in 28 UI languages R4
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-worldwide-labels-i18n-r4.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Make Worldwide explicit in i18n country selector
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('i18n-ui.js')
+          s=p.read_text(encoding='utf-8')
+          reps={
+          "en:['Country / Region','All countries'":"en:['Country / Region','Worldwide · All countries'",
+          "ar:['الدولة / المنطقة','كل الدول'":"ar:['الدولة / المنطقة','العالم · كل الدول'",
+          "fr:['Pays / région','Tous les pays'":"fr:['Pays / région','Monde · Tous les pays'",
+          "zh:['国家 / 地区','所有国家'":"zh:['国家 / 地区','全球 · 所有国家'",
+          "es:['País / región','Todos los países'":"es:['País / región','Mundial · Todos los países'",
+          "hi:['देश / क्षेत्र','सभी देश'":"hi:['देश / क्षेत्र','विश्वभर · सभी देश'",
+          "pt:['País / região','Todos os países'":"pt:['País / região','Mundo · Todos os países'",
+          "de:['Land / Region','Alle Länder'":"de:['Land / Region','Weltweit · Alle Länder'",
+          "ja:['国 / 地域','すべての国'":"ja:['国 / 地域','世界 · すべての国'",
+          "ko:['국가 / 지역','모든 국가'":"ko:['국가 / 지역','전 세계 · 모든 국가'",
+          "id:['Negara / Wilayah','Semua negara'":"id:['Negara / Wilayah','Seluruh dunia · Semua negara'",
+          "tr:['Ülke / Bölge','Tüm ülkeler'":"tr:['Ülke / Bölge','Dünya çapında · Tüm ülkeler'",
+          "ru:['Страна / регион','Все страны'":"ru:['Страна / регион','Весь мир · Все страны'",
+          "ur:['ملک / علاقہ','تمام ممالک'":"ur:['ملک / علاقہ','دنیا بھر · تمام ممالک'",
+          "bn:['দেশ / অঞ্চল','সব দেশ'":"bn:['দেশ / অঞ্চল','বিশ্বব্যাপী · সব দেশ'",
+          "vi:['Quốc gia / Khu vực','Tất cả quốc gia'":"vi:['Quốc gia / Khu vực','Toàn cầu · Tất cả quốc gia'",
+          "it:['Paese / Regione','Tutti i paesi'":"it:['Paese / Regione','Tutto il mondo · Tutti i paesi'",
+          "sw:['Nchi / Eneo','Nchi zote'":"sw:['Nchi / Eneo','Duniani · Nchi zote'",
+          "th:['ประเทศ / ภูมิภาค','ทุกประเทศ'":"th:['ประเทศ / ภูมิภาค','ทั่วโลก · ทุกประเทศ'",
+          "fa:['کشور / منطقه','همه کشورها'":"fa:['کشور / منطقه','سراسر جهان · همه کشورها'",
+          "pl:['Kraj / region','Wszystkie kraje'":"pl:['Kraj / region','Cały świat · Wszystkie kraje'",
+          "nl:['Land / regio','Alle landen'":"nl:['Land / regio','Wereldwijd · Alle landen'",
+          "ms:['Negara / Wilayah','Semua negara'":"ms:['Negara / Wilayah','Seluruh dunia · Semua negara'",
+          "fil:['Bansa / Rehiyon','Lahat ng bansa'":"fil:['Bansa / Rehiyon','Buong mundo · Lahat ng bansa'",
+          "ha:['Ƙasa / Yanki','Duk ƙasashe'":"ha:['Ƙasa / Yanki','Duniya · Duk ƙasashe'",
+          "yo:['Orílẹ̀-èdè / Agbègbè','Gbogbo orílẹ̀-èdè'":"yo:['Orílẹ̀-èdè / Agbègbè','Kárí ayé · Gbogbo orílẹ̀-èdè'",
+          "ig:['Mba / Mpaghara','Mba niile'":"ig:['Mba / Mpaghara','Ụwa niile · Mba niile'",
+          "am:['አገር / ክልል','ሁሉም አገሮች'":"am:['አገር / ክልል','ዓለም አቀፍ · ሁሉም አገሮች'"
+          }
+          missing=[]
+          for old,new in reps.items():
+              if old not in s: missing.append(old[:30])
+              else: s=s.replace(old,new,1)
+          if missing: raise SystemExit('Missing anchors: '+repr(missing))
+          s=s.replace('/* SEEKVERA multilingual UI runtime — final-r3 */','/* SEEKVERA multilingual UI runtime — worldwide-r4 */',1)
+          p.write_text(s,encoding='utf-8')
+      - name: Validate all 28 Worldwide labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check i18n-ui.js
+          grep -q "Worldwide · All countries" i18n-ui.js
+          grep -q "العالم · كل الدول" i18n-ui.js
+          grep -q "Mundo · Todos os países" i18n-ui.js
+          grep -q "全球 · 所有国家" i18n-ui.js
+          grep -q "ዓለም አቀፍ · ሁሉም አገሮች" i18n-ui.js
+          git diff --check
+      - name: Commit labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'SEEKVERA automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add i18n-ui.js
+          git commit -m 'Make Worldwide explicit in all 28 country selectors'
+          git push origin HEAD:main
