@@ -1,0 +1,93 @@
+name: Fix R6 Workers AI Output Shapes V8
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-r6-ai-output-shapes-v8.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Support all Workers AI synchronous output shapes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('worker.js')
+          s=p.read_text(encoding='utf-8')
+          new="function out(x){if(typeof x==='string')return x.trim();if(typeof x?.response==='string')return x.response.trim();if(typeof x?.result==='string')return x.result.trim();if(typeof x?.result?.response==='string')return x.result.response.trim();if(typeof x?.result?.output_text==='string')return x.result.output_text.trim();const c=x?.choices?.[0]?.message?.content;if(typeof c==='string')return c.trim();if(Array.isArray(c))return c.map(p=>typeof p==='string'?p:(p?.text||p?.content||'')).filter(Boolean).join(' ').trim();return''}"
+          s,n=re.subn(r"function out\(x\)\{.*?\}\nasync function ai",lambda m:new+'\nasync function ai',s,count=1,flags=re.S)
+          if n!=1: raise SystemExit('out() patch target not found')
+          p.write_text(s,encoding='utf-8')
+          PY
+          node --check worker.js
+          grep -q "typeof x?.result==='string'" worker.js
+
+      - name: Commit output-shape support
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name seekvera-bot
+          git config user.email actions@users.noreply.github.com
+          git add worker.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Support Workers AI result and chat output shapes'
+            git push origin main
+          fi
+
+      - name: Deploy Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx -y wrangler@4 deploy
+
+      - name: Verify AI text and full live Visual Search
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64,struct,zlib,binascii,json,urllib.request,time
+          H={'Content-Type':'application/json','User-Agent':'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 Version/19.0 Mobile/15E148 Safari/604.1','Origin':'https://seekveraglobal.com','Referer':'https://seekveraglobal.com/'}
+          # Text AI sanity
+          b=json.dumps({'message':'Reply only with: Hello.','country':'Worldwide','language':'English','scope':'worldwide','fast':True}).encode()
+          req=urllib.request.Request('https://seekveraglobal.com/api/ai',data=b,headers=H,method='POST')
+          with urllib.request.urlopen(req,timeout=90) as r: d=json.loads(r.read().decode())
+          if not d.get('ok') or 'hello' not in str(d.get('response','')).lower(): raise SystemExit('Text AI sanity failed '+str(d)[:500])
+          print('TEXT AI PASS',d.get('response'))
+          # Visual search safe image
+          w=h=96
+          raw=b''.join(b'\x00'+b'\x22\x88\xdd\xff'*w for _ in range(h))
+          def chunk(t,z): return struct.pack('>I',len(z))+t+z+struct.pack('>I',binascii.crc32(t+z)&0xffffffff)
+          png=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',w,h,8,6,0,0,0))+chunk(b'IDAT',zlib.compress(raw))+chunk(b'IEND',b'')
+          image='data:image/png;base64,'+base64.b64encode(png).decode()
+          body=json.dumps({'image':image,'country':'Worldwide','language':'English','context':'Safe ordinary test image'}).encode()
+          last={}
+          for n in range(5):
+              req=urllib.request.Request('https://seekveraglobal.com/api/visual-search',data=body,headers=H,method='POST')
+              with urllib.request.urlopen(req,timeout=100) as r: d=json.loads(r.read().decode())
+              last=d; print('VISUAL TRY',n+1,json.dumps(d,ensure_ascii=False)[:900],flush=True)
+              if d.get('ok') and d.get('allowed') is True and d.get('reviewRequired') is False and d.get('summary') and d.get('suggestedQuery'):
+                  print('FULL VISUAL SEARCH PASS',d.get('category'),d.get('summary'),flush=True)
+                  break
+              time.sleep(4)
+          else: raise SystemExit('Visual Search failed: '+str(last)[:900])
+          PY
+
+      - name: Result
+        run: echo 'R6 WORKERS AI OUTPUT + VISUAL SEARCH PASS'
