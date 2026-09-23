@@ -1,0 +1,67 @@
+name: Expand SEEKVERA AI intro to all 28 UI languages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/expand-ai-intro-28-20260923.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Expand localized assistant introduction
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+          p=Path('global-ui.js')
+          s=p.read_text(encoding='utf-8')
+          new=r"""const AI_INTRO={
+en:'I’m the SEEKVERA AI assistant. I can help you search, compare, translate and find the right section, service or opportunity inside SEEKVERA. Type or speak in your language.',
+ar:'أنا مساعد SEEKVERA بالذكاء الاصطناعي. أساعدك بالبحث والمقارنة والترجمة والوصول للقسم أو الخدمة أو الفرصة المناسبة داخل SEEKVERA. اكتب أو احكِ بلغتك.',
+fr:'Je suis l’assistant IA de SEEKVERA. Je peux vous aider à rechercher, comparer, traduire et trouver la bonne rubrique, le bon service ou la bonne opportunité dans SEEKVERA. Écrivez ou parlez dans votre langue.',
+zh:'我是 SEEKVERA AI 助手。我可以帮你搜索、比较、翻译，并在 SEEKVERA 中找到合适的栏目、服务或机会。你可以用自己的语言打字或说话。',
+es:'Soy el asistente de IA de SEEKVERA. Puedo ayudarte a buscar, comparar, traducir y encontrar la sección, el servicio o la oportunidad adecuada dentro de SEEKVERA. Escribe o habla en tu idioma.',
+hi:'मैं SEEKVERA AI सहायक हूँ। मैं खोजने, तुलना करने, अनुवाद करने और SEEKVERA के अंदर सही सेक्शन, सेवा या अवसर तक पहुँचने में आपकी मदद कर सकता हूँ। अपनी भाषा में लिखें या बोलें।',
+pt:'Sou o assistente de IA da SEEKVERA. Posso ajudar a pesquisar, comparar, traduzir e encontrar a seção, o serviço ou a oportunidade certa dentro da SEEKVERA. Escreva ou fale no seu idioma.',
+de:'Ich bin der SEEKVERA-KI-Assistent. Ich helfe beim Suchen, Vergleichen, Übersetzen und dabei, den richtigen Bereich, Dienst oder die passende Möglichkeit in SEEKVERA zu finden. Schreiben oder sprechen Sie in Ihrer Sprache.',
+ja:'私はSEEKVERAのAIアシスタントです。検索、比較、翻訳、そしてSEEKVERA内で最適なセクション、サービス、機会を見つけるお手伝いをします。あなたの言語で入力または話してください。',
+ko:'저는 SEEKVERA AI 도우미입니다. 검색, 비교, 번역을 돕고 SEEKVERA 안에서 알맞은 섹션, 서비스 또는 기회를 찾도록 도와드립니다. 원하는 언어로 입력하거나 말하세요.',
+id:'Saya asisten AI SEEKVERA. Saya dapat membantu mencari, membandingkan, menerjemahkan, dan menemukan bagian, layanan, atau peluang yang tepat di SEEKVERA. Ketik atau bicara dalam bahasa Anda.',
+tr:'Ben SEEKVERA AI asistanıyım. Arama, karşılaştırma, çeviri ve SEEKVERA içinde doğru bölüm, hizmet veya fırsatı bulma konusunda yardımcı olabilirim. Kendi dilinizde yazın veya konuşun.',
+ru:'Я ИИ-помощник SEEKVERA. Я помогу искать, сравнивать, переводить и находить нужный раздел, услугу или возможность внутри SEEKVERA. Пишите или говорите на своем языке.',
+ur:'میں SEEKVERA کا AI اسسٹنٹ ہوں۔ میں تلاش، موازنہ، ترجمہ اور SEEKVERA کے اندر درست سیکشن، سروس یا موقع تلاش کرنے میں مدد کر سکتا ہوں۔ اپنی زبان میں لکھیں یا بولیں۔',
+bn:'আমি SEEKVERA AI সহকারী। আমি খোঁজা, তুলনা, অনুবাদ এবং SEEKVERA-এর ভেতরে সঠিক বিভাগ, সেবা বা সুযোগ খুঁজে পেতে সাহায্য করতে পারি। আপনার ভাষায় লিখুন বা বলুন।',
+vi:'Tôi là trợ lý AI của SEEKVERA. Tôi có thể giúp bạn tìm kiếm, so sánh, dịch và tìm đúng mục, dịch vụ hoặc cơ hội trong SEEKVERA. Hãy nhập hoặc nói bằng ngôn ngữ của bạn.',
+it:'Sono l’assistente AI di SEEKVERA. Posso aiutarti a cercare, confrontare, tradurre e trovare la sezione, il servizio o l’opportunità giusta all’interno di SEEKVERA. Scrivi o parla nella tua lingua.',
+sw:'Mimi ni msaidizi wa AI wa SEEKVERA. Ninaweza kusaidia kutafuta, kulinganisha, kutafsiri na kupata sehemu, huduma au fursa sahihi ndani ya SEEKVERA. Andika au zungumza kwa lugha yako.',
+th:'ฉันคือผู้ช่วย AI ของ SEEKVERA ฉันช่วยค้นหา เปรียบเทียบ แปล และค้นหาหมวด บริการ หรือโอกาสที่เหมาะสมภายใน SEEKVERA ได้ พิมพ์หรือพูดด้วยภาษาของคุณ',
+fa:'من دستیار هوش مصنوعی SEEKVERA هستم. می‌توانم در جستجو، مقایسه، ترجمه و پیدا کردن بخش، سرویس یا فرصت مناسب در SEEKVERA کمک کنم. به زبان خودتان بنویسید یا صحبت کنید.',
+pl:'Jestem asystentem AI SEEKVERA. Mogę pomóc wyszukiwać, porównywać, tłumaczyć i znaleźć właściwą sekcję, usługę lub możliwość w SEEKVERA. Pisz lub mów w swoim języku.',
+nl:'Ik ben de AI-assistent van SEEKVERA. Ik kan helpen zoeken, vergelijken, vertalen en de juiste rubriek, dienst of mogelijkheid binnen SEEKVERA vinden. Typ of spreek in uw taal.',
+ms:'Saya pembantu AI SEEKVERA. Saya boleh membantu mencari, membandingkan, menterjemah dan mencari bahagian, perkhidmatan atau peluang yang sesuai dalam SEEKVERA. Taip atau bercakap dalam bahasa anda.',
+fil:'Ako ang SEEKVERA AI assistant. Matutulungan kitang maghanap, maghambing, magsalin at mahanap ang tamang seksyon, serbisyo o oportunidad sa loob ng SEEKVERA. Mag-type o magsalita sa iyong wika.',
+ha:'Ni ne mataimakin AI na SEEKVERA. Zan taimaka maka wajen nema, kwatantawa, fassara da gano sashen, sabis ko damar da ta dace a cikin SEEKVERA. Rubuta ko yi magana da harshenka.',
+yo:'Èmi ni olùrànlọ́wọ́ AI SEEKVERA. Mo lè ràn ọ́ lọ́wọ́ láti wá, fiwé, túmọ̀ àti rí ẹ̀ka, iṣẹ́ tàbí àǹfààní tó yẹ nínú SEEKVERA. Kọ tàbí sọ̀rọ̀ ní èdè rẹ.',
+ig:'Abụ m onye enyemaka AI SEEKVERA. Enwere m ike inyere gị aka ịchọ, tụnyere, tụgharịa asụsụ ma chọta ngalaba, ọrụ ma ọ bụ ohere kwesịrị ekwesị n’ime SEEKVERA. Dee ma ọ bụ kwuo n’asụsụ gị.',
+am:'እኔ የSEEKVERA AI ረዳት ነኝ። በSEEKVERA ውስጥ ለመፈለግ፣ ለማወዳደር፣ ለመተርጎም እና ትክክለኛውን ክፍል፣ አገልግሎት ወይም እድል ለማግኘት እረዳዎታለሁ። በቋንቋዎ ይጻፉ ወይም ይናገሩ።'};"""
+          s2,n=re.subn(r"const AI_INTRO=\{.*?\};",new,s,count=1,flags=re.S)
+          if n!=1: raise SystemExit('AI_INTRO block not found')
+          p.write_text(s2,encoding='utf-8')
+          print('Localized intro count:',len(re.findall(r"\n[a-z]{2,3}:'",new)))
+      - name: Validate and commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check global-ui.js
+          for code in en ar fr zh es hi pt de ja ko id tr ru ur bn vi it sw th fa pl nl ms fil ha yo ig am; do grep -q "^${code}:'" global-ui.js; done
+          git config user.name 'SEEKVERA automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add global-ui.js
+          if ! git diff --cached --quiet; then git commit -m 'Localize AI assistant intro in all 28 UI languages'; git push origin HEAD:main; fi
