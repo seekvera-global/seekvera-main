@@ -16,6 +16,8 @@ on:
       - 'i18n-premium.css'
       - 'home-marketplace-r5.css'
       - 'mobile-r5b.css'
+      - 'r5b-language-fix.css'
+      - 'home-r5b-i18n.js'
       - 'app.js'
       - 'superapp.js'
       - 'sw.js'
@@ -52,14 +54,18 @@ jobs:
           grep -q 'safetyGateVersion' worker.js
           grep -q '/api/vision' worker.js
           grep -q '/api/marketplace-submit' worker.js
-          for f in voice-ai.js i18n-ui.js global-ui.js superapp.js sw.js worker.js; do node --check "$f"; done
+          for f in voice-ai.js i18n-ui.js global-ui.js superapp.js home-r5b-i18n.js sw.js worker.js; do node --check "$f"; done
           grep -q 'serverVoice' voice-ai.js
           grep -q 'navigator.mediaDevices' voice-ai.js
           grep -q 'MediaRecorder' voice-ai.js
           grep -q 'data-release="20260923-market-r5"' index.html
           grep -q 'home-marketplace-r5.css?v=20260923-market-r5' index.html
           grep -q 'mobile-r5b.css?v=20260923-r5b' index.html
+          grep -q 'r5b-language-fix.css?v=20260923-r5b2' index.html
+          grep -q 'home-r5b-i18n.js?v=20260923-r5b2' index.html
           grep -q 'SEEKVERA R5B mobile cleanup' mobile-r5b.css
+          grep -q 'R5B language rendering safety layer' r5b-language-fix.css
+          grep -q 'Encontre mais rápido. Compare melhor.' home-r5b-i18n.js
           grep -q 'class="r5-tile"' index.html
           grep -q 'location.replace' app.html
           if grep -q '<iframe' app.html; then echo 'R5 app shell must not use iframe'; exit 1; fi
@@ -90,7 +96,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
 
-      - name: Verify live R5B + server voice fallback
+      - name: Verify live R5B assets, AI, voice and Safety
         if: steps.cf.outputs.ready == 'true'
         shell: bash
         run: |
@@ -98,21 +104,22 @@ jobs:
           SITE='https://seekveraglobal.com'
           ok=0
           for i in $(seq 1 30); do
-            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/?r5b=$i" -o /tmp/home.html || true
-            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/mobile-r5b.css?r5b=$i" -o /tmp/mobile.css || true
-            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/api/health?r5b=$i" -o /tmp/health.json || true
-            if grep -q 'mobile-r5b.css?v=20260923-r5b' /tmp/home.html 2>/dev/null && grep -q 'SEEKVERA R5B mobile cleanup' /tmp/mobile.css 2>/dev/null && grep -q '"release":"2026-09-23-market-r5-stt"' /tmp/health.json 2>/dev/null && grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/health.json 2>/dev/null; then ok=1; break; fi
+            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/?r5b2=$i" -o /tmp/home.html || true
+            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/mobile-r5b.css?r5b2=$i" -o /tmp/mobile.css || true
+            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/r5b-language-fix.css?r5b2=$i" -o /tmp/langfix.css || true
+            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/home-r5b-i18n.js?r5b2=$i" -o /tmp/r5bi18n.js || true
+            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/api/health?r5b2=$i" -o /tmp/health.json || true
+            if grep -q 'r5b-language-fix.css?v=20260923-r5b2' /tmp/home.html 2>/dev/null && grep -q 'home-r5b-i18n.js?v=20260923-r5b2' /tmp/home.html 2>/dev/null && grep -q 'SEEKVERA R5B mobile cleanup' /tmp/mobile.css 2>/dev/null && grep -q 'R5B language rendering safety layer' /tmp/langfix.css 2>/dev/null && grep -q 'Encontre mais rápido. Compare melhor.' /tmp/r5bi18n.js 2>/dev/null && grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/health.json 2>/dev/null; then ok=1; break; fi
             sleep 4
           done
           test "$ok" = '1'
-          echo 'LIVE R5B + ASR HEALTH PASS'
+          echo 'LIVE R5B2 ASSETS + ASR HEALTH PASS'
           grep -q '"centralSafetyGate":"enabled"' /tmp/health.json
           grep -q '"failClosed":true' /tmp/health.json
-          grep -q '@cf/openai/whisper-large-v3-turbo' /tmp/health.json
-          curl -fsS --max-time 15 "$SITE/voice-ai.js?r5b=1" -o /tmp/voice.js
+          curl -fsS --max-time 15 "$SITE/voice-ai.js?r5b2=1" -o /tmp/voice.js
           grep -q 'serverVoice' /tmp/voice.js
           grep -q 'MediaRecorder' /tmp/voice.js
-          curl -fsS --max-time 15 "$SITE/app.html?r5b=1" -o /tmp/app.html
+          curl -fsS --max-time 15 "$SITE/app.html?r5b2=1" -o /tmp/app.html
           grep -q 'location.replace' /tmp/app.html
           if grep -q '<iframe' /tmp/app.html; then exit 1; fi
           code="$(curl -sS -o /tmp/stt-invalid.json -w '%{http_code}' --max-time 20 -X POST "$SITE/api/transcribe" -H 'Content-Type: application/json' --data '{"audio":"invalid","language":"en"}')"
