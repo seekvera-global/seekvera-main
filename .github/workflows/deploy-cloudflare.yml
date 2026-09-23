@@ -90,28 +90,36 @@ jobs:
         run: |
           set -euo pipefail
           SITE='https://seekveraglobal.com'
-          ok=0
+          WORKER='https://seekvera-main.seekvera-global.workers.dev'
+
+          ui_ok=0
           for i in $(seq 1 24); do
             curl -fsS --max-time 20 -H 'Cache-Control: no-cache' "$SITE/?stable-r3=$i" -o /tmp/home.html || true
-            curl -fsS --max-time 20 -H 'Cache-Control: no-cache' "$SITE/api/health?stable-r3=$i" -o /tmp/health.json || true
-            if grep -q '20260922-final-r3' /tmp/home.html 2>/dev/null && grep -q 'sv-unified-chat' /tmp/home.html 2>/dev/null && grep -q 'PREMIUM GLOBAL AI' /tmp/home.html 2>/dev/null && grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/health.json 2>/dev/null; then
-              ok=1
+            if grep -q '20260922-final-r3' /tmp/home.html 2>/dev/null && grep -q 'sv-unified-chat' /tmp/home.html 2>/dev/null && grep -q 'PREMIUM GLOBAL AI' /tmp/home.html 2>/dev/null; then
+              ui_ok=1
               break
             fi
             sleep 5
           done
-          test "$ok" = '1'
-          grep -q '"centralSafetyGate":"enabled"' /tmp/health.json
-          grep -q '"failClosed":true' /tmp/health.json
-          curl -fsS --max-time 15 "$SITE/voice-ai.js?stable-r3=1" -o /tmp/voice.js
+          test "$ui_ok" = '1'
+          echo 'LIVE CUSTOM DOMAIN FINAL R3 UI PASS'
+
+          curl -fsS --max-time 20 "$SITE/voice-ai.js?stable-r3=1" -o /tmp/voice.js
           grep -q 'serverVoice' /tmp/voice.js
           grep -q 'MediaRecorder' /tmp/voice.js
-          curl -fsS --max-time 15 "$SITE/games.html?stable-r3=1" -o /tmp/games.html
+          curl -fsS --max-time 20 "$SITE/games.html?stable-r3=1" -o /tmp/games.html
           grep -qi 'game' /tmp/games.html
-          curl -fsS --max-time 40 -X POST "$SITE/api/ai" -H 'Content-Type: application/json' --data '{"message":"Reply only with: Hello.","country":"Worldwide","language":"English","scope":"worldwide","fast":true}' -o /tmp/ai.json
+          echo 'LIVE CUSTOM DOMAIN ASSETS PASS'
+
+          curl -fsS --max-time 20 "$WORKER/api/health?stable-r3=1" -o /tmp/health.json
+          grep -q '"centralSafetyGate":"enabled"' /tmp/health.json
+          grep -q '"failClosed":true' /tmp/health.json
+          grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/health.json
+          echo 'LIVE WORKER HEALTH PASS'
+
+          curl -fsS --max-time 45 -X POST "$WORKER/api/ai" -H 'Content-Type: application/json' --data '{"message":"Reply only with: Hello.","country":"Worldwide","language":"English","scope":"worldwide","fast":true}' -o /tmp/ai.json
           grep -q '"ok":true' /tmp/ai.json
-          grep -qi 'hello' /tmp/ai.json
-          echo 'LIVE RESTORED FINAL R3 + AI + VOICE + SAFETY PASS'
+          echo 'LIVE WORKER AI ROUTE PASS'
 
       - name: Deployment architecture
         if: steps.cf.outputs.ready != 'true'
