@@ -1,24 +1,23 @@
 {
   "id": "./app.html",
-  "name": "SEEKVERA — Global AI Marketplace",
+  "name": "SEEKVERA — Premium Global AI Super-App",
   "short_name": "SEEKVERA",
-  "start_url": "./index.html?v=20260923-market-r5",
+  "start_url": "./app.html?v=20260922-final-r3",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#f4f6f8",
-  "theme_color": "#ffffff",
-  "description": "Worldwide AI search, voice, visual search, marketplace, travel, games, media, connectivity and business tools in one SEEKVERA app.",
+  "background_color": "#f4f7fb",
+  "theme_color": "#07111f",
+  "description": "Worldwide AI search, voice, visual search, marketplace, travel, games, connectivity and business tools in one SEEKVERA app.",
   "categories": ["shopping", "travel", "games", "business", "utilities", "lifestyle"],
   "icons": [
     {"src":"favicon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
   ],
   "shortcuts": [
-    {"name":"AI Search","short_name":"AI","url":"./index.html#aiChat"},
-    {"name":"Marketplace","short_name":"Market","url":"./marketplace.html"},
+    {"name":"AI Search","short_name":"AI","url":"./app.html#home"},
+    {"name":"Marketplace","short_name":"Market","url":"./app.html#marketplace"},
     {"name":"Free Games","short_name":"Games","url":"./games.html"},
-    {"name":"Media","short_name":"Media","url":"./media.html"},
-    {"name":"Travel & Connectivity","short_name":"Travel","url":"./connectivity.html"},
-    {"name":"AI Deal Agent","short_name":"Deals","url":"./deal-agent.html"}
+    {"name":"Travel & Connectivity","short_name":"Travel","url":"./app.html#connectivity"},
+    {"name":"AI Deal Agent","short_name":"Deals","url":"./app.html#deal-agent"}
   ]
 }
