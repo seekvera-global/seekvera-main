@@ -1,0 +1,98 @@
+name: Fix R6 Vision Empty Fallback V9
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-r6-vision-empty-fallback-v9.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch runVision to skip empty responses
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('worker.js')
+          s=p.read_text(encoding='utf-8')
+          fn="""async function runVision(env,input){
+ const errors=[],image=input?.image,messages=Array.isArray(input?.messages)?input.messages:[];
+ const multimodal=async(model)=>{const mm=messages.map(m=>({...m}));let i=-1;for(let n=mm.length-1;n>=0;n--)if(mm[n]?.role==='user'){i=n;break}if(i<0){mm.push({role:'user',content:'Review this image.'});i=mm.length-1}const text=typeof mm[i].content==='string'?mm[i].content:'Review this image.';mm[i]={...mm[i],content:[{type:'text',text},{type:'image_url',image_url:{url:image}}]};return env.AI.run(model,{messages:mm,max_completion_tokens:Math.min(Number(input?.max_tokens)||140,220),temperature:Number(input?.temperature)||0})};
+ const attempt=async(label,fn)=>{try{const r=await fn(),text=out(r);if(text)return r;errors.push(label+':empty');return null}catch(e){errors.push(label+':'+clean(e?.message||e,220));return null}};
+ if(image){
+  let r=await attempt(VISION+':multimodal',()=>multimodal(VISION));if(r)return r;
+  r=await attempt(VISION+':top-level-image',()=>env.AI.run(VISION,{messages,image,max_completion_tokens:Math.min(Number(input?.max_tokens)||140,220),temperature:Number(input?.temperature)||0}));if(r)return r;
+  r=await attempt(VISION_FALLBACK+':multimodal',()=>multimodal(VISION_FALLBACK));if(r)return r;
+  r=await attempt(VISION_FALLBACK+':top-level-image',()=>env.AI.run(VISION_FALLBACK,{messages,image,max_completion_tokens:Math.min(Number(input?.max_tokens)||140,220),temperature:Number(input?.temperature)||0}));if(r)return r;
+ }
+ const r=await attempt(VISION+':plain',()=>env.AI.run(VISION,{...input,max_completion_tokens:Math.min(Number(input?.max_tokens)||140,220)}));if(r)return r;
+ throw Error(errors.join(' | '))
+}"""
+          s,n=re.subn(r"async function runVision\(env,input\)\{.*?\}\nasync function vision",lambda m:fn+'\nasync function vision',s,count=1,flags=re.S)
+          if n!=1: raise SystemExit('runVision patch failed')
+          p.write_text(s,encoding='utf-8')
+          PY
+          node --check worker.js
+          grep -q "top-level-image" worker.js
+
+      - name: Commit fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name seekvera-bot
+          git config user.email actions@users.noreply.github.com
+          git add worker.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Skip empty Vision responses and try native image input'
+            git push origin main
+          fi
+
+      - name: Deploy Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx -y wrangler@4 deploy
+
+      - name: Require full visual-search result
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64,struct,zlib,binascii,json,urllib.request,time
+          w=h=96
+          raw=b''.join(b'\x00'+b'\x22\x88\xdd\xff'*w for _ in range(h))
+          def chunk(t,z): return struct.pack('>I',len(z))+t+z+struct.pack('>I',binascii.crc32(t+z)&0xffffffff)
+          png=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',w,h,8,6,0,0,0))+chunk(b'IDAT',zlib.compress(raw))+chunk(b'IEND',b'')
+          image='data:image/png;base64,'+base64.b64encode(png).decode()
+          H={'Content-Type':'application/json','User-Agent':'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 Version/19.0 Mobile/15E148 Safari/604.1','Origin':'https://seekveraglobal.com','Referer':'https://seekveraglobal.com/'}
+          body=json.dumps({'image':image,'country':'Worldwide','language':'English','context':'Safe ordinary test image'}).encode()
+          last={}
+          for n in range(5):
+              req=urllib.request.Request('https://seekveraglobal.com/api/visual-search',data=body,headers=H,method='POST')
+              with urllib.request.urlopen(req,timeout=110) as r: d=json.loads(r.read().decode())
+              last=d; print('TRY',n+1,json.dumps(d,ensure_ascii=False)[:1200],flush=True)
+              if d.get('ok') and d.get('allowed') is True and d.get('reviewRequired') is False and d.get('summary') and d.get('suggestedQuery'):
+                  print('FULL VISUAL SEARCH PASS',d.get('category'),d.get('summary'),flush=True)
+                  break
+              time.sleep(4)
+          else: raise SystemExit('Visual Search failed: '+str(last)[:1200])
+          PY
+
+      - name: Result
+        run: echo 'R6 NATIVE IMAGE FALLBACK VISUAL PASS'
