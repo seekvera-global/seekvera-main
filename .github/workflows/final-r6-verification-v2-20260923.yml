@@ -1,0 +1,180 @@
+name: Final SEEKVERA R6 Verification V2
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/final-r6-verification-v2-20260923.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Confirm R6 source and production UI
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check worker.js
+          node --check superapp.js
+          node --check global-ui.js
+          node --check voice-ai.js
+          node --check i18n-ui.js
+          grep -q '20260923-final-market-r6' index.html
+          grep -q 'News & Media' index.html
+          grep -q 'sv_i18n_r6_' i18n-ui.js
+          grep -q 'LANGUAGE_NAME_MAP' worker.js
+          grep -q 'country/location never changes it' index.html
+          if grep -q '<iframe' app.html; then echo 'iframe found'; exit 1; fi
+          SITE='https://seekveraglobal.com'
+          curl -fsSL --max-time 30 -H 'Cache-Control: no-cache' "$SITE/?verify-v2=1" -o /tmp/live-home.html
+          grep -q '20260923-final-market-r6' /tmp/live-home.html
+          grep -q 'News & Media' /tmp/live-home.html
+          for p in marketplace.html travel.html property.html cars-auto.html jobs.html shopping.html import-export.html restaurants-food.html local-services.html media.html games.html connectivity.html deal-agent.html post-ad.html hub.html app.html; do
+            code=$(curl -L -sS -o /tmp/page -w '%{http_code}' --max-time 30 "$SITE/$p?verify-v2=1")
+            echo "$p=$code"
+            test "$code" = 200
+          done
+          curl -fsSL --max-time 30 "$SITE/media.html?verify-v2=1" -o /tmp/media.html
+          for x in 'Al Jazeera' 'Al Arabiya' 'CNN' 'BBC News' 'Reuters' 'France 24' 'DW' 'Sky News' 'CNBC' 'Bloomberg'; do grep -q "$x" /tmp/media.html; done
+          echo 'R6 SOURCE + LIVE UI + NEWS PASS'
+
+      - name: Verify 28 selected languages and country independence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, urllib.request, urllib.error, concurrent.futures, time
+          URL='https://seekveraglobal.com/api/ai'
+          H={
+            'Content-Type':'application/json',
+            'User-Agent':'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/140.0 Mobile Safari/537.36',
+            'Origin':'https://seekveraglobal.com',
+            'Referer':'https://seekveraglobal.com/'
+          }
+          cases=[
+            ('English','Nigeria','Hello.'),('Arabic','Lebanon','مرحبا'),('French','France','Bonjour'),('Chinese','China','你好'),
+            ('Spanish','Spain','Hola'),('Hindi','India','नमस्ते'),('Portuguese','Brazil','Olá'),('German','Germany','Hallo'),
+            ('Japanese','Japan','こんにちは'),('Korean','South Korea','안녕하세요'),('Indonesian','Indonesia','Halo'),('Turkish','Turkey','Merhaba'),
+            ('Russian','Russia','Привет'),('Urdu','Pakistan','سلام'),('Bengali','Bangladesh','নমস্কার'),('Vietnamese','Vietnam','Xin chào'),
+            ('Italian','Italy','Ciao'),('Swahili','Kenya','Habari'),('Thai','Thailand','สวัสดี'),('Persian','Iran','سلام'),
+            ('Polish','Poland','Cześć'),('Dutch','Netherlands','Hallo'),('Malay','Malaysia','Hai'),('Filipino','Philippines','Kumusta'),
+            ('Hausa','Nigeria','Sannu'),('Yoruba','Nigeria','Pẹlẹ o'),('Igbo','Nigeria','Ndewo'),('Amharic','Ethiopia','ሰላም')
+          ]
+          # Deliberately mismatched countries prove location does not override selected language.
+          cross=[('Portuguese','Nigeria','Olá'),('Arabic','United States','مرحبا'),('English','Brazil','Hello.'),('French','Japan','Bonjour'),('Urdu','Germany','سلام')]
+          errors=[]
+          def call(lang,country,target):
+            payload={'message':f'Reply only with exactly this text: {target}','country':country,'language':lang,'scope':'worldwide','fast':True}
+            data=json.dumps(payload,ensure_ascii=False).encode('utf-8')
+            last=''
+            for attempt in range(3):
+              try:
+                req=urllib.request.Request(URL,data=data,headers=H,method='POST')
+                with urllib.request.urlopen(req,timeout=95) as r:
+                  d=json.loads(r.read().decode('utf-8'))
+                got=str(d.get('language','')); ans=str(d.get('response','')).strip()
+                if d.get('ok') and lang.lower() in got.lower() and target in ans:
+                  return f'{lang}/{country}: PASS ({ans[:45]})'
+                last=f'language={got} answer={ans[:120]} reason={d.get("reason","")}'
+              except urllib.error.HTTPError as e:
+                try: last=f'HTTP {e.code} '+e.read().decode('utf-8','ignore')[:160]
+                except: last=f'HTTP {e.code}'
+              except Exception as e: last=repr(e)
+              time.sleep(2+attempt*2)
+            raise RuntimeError(f'{lang}/{country}: {last}')
+          with concurrent.futures.ThreadPoolExecutor(max_workers=5) as ex:
+            fs={ex.submit(call,*c):c for c in cases}
+            for f in concurrent.futures.as_completed(fs):
+              try: print(f.result(),flush=True)
+              except Exception as e: errors.append(str(e)); print('FAIL',e,flush=True)
+          for c in cross:
+            try: print('COUNTRY-INDEPENDENCE',call(*c),flush=True)
+            except Exception as e: errors.append('COUNTRY-INDEPENDENCE '+str(e)); print('FAIL',e,flush=True)
+          if errors:
+            print('\n'.join(errors)); raise SystemExit(1)
+          print('ALL 28 LANGUAGES + COUNTRY INDEPENDENCE PASS')
+          PY
+
+      - name: Verify voice ASR TTS mappings visual search and Safety
+        shell: bash
+        run: |
+          set -euo pipefail
+          W='https://seekvera-main.seekvera-global.workers.dev'
+          UA='Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 Version/19.0 Mobile/15E148 Safari/604.1'
+          curl -fsSL --max-time 30 -H "User-Agent: $UA" -H 'Origin: https://seekveraglobal.com' -H 'Referer: https://seekveraglobal.com/' "$W/api/health?verify-v2=1" -o /tmp/health.json
+          grep -q '20260923-final-market-r6' /tmp/health.json
+          grep -q '"centralSafetyGate":"enabled"' /tmp/health.json
+          grep -q '"failClosed":true' /tmp/health.json
+          grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/health.json
+          grep -q '"asrModel":"@cf/openai/whisper-large-v3-turbo"' /tmp/health.json
+          code=$(curl -sS -o /tmp/stt -w '%{http_code}' --max-time 30 -X POST "$W/api/transcribe" -H "User-Agent: $UA" -H 'Origin: https://seekveraglobal.com' -H 'Referer: https://seekveraglobal.com/' -H 'Content-Type: application/json' --data '{"audio":"invalid","language":"English"}')
+          test "$code" = 400
+          grep -q 'serverVoice' voice-ai.js
+          grep -q 'MediaRecorder' voice-ai.js
+          grep -q "pt:'pt-BR'" voice-ai.js
+          grep -q "ar:'ar-SA'" voice-ai.js
+          grep -q "ur:'ur-PK'" voice-ai.js
+          grep -q "ja:'ja-JP'" voice-ai.js
+          grep -q "fil:'fil-PH'" voice-ai.js
+          grep -q "am:'am-ET'" voice-ai.js
+          grep -q 'if(!c.length)return null' voice-ai.js
+          python3 - <<'PY'
+          import base64,struct,zlib,binascii,json,urllib.request
+          W='https://seekveraglobal.com/api/visual-search'
+          w=h=64; raw=b''.join(b'\x00'+b'\xff\xff\xff\xff'*w for _ in range(h))
+          def chunk(t,d): return struct.pack('>I',len(d))+t+d+struct.pack('>I',binascii.crc32(t+d)&0xffffffff)
+          png=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',w,h,8,6,0,0,0))+chunk(b'IDAT',zlib.compress(raw))+chunk(b'IEND',b'')
+          body=json.dumps({'image':'data:image/png;base64,'+base64.b64encode(png).decode(),'country':'Worldwide','language':'English'}).encode()
+          hdr={'Content-Type':'application/json','User-Agent':'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 Version/19.0 Mobile/15E148 Safari/604.1','Origin':'https://seekveraglobal.com','Referer':'https://seekveraglobal.com/'}
+          req=urllib.request.Request(W,data=body,headers=hdr,method='POST')
+          with urllib.request.urlopen(req,timeout=70) as r: d=json.loads(r.read().decode())
+          if 'ok' not in d: raise SystemExit('visual API did not return a valid result')
+          print('VISUAL API PASS',d.get('ok'),d.get('reason',''))
+          PY
+          echo 'VOICE + VISUAL + SAFETY PASS'
+
+      - name: Cross-device live browser UI language audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm i --no-save playwright@1.58.2 >/dev/null 2>&1
+          npx playwright install chromium webkit firefox >/dev/null 2>&1
+          cat > /tmp/r6-audit.cjs <<'JS'
+          const {chromium,webkit,firefox}=require('playwright');
+          const profiles=[
+            ['Android Chrome',chromium,{viewport:{width:360,height:800},userAgent:'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'}],
+            ['iPhone Safari',webkit,{viewport:{width:390,height:844},userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 Version/19.0 Mobile/15E148 Safari/604.1'}],
+            ['iPad Safari',webkit,{viewport:{width:820,height:1180},userAgent:'Mozilla/5.0 (iPad; CPU OS 19_0 like Mac OS X) AppleWebKit/605.1.15 Version/19.0 Mobile/15E148 Safari/604.1'}],
+            ['Desktop Chrome Edge engine',chromium,{viewport:{width:1366,height:768}}],
+            ['Desktop Firefox',firefox,{viewport:{width:1366,height:768}}]
+          ];
+          for(const [name,engine,opt] of profiles){
+            const b=await engine.launch({headless:true}); const c=await b.newContext(opt); const p=await c.newPage();
+            await p.goto('https://seekveraglobal.com/?final-r6-v2=1',{waitUntil:'domcontentloaded',timeout:60000}); await p.waitForTimeout(1800);
+            const base=await p.evaluate(()=>({release:document.body.dataset.release||'',countries:document.querySelector('#country')?.options.length||0,languages:document.querySelector('#lang')?.options.length||0,tiles:document.querySelectorAll('.r5-tile').length,media:!!document.querySelector('a[href="media.html"]'),chat:!!document.querySelector('#aiChat'),mic:!!document.querySelector('#aiChatMic'),camera:!!document.querySelector('#aiChatCamera'),speaker:!!document.querySelector('#aiChatSpeaker'),overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth}));
+            if(base.release!=='20260923-final-market-r6'||base.countries<249||base.languages!==29||base.tiles<16||!base.media||!base.chat||!base.mic||!base.camera||!base.speaker||base.overflow>4) throw Error(name+' '+JSON.stringify(base));
+            await p.selectOption('#lang','pt'); await p.waitForTimeout(4500);
+            const pt=await p.evaluate(()=>({intro:document.querySelector('#aiMessages .ai-msg.bot')?.textContent||'',toggle:document.querySelector('.sv-request-toggle')?.textContent||'',dir:document.documentElement.dir}));
+            if(!/assistente/i.test(pt.intro)||/[\u0600-\u06ff]/.test(pt.toggle)||pt.dir==='rtl') throw Error(name+' Portuguese mixed '+JSON.stringify(pt));
+            await p.selectOption('#lang','en'); await p.waitForTimeout(900);
+            const en=await p.evaluate(()=>({toggle:document.querySelector('.sv-request-toggle')?.textContent||'',dir:document.documentElement.dir,intro:document.querySelector('#aiMessages .ai-msg.bot')?.textContent||''}));
+            if(/[\u0600-\u06ff]/.test(en.toggle)||en.dir==='rtl'||!/SEEKVERA AI assistant/i.test(en.intro)) throw Error(name+' English mixed '+JSON.stringify(en));
+            await p.selectOption('#lang','ar'); await p.waitForTimeout(900);
+            const ar=await p.evaluate(()=>({dir:document.documentElement.dir,intro:document.querySelector('#aiMessages .ai-msg.bot')?.textContent||''}));
+            if(ar.dir!=='rtl'||!/[\u0600-\u06ff]/.test(ar.intro)) throw Error(name+' Arabic fail '+JSON.stringify(ar));
+            console.log(name,'PASS',base);
+            await b.close();
+          }
+          console.log('ALL DEVICE PROFILES + LANGUAGE SWITCHING PASS');
+          JS
+          node /tmp/r6-audit.cjs
+
+      - name: Final pass
+        run: echo 'SEEKVERA R6 FINAL VERIFICATION V2 PASS'
