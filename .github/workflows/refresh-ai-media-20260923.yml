@@ -1,0 +1,167 @@
+name: Refresh SEEKVERA AI voice + Media hub 2026-09-23
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/refresh-ai-media-20260923.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Patch multilingual AI, voice, Media hub and cache version
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          VERSION='20260923-ai-media-r1'
+
+          # 1) Stronger AI assistant behavior, strict same-language output and Media routing.
+          p=Path('worker.js')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace("const RELEASE='2026-09-22-premium-r1'","const RELEASE='2026-09-23-ai-media-r1'",1)
+          s=s.replace("if(model===LIGHT||model===FASTCHAT)input.max_tokens=Math.min(max,360)","if(model===LIGHT||model===FASTCHAT)input.max_tokens=Math.min(max,480)",1)
+          old="Understand multilingual and cross-border intent. Help search, compare, translate and route."
+          new=("Understand multilingual and cross-border intent. Help search, compare, translate and route. "
+               "You are the in-app SEEKVERA assistant: when useful, briefly explain that you can help users search, compare, translate, find the right department, discover travel, hotels, jobs, shopping, suppliers, deals, games, media and services inside SEEKVERA. "
+               "You may have a short natural conversation, but stay focused on helping the user complete something in SEEKVERA. Ask at most one useful follow-up question when truly needed. Give practical next steps instead of vague filler.")
+          if old not in s:
+              raise SystemExit('AI assistant prompt anchor missing')
+          s=s.replace(old,new,1)
+          s=s.replace("const r=await ai(env,[{role:'system',content:p},{role:'system',content:lock},{role:'user',content:m}],360,.15)","const r=await ai(env,[{role:'system',content:p},{role:'system',content:lock},{role:'user',content:m}],480,.16)",1)
+          oldcat="['shopping',/shop|buy|product|shopping|شراء|تسوق/u]])"
+          newcat="['shopping',/shop|buy|product|shopping|شراء|تسوق/u],['media',/movie|movies|film|films|cinema|news|music|song|songs|radio|tv|television|فيلم|افلام|أفلام|سينما|أخبار|اخبار|موسيقى|أغاني|اغاني|تلفزيون/u]])"
+          if oldcat not in s:
+              raise SystemExit('category anchor missing')
+          s=s.replace(oldcat,newcat,1)
+          s=s.replace("shopping:'shopping.html',general:'marketplace.html'","shopping:'shopping.html',media:'media.html',general:'marketplace.html'",1)
+          p.write_text(s,encoding='utf-8')
+
+          # 2) Voice: add broader locale coverage and never fall back to an unrelated-language installed voice.
+          p=Path('voice-ai.js')
+          s=p.read_text(encoding='utf-8')
+          old_lang=re.search(r"const LANGS=\{[^\n]+\};",s)
+          old_names=re.search(r"const NAME_CODE=\{[^\n]+\};",s)
+          if not old_lang or not old_names:
+              raise SystemExit('voice language maps missing')
+          langs="const LANGS={en:'en-US',ar:'ar-SA',fr:'fr-FR',zh:'zh-CN',es:'es-ES',hi:'hi-IN',pt:'pt-BR',de:'de-DE',ja:'ja-JP',ko:'ko-KR',id:'id-ID',tr:'tr-TR',ru:'ru-RU',ur:'ur-PK',bn:'bn-BD',vi:'vi-VN',it:'it-IT',sw:'sw-KE',th:'th-TH',fa:'fa-IR',pl:'pl-PL',nl:'nl-NL',ms:'ms-MY',fil:'fil-PH',ha:'ha-NG',yo:'yo-NG',ig:'ig-NG',am:'am-ET',he:'he-IL',el:'el-GR',uk:'uk-UA',ro:'ro-RO',cs:'cs-CZ',sk:'sk-SK',hu:'hu-HU',sv:'sv-SE',no:'nb-NO',da:'da-DK',fi:'fi-FI',bg:'bg-BG',hr:'hr-HR',sr:'sr-RS',sl:'sl-SI',lt:'lt-LT',lv:'lv-LV',et:'et-EE',ca:'ca-ES',eu:'eu-ES',gl:'gl-ES',is:'is-IS',sq:'sq-AL',mk:'mk-MK',ka:'ka-GE',hy:'hy-AM',az:'az-AZ',kk:'kk-KZ',uz:'uz-UZ',ne:'ne-NP',si:'si-LK',ta:'ta-IN',te:'te-IN',ml:'ml-IN',mr:'mr-IN',gu:'gu-IN',pa:'pa-IN',km:'km-KH',lo:'lo-LA',my:'my-MM',mn:'mn-MN',zu:'zu-ZA',af:'af-ZA'};"
+          names="const NAME_CODE={english:'en',arabic:'ar',french:'fr',chinese:'zh',mandarin:'zh',spanish:'es',hindi:'hi',portuguese:'pt',german:'de',japanese:'ja',korean:'ko',indonesian:'id',turkish:'tr',russian:'ru',urdu:'ur',bengali:'bn',vietnamese:'vi',italian:'it',swahili:'sw',thai:'th',persian:'fa',farsi:'fa',polish:'pl',dutch:'nl',malay:'ms',filipino:'fil',tagalog:'fil',hausa:'ha',yoruba:'yo',igbo:'ig',amharic:'am',hebrew:'he',greek:'el',ukrainian:'uk',romanian:'ro',czech:'cs',slovak:'sk',hungarian:'hu',swedish:'sv',norwegian:'no',danish:'da',finnish:'fi',bulgarian:'bg',croatian:'hr',serbian:'sr',slovenian:'sl',lithuanian:'lt',latvian:'lv',estonian:'et',catalan:'ca',basque:'eu',galician:'gl',icelandic:'is',albanian:'sq',macedonian:'mk',georgian:'ka',armenian:'hy',azerbaijani:'az',kazakh:'kk',uzbek:'uz',nepali:'ne',sinhala:'si',tamil:'ta',telugu:'te',malayalam:'ml',marathi:'mr',gujarati:'gu',punjabi:'pa',khmer:'km',lao:'lo',burmese:'my',mongolian:'mn',zulu:'zu',afrikaans:'af'};"
+          s=s[:old_lang.start()]+langs+s[old_lang.end():]
+          old_names=re.search(r"const NAME_CODE=\{[^\n]+\};",s)
+          s=s[:old_names.start()]+names+s[old_names.end():]
+          s=s.replace("if(!c.length)c=vs;const sc=v=>","if(!c.length)return null;const sc=v=>",1)
+          s=s.replace("if(/[\\u0400-\\u04ff]/.test(t))return 'ru-RU';return locale()","if(/[\\u0400-\\u04ff]/.test(t))return 'ru-RU';if(/[\\u0590-\\u05ff]/.test(t))return 'he-IL';if(/[\\u0370-\\u03ff]/.test(t))return 'el-GR';if(/[\\u0e00-\\u0e7f]/.test(t))return 'th-TH';if(/[\\u1200-\\u137f]/.test(t))return 'am-ET';return locale()",1)
+          p.write_text(s,encoding='utf-8')
+
+          # 3) Localized first-message introduction in global side chat.
+          p=Path('global-ui.js')
+          s=p.read_text(encoding='utf-8')
+          anchor="function addMsg(box,role,text,thinking=false){"
+          intro="""const AI_INTRO={
+          en:'I’m the SEEKVERA AI assistant. I can help you search, compare, translate and find travel, hotels, jobs, shopping, suppliers, deals, games, media and services inside SEEKVERA. Type or speak in your language.',
+          ar:'أنا مساعد SEEKVERA بالذكاء الاصطناعي. أساعدك في البحث والمقارنة والترجمة والعثور على السفر والفنادق والوظائف والتسوق والموردين والصفقات والألعاب والميديا والخدمات داخل SEEKVERA. اكتب أو احكِ بلغتك.',
+          fr:'Je suis l’assistant IA de SEEKVERA. Je peux vous aider à rechercher, comparer, traduire et trouver voyages, hôtels, emplois, achats, fournisseurs, offres, jeux, médias et services dans SEEKVERA. Écrivez ou parlez dans votre langue.',
+          es:'Soy el asistente de IA de SEEKVERA. Puedo ayudarte a buscar, comparar, traducir y encontrar viajes, hoteles, empleo, compras, proveedores, ofertas, juegos, medios y servicios dentro de SEEKVERA. Escribe o habla en tu idioma.',
+          pt:'Sou o assistente de IA da SEEKVERA. Posso ajudar a pesquisar, comparar, traduzir e encontrar viagens, hotéis, empregos, compras, fornecedores, ofertas, jogos, mídia e serviços dentro da SEEKVERA. Escreva ou fale no seu idioma.',
+          de:'Ich bin der SEEKVERA-KI-Assistent. Ich helfe beim Suchen, Vergleichen, Übersetzen und beim Finden von Reisen, Hotels, Jobs, Shopping, Lieferanten, Angeboten, Spielen, Medien und Diensten in SEEKVERA. Schreiben oder sprechen Sie in Ihrer Sprache.',
+          zh:'我是 SEEKVERA AI 助手。我可以帮你搜索、比较、翻译，并在 SEEKVERA 内寻找旅行、酒店、工作、购物、供应商、优惠、游戏、媒体和服务。你可以用自己的语言打字或说话。',
+          hi:'मैं SEEKVERA AI सहायक हूँ। मैं SEEKVERA के अंदर खोज, तुलना, अनुवाद और यात्रा, होटल, नौकरी, खरीदारी, सप्लायर, डील, गेम, मीडिया और सेवाएँ ढूँढने में मदद कर सकता हूँ। अपनी भाषा में लिखें या बोलें।',
+          tr:'Ben SEEKVERA AI asistanıyım. SEEKVERA içinde arama, karşılaştırma, çeviri; seyahat, otel, iş, alışveriş, tedarikçi, fırsat, oyun, medya ve hizmet bulma konusunda yardımcı olabilirim. Kendi dilinizde yazın veya konuşun.',
+          ru:'Я ИИ-помощник SEEKVERA. Я помогу искать, сравнивать, переводить и находить путешествия, отели, работу, покупки, поставщиков, предложения, игры, медиа и услуги внутри SEEKVERA. Пишите или говорите на своем языке.'};
+          function assistantIntro(){return AI_INTRO[langCode()]||AI_INTRO.en}
+          """
+          if anchor not in s:
+              raise SystemExit('global UI intro anchor missing')
+          if 'const AI_INTRO=' not in s:
+              s=s.replace(anchor,intro+anchor,1)
+          s=s.replace('Message me in your language — type, speak, take a photo or attach a file.','${assistantIntro()}')
+          p.write_text(s,encoding='utf-8')
+
+          # 4) Add Media hub page using official/legal sources only.
+          media=Path('media.html')
+          media.write_text('''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SEEKVERA Media — News, Movies & Music</title><meta name="description" content="SEEKVERA Media hub for official news, legal movies and music services worldwide."><style>*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Arial;background:#07111f;color:#eef6ff}.wrap{max-width:1160px;margin:auto;padding:22px}.hero{padding:28px;border:1px solid #29415b;border-radius:22px;background:linear-gradient(135deg,#102238,#241646)}h1{font-size:clamp(2rem,6vw,4rem);margin:.2em 0}.tag{display:inline-block;padding:7px 11px;border-radius:999px;background:#1d3857;font-weight:850}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:14px;margin-top:18px}.card{display:block;text-decoration:none;color:inherit;padding:18px;border:1px solid #29415b;border-radius:18px;background:#0d1a2a}.card:hover{transform:translateY(-2px);border-color:#6cf0b9}.card b{font-size:1.1rem}.card p{color:#b9c9da;line-height:1.5}.note{margin:18px 0;padding:14px;border-radius:14px;background:#102238;color:#c9d8e7}.top{display:flex;gap:10px;flex-wrap:wrap}.btn{display:inline-block;padding:10px 14px;border-radius:12px;background:#17324f;color:#fff;text-decoration:none;font-weight:800}</style><link rel="stylesheet" href="global-ui.css?v=20260923-ai-media-r1"><link rel="stylesheet" href="i18n-premium.css?v=20260923-ai-media-r1"></head><body><main class="wrap"><div class="top"><a class="btn" href="app.html">← SEEKVERA App</a><a class="btn" href="games.html">🎮 Games</a></div><section class="hero"><span class="tag">🎬 SEEKVERA MEDIA</span><h1>News · Movies · Music</h1><p>One place to open trusted news, legal movie services and official music platforms. Availability can vary by country.</p></section><div class="note">SEEKVERA only links to official or lawful sources. It does not host pirated movies, TV channels or music.</div><h2>📰 News</h2><section class="grid"><a class="card" href="https://www.aljazeera.com/live" target="_blank" rel="noopener noreferrer"><b>Al Jazeera</b><p>Official live/news site.</p></a><a class="card" href="https://www.alarabiya.net/" target="_blank" rel="noopener noreferrer"><b>Al Arabiya</b><p>Official Arabic news site.</p></a><a class="card" href="https://www.cnn.com/" target="_blank" rel="noopener noreferrer"><b>CNN</b><p>Official CNN news site.</p></a><a class="card" href="https://www.bbc.com/news" target="_blank" rel="noopener noreferrer"><b>BBC News</b><p>Official BBC news site.</p></a><a class="card" href="https://www.reuters.com/" target="_blank" rel="noopener noreferrer"><b>Reuters</b><p>Global news and business coverage.</p></a></section><h2>🎞️ Movies & video</h2><section class="grid"><a class="card" href="https://www.youtube.com/movies" target="_blank" rel="noopener noreferrer"><b>YouTube Movies</b><p>Official movie storefront and available free/paid titles by region.</p></a><a class="card" href="https://www.plex.tv/watch-free-tv/" target="_blank" rel="noopener noreferrer"><b>Plex Free TV & Movies</b><p>Legal ad-supported viewing where available.</p></a><a class="card" href="https://archive.org/details/feature_films" target="_blank" rel="noopener noreferrer"><b>Classic / Public-domain films</b><p>Internet Archive collection; rights vary by title and region.</p></a></section><h2>🎵 Music</h2><section class="grid"><a class="card" href="https://music.youtube.com/" target="_blank" rel="noopener noreferrer"><b>YouTube Music</b><p>Official music service.</p></a><a class="card" href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer"><b>Spotify</b><p>Official web player where available.</p></a><a class="card" href="https://soundcloud.com/" target="_blank" rel="noopener noreferrer"><b>SoundCloud</b><p>Music and creator audio.</p></a></section></main><script src="global-ui.js?v=20260923-ai-media-r1" defer></script><script src="voice-ai.js?v=20260923-ai-media-r1" defer></script><script src="i18n-ui.js?v=20260923-ai-media-r1" defer></script></body></html>''',encoding='utf-8')
+
+          # 5) Add Media to app navigation and hash routing.
+          p=Path('app.html'); s=p.read_text(encoding='utf-8')
+          if 'data-page="media.html"' not in s:
+              s=s.replace('<button class="games" data-page="games.html">🎮 Games</button>','<button class="games" data-page="games.html">🎮 Games</button><button data-page="media.html">🎬 Media</button>',1)
+              s=s.replace("games:'games.html',connectivity:","games:'games.html',media:'media.html',connectivity:",1)
+          p.write_text(s,encoding='utf-8')
+
+          # 6) Add Media to the all-categories hub when possible.
+          p=Path('hub.html')
+          if p.exists():
+              s=p.read_text(encoding='utf-8')
+              if 'href="media.html"' not in s:
+                  marker='href="games.html"'
+                  pos=s.find(marker)
+                  if pos!=-1:
+                      # Insert a simple Media card before the closing main as a safe fallback.
+                      s=s.replace('</main>','<section style="max-width:1180px;margin:16px auto;padding:0 14px"><a href="media.html" style="display:block;padding:16px;border-radius:16px;background:#241646;color:#fff;text-decoration:none;font-weight:900">🎬 SEEKVERA Media — News, Movies & Music →</a></section></main>',1)
+              p.write_text(s,encoding='utf-8')
+
+          # 7) Add to sitemap and app manifest shortcut.
+          p=Path('sitemap.xml')
+          if p.exists():
+              s=p.read_text(encoding='utf-8')
+              if 'https://seekveraglobal.com/media.html' not in s:
+                  s=s.replace('</urlset>','  <url><loc>https://seekveraglobal.com/media.html</loc><lastmod>2026-09-23</lastmod></url>\n</urlset>')
+              p.write_text(s,encoding='utf-8')
+          p=Path('manifest.webmanifest')
+          if p.exists():
+              s=p.read_text(encoding='utf-8')
+              if '"Media"' not in s and '"shortcuts"' in s:
+                  s=s.replace('{"name":"Free Games","short_name":"Games","url":"./games.html"},','{"name":"Free Games","short_name":"Games","url":"./games.html"},\n    {"name":"Media","short_name":"Media","url":"./media.html"},',1)
+              p.write_text(s,encoding='utf-8')
+
+          # 8) Cache-bust the common global assets on every public HTML page.
+          for p in Path('.').glob('*.html'):
+              s=p.read_text(encoding='utf-8')
+              s=s.replace('20260922-final-r3',VERSION).replace('20260922-premium-voice2',VERSION)
+              p.write_text(s,encoding='utf-8')
+
+          # Keep the production deployment validator aligned with the new release.
+          p=Path('.github/workflows/deploy-cloudflare.yml')
+          s=p.read_text(encoding='utf-8').replace('20260922-final-r3',VERSION)
+          p.write_text(s,encoding='utf-8')
+
+          print('SEEKVERA AI/voice/media refresh patched.')
+
+      - name: Validate source before commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check voice-ai.js
+          node --check global-ui.js
+          node --check worker.js
+          grep -q "const RELEASE='2026-09-23-ai-media-r1'" worker.js
+          grep -q "data-page=\"media.html\"" app.html
+          grep -q "SEEKVERA MEDIA" media.html
+          grep -q "if(!c.length)return null" voice-ai.js
+          grep -q "const AI_INTRO=" global-ui.js
+          grep -q "media:'media.html'" worker.js
+          grep -q "i18n-ui.js?v=20260923-ai-media-r1" index.html
+          git diff --check
+
+      - name: Commit refreshed production source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'SEEKVERA automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add worker.js voice-ai.js global-ui.js media.html app.html hub.html sitemap.xml manifest.webmanifest .github/workflows/deploy-cloudflare.yml *.html
+          if git diff --cached --quiet; then
+            echo 'No changes required.'
+          else
+            git commit -m 'Strengthen multilingual AI voice and add Media hub'
+            git push origin HEAD:main
+          fi
