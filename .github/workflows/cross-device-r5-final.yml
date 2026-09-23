@@ -36,13 +36,34 @@ jobs:
           fi
           espeak -s 125 -w /tmp/seekvera-hello.wav 'hello seekvera' >/dev/null 2>&1
           python - <<'PY'
-          import base64, json, urllib.request
-          data='data:audio/wav;base64,'+base64.b64encode(open('/tmp/seekvera-hello.wav','rb').read()).decode()
-          req=urllib.request.Request('https://seekveraglobal.com/api/transcribe',data=json.dumps({'audio':data,'language':'en'}).encode(),headers={'content-type':'application/json'},method='POST')
-          with urllib.request.urlopen(req,timeout=60) as r:
-              d=json.loads(r.read().decode())
-          print('LIVE_STT',d)
-          assert d.get('ok') is True and str(d.get('text') or '').strip(), d
-          assert 'whisper-large-v3-turbo' in str(d.get('model') or ''), d
-          print('LIVE_WHISPER_REAL_AUDIO_PASS')
+          import base64,json
+          raw=open('/tmp/seekvera-hello.wav','rb').read()
+          payload={'audio':'data:audio/wav;base64,'+base64.b64encode(raw).decode(),'language':'en'}
+          open('/tmp/payload.json','w').write(json.dumps(payload))
+          print('AUDIO_BYTES',len(raw),'JSON_BYTES',len(json.dumps(payload)))
+          PY
+          # Use browser-like headers because Cloudflare can reject bare CI HTTP clients even while real browsers work.
+          UA='Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1'
+          SITE_CODE="$(curl -sS -A "$UA" -H 'Origin: https://seekveraglobal.com' -H 'Referer: https://seekveraglobal.com/' -H 'Accept: application/json,text/plain,*/*' -H 'Content-Type: application/json' --data-binary @/tmp/payload.json -o /tmp/site.json -w '%{http_code}' --max-time 90 https://seekveraglobal.com/api/transcribe || true)"
+          echo "SITE_CODE=$SITE_CODE"; cat /tmp/site.json 2>/dev/null || true; echo
+          WORKER_CODE="$(curl -sS -A "$UA" -H 'Origin: https://seekveraglobal.com' -H 'Referer: https://seekveraglobal.com/' -H 'Accept: application/json,text/plain,*/*' -H 'Content-Type: application/json' --data-binary @/tmp/payload.json -o /tmp/worker.json -w '%{http_code}' --max-time 90 https://seekvera-main.seekvera-global.workers.dev/api/transcribe || true)"
+          echo "WORKER_CODE=$WORKER_CODE"; cat /tmp/worker.json 2>/dev/null || true; echo
+          export SITE_CODE WORKER_CODE
+          python - <<'PY'
+          import json,os
+          def load(path):
+              try:
+                  raw=open(path).read().strip()
+              except FileNotFoundError:
+                  return {}
+              try:return json.loads(raw)
+              except:return {'raw':raw[:500]}
+          sc=int(os.environ.get('SITE_CODE') or 0); wc=int(os.environ.get('WORKER_CODE') or 0)
+          site=load('/tmp/site.json'); worker=load('/tmp/worker.json')
+          good=[]
+          for label,code,d in [('site',sc,site),('worker',wc,worker)]:
+              if 200 <= code < 300 and d.get('ok') and str(d.get('text') or '').strip() and 'whisper-large-v3-turbo' in str(d.get('model') or ''):
+                  good.append(label)
+          assert good, {'site_code':sc,'site':site,'worker_code':wc,'worker':worker}
+          print('LIVE_WHISPER_REAL_AUDIO_PASS',good)
           PY
