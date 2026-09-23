@@ -1,0 +1,48 @@
+name: SEEKVERA R5 final all-device audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/cross-device-r5-final.yml'
+      - '.github/scripts/cross_device_r5_final.js'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install browser engines
+        shell: bash
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install --with-deps chromium firefox webkit
+      - name: Run all-device browser behavior audit
+        shell: bash
+        run: node .github/scripts/cross_device_r5_final.js
+      - name: Verify live Whisper transcription with real generated speech
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v espeak >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq espeak >/dev/null
+          fi
+          espeak -s 125 -w /tmp/seekvera-hello.wav 'hello seekvera' >/dev/null 2>&1
+          python - <<'PY'
+          import base64, json, urllib.request
+          data='data:audio/wav;base64,'+base64.b64encode(open('/tmp/seekvera-hello.wav','rb').read()).decode()
+          req=urllib.request.Request('https://seekveraglobal.com/api/transcribe',data=json.dumps({'audio':data,'language':'en'}).encode(),headers={'content-type':'application/json'},method='POST')
+          with urllib.request.urlopen(req,timeout=60) as r:
+              d=json.loads(r.read().decode())
+          print('LIVE_STT',d)
+          assert d.get('ok') is True and str(d.get('text') or '').strip(), d
+          assert 'whisper-large-v3-turbo' in str(d.get('model') or ''), d
+          print('LIVE_WHISPER_REAL_AUDIO_PASS')
+          PY
