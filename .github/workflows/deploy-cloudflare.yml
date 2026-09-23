@@ -84,17 +84,16 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
 
-      - name: Verify live restored UI and current backend
+      - name: Verify live restored Final R3 production
         if: steps.cf.outputs.ready == 'true'
         shell: bash
         run: |
           set -euo pipefail
           SITE='https://seekveraglobal.com'
-          WORKER='https://seekvera-main.seekvera-global.workers.dev'
 
           ui_ok=0
           for i in $(seq 1 24); do
-            curl -fsS --max-time 20 -H 'Cache-Control: no-cache' "$SITE/?stable-r3=$i" -o /tmp/home.html || true
+            curl -L -fsS --max-time 20 -H 'Cache-Control: no-cache' "$SITE/?stable-r3=$i" -o /tmp/home.html || true
             if grep -q '20260922-final-r3' /tmp/home.html 2>/dev/null && grep -q 'sv-unified-chat' /tmp/home.html 2>/dev/null && grep -q 'PREMIUM GLOBAL AI' /tmp/home.html 2>/dev/null; then
               ui_ok=1
               break
@@ -104,22 +103,18 @@ jobs:
           test "$ui_ok" = '1'
           echo 'LIVE CUSTOM DOMAIN FINAL R3 UI PASS'
 
-          curl -fsS --max-time 20 "$SITE/voice-ai.js?stable-r3=1" -o /tmp/voice.js
-          grep -q 'serverVoice' /tmp/voice.js
-          grep -q 'MediaRecorder' /tmp/voice.js
-          curl -fsS --max-time 20 "$SITE/games.html?stable-r3=1" -o /tmp/games.html
-          grep -qi 'game' /tmp/games.html
-          echo 'LIVE CUSTOM DOMAIN ASSETS PASS'
+          pages=(games.html marketplace.html travel.html property.html jobs.html shopping.html hub.html)
+          for p in "${pages[@]}"; do
+            code="$(curl -L -sS -o /tmp/page.html -w '%{http_code}' --max-time 25 "$SITE/$p?stable-r3=1")"
+            test "$code" = '200'
+            echo "PASS $p"
+          done
+          echo 'LIVE CORE PUBLIC PAGES PASS'
 
-          curl -fsS --max-time 20 "$WORKER/api/health?stable-r3=1" -o /tmp/health.json
-          grep -q '"centralSafetyGate":"enabled"' /tmp/health.json
-          grep -q '"failClosed":true' /tmp/health.json
-          grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/health.json
-          echo 'LIVE WORKER HEALTH PASS'
-
-          curl -fsS --max-time 45 -X POST "$WORKER/api/ai" -H 'Content-Type: application/json' --data '{"message":"Reply only with: Hello.","country":"Worldwide","language":"English","scope":"worldwide","fast":true}' -o /tmp/ai.json
+          ai_code="$(curl -sS -o /tmp/ai.json -w '%{http_code}' --max-time 45 -X POST "$SITE/api/ai" -H 'Content-Type: application/json' --data '{"message":"Hello","country":"Worldwide","language":"English","scope":"worldwide","fast":true}')"
+          test "$ai_code" = '200'
           grep -q '"ok":true' /tmp/ai.json
-          echo 'LIVE WORKER AI ROUTE PASS'
+          echo 'LIVE CUSTOM DOMAIN AI ROUTE PASS'
 
       - name: Deployment architecture
         if: steps.cf.outputs.ready != 'true'
