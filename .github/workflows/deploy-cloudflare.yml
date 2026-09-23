@@ -1,6 +1,6 @@
 name: Deploy SEEKVERA to Cloudflare
 # Production deployment: Safety Gate v4 + AI Vision + global Voice AI + marketplace server routing
-# 2026-09-22: final R3 multilingual UI + same-origin iPhone/WebKit API alignment
+# 2026-09-23: worldwide R4 app/cache + multilingual UI alignment
 
 on:
   push:
@@ -61,14 +61,20 @@ jobs:
           node --check voice-ai.js
           node --check i18n-ui.js
           node --check global-ui.js
+          node --check superapp.js
           grep -q "HOST==='seekveraglobal.com'" i18n-ui.js
           grep -q "HOST==='seekveraglobal.com'" global-ui.js
           grep -q "'Country / Region':'الدولة / المنطقة'" i18n-ui.js
           grep -q 'html\[dir="rtl"\]' i18n-premium.css
-          grep -q 'i18n-ui.js?v=20260922-final-r3' index.html
-          grep -q 'i18n-premium.css?v=20260922-final-r3' index.html
+          grep -q 'i18n-ui.js?v=20260923-worldwide-r4' index.html
+          grep -q 'i18n-premium.css?v=20260923-worldwide-r4' index.html
+          grep -q 'seekvera_worldwide_default_20260923_r4' superapp.js
+          grep -q 'Worldwide · All countries' superapp.js
+          grep -q 'syncInlineAssistantIntro' global-ui.js
+          grep -q 'href="media.html"' index.html
+          grep -q 'seekvera-worldwide-r4-20260923' sw.js
           rm -rf .wrangler-dry-run .wrangler
-          echo 'SEEKVERA Worker, Safety Gate, Voice AI, same-origin final R3 multilingual UI and asset boundaries are valid.'
+          echo 'SEEKVERA Worker, Safety Gate, Voice AI, Worldwide R4 multilingual UI, app cache and asset boundaries are valid.'
 
       - name: Detect Cloudflare deployment credentials
         id: cf
@@ -103,11 +109,12 @@ jobs:
 
           for i in $(seq 1 18); do
             HEALTH="$(curl -fsS --max-time 12 "$BASE/api/health" || true)"
-            SITE_HEALTH="$(curl -fsS --max-time 12 "$SITE/api/health?final-r3=$i" || true)"
-            HOME="$(curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/?final-r3=$i" || true)"
-            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/i18n-ui.js?v=20260922-final-r3&sameorigin=$i" -o /tmp/i18n-ui.js || true
-            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/global-ui.js?v=20260922-final-r3&sameorigin=$i" -o /tmp/global-ui.js || true
-            if echo "$HEALTH" | grep -q '"marketplaceProxy":"enabled"' && echo "$SITE_HEALTH" | grep -q '"centralSafetyGate":"enabled"' && echo "$HOME" | grep -q 'i18n-ui.js?v=20260922-final-r3' && grep -q "HOST==='seekveraglobal.com'" /tmp/i18n-ui.js 2>/dev/null && grep -q "HOST==='seekveraglobal.com'" /tmp/global-ui.js 2>/dev/null; then
+            SITE_HEALTH="$(curl -fsS --max-time 12 "$SITE/api/health?worldwide-r4=$i" || true)"
+            HOME="$(curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/?worldwide-r4=$i" || true)"
+            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/i18n-ui.js?v=20260923-worldwide-r4&sameorigin=$i" -o /tmp/i18n-ui.js || true
+            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/global-ui.js?v=20260923-worldwide-r4&sameorigin=$i" -o /tmp/global-ui.js || true
+            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/superapp.js?v=20260923-worldwide-r4&sameorigin=$i" -o /tmp/superapp.js || true
+            if echo "$HEALTH" | grep -q '"marketplaceProxy":"enabled"' && echo "$SITE_HEALTH" | grep -q '"centralSafetyGate":"enabled"' && echo "$HOME" | grep -q 'i18n-ui.js?v=20260923-worldwide-r4' && grep -q "HOST==='seekveraglobal.com'" /tmp/i18n-ui.js 2>/dev/null && grep -q "HOST==='seekveraglobal.com'" /tmp/global-ui.js 2>/dev/null && grep -q 'seekvera_worldwide_default_20260923_r4' /tmp/superapp.js 2>/dev/null; then
               break
             fi
             sleep 5
@@ -117,12 +124,15 @@ jobs:
           echo "$HEALTH" | grep -q '"failClosed":true'
           echo "$SITE_HEALTH" | grep -q '"centralSafetyGate":"enabled"'
           echo "$SITE_HEALTH" | grep -q '"failClosed":true'
-          echo "$HOME" | grep -q 'i18n-ui.js?v=20260922-final-r3'
-          echo "$HOME" | grep -q 'i18n-premium.css?v=20260922-final-r3'
+          echo "$HOME" | grep -q 'i18n-ui.js?v=20260923-worldwide-r4'
+          echo "$HOME" | grep -q 'i18n-premium.css?v=20260923-worldwide-r4'
+          echo "$HOME" | grep -q 'href="media.html"'
           grep -q 'SEEKVERA multilingual UI runtime' /tmp/i18n-ui.js
           grep -q "HOST==='seekveraglobal.com'" /tmp/i18n-ui.js
           grep -q "HOST==='seekveraglobal.com'" /tmp/global-ui.js
-          curl -fsS --max-time 15 "$SITE/i18n-premium.css?v=20260922-final-r3" -o /tmp/i18n-premium.css
+          grep -q 'syncInlineAssistantIntro' /tmp/global-ui.js
+          grep -q 'seekvera_worldwide_default_20260923_r4' /tmp/superapp.js
+          curl -fsS --max-time 15 "$SITE/i18n-premium.css?v=20260923-worldwide-r4" -o /tmp/i18n-premium.css
           grep -q 'premium multilingual/RTL overrides' /tmp/i18n-premium.css
 
           curl -fsS --max-time 35 -X POST "$SITE/api/ai" -H 'Content-Type: application/json' --data '{"message":"Reply only with: Hello.","country":"Worldwide","language":"English","scope":"worldwide","fast":true}' -o /tmp/site-ai.json
@@ -144,7 +154,7 @@ jobs:
           review_code="$(curl -sS -o /tmp/review.json -w '%{http_code}' --max-time 15 -X POST "$BASE/api/marketplace-review" -H 'Origin: https://seekveraglobal.com' -H 'Content-Type: application/json' --data '{}')"
           test "$review_code" = '400'
           grep -Eqi 'reference|invalid' /tmp/review.json
-          echo 'Live production final R3 same-origin APIs, multilingual UI, health, internal-file isolation and marketplace server routing passed.'
+          echo 'Live production Worldwide R4 same-origin APIs, multilingual UI, Worldwide default, health, internal-file isolation and marketplace server routing passed.'
 
       - name: Deployment architecture
         if: steps.cf.outputs.ready != 'true'
