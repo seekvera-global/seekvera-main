@@ -17,13 +17,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Patch multilingual AI, voice, Media hub and cache version
+      - name: Patch multilingual AI, voice and Media hub
         shell: python
         run: |
           from pathlib import Path
           import re
-
-          VERSION='20260923-ai-media-r1'
 
           # 1) Stronger AI assistant behavior, strict same-language output and Media routing.
           p=Path('worker.js')
@@ -46,7 +44,7 @@ jobs:
           s=s.replace("shopping:'shopping.html',general:'marketplace.html'","shopping:'shopping.html',media:'media.html',general:'marketplace.html'",1)
           p.write_text(s,encoding='utf-8')
 
-          # 2) Voice: add broader locale coverage and never fall back to an unrelated-language installed voice.
+          # 2) Voice: broad locale coverage and no wrong-language installed voice fallback.
           p=Path('voice-ai.js')
           s=p.read_text(encoding='utf-8')
           old_lang=re.search(r"const LANGS=\{[^\n]+\};",s)
@@ -88,7 +86,7 @@ jobs:
 
           # 4) Add Media hub page using official/legal sources only.
           media=Path('media.html')
-          media.write_text('''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SEEKVERA Media — News, Movies & Music</title><meta name="description" content="SEEKVERA Media hub for official news, legal movies and music services worldwide."><style>*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Arial;background:#07111f;color:#eef6ff}.wrap{max-width:1160px;margin:auto;padding:22px}.hero{padding:28px;border:1px solid #29415b;border-radius:22px;background:linear-gradient(135deg,#102238,#241646)}h1{font-size:clamp(2rem,6vw,4rem);margin:.2em 0}.tag{display:inline-block;padding:7px 11px;border-radius:999px;background:#1d3857;font-weight:850}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:14px;margin-top:18px}.card{display:block;text-decoration:none;color:inherit;padding:18px;border:1px solid #29415b;border-radius:18px;background:#0d1a2a}.card:hover{transform:translateY(-2px);border-color:#6cf0b9}.card b{font-size:1.1rem}.card p{color:#b9c9da;line-height:1.5}.note{margin:18px 0;padding:14px;border-radius:14px;background:#102238;color:#c9d8e7}.top{display:flex;gap:10px;flex-wrap:wrap}.btn{display:inline-block;padding:10px 14px;border-radius:12px;background:#17324f;color:#fff;text-decoration:none;font-weight:800}</style><link rel="stylesheet" href="global-ui.css?v=20260923-ai-media-r1"><link rel="stylesheet" href="i18n-premium.css?v=20260923-ai-media-r1"></head><body><main class="wrap"><div class="top"><a class="btn" href="app.html">← SEEKVERA App</a><a class="btn" href="games.html">🎮 Games</a></div><section class="hero"><span class="tag">🎬 SEEKVERA MEDIA</span><h1>News · Movies · Music</h1><p>One place to open trusted news, legal movie services and official music platforms. Availability can vary by country.</p></section><div class="note">SEEKVERA only links to official or lawful sources. It does not host pirated movies, TV channels or music.</div><h2>📰 News</h2><section class="grid"><a class="card" href="https://www.aljazeera.com/live" target="_blank" rel="noopener noreferrer"><b>Al Jazeera</b><p>Official live/news site.</p></a><a class="card" href="https://www.alarabiya.net/" target="_blank" rel="noopener noreferrer"><b>Al Arabiya</b><p>Official Arabic news site.</p></a><a class="card" href="https://www.cnn.com/" target="_blank" rel="noopener noreferrer"><b>CNN</b><p>Official CNN news site.</p></a><a class="card" href="https://www.bbc.com/news" target="_blank" rel="noopener noreferrer"><b>BBC News</b><p>Official BBC news site.</p></a><a class="card" href="https://www.reuters.com/" target="_blank" rel="noopener noreferrer"><b>Reuters</b><p>Global news and business coverage.</p></a></section><h2>🎞️ Movies & video</h2><section class="grid"><a class="card" href="https://www.youtube.com/movies" target="_blank" rel="noopener noreferrer"><b>YouTube Movies</b><p>Official movie storefront and available free/paid titles by region.</p></a><a class="card" href="https://www.plex.tv/watch-free-tv/" target="_blank" rel="noopener noreferrer"><b>Plex Free TV & Movies</b><p>Legal ad-supported viewing where available.</p></a><a class="card" href="https://archive.org/details/feature_films" target="_blank" rel="noopener noreferrer"><b>Classic / Public-domain films</b><p>Internet Archive collection; rights vary by title and region.</p></a></section><h2>🎵 Music</h2><section class="grid"><a class="card" href="https://music.youtube.com/" target="_blank" rel="noopener noreferrer"><b>YouTube Music</b><p>Official music service.</p></a><a class="card" href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer"><b>Spotify</b><p>Official web player where available.</p></a><a class="card" href="https://soundcloud.com/" target="_blank" rel="noopener noreferrer"><b>SoundCloud</b><p>Music and creator audio.</p></a></section></main><script src="global-ui.js?v=20260923-ai-media-r1" defer></script><script src="voice-ai.js?v=20260923-ai-media-r1" defer></script><script src="i18n-ui.js?v=20260923-ai-media-r1" defer></script></body></html>''',encoding='utf-8')
+          media.write_text('''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SEEKVERA Media — News, Movies & Music</title><meta name="description" content="SEEKVERA Media hub for official news, legal movies and music services worldwide."><style>*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Arial;background:#07111f;color:#eef6ff}.wrap{max-width:1160px;margin:auto;padding:22px}.hero{padding:28px;border:1px solid #29415b;border-radius:22px;background:linear-gradient(135deg,#102238,#241646)}h1{font-size:clamp(2rem,6vw,4rem);margin:.2em 0}.tag{display:inline-block;padding:7px 11px;border-radius:999px;background:#1d3857;font-weight:850}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:14px;margin-top:18px}.card{display:block;text-decoration:none;color:inherit;padding:18px;border:1px solid #29415b;border-radius:18px;background:#0d1a2a}.card:hover{transform:translateY(-2px);border-color:#6cf0b9}.card b{font-size:1.1rem}.card p{color:#b9c9da;line-height:1.5}.note{margin:18px 0;padding:14px;border-radius:14px;background:#102238;color:#c9d8e7}.top{display:flex;gap:10px;flex-wrap:wrap}.btn{display:inline-block;padding:10px 14px;border-radius:12px;background:#17324f;color:#fff;text-decoration:none;font-weight:800}</style><link rel="stylesheet" href="global-ui.css?v=20260922-final-r3"><link rel="stylesheet" href="i18n-premium.css?v=20260922-final-r3"></head><body><main class="wrap"><div class="top"><a class="btn" href="app.html">← SEEKVERA App</a><a class="btn" href="games.html">🎮 Games</a></div><section class="hero"><span class="tag">🎬 SEEKVERA MEDIA</span><h1>News · Movies · Music</h1><p>One place to open trusted news, legal movie services and official music platforms. Availability can vary by country.</p></section><div class="note">SEEKVERA only links to official or lawful sources. It does not host pirated movies, TV channels or music.</div><h2>📰 News</h2><section class="grid"><a class="card" href="https://www.aljazeera.com/live" target="_blank" rel="noopener noreferrer"><b>Al Jazeera</b><p>Official live/news site.</p></a><a class="card" href="https://www.alarabiya.net/" target="_blank" rel="noopener noreferrer"><b>Al Arabiya</b><p>Official Arabic news site.</p></a><a class="card" href="https://www.cnn.com/" target="_blank" rel="noopener noreferrer"><b>CNN</b><p>Official CNN news site.</p></a><a class="card" href="https://www.bbc.com/news" target="_blank" rel="noopener noreferrer"><b>BBC News</b><p>Official BBC news site.</p></a><a class="card" href="https://www.reuters.com/" target="_blank" rel="noopener noreferrer"><b>Reuters</b><p>Global news and business coverage.</p></a></section><h2>🎞️ Movies & video</h2><section class="grid"><a class="card" href="https://www.youtube.com/movies" target="_blank" rel="noopener noreferrer"><b>YouTube Movies</b><p>Official movie storefront and available free/paid titles by region.</p></a><a class="card" href="https://www.plex.tv/watch-free-tv/" target="_blank" rel="noopener noreferrer"><b>Plex Free TV & Movies</b><p>Legal ad-supported viewing where available.</p></a><a class="card" href="https://archive.org/details/feature_films" target="_blank" rel="noopener noreferrer"><b>Classic / Public-domain films</b><p>Internet Archive collection; rights vary by title and region.</p></a></section><h2>🎵 Music</h2><section class="grid"><a class="card" href="https://music.youtube.com/" target="_blank" rel="noopener noreferrer"><b>YouTube Music</b><p>Official music service.</p></a><a class="card" href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer"><b>Spotify</b><p>Official web player where available.</p></a><a class="card" href="https://soundcloud.com/" target="_blank" rel="noopener noreferrer"><b>SoundCloud</b><p>Music and creator audio.</p></a></section></main><script src="global-ui.js?v=20260922-final-r3" defer></script><script src="voice-ai.js?v=20260922-final-r3" defer></script><script src="i18n-ui.js?v=20260922-final-r3" defer></script></body></html>''',encoding='utf-8')
 
           # 5) Add Media to app navigation and hash routing.
           p=Path('app.html'); s=p.read_text(encoding='utf-8')
@@ -97,19 +95,15 @@ jobs:
               s=s.replace("games:'games.html',connectivity:","games:'games.html',media:'media.html',connectivity:",1)
           p.write_text(s,encoding='utf-8')
 
-          # 6) Add Media to the all-categories hub when possible.
+          # 6) Add Media to the all-categories hub.
           p=Path('hub.html')
           if p.exists():
               s=p.read_text(encoding='utf-8')
-              if 'href="media.html"' not in s:
-                  marker='href="games.html"'
-                  pos=s.find(marker)
-                  if pos!=-1:
-                      # Insert a simple Media card before the closing main as a safe fallback.
-                      s=s.replace('</main>','<section style="max-width:1180px;margin:16px auto;padding:0 14px"><a href="media.html" style="display:block;padding:16px;border-radius:16px;background:#241646;color:#fff;text-decoration:none;font-weight:900">🎬 SEEKVERA Media — News, Movies & Music →</a></section></main>',1)
+              if 'href="media.html"' not in s and 'href="games.html"' in s:
+                  s=s.replace('</main>','<section style="max-width:1180px;margin:16px auto;padding:0 14px"><a href="media.html" style="display:block;padding:16px;border-radius:16px;background:#241646;color:#fff;text-decoration:none;font-weight:900">🎬 SEEKVERA Media — News, Movies & Music →</a></section></main>',1)
               p.write_text(s,encoding='utf-8')
 
-          # 7) Add to sitemap and app manifest shortcut.
+          # 7) Add Media to sitemap and app manifest shortcut.
           p=Path('sitemap.xml')
           if p.exists():
               s=p.read_text(encoding='utf-8')
@@ -119,20 +113,9 @@ jobs:
           p=Path('manifest.webmanifest')
           if p.exists():
               s=p.read_text(encoding='utf-8')
-              if '"Media"' not in s and '"shortcuts"' in s:
+              if '"name":"Media"' not in s and '"shortcuts"' in s:
                   s=s.replace('{"name":"Free Games","short_name":"Games","url":"./games.html"},','{"name":"Free Games","short_name":"Games","url":"./games.html"},\n    {"name":"Media","short_name":"Media","url":"./media.html"},',1)
               p.write_text(s,encoding='utf-8')
-
-          # 8) Cache-bust the common global assets on every public HTML page.
-          for p in Path('.').glob('*.html'):
-              s=p.read_text(encoding='utf-8')
-              s=s.replace('20260922-final-r3',VERSION).replace('20260922-premium-voice2',VERSION)
-              p.write_text(s,encoding='utf-8')
-
-          # Keep the production deployment validator aligned with the new release.
-          p=Path('.github/workflows/deploy-cloudflare.yml')
-          s=p.read_text(encoding='utf-8').replace('20260922-final-r3',VERSION)
-          p.write_text(s,encoding='utf-8')
 
           print('SEEKVERA AI/voice/media refresh patched.')
 
@@ -149,7 +132,7 @@ jobs:
           grep -q "if(!c.length)return null" voice-ai.js
           grep -q "const AI_INTRO=" global-ui.js
           grep -q "media:'media.html'" worker.js
-          grep -q "i18n-ui.js?v=20260923-ai-media-r1" index.html
+          grep -q "i18n-ui.js?v=20260922-final-r3" index.html
           git diff --check
 
       - name: Commit refreshed production source
@@ -158,7 +141,7 @@ jobs:
           set -euo pipefail
           git config user.name 'SEEKVERA automation'
           git config user.email 'actions@users.noreply.github.com'
-          git add worker.js voice-ai.js global-ui.js media.html app.html hub.html sitemap.xml manifest.webmanifest .github/workflows/deploy-cloudflare.yml *.html
+          git add worker.js voice-ai.js global-ui.js media.html app.html hub.html sitemap.xml manifest.webmanifest
           if git diff --cached --quiet; then
             echo 'No changes required.'
           else
