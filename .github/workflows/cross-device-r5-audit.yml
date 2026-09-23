@@ -1,4 +1,5 @@
 name: SEEKVERA R5 cross-device audit
+# Rerun after R5 was deployed to Cloudflare production.
 
 on:
   push:
@@ -51,7 +52,7 @@ jobs:
             const context=await browser.newContext({...p.ctx});
             const page=await context.newPage();
             const pageErrors=[]; page.on('pageerror',e=>pageErrors.push(String(e)));
-            await page.goto(SITE+'/?r5-cross-device=1',{waitUntil:'domcontentloaded',timeout:60000});
+            await page.goto(SITE+'/?r5-cross-device=2',{waitUntil:'domcontentloaded',timeout:60000});
             await page.waitForFunction(()=>document.querySelector('#country')?.options?.length>240 && document.querySelector('#lang')?.options?.length>=29,null,{timeout:60000});
             await page.waitForTimeout(900);
             const s=await page.evaluate(()=>({
@@ -106,9 +107,9 @@ jobs:
             await page.waitForURL(/\/index\.html\?v=20260923-market-r5/,{timeout:30000});
             assert(!(await page.locator('iframe').count()),'app shell still contains an iframe');
             const [manifest,sw,voice]=await Promise.all([
-              page.request.get(SITE+'/manifest.webmanifest?r5=1').then(r=>r.text()),
-              page.request.get(SITE+'/sw.js?r5=1').then(r=>r.text()),
-              page.request.get(SITE+'/voice-ai.js?r5=1').then(r=>r.text())
+              page.request.get(SITE+'/manifest.webmanifest?r5=2').then(r=>r.text()),
+              page.request.get(SITE+'/sw.js?r5=2').then(r=>r.text()),
+              page.request.get(SITE+'/voice-ai.js?r5=2').then(r=>r.text())
             ]);
             assert(manifest.includes('index.html?v=20260923-market-r5'),'PWA start_url is not R5 direct home');
             assert(sw.includes('seekvera-market-r5-20260923')&&sw.includes('home-marketplace-r5.css'),'R5 service worker cache missing');
