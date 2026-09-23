@@ -1,0 +1,28 @@
+name: SEEKVERA R5B mobile visual audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/scripts/r5b_mobile_audit.js'
+      - '.github/workflows/r5b-mobile-visual-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Chromium and WebKit
+        shell: bash
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install --with-deps chromium webkit
+      - name: Audit live Android and iPhone layouts
+        shell: bash
+        run: node .github/scripts/r5b_mobile_audit.js
