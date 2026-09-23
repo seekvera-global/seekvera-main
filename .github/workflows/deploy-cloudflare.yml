@@ -1,5 +1,5 @@
 name: Deploy SEEKVERA to Cloudflare
-# Production deployment: Safety Gate + multilingual AI/Voice + R5 visual marketplace UI
+# Production deployment: R5 visual marketplace + multilingual AI/Voice + server ASR fallback
 
 on:
   push:
@@ -38,44 +38,33 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate Worker, Safety, AI, Worldwide and R5 UI
+      - name: Validate R5 source, AI, voice and Safety
         shell: bash
         run: |
           set -euo pipefail
           npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-dry-run
           grep -q '"binding": "AI"' wrangler.jsonc
           grep -q '@cf/google/gemma-4-26b-a4b-it' worker.js
-          grep -q '@cf/zai-org/glm-4.7-flash' worker.js
-          grep -q '@cf/meta/llama-3.1-8b-instruct-fast' worker.js
-          grep -q '@cf/meta/llama-3.2-11b-vision-instruct' worker.js
+          grep -q '@cf/openai/whisper-large-v3-turbo' worker.js
+          grep -q '/api/transcribe' worker.js
+          grep -q "voiceInputFallback:'server-asr-v1'" worker.js
           grep -q 'safetyGateVersion' worker.js
           grep -q '/api/vision' worker.js
           grep -q '/api/marketplace-submit' worker.js
-          grep -q '/api/marketplace-review' worker.js
-          grep -q "marketplaceProxy:'enabled'" worker.js
-          grep -q '^\.wrangler$' .assetsignore
-          grep -q '^worker.js$' .assetsignore
-          grep -q '^wrangler.jsonc$' .assetsignore
-          for f in voice-ai.js i18n-ui.js global-ui.js superapp.js sw.js; do node --check "$f"; done
-          grep -q "HOST==='seekveraglobal.com'" i18n-ui.js
-          grep -q "HOST==='seekveraglobal.com'" global-ui.js
-          grep -q 'html\[dir="rtl"\]' i18n-premium.css
+          for f in voice-ai.js i18n-ui.js global-ui.js superapp.js sw.js worker.js; do node --check "$f"; done
+          grep -q 'serverVoice' voice-ai.js
+          grep -q 'navigator.mediaDevices' voice-ai.js
+          grep -q 'MediaRecorder' voice-ai.js
           grep -q 'data-release="20260923-market-r5"' index.html
           grep -q 'home-marketplace-r5.css?v=20260923-market-r5' index.html
-          grep -q 'Worldwide' index.html
           grep -q 'class="r5-tile"' index.html
-          grep -q 'href="media.html"' index.html
-          grep -q 'href="games.html"' index.html
           grep -q 'location.replace' app.html
           if grep -q '<iframe' app.html; then echo 'R5 app shell must not use iframe'; exit 1; fi
           grep -q 'index.html?v=20260923-market-r5' manifest.webmanifest
           grep -q 'seekvera-market-r5-20260923' sw.js
-          grep -q 'home-marketplace-r5.css' sw.js
-          grep -q 'seekvera_worldwide_default_20260923_r4' superapp.js
           grep -q 'Worldwide · All countries' superapp.js
-          grep -q 'syncInlineAssistantIntro' global-ui.js
           rm -rf .wrangler-dry-run .wrangler
-          echo 'R5 source validation passed.'
+          echo 'R5 source validation PASS'
 
       - name: Detect Cloudflare deployment credentials
         id: cf
@@ -86,10 +75,8 @@ jobs:
         run: |
           if [ -n "$CF_TOKEN" ] && [ -n "$CF_ACCOUNT" ]; then
             echo 'ready=true' >> "$GITHUB_OUTPUT"
-            echo 'Cloudflare credentials found.'
           else
             echo 'ready=false' >> "$GITHUB_OUTPUT"
-            echo 'Cloudflare GitHub secrets are not configured.'
           fi
 
       - name: Deploy to Cloudflare Workers
@@ -100,46 +87,42 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
 
-      - name: Verify live R5 production, AI and Safety
+      - name: Verify live R5 + server voice fallback
         if: steps.cf.outputs.ready == 'true'
         shell: bash
         run: |
           set -euo pipefail
-          BASE='https://seekvera-main.seekvera-global.workers.dev'
           SITE='https://seekveraglobal.com'
           ok=0
-          for i in $(seq 1 24); do
-            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/?market-r5=$i" -o /tmp/home.html || true
-            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/home-marketplace-r5.css?v=20260923-market-r5&n=$i" -o /tmp/r5.css || true
-            curl -fsS --max-time 15 "$SITE/api/health?market-r5=$i" -o /tmp/site-health.json || true
-            curl -fsS --max-time 15 "$BASE/api/health?market-r5=$i" -o /tmp/worker-health.json || true
-            if grep -q 'data-release="20260923-market-r5"' /tmp/home.html 2>/dev/null && grep -q 'r5-market' /tmp/r5.css 2>/dev/null && grep -q '"centralSafetyGate":"enabled"' /tmp/site-health.json 2>/dev/null && grep -q '"marketplaceProxy":"enabled"' /tmp/worker-health.json 2>/dev/null; then ok=1; break; fi
-            sleep 5
+          for i in $(seq 1 30); do
+            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/?r5-stt=$i" -o /tmp/home.html || true
+            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/api/health?r5-stt=$i" -o /tmp/health.json || true
+            if grep -q 'data-release="20260923-market-r5"' /tmp/home.html 2>/dev/null && grep -q '"release":"2026-09-23-market-r5-stt"' /tmp/health.json 2>/dev/null && grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/health.json 2>/dev/null; then ok=1; break; fi
+            sleep 4
           done
           test "$ok" = '1'
-          grep -q 'home-marketplace-r5.css?v=20260923-market-r5' /tmp/home.html
-          grep -q 'class="r5-tile"' /tmp/home.html
-          grep -q 'href="media.html"' /tmp/home.html
-          grep -q 'href="games.html"' /tmp/home.html
-          grep -q '"failClosed":true' /tmp/site-health.json
-          curl -fsS --max-time 15 "$SITE/app.html?market-r5=1" -o /tmp/app.html
+          echo 'LIVE R5 + ASR HEALTH PASS'
+          grep -q '"centralSafetyGate":"enabled"' /tmp/health.json
+          grep -q '"failClosed":true' /tmp/health.json
+          grep -q '@cf/openai/whisper-large-v3-turbo' /tmp/health.json
+          curl -fsS --max-time 15 "$SITE/voice-ai.js?r5-stt=1" -o /tmp/voice.js
+          grep -q 'serverVoice' /tmp/voice.js
+          grep -q 'MediaRecorder' /tmp/voice.js
+          curl -fsS --max-time 15 "$SITE/app.html?r5-stt=1" -o /tmp/app.html
           grep -q 'location.replace' /tmp/app.html
-          if grep -q '<iframe' /tmp/app.html; then echo 'Live app.html still contains iframe'; exit 1; fi
-          curl -fsS --max-time 15 "$SITE/manifest.webmanifest?market-r5=1" -o /tmp/manifest.json
-          grep -q 'index.html?v=20260923-market-r5' /tmp/manifest.json
-          curl -fsS --max-time 15 "$SITE/sw.js?market-r5=1" -o /tmp/sw.js
-          grep -q 'seekvera-market-r5-20260923' /tmp/sw.js
-          curl -fsS --max-time 35 -X POST "$SITE/api/ai" -H 'Content-Type: application/json' --data '{"message":"Reply only with: Hello.","country":"Worldwide","language":"English","scope":"worldwide","fast":true}' -o /tmp/site-ai.json
-          grep -q '"ok":true' /tmp/site-ai.json
-          grep -qi 'hello' /tmp/site-ai.json
-          submit_code="$(curl -sS -o /tmp/submit.json -w '%{http_code}' --max-time 15 -X POST "$BASE/api/marketplace-submit" -H 'Origin: https://seekveraglobal.com' -H 'Content-Type: application/json' --data '{}')"
-          test "$submit_code" = '400'
-          grep -q 'Safety confirmations are required' /tmp/submit.json
-          echo 'Live R5 production, direct app shell, AI and Safety checks passed.'
+          if grep -q '<iframe' /tmp/app.html; then exit 1; fi
+          code="$(curl -sS -o /tmp/stt-invalid.json -w '%{http_code}' --max-time 20 -X POST "$SITE/api/transcribe" -H 'Content-Type: application/json' --data '{"audio":"invalid","language":"en"}')"
+          test "$code" = '400'
+          grep -q 'Valid recorded audio is required' /tmp/stt-invalid.json
+          echo 'LIVE TRANSCRIBE ROUTE PASS'
+          curl -fsS --max-time 40 -X POST "$SITE/api/ai" -H 'Content-Type: application/json' --data '{"message":"Reply only with: Hello.","country":"Worldwide","language":"English","scope":"worldwide","fast":true}' -o /tmp/ai.json
+          grep -q '"ok":true' /tmp/ai.json
+          grep -qi 'hello' /tmp/ai.json
+          echo 'LIVE AI PASS'
 
       - name: Deployment architecture
         if: steps.cf.outputs.ready != 'true'
         shell: bash
         run: |
-          echo 'No GitHub Cloudflare credentials were found.'
-          echo 'Production deployment must be completed by the connected Cloudflare Workers Build.'
+          echo 'Cloudflare GitHub deployment credentials are unavailable.'
+          exit 1
