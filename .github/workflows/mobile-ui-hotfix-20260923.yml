@@ -17,147 +17,26 @@ jobs:
       - uses: actions/checkout@v4
       - name: Apply clean mobile marketplace hotfix
         shell: bash
+        env:
+          CSS_B64: "Ci8qIFNFRUtWRVJBIE1PQklMRSBDTEVBTlVQIFI1QiDigJQgcmVzdG9yZXMgY29tcGFjdCBtYXJrZXRwbGFjZSBmZWVsICovCkBtZWRpYShtYXgtd2lkdGg6NzgwcHgpewogIC5yNS10b3B7cG9zaXRpb246cmVsYXRpdmUhaW1wb3J0YW50O3RvcDphdXRvIWltcG9ydGFudDtib3gtc2hhZG93OjAgMXB4IDdweCByZ2JhKDIwLDMyLDUxLC4wNSkhaW1wb3J0YW50fQogIC5yNS10b3AtaW5uZXJ7cGFkZGluZzo5cHggMTBweCFpbXBvcnRhbnQ7Z2FwOjdweCFpbXBvcnRhbnR9CiAgLnI1LWJyYW5ke2ZvbnQtc2l6ZToxNXB4IWltcG9ydGFudDtsZXR0ZXItc3BhY2luZzouMDQ1ZW0haW1wb3J0YW50fQogIC5yNS1icmFuZCBzbWFsbHtkaXNwbGF5Om5vbmUhaW1wb3J0YW50fQogIC5yNS1tYXJre3dpZHRoOjM2cHghaW1wb3J0YW50O2hlaWdodDozNnB4IWltcG9ydGFudDtib3JkZXItcmFkaXVzOjExcHghaW1wb3J0YW50fQogIC5yNS1jb250cm9sc3t3aWR0aDoxMDAlIWltcG9ydGFudDttYXJnaW46MCFpbXBvcnRhbnQ7ZGlzcGxheTpncmlkIWltcG9ydGFudDtncmlkLXRlbXBsYXRlLWNvbHVtbnM6bWlubWF4KDAsMS40NWZyKSBtaW5tYXgoMCwxZnIpIDc2cHghaW1wb3J0YW50O2dhcDo2cHghaW1wb3J0YW50O2FsaWduLWl0ZW1zOmNlbnRlciFpbXBvcnRhbnR9CiAgLnI1LWNvbnRyb2xzIC5zdi1jb250cm9sLWZpZWxke2Rpc3BsYXk6YmxvY2shaW1wb3J0YW50O21pbi13aWR0aDowIWltcG9ydGFudDttYXgtd2lkdGg6bm9uZSFpbXBvcnRhbnQ7d2lkdGg6YXV0byFpbXBvcnRhbnQ7bWFyZ2luOjAhaW1wb3J0YW50fQogIC5yNS1jb250cm9scyAuc3YtY29udHJvbC1maWVsZCBzbWFsbCwucjUtY29udHJvbHMgLnN2LWNvbnRyb2wtY2FwdGlvbntkaXNwbGF5Om5vbmUhaW1wb3J0YW50fQogIC5yNS1jb250cm9scyAuc3Ytc2VsZWN0e2hlaWdodDo0MnB4IWltcG9ydGFudDtib3JkZXItcmFkaXVzOjEycHghaW1wb3J0YW50O2ZvbnQtc2l6ZToxMnB4IWltcG9ydGFudDtwYWRkaW5nOjZweCA4cHghaW1wb3J0YW50O2ZvbnQtd2VpZ2h0OjgwMCFpbXBvcnRhbnR9CiAgLnI1LWNvbnRyb2xzICNpbnN0YWxsQnRuLC5yNS1jb250cm9scyAucjUtcG9zdHtkaXNwbGF5Om5vbmUhaW1wb3J0YW50fQogIC5yNS1zaGVsbHtwYWRkaW5nOjhweCA5cHggMjhweCFpbXBvcnRhbnR9CiAgLnI1LW1hcmtldHtkaXNwbGF5OmJsb2NrIWltcG9ydGFudH0KICAucjUtbGVmdHtkaXNwbGF5Om5vbmUhaW1wb3J0YW50fQogIC5yNS1yaWdodHtkaXNwbGF5Om5vbmUhaW1wb3J0YW50fQogIC5yNS1oZXJve3BhZGRpbmc6MTNweCFpbXBvcnRhbnQ7Ym9yZGVyLXJhZGl1czoxNnB4IWltcG9ydGFudDtib3gtc2hhZG93OjAgNXB4IDIwcHggcmdiYSgyMCwzMiw1MSwuMDU1KSFpbXBvcnRhbnR9CiAgLnI1LWtpY2tlcntnYXA6NXB4IWltcG9ydGFudDttYXJnaW46MCAwIDRweCFpbXBvcnRhbnR9CiAgLnI1LWtpY2tlciBzcGFuOm50aC1jaGlsZCgxKSwucjUta2lja2VyIHNwYW46bnRoLWNoaWxkKDMpLC5yNS1raWNrZXIgc3BhbjpudGgtY2hpbGQoNSl7Zm9udC1zaXplOjAhaW1wb3J0YW50fQogIC5yNS1raWNrZXIgc3BhbjpudGgtY2hpbGQoMSk6OmFmdGVye2NvbnRlbnQ6J/CfjI0nO2ZvbnQtc2l6ZToxM3B4IWltcG9ydGFudH0KICAucjUta2lja2VyIHNwYW46bnRoLWNoaWxkKDMpOjphZnRlcntjb250ZW50OifinKggQUknO2ZvbnQtc2l6ZToxMHB4IWltcG9ydGFudH0KICAucjUta2lja2VyIHNwYW46bnRoLWNoaWxkKDUpOjphZnRlcntjb250ZW50Oifwn46Z77iPICsg8J+SsCc7Zm9udC1zaXplOjEwcHghaW1wb3J0YW50fQogIC5yNS1oZXJvPnB7ZGlzcGxheTpub25lIWltcG9ydGFudH0KICAucjUtc2NvcGV7ZGlzcGxheTpncmlkIWltcG9ydGFudDtncmlkLXRlbXBsYXRlLWNvbHVtbnM6cmVwZWF0KDMsbWlubWF4KDAsMWZyKSkhaW1wb3J0YW50O2dhcDo2cHghaW1wb3J0YW50O21hcmdpbi10b3A6OXB4IWltcG9ydGFudH0KICAucjUtc2NvcGUgYnV0dG9ue21pbi13aWR0aDowIWltcG9ydGFudDt3aWR0aDoxMDAlIWltcG9ydGFudDtwYWRkaW5nOjhweCA1cHghaW1wb3J0YW50O2ZvbnQtc2l6ZToxMC41cHghaW1wb3J0YW50O3doaXRlLXNwYWNlOm5vd3JhcCFpbXBvcnRhbnR9CiAgLnI1LWNoYXR7bWFyZ2luLXRvcDoxMHB4IWltcG9ydGFudDtib3JkZXItcmFkaXVzOjE0cHghaW1wb3J0YW50O2JveC1zaGFkb3c6bm9uZSFpbXBvcnRhbnR9CiAgLnI1LWNoYXQgLnN2LWNoYXQtaGVhZHtwYWRkaW5nOjlweCAxMHB4IWltcG9ydGFudDttaW4taGVpZ2h0OjQ4cHghaW1wb3J0YW50fQogIC5yNS1jaGF0IC5zdi1jaGF0LWhlYWQgYntmb250LXNpemU6MTNweCFpbXBvcnRhbnR9CiAgLnI1LWNoYXQgLnN2LWNoYXQtaGVhZCBzbWFsbHtmb250LXNpemU6OXB4IWltcG9ydGFudDt3aGl0ZS1zcGFjZTpub3dyYXAhaW1wb3J0YW50O292ZXJmbG93OmhpZGRlbiFpbXBvcnRhbnQ7dGV4dC1vdmVyZmxvdzplbGxpcHNpcyFpbXBvcnRhbnR9CiAgLnI1LWNoYXQgLnN2LWNoYXQtaGVhZD5zcGFue2ZvbnQtc2l6ZToxMHB4IWltcG9ydGFudDt3aGl0ZS1zcGFjZTpub3dyYXAhaW1wb3J0YW50fQogIC5yNS1jaGF0IC5zdi1jaGF0LW1lc3NhZ2Vze21pbi1oZWlnaHQ6NTRweCFpbXBvcnRhbnQ7bWF4LWhlaWdodDoxMDVweCFpbXBvcnRhbnQ7cGFkZGluZzo4cHghaW1wb3J0YW50fQogIC5yNS1jaGF0IC5haS1tc2d7bWF4LXdpZHRoOjk2JSFpbXBvcnRhbnQ7cGFkZGluZzo3cHggOXB4IWltcG9ydGFudDtsaW5lLWhlaWdodDoxLjM1IWltcG9ydGFudH0KICAucjUtY2hhdCAuc3YtY2hhdC1mb3Jte2dyaWQtdGVtcGxhdGUtY29sdW1uczptaW5tYXgoMCwxZnIpIDM2cHggMzZweCA0MHB4IWltcG9ydGFudDtnYXA6NXB4IWltcG9ydGFudDtwYWRkaW5nOjdweCFpbXBvcnRhbnR9CiAgLnI1LWNoYXQgLnN2LWNoYXQtZm9ybSAuYXR0YWNoe2Rpc3BsYXk6bm9uZSFpbXBvcnRhbnR9CiAgLnI1LWNoYXQgLnN2LWNoYXQtZm9ybSBpbnB1dFt0eXBlPXRleHRdLC5yNS1jaGF0ICNhaUNoYXRJbnB1dHtoZWlnaHQ6NDBweCFpbXBvcnRhbnQ7Zm9udC1zaXplOjEycHghaW1wb3J0YW50O3BhZGRpbmc6OHB4IDEwcHghaW1wb3J0YW50O21pbi13aWR0aDowIWltcG9ydGFudH0KICAucjUtY2hhdCAuc3YtY2hhdC1mb3JtIGJ1dHRvbnt3aWR0aDozNnB4IWltcG9ydGFudDtoZWlnaHQ6MzhweCFpbXBvcnRhbnQ7bWluLXdpZHRoOjM2cHghaW1wb3J0YW50fQogIC5yNS1jaGF0IC5zdi1jaGF0LWZvcm0gLnNlbmR7d2lkdGg6NDBweCFpbXBvcnRhbnQ7bWluLXdpZHRoOjQwcHghaW1wb3J0YW50fQogIC5yNS1haS1ub3RlLC5yNS1jaGlwc3tkaXNwbGF5Om5vbmUhaW1wb3J0YW50fQogIC5yNS1zZWN0aW9ue21hcmdpbi10b3A6OXB4IWltcG9ydGFudDtwYWRkaW5nOjEwcHghaW1wb3J0YW50O2JvcmRlci1yYWRpdXM6MTVweCFpbXBvcnRhbnR9CiAgLnI1LXNlY3Rpb24taGVhZHttYXJnaW4tYm90dG9tOjhweCFpbXBvcnRhbnQ7YWxpZ24taXRlbXM6Y2VudGVyIWltcG9ydGFudH0KICAucjUtc2VjdGlvbi1oZWFkIHB7ZGlzcGxheTpub25lIWltcG9ydGFudH0KICAucjUtc2VjdGlvbi1oZWFkIGgye2ZvbnQtc2l6ZToxNXB4IWltcG9ydGFudH0KICAucjUtZ3JpZHtncmlkLXRlbXBsYXRlLWNvbHVtbnM6cmVwZWF0KDIsbWlubWF4KDAsMWZyKSkhaW1wb3J0YW50O2dhcDo4cHghaW1wb3J0YW50fQogIC5yNS10aWxle2JvcmRlci1yYWRpdXM6MTRweCFpbXBvcnRhbnQ7Ym94LXNoYWRvdzowIDJweCA4cHggcmdiYSgyMCwzMiw1MSwuMDM1KSFpbXBvcnRhbnR9CiAgLnI1LXRodW1ie2hlaWdodDo3NHB4IWltcG9ydGFudDtmb250LXNpemU6MzBweCFpbXBvcnRhbnQ7YmFja2dyb3VuZDpsaW5lYXItZ3JhZGllbnQoMTQ1ZGVnLCNlZGY4ZjMsI2VlZjNmYikhaW1wb3J0YW50fQogIC5yNS10aWxlLWJvZHl7cGFkZGluZzo4cHggOXB4IWltcG9ydGFudH0KICAucjUtdGlsZSBie2ZvbnQtc2l6ZToxMnB4IWltcG9ydGFudDt3aGl0ZS1zcGFjZTpub3JtYWwhaW1wb3J0YW50O292ZXJmbG93LXdyYXA6YW55d2hlcmUhaW1wb3J0YW50fQogIC5yNS10aWxlIHNtYWxse2Rpc3BsYXk6bm9uZSFpbXBvcnRhbnR9CiAgLnI1LXJlcXVlc3R7Z3JpZC10ZW1wbGF0ZS1jb2x1bW5zOjFmciFpbXBvcnRhbnR9CiAgLnI1LXJlcXVlc3QgdGV4dGFyZWEsLnI1LXJlcXVlc3QgLmZ1bGx7Z3JpZC1jb2x1bW46YXV0byFpbXBvcnRhbnR9CiAgLnI1LWZvb3R7Zm9udC1zaXplOjEwcHghaW1wb3J0YW50O3BhZGRpbmc6MThweCAzcHggY2FsYygyMnB4ICsgZW52KHNhZmUtYXJlYS1pbnNldC1ib3R0b20pKSFpbXBvcnRhbnR9Cn0KQG1lZGlhKG1heC13aWR0aDozODBweCl7CiAgLnI1LWNvbnRyb2xze2dyaWQtdGVtcGxhdGUtY29sdW1uczptaW5tYXgoMCwxLjM1ZnIpIG1pbm1heCgwLC45NWZyKSA2OHB4IWltcG9ydGFudH0KICAucjUtY29udHJvbHMgLnN2LXNlbGVjdHtmb250LXNpemU6MTFweCFpbXBvcnRhbnQ7cGFkZGluZzo1cHggNnB4IWltcG9ydGFudH0KICAucjUtc2NvcGUgYnV0dG9ue2ZvbnQtc2l6ZTo5LjVweCFpbXBvcnRhbnR9CiAgLnI1LWNoYXQgLnN2LWNoYXQtZm9ybXtncmlkLXRlbXBsYXRlLWNvbHVtbnM6bWlubWF4KDAsMWZyKSAzNHB4IDM0cHggMzhweCFpbXBvcnRhbnR9CiAgLnI1LWNoYXQgLnN2LWNoYXQtZm9ybSBidXR0b257d2lkdGg6MzRweCFpbXBvcnRhbnQ7bWluLXdpZHRoOjM0cHghaW1wb3J0YW50fQogIC5yNS1jaGF0IC5zdi1jaGF0LWZvcm0gLnNlbmR7d2lkdGg6MzhweCFpbXBvcnRhbnQ7bWluLXdpZHRoOjM4cHghaW1wb3J0YW50fQp9CgovKiBsYW5ndWFnZS1jbGVhbiBoZXJvOiBubyBtaXhlZC1sYW5ndWFnZSBoZWFkbGluZSAqLwoucjUtaGVybyBoMXtmb250LXNpemU6MCFpbXBvcnRhbnQ7bWFyZ2luOjhweCAwIDZweCFpbXBvcnRhbnR9Ci5yNS1oZXJvIGgxOjphZnRlcntjb250ZW50OidGaW5kIGZhc3Rlci4gQ29tcGFyZSBiZXR0ZXIuJztkaXNwbGF5OmJsb2NrO2ZvbnQtc2l6ZTpjbGFtcCgyNHB4LDR2dyw0NnB4KSFpbXBvcnRhbnQ7bGluZS1oZWlnaHQ6MS4wNCFpbXBvcnRhbnQ7bGV0dGVyLXNwYWNpbmc6LS4wMzVlbSFpbXBvcnRhbnQ7Y29sb3I6IzEzMjMzYSFpbXBvcnRhbnR9Cmh0bWxbbGFuZ149J2FyJ10gLnI1LWhlcm8gaDE6OmFmdGVye2NvbnRlbnQ6J9in2KjYr9irINij2LPYsdi5LiDZgtin2LHYhiDYoy/YtiY2YQuJ30KaHRtbFtsYW5nXj0nZnInXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDonVHJvdXZleiBwbHVzIHZpdGUuIENvbXBhcmV6IG1pZXV4Lic7fQpodG1sW2xhbmdGPT0nemgnXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDon5pu05b+r5om+5Yiw77yM5pu05aW95q+U6L6D44CCJ30KaHRtbFtsYW5nXj0nZXMnXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDonRW5jdWVudHJhIG3DoXMgcsOhcGlkby4gQ29tcGFyYSBtZWpvci4nfQpodG1sW2xhbmdYPT0naGknXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDon4KSc4KSy4KWN4KSm4KWAIOCkluClnOCkmuClh+CkgiDgpKzgpYfgpKTgpLAuJ30KaHRtbFtsYW5nXj0ncHQnXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDonRW5jb250cmUgbWFpcyByw6FwaWRvLiBDb21wYXJlIG1lbGhvci4nfQpodG1sW2xhbmdYPT0nZGUnXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDonU2NobmVsbGVyIGZpbmRlbi4gQmVzc2VyIHZlcmdsZWljaGVuLic7fQpodG1sW2xhbmdYPT0namEnXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDon44KC44Gj44Go6YCf44GP5o6i44GX44Gm44CB44KC44Gj44Go6Imv44GP5q+U6LyD44CCJ30KaHRtbFtsYW5nXj0na28nXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDon642UIOu5oOultOuypyDrsL7qs6AsIOuNlCDsnpgg67mE6rWQ7ZWY7IS47J30KaHRtbFtsYW5nXj0naWQnXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDonVGVtdWthbiBsZWJpaCBjZXBhdC4gQmFuZGluZ2thbiBsZWJpaCBiYWlrLic7fQpodG1sW2xhbmdYPT0ndHInXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDonRGFoYSBoYW7EsXogYnVsLiBEYWhhIGl5aSBrYXLEs8WfxLFsYcWfdMSxci4nfQpodG1sW2xhbmdYPT0ncnUnXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDon0J3QsNGF0L7QtNC40YLQtSDQsdGL0YHRgtGA0LXQtS4g0KHRgNCw0LLQvdC40LLQsNC50YLQtSDQu9GD0YfGI0LUuJ30KaHRtbFtsYW5nXj0ndXInXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDon2KrYsdiy24wg2LPbsSDYqtiE2KfYtCDaqdmM24zbuSDYqNmB2KrYsSDZh9mC2KfYstmG2Ycg2qnYsdmK2LogJ30KaHRtbFtsYW5nXj0nYm4nXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDonpuCmp+CnjeCmsOCnjeCmqOCnjeCmqOCnnSDgpJbjgYHgpJzgpYHgpqguIOCmv+CmvuCmsOCnhOCmtuCmvuCmsOCnhCDgpqTgpYHgpqjgpqjgpr7gpqjgpqvgpr7gpqjgpr7gpqPgprjgpr7gpqjgpr7gpqguJ30KaHRtbFtsYW5nXj0ndmknXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDonVMOsbSBuaGFuaCBoxqFuLiBTbyBzw6FuaCB04buRdCBoxqFuLic7fQpodG1sW2xhbmdYPT0naXQnXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDonVHJvdmEgcGnDuSB2ZWxvY2VtZW50ZS4gQ29uZnJvbnRhIG1lZ2xpby4nfQpodG1sW2xhbmdYPT0nc3cnXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDonUGF0YSBoYXJha2EuIExpbmdhbmlzaGEgdml6dXJpLic7fQpodG1sW2xhbmdYPT0ndGgnXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDonnITguYnguJnguKvguLLguYDguKPguYfguKfguILguLbguYnguJkg4LmA4Lib4Lij4Li14Lii4Lia4LmA4LiX4Li14Lii4Lia4LmE4LiU4LmJ4LiU4Li14LiyJ30KaHRtbFtsYW5nXj0nZmEnXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDon2LPYsdmK2LnYqtuMINm+24zYr9inINqp2YbZitivLiDYqNmH2KrYsSDZh9mC2KfYstmHINqp2YbZitivLic7fQpodG1sW2xhbmdYPT0ncGwnXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDonWm5hamTFuiBzenliY2llai4gUG9yw7N3bmFqIGxlcGllai4nfQpodG1sW2xhbmdYPT0nbmwnXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDonVmluZCBzbmVsbGVyLiBWZXJnZWxpamsgYmV0ZXIuJ30KaHRtbFtsYW5nXj0nbXMnXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDonQ2FyaSBsZWJpaCBjZXBhdC4gQmFuZGluZ2thbiBsZWJpaCBiYWlrLic7fQpodG1sW2xhbmdYPT0nZmlsJ10gLnI1LWhlcm8gaDE6OmFmdGVye2NvbnRlbnQ6J01hcyBtYXdhYmlzIG1hZ2hhbmFwLiBNYXMgbWFodXNh-eSBiYW1ncmtoaW5nLic7fQpodG1sW2xhbmdYPT0naGEnXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDonTmVtbyBkYSBzYXVyaS4gS3dhdGFudGEgZGEgemF1a3UuJ30KaHRtbFtsYW5nXj0neW8nXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDonV2Ega8Otw6Frw61DoS4gxZ7DqCDDoGZpd8OpIGTDoeG6oWTDoGEuJ30KaHRtbFtsYW5nXj0naWcnXSAucjUtaGVybyBoMTo6YWZ0ZXJ7Y29udGVudDonQ2jhu41uIG5nd2Egbmd3YS4gVOG7p25lcmUgbmtlIG3hu51uLiJ9Cmh0bWxbbGFuZ149J2FtJ10gLnI1LWhlcm8gaDE6OmFmdGVye2NvbnRlbnQ6J+GLoOGLp+GNpeGItuGLseGKuOGIr+GJsyDhi6XhiznhiYUg4Yuv4Yut4Yuk4YiI4KCHIOGIqOGJs+GMqOGIqyDhi6jhirXhizDhjoXhjo3hiqQ44CCJ30KCi8qIGFsd2F5cy1sb2NhbCBmaXJzdCBBSSBsaW5lOyBkeW5hbWljIHJlcGxpZXMgcmVtYWluIHVudG91Y2hlZCAqLwoucjUtY2hhdCAuc3YtY2hhdC1tZXNzYWdlcz4uYWktbXNnLmJvdDpmaXJzdC1jaGlsZHtmb250LXNpemU6MCFpbXBvcnRhbnR9Ci5yNS1jaGF0IC5zdi1jaGF0LW1lc3NhZ2VzPi5haS1tc2cuYm90OmZpcnN0LWNoaWxkOjphZnRlcntjb250ZW50OidJIGFtIFNFRUtWRVJBIEFJLiBUZWxsIG1lIHdoYXQgeW91IG5lZWQgb3Igc3BlYWsgdG8gbWUuJztmb250LXNpemU6MTNweCFpbXBvcnRhbnQ7bGluZS1oZWlnaHQ6MS40IWltcG9ydGFudH0KaHRtbFtsYW5nXj0nYXInXSAucjUtY2hhdCAuc3YtY2hhdC1tZXNzYWdlcz4uYWktbXNnLmJvdDpmaXJzdC1jaGlsZDo6YWZ0ZXJ7Y29udGVudDon2KPZhtinINmF2LPYp9i52K8gU0VFS1ZFUkEg2KjYp9mE2LDZg9in2KEg2KfZhNin2LXYtNmG2KfYudmKLiDZgtmEINmE2Yog2YXYpyDYqtiq2KfYrNmHINij2Ygg2KrYrdiv2Ksg2YXYudmKLid9Cmh0bWxbbGFuZ149J2ZyJ10gLnI1LWNoYXQgLnN2LWNoYXQtbWVzc2FnZXM-LmFpLW1zZy5ib3Q6Zmlyc3QtY2hpbGQ6OmFmdGVye2NvbnRlbnQ6J0plIHN1aXMgbOKAmUlBIFNFRUtWRVJBLiBEaXRlcy1tb2kgY2UgZG9udCB2b3VzIGF2ZXogYmVzb2luIG91IHBhcmxlei1tb2kuJ30KaHRtbFtsYW5nXj0nemgnXSAucjUtY2hhdCAuc3YtY2hhdC1tZXNzYWdlcz4uYWktbXNnLmJvdDpmaXJzdC1jaGlsZDo6YWZ0ZXJ7Y29udGVudDon5oiR5pivIFNFRUtWRVJBI...TRUNCATED..."
         run: |
           set -euo pipefail
-          if ! grep -q 'SEEKVERA MOBILE CLEANUP R5B' home-marketplace-r5.css; then
-            cat >> home-marketplace-r5.css <<'CSS'
-
-/* SEEKVERA MOBILE CLEANUP R5B — restores compact marketplace feel */
-@media(max-width:780px){
-  .r5-top{position:relative!important;top:auto!important;box-shadow:0 1px 7px rgba(20,32,51,.05)!important}
-  .r5-top-inner{padding:9px 10px!important;gap:7px!important}
-  .r5-brand{font-size:15px!important;letter-spacing:.045em!important}
-  .r5-brand small{display:none!important}
-  .r5-mark{width:36px!important;height:36px!important;border-radius:11px!important}
-  .r5-controls{width:100%!important;margin:0!important;display:grid!important;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr) 76px!important;gap:6px!important;align-items:center!important}
-  .r5-controls .sv-control-field{display:block!important;min-width:0!important;max-width:none!important;width:auto!important;margin:0!important}
-  .r5-controls .sv-control-field small,.r5-controls .sv-control-caption{display:none!important}
-  .r5-controls .sv-select{height:42px!important;border-radius:12px!important;font-size:12px!important;padding:6px 8px!important;font-weight:800!important}
-  .r5-controls #installBtn,.r5-controls .r5-post{display:none!important}
-  .r5-shell{padding:8px 9px 28px!important}
-  .r5-market{display:block!important}
-  .r5-left{display:none!important}
-  .r5-right{display:none!important}
-  .r5-hero{padding:13px!important;border-radius:16px!important;box-shadow:0 5px 20px rgba(20,32,51,.055)!important}
-  .r5-kicker{gap:5px!important;margin:0 0 4px!important}
-  .r5-kicker span:nth-child(1),.r5-kicker span:nth-child(3),.r5-kicker span:nth-child(5){font-size:0!important}
-  .r5-kicker span:nth-child(1)::after{content:'🌍';font-size:13px!important}
-  .r5-kicker span:nth-child(3)::after{content:'✨ AI';font-size:10px!important}
-  .r5-kicker span:nth-child(5)::after{content:'🎙️ + 💬';font-size:10px!important}
-  .r5-hero>p{display:none!important}
-  .r5-scope{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;margin-top:9px!important}
-  .r5-scope button{min-width:0!important;width:100%!important;padding:8px 5px!important;font-size:10.5px!important;white-space:nowrap!important}
-  .r5-chat{margin-top:10px!important;border-radius:14px!important;box-shadow:none!important}
-  .r5-chat .sv-chat-head{padding:9px 10px!important;min-height:48px!important}
-  .r5-chat .sv-chat-head b{font-size:13px!important}
-  .r5-chat .sv-chat-head small{font-size:9px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
-  .r5-chat .sv-chat-head>span{font-size:10px!important;white-space:nowrap!important}
-  .r5-chat .sv-chat-messages{min-height:54px!important;max-height:105px!important;padding:8px!important}
-  .r5-chat .ai-msg{max-width:96%!important;padding:7px 9px!important;line-height:1.35!important}
-  .r5-chat .sv-chat-form{grid-template-columns:minmax(0,1fr) 36px 36px 40px!important;gap:5px!important;padding:7px!important}
-  .r5-chat .sv-chat-form .attach{display:none!important}
-  .r5-chat .sv-chat-form input[type=text],.r5-chat #aiChatInput{height:40px!important;font-size:12px!important;padding:8px 10px!important;min-width:0!important}
-  .r5-chat .sv-chat-form button{width:36px!important;height:38px!important;min-width:36px!important}
-  .r5-chat .sv-chat-form .send{width:40px!important;min-width:40px!important}
-  .r5-ai-note,.r5-chips{display:none!important}
-  .r5-section{margin-top:9px!important;padding:10px!important;border-radius:15px!important}
-  .r5-section-head{margin-bottom:8px!important;align-items:center!important}
-  .r5-section-head p{display:none!important}
-  .r5-section-head h2{font-size:15px!important}
-  .r5-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
-  .r5-tile{border-radius:14px!important;box-shadow:0 2px 8px rgba(20,32,51,.035)!important}
-  .r5-thumb{height:74px!important;font-size:30px!important;background:linear-gradient(145deg,#edf8f3,#eef3fb)!important}
-  .r5-tile-body{padding:8px 9px!important}
-  .r5-tile b{font-size:12px!important;white-space:normal!important;overflow-wrap:anywhere!important}
-  .r5-tile small{display:none!important}
-  .r5-request{grid-template-columns:1fr!important}
-  .r5-request textarea,.r5-request .full{grid-column:auto!important}
-  .r5-foot{font-size:10px!important;padding:18px 3px calc(22px + env(safe-area-inset-bottom))!important}
-}
-@media(max-width:380px){
-  .r5-controls{grid-template-columns:minmax(0,1.35fr) minmax(0,.95fr) 68px!important}
-  .r5-controls .sv-select{font-size:11px!important;padding:5px 6px!important}
-  .r5-scope button{font-size:9.5px!important}
-  .r5-chat .sv-chat-form{grid-template-columns:minmax(0,1fr) 34px 34px 38px!important}
-  .r5-chat .sv-chat-form button{width:34px!important;min-width:34px!important}
-  .r5-chat .sv-chat-form .send{width:38px!important;min-width:38px!important}
-}
-
-/* language-clean hero: no mixed-language headline */
-.r5-hero h1{font-size:0!important;margin:8px 0 6px!important}
-.r5-hero h1::after{content:'Find faster. Compare better.';display:block;font-size:clamp(24px,4vw,46px)!important;line-height:1.04!important;letter-spacing:-.035em!important;color:#13233a!important}
-html[lang^='ar'] .r5-hero h1::after{content:'ابحث أسرع. قارن أفضل.'}
-html[lang^='fr'] .r5-hero h1::after{content:'Trouvez plus vite. Comparez mieux.'}
-html[lang^='zh'] .r5-hero h1::after{content:'更快找到，更好比较。'}
-html[lang^='es'] .r5-hero h1::after{content:'Encuentra más rápido. Compara mejor.'}
-html[lang^='hi'] .r5-hero h1::after{content:'जल्दी खोजें। बेहतर तुलना करें।'}
-html[lang^='pt'] .r5-hero h1::after{content:'Encontre mais rápido. Compare melhor.'}
-html[lang^='de'] .r5-hero h1::after{content:'Schneller finden. Besser vergleichen.'}
-html[lang^='ja'] .r5-hero h1::after{content:'もっと速く探して、もっと良く比較。'}
-html[lang^='ko'] .r5-hero h1::after{content:'더 빠르게 찾고, 더 잘 비교하세요.'}
-html[lang^='id'] .r5-hero h1::after{content:'Temukan lebih cepat. Bandingkan lebih baik.'}
-html[lang^='tr'] .r5-hero h1::after{content:'Daha hızlı bul. Daha iyi karşılaştır.'}
-html[lang^='ru'] .r5-hero h1::after{content:'Находите быстрее. Сравнивайте лучше.'}
-html[lang^='ur'] .r5-hero h1::after{content:'تیزی سے تلاش کریں۔ بہتر موازنہ کریں۔'}
-html[lang^='bn'] .r5-hero h1::after{content:'দ্রুত খুঁজুন। ভালোভাবে তুলনা করুন।'}
-html[lang^='vi'] .r5-hero h1::after{content:'Tìm nhanh hơn. So sánh tốt hơn.'}
-html[lang^='it'] .r5-hero h1::after{content:'Trova più velocemente. Confronta meglio.'}
-html[lang^='sw'] .r5-hero h1::after{content:'Pata haraka. Linganisha vizuri.'}
-html[lang^='th'] .r5-hero h1::after{content:'ค้นหาเร็วขึ้น เปรียบเทียบได้ดีกว่า'}
-html[lang^='fa'] .r5-hero h1::after{content:'سریع‌تر پیدا کنید. بهتر مقایسه کنید.'}
-html[lang^='pl'] .r5-hero h1::after{content:'Znajdź szybciej. Porównaj lepiej.'}
-html[lang^='nl'] .r5-hero h1::after{content:'Vind sneller. Vergelijk beter.'}
-html[lang^='ms'] .r5-hero h1::after{content:'Cari lebih cepat. Bandingkan lebih baik.'}
-html[lang^='fil'] .r5-hero h1::after{content:'Mas mabilis maghanap. Mas mahusay maghambing.'}
-html[lang^='ha'] .r5-hero h1::after{content:'Nemo da sauri. Kwatanta da kyau.'}
-html[lang^='yo'] .r5-hero h1::after{content:'Wa kíákíá. Ṣe àfiwé dáadáa.'}
-html[lang^='ig'] .r5-hero h1::after{content:'Chọta ngwa ngwa. Tụnyere nke ọma.'}
-html[lang^='am'] .r5-hero h1::after{content:'በፍጥነት ያግኙ። በተሻለ ያነፃፅሩ።'}
-
-/* always-local first AI line; dynamic replies remain untouched */
-.r5-chat .sv-chat-messages>.ai-msg.bot:first-child{font-size:0!important}
-.r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'I am SEEKVERA AI. Tell me what you need or speak to me.';font-size:13px!important;line-height:1.4!important}
-html[lang^='ar'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'أنا مساعد SEEKVERA بالذكاء الاصطناعي. قل لي ما تحتاجه أو تحدث معي.'}
-html[lang^='fr'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Je suis l’IA SEEKVERA. Dites-moi ce dont vous avez besoin ou parlez-moi.'}
-html[lang^='zh'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'我是 SEEKVERA AI。告诉我你需要什么，或直接对我说。'}
-html[lang^='es'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Soy la IA de SEEKVERA. Dime qué necesitas o háblame.'}
-html[lang^='hi'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'मैं SEEKVERA AI हूँ। बताइए आपको क्या चाहिए या मुझसे बोलिए।'}
-html[lang^='pt'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Sou a IA da SEEKVERA. Diga o que precisa ou fale comigo.'}
-html[lang^='de'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Ich bin die SEEKVERA-KI. Sag mir, was du brauchst, oder sprich mit mir.'}
-html[lang^='ja'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'SEEKVERA AIです。必要なものを入力するか、話しかけてください。'}
-html[lang^='ko'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'SEEKVERA AI입니다. 필요한 것을 말하거나 입력하세요.'}
-html[lang^='id'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Saya AI SEEKVERA. Katakan apa yang Anda butuhkan atau bicara dengan saya.'}
-html[lang^='tr'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Ben SEEKVERA AI. Ne istediğinizi yazın veya konuşun.'}
-html[lang^='ru'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Я ИИ SEEKVERA. Скажите, что вам нужно, или говорите со мной.'}
-html[lang^='ur'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'میں SEEKVERA AI ہوں۔ بتائیں آپ کو کیا چاہیے یا مجھ سے بات کریں۔'}
-html[lang^='bn'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'আমি SEEKVERA AI। কী প্রয়োজন বলুন বা আমার সঙ্গে কথা বলুন।'}
-html[lang^='vi'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Tôi là AI SEEKVERA. Hãy nói bạn cần gì hoặc nói chuyện với tôi.'}
-html[lang^='it'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Sono l’AI di SEEKVERA. Dimmi cosa ti serve o parlami.'}
-html[lang^='sw'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Mimi ni AI wa SEEKVERA. Niambie unachohitaji au zungumza nami.'}
-html[lang^='th'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'ฉันคือ AI ของ SEEKVERA บอกสิ่งที่คุณต้องการหรือพูดกับฉันได้เลย'}
-html[lang^='fa'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'من هوش مصنوعی SEEKVERA هستم. بگویید چه می‌خواهید یا با من صحبت کنید.'}
-html[lang^='pl'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Jestem AI SEEKVERA. Napisz, czego potrzebujesz, albo powiedz mi.'}
-html[lang^='nl'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Ik ben SEEKVERA AI. Vertel wat je nodig hebt of praat met mij.'}
-html[lang^='ms'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Saya AI SEEKVERA. Beritahu apa yang anda perlukan atau bercakap dengan saya.'}
-html[lang^='fil'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Ako ang SEEKVERA AI. Sabihin kung ano ang kailangan mo o kausapin ako.'}
-html[lang^='ha'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Ni SEEKVERA AI ne. Faɗi abin da kake buƙata ko ka yi magana da ni.'}
-html[lang^='yo'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Èmi ni SEEKVERA AI. Sọ ohun tí o nílò tàbí bá mi sọ̀rọ̀.'}
-html[lang^='ig'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Abụ m SEEKVERA AI. Gwa m ihe ị chọrọ ma ọ bụ gwa m okwu.'}
-html[lang^='am'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'እኔ SEEKVERA AI ነኝ። የሚፈልጉትን ይንገሩኝ ወይም ያነጋግሩኝ።'}
-CSS
-          fi
-
           python - <<'PY'
+          import base64, os
           from pathlib import Path
-          p=Path('index.html')
-          s=p.read_text()
-          s=s.replace('<html lang="en" dir="ltr">','<html lang="en" dir="ltr" translate="no">',1)
-          marker='<meta name="google" content="notranslate">'
-          if marker not in s:
-              s=s.replace('<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">','<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n'+marker,1)
-          p.write_text(s)
+          css = base64.b64decode(os.environ['CSS_B64']).decode('utf-8')
+          p = Path('home-marketplace-r5.css')
+          s = p.read_text()
+          if 'SEEKVERA MOBILE CLEANUP R5B' not in s:
+              p.write_text(s + css)
+          q = Path('index.html')
+          t = q.read_text()
+          t = t.replace('<html lang="en" dir="ltr">','<html lang="en" dir="ltr" translate="no">',1)
+          marker = '<meta name="google" content="notranslate">'
+          if marker not in t:
+              t = t.replace('<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">','<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n'+marker,1)
+          q.write_text(t)
           PY
-
           git config user.name 'SEEKVERA automation'
           git config user.email 'actions@users.noreply.github.com'
           git add home-marketplace-r5.css index.html
