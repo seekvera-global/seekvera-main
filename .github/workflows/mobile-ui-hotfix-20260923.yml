@@ -1,0 +1,169 @@
+name: SEEKVERA mobile UI cleanup 2026-09-23
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/mobile-ui-hotfix-20260923.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply clean mobile marketplace hotfix
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! grep -q 'SEEKVERA MOBILE CLEANUP R5B' home-marketplace-r5.css; then
+            cat >> home-marketplace-r5.css <<'CSS'
+
+/* SEEKVERA MOBILE CLEANUP R5B — restores compact marketplace feel */
+@media(max-width:780px){
+  .r5-top{position:relative!important;top:auto!important;box-shadow:0 1px 7px rgba(20,32,51,.05)!important}
+  .r5-top-inner{padding:9px 10px!important;gap:7px!important}
+  .r5-brand{font-size:15px!important;letter-spacing:.045em!important}
+  .r5-brand small{display:none!important}
+  .r5-mark{width:36px!important;height:36px!important;border-radius:11px!important}
+  .r5-controls{width:100%!important;margin:0!important;display:grid!important;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr) 76px!important;gap:6px!important;align-items:center!important}
+  .r5-controls .sv-control-field{display:block!important;min-width:0!important;max-width:none!important;width:auto!important;margin:0!important}
+  .r5-controls .sv-control-field small,.r5-controls .sv-control-caption{display:none!important}
+  .r5-controls .sv-select{height:42px!important;border-radius:12px!important;font-size:12px!important;padding:6px 8px!important;font-weight:800!important}
+  .r5-controls #installBtn,.r5-controls .r5-post{display:none!important}
+  .r5-shell{padding:8px 9px 28px!important}
+  .r5-market{display:block!important}
+  .r5-left{display:none!important}
+  .r5-right{display:none!important}
+  .r5-hero{padding:13px!important;border-radius:16px!important;box-shadow:0 5px 20px rgba(20,32,51,.055)!important}
+  .r5-kicker{gap:5px!important;margin:0 0 4px!important}
+  .r5-kicker span:nth-child(1),.r5-kicker span:nth-child(3),.r5-kicker span:nth-child(5){font-size:0!important}
+  .r5-kicker span:nth-child(1)::after{content:'🌍';font-size:13px!important}
+  .r5-kicker span:nth-child(3)::after{content:'✨ AI';font-size:10px!important}
+  .r5-kicker span:nth-child(5)::after{content:'🎙️ + 💬';font-size:10px!important}
+  .r5-hero>p{display:none!important}
+  .r5-scope{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;margin-top:9px!important}
+  .r5-scope button{min-width:0!important;width:100%!important;padding:8px 5px!important;font-size:10.5px!important;white-space:nowrap!important}
+  .r5-chat{margin-top:10px!important;border-radius:14px!important;box-shadow:none!important}
+  .r5-chat .sv-chat-head{padding:9px 10px!important;min-height:48px!important}
+  .r5-chat .sv-chat-head b{font-size:13px!important}
+  .r5-chat .sv-chat-head small{font-size:9px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  .r5-chat .sv-chat-head>span{font-size:10px!important;white-space:nowrap!important}
+  .r5-chat .sv-chat-messages{min-height:54px!important;max-height:105px!important;padding:8px!important}
+  .r5-chat .ai-msg{max-width:96%!important;padding:7px 9px!important;line-height:1.35!important}
+  .r5-chat .sv-chat-form{grid-template-columns:minmax(0,1fr) 36px 36px 40px!important;gap:5px!important;padding:7px!important}
+  .r5-chat .sv-chat-form .attach{display:none!important}
+  .r5-chat .sv-chat-form input[type=text],.r5-chat #aiChatInput{height:40px!important;font-size:12px!important;padding:8px 10px!important;min-width:0!important}
+  .r5-chat .sv-chat-form button{width:36px!important;height:38px!important;min-width:36px!important}
+  .r5-chat .sv-chat-form .send{width:40px!important;min-width:40px!important}
+  .r5-ai-note,.r5-chips{display:none!important}
+  .r5-section{margin-top:9px!important;padding:10px!important;border-radius:15px!important}
+  .r5-section-head{margin-bottom:8px!important;align-items:center!important}
+  .r5-section-head p{display:none!important}
+  .r5-section-head h2{font-size:15px!important}
+  .r5-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  .r5-tile{border-radius:14px!important;box-shadow:0 2px 8px rgba(20,32,51,.035)!important}
+  .r5-thumb{height:74px!important;font-size:30px!important;background:linear-gradient(145deg,#edf8f3,#eef3fb)!important}
+  .r5-tile-body{padding:8px 9px!important}
+  .r5-tile b{font-size:12px!important;white-space:normal!important;overflow-wrap:anywhere!important}
+  .r5-tile small{display:none!important}
+  .r5-request{grid-template-columns:1fr!important}
+  .r5-request textarea,.r5-request .full{grid-column:auto!important}
+  .r5-foot{font-size:10px!important;padding:18px 3px calc(22px + env(safe-area-inset-bottom))!important}
+}
+@media(max-width:380px){
+  .r5-controls{grid-template-columns:minmax(0,1.35fr) minmax(0,.95fr) 68px!important}
+  .r5-controls .sv-select{font-size:11px!important;padding:5px 6px!important}
+  .r5-scope button{font-size:9.5px!important}
+  .r5-chat .sv-chat-form{grid-template-columns:minmax(0,1fr) 34px 34px 38px!important}
+  .r5-chat .sv-chat-form button{width:34px!important;min-width:34px!important}
+  .r5-chat .sv-chat-form .send{width:38px!important;min-width:38px!important}
+}
+
+/* language-clean hero: no mixed-language headline */
+.r5-hero h1{font-size:0!important;margin:8px 0 6px!important}
+.r5-hero h1::after{content:'Find faster. Compare better.';display:block;font-size:clamp(24px,4vw,46px)!important;line-height:1.04!important;letter-spacing:-.035em!important;color:#13233a!important}
+html[lang^='ar'] .r5-hero h1::after{content:'ابحث أسرع. قارن أفضل.'}
+html[lang^='fr'] .r5-hero h1::after{content:'Trouvez plus vite. Comparez mieux.'}
+html[lang^='zh'] .r5-hero h1::after{content:'更快找到，更好比较。'}
+html[lang^='es'] .r5-hero h1::after{content:'Encuentra más rápido. Compara mejor.'}
+html[lang^='hi'] .r5-hero h1::after{content:'जल्दी खोजें। बेहतर तुलना करें।'}
+html[lang^='pt'] .r5-hero h1::after{content:'Encontre mais rápido. Compare melhor.'}
+html[lang^='de'] .r5-hero h1::after{content:'Schneller finden. Besser vergleichen.'}
+html[lang^='ja'] .r5-hero h1::after{content:'もっと速く探して、もっと良く比較。'}
+html[lang^='ko'] .r5-hero h1::after{content:'더 빠르게 찾고, 더 잘 비교하세요.'}
+html[lang^='id'] .r5-hero h1::after{content:'Temukan lebih cepat. Bandingkan lebih baik.'}
+html[lang^='tr'] .r5-hero h1::after{content:'Daha hızlı bul. Daha iyi karşılaştır.'}
+html[lang^='ru'] .r5-hero h1::after{content:'Находите быстрее. Сравнивайте лучше.'}
+html[lang^='ur'] .r5-hero h1::after{content:'تیزی سے تلاش کریں۔ بہتر موازنہ کریں۔'}
+html[lang^='bn'] .r5-hero h1::after{content:'দ্রুত খুঁজুন। ভালোভাবে তুলনা করুন।'}
+html[lang^='vi'] .r5-hero h1::after{content:'Tìm nhanh hơn. So sánh tốt hơn.'}
+html[lang^='it'] .r5-hero h1::after{content:'Trova più velocemente. Confronta meglio.'}
+html[lang^='sw'] .r5-hero h1::after{content:'Pata haraka. Linganisha vizuri.'}
+html[lang^='th'] .r5-hero h1::after{content:'ค้นหาเร็วขึ้น เปรียบเทียบได้ดีกว่า'}
+html[lang^='fa'] .r5-hero h1::after{content:'سریع‌تر پیدا کنید. بهتر مقایسه کنید.'}
+html[lang^='pl'] .r5-hero h1::after{content:'Znajdź szybciej. Porównaj lepiej.'}
+html[lang^='nl'] .r5-hero h1::after{content:'Vind sneller. Vergelijk beter.'}
+html[lang^='ms'] .r5-hero h1::after{content:'Cari lebih cepat. Bandingkan lebih baik.'}
+html[lang^='fil'] .r5-hero h1::after{content:'Mas mabilis maghanap. Mas mahusay maghambing.'}
+html[lang^='ha'] .r5-hero h1::after{content:'Nemo da sauri. Kwatanta da kyau.'}
+html[lang^='yo'] .r5-hero h1::after{content:'Wa kíákíá. Ṣe àfiwé dáadáa.'}
+html[lang^='ig'] .r5-hero h1::after{content:'Chọta ngwa ngwa. Tụnyere nke ọma.'}
+html[lang^='am'] .r5-hero h1::after{content:'በፍጥነት ያግኙ። በተሻለ ያነፃፅሩ።'}
+
+/* always-local first AI line; dynamic replies remain untouched */
+.r5-chat .sv-chat-messages>.ai-msg.bot:first-child{font-size:0!important}
+.r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'I am SEEKVERA AI. Tell me what you need or speak to me.';font-size:13px!important;line-height:1.4!important}
+html[lang^='ar'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'أنا مساعد SEEKVERA بالذكاء الاصطناعي. قل لي ما تحتاجه أو تحدث معي.'}
+html[lang^='fr'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Je suis l’IA SEEKVERA. Dites-moi ce dont vous avez besoin ou parlez-moi.'}
+html[lang^='zh'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'我是 SEEKVERA AI。告诉我你需要什么，或直接对我说。'}
+html[lang^='es'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Soy la IA de SEEKVERA. Dime qué necesitas o háblame.'}
+html[lang^='hi'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'मैं SEEKVERA AI हूँ। बताइए आपको क्या चाहिए या मुझसे बोलिए।'}
+html[lang^='pt'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Sou a IA da SEEKVERA. Diga o que precisa ou fale comigo.'}
+html[lang^='de'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Ich bin die SEEKVERA-KI. Sag mir, was du brauchst, oder sprich mit mir.'}
+html[lang^='ja'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'SEEKVERA AIです。必要なものを入力するか、話しかけてください。'}
+html[lang^='ko'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'SEEKVERA AI입니다. 필요한 것을 말하거나 입력하세요.'}
+html[lang^='id'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Saya AI SEEKVERA. Katakan apa yang Anda butuhkan atau bicara dengan saya.'}
+html[lang^='tr'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Ben SEEKVERA AI. Ne istediğinizi yazın veya konuşun.'}
+html[lang^='ru'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Я ИИ SEEKVERA. Скажите, что вам нужно, или говорите со мной.'}
+html[lang^='ur'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'میں SEEKVERA AI ہوں۔ بتائیں آپ کو کیا چاہیے یا مجھ سے بات کریں۔'}
+html[lang^='bn'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'আমি SEEKVERA AI। কী প্রয়োজন বলুন বা আমার সঙ্গে কথা বলুন।'}
+html[lang^='vi'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Tôi là AI SEEKVERA. Hãy nói bạn cần gì hoặc nói chuyện với tôi.'}
+html[lang^='it'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Sono l’AI di SEEKVERA. Dimmi cosa ti serve o parlami.'}
+html[lang^='sw'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Mimi ni AI wa SEEKVERA. Niambie unachohitaji au zungumza nami.'}
+html[lang^='th'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'ฉันคือ AI ของ SEEKVERA บอกสิ่งที่คุณต้องการหรือพูดกับฉันได้เลย'}
+html[lang^='fa'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'من هوش مصنوعی SEEKVERA هستم. بگویید چه می‌خواهید یا با من صحبت کنید.'}
+html[lang^='pl'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Jestem AI SEEKVERA. Napisz, czego potrzebujesz, albo powiedz mi.'}
+html[lang^='nl'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Ik ben SEEKVERA AI. Vertel wat je nodig hebt of praat met mij.'}
+html[lang^='ms'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Saya AI SEEKVERA. Beritahu apa yang anda perlukan atau bercakap dengan saya.'}
+html[lang^='fil'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Ako ang SEEKVERA AI. Sabihin kung ano ang kailangan mo o kausapin ako.'}
+html[lang^='ha'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Ni SEEKVERA AI ne. Faɗi abin da kake buƙata ko ka yi magana da ni.'}
+html[lang^='yo'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Èmi ni SEEKVERA AI. Sọ ohun tí o nílò tàbí bá mi sọ̀rọ̀.'}
+html[lang^='ig'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'Abụ m SEEKVERA AI. Gwa m ihe ị chọrọ ma ọ bụ gwa m okwu.'}
+html[lang^='am'] .r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:'እኔ SEEKVERA AI ነኝ። የሚፈልጉትን ይንገሩኝ ወይም ያነጋግሩኝ።'}
+CSS
+          fi
+
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          s=s.replace('<html lang="en" dir="ltr">','<html lang="en" dir="ltr" translate="no">',1)
+          marker='<meta name="google" content="notranslate">'
+          if marker not in s:
+              s=s.replace('<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">','<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n'+marker,1)
+          p.write_text(s)
+          PY
+
+          git config user.name 'SEEKVERA automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add home-marketplace-r5.css index.html
+          if git diff --cached --quiet; then
+            echo 'No changes required'
+          else
+            git commit -m 'Clean mobile homepage layout and language presentation'
+            git push
+          fi
