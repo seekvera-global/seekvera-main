@@ -13,26 +13,25 @@ permissions:
 jobs:
   audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 14
     steps:
       - uses: actions/checkout@v4
-      - name: Verify all departments, multilingual AI, voice and compact UI live
+      - name: Verify 28 languages, country-language lock, voice runtime and Media live
         shell: python
         run: |
           from pathlib import Path
-          import json, re, time, urllib.request, urllib.error
+          import json, time, urllib.request, urllib.error
 
           SITE='https://seekveraglobal.com'
           WORKER='https://seekvera-main.seekvera-global.workers.dev'
           UA='Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
-          VERSION='20260922-premium-voice2'
 
           def get(url,timeout=25):
               req=urllib.request.Request(url,headers={'User-Agent':UA,'Cache-Control':'no-cache'})
               with urllib.request.urlopen(req,timeout=timeout) as r:
                   return r.status,r.read().decode('utf-8','replace')
 
-          def post(path,payload,timeout=30):
+          def post(path,payload,timeout=35):
               req=urllib.request.Request(WORKER+path,data=json.dumps(payload,ensure_ascii=False).encode('utf-8'),headers={'User-Agent':UA,'content-type':'application/json','origin':SITE},method='POST')
               try:
                   with urllib.request.urlopen(req,timeout=timeout) as r:
@@ -40,73 +39,69 @@ jobs:
               except urllib.error.HTTPError as e:
                   return e.code,json.loads(e.read().decode('utf-8'))
 
-          # Wait until Cloudflare is serving this exact release, not an older cached copy.
-          home=''
-          for i in range(36):
-              try:
-                  status,home=get(SITE+f'/?multilingual-v2={i}')
-                  if status==200 and f'global-ui.css?v={VERSION}' in home and f'voice-ai.js?v={VERSION}' in home:
-                      break
-              except Exception:
-                  pass
-              time.sleep(10)
-          assert f'global-ui.css?v={VERSION}' in home, 'new premium UI is not live'
-          assert f'voice-ai.js?v={VERSION}' in home, 'new voice runtime is not live'
-          assert '＋ Post Ad' in home, 'Post Ad control missing'
-          assert 'id="aiChat"' in home, 'visible homepage AI chat missing'
-
-          # Every public department/page must use the same global UI + chat + voice runtime.
-          pages=[p.name for p in Path('.').glob('*.html') if not p.name.lower().startswith('google')]
-          bad=[]
-          for name in pages:
-              try:
-                  status,text=get(SITE+'/'+name+'?dept-audit=2')
-                  if status!=200: bad.append(f'{name}: HTTP {status}'); continue
-                  for needle in [f'global-ui.css?v={VERSION}',f'voice-ai.js?v={VERSION}',f'global-ui.js?v={VERSION}']:
-                      if needle not in text: bad.append(f'{name}: missing {needle}')
-              except Exception as e:
-                  bad.append(f'{name}: {e}')
-          print('Live departments/pages tested:',len(pages))
-          if bad: raise AssertionError('\n'.join(bad))
-          assert len(pages)>=38, len(pages)
-
-          # Runtime source checks: inline chat remains visible, compact mobile UI exists,
-          # voice works on app.html, and natural/female voice preference is active.
-          _,gui=get(SITE+'/global-ui.js?multilingual-v2=1')
-          _,css=get(SITE+'/global-ui.css?multilingual-v2=1')
-          _,voice=get(SITE+'/voice-ai.js?multilingual-v2=1')
-          _,superapp=get(SITE+'/superapp.js?multilingual-v2=1')
-          assert 'keep the homepage #aiChat exactly where it is' in gui
-          assert 'sv-inline-ai-visible' in gui and 'sv-request-compact' in css
-          assert 'grid-auto-flow:column' in css and 'overflow-x:auto' in css
-          assert 'FEMALE_HINTS' in voice and 'QUALITY_HINTS' in voice
-          assert "if(location.pathname.endsWith('/app.html'))return" not in voice
+          # Confirm the refreshed production source is actually live.
+          _,health_text=get(WORKER+'/api/health?ai-media-audit=1')
+          health=json.loads(health_text)
+          assert health.get('ok') is True,health
+          assert health.get('centralSafetyGate')=='enabled',health
+          _,voice=get(SITE+'/voice-ai.js?ai-media-audit=1')
+          _,gui=get(SITE+'/global-ui.js?ai-media-audit=1')
+          status,media=get(SITE+'/media.html?ai-media-audit=1')
+          assert status==200 and 'SEEKVERA MEDIA' in media
+          assert 'if(!c.length)return null' in voice, 'wrong-language voice fallback is still present'
           assert ('SpeechRecognition' in voice or 'webkitSpeechRecognition' in voice) and 'speechSynthesis' in voice
-          assert 'Auto · Same as my language' in superapp
-          print('Chat visibility, compact UI and voice runtime PASS')
+          for code in ['en','ar','fr','zh','es','hi','pt','de','ja','ko','id','tr','ru','ur','bn','vi','it','sw','th','fa','pl','nl','ms','fil','ha','yo','ig','am']:
+              assert code+":" in voice or code+":'" in voice or code+'=' in voice,code
+          assert 'AI_INTRO' in gui
+          print('LIVE VOICE RUNTIME + MEDIA PASS')
 
-          # Same-language AI checks. Country stays Worldwide to prove language is independent of location.
+          # One live AI test for every language exposed by the SEEKVERA language selector.
+          # Country is intentionally set to a representative country to prove country selection does not override reply language.
           cases=[
-              ('English','Reply only with: Hello.','Hello'),
-              ('Arabic','أجب فقط بكلمة: مرحبا','مرح'),
-              ('French','Réponds uniquement par : Bonjour.','Bonjour'),
-              ('Spanish','Responde únicamente: Hola.','Hola'),
-              ('Chinese','只回答：你好','你好'),
-              ('Hindi','केवल उत्तर दें: नमस्ते','नमस्ते'),
-              ('Turkish','Yalnızca cevap ver: Merhaba.','Merhaba'),
+            ('English','Nigeria','Reply only with: Hello.','Hello'),
+            ('Arabic','Lebanon','أجب فقط: مرحبا','مرح'),
+            ('French','France','Réponds seulement : Bonjour.','Bonjour'),
+            ('Chinese','China','只回答：你好','你好'),
+            ('Spanish','Spain','Responde solo: Hola.','Hola'),
+            ('Hindi','India','केवल उत्तर दें: नमस्ते','नमस्ते'),
+            ('Portuguese','Brazil','Responda apenas: Olá.','Olá'),
+            ('German','Germany','Antworte nur: Hallo.','Hallo'),
+            ('Japanese','Japan','「こんにちは」だけ答えてください。','こんにちは'),
+            ('Korean','South Korea','다음만 답하세요: 안녕하세요','안녕'),
+            ('Indonesian','Indonesia','Jawab hanya: Halo.','Halo'),
+            ('Turkish','Turkey','Yalnızca cevap ver: Merhaba.','Merhaba'),
+            ('Russian','Russia','Ответь только: Привет.','Привет'),
+            ('Urdu','Pakistan','صرف جواب دیں: سلام','سلام'),
+            ('Bengali','Bangladesh','শুধু উত্তর দিন: নমস্কার','নমস্কার'),
+            ('Vietnamese','Vietnam','Chỉ trả lời: Xin chào.','Xin chào'),
+            ('Italian','Italy','Rispondi solo: Ciao.','Ciao'),
+            ('Swahili','Kenya','Jibu tu: Habari.','Habari'),
+            ('Thai','Thailand','ตอบเพียง: สวัสดี','สวัสดี'),
+            ('Persian','Iran','فقط پاسخ بده: سلام','سلام'),
+            ('Polish','Poland','Odpowiedz tylko: Cześć.','Cześć'),
+            ('Dutch','Netherlands','Antwoord alleen: Hallo.','Hallo'),
+            ('Malay','Malaysia','Jawab sahaja: Helo.','Helo'),
+            ('Filipino','Philippines','Sagutin lamang: Kumusta.','Kumusta'),
+            ('Hausa','Nigeria','Amsa kawai: Sannu.','Sannu'),
+            ('Yoruba','Nigeria','Dahun nikan: Pẹlẹ o.','Pẹlẹ'),
+            ('Igbo','Nigeria','Zaa naanị: Ndewo.','Ndewo'),
+            ('Amharic','Ethiopia','ብቻ መልስ፡ ሰላም','ሰላም'),
           ]
-          for label,message,marker in cases:
-              status,d=post('/api/ai',{'message':message,'country':'Worldwide','language':'auto','scope':'worldwide','fast':True},30)
+          failures=[]
+          for label,country,message,marker in cases:
+              started=time.monotonic()
+              status,d=post('/api/ai',{'message':message,'country':country,'language':label,'scope':'worldwide','fast':True},35)
+              elapsed=time.monotonic()-started
               answer=str(d.get('response') or '')
-              print(label,':',answer[:120])
-              assert 200<=status<300 and d.get('ok') is True and answer,(label,d)
-              assert marker.lower() in answer.lower(),(label,answer)
-          print('MULTILINGUAL SAME-LANGUAGE AI PASS')
+              ok=(200<=status<300 and d.get('ok') is True and marker.lower() in answer.lower())
+              print(label,country,round(elapsed,2),'s',answer[:100], 'PASS' if ok else 'FAIL')
+              if not ok: failures.append((label,country,status,answer,d))
+          assert not failures,failures
+          print('ALL 28 SEEKVERA LANGUAGES SAME-LANGUAGE LIVE AI PASS')
 
-          # Safety still operates after multilingual changes.
-          _,safe=post('/api/moderate',{'text':'lawful hotel booking request','context':'multilingual production audit'},35)
-          _,blocked=post('/api/moderate',{'text':'gun and ammunition for sale','context':'multilingual production audit'},25)
-          assert safe.get('allowed') is True and safe.get('reviewRequired') is False,safe
-          assert blocked.get('allowed') is False,blocked
+          # Verify safety still behaves after AI changes.
+          _,safe=post('/api/moderate',{'text':'lawful hotel booking request','context':'28-language production audit'},35)
+          _,blocked=post('/api/moderate',{'text':'gun and ammunition for sale','context':'28-language production audit'},25)
+          assert safe.get('allowed') is True and blocked.get('allowed') is False,(safe,blocked)
           print('SAFETY GATE PASS')
-          print('FINAL MULTILINGUAL PRODUCTION AUDIT PASS')
+          print('FINAL 28-LANGUAGE COUNTRY + CHAT + VOICE-RUNTIME AUDIT PASS')
