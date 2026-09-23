@@ -1,0 +1,37 @@
+name: SEEKVERA R5 live Whisper speech test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r5-live-whisper-test.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  speech:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Generate spoken audio and transcribe through live SEEKVERA
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak >/dev/null
+          espeak -s 120 -w /tmp/seekvera.wav 'hello seekvera' >/dev/null 2>&1
+          python - <<'PY'
+          import base64, json, urllib.request
+          raw=open('/tmp/seekvera.wav','rb').read()
+          payload={'audio':'data:audio/wav;base64,'+base64.b64encode(raw).decode(),'language':'en'}
+          req=urllib.request.Request('https://seekveraglobal.com/api/transcribe',data=json.dumps(payload).encode(),headers={'content-type':'application/json'},method='POST')
+          with urllib.request.urlopen(req,timeout=90) as r:
+              d=json.loads(r.read().decode())
+          print(json.dumps(d,ensure_ascii=False))
+          assert d.get('ok') is True,d
+          assert str(d.get('text') or '').strip(),d
+          assert 'whisper-large-v3-turbo' in str(d.get('model') or ''),d
+          print('LIVE_WHISPER_REAL_AUDIO_PASS')
+          PY
