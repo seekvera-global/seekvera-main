@@ -14,7 +14,7 @@ async function auditProfile(p){
   const context=await browser.newContext({...p.ctx});
   const page=await context.newPage();
   const errs=[]; page.on('pageerror',e=>errs.push(String(e)));
-  await page.goto(SITE+'/?r5-final-cross-device=1',{waitUntil:'domcontentloaded',timeout:60000});
+  await page.goto(SITE+'/?r5-final-cross-device=2',{waitUntil:'domcontentloaded',timeout:60000});
   await page.waitForFunction(()=>document.querySelector('#country')?.options?.length>=249&&document.querySelector('#lang')?.options?.length===29,null,{timeout:60000});
   await page.waitForTimeout(500);
   const s=await page.evaluate(()=>({
@@ -58,20 +58,34 @@ async function auditWebKitVoiceFallback(){
       constructor(stream,opts={}){this.stream=stream;this.mimeType=opts.mimeType||'audio/webm';this.state='inactive'}
       static isTypeSupported(){return true}
       start(){this.state='recording'}
-      stop(){this.state='inactive';const data=new Blob(['fake-audio'],{type:this.mimeType});this.ondataavailable?.({data});this.onstop?.()}
+      stop(){this.state='inactive';const data=new Blob(['fake-audio'],{type:this.mimeType});setTimeout(()=>{this.ondataavailable?.({data});this.onstop?.()},0)}
     }
     Object.defineProperty(window,'MediaRecorder',{configurable:true,value:FakeRecorder});
     Object.defineProperty(window,'SpeechRecognition',{configurable:true,value:undefined});
     Object.defineProperty(window,'webkitSpeechRecognition',{configurable:true,value:undefined});
+    const nativeFetch=window.fetch.bind(window);
+    window.fetch=(input,init)=>{
+      const url=typeof input==='string'?input:(input?.url||'');
+      if(String(url).includes('/api/transcribe')){
+        window.__r5TranscribeCalled=true;
+        return Promise.resolve(new Response(JSON.stringify({ok:true,text:'Hello from voice',model:'test'}),{status:200,headers:{'content-type':'application/json'}}));
+      }
+      return nativeFetch(input,init);
+    };
   });
   const page=await context.newPage();
-  await page.route('**/api/transcribe',async route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,text:'Hello from voice',model:'test'})}));
-  await page.goto(SITE+'/?webkit-voice-fallback=1',{waitUntil:'domcontentloaded',timeout:60000});
+  const errs=[]; page.on('pageerror',e=>errs.push(String(e)));
+  await page.goto(SITE+'/?webkit-voice-fallback=2',{waitUntil:'domcontentloaded',timeout:60000});
   await page.waitForSelector('#aiChatMic',{timeout:30000});
+  const caps=await page.evaluate(()=>({sr:!!(window.SpeechRecognition||window.webkitSpeechRecognition),mr:!!window.MediaRecorder,gum:!!navigator.mediaDevices?.getUserMedia}));
+  console.log('WEBKIT_SYNTHETIC_CAPS',caps);
+  assert(!caps.sr&&caps.mr&&caps.gum,'Synthetic WebKit fallback prerequisites failed');
   await page.click('#aiChatMic');
   await page.waitForFunction(()=>/Listening/i.test(document.querySelector('#aiChatInput')?.placeholder||''),null,{timeout:10000});
   await page.click('#aiChatMic');
+  await page.waitForFunction(()=>window.__r5TranscribeCalled===true,null,{timeout:10000});
   await page.waitForFunction(()=>[...document.querySelectorAll('#aiMessages .ai-msg.user')].some(x=>/Hello from voice/i.test(x.textContent||'')),null,{timeout:30000});
+  assert(!errs.length,'Synthetic WebKit voice fallback page errors: '+errs.join(' | '));
   console.log('IPHONE_WEBKIT_SERVER_VOICE_FALLBACK_PASS');
   await browser.close();
 }
@@ -82,10 +96,10 @@ async function auditAppShellAndRuntime(){
   await page.waitForFunction(()=>document.body?.dataset?.release==='20260923-market-r5',null,{timeout:30000});
   assert(await page.locator('iframe').count()===0,'app launch ended with iframe nesting');
   const [health,voice,manifest,sw]=await Promise.all([
-    page.request.get(SITE+'/api/health?r5-final=1').then(r=>r.json()),
-    page.request.get(SITE+'/voice-ai.js?r5-final=1').then(r=>r.text()),
-    page.request.get(SITE+'/manifest.webmanifest?r5-final=1').then(r=>r.text()),
-    page.request.get(SITE+'/sw.js?r5-final=1').then(r=>r.text())
+    page.request.get(SITE+'/api/health?r5-final=2').then(r=>r.json()),
+    page.request.get(SITE+'/voice-ai.js?r5-final=2').then(r=>r.text()),
+    page.request.get(SITE+'/manifest.webmanifest?r5-final=2').then(r=>r.text()),
+    page.request.get(SITE+'/sw.js?r5-final=2').then(r=>r.text())
   ]);
   assert(health.ok===true&&health.voiceInputFallback==='server-asr-v1','live server ASR health missing');
   assert(String(health.asrModel||'').includes('whisper-large-v3-turbo'),'live ASR model missing');
