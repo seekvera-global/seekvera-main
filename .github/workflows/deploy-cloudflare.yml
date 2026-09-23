@@ -114,19 +114,19 @@ jobs:
             curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/i18n-ui.js?v=20260923-worldwide-r4&sameorigin=$i" -o /tmp/i18n-ui.js || true
             curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/global-ui.js?v=20260923-worldwide-r4&sameorigin=$i" -o /tmp/global-ui.js || true
             curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/superapp.js?v=20260923-worldwide-r4&sameorigin=$i" -o /tmp/superapp.js || true
-            if echo "$HEALTH" | grep -q '"marketplaceProxy":"enabled"' && echo "$SITE_HEALTH" | grep -q '"centralSafetyGate":"enabled"' && echo "$HOME" | grep -q 'i18n-ui.js?v=20260923-worldwide-r4' && grep -q "HOST==='seekveraglobal.com'" /tmp/i18n-ui.js 2>/dev/null && grep -q "HOST==='seekveraglobal.com'" /tmp/global-ui.js 2>/dev/null && grep -q 'seekvera_worldwide_default_20260923_r4' /tmp/superapp.js 2>/dev/null; then
+            if grep -q '"marketplaceProxy":"enabled"' <<<"$HEALTH" && grep -q '"centralSafetyGate":"enabled"' <<<"$SITE_HEALTH" && grep -q 'i18n-ui.js?v=20260923-worldwide-r4' <<<"$HOME" && grep -q "HOST==='seekveraglobal.com'" /tmp/i18n-ui.js 2>/dev/null && grep -q "HOST==='seekveraglobal.com'" /tmp/global-ui.js 2>/dev/null && grep -q 'seekvera_worldwide_default_20260923_r4' /tmp/superapp.js 2>/dev/null; then
               break
             fi
             sleep 5
           done
-          echo "$HEALTH" | grep -q '"marketplaceProxy":"enabled"'
-          echo "$HEALTH" | grep -q '"centralSafetyGate":"enabled"'
-          echo "$HEALTH" | grep -q '"failClosed":true'
-          echo "$SITE_HEALTH" | grep -q '"centralSafetyGate":"enabled"'
-          echo "$SITE_HEALTH" | grep -q '"failClosed":true'
-          echo "$HOME" | grep -q 'i18n-ui.js?v=20260923-worldwide-r4'
-          echo "$HOME" | grep -q 'i18n-premium.css?v=20260923-worldwide-r4'
-          echo "$HOME" | grep -q 'href="media.html"'
+          grep -q '"marketplaceProxy":"enabled"' <<<"$HEALTH"
+          grep -q '"centralSafetyGate":"enabled"' <<<"$HEALTH"
+          grep -q '"failClosed":true' <<<"$HEALTH"
+          grep -q '"centralSafetyGate":"enabled"' <<<"$SITE_HEALTH"
+          grep -q '"failClosed":true' <<<"$SITE_HEALTH"
+          grep -q 'i18n-ui.js?v=20260923-worldwide-r4' <<<"$HOME"
+          grep -q 'i18n-premium.css?v=20260923-worldwide-r4' <<<"$HOME"
+          grep -q 'href="media.html"' <<<"$HOME"
           grep -q 'SEEKVERA multilingual UI runtime' /tmp/i18n-ui.js
           grep -q "HOST==='seekveraglobal.com'" /tmp/i18n-ui.js
           grep -q "HOST==='seekveraglobal.com'" /tmp/global-ui.js
