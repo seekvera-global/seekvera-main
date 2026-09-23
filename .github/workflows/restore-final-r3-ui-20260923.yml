@@ -1,0 +1,133 @@
+name: Restore yesterday Final R3 UI and verify public app
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/restore-final-r3-ui-20260923.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: restore-final-r3-ui
+  cancel-in-progress: false
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore exact public UI snapshot from 22 September Final R3
+        shell: bash
+        run: |
+          set -euo pipefail
+          OLD='636802b661e2b14f1e4f1527daa7c1a07d176f8d'
+          files=(
+            404.html about.html affiliate-disclosure.html app.html
+            business-software.html cars-auto.html connectivity.html contact.html
+            deal-agent.html disclosure.html education.html entertainment.html everyday.html
+            games.html health.html hub.html import-export.html index.html jobs.html listing.html
+            local-services.html marketplace.html money-insurance.html post-ad.html privacy.html
+            property.html restaurants-food.html scan.html seller-plans.html shipping-logistics.html
+            shopping.html software.html solar.html terms.html tourism.html travel.html
+            web-hosting.html wifi.html manifest.webmanifest sw.js
+          )
+          for f in "${files[@]}"; do
+            git cat-file -e "$OLD:$f"
+            git show "$OLD:$f" > "$f"
+          done
+
+          # Keep today's stronger backend/runtime files on purpose:
+          # worker.js, voice-ai.js, global-ui.js, i18n-ui.js, superapp.js.
+          # Keep new media/game prototype files; only the public presentation is restored.
+
+          grep -q 'Release 2026' index.html
+          grep -q '20260922-final-r3' index.html
+          grep -q 'sv-unified-chat' index.html
+          grep -q 'games.html' index.html
+          grep -q 'premium.css' index.html
+
+          git config user.name 'SEEKVERA restore automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add "${files[@]}"
+          if git diff --cached --quiet; then
+            echo 'UI already matches yesterday Final R3 snapshot.'
+          else
+            git commit -m 'Restore 22 Sep Final R3 public UI while keeping current AI backend'
+            git push
+          fi
+
+      - name: Deploy restored UI directly to Cloudflare
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          git pull --ff-only
+          npx -y wrangler@4 deploy
+
+      - name: Verify main domain is really yesterday UI
+        shell: bash
+        run: |
+          set -euo pipefail
+          SITE='https://seekveraglobal.com'
+          ok=0
+          for i in $(seq 1 24); do
+            curl -fsS --max-time 20 -H 'Cache-Control: no-cache' "$SITE/?restore-r3=$i" -o /tmp/home.html || true
+            if grep -q '20260922-final-r3' /tmp/home.html 2>/dev/null && grep -q 'sv-unified-chat' /tmp/home.html 2>/dev/null && grep -q 'PREMIUM GLOBAL AI' /tmp/home.html 2>/dev/null; then
+              ok=1
+              break
+            fi
+            sleep 5
+          done
+          test "$ok" = '1'
+          echo 'MAIN DOMAIN FINAL R3 RESTORE PASS'
+
+      - name: Check every restored public section on the live domain
+        shell: bash
+        run: |
+          set -euo pipefail
+          SITE='https://seekveraglobal.com'
+          pages=(
+            about.html affiliate-disclosure.html app.html business-software.html cars-auto.html
+            connectivity.html contact.html deal-agent.html disclosure.html education.html
+            entertainment.html everyday.html games.html health.html hub.html import-export.html
+            jobs.html listing.html local-services.html marketplace.html money-insurance.html
+            post-ad.html privacy.html property.html restaurants-food.html scan.html
+            seller-plans.html shipping-logistics.html shopping.html software.html solar.html
+            terms.html tourism.html travel.html web-hosting.html wifi.html
+          )
+          bad=0
+          for p in "${pages[@]}"; do
+            code="$(curl -L -sS -o /tmp/page.html -w '%{http_code}' --max-time 25 "$SITE/$p?restore-check=1")"
+            if [ "$code" != '200' ]; then
+              echo "FAIL $p HTTP $code"
+              bad=1
+            else
+              echo "PASS $p"
+            fi
+          done
+          test "$bad" = '0'
+          echo 'ALL RESTORED PUBLIC PAGES HTTP PASS'
+
+      - name: Verify current AI Safety and voice backend were preserved
+        shell: bash
+        run: |
+          set -euo pipefail
+          SITE='https://seekveraglobal.com'
+          curl -fsS --max-time 20 "$SITE/api/health?restore-r3=1" -o /tmp/health.json
+          grep -q '"centralSafetyGate":"enabled"' /tmp/health.json
+          grep -q '"failClosed":true' /tmp/health.json
+          grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/health.json
+          curl -fsS --max-time 45 -X POST "$SITE/api/ai" -H 'Content-Type: application/json' --data '{"message":"Reply only with: Hello.","country":"Worldwide","language":"English","scope":"worldwide","fast":true}' -o /tmp/ai.json
+          grep -q '"ok":true' /tmp/ai.json
+          grep -qi 'hello' /tmp/ai.json
+          echo 'CURRENT AI + SAFETY + VOICE BACKEND PRESERVED PASS'
