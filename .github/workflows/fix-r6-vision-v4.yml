@@ -1,0 +1,112 @@
+name: Fix R6 Vision V4
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-r6-vision-v4.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch Vision runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('worker.js')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace("VISION='@cf/meta/llama-3.2-11b-vision-instruct'","VISION='@cf/google/gemma-4-26b-a4b-it',VISION_FALLBACK='@cf/qwen/qwen3.8-27b'",1)
+          lines=[
+            "async function runVision(env,input){",
+            " const errors=[],image=input?.image,messages=Array.isArray(input?.messages)?input.messages:[];",
+            " const multimodal=async(model)=>{const mm=messages.map(m=>({...m}));let i=-1;for(let n=mm.length-1;n>=0;n--)if(mm[n]?.role==='user'){i=n;break}if(i<0){mm.push({role:'user',content:'Review this image.'});i=mm.length-1}const text=typeof mm[i].content==='string'?mm[i].content:'Review this image.';mm[i]={...mm[i],content:[{type:'text',text},{type:'image_url',image_url:{url:image}}]};return env.AI.run(model,{messages:mm,max_completion_tokens:Math.min(Number(input?.max_tokens)||140,220),temperature:Number(input?.temperature)||0})};",
+            " if(image){",
+            "  try{return await multimodal(VISION)}catch(e){errors.push(VISION+':multimodal:'+clean(e?.message||e,220))}",
+            "  try{return await env.AI.run(VISION,{messages,image,max_completion_tokens:Math.min(Number(input?.max_tokens)||140,220),temperature:Number(input?.temperature)||0})}catch(e){errors.push(VISION+':image:'+clean(e?.message||e,220))}",
+            "  try{return await multimodal(VISION_FALLBACK)}catch(e){errors.push(VISION_FALLBACK+':multimodal:'+clean(e?.message||e,220))}",
+            " }",
+            " try{return await env.AI.run(VISION,{...input,max_completion_tokens:Math.min(Number(input?.max_tokens)||140,220)})}catch(e){errors.push(VISION+':plain:'+clean(e?.message||e,220))}",
+            " throw Error(errors.join(' | '))",
+            "}"
+          ]
+          repl='\n'.join(lines)+'\nasync function vision'
+          s2,n=re.subn(r"async function runVision\(env,input\)\{.*?\}\nasync function vision",repl,s,count=1,flags=re.S)
+          if n!=1:
+              raise SystemExit('runVision patch target not found')
+          p.write_text(s2,encoding='utf-8')
+          PY
+          node --check worker.js
+          grep -q "VISION='@cf/google/gemma-4-26b-a4b-it'" worker.js
+          grep -q "VISION_FALLBACK='@cf/qwen/qwen3.8-27b'" worker.js
+
+      - name: Commit Vision fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name seekvera-bot
+          git config user.email actions@users.noreply.github.com
+          git add worker.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Use Gemma Vision with Qwen fallback'
+            git push origin main
+          fi
+
+      - name: Deploy Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          npx -y wrangler@4 deploy
+
+      - name: Test live safe image through Visual Search
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64,struct,zlib,binascii,json,urllib.request,time
+          w=h=96
+          raw=b''.join(b'\x00'+b'\x22\x88\xdd\xff'*w for _ in range(h))
+          def chunk(t,d):
+              return struct.pack('>I',len(d))+t+d+struct.pack('>I',binascii.crc32(t+d)&0xffffffff)
+          png=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',w,h,8,6,0,0,0))+chunk(b'IDAT',zlib.compress(raw))+chunk(b'IEND',b'')
+          image='data:image/png;base64,'+base64.b64encode(png).decode()
+          headers={'Content-Type':'application/json','User-Agent':'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 Version/19.0 Mobile/15E148 Safari/604.1','Origin':'https://seekveraglobal.com','Referer':'https://seekveraglobal.com/'}
+          body=json.dumps({'image':image,'country':'Worldwide','language':'English','context':'Plain safe blue image'}).encode()
+          last={}
+          for attempt in range(5):
+              try:
+                  req=urllib.request.Request('https://seekveraglobal.com/api/visual-search',data=body,headers=headers,method='POST')
+                  with urllib.request.urlopen(req,timeout=100) as r:
+                      d=json.loads(r.read().decode())
+                  last=d
+                  print('TRY',attempt+1,json.dumps(d,ensure_ascii=False)[:600],flush=True)
+                  if d.get('ok') and d.get('allowed') is True and d.get('reviewRequired') is False and d.get('summary'):
+                      print('VISUAL SEARCH FULL PASS',d.get('model'),str(d.get('summary'))[:120])
+                      break
+              except Exception as e:
+                  last={'error':repr(e)}
+                  print(last,flush=True)
+              time.sleep(4)
+          else:
+              raise SystemExit('Visual Search failed: '+str(last)[:700])
+          PY
+
+      - name: Result
+        run: echo 'R6 GEMMA VISION PASS'
