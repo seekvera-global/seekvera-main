@@ -1,0 +1,131 @@
+name: Fix SEEKVERA worldwide app r4
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-worldwide-app-r4-20260923.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch worldwide defaults, localized AI intro, media visibility and cache version
+        shell: python
+        run: |
+          from pathlib import Path
+
+          V='20260923-worldwide-r4'
+
+          # 1) Reset stale country/scope exactly once so old Portugal/other saved values do not override Worldwide.
+          p=Path('superapp.js'); s=p.read_text(encoding='utf-8')
+          s=s.replace("const RELEASE='2026-09-22-premium-r1';","const RELEASE='2026-09-23-worldwide-r4';",1)
+          old="function populateCountries(){const el=$('#country');if(!el)return;let dn;try{dn=new Intl.DisplayNames([navigator.language||'en'],{type:'region'})}catch{}const options=['<option value=\"WW\">Worldwide</option>'];for(const c of ISO){const name=dn?.of(c)||c;options.push(`<option value=\"${c}\">${esc(name)}</option>`)}el.innerHTML=options.join('');const saved=localStorage.getItem('seekvera_country')||'WW';if([...el.options].some(o=>o.value===saved))el.value=saved;el.addEventListener('change',()=>{localStorage.setItem('seekvera_country',el.value);syncCurrency()});syncCurrency()}"
+          new="function populateCountries(){const el=$('#country');if(!el)return;const migration='seekvera_worldwide_default_20260923_r4';if(!localStorage.getItem(migration)){localStorage.setItem('seekvera_country','WW');localStorage.setItem('seekvera_scope','worldwide');localStorage.setItem(migration,'1')}let dn;try{dn=new Intl.DisplayNames([navigator.language||'en'],{type:'region'})}catch{}const options=['<option value=\"WW\">Worldwide · All countries</option>'];for(const c of ISO){const name=dn?.of(c)||c;options.push(`<option value=\"${c}\">${esc(name)}</option>`)}el.innerHTML=options.join('');const saved=localStorage.getItem('seekvera_country')||'WW';el.value=[...el.options].some(o=>o.value===saved)?saved:'WW';el.addEventListener('change',()=>{localStorage.setItem('seekvera_country',el.value);syncCurrency()});syncCurrency()}"
+          if old not in s: raise SystemExit('superapp populateCountries anchor missing')
+          s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+
+          # 2) Make Worldwide explicit in every localized country selector and localize the inline home AI intro.
+          p=Path('global-ui.js'); g=p.read_text(encoding='utf-8')
+          replacements={
+            "'All countries'":"'Worldwide · All countries'",
+            "'كل الدول'":"'العالم · كل الدول'",
+            "'Tous les pays'":"'Monde · Tous les pays'",
+            "'所有国家'":"'全球 · 所有国家'",
+            "'Todos los países'":"'Mundial · Todos los países'",
+            "'सभी देश'":"'विश्वभर · सभी देश'",
+            "'Todos os países'":"'Mundo · Todos os países'",
+            "'Alle Länder'":"'Weltweit · Alle Länder'",
+            "'すべての国'":"'世界 · すべての国'",
+            "'모든 국가'":"'전 세계 · 모든 국가'",
+            "'Semua negara'":"'Seluruh dunia · Semua negara'",
+            "'Tüm ülkeler'":"'Dünya çapında · Tüm ülkeler'",
+            "'Все страны'":"'Весь мир · Все страны'",
+            "'تمام ممالک'":"'دنیا بھر · تمام ممالک'",
+            "'সব দেশ'":"'বিশ্বব্যাপী · সব দেশ'",
+            "'Tất cả quốc gia'":"'Toàn cầu · Tất cả quốc gia'",
+            "'Tutti i paesi'":"'Tutto il mondo · Tutti i paesi'",
+            "'Nchi zote'":"'Duniani · Nchi zote'",
+            "'ทุกประเทศ'":"'ทั่วโลก · ทุกประเทศ'",
+            "'همه کشورها'":"'سراسر جهان · همه کشورها'",
+            "'Wszystkie kraje'":"'Cały świat · Wszystkie kraje'",
+            "'Alle landen'":"'Wereldwijd · Alle landen'",
+            "'Lahat ng bansa'":"'Buong mundo · Lahat ng bansa'",
+            "'Duk ƙasashe'":"'Duniya · Duk ƙasashe'",
+            "'Gbogbo orílẹ̀-èdè'":"'Kárí ayé · Gbogbo orílẹ̀-èdè'",
+            "'Mba niile'":"'Ụwa niile · Mba niile'",
+            "'ሁሉም አገሮች'":"'ዓለም አቀፍ · ሁሉም አገሮች'"
+          }
+          for a,b in replacements.items(): g=g.replace(a,b,1)
+          anchor="function assistantIntro(){return AI_INTRO[langCode()]||AI_INTRO.en}"
+          insert="function assistantIntro(){return AI_INTRO[langCode()]||AI_INTRO.en}\nfunction syncInlineAssistantIntro(){const first=document.querySelector('#aiMessages .ai-msg.bot');if(first)first.textContent=assistantIntro()}"
+          if anchor not in g: raise SystemExit('global-ui intro anchor missing')
+          g=g.replace(anchor,insert,1)
+          old="const inline=$('#aiChat');if(inline)inline.classList.add('sv-inline-ai-visible');"
+          new="const inline=$('#aiChat');if(inline){inline.classList.add('sv-inline-ai-visible');syncInlineAssistantIntro();$('#lang')?.addEventListener('change',()=>setTimeout(syncInlineAssistantIntro,0));}"
+          if old not in g: raise SystemExit('global-ui inline anchor missing')
+          g=g.replace(old,new,1)
+          p.write_text(g,encoding='utf-8')
+
+          # 3) Refresh public homepage: make Media visible and bump all asset versions to defeat stale installed-app/browser cache.
+          p=Path('index.html'); h=p.read_text(encoding='utf-8')
+          if 'href="media.html"' not in h:
+            anchor='<a class="sv-cat" href="games.html"><span class="ico">🎮</span><b>Games</b></a>'
+            if anchor not in h: raise SystemExit('index games anchor missing')
+            h=h.replace(anchor,anchor+'<a class="sv-cat" href="media.html"><span class="ico">🎬</span><b>Media</b></a>',1)
+          import re
+          h=re.sub(r'v=20260922-[A-Za-z0-9_-]+',f'v={V}',h)
+          h=h.replace('Release 2026‑09‑22 final r3','Release 2026‑09‑23 worldwide r4')
+          p.write_text(h,encoding='utf-8')
+
+          p=Path('app.html'); a=p.read_text(encoding='utf-8')
+          a=re.sub(r'20260922-final-r3',V,a)
+          p.write_text(a,encoding='utf-8')
+
+          p=Path('manifest.webmanifest'); m=p.read_text(encoding='utf-8')
+          m=m.replace('20260922-final-r3',V)
+          p.write_text(m,encoding='utf-8')
+
+          p=Path('sw.js'); w=p.read_text(encoding='utf-8')
+          w=re.sub(r"const CACHE='[^']+';", "const CACHE='seekvera-worldwide-r4-20260923';", w, count=1)
+          if './media.html' not in w:
+            w=w.replace("'./games.html','./games.js'","'./games.html','./games.js','./media.html'",1)
+          p.write_text(w,encoding='utf-8')
+
+      - name: Validate code and worldwide behavior before commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check superapp.js
+          node --check global-ui.js
+          node --check voice-ai.js
+          node --check worker.js
+          grep -q "seekvera_worldwide_default_20260923_r4" superapp.js
+          grep -q "Worldwide · All countries" superapp.js
+          grep -q "syncInlineAssistantIntro" global-ui.js
+          grep -q "العالم · كل الدول" global-ui.js
+          grep -q 'href="media.html"' index.html
+          grep -q '20260923-worldwide-r4' index.html
+          grep -q '20260923-worldwide-r4' app.html
+          grep -q '20260923-worldwide-r4' manifest.webmanifest
+          grep -q 'seekvera-worldwide-r4-20260923' sw.js
+          git diff --check
+
+      - name: Commit worldwide r4 fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'SEEKVERA automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add superapp.js global-ui.js index.html app.html manifest.webmanifest sw.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Restore Worldwide default and refresh public app r4'
+            git push origin HEAD:main
+          fi
