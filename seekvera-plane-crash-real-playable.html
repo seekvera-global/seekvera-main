@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#050706">
+<title>SEEKVERA Survival — Plane Crash Playable Preview</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+button{font:inherit}
+#app{position:fixed;inset:0;background:#000;overflow:hidden}
+.scene{position:absolute;inset:-3%;background-size:cover;background-position:center;opacity:0;transform:scale(1.04);transition:opacity 1.2s ease;will-change:transform,opacity}
+.scene.on{opacity:1}
+#cinema{position:absolute;inset:0;display:none;background:#000;overflow:hidden}
+#cinema.on{display:block}
+.vignette{position:absolute;inset:0;z-index:4;pointer-events:none;background:radial-gradient(circle at center,transparent 42%,rgba(0,0,0,.55) 100%)}
+.grain{position:absolute;inset:0;z-index:5;opacity:.09;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");animation:grain .18s steps(2) infinite}
+@keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-1%,1%)}50%{transform:translate(1%,-1%)}75%{transform:translate(1%,1%)}100%{transform:translate(0,0)}}
+.letterbox:before,.letterbox:after{content:"";position:absolute;left:0;right:0;height:7vh;background:#000;z-index:8;pointer-events:none}.letterbox:before{top:0}.letterbox:after{bottom:0}
+#caption{position:absolute;z-index:10;left:50%;bottom:10vh;transform:translateX(-50%);width:min(92vw,900px);text-align:center;font-size:clamp(17px,3.2vw,28px);font-weight:850;line-height:1.15;text-shadow:0 3px 14px #000;opacity:0;transition:.35s}
+#caption.show{opacity:1}
+#timer{position:absolute;z-index:10;top:9vh;left:18px;font-size:12px;font-weight:900;letter-spacing:.08em;background:#0009;border:1px solid #ffffff25;padding:7px 10px;border-radius:10px}
+#skip{position:absolute;z-index:12;top:9vh;right:16px;border:1px solid #ffffff33;background:#0008;color:#fff;padding:9px 12px;border-radius:12px;font-weight:800}
+.shake{animation:shake .13s infinite}
+@keyframes shake{0%{transform:translate(0,0)}25%{transform:translate(-5px,3px)}50%{transform:translate(4px,-2px)}75%{transform:translate(-3px,-4px)}100%{transform:translate(0,0)}}
+#flash{position:absolute;inset:0;z-index:40;background:#fff;opacity:0;pointer-events:none;transition:opacity .12s}
+#start{position:absolute;inset:0;z-index:50;display:grid;place-items:center;padding:22px;background:linear-gradient(180deg,#05070699,#050706e8),url("https://images.pexels.com/photos/14772122/pexels-photo-14772122.jpeg?auto=compress&cs=tinysrgb&w=1600") center/cover no-repeat}
+.card{width:min(680px,94vw);padding:26px;border:1px solid #ffffff29;border-radius:26px;background:#07100cdc;backdrop-filter:blur(14px);box-shadow:0 28px 90px #000b;text-align:center}
+.kicker{font-size:11px;letter-spacing:.22em;color:#bfe7c8;font-weight:900}
+h1{font-size:clamp(40px,9vw,82px);line-height:.9;margin:10px 0 12px;letter-spacing:-.045em}
+.card p{color:#d5dfd7;line-height:1.5;margin:0 auto 18px;max-width:580px}
+.startBtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.primary,.secondary{border:0;border-radius:15px;padding:14px 18px;font-weight:950}
+.primary{background:linear-gradient(135deg,#d4f28b,#73e4a0);color:#07180d}
+.secondary{background:#ffffff12;color:#fff;border:1px solid #ffffff25}
+.note{font-size:11px;color:#9faf9f;margin-top:13px}
+#game{position:absolute;inset:0;display:none;background:#000}
+#game.on{display:block}
+.bg{position:absolute;inset:-6%;background-size:cover;background-position:center;transition:filter .35s;will-change:transform}
+#game.wreck #gamebg{background-image:url("https://images.pexels.com/photos/8025515/pexels-photo-8025515.jpeg?auto=compress&cs=tinysrgb&w=1600");filter:saturate(.86) contrast(1.08) brightness(.78)}
+#game.jungle #gamebg{background-image:url("https://images.pexels.com/photos/14772122/pexels-photo-14772122.jpeg?auto=compress&cs=tinysrgb&w=1600");filter:saturate(1.05) contrast(1.05) brightness(.83)}
+#gameOverlay{position:absolute;inset:0;background:linear-gradient(180deg,#0007,transparent 35%,#000b);pointer-events:none}
+#hud{position:absolute;inset:0;z-index:10;pointer-events:none}
+.brand{position:absolute;top:14px;left:14px;font-size:12px;font-weight:950;letter-spacing:.13em;text-shadow:0 2px 8px #000}
+.objective{position:absolute;top:14px;right:14px;width:min(330px,62vw);padding:10px 12px;border:1px solid #ffffff22;background:#07100cdd;border-radius:14px;font-size:11px;box-shadow:0 10px 35px #0007}
+.objective b{display:block;color:#ffd36c;font-size:13px;margin-bottom:2px}
+.stats{position:absolute;top:62px;left:14px;width:min(260px,55vw)}
+.stat{display:flex;align-items:center;gap:7px;margin:5px 0;font-size:10px;text-shadow:0 2px 7px #000}
+.bar{height:7px;flex:1;border-radius:99px;background:#0008;border:1px solid #ffffff28;overflow:hidden}
+.fill{height:100%;width:100%;background:linear-gradient(90deg,#49be73,#b8e98f)}
+.water{background:linear-gradient(90deg,#3299dd,#8ad9ff)}
+.food{background:linear-gradient(90deg,#d1842d,#ffd277)}
+.hp{background:linear-gradient(90deg,#dc4b48,#ff9b7f)}
+#inventory{position:absolute;left:50%;bottom:13px;transform:translateX(-50%);display:flex;gap:6px}
+.slot{width:47px;height:47px;border-radius:12px;border:1px solid #ffffff2c;background:#06110ce7;display:grid;place-items:center;font-size:19px;box-shadow:0 8px 25px #0007}
+#message{position:absolute;left:50%;top:18%;transform:translateX(-50%);width:min(86vw,680px);padding:10px 14px;background:#000b;border-radius:12px;text-align:center;font-weight:850;font-size:clamp(14px,2.5vw,20px);opacity:0;transition:.3s}
+#message.show{opacity:1}
+.hotspot{position:absolute;z-index:15;width:68px;height:68px;border-radius:50%;border:1px solid #ffffff88;background:#07110ab8;color:#fff;display:grid;place-items:center;text-align:center;font-size:10px;font-weight:900;box-shadow:0 0 0 5px #ffffff0d,0 0 35px #fff3;animation:pulse 1.5s infinite;touch-action:manipulation}
+.hotspot span{display:block;font-size:22px;line-height:1}
+@keyframes pulse{50%{box-shadow:0 0 0 11px #ffffff05,0 0 45px #fff5}}
+#knife{left:20%;bottom:25%}#jacket{left:42%;bottom:18%}#waterItem{right:23%;bottom:30%}#bag{right:10%;bottom:16%}
+#enterJungle{position:absolute;z-index:16;left:50%;bottom:88px;transform:translateX(-50%);display:none;border:0;border-radius:16px;padding:14px 22px;background:linear-gradient(135deg,#d6f189,#69d89a);color:#082012;font-weight:950;box-shadow:0 12px 40px #000a}
+#enterJungle.show{display:block}
+#controls{position:absolute;inset:0;z-index:18;display:none;pointer-events:none}
+#controls.show{display:block}
+#joy{position:absolute;left:20px;bottom:22px;width:112px;height:112px;border-radius:50%;border:1px solid #ffffff35;background:#ffffff0b;pointer-events:auto;touch-action:none}
+#knob{position:absolute;left:35px;top:35px;width:42px;height:42px;border-radius:50%;background:#eaf7ee77;border:1px solid #ffffff8a}
+.actionBtn{position:absolute;right:20px;bottom:28px;width:86px;height:86px;border-radius:50%;pointer-events:auto;touch-action:none;border:1px solid #ffffff35;background:#0b2c1ee8;color:#fff;font-weight:950}
+#distance{position:absolute;left:50%;bottom:75px;transform:translateX(-50%);font-size:11px;padding:7px 10px;background:#0008;border-radius:9px}
+#finish{position:absolute;inset:0;z-index:60;display:none;place-items:center;padding:22px;background:linear-gradient(#0008,#000d),url("https://images.pexels.com/photos/14772122/pexels-photo-14772122.jpeg?auto=compress&cs=tinysrgb&w=1600") center/cover}
+#finish.on{display:grid}
+@media (orientation:portrait){.letterbox:before,.letterbox:after{height:4vh}#timer,#skip{top:5vh}#caption{bottom:7vh}.hotspot{width:62px;height:62px}}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="start"><div class="card"><div class="kicker">SEEKVERA ORIGINAL • PLAYABLE PHOTO-REAL CONCEPT</div><h1>THE<br>CRASH</h1><p>Start inside the aircraft, survive the crash, collect what you can from the wreckage, then walk into the jungle. This preview uses the realistic visual direction you approved — not the cartoon-style 3D build.</p><div class="startBtns"><button class="primary" id="full">PLAY 2-MIN OPENING</button><button class="secondary" id="quick">QUICK TEST • 24 SEC</button></div><div class="note">Use headphones if you can. After the crash, tap the items yourself and then move into the jungle.</div></div></div>
+<div id="cinema" class="letterbox"><div class="scene" id="s0"></div><div class="scene" id="s1"></div><div class="scene" id="s2"></div><div class="scene" id="s3"></div><div class="scene" id="s4"></div><div class="scene" id="s5"></div><div class="scene" id="s6"></div><div class="scene" id="s7"></div><div class="vignette"></div><div class="grain"></div><div id="timer">00:00 / 02:00</div><button id="skip">SKIP TO CRASH</button><div id="caption"></div></div><div id="flash"></div>
+<div id="game" class="wreck"><div id="gamebg" class="bg"></div><div id="gameOverlay"></div><div id="hud"><div class="brand">SEEKVERA • SURVIVAL</div><div class="objective"><b id="objectiveTitle">SEARCH THE WRECKAGE</b><span id="objectiveText">Take only what may keep you alive.</span></div><div class="stats"><div class="stat">❤️<div class="bar"><div class="fill hp" id="hp"></div></div><span id="hpt">62</span></div><div class="stat">💧<div class="bar"><div class="fill water" id="thirst"></div></div></div><div class="stat">🍗<div class="bar"><div class="fill food" id="hunger"></div></div></div></div><div id="inventory"></div><div id="message"></div></div><button class="hotspot" id="knife" data-item="knife"><span>🔪</span>KNIFE</button><button class="hotspot" id="jacket" data-item="jacket"><span>🧥</span>JACKET</button><button class="hotspot" id="waterItem" data-item="water"><span>💧</span>WATER</button><button class="hotspot" id="bag" data-item="bag"><span>🎒</span>BAG</button><button id="enterJungle">ENTER THE JUNGLE</button><div id="controls"><div id="joy"><div id="knob"></div></div><button class="actionBtn" id="run">RUN</button><div id="distance">0 m</div></div></div>
+<div id="finish"><div class="card"><div class="kicker">PART 1 • FIRST STEPS</div><h1>YOU ARE<br>ALONE</h1><p>You left the crash site with a knife, jacket, water and a bag. The jungle is now the game world. From here the full Part 1 can continue with water, shelter, fire, animals and the first night.</p><button class="primary" onclick="location.reload()">PLAY AGAIN</button></div></div>
+</div>
+<script>
+const sceneImages=["https://images.pexels.com/photos/1547739/pexels-photo-1547739.jpeg?auto=compress&cs=tinysrgb&w=1600","https://images.pexels.com/photos/1547739/pexels-photo-1547739.jpeg?auto=compress&cs=tinysrgb&w=1600","https://images.pexels.com/photos/1547739/pexels-photo-1547739.jpeg?auto=compress&cs=tinysrgb&w=1600","https://images.pexels.com/photos/1547739/pexels-photo-1547739.jpeg?auto=compress&cs=tinysrgb&w=1600","https://images.pexels.com/photos/1021361/pexels-photo-1021361.jpeg?auto=compress&cs=tinysrgb&w=1600","https://images.pexels.com/photos/1021361/pexels-photo-1021361.jpeg?auto=compress&cs=tinysrgb&w=1600","https://images.pexels.com/photos/17134187/pexels-photo-17134187.jpeg?auto=compress&cs=tinysrgb&w=1600","https://images.pexels.com/photos/8025515/pexels-photo-8025515.jpeg?auto=compress&cs=tinysrgb&w=1600"];
+const captions=["A normal flight. Nothing feels wrong.","You look outside. A long journey ahead.","The aircraft starts to shake.","The turbulence gets worse. Something is wrong.","Panic spreads through the cabin.","The aircraft fights through the storm.","The mountain is suddenly too close.","Impact."];
+const $=id=>document.getElementById(id),start=$("start"),cinema=$("cinema"),game=$("game"),flash=$("flash"),cap=$("caption"),timer=$("timer"),scenes=[...Array(8)].map((_,i)=>$("s"+i));scenes.forEach((s,i)=>s.style.backgroundImage=`url("${sceneImages[i]}")`);
+let audioCtx,engine,engineGain,noiseSrc,noiseGain,ended=false;function audioInit(){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();engine=audioCtx.createOscillator();engine.type="sawtooth";engine.frequency.value=53;engineGain=audioCtx.createGain();engineGain.gain.value=.025;const low=audioCtx.createBiquadFilter();low.type="lowpass";low.frequency.value=160;engine.connect(low).connect(engineGain).connect(audioCtx.destination);engine.start();const len=audioCtx.sampleRate*2,buf=audioCtx.createBuffer(1,len,audioCtx.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;noiseSrc=audioCtx.createBufferSource();noiseSrc.buffer=buf;noiseSrc.loop=true;noiseGain=audioCtx.createGain();noiseGain.gain.value=.004;const nlow=audioCtx.createBiquadFilter();nlow.type="lowpass";nlow.frequency.value=900;noiseSrc.connect(nlow).connect(noiseGain).connect(audioCtx.destination);noiseSrc.start()}catch(e){}}
+function setSound(level){if(!audioCtx)return;const t=audioCtx.currentTime;engineGain.gain.cancelScheduledValues(t);engineGain.gain.linearRampToValueAtTime(.018+.035*level,t+.3);noiseGain.gain.cancelScheduledValues(t);noiseGain.gain.linearRampToValueAtTime(.002+.05*level,t+.3);engine.frequency.cancelScheduledValues(t);engine.frequency.linearRampToValueAtTime(53+20*level,t+.3)}
+function boom(){if(!audioCtx)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type="sine";o.frequency.setValueAtTime(70,audioCtx.currentTime);o.frequency.exponentialRampToValueAtTime(20,audioCtx.currentTime+.8);g.gain.setValueAtTime(.8,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+1);o.connect(g).connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+1)}
+function fmt(s){let m=Math.floor(s/60),x=Math.floor(s%60);return String(m).padStart(2,"0")+":"+String(x).padStart(2,"0")}
+function showScene(i,dur){scenes.forEach((s,j)=>s.classList.toggle("on",j===i));scenes[i].animate([{transform:"scale(1.03) translate(0,0)"},{transform:`scale(1.12) translate(${i%2?"-1.5%":"1.5%"},${i%3?"-1%":"1%"})`}],{duration:dur,fill:"forwards",easing:"linear"});cap.textContent=captions[i];cap.classList.add("show");setTimeout(()=>cap.classList.remove("show"),Math.min(dur-800,5000));setSound(i<2?.05:i<4?.25:i<6?.55:.85);cinema.classList.toggle("shake",i>=2&&i<=6)}
+function startMovie(quick){audioInit();start.style.display="none";cinema.classList.add("on");const total=quick?24000:120000,per=total/8,t0=performance.now();let last=-1;function loop(now){if(ended)return;let elapsed=now-t0,i=Math.min(7,Math.floor(elapsed/per));if(i!==last){last=i;showScene(i,per+600)}timer.textContent=fmt(elapsed/1000)+" / "+(quick?"00:24":"02:00");if(elapsed>=total)crash();else requestAnimationFrame(loop)}requestAnimationFrame(loop)}
+function crash(){if(ended)return;ended=true;cinema.classList.add("shake");boom();flash.style.opacity="1";setTimeout(()=>flash.style.opacity="0",120);setTimeout(()=>{cinema.classList.remove("on");cinema.classList.remove("shake");game.classList.add("on");showMsg("You are alive. Everyone else is gone.");if(engineGain)engineGain.gain.value=.006;if(noiseGain)noiseGain.gain.value=.002},650)}
+$("full").onclick=()=>startMovie(false);$("quick").onclick=()=>startMovie(true);$("skip").onclick=crash;
+let inv={knife:false,jacket:false,water:false,bag:false},collected=0;const icons={knife:"🔪",jacket:"🧥",water:"💧",bag:"🎒"};function renderInv(){$("inventory").innerHTML=Object.keys(inv).filter(k=>inv[k]).map(k=>`<div class="slot">${icons[k]}</div>`).join("")}function showMsg(t){const m=$("message");m.textContent=t;m.classList.add("show");clearTimeout(showMsg.t);showMsg.t=setTimeout(()=>m.classList.remove("show"),2600)}
+document.querySelectorAll(".hotspot").forEach(b=>b.addEventListener("click",()=>{const k=b.dataset.item;if(inv[k])return;inv[k]=true;collected++;b.remove();renderInv();const texts={knife:"A survival knife. Keep it close.",jacket:"Dry clothing may save you after dark.",water:"One bottle. Use it carefully.",bag:"A bag for anything useful you can carry."};showMsg(texts[k]);if(k==="water")$("thirst").style.width="82%";if(collected===4){$("objectiveTitle").textContent="LEAVE THE CRASH SITE";$("objectiveText").textContent="You have what you can carry. Move before nightfall.";$("enterJungle").classList.add("show")}}));
+$("enterJungle").onclick=()=>{game.classList.remove("wreck");game.classList.add("jungle");document.querySelectorAll(".hotspot").forEach(x=>x.remove());$("enterJungle").remove();$("controls").classList.add("show");$("objectiveTitle").textContent="FIND HIGHER GROUND";$("objectiveText").textContent="Move forward. Stay near water, but do not enter the current.";showMsg("Part 1 begins. Keep moving.")};
+let joyActive=false,joyY=0,dist=0,lastTime=performance.now(),bgx=0,bgy=0;const joy=$("joy"),knob=$("knob"),bg=$("gamebg");function joyMove(e){if(!joyActive)return;const p=e.touches?e.touches[0]:e,r=joy.getBoundingClientRect(),dx=p.clientX-(r.left+r.width/2),dy=p.clientY-(r.top+r.height/2),lim=34,mag=Math.hypot(dx,dy)||1,sc=Math.min(1,lim/mag),x=dx*sc,y=dy*sc;knob.style.transform=`translate(${x}px,${y}px)`;joyY=-y/lim}function joyEnd(){joyActive=false;joyY=0;knob.style.transform="translate(0,0)"}joy.addEventListener("touchstart",e=>{joyActive=true;joyMove(e)},{passive:true});joy.addEventListener("touchmove",joyMove,{passive:true});joy.addEventListener("touchend",joyEnd);joy.addEventListener("pointerdown",e=>{joyActive=true;joy.setPointerCapture(e.pointerId);joyMove(e)});joy.addEventListener("pointermove",joyMove);joy.addEventListener("pointerup",joyEnd);let runHeld=false;$("run").addEventListener("pointerdown",()=>runHeld=true);["pointerup","pointercancel","pointerleave"].forEach(x=>$("run").addEventListener(x,()=>runHeld=false));function anim(now){const dt=Math.min(.05,(now-lastTime)/1000);lastTime=now;if(game.classList.contains("jungle")&&joyY>.08){const speed=(runHeld?18:9)*joyY;dist+=speed*dt;bgx+=speed*dt*.04;bgy+=speed*dt*.018;bg.style.transform=`scale(${1.06+Math.sin(dist*.04)*.004}) translate(${Math.sin(bgx)*1.7}%,${Math.sin(bgy)*.8}%)`;$("distance").textContent=Math.floor(dist)+" m";$("thirst").style.width=Math.max(30,82-dist*.17)+"%";$("hunger").style.width=Math.max(35,100-dist*.12)+"%";if(dist>40&&dist<42)showMsg("You hear water ahead.");if(dist>82&&dist<84)showMsg("Fresh animal tracks. Stay alert.");if(dist>=120){game.classList.remove("on");$("finish").classList.add("on")}}requestAnimationFrame(anim)}requestAnimationFrame(anim);
+</script>
+</body>
+</html>
