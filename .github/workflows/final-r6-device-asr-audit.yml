@@ -1,0 +1,106 @@
+name: Final R6 Cross Device and Real ASR Audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/final-r6-device-asr-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify real server speech recognition
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq >/dev/null
+          sudo apt-get install -y -qq espeak >/dev/null
+          espeak -w /tmp/seekvera.wav 'hello seekvera' >/dev/null 2>&1
+          python3 - <<'PY'
+          import base64,json,urllib.request
+          audio='data:audio/wav;base64,'+base64.b64encode(open('/tmp/seekvera.wav','rb').read()).decode()
+          H={'Content-Type':'application/json','User-Agent':'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36','Origin':'https://seekveraglobal.com','Referer':'https://seekveraglobal.com/'}
+          req=urllib.request.Request('https://seekveraglobal.com/api/transcribe',data=json.dumps({'audio':audio,'language':'English'}).encode(),headers=H,method='POST')
+          with urllib.request.urlopen(req,timeout=100) as r: d=json.loads(r.read().decode())
+          text=str(d.get('text','')).strip()
+          if not d.get('ok') or not text: raise SystemExit('ASR failed: '+str(d)[:400])
+          print('REAL ASR PASS:',text)
+          PY
+
+      - name: Verify live News Media and application shell
+        shell: bash
+        run: |
+          set -euo pipefail
+          SITE='https://seekveraglobal.com'
+          curl -fsSL --max-time 30 "$SITE/?final-device=1" -o /tmp/home.html
+          grep -q '20260923-final-market-r6' /tmp/home.html
+          grep -q 'News & Media' /tmp/home.html
+          curl -fsSL --max-time 30 "$SITE/media.html?final-device=1" -o /tmp/media.html
+          for x in 'Al Jazeera' 'Al Arabiya' 'CNN' 'BBC News' 'Reuters'; do grep -q "$x" /tmp/media.html; done
+          curl -fsSL --max-time 30 "$SITE/app.html?final-device=1" -o /tmp/app.html
+          grep -q 'location.replace' /tmp/app.html
+          if grep -q '<iframe' /tmp/app.html; then exit 1; fi
+          echo 'LIVE NEWS + APP SHELL PASS'
+
+      - name: Cross-device UI and language switching
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm i --no-save playwright@1.58.2 >/dev/null 2>&1
+          npx playwright install chromium webkit firefox >/dev/null 2>&1
+          cat > /tmp/audit.cjs <<'JS'
+          const {chromium,webkit,firefox}=require('playwright');
+          (async()=>{
+            const profiles=[
+              ['Android Chrome',chromium,{viewport:{width:360,height:800},userAgent:'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'}],
+              ['iPhone Safari',webkit,{viewport:{width:390,height:844},userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 Version/19.0 Mobile/15E148 Safari/604.1'}],
+              ['iPad Safari',webkit,{viewport:{width:820,height:1180},userAgent:'Mozilla/5.0 (iPad; CPU OS 19_0 like Mac OS X) AppleWebKit/605.1.15 Version/19.0 Mobile/15E148 Safari/604.1'}],
+              ['Desktop Chrome Edge',chromium,{viewport:{width:1366,height:768}}],
+              ['Desktop Firefox',firefox,{viewport:{width:1366,height:768}}]
+            ];
+            for(const [name,engine,opt] of profiles){
+              const b=await engine.launch({headless:true});
+              const c=await b.newContext(opt);
+              const p=await c.newPage();
+              await p.goto('https://seekveraglobal.com/?final-device-r6=1',{waitUntil:'domcontentloaded',timeout:60000});
+              await p.waitForTimeout(1800);
+              const base=await p.evaluate(()=>({
+                release:document.body.dataset.release||'',
+                countries:document.querySelector('#country')?.options.length||0,
+                languages:document.querySelector('#lang')?.options.length||0,
+                tiles:document.querySelectorAll('.r5-tile').length,
+                media:!!document.querySelector('a[href="media.html"]'),
+                chat:!!document.querySelector('#aiChat'),
+                mic:!!document.querySelector('#aiChatMic'),
+                camera:!!document.querySelector('#aiChatCamera'),
+                speaker:!!document.querySelector('#aiChatSpeaker'),
+                overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth
+              }));
+              if(base.release!=='20260923-final-market-r6'||base.countries<249||base.languages!==29||base.tiles<16||!base.media||!base.chat||!base.mic||!base.camera||!base.speaker||base.overflow>4) throw Error(name+' BASE '+JSON.stringify(base));
+              await p.selectOption('#lang','pt'); await p.waitForTimeout(5000);
+              const pt=await p.evaluate(()=>({intro:document.querySelector('#aiMessages .ai-msg.bot')?.textContent||'',toggle:document.querySelector('.sv-request-toggle')?.textContent||'',dir:document.documentElement.dir}));
+              if(!/assistente/i.test(pt.intro)||/[\u0600-\u06ff]/.test(pt.toggle)||pt.dir==='rtl') throw Error(name+' PT '+JSON.stringify(pt));
+              await p.selectOption('#lang','en'); await p.waitForTimeout(1000);
+              const en=await p.evaluate(()=>({intro:document.querySelector('#aiMessages .ai-msg.bot')?.textContent||'',toggle:document.querySelector('.sv-request-toggle')?.textContent||'',dir:document.documentElement.dir}));
+              if(/[\u0600-\u06ff]/.test(en.toggle)||!/SEEKVERA AI assistant/i.test(en.intro)||en.dir==='rtl') throw Error(name+' EN '+JSON.stringify(en));
+              await p.selectOption('#lang','ar'); await p.waitForTimeout(1000);
+              const ar=await p.evaluate(()=>({intro:document.querySelector('#aiMessages .ai-msg.bot')?.textContent||'',dir:document.documentElement.dir}));
+              if(ar.dir!=='rtl'||!/[\u0600-\u06ff]/.test(ar.intro)) throw Error(name+' AR '+JSON.stringify(ar));
+              console.log(name,'PASS',JSON.stringify(base));
+              await b.close();
+            }
+            console.log('ALL CROSS DEVICE + LANGUAGE SWITCHING PASS');
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          node /tmp/audit.cjs
+
+      - name: Final result
+        run: echo 'R6 CROSS DEVICE + REAL ASR FINAL PASS'
