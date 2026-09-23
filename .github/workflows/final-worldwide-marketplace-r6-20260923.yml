@@ -1,0 +1,279 @@
+name: Final SEEKVERA Worldwide Marketplace R6
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/final-worldwide-marketplace-r6-20260923.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-final-r6
+  cancel-in-progress: false
+
+jobs:
+  final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build final visual marketplace and harden language runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess, json, re
+
+          OLD='0b3f11f91095c82c4c9725f923c778afaa73ed02'
+          VER='20260923-final-market-r6'
+
+          # Restore the clean visual marketplace home that predates the broken R5B mobile overrides.
+          s=subprocess.check_output(['git','show',f'{OLD}:index.html'],text=True)
+          s=s.replace('20260923-market-r5',VER)
+          s=s.replace('Release 2026‑09‑23 marketplace r5','Release 2026‑09‑23 final worldwide marketplace')
+          s=s.replace('<a href="media.html"><span class="r5-ico">🎬</span>Media</a>','<a href="media.html"><span class="r5-ico">📰</span>News & Media</a>')
+          s=s.replace('<a href="media.html">🎬 Media</a>','<a href="media.html">📰 News & Media</a>')
+          s=s.replace('<b>Media</b><small>News, video and music</small>','<b>News & Media</b><small>Al Jazeera, Al Arabiya, CNN, BBC, Reuters, movies & music</small>')
+          s=s.replace('<div class="r5-right-box"><b>🎬 Media</b><p>Official news, video and music routes.</p><a href="media.html">Open Media →</a></div>','<div class="r5-right-box"><b>📰 News & Media</b><p>Al Jazeera, Al Arabiya, CNN, BBC, Reuters and more official sources.</p><a href="media.html">Open News & Media →</a></div>')
+          s=s.replace('SEEKVERA follows your selected language. Voice input uses the browser/device speech service when available; text stays available everywhere.','SEEKVERA follows your selected language — country/location never changes it. Voice uses the device/browser when available and secure server speech recognition as fallback; text stays available everywhere.')
+          Path('index.html').write_text(s,encoding='utf-8')
+
+          # Direct app entry: no iframe, so microphone/camera permissions work consistently on iPhone/iPad/Android/desktop.
+          app=f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#ffffff"><title>SEEKVERA App</title><link rel="manifest" href="manifest.webmanifest?v={VER}"></head><body><p style="font-family:system-ui;padding:20px">Opening SEEKVERA…</p><script>(function(){{const m={{home:'index.html',marketplace:'marketplace.html',travel:'travel.html',games:'games.html',media:'media.html',connectivity:'connectivity.html','deal-agent':'deal-agent.html',hub:'hub.html'}};const k=location.hash.slice(1);location.replace((m[k]||'index.html')+'?v={VER}')}})();</script></body></html>'''
+          Path('app.html').write_text(app,encoding='utf-8')
+
+          manifest={
+            'id':'./index.html','name':'SEEKVERA — Global AI Marketplace','short_name':'SEEKVERA',
+            'start_url':f'./index.html?v={VER}','scope':'./','display':'standalone','orientation':'any',
+            'background_color':'#f4f6f8','theme_color':'#ffffff',
+            'description':'Worldwide AI search, voice, visual search, marketplace, travel, news, media, games, connectivity and business tools in one SEEKVERA app.',
+            'categories':['shopping','travel','news','games','business','utilities','lifestyle'],
+            'icons':[{'src':'favicon.svg','sizes':'any','type':'image/svg+xml','purpose':'any maskable'}],
+            'shortcuts':[
+              {'name':'AI Search','short_name':'AI','url':'./index.html#aiChat'},
+              {'name':'Marketplace','short_name':'Market','url':'./marketplace.html'},
+              {'name':'News & Media','short_name':'Media','url':'./media.html'},
+              {'name':'Free Games','short_name':'Games','url':'./games.html'},
+              {'name':'Travel & Connectivity','short_name':'Travel','url':'./connectivity.html'},
+              {'name':'AI Deal Agent','short_name':'Deals','url':'./deal-agent.html'}]
+          }
+          Path('manifest.webmanifest').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+
+          # Fresh PWA cache. Navigations stay network-first to avoid old/broken UI sticking on phones.
+          sw=Path('sw.js').read_text(encoding='utf-8')
+          sw=re.sub(r"const CACHE='[^']+';",f"const CACHE='seekvera-final-market-r6-20260923';",sw,1)
+          if "'./media.html'" not in sw:
+            sw=sw.replace("'./games.html'","'./games.html','./media.html','./home-marketplace-r5.css'")
+          Path('sw.js').write_text(sw,encoding='utf-8')
+
+          # i18n: invalidate every old cached AI translation, pass full language names to AI translator,
+          # and ensure the new service worker is installed.
+          p=Path('i18n-ui.js'); t=p.read_text(encoding='utf-8')
+          t=t.replace('sv_i18n_r3_','sv_i18n_r6_')
+          t=t.replace("sw.js?v=20260922-final-r3",f"sw.js?v={VER}")
+          t=t.replace("body:JSON.stringify({message:prompt,country:'Worldwide',language:l,scope:'worldwide',fast:true})","body:JSON.stringify({message:prompt,country:'Worldwide',language:LANG_NAME[l]||l,scope:'worldwide',fast:true})")
+          old="function cleanBrokenCache(){for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i)||'';if(!k.startsWith('sv_i18n_'))continue;const v=localStorage.getItem(k)||'';if(/\\[object Object\\]|^(undefined|null)$/i.test(v.trim()))localStorage.removeItem(k)}}"
+          new="function cleanBrokenCache(){for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i)||'';if(!k.startsWith('sv_i18n_'))continue;if(!k.startsWith('sv_i18n_r6_')){localStorage.removeItem(k);continue}const v=localStorage.getItem(k)||'';if(/\\[object Object\\]|^(undefined|null)$/i.test(v.trim()))localStorage.removeItem(k)}}"
+          if old in t: t=t.replace(old,new,1)
+          Path('i18n-ui.js').write_text(t,encoding='utf-8')
+
+          # Main runtime: always send full selected language names to AI/Vision, and route media/news correctly.
+          p=Path('superapp.js'); t=p.read_text(encoding='utf-8')
+          t=re.sub(r"const RELEASE='[^']+';",f"const RELEASE='{VER}';",t,1)
+          if 'const LANGUAGE_NAME=Object.fromEntries' not in t:
+            t=t.replace("const ISO=", "const LANGUAGE_NAME=Object.fromEntries(LANGS.filter(x=>x[0]!=='auto').map(([c,n])=>[c,n.replace(/[^\\p{L}\\p{M} .-]/gu,'').trim()]));\nconst ISO=",1)
+          if 'function languageName()' not in t:
+            t=t.replace("function lang(){return $('#lang')?.value||localStorage.getItem('seekvera_lang')||'en'}", "function lang(){return $('#lang')?.value||localStorage.getItem('seekvera_lang')||'en'}\nfunction languageName(){let c=lang();if(c==='auto')c=(navigator.language||'en').split(/[-_]/)[0];return LANGUAGE_NAME[c]||c}",1)
+          t=t.replace('language:lang()','language:languageName()')
+          if "media:'media.html'" not in t:
+            t=t.replace("entertainment:'hub.html'","media:'media.html',news:'media.html',music:'media.html',movies:'media.html',entertainment:'media.html'",1)
+          if "media:['news'" not in t:
+            t=t.replace("business:['business','company','partner','deal','rfq','quotation','شركة','صفقة','عرض سعر']", "business:['business','company','partner','deal','rfq','quotation','شركة','صفقة','عرض سعر'],media:['news','cnn','al jazeera','al arabiya','bbc','reuters','movie','movies','music','radio','tv','أخبار','الجزيرة','العربية','أفلام','موسيقى']",1)
+          Path('superapp.js').write_text(t,encoding='utf-8')
+
+          # Global AI: full language names stop code ambiguity (pt/ar/ur etc.).
+          p=Path('global-ui.js'); t=p.read_text(encoding='utf-8')
+          names="const AI_LANGUAGE_NAME={en:'English',ar:'Arabic',fr:'French',zh:'Chinese',es:'Spanish',hi:'Hindi',pt:'Portuguese',de:'German',ja:'Japanese',ko:'Korean',id:'Indonesian',tr:'Turkish',ru:'Russian',ur:'Urdu',bn:'Bengali',vi:'Vietnamese',it:'Italian',sw:'Swahili',th:'Thai',fa:'Persian',pl:'Polish',nl:'Dutch',ms:'Malay',fil:'Filipino',ha:'Hausa',yo:'Yoruba',ig:'Igbo',am:'Amharic'};"
+          if 'const AI_LANGUAGE_NAME=' not in t:
+            t=t.replace("const AI_INTRO={",names+"\nconst AI_INTRO={",1)
+          if 'function aiLanguageName()' not in t:
+            t=t.replace("function assistantIntro(){return AI_INTRO[langCode()]||AI_INTRO.en}","function aiLanguageName(){const c=langCode();return AI_LANGUAGE_NAME[c]||c}\nfunction assistantIntro(){return AI_INTRO[langCode()]||AI_INTRO.en}",1)
+          t=t.replace('language:lang()','language:aiLanguageName()')
+          Path('global-ui.js').write_text(t,encoding='utf-8')
+
+          # Worker: normalize explicit ISO language codes to unambiguous full names before LANGUAGE LOCK.
+          p=Path('worker.js'); t=p.read_text(encoding='utf-8')
+          t=re.sub(r"const RELEASE='[^']+'",f"const RELEASE='{VER}'",t,1)
+          langmap="const LANGUAGE_NAME_MAP={en:'English',ar:'Arabic',fr:'French',zh:'Chinese',es:'Spanish',hi:'Hindi',pt:'Portuguese',de:'German',ja:'Japanese',ko:'Korean',id:'Indonesian',tr:'Turkish',ru:'Russian',ur:'Urdu',bn:'Bengali',vi:'Vietnamese',it:'Italian',sw:'Swahili',th:'Thai',fa:'Persian',pl:'Polish',nl:'Dutch',ms:'Malay',fil:'Filipino',ha:'Hausa',yo:'Yoruba',ig:'Igbo',am:'Amharic'};"
+          if 'const LANGUAGE_NAME_MAP=' not in t:
+            t=t.replace("const SB=",langmap+"\nconst SB=",1)
+          old="async function detectedLanguage(env,text,hint=''){const h=clean(hint,50);if(h&&!/^auto$/i.test(h))return h;"
+          new="async function detectedLanguage(env,text,hint=''){const raw=clean(hint,50),code=raw.toLowerCase().split(/[-_ ]/)[0],h=LANGUAGE_NAME_MAP[code]||raw;if(h&&!/^auto$/i.test(h))return h;"
+          if old in t: t=t.replace(old,new,1)
+          Path('worker.js').write_text(t,encoding='utf-8')
+
+          # Media/news hub: official/lawful sources only.
+          media=f'''<!doctype html><html lang="en" dir="ltr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>SEEKVERA News & Media</title><meta name="description" content="Official news channels, legal movies and music services worldwide through SEEKVERA."><meta name="theme-color" content="#07111f"><link rel="stylesheet" href="global-ui.css?v={VER}"><link rel="stylesheet" href="i18n-premium.css?v={VER}"><style>*{{box-sizing:border-box}}body{{margin:0;font-family:Inter,system-ui,Arial;background:#07111f;color:#eef6ff}}.wrap{{max-width:1180px;margin:auto;padding:18px}}.top{{display:flex;gap:8px;flex-wrap:wrap}}.btn,.card{{text-decoration:none;color:inherit}}.btn{{padding:9px 12px;border-radius:11px;background:#17324f;font-weight:800}}.hero{{margin-top:12px;padding:24px;border:1px solid #29415b;border-radius:20px;background:linear-gradient(135deg,#102238,#241646)}}h1{{font-size:clamp(2rem,6vw,4rem);margin:.18em 0}}.tag{{display:inline-block;padding:6px 10px;border-radius:999px;background:#1d3857;font-weight:850}}.note{{margin:14px 0;padding:12px;border-radius:12px;background:#102238;color:#c9d8e7}}.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:10px 0 22px}}.card{{padding:15px;border:1px solid #29415b;border-radius:15px;background:#0d1a2a;min-height:105px}}.card:hover{{border-color:#6cf0b9;transform:translateY(-1px)}}.card b{{font-size:1.05rem}}.card p{{color:#b9c9da;line-height:1.4;font-size:.9rem;margin:.45em 0}}h2{{margin-top:24px}}</style></head><body><main class="wrap"><div class="top"><a class="btn" href="index.html">← SEEKVERA</a><a class="btn" href="games.html">🎮 Games</a></div><section class="hero"><span class="tag">📰 SEEKVERA NEWS & MEDIA</span><h1>News · Live channels · Movies · Music</h1><p>Open official news organizations and lawful media services. Availability and live streams vary by country.</p></section><div class="note">SEEKVERA links only to official/lawful sources. The selected SEEKVERA language controls the AI; your country never forces a different AI language.</div><h2>📰 News & live channels</h2><section class="grid"><a class="card" href="https://www.aljazeera.com/live" target="_blank" rel="noopener noreferrer"><b>Al Jazeera</b><p>Official English news and live coverage.</p></a><a class="card" href="https://www.aljazeera.net/live" target="_blank" rel="noopener noreferrer"><b>الجزيرة</b><p>Official Arabic live/news service.</p></a><a class="card" href="https://www.alarabiya.net/" target="_blank" rel="noopener noreferrer"><b>Al Arabiya · العربية</b><p>Official Arabic news service.</p></a><a class="card" href="https://www.cnn.com/" target="_blank" rel="noopener noreferrer"><b>CNN</b><p>Official CNN news service.</p></a><a class="card" href="https://www.bbc.com/news" target="_blank" rel="noopener noreferrer"><b>BBC News</b><p>Official BBC global news.</p></a><a class="card" href="https://www.reuters.com/" target="_blank" rel="noopener noreferrer"><b>Reuters</b><p>Global news and business coverage.</p></a><a class="card" href="https://www.france24.com/" target="_blank" rel="noopener noreferrer"><b>France 24</b><p>Official multilingual international news.</p></a><a class="card" href="https://www.dw.com/" target="_blank" rel="noopener noreferrer"><b>DW</b><p>Official Deutsche Welle international news.</p></a><a class="card" href="https://news.sky.com/" target="_blank" rel="noopener noreferrer"><b>Sky News</b><p>Official Sky News service.</p></a><a class="card" href="https://www.cnbc.com/" target="_blank" rel="noopener noreferrer"><b>CNBC</b><p>Business and markets news.</p></a><a class="card" href="https://www.bloomberg.com/" target="_blank" rel="noopener noreferrer"><b>Bloomberg</b><p>Business and markets coverage.</p></a></section><h2>🎞️ Movies & video</h2><section class="grid"><a class="card" href="https://www.youtube.com/movies" target="_blank" rel="noopener noreferrer"><b>YouTube Movies</b><p>Official movie storefront; titles vary by region.</p></a><a class="card" href="https://www.plex.tv/watch-free-tv/" target="_blank" rel="noopener noreferrer"><b>Plex Free TV & Movies</b><p>Legal ad-supported viewing where available.</p></a><a class="card" href="https://archive.org/details/feature_films" target="_blank" rel="noopener noreferrer"><b>Classic / Public-domain films</b><p>Internet Archive collection; rights vary by title and region.</p></a></section><h2>🎵 Music</h2><section class="grid"><a class="card" href="https://music.youtube.com/" target="_blank" rel="noopener noreferrer"><b>YouTube Music</b><p>Official music service.</p></a><a class="card" href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer"><b>Spotify</b><p>Official web player where available.</p></a><a class="card" href="https://soundcloud.com/" target="_blank" rel="noopener noreferrer"><b>SoundCloud</b><p>Music and creator audio.</p></a></section></main><script src="global-ui.js?v={VER}" defer></script><script src="voice-ai.js?v={VER}" defer></script><script src="i18n-ui.js?v={VER}" defer></script></body></html>'''
+          Path('media.html').write_text(media,encoding='utf-8')
+          PY
+
+          node --check superapp.js
+          node --check global-ui.js
+          node --check voice-ai.js
+          node --check i18n-ui.js
+          node --check worker.js
+          grep -q 'data-release="20260923-final-market-r6"' index.html
+          grep -q 'News & Media' index.html
+          grep -q 'Al Jazeera' media.html
+          grep -q 'sv_i18n_r6_' i18n-ui.js
+          grep -q "LANGUAGE_NAME_MAP" worker.js
+          grep -q "serverVoice" voice-ai.js
+          ! grep -q '<iframe' app.html
+
+      - name: Commit final R6 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add index.html app.html manifest.webmanifest sw.js i18n-ui.js superapp.js global-ui.js worker.js media.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'Finalize worldwide visual marketplace R6 with news and language lock'
+          git push origin main
+
+      - name: Deploy R6 directly to Cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          npx -y wrangler@4 deploy
+
+      - name: Wait for live R6 and verify core routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          SITE='https://seekveraglobal.com'
+          ok=0
+          for i in $(seq 1 30); do
+            curl -fsS --max-time 20 -H 'Cache-Control: no-cache' "$SITE/?r6=$i" -o /tmp/home.html || true
+            if grep -q '20260923-final-market-r6' /tmp/home.html && grep -q 'News & Media' /tmp/home.html; then ok=1; break; fi
+            sleep 4
+          done
+          test "$ok" = 1
+          for p in marketplace.html travel.html property.html cars-auto.html jobs.html shopping.html import-export.html restaurants-food.html local-services.html media.html games.html connectivity.html deal-agent.html post-ad.html hub.html; do
+            code=$(curl -sS -o /tmp/p -w '%{http_code}' --max-time 20 "$SITE/$p?r6=1")
+            test "$code" = 200
+          done
+          curl -fsS "$SITE/media.html?r6=1" | grep -q 'Al Jazeera'
+          curl -fsS "$SITE/media.html?r6=1" | grep -q 'CNN'
+          curl -fsS "$SITE/app.html?r6=1" | grep -q 'location.replace'
+          echo 'LIVE R6 UI + ROUTES + NEWS PASS'
+
+      - name: Audit all 28 AI languages live
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, urllib.request, concurrent.futures
+          URL='https://seekvera-main.seekvera-global.workers.dev/api/ai'
+          cases=[
+            ('English','Nigeria','Hello.'),('Arabic','Lebanon','مرحبا'),('French','France','Bonjour'),('Chinese','China','你好'),
+            ('Spanish','Spain','Hola'),('Hindi','India','नमस्ते'),('Portuguese','Brazil','Olá'),('German','Germany','Hallo'),
+            ('Japanese','Japan','こんにちは'),('Korean','South Korea','안녕하세요'),('Indonesian','Indonesia','Halo'),('Turkish','Turkey','Merhaba'),
+            ('Russian','Russia','Привет'),('Urdu','Pakistan','سلام'),('Bengali','Bangladesh','নমস্কার'),('Vietnamese','Vietnam','Xin chào'),
+            ('Italian','Italy','Ciao'),('Swahili','Kenya','Habari'),('Thai','Thailand','สวัสดี'),('Persian','Iran','سلام'),
+            ('Polish','Poland','Cześć'),('Dutch','Netherlands','Hallo'),('Malay','Malaysia','Hai'),('Filipino','Philippines','Kumusta'),
+            ('Hausa','Nigeria','Sannu'),('Yoruba','Nigeria','Pẹlẹ o'),('Igbo','Nigeria','Ndewo'),('Amharic','Ethiopia','ሰላም')]
+          def one(c):
+            lang,country,target=c
+            data=json.dumps({'message':f'Reply only with exactly this text: {target}','country':country,'language':lang,'scope':'worldwide','fast':True}).encode()
+            req=urllib.request.Request(URL,data=data,headers={'content-type':'application/json'})
+            with urllib.request.urlopen(req,timeout=80) as r: d=json.load(r)
+            got=str(d.get('language','')).lower(); ans=str(d.get('response','')).strip()
+            if not d.get('ok') or lang.lower() not in got or target not in ans:
+              raise RuntimeError(f'{lang}/{country} FAIL language={d.get("language")} answer={ans[:120]}')
+            return f'{lang}/{country}: PASS'
+          with concurrent.futures.ThreadPoolExecutor(max_workers=8) as ex:
+            futs=[ex.submit(one,c) for c in cases]
+            for f in concurrent.futures.as_completed(futs): print(f.result())
+          print('ALL 28 AI LANGUAGES LIVE PASS')
+          PY
+
+      - name: Verify voice, visual search and Safety APIs
+        shell: bash
+        run: |
+          set -euo pipefail
+          W='https://seekvera-main.seekvera-global.workers.dev'
+          curl -fsS "$W/api/health?r6=1" -o /tmp/h.json
+          grep -q '"centralSafetyGate":"enabled"' /tmp/h.json
+          grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/h.json
+          grep -q '"asrModel":"@cf/openai/whisper-large-v3-turbo"' /tmp/h.json
+          code=$(curl -sS -o /tmp/stt -w '%{http_code}' -X POST "$W/api/transcribe" -H 'content-type: application/json' --data '{"audio":"invalid","language":"English"}')
+          test "$code" = 400
+          python3 - <<'PY'
+          import base64,struct,zlib,json,urllib.request
+          # 64x64 opaque PNG, enough to exercise visual-search route safely.
+          w=h=64
+          raw=b''.join(b'\x00'+b'\xff\xff\xff\xff'*w for _ in range(h))
+          def chunk(t,d):
+            import binascii
+            return struct.pack('>I',len(d))+t+d+struct.pack('>I',binascii.crc32(t+d)&0xffffffff)
+          png=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',w,h,8,6,0,0,0))+chunk(b'IDAT',zlib.compress(raw))+chunk(b'IEND',b'')
+          body=json.dumps({'image':'data:image/png;base64,'+base64.b64encode(png).decode(),'country':'Worldwide','language':'English'}).encode()
+          req=urllib.request.Request('https://seekvera-main.seekvera-global.workers.dev/api/visual-search',data=body,headers={'content-type':'application/json'})
+          with urllib.request.urlopen(req,timeout=60) as r: d=json.load(r)
+          if 'ok' not in d: raise SystemExit('visual route failed')
+          print('VISUAL SEARCH ROUTE PASS',d.get('ok'),d.get('reason',''))
+          PY
+          echo 'VOICE + VISUAL + SAFETY API PASS'
+
+      - name: Cross-device browser audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm i --no-save playwright@1.58.2 >/dev/null 2>&1
+          npx playwright install chromium webkit firefox >/dev/null 2>&1
+          cat > /tmp/audit.js <<'JS'
+          const {chromium,webkit,firefox}=require('playwright');
+          const SITE='https://seekveraglobal.com/?final-r6=1';
+          const profiles=[
+            ['Android Chrome',chromium,{viewport:{width:360,height:800},userAgent:'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'}],
+            ['iPhone Safari',webkit,{viewport:{width:390,height:844},userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 Version/19.0 Mobile/15E148 Safari/604.1'}],
+            ['iPad Safari',webkit,{viewport:{width:820,height:1180},userAgent:'Mozilla/5.0 (iPad; CPU OS 19_0 like Mac OS X) AppleWebKit/605.1.15 Version/19.0 Mobile/15E148 Safari/604.1'}],
+            ['Desktop Chrome/Edge engine',chromium,{viewport:{width:1366,height:768}}],
+            ['Desktop Firefox',firefox,{viewport:{width:1366,height:768}}]
+          ];
+          for(const [name,type,ctxopt] of profiles){
+            const b=await type.launch({headless:true}); const c=await b.newContext(ctxopt); const p=await c.newPage();
+            await p.goto(SITE,{waitUntil:'domcontentloaded',timeout:60000}); await p.waitForTimeout(1800);
+            const r=await p.evaluate(()=>({release:document.body.dataset.release||'',country:document.querySelector('#country')?.options.length||0,langs:document.querySelector('#lang')?.options.length||0,tiles:document.querySelectorAll('.r5-tile').length,media:!!document.querySelector('a[href="media.html"]'),chat:!!document.querySelector('#aiChat'),mic:!!document.querySelector('#aiChatMic'),camera:!!document.querySelector('#aiChatCamera'),overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth}));
+            if(r.release!=='20260923-final-market-r6'||r.country<249||r.langs!==29||r.tiles<16||!r.media||!r.chat||!r.mic||!r.camera||r.overflow>4) throw Error(name+' '+JSON.stringify(r));
+            await p.selectOption('#lang','pt'); await p.waitForTimeout(3500);
+            const pt=await p.evaluate(()=>({intro:document.querySelector('#aiMessages .ai-msg.bot')?.textContent||'',toggle:document.querySelector('.sv-request-toggle')?.textContent||'',dir:document.documentElement.dir}));
+            if(!/assistente/i.test(pt.intro)||/[\u0600-\u06FF]/.test(pt.toggle)) throw Error(name+' Portuguese mixed language '+JSON.stringify(pt));
+            await p.selectOption('#lang','en'); await p.waitForTimeout(700);
+            const en=await p.evaluate(()=>document.querySelector('.sv-request-toggle')?.textContent||'');
+            if(/[\u0600-\u06FF]/.test(en)) throw Error(name+' English has Arabic '+en);
+            await p.selectOption('#lang','ar'); await p.waitForTimeout(700);
+            const ar=await p.evaluate(()=>({dir:document.documentElement.dir,intro:document.querySelector('#aiMessages .ai-msg.bot')?.textContent||''}));
+            if(ar.dir!=='rtl'||!/[\u0600-\u06FF]/.test(ar.intro)) throw Error(name+' Arabic/RTL failed '+JSON.stringify(ar));
+            console.log(name,'PASS',r);
+            await b.close();
+          }
+          console.log('ALL CROSS-DEVICE R6 PASS');
+          JS
+          node /tmp/audit.js
+
+      - name: Final result
+        run: echo 'SEEKVERA FINAL WORLDWIDE MARKETPLACE R6 PASS'
