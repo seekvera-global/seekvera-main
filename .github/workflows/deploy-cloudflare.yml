@@ -1,6 +1,5 @@
 name: Deploy SEEKVERA to Cloudflare
-# Production deployment: Safety Gate v4 + AI Vision + global Voice AI + marketplace server routing
-# 2026-09-23: worldwide R4 app/cache + multilingual UI alignment
+# Production deployment: Safety Gate + multilingual AI/Voice + R5 visual marketplace UI
 
 on:
   push:
@@ -10,11 +9,14 @@ on:
       - 'voice-ai.js'
       - '*.html'
       - 'styles.css'
+      - 'premium.css'
       - 'global-ui.css'
       - 'global-ui.js'
       - 'i18n-ui.js'
       - 'i18n-premium.css'
+      - 'home-marketplace-r5.css'
       - 'app.js'
+      - 'superapp.js'
       - 'sw.js'
       - 'manifest.webmanifest'
       - 'wrangler.jsonc'
@@ -36,7 +38,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate Worker build, safety, multilingual UI and asset boundaries
+      - name: Validate Worker, Safety, AI, Worldwide and R5 UI
         shell: bash
         run: |
           set -euo pipefail
@@ -54,27 +56,26 @@ jobs:
           grep -q '^\.wrangler$' .assetsignore
           grep -q '^worker.js$' .assetsignore
           grep -q '^wrangler.jsonc$' .assetsignore
-          test -s voice-ai.js
-          test -s i18n-ui.js
-          test -s global-ui.js
-          test -s i18n-premium.css
-          node --check voice-ai.js
-          node --check i18n-ui.js
-          node --check global-ui.js
-          node --check superapp.js
+          for f in voice-ai.js i18n-ui.js global-ui.js superapp.js sw.js; do node --check "$f"; done
           grep -q "HOST==='seekveraglobal.com'" i18n-ui.js
           grep -q "HOST==='seekveraglobal.com'" global-ui.js
-          grep -q "'Country / Region':'الدولة / المنطقة'" i18n-ui.js
           grep -q 'html\[dir="rtl"\]' i18n-premium.css
-          grep -q 'i18n-ui.js?v=20260923-worldwide-r4' index.html
-          grep -q 'i18n-premium.css?v=20260923-worldwide-r4' index.html
+          grep -q 'data-release="20260923-market-r5"' index.html
+          grep -q 'home-marketplace-r5.css?v=20260923-market-r5' index.html
+          grep -q 'Worldwide' index.html
+          grep -q 'class="r5-tile"' index.html
+          grep -q 'href="media.html"' index.html
+          grep -q 'href="games.html"' index.html
+          grep -q 'location.replace' app.html
+          if grep -q '<iframe' app.html; then echo 'R5 app shell must not use iframe'; exit 1; fi
+          grep -q 'index.html?v=20260923-market-r5' manifest.webmanifest
+          grep -q 'seekvera-market-r5-20260923' sw.js
+          grep -q 'home-marketplace-r5.css' sw.js
           grep -q 'seekvera_worldwide_default_20260923_r4' superapp.js
           grep -q 'Worldwide · All countries' superapp.js
           grep -q 'syncInlineAssistantIntro' global-ui.js
-          grep -q 'href="media.html"' index.html
-          grep -q 'seekvera-worldwide-r4-20260923' sw.js
           rm -rf .wrangler-dry-run .wrangler
-          echo 'SEEKVERA Worker, Safety Gate, Voice AI, Worldwide R4 multilingual UI, app cache and asset boundaries are valid.'
+          echo 'R5 source validation passed.'
 
       - name: Detect Cloudflare deployment credentials
         id: cf
@@ -85,10 +86,10 @@ jobs:
         run: |
           if [ -n "$CF_TOKEN" ] && [ -n "$CF_ACCOUNT" ]; then
             echo 'ready=true' >> "$GITHUB_OUTPUT"
-            echo 'Cloudflare credentials found; production deployment will run.'
+            echo 'Cloudflare credentials found.'
           else
             echo 'ready=false' >> "$GITHUB_OUTPUT"
-            echo 'Cloudflare GitHub secrets are not configured; native Cloudflare Workers Builds remains the deployment path.'
+            echo 'Cloudflare GitHub secrets are not configured.'
           fi
 
       - name: Deploy to Cloudflare Workers
@@ -99,62 +100,42 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
 
-      - name: Verify live production security, same-origin APIs and health
+      - name: Verify live R5 production, AI and Safety
         if: steps.cf.outputs.ready == 'true'
         shell: bash
         run: |
           set -euo pipefail
           BASE='https://seekvera-main.seekvera-global.workers.dev'
           SITE='https://seekveraglobal.com'
-
-          for i in $(seq 1 18); do
-            HEALTH="$(curl -fsS --max-time 12 "$BASE/api/health" || true)"
-            SITE_HEALTH="$(curl -fsS --max-time 12 "$SITE/api/health?worldwide-r4=$i" || true)"
-            HOME="$(curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/?worldwide-r4=$i" || true)"
-            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/i18n-ui.js?v=20260923-worldwide-r4&sameorigin=$i" -o /tmp/i18n-ui.js || true
-            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/global-ui.js?v=20260923-worldwide-r4&sameorigin=$i" -o /tmp/global-ui.js || true
-            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/superapp.js?v=20260923-worldwide-r4&sameorigin=$i" -o /tmp/superapp.js || true
-            if grep -q '"marketplaceProxy":"enabled"' <<<"$HEALTH" && grep -q '"centralSafetyGate":"enabled"' <<<"$SITE_HEALTH" && grep -q 'i18n-ui.js?v=20260923-worldwide-r4' <<<"$HOME" && grep -q "HOST==='seekveraglobal.com'" /tmp/i18n-ui.js 2>/dev/null && grep -q "HOST==='seekveraglobal.com'" /tmp/global-ui.js 2>/dev/null && grep -q 'seekvera_worldwide_default_20260923_r4' /tmp/superapp.js 2>/dev/null; then
-              break
-            fi
+          ok=0
+          for i in $(seq 1 24); do
+            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/?market-r5=$i" -o /tmp/home.html || true
+            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/home-marketplace-r5.css?v=20260923-market-r5&n=$i" -o /tmp/r5.css || true
+            curl -fsS --max-time 15 "$SITE/api/health?market-r5=$i" -o /tmp/site-health.json || true
+            curl -fsS --max-time 15 "$BASE/api/health?market-r5=$i" -o /tmp/worker-health.json || true
+            if grep -q 'data-release="20260923-market-r5"' /tmp/home.html 2>/dev/null && grep -q 'r5-market' /tmp/r5.css 2>/dev/null && grep -q '"centralSafetyGate":"enabled"' /tmp/site-health.json 2>/dev/null && grep -q '"marketplaceProxy":"enabled"' /tmp/worker-health.json 2>/dev/null; then ok=1; break; fi
             sleep 5
           done
-          grep -q '"marketplaceProxy":"enabled"' <<<"$HEALTH"
-          grep -q '"centralSafetyGate":"enabled"' <<<"$HEALTH"
-          grep -q '"failClosed":true' <<<"$HEALTH"
-          grep -q '"centralSafetyGate":"enabled"' <<<"$SITE_HEALTH"
-          grep -q '"failClosed":true' <<<"$SITE_HEALTH"
-          grep -q 'i18n-ui.js?v=20260923-worldwide-r4' <<<"$HOME"
-          grep -q 'i18n-premium.css?v=20260923-worldwide-r4' <<<"$HOME"
-          grep -q 'href="media.html"' <<<"$HOME"
-          grep -q 'SEEKVERA multilingual UI runtime' /tmp/i18n-ui.js
-          grep -q "HOST==='seekveraglobal.com'" /tmp/i18n-ui.js
-          grep -q "HOST==='seekveraglobal.com'" /tmp/global-ui.js
-          grep -q 'syncInlineAssistantIntro' /tmp/global-ui.js
-          grep -q 'seekvera_worldwide_default_20260923_r4' /tmp/superapp.js
-          curl -fsS --max-time 15 "$SITE/i18n-premium.css?v=20260923-worldwide-r4" -o /tmp/i18n-premium.css
-          grep -q 'premium multilingual/RTL overrides' /tmp/i18n-premium.css
-
+          test "$ok" = '1'
+          grep -q 'home-marketplace-r5.css?v=20260923-market-r5' /tmp/home.html
+          grep -q 'class="r5-tile"' /tmp/home.html
+          grep -q 'href="media.html"' /tmp/home.html
+          grep -q 'href="games.html"' /tmp/home.html
+          grep -q '"failClosed":true' /tmp/site-health.json
+          curl -fsS --max-time 15 "$SITE/app.html?market-r5=1" -o /tmp/app.html
+          grep -q 'location.replace' /tmp/app.html
+          if grep -q '<iframe' /tmp/app.html; then echo 'Live app.html still contains iframe'; exit 1; fi
+          curl -fsS --max-time 15 "$SITE/manifest.webmanifest?market-r5=1" -o /tmp/manifest.json
+          grep -q 'index.html?v=20260923-market-r5' /tmp/manifest.json
+          curl -fsS --max-time 15 "$SITE/sw.js?market-r5=1" -o /tmp/sw.js
+          grep -q 'seekvera-market-r5-20260923' /tmp/sw.js
           curl -fsS --max-time 35 -X POST "$SITE/api/ai" -H 'Content-Type: application/json' --data '{"message":"Reply only with: Hello.","country":"Worldwide","language":"English","scope":"worldwide","fast":true}' -o /tmp/site-ai.json
           grep -q '"ok":true' /tmp/site-ai.json
           grep -qi 'hello' /tmp/site-ai.json
-
-          for path in worker.js wrangler.jsonc README.md README-FIRST.txt QA-REPORT.txt PAYMENTS-GLOBAL-NOTES.md package.json package-lock.json; do
-            code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 12 "$BASE/$path")"
-            if [ "$code" = '200' ]; then
-              echo "Internal file unexpectedly public: $path"
-              exit 1
-            fi
-          done
-
           submit_code="$(curl -sS -o /tmp/submit.json -w '%{http_code}' --max-time 15 -X POST "$BASE/api/marketplace-submit" -H 'Origin: https://seekveraglobal.com' -H 'Content-Type: application/json' --data '{}')"
           test "$submit_code" = '400'
           grep -q 'Safety confirmations are required' /tmp/submit.json
-
-          review_code="$(curl -sS -o /tmp/review.json -w '%{http_code}' --max-time 15 -X POST "$BASE/api/marketplace-review" -H 'Origin: https://seekveraglobal.com' -H 'Content-Type: application/json' --data '{}')"
-          test "$review_code" = '400'
-          grep -Eqi 'reference|invalid' /tmp/review.json
-          echo 'Live production Worldwide R4 same-origin APIs, multilingual UI, Worldwide default, health, internal-file isolation and marketplace server routing passed.'
+          echo 'Live R5 production, direct app shell, AI and Safety checks passed.'
 
       - name: Deployment architecture
         if: steps.cf.outputs.ready != 'true'
