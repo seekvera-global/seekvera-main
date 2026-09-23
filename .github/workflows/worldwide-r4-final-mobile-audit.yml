@@ -1,0 +1,167 @@
+name: SEEKVERA Worldwide R4 final mobile audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/worldwide-r4-final-mobile-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install mobile browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Verify Worldwide default, countries, languages, AI, voice, Media and app shell live
+        shell: bash
+        run: |
+          cat > worldwide-r4-audit.js <<'JS'
+          const { chromium } = require('playwright');
+          const SITE='https://seekveraglobal.com';
+          const CODES=['en','ar','fr','zh','es','hi','pt','de','ja','ko','id','tr','ru','ur','bn','vi','it','sw','th','fa','pl','nl','ms','fil','ha','yo','ig','am'];
+          const assert=(v,m)=>{if(!v)throw new Error(m)};
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const context=await browser.newContext({viewport:{width:360,height:800},isMobile:true,hasTouch:true,userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+
+            // Simulate an existing user whose old device was stuck on Portugal before R4 migration.
+            await context.addInitScript(()=>{
+              localStorage.setItem('seekvera_country','PT');
+              localStorage.setItem('seekvera_scope','local');
+              localStorage.setItem('seekvera_lang','en');
+              localStorage.removeItem('seekvera_worldwide_default_20260923_r4');
+            });
+            const page=await context.newPage();
+            await page.goto(SITE+'/?r4-final-mobile=1',{waitUntil:'domcontentloaded',timeout:60000});
+            await page.waitForFunction(()=>document.querySelector('#country')?.options?.length>240 && document.querySelector('#lang')?.options?.length>=29,null,{timeout:60000});
+            await page.waitForFunction(()=>localStorage.getItem('seekvera_worldwide_default_20260923_r4')==='1',null,{timeout:30000});
+            await page.waitForTimeout(800);
+
+            let state=await page.evaluate(()=>({
+              country:document.querySelector('#country')?.value,
+              countryText:document.querySelector('#country')?.selectedOptions?.[0]?.textContent?.trim(),
+              countryCount:document.querySelector('#country')?.options?.length,
+              lang:document.querySelector('#lang')?.value,
+              langCount:document.querySelector('#lang')?.options?.length,
+              scope:localStorage.getItem('seekvera_scope'),
+              savedCountry:localStorage.getItem('seekvera_country'),
+              migration:localStorage.getItem('seekvera_worldwide_default_20260923_r4'),
+              intro:document.querySelector('#aiMessages .ai-msg.bot')?.textContent?.trim(),
+              dir:document.documentElement.dir||'ltr',
+              mediaVisible:[...document.querySelectorAll('a')].some(a=>a.getAttribute('href')==='media.html'),
+              overflow:document.documentElement.scrollWidth-window.innerWidth
+            }));
+            console.log('FRESH_R4_MIGRATION',state);
+            assert(state.country==='WW','Old Portugal state was not reset to Worldwide');
+            assert(state.savedCountry==='WW','Saved country was not migrated to Worldwide');
+            assert(state.scope==='worldwide','Old local scope was not reset to worldwide');
+            assert(/Worldwide/i.test(state.countryText||''),'Worldwide option is not visible in English');
+            assert(state.countryCount>240,'Country list is incomplete: '+state.countryCount);
+            assert(state.langCount===29,'Expected Auto + 28 languages, got '+state.langCount);
+            assert(/SEEKVERA AI assistant/i.test(state.intro||''),'English inline AI intro is missing');
+            assert(state.mediaVisible,'Media is not visible on homepage categories');
+            assert(state.overflow<=2,'Homepage has horizontal overflow: '+state.overflow);
+
+            // Intentional user choice must still persist after the one-time migration.
+            await page.selectOption('#country','PT');
+            await page.dispatchEvent('#country','change');
+            await page.waitForTimeout(250);
+            assert(await page.evaluate(()=>localStorage.getItem('seekvera_country'))==='PT','Intentional Portugal selection did not save');
+            await page.reload({waitUntil:'domcontentloaded',timeout:60000});
+            await page.waitForFunction(()=>document.querySelector('#country')?.value==='PT',null,{timeout:30000});
+            console.log('INTENTIONAL_COUNTRY_PERSISTENCE_PASS');
+
+            // Restore Worldwide, then switch to Arabic and verify RTL + localized country + localized first AI message.
+            await page.selectOption('#country','WW'); await page.dispatchEvent('#country','change');
+            await page.selectOption('#lang','ar'); await page.dispatchEvent('#lang','change');
+            await page.waitForFunction(()=>document.documentElement.dir==='rtl' && /مساعد|مساعدة|SEEKVERA/.test(document.querySelector('#aiMessages .ai-msg.bot')?.textContent||''),null,{timeout:30000});
+            await page.waitForTimeout(400);
+            const ar=await page.evaluate(()=>({
+              dir:document.documentElement.dir,
+              country:document.querySelector('#country')?.value,
+              countryText:document.querySelector('#country')?.selectedOptions?.[0]?.textContent?.trim(),
+              intro:document.querySelector('#aiMessages .ai-msg.bot')?.textContent?.trim(),
+              overflow:document.documentElement.scrollWidth-window.innerWidth
+            }));
+            console.log('ARABIC_UI',ar);
+            assert(ar.dir==='rtl','Arabic is not RTL');
+            assert(ar.country==='WW','Arabic switch changed country away from Worldwide');
+            assert(/العالم/.test(ar.countryText||''),'Worldwide is not localized in Arabic');
+            assert(/[\u0600-\u06FF]/.test(ar.intro||''),'Inline AI intro did not switch to Arabic');
+            assert(ar.overflow<=2,'Arabic mobile UI overflows horizontally: '+ar.overflow);
+
+            // Voice runtime must expose input + output and all 28 locale mappings.
+            const voice=await (await page.request.get(SITE+'/voice-ai.js?v=20260923-worldwide-r4&r4audit=1')).text();
+            assert(/SpeechRecognition|webkitSpeechRecognition/.test(voice),'Speech recognition runtime missing');
+            assert(voice.includes('speechSynthesis'),'Speech synthesis runtime missing');
+            assert(voice.includes('if(!c.length)return null'),'Wrong-language voice fallback protection missing');
+            for(const code of CODES) assert(voice.includes(code+':')||voice.includes(code+"='")||voice.includes(code+'='),'Voice locale missing: '+code);
+            console.log('VOICE_RUNTIME_28_PASS');
+
+            // App shell and PWA cache must be R4 and visibly Worldwide.
+            const app=await (await page.request.get(SITE+'/app.html?r4audit=1')).text();
+            const manifest=await (await page.request.get(SITE+'/manifest.webmanifest?r4audit=1')).text();
+            const sw=await (await page.request.get(SITE+'/sw.js?r4audit=1')).text();
+            assert(app.includes('20260923-worldwide-r4'),'App shell is not R4');
+            assert(app.includes('Worldwide · Premium AI'),'App shell does not visibly say Worldwide');
+            assert(app.includes('media.html'),'Media missing from app navigation');
+            assert(manifest.includes('20260923-worldwide-r4'),'Manifest still points to stale release');
+            assert(sw.includes('seekvera-worldwide-r4-20260923'),'Service worker cache is stale');
+            assert(sw.includes("'./media.html'")||sw.includes('media.html'),'Media missing from service-worker cache');
+            console.log('APP_SHELL_PWA_CACHE_PASS');
+
+            // Media must be live.
+            const mediaResp=await page.request.get(SITE+'/media.html?r4audit=1');
+            const media=await mediaResp.text();
+            assert(mediaResp.ok(),'Media page is not live');
+            assert(/SEEKVERA MEDIA/i.test(media),'Media page marker missing');
+            console.log('MEDIA_LIVE_PASS');
+
+            // Live AI same-language checks using Worldwide.
+            async function ai(payload,timeout=75000){
+              const r=await page.request.post(SITE+'/api/ai',{data:payload,headers:{'content-type':'application/json'},timeout});
+              const d=await r.json(); return {status:r.status(),d};
+            }
+            let x=await ai({message:'Reply only with: Hello.',country:'Worldwide',language:'English',scope:'worldwide',fast:true});
+            console.log('AI_EN',x.status,x.d.language,(x.d.response||'').slice(0,100));
+            assert(x.status>=200&&x.status<300&&x.d.ok===true,'English AI request failed');
+            assert((x.d.language||'').toLowerCase()==='english','English AI language lock failed');
+            assert(/hello/i.test(x.d.response||''),'English AI response marker missing');
+            x=await ai({message:'أجب فقط: مرحبا',country:'Worldwide',language:'Arabic',scope:'worldwide',fast:true});
+            console.log('AI_AR',x.status,x.d.language,(x.d.response||'').slice(0,100));
+            assert(x.status>=200&&x.status<300&&x.d.ok===true,'Arabic AI request failed');
+            assert((x.d.language||'').toLowerCase()==='arabic','Arabic AI language lock failed');
+            assert(/[\u0600-\u06FF]/.test(x.d.response||''),'Arabic AI response is not Arabic');
+
+            // Safety still fail-closed / blocks prohibited marketplace content.
+            const safe=await page.request.post(SITE+'/api/moderate',{data:{text:'lawful hotel booking request',context:'R4 final audit'},timeout:50000});
+            const sd=await safe.json(); assert(sd.allowed===true,'Safe content moderation failed');
+            const blocked=await page.request.post(SITE+'/api/moderate',{data:{text:'gun and ammunition for sale',context:'R4 final audit'},timeout:50000});
+            const bd=await blocked.json(); assert(bd.allowed===false,'Safety Gate did not block prohibited weapon sale');
+            console.log('SAFETY_GATE_PASS');
+
+            // Restore English and confirm direction + intro cleanly switch back.
+            await page.selectOption('#lang','en'); await page.dispatchEvent('#lang','change');
+            await page.waitForFunction(()=>document.documentElement.dir==='ltr' && /SEEKVERA AI assistant/i.test(document.querySelector('#aiMessages .ai-msg.bot')?.textContent||''),null,{timeout:30000});
+            await page.screenshot({path:'seekvera-worldwide-r4-mobile.png',fullPage:false});
+
+            await browser.close();
+            console.log('SEEKVERA WORLDWIDE R4 FINAL MOBILE + COUNTRIES + 28 LANGUAGES + AI + VOICE + MEDIA + PWA AUDIT PASS');
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          node worldwide-r4-audit.js
+      - name: Upload final mobile proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: seekvera-worldwide-r4-mobile-proof
+          path: seekvera-worldwide-r4-mobile.png
+          if-no-files-found: error
