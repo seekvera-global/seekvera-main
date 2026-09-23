@@ -1,0 +1,90 @@
+name: Fix R6 Vision Description Pipeline V7
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-r6-vision-description-pipeline-v7.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Replace brittle Vision markers with description plus central Safety
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('worker.js')
+          s=p.read_text(encoding='utf-8')
+          vision_fn="""async function vision(env,image,ctx=''){const im=img(image);if(im.error)return{status:400,result:{ok:false,error:im.error}};if(!env.AI)return{status:200,result:{ok:true,allowed:false,reviewRequired:true,reason:'vision_ai_unavailable_hold',source:'fail-closed'}};try{const prompt='Describe this image objectively and concretely for a safety and visual-search system. State the main visible objects or place, any readable text, and explicitly mention if you see weapons, explosives, nudity/sexual content, drugs, identity/payment documents, passwords/credentials, extremist symbols, injury, or other potentially unsafe or privacy-sensitive material. Do not identify or guess the identity of any person. Do not give advice. Keep it under 120 words.';const r=await runVision(env,{messages:[{role:'system',content:'You are SEEKVERA visual understanding. Accurately describe what is visibly present; do not invent details.'},{role:'user',content:prompt}],image:im.value,max_tokens:180,temperature:0}),description=clean(out(r),1600);if(!description)return{status:200,result:{ok:true,allowed:false,reviewRequired:true,reason:'vision_description_empty',source:'fail-closed'}};const sg=await safety(env,description+' '+clean(ctx,500),'image description');return{status:200,result:{...sg,description,visionModel:VISION,source:sg.source==='rules'?sg.source:'vision-plus-central-safety'}}}catch(e){const m=clean(e?.message||e,500);return{status:200,result:{ok:true,allowed:false,reviewRequired:true,reason:/3036|daily free allocation/i.test(m)?'vision_daily_free_ai_limit':/3040|capacity temporarily exceeded/i.test(m)?'vision_capacity_busy':'vision_moderation_unavailable_hold',source:'fail-closed'}}}}"""
+          s,n=re.subn(r"async function vision\(env,image,ctx=''\)\{.*?\}\nconst category=",lambda m: vision_fn+'\nconst category=',s,count=1,flags=re.S)
+          if n!=1: raise SystemExit('vision function patch failed')
+          visual="""if(u.pathname==='/api/visual-search'){try{const b=await request.json(),v=await vision(env,b.image,[b.country,b.language,b.context].filter(Boolean).join(' | '));if(v.status!==200||!v.result.allowed||v.result.reviewRequired)return j(request,v.result,v.status);const description=clean(v.result.description,1000);if(!description)return j(request,{ok:true,allowed:true,reviewRequired:true,reason:'visual_description_missing'});const cat=category(description),summary=clean(description,250),suggestedQuery=clean(description.replace(/\\s+/g,' '),180);return j(request,{ok:true,allowed:true,reviewRequired:false,category:cat,summary,suggestedQuery,guidance:'Open the matching section and compare verified live offers.',route:route(cat),model:v.result.visionModel||VISION,safetySource:v.result.source})}catch{return j(request,{ok:true,allowed:false,reviewRequired:true,reason:'visual_search_unavailable_hold',source:'fail-closed'})}}"""
+          s,n=re.subn(r"if\(u\.pathname==='/api/visual-search'\)\{.*?\}\}\nif\(u\.pathname==='/api/marketplace-submit'",lambda m: visual+"\nif(u.pathname==='/api/marketplace-submit'",s,count=1,flags=re.S)
+          if n!=1: raise SystemExit('visual-search patch failed')
+          s=s.replace("visionRuntime:'license-aware-v2'","visionRuntime:'gemma-description-central-safety-v3'")
+          p.write_text(s,encoding='utf-8')
+          PY
+          node --check worker.js
+          grep -q "gemma-description-central-safety-v3" worker.js
+
+      - name: Commit Vision pipeline
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name seekvera-bot
+          git config user.email actions@users.noreply.github.com
+          git add worker.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Use Vision description through centralized Safety Gate'
+            git push origin main
+          fi
+
+      - name: Deploy Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx -y wrangler@4 deploy
+
+      - name: Require full live visual-search pass
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64,struct,zlib,binascii,json,urllib.request,time
+          w=h=96
+          raw=b''.join(b'\x00'+b'\x22\x88\xdd\xff'*w for _ in range(h))
+          def chunk(t,d): return struct.pack('>I',len(d))+t+d+struct.pack('>I',binascii.crc32(t+d)&0xffffffff)
+          png=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',w,h,8,6,0,0,0))+chunk(b'IDAT',zlib.compress(raw))+chunk(b'IEND',b'')
+          image='data:image/png;base64,'+base64.b64encode(png).decode()
+          H={'Content-Type':'application/json','User-Agent':'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 Version/19.0 Mobile/15E148 Safari/604.1','Origin':'https://seekveraglobal.com','Referer':'https://seekveraglobal.com/'}
+          body=json.dumps({'image':image,'country':'Worldwide','language':'English','context':'Safe ordinary test image'}).encode()
+          last={}
+          for n in range(5):
+              req=urllib.request.Request('https://seekveraglobal.com/api/visual-search',data=body,headers=H,method='POST')
+              with urllib.request.urlopen(req,timeout=100) as r: d=json.loads(r.read().decode())
+              last=d; print('TRY',n+1,json.dumps(d,ensure_ascii=False)[:900],flush=True)
+              if d.get('ok') and d.get('allowed') is True and d.get('reviewRequired') is False and d.get('summary') and d.get('suggestedQuery'):
+                  print('FULL VISUAL SEARCH PASS',d.get('category'),d.get('summary'),flush=True)
+                  break
+              time.sleep(4)
+          else: raise SystemExit('Visual Search failed: '+str(last)[:900])
+          PY
+
+      - name: Result
+        run: echo 'R6 VISUAL SEARCH DESCRIPTION PIPELINE PASS'
