@@ -1,0 +1,14 @@
+/* R5B language rendering safety layer. Real strings are provided by JS/runtime, not pseudo-elements. */
+.r5-hero h1{
+  font-size:clamp(24px,4vw,46px)!important;
+  line-height:1.04!important;
+  letter-spacing:-.035em!important;
+}
+.r5-hero h1::after{content:none!important;display:none!important}
+.r5-chat .sv-chat-messages>.ai-msg.bot:first-child{font-size:13px!important;line-height:1.4!important}
+.r5-chat .sv-chat-messages>.ai-msg.bot:first-child::after{content:none!important;display:none!important}
+@media(max-width:780px){
+  .r5-hero h1{font-size:29px!important;margin:7px 0 5px!important;line-height:1.02!important}
+  .r5-chat .sv-chat-messages>.ai-msg.bot:first-child{font-size:12.5px!important}
+}
+@media(max-width:380px){.r5-hero h1{font-size:26px!important}}
