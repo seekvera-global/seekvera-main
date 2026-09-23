@@ -1,5 +1,5 @@
-const CACHE='seekvera-final-r3-20260922';
-const CORE=['./','./index.html','./app.html','./premium.css','./superapp.js','./voice-ai.js','./global-ui.js','./global-ui.css','./i18n-ui.js','./i18n-premium.css','./games.html','./games.js','./connectivity.html','./deal-agent.html','./deal-agent.js','./marketplace.html','./post-ad.html','./travel.html','./tourism.html','./wifi.html','./scan.html','./hub.html','./manifest.webmanifest','./favicon.svg'];
+const CACHE='seekvera-worldwide-r4-20260923';
+const CORE=['./','./index.html','./app.html','./premium.css','./superapp.js','./voice-ai.js','./global-ui.js','./global-ui.css','./i18n-ui.js','./i18n-premium.css','./games.html','./games.js','./media.html','./connectivity.html','./deal-agent.html','./deal-agent.js','./marketplace.html','./post-ad.html','./travel.html','./tourism.html','./wifi.html','./scan.html','./hub.html','./manifest.webmanifest','./favicon.svg'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE).catch(()=>{})).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener('message',e=>{if(e.data==='SKIP_WAITING')self.skipWaiting()});

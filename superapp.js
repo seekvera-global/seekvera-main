@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-const RELEASE='2026-09-22-premium-r1';
+const RELEASE='2026-09-23-worldwide-r4';
 const WORKER=location.hostname.endsWith('workers.dev')?'':'https://seekvera-main.seekvera-global.workers.dev';
 const SB='https://nrdpyydfrpmqedtzmbyw.supabase.co';
 const SB_KEY='sb_publishable_tqqPQxqdNowIsSlJz4bW5w_kHOC905o';
@@ -17,7 +17,7 @@ function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&l
 function lang(){return $('#lang')?.value||localStorage.getItem('seekvera_lang')||'en'}
 function tr(k){return I18N[lang()]?.[k]||I18N.en[k]||k}
 function populateLanguage(){const el=$('#lang');if(!el)return;el.innerHTML=LANGS.map(([v,n])=>`<option value="${v}">${n}</option>`).join('');const saved=localStorage.getItem('seekvera_lang');if(saved&&LANGS.some(x=>x[0]===saved))el.value=saved;else el.value='auto';el.addEventListener('change',()=>{localStorage.setItem('seekvera_lang',el.value);document.documentElement.lang=el.value==='auto'?((navigator.language||'en').split('-')[0]):el.value;document.documentElement.dir=/^(ar|fa|ur)$/.test(el.value)?'rtl':'ltr';if($('#globalSearch'))$('#globalSearch').placeholder=tr('placeholder')})}
-function populateCountries(){const el=$('#country');if(!el)return;let dn;try{dn=new Intl.DisplayNames([navigator.language||'en'],{type:'region'})}catch{}const options=['<option value="WW">Worldwide</option>'];for(const c of ISO){const name=dn?.of(c)||c;options.push(`<option value="${c}">${esc(name)}</option>`)}el.innerHTML=options.join('');const saved=localStorage.getItem('seekvera_country')||'WW';if([...el.options].some(o=>o.value===saved))el.value=saved;el.addEventListener('change',()=>{localStorage.setItem('seekvera_country',el.value);syncCurrency()});syncCurrency()}
+function populateCountries(){const el=$('#country');if(!el)return;const migration='seekvera_worldwide_default_20260923_r4';if(!localStorage.getItem(migration)){localStorage.setItem('seekvera_country','WW');localStorage.setItem('seekvera_scope','worldwide');localStorage.setItem(migration,'1')}let dn;try{dn=new Intl.DisplayNames([navigator.language||'en'],{type:'region'})}catch{}const options=['<option value="WW">Worldwide · All countries</option>'];for(const c of ISO){const name=dn?.of(c)||c;options.push(`<option value="${c}">${esc(name)}</option>`)}el.innerHTML=options.join('');const saved=localStorage.getItem('seekvera_country')||'WW';el.value=[...el.options].some(o=>o.value===saved)?saved:'WW';el.addEventListener('change',()=>{localStorage.setItem('seekvera_country',el.value);syncCurrency()});syncCurrency()}
 function syncCurrency(){const c=$('#country')?.value||'WW',cur=$('#currency');if(!cur)return;const wanted=CURRENCY_BY_COUNTRY[c]||localStorage.getItem('seekvera_currency')||'USD';if([...cur.options].some(o=>o.value===wanted))cur.value=wanted;localStorage.setItem('seekvera_currency',cur.value)}
 function bindCurrency(){const el=$('#currency');if(el)el.addEventListener('change',()=>localStorage.setItem('seekvera_currency',el.value))}
 function categoryFor(q){const t=q.toLowerCase();let best='marketplace',score=0;for(const [cat,words] of Object.entries(KEYWORDS)){const s=words.reduce((n,w)=>n+(t.includes(w)?1:0),0);if(s>score){best=cat;score=s}}return best}
