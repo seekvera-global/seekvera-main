@@ -17,6 +17,7 @@
     {"name":"AI Search","short_name":"AI","url":"./app.html#home"},
     {"name":"Marketplace","short_name":"Market","url":"./app.html#marketplace"},
     {"name":"Free Games","short_name":"Games","url":"./games.html"},
+    {"name":"Media","short_name":"Media","url":"./media.html"},
     {"name":"Travel & Connectivity","short_name":"Travel","url":"./app.html#connectivity"},
     {"name":"AI Deal Agent","short_name":"Deals","url":"./app.html#deal-agent"}
   ]
