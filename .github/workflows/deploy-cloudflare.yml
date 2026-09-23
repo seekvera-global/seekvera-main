@@ -1,5 +1,5 @@
 name: Deploy SEEKVERA to Cloudflare
-# Stable production deployment: restored 22 Sep Final R3 UI + current AI/Voice/Safety backend
+# Final production deployment: R6 visual marketplace + multilingual AI + Voice + News/Media + Safety
 
 on:
   push:
@@ -14,6 +14,7 @@ on:
       - 'global-ui.js'
       - 'i18n-ui.js'
       - 'i18n-premium.css'
+      - 'home-marketplace-r5.css'
       - 'app.js'
       - 'superapp.js'
       - 'sw.js'
@@ -27,41 +28,40 @@ permissions:
   contents: read
 
 concurrency:
-  group: seekvera-cloudflare-production
+  group: seekvera-cloudflare-production-r6
   cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate restored public UI and current backend
+      - name: Validate R6 source and backend
         shell: bash
         run: |
           set -euo pipefail
-          npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-dry-run
-          grep -q '"binding": "AI"' wrangler.jsonc
-          grep -q '@cf/google/gemma-4-26b-a4b-it' worker.js
+          for f in worker.js voice-ai.js i18n-ui.js global-ui.js superapp.js sw.js; do node --check "$f"; done
+          grep -q '20260923-final-market-r6' index.html
+          grep -q 'News & Media' index.html
+          grep -q 'Al Jazeera' media.html
+          grep -q 'CNN' media.html
+          grep -q 'sv_i18n_r6_' i18n-ui.js
+          grep -q 'LANGUAGE_NAME_MAP' worker.js
           grep -q '@cf/openai/whisper-large-v3-turbo' worker.js
           grep -q '/api/transcribe' worker.js
-          grep -q "voiceInputFallback:'server-asr-v1'" worker.js
+          grep -q '/api/visual-search' worker.js
           grep -q 'safetyGateVersion' worker.js
-          grep -q '/api/vision' worker.js
-          grep -q '/api/marketplace-submit' worker.js
-          for f in voice-ai.js i18n-ui.js global-ui.js superapp.js sw.js worker.js; do node --check "$f"; done
           grep -q 'serverVoice' voice-ai.js
-          grep -q 'navigator.mediaDevices' voice-ai.js
           grep -q 'MediaRecorder' voice-ai.js
-          grep -q '20260922-final-r3' index.html
-          grep -q 'sv-unified-chat' index.html
-          grep -q 'PREMIUM GLOBAL AI' index.html
-          grep -q 'premium.css' index.html
-          grep -q 'games.html' index.html
-          grep -q 'seekvera-final-r3-20260922' sw.js
+          if grep -q '<iframe' app.html; then echo 'app.html must not use iframe'; exit 1; fi
+          grep -q 'location.replace' app.html
+          npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-dry-run
+          grep -q '"binding": "AI"' wrangler.jsonc
           rm -rf .wrangler-dry-run .wrangler
-          echo 'RESTORED FINAL R3 + CURRENT BACKEND SOURCE VALIDATION PASS'
+          echo 'R6 SOURCE VALIDATION PASS'
 
       - name: Detect Cloudflare deployment credentials
         id: cf
@@ -84,41 +84,50 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
 
-      - name: Verify live restored Final R3 production
+      - name: Verify live R6 production
         if: steps.cf.outputs.ready == 'true'
         shell: bash
         run: |
           set -euo pipefail
           SITE='https://seekveraglobal.com'
-
-          ui_ok=0
-          for i in $(seq 1 24); do
-            curl -L -fsS --max-time 20 -H 'Cache-Control: no-cache' "$SITE/?stable-r3=$i" -o /tmp/home.html || true
-            if grep -q '20260922-final-r3' /tmp/home.html 2>/dev/null && grep -q 'sv-unified-chat' /tmp/home.html 2>/dev/null && grep -q 'PREMIUM GLOBAL AI' /tmp/home.html 2>/dev/null; then
-              ui_ok=1
-              break
-            fi
-            sleep 5
+          ok=0
+          for i in $(seq 1 25); do
+            curl -L -fsS --max-time 20 -H 'Cache-Control: no-cache' "$SITE/?r6-live=$i" -o /tmp/home.html || true
+            if grep -q '20260923-final-market-r6' /tmp/home.html 2>/dev/null && grep -q 'News & Media' /tmp/home.html 2>/dev/null; then ok=1; break; fi
+            sleep 4
           done
-          test "$ui_ok" = '1'
-          echo 'LIVE CUSTOM DOMAIN FINAL R3 UI PASS'
+          test "$ok" = '1'
+          echo 'LIVE R6 HOME PASS'
 
-          pages=(games.html marketplace.html travel.html property.html jobs.html shopping.html hub.html)
+          pages=(marketplace.html travel.html property.html cars-auto.html jobs.html shopping.html import-export.html restaurants-food.html local-services.html media.html games.html connectivity.html deal-agent.html post-ad.html hub.html app.html)
           for p in "${pages[@]}"; do
-            code="$(curl -L -sS -o /tmp/page.html -w '%{http_code}' --max-time 25 "$SITE/$p?stable-r3=1")"
+            code="$(curl -L -sS -o /tmp/page.html -w '%{http_code}' --max-time 25 "$SITE/$p?r6-live=1")"
             test "$code" = '200'
             echo "PASS $p"
           done
-          echo 'LIVE CORE PUBLIC PAGES PASS'
+          curl -L -fsS --max-time 20 "$SITE/media.html?r6-live=1" -o /tmp/media.html
+          grep -q 'Al Jazeera' /tmp/media.html
+          grep -q 'Al Arabiya' /tmp/media.html
+          grep -q 'CNN' /tmp/media.html
+          grep -q 'BBC News' /tmp/media.html
+          grep -q 'Reuters' /tmp/media.html
+          echo 'LIVE R6 PAGES + NEWS PASS'
 
-          ai_code="$(curl -sS -o /tmp/ai.json -w '%{http_code}' --max-time 45 -X POST "$SITE/api/ai" -H 'Content-Type: application/json' --data '{"message":"Hello","country":"Worldwide","language":"English","scope":"worldwide","fast":true}')"
+          UA='Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
+          ai_code="$(curl -sS -o /tmp/ai.json -w '%{http_code}' --max-time 60 -X POST "$SITE/api/ai" -H "User-Agent: $UA" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' --data '{"message":"Reply only with: Hello.","country":"Brazil","language":"English","scope":"worldwide","fast":true}')"
           test "$ai_code" = '200'
           grep -q '"ok":true' /tmp/ai.json
-          echo 'LIVE CUSTOM DOMAIN AI ROUTE PASS'
+          grep -qi 'hello' /tmp/ai.json
+          echo 'LIVE R6 AI ROUTE PASS'
+
+          curl -L -fsS --max-time 25 "$SITE/api/health?r6-live=1" -o /tmp/health.json
+          grep -q '"centralSafetyGate":"enabled"' /tmp/health.json
+          grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/health.json
+          echo 'LIVE R6 SAFETY + VOICE HEALTH PASS'
 
       - name: Deployment architecture
         if: steps.cf.outputs.ready != 'true'
         shell: bash
         run: |
-          echo 'Cloudflare GitHub deployment credentials are unavailable.'
+          echo 'Cloudflare deployment credentials are unavailable.'
           exit 1
