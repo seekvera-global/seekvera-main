@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-const RELEASE='2026-09-23-worldwide-r4';
+const RELEASE='2026-09-23-market-r5';
 const WORKER=location.hostname.endsWith('workers.dev')?'':'https://seekvera-main.seekvera-global.workers.dev';
 const SB='https://nrdpyydfrpmqedtzmbyw.supabase.co';
 const SB_KEY='sb_publishable_tqqPQxqdNowIsSlJz4bW5w_kHOC905o';
