@@ -1,0 +1,135 @@
+name: Final R6 Device Voice Vision Audit V3
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/final-r6-device-vision-audit-v3.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Accept and test Cloudflare Vision model directly
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$CF_TOKEN" && test -n "$CF_ACCOUNT"
+          API="https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT/ai/run/@cf/meta/llama-3.2-11b-vision-instruct"
+          curl -fsS --max-time 60 -X POST "$API" -H "Authorization: Bearer $CF_TOKEN" -H 'Content-Type: application/json' --data '{"prompt":"agree"}' -o /tmp/agree.json
+          python3 - <<'PY'
+          import json
+          d=json.load(open('/tmp/agree.json'))
+          if not d.get('success'): raise SystemExit('Vision license agreement request failed')
+          print('VISION LICENSE AGREEMENT PASS')
+          PY
+          python3 - <<'PY'
+          import os,json,base64,struct,zlib,binascii,urllib.request
+          account=os.environ['CF_ACCOUNT']; token=os.environ['CF_TOKEN']
+          w=h=64; raw=b''.join(b'\x00'+b'\x20\x90\xe0\xff'*w for _ in range(h))
+          def chunk(t,d): return struct.pack('>I',len(d))+t+d+struct.pack('>I',binascii.crc32(t+d)&0xffffffff)
+          png=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',w,h,8,6,0,0,0))+chunk(b'IDAT',zlib.compress(raw))+chunk(b'IEND',b'')
+          image='data:image/png;base64,'+base64.b64encode(png).decode()
+          body=json.dumps({'messages':[{'role':'system','content':'You describe safe ordinary images briefly.'},{'role':'user','content':'Describe this simple image.'}],'image':image,'max_tokens':40,'temperature':0}).encode()
+          url=f'https://api.cloudflare.com/client/v4/accounts/{account}/ai/run/@cf/meta/llama-3.2-11b-vision-instruct'
+          req=urllib.request.Request(url,data=body,headers={'Authorization':'Bearer '+token,'Content-Type':'application/json'},method='POST')
+          with urllib.request.urlopen(req,timeout=80) as r: d=json.loads(r.read().decode())
+          if not d.get('success'): raise SystemExit('Direct Vision model test failed: '+str(d)[:300])
+          result=d.get('result') or {}; text=result.get('response') if isinstance(result,dict) else str(result)
+          if not text: raise SystemExit('Vision model returned no text')
+          print('DIRECT VISION MODEL PASS:',str(text)[:120])
+          PY
+
+      - name: Verify SEEKVERA live visual search after license acceptance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64,struct,zlib,binascii,json,urllib.request,time
+          w=h=64; raw=b''.join(b'\x00'+b'\x20\x90\xe0\xff'*w for _ in range(h))
+          def chunk(t,d): return struct.pack('>I',len(d))+t+d+struct.pack('>I',binascii.crc32(t+d)&0xffffffff)
+          png=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',w,h,8,6,0,0,0))+chunk(b'IDAT',zlib.compress(raw))+chunk(b'IEND',b'')
+          image='data:image/png;base64,'+base64.b64encode(png).decode()
+          H={'Content-Type':'application/json','User-Agent':'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 Version/19.0 Mobile/15E148 Safari/604.1','Origin':'https://seekveraglobal.com','Referer':'https://seekveraglobal.com/'}
+          body=json.dumps({'image':image,'country':'Worldwide','language':'English','context':'A safe plain color test image'}).encode()
+          last=None
+          for n in range(3):
+            req=urllib.request.Request('https://seekveraglobal.com/api/visual-search',data=body,headers=H,method='POST')
+            with urllib.request.urlopen(req,timeout=80) as r: d=json.loads(r.read().decode())
+            last=d
+            if d.get('ok') and d.get('allowed') is True and d.get('reviewRequired') is False:
+              print('LIVE VISUAL SEARCH PASS',d.get('category'),d.get('summary','')[:100]); break
+            time.sleep(3)
+          else: raise SystemExit('Live visual search did not clear safely: '+str(last)[:400])
+          PY
+
+      - name: Verify real speech-to-text with generated WAV
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq >/dev/null
+          sudo apt-get install -y -qq espeak >/dev/null
+          espeak -w /tmp/seekvera.wav 'hello seekvera' >/dev/null 2>&1
+          python3 - <<'PY'
+          import base64,json,urllib.request
+          audio='data:audio/wav;base64,'+base64.b64encode(open('/tmp/seekvera.wav','rb').read()).decode()
+          H={'Content-Type':'application/json','User-Agent':'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36','Origin':'https://seekveraglobal.com','Referer':'https://seekveraglobal.com/'}
+          body=json.dumps({'audio':audio,'language':'English'}).encode()
+          req=urllib.request.Request('https://seekveraglobal.com/api/transcribe',data=body,headers=H,method='POST')
+          with urllib.request.urlopen(req,timeout=90) as r: d=json.loads(r.read().decode())
+          text=str(d.get('text','')).strip()
+          if not d.get('ok') or not text: raise SystemExit('Real ASR failed: '+str(d)[:300])
+          print('REAL ASR PASS:',text)
+          PY
+
+      - name: Cross-device browser audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm i --no-save playwright@1.58.2 >/dev/null 2>&1
+          npx playwright install chromium webkit firefox >/dev/null 2>&1
+          cat > /tmp/r6-audit.cjs <<'JS'
+          const {chromium,webkit,firefox}=require('playwright');
+          (async()=>{
+            const profiles=[
+              ['Android Chrome',chromium,{viewport:{width:360,height:800},userAgent:'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'}],
+              ['iPhone Safari',webkit,{viewport:{width:390,height:844},userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 Version/19.0 Mobile/15E148 Safari/604.1'}],
+              ['iPad Safari',webkit,{viewport:{width:820,height:1180},userAgent:'Mozilla/5.0 (iPad; CPU OS 19_0 like Mac OS X) AppleWebKit/605.1.15 Version/19.0 Mobile/15E148 Safari/604.1'}],
+              ['Desktop Chrome Edge engine',chromium,{viewport:{width:1366,height:768}}],
+              ['Desktop Firefox',firefox,{viewport:{width:1366,height:768}}]
+            ];
+            for(const [name,engine,opt] of profiles){
+              const b=await engine.launch({headless:true});
+              const c=await b.newContext(opt); const p=await c.newPage();
+              await p.goto('https://seekveraglobal.com/?final-device-r6=1',{waitUntil:'domcontentloaded',timeout:60000}); await p.waitForTimeout(1800);
+              const base=await p.evaluate(()=>({release:document.body.dataset.release||'',countries:document.querySelector('#country')?.options.length||0,languages:document.querySelector('#lang')?.options.length||0,tiles:document.querySelectorAll('.r5-tile').length,media:!!document.querySelector('a[href="media.html"]'),chat:!!document.querySelector('#aiChat'),mic:!!document.querySelector('#aiChatMic'),camera:!!document.querySelector('#aiChatCamera'),speaker:!!document.querySelector('#aiChatSpeaker'),overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth}));
+              if(base.release!=='20260923-final-market-r6'||base.countries<249||base.languages!==29||base.tiles<16||!base.media||!base.chat||!base.mic||!base.camera||!base.speaker||base.overflow>4) throw Error(name+' BASE '+JSON.stringify(base));
+              await p.selectOption('#lang','pt'); await p.waitForTimeout(4500);
+              const pt=await p.evaluate(()=>({intro:document.querySelector('#aiMessages .ai-msg.bot')?.textContent||'',toggle:document.querySelector('.sv-request-toggle')?.textContent||'',dir:document.documentElement.dir}));
+              if(!/assistente/i.test(pt.intro)||/[\u0600-\u06ff]/.test(pt.toggle)||pt.dir==='rtl') throw Error(name+' PT '+JSON.stringify(pt));
+              await p.selectOption('#lang','en'); await p.waitForTimeout(900);
+              const en=await p.evaluate(()=>({toggle:document.querySelector('.sv-request-toggle')?.textContent||'',dir:document.documentElement.dir,intro:document.querySelector('#aiMessages .ai-msg.bot')?.textContent||''}));
+              if(/[\u0600-\u06ff]/.test(en.toggle)||en.dir==='rtl'||!/SEEKVERA AI assistant/i.test(en.intro)) throw Error(name+' EN '+JSON.stringify(en));
+              await p.selectOption('#lang','ar'); await p.waitForTimeout(900);
+              const ar=await p.evaluate(()=>({dir:document.documentElement.dir,intro:document.querySelector('#aiMessages .ai-msg.bot')?.textContent||''}));
+              if(ar.dir!=='rtl'||!/[\u0600-\u06ff]/.test(ar.intro)) throw Error(name+' AR '+JSON.stringify(ar));
+              console.log(name,'PASS',JSON.stringify(base));
+              await b.close();
+            }
+            console.log('ALL CROSS DEVICE PROFILES PASS');
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          node /tmp/r6-audit.cjs
+
+      - name: Final result
+        run: echo 'FINAL R6 DEVICE + REAL ASR + VISION PASS'
