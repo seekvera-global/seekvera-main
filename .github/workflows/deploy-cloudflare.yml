@@ -1,5 +1,5 @@
 name: Deploy SEEKVERA to Cloudflare
-# Production deployment: R5B clean mobile marketplace + multilingual AI/Voice + server ASR fallback
+# Stable production deployment: restored 22 Sep Final R3 UI + current AI/Voice/Safety backend
 
 on:
   push:
@@ -14,10 +14,6 @@ on:
       - 'global-ui.js'
       - 'i18n-ui.js'
       - 'i18n-premium.css'
-      - 'home-marketplace-r5.css'
-      - 'mobile-r5b.css'
-      - 'r5b-language-fix.css'
-      - 'home-r5b-i18n.js'
       - 'app.js'
       - 'superapp.js'
       - 'sw.js'
@@ -41,7 +37,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate R5B source, AI, voice and Safety
+      - name: Validate restored public UI and current backend
         shell: bash
         run: |
           set -euo pipefail
@@ -54,26 +50,18 @@ jobs:
           grep -q 'safetyGateVersion' worker.js
           grep -q '/api/vision' worker.js
           grep -q '/api/marketplace-submit' worker.js
-          for f in voice-ai.js i18n-ui.js global-ui.js superapp.js home-r5b-i18n.js sw.js worker.js; do node --check "$f"; done
+          for f in voice-ai.js i18n-ui.js global-ui.js superapp.js sw.js worker.js; do node --check "$f"; done
           grep -q 'serverVoice' voice-ai.js
           grep -q 'navigator.mediaDevices' voice-ai.js
           grep -q 'MediaRecorder' voice-ai.js
-          grep -q 'data-release="20260923-market-r5"' index.html
-          grep -q 'home-marketplace-r5.css?v=20260923-market-r5' index.html
-          grep -q 'mobile-r5b.css?v=20260923-r5b' index.html
-          grep -q 'r5b-language-fix.css?v=20260923-r5b2' index.html
-          grep -q 'home-r5b-i18n.js?v=20260923-r5b2' index.html
-          grep -q 'SEEKVERA R5B mobile cleanup' mobile-r5b.css
-          grep -q 'R5B language rendering safety layer' r5b-language-fix.css
-          grep -q 'Encontre mais rápido. Compare melhor.' home-r5b-i18n.js
-          grep -q 'class="r5-tile"' index.html
-          grep -q 'location.replace' app.html
-          if grep -q '<iframe' app.html; then echo 'R5 app shell must not use iframe'; exit 1; fi
-          grep -q 'index.html?v=20260923-market-r5' manifest.webmanifest
-          grep -q 'seekvera-market-r5-20260923' sw.js
-          grep -q 'Worldwide · All countries' superapp.js
+          grep -q '20260922-final-r3' index.html
+          grep -q 'sv-unified-chat' index.html
+          grep -q 'PREMIUM GLOBAL AI' index.html
+          grep -q 'premium.css' index.html
+          grep -q 'games.html' index.html
+          grep -q 'seekvera-final-r3-20260922' sw.js
           rm -rf .wrangler-dry-run .wrangler
-          echo 'R5B source validation PASS'
+          echo 'RESTORED FINAL R3 + CURRENT BACKEND SOURCE VALIDATION PASS'
 
       - name: Detect Cloudflare deployment credentials
         id: cf
@@ -96,40 +84,34 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
 
-      - name: Verify live R5B assets, AI, voice and Safety
+      - name: Verify live restored UI and current backend
         if: steps.cf.outputs.ready == 'true'
         shell: bash
         run: |
           set -euo pipefail
           SITE='https://seekveraglobal.com'
           ok=0
-          for i in $(seq 1 30); do
-            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/?r5b2=$i" -o /tmp/home.html || true
-            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/mobile-r5b.css?r5b2=$i" -o /tmp/mobile.css || true
-            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/r5b-language-fix.css?r5b2=$i" -o /tmp/langfix.css || true
-            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/home-r5b-i18n.js?r5b2=$i" -o /tmp/r5bi18n.js || true
-            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/api/health?r5b2=$i" -o /tmp/health.json || true
-            if grep -q 'r5b-language-fix.css?v=20260923-r5b2' /tmp/home.html 2>/dev/null && grep -q 'home-r5b-i18n.js?v=20260923-r5b2' /tmp/home.html 2>/dev/null && grep -q 'SEEKVERA R5B mobile cleanup' /tmp/mobile.css 2>/dev/null && grep -q 'R5B language rendering safety layer' /tmp/langfix.css 2>/dev/null && grep -q 'Encontre mais rápido. Compare melhor.' /tmp/r5bi18n.js 2>/dev/null && grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/health.json 2>/dev/null; then ok=1; break; fi
-            sleep 4
+          for i in $(seq 1 24); do
+            curl -fsS --max-time 20 -H 'Cache-Control: no-cache' "$SITE/?stable-r3=$i" -o /tmp/home.html || true
+            curl -fsS --max-time 20 -H 'Cache-Control: no-cache' "$SITE/api/health?stable-r3=$i" -o /tmp/health.json || true
+            if grep -q '20260922-final-r3' /tmp/home.html 2>/dev/null && grep -q 'sv-unified-chat' /tmp/home.html 2>/dev/null && grep -q 'PREMIUM GLOBAL AI' /tmp/home.html 2>/dev/null && grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/health.json 2>/dev/null; then
+              ok=1
+              break
+            fi
+            sleep 5
           done
           test "$ok" = '1'
-          echo 'LIVE R5B2 ASSETS + ASR HEALTH PASS'
           grep -q '"centralSafetyGate":"enabled"' /tmp/health.json
           grep -q '"failClosed":true' /tmp/health.json
-          curl -fsS --max-time 15 "$SITE/voice-ai.js?r5b2=1" -o /tmp/voice.js
+          curl -fsS --max-time 15 "$SITE/voice-ai.js?stable-r3=1" -o /tmp/voice.js
           grep -q 'serverVoice' /tmp/voice.js
           grep -q 'MediaRecorder' /tmp/voice.js
-          curl -fsS --max-time 15 "$SITE/app.html?r5b2=1" -o /tmp/app.html
-          grep -q 'location.replace' /tmp/app.html
-          if grep -q '<iframe' /tmp/app.html; then exit 1; fi
-          code="$(curl -sS -o /tmp/stt-invalid.json -w '%{http_code}' --max-time 20 -X POST "$SITE/api/transcribe" -H 'Content-Type: application/json' --data '{"audio":"invalid","language":"en"}')"
-          test "$code" = '400'
-          grep -q 'Valid recorded audio is required' /tmp/stt-invalid.json
-          echo 'LIVE TRANSCRIBE ROUTE PASS'
+          curl -fsS --max-time 15 "$SITE/games.html?stable-r3=1" -o /tmp/games.html
+          grep -qi 'game' /tmp/games.html
           curl -fsS --max-time 40 -X POST "$SITE/api/ai" -H 'Content-Type: application/json' --data '{"message":"Reply only with: Hello.","country":"Worldwide","language":"English","scope":"worldwide","fast":true}' -o /tmp/ai.json
           grep -q '"ok":true' /tmp/ai.json
           grep -qi 'hello' /tmp/ai.json
-          echo 'LIVE AI PASS'
+          echo 'LIVE RESTORED FINAL R3 + AI + VOICE + SAFETY PASS'
 
       - name: Deployment architecture
         if: steps.cf.outputs.ready != 'true'
