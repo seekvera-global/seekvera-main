@@ -21,7 +21,25 @@ de:'Ich bin der SEEKVERA-KI-Assistent. Ich helfe beim Suchen, Vergleichen, Über
 zh:'我是 SEEKVERA AI 助手。我可以帮你搜索、比较、翻译，并在 SEEKVERA 内寻找旅行、酒店、工作、购物、供应商、优惠、游戏、媒体和服务。你可以用自己的语言打字或说话。',
 hi:'मैं SEEKVERA AI सहायक हूँ। मैं SEEKVERA के अंदर खोज, तुलना, अनुवाद और यात्रा, होटल, नौकरी, खरीदारी, सप्लायर, डील, गेम, मीडिया और सेवाएँ ढूँढने में मदद कर सकता हूँ। अपनी भाषा में लिखें या बोलें।',
 tr:'Ben SEEKVERA AI asistanıyım. SEEKVERA içinde arama, karşılaştırma, çeviri; seyahat, otel, iş, alışveriş, tedarikçi, fırsat, oyun, medya ve hizmet bulma konusunda yardımcı olabilirim. Kendi dilinizde yazın veya konuşun.',
-ru:'Я ИИ-помощник SEEKVERA. Я помогу искать, сравнивать, переводить и находить путешествия, отели, работу, покупки, поставщиков, предложения, игры, медиа и услуги внутри SEEKVERA. Пишите или говорите на своем языке.'};
+ru:'Я ИИ-помощник SEEKVERA. Я помогу искать, сравнивать, переводить и находить путешествия, отели, работу, покупки, поставщиков, предложения, игры, медиа и услуги внутри SEEKVERA. Пишите или говорите на своем языке.',
+ja:"私はSEEKVERAのAIアシスタントです。検索、比較、翻訳、SEEKVERA内のサービス探しをお手伝いします。あなたの言語で入力または話してください。",
+ko:"저는 SEEKVERA AI 도우미입니다. 검색, 비교, 번역과 SEEKVERA 안의 서비스 찾기를 도와드립니다. 원하는 언어로 입력하거나 말하세요.",
+id:"Saya asisten AI SEEKVERA. Saya membantu mencari, membandingkan, menerjemahkan, dan menemukan layanan di SEEKVERA. Ketik atau bicara dalam bahasa Anda.",
+ur:"میں SEEKVERA کا AI اسسٹنٹ ہوں۔ میں تلاش، موازنہ، ترجمہ اور SEEKVERA کے اندر خدمات تلاش کرنے میں مدد کر سکتا ہوں۔ اپنی زبان میں لکھیں یا بولیں۔",
+bn:"আমি SEEKVERA AI সহকারী। আমি খোঁজা, তুলনা, অনুবাদ এবং SEEKVERA-এর ভেতরে সেবা খুঁজে পেতে সাহায্য করতে পারি। আপনার ভাষায় লিখুন বা বলুন।",
+vi:"Tôi là trợ lý AI của SEEKVERA. Tôi có thể giúp tìm kiếm, so sánh, dịch và tìm dịch vụ trong SEEKVERA. Hãy nhập hoặc nói bằng ngôn ngữ của bạn.",
+it:"Sono l’assistente AI di SEEKVERA. Posso aiutarti a cercare, confrontare, tradurre e trovare servizi in SEEKVERA. Scrivi o parla nella tua lingua.",
+sw:"Mimi ni msaidizi wa AI wa SEEKVERA. Ninaweza kusaidia kutafuta, kulinganisha, kutafsiri na kupata huduma ndani ya SEEKVERA. Andika au zungumza kwa lugha yako.",
+th:"ฉันคือผู้ช่วย AI ของ SEEKVERA ฉันช่วยค้นหา เปรียบเทียบ แปล และค้นหาบริการใน SEEKVERA ได้ พิมพ์หรือพูดด้วยภาษาของคุณ",
+fa:"من دستیار هوش مصنوعی SEEKVERA هستم. می‌توانم در جستجو، مقایسه، ترجمه و پیدا کردن خدمات در SEEKVERA کمک کنم. به زبان خودتان بنویسید یا صحبت کنید.",
+pl:"Jestem asystentem AI SEEKVERA. Mogę pomóc wyszukiwać, porównywać, tłumaczyć i znaleźć usługi w SEEKVERA. Pisz lub mów w swoim języku.",
+nl:"Ik ben de AI-assistent van SEEKVERA. Ik kan helpen zoeken, vergelijken, vertalen en diensten binnen SEEKVERA vinden. Typ of spreek in uw taal.",
+ms:"Saya pembantu AI SEEKVERA. Saya boleh membantu mencari, membandingkan, menterjemah dan mencari perkhidmatan dalam SEEKVERA. Taip atau bercakap dalam bahasa anda.",
+fil:"Ako ang SEEKVERA AI assistant. Matutulungan kitang maghanap, maghambing, magsalin at mahanap ang mga serbisyo sa SEEKVERA. Mag-type o magsalita sa iyong wika.",
+ha:"Ni ne mataimakin AI na SEEKVERA. Zan taimaka maka wajen nema, kwatantawa, fassara da gano sabis a cikin SEEKVERA. Rubuta ko yi magana da harshenka.",
+yo:"Èmi ni olùrànlọ́wọ́ AI SEEKVERA. Mo lè ràn ọ́ lọ́wọ́ láti wá, fiwé, túmọ̀ àti rí iṣẹ́ nínú SEEKVERA. Kọ tàbí sọ̀rọ̀ ní èdè rẹ.",
+ig:"Abụ m onye enyemaka AI SEEKVERA. Enwere m ike inyere gị aka ịchọ, tụnyere, tụgharịa asụsụ ma chọta ọrụ n’ime SEEKVERA. Dee ma ọ bụ kwuo n’asụsụ gị.",
+am:"እኔ የSEEKVERA AI ረዳት ነኝ። በSEEKVERA ውስጥ ለመፈለግ፣ ለማወዳደር፣ ለመተርጎም እና አገልግሎቶችን ለማግኘት እረዳዎታለሁ። በቋንቋዎ ይጻፉ ወይም ይናገሩ።"};
 function assistantIntro(){return AI_INTRO[langCode()]||AI_INTRO.en}
 function addMsg(box,role,text,thinking=false){const d=document.createElement('div');d.className=`sv-global-msg ${role}${thinking?' thinking':''}`;d.textContent=plain(text)||tx('SEEKVERA AI is temporarily unavailable. Please try again.');box.appendChild(d);box.scrollTop=box.scrollHeight;return d}
 function country(){const e=$('#country');return e?.value==='WW'?'Worldwide':(e?.options?.[e.selectedIndex]?.textContent||'Worldwide')}
