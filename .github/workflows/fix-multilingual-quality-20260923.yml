@@ -20,7 +20,6 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
-          import re, base64
 
           p=Path('worker.js')
           s=p.read_text(encoding='utf-8')
@@ -41,17 +40,10 @@ jobs:
           if old not in s: raise SystemExit('ai order anchor missing')
           s=s.replace(old,new,1)
 
-          old="Automatically detect the language of the user's latest message and reply in that same language and script, independent of country or location. If the user explicitly asks for a different reply language, use that requested language."
+          old="Automatically detect the language of the user\\'s latest message and reply in that same language and script, independent of country or location. If the user explicitly asks for a different reply language, use that requested language."
           new="Follow the LANGUAGE LOCK supplied below as authoritative. When the app has an explicit selected language, reply in that selected language; when language is Auto, detect the latest user message and reply in that same language and script. Country or location must never override the selected or detected language. If the user explicitly asks inside the message for a different reply language, use that requested language."
           if old not in s: raise SystemExit('assistant language prompt anchor missing')
           s=s.replace(old,new,1)
-          p.write_text(s,encoding='utf-8')
-
-          intro=base64.b64decode('Y29uc3QgQUlfSU5UUk89eyJlbiI6IknigJltIHRoZSBTRUVLVkVSQSBBSSBhc3Npc3RhbnQuIEkgY2FuIGhlbHAgeW91IHNlYXJjaCwgY29tcGFyZSwgdHJhbnNsYXRlIGFuZCBmaW5kIHRoZSByaWdodCBzZWN0aW9uLCBzZXJ2aWNlIG9yIG9wcG9ydHVuaXR5IGluc2lkZSBTRUVLVkVSQS4gVHlwZSBvciBzcGVhayBpbiB5b3VyIGxhbmd1YWdlLiIsImFyIjoi2KPZhtinINmF2LPYp9i52K8gU0VFS1ZFUkEg2KjYp9mE2LDZg9in2KEg2KfZhNin2LXYtNmG2KfYudmKLCDYo9iz2KfYudiv2YPYqSDYqNin2YTYqNit2Ksg2YjYp9mE2YXZgtin2LHZhtipINmI2KfZhNiq2LHZrNmF2Kkg2YjYp9mE2YjYtdmI2YQg2YTZhNmC2LPZhSDYoNmIINin2YTYrtiv2YXYqSDYoNmIINin2YTZgdix2LXZqSDYp9mE2YXZhtin2LPYqNipINiv2KfYrtmEINinZhNmAIFNFRUtWRVJBLiDYp9mD2KrYqCDYoNmIINin2K3ZgyDYqNmE2LrYqtmDLiIsImZyIjoiSmUgc3VpcyBs4oCZYXNzaXN0YW50IElBIGRlIFNFRUtWRVJBLiBKZSBwZXV4IHZvdXMgYWlkZXIgw6AgcmVjaGVyY2hlciwgY29tcGFyZXIsIHRyYWR1aXJlIGV0IHRyb3V2ZXIgbGEgYm9ubmUgcnVicmlxdWUsIGxlIGJvbiBzZXJ2aWNlIG91IGxhIGJvbm5lIG9wcG9ydHVuaXTDqSBkYW5zIFNFRUtWRVJBLiDDiWNyaXZleiBvdSBwYXJsZXogZGFucyB2b3RyZSBsYW5ndWUuIiwiemgiOiLmiJHmmK8gU0VFS1ZFUkEgQUkg5Yqp5omL44CC5oiR5Y+v5Lul5biu5L2g5pCc57Si44CB5q+U6L6D44CB57+76K+R77yM5bm25ZyoIFNFRUtWRVJBIOS4re‰xqvzpwYTliYjphILnlKjmlLnmnaXjgIHmnI3liqHmiJbmnLrkvJrjgILkvaDlj6/ku6XnlKjoh6rlt7HnmoTorrDooIDmiZPlrZfmiJbor7TvvIzjgIIiLCJlcyI6IlNveSBlbCBhc2lzdGVudGUgZGUgSUEgZGUgU0VFS1ZFUkEuIFB1ZWRvIGF5dWRhcnRlIGEgYnVzY2FyLCBjb21wYXJhciwgdHJhZHVjaXIgeSBlbmNvbnRyYXIgbGEgc2VjY2nDs24sIGVsIHNlcnZpY2lvIG8gbGEgb3BvcnR1bmlkYWQgYWRlY3VhZGEgZGVudHJvIGRlIFNFRUtWRVJBLiBFc2NyaWJlIG8gaGFibGEgZW4gdHUgaWRpb21hLiIsImhpIjoi4KSu4KWI4KSCIFNFRUtWRVJBIIEFSSDgpLjgpLngpL7gpL7gpJXgpJXgpJUg4KS54KWC4KSB4oCc4KWkIOCkruCliOCkgiDgpJbgpYvgpJzgpKjgpYcsIOCkpOClgeCksOCkq+CkqOCkviwg4KSF4KSo4KWB4KS14KS+4KSmIOCkleCksOCkqOCkhyDgpJTopYIgU0VFS1ZFUkEgw6g4KSF4KSC4KSm4KSwIOCkuOCkueClgCDgpLjgpL7gpJXgpY3gpJXgpKgsIOCkuOCkh+CkteCkviDgpK8gpL4g4KSF4KS14KS44KSwIOCkpOClleCkleCkiCDgpI/gpA==').decode('utf-8')
-          p=Path('global-ui.js')
-          s=p.read_text(encoding='utf-8')
-          s,n=re.subn(r"const AI_INTRO=\{.*?\};",lambda m:intro,s,count=1,flags=re.S)
-          if n!=1: raise SystemExit('AI_INTRO anchor missing')
           p.write_text(s,encoding='utf-8')
 
       - name: Validate patched runtime
@@ -59,10 +51,10 @@ jobs:
         run: |
           set -euo pipefail
           node --check worker.js
-          node --check global-ui.js
           grep -q "2026-09-23-ai-media-r2" worker.js
           grep -q "if(h&&!/^auto$/i.test(h))return h" worker.js
           grep -q "quality=/LANGUAGE LOCK" worker.js
+          grep -q "Follow the LANGUAGE LOCK supplied below as authoritative" worker.js
           git diff --check
 
       - name: Commit fixes
@@ -71,7 +63,7 @@ jobs:
           set -euo pipefail
           git config user.name 'SEEKVERA automation'
           git config user.email 'actions@users.noreply.github.com'
-          git add worker.js global-ui.js
+          git add worker.js
           if ! git diff --cached --quiet; then
             git commit -m 'Fix selected-language lock and improve multilingual AI quality'
             git push origin HEAD:main
