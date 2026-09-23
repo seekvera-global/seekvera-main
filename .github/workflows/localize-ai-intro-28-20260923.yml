@@ -16,9 +16,60 @@ jobs:
     timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
-      - name: Replace assistant welcome block with all 28 UI languages
+      - name: Add missing localized assistant welcome messages
         shell: python
         run: |
           from pathlib import Path
-          import base64,re
-          encoded='Y29uc3QgQUlfSU5UUk89ewplbjonSeKAmW0gdGhlIFNFRUtWRVJBIEFJIGFzc2lzdGFudC4gSSBjYW4gaGVscCB5b3Ugc2VhcmNoLCBjb21wYXJlLCB0cmFuc2xhdGUgYW5kIGZpbmQgdGhlIHJpZ2h0IHNlY3Rpb24sIHNlcnZpY2Ugb3Igb3Bwb3J0dW5pdHkgaW5zaWRlIFNFRUtWRVJBLiBUeXBlIG9yIHNwZWFrIGluIHlvdXIgbGFuZ3VhZ2UuJyxhcion2KPZhtinINmF2LPYp9i52K8gU0VFS1ZFUkEg2KjYp9mE2LDZg9in2KEg2KfZhNin2LXYtNmG2KfYudmKLCDYo9iz2KfYudiv2YPYqSDYqNin2YTYqNit2Ksg2YjYp9mE2YXZgtin2LHZhtipINmI2KfZhNiq2LHZrNmF2Kkg2YjYp9mE2YjYtdmI2YQg2YTZhNmC2LPZhSDYoNmIINin2YTYrtiv2YXYqSDYoNmIINin2YTZgdix2LXZqSDYp9mE2YXZhtin2LPYqNipINiv2KfYrtmEINinZhNmAIFNFRUtWRVJBLiDYp9mD2KrYqCDYoNmIINin2K3ZgyDYqNmE2LrYqtmDLidymZjonSmUgc3VpcyBs4oCZYXNzaXN0YW50IElBIGRlIFNFRUtWRVJBLiBKZSBwZXV4IHZvdXMgYWlkZXIgw6AgcmVjaGVyY2hlciwgY29tcGFyZXIsIHRyYWR1aXJlIGV0IHRyb3V2ZXIgbGEgYm9ubmUgcnVicmlxdWUsIGxlIGJvbiBzZXJ2aWNlIG91IGxhIGJvbm5lIG9wcG9ydHVuaXTDqSBkYW5zIFNFRUtWRVJBLiDDiWNyaXZleiBvdSBwYXJsZXogZGFucyB2b3RyZSBsYW5ndWUuJyx6aDon5oiR5pivIFNFRUtWRVJBIEFAIOS9nOi1p+OAguS9oOWPr+S7peW4ruS9oOaQnOe0ouOAgeavlOi+g+OAgee/voiR77yM5bm25ZyoIFNFRUtWRVJBIOS4reaJvuWIsOWQiOmAguS4reaEn+ebruOAgeacjeWKoOaIluacuuS8muOAgeS9oOWPr+S7peeUqOiHquW3seSahOivreiogOWtkOaIluivtOivneOAgiAnLGVzOidTb3kgZWwgYXNpc3RlbnRlIGRlIElBIGRlIFNFRUtWRVJBLiBQdWVkbyBheXVkYXJ0ZSBhIGJ1c2NhciwgY29tcGFyYXIsIHRyYWR1Y2lyIHkgZW5jb250cmFyIGxhIHNlY2Npw7NuLCBlbCBzZXJ2aWNpbyBvIGxhIG9wb3J0dW5pZGFkIGFkZWN1YWRhIGRlbnRybyBkZSBTRUVLVkVSQS4gRXNjcmliZSBvIGhhYmxhIGVuIHR1IGlkaW9tYS4nLGhpOifgpK7gpYjgpIIgU0VFS1ZFUkEgQUkg4KS44KS54KS+4KSv4KSVIOCkueClguClp+CkgiDgpK7gpYjgpIIg4KSW4KWL4KSc4KSo4KWHLCDgpKTgpYHgpLLgpKjgpL4g4KSV4KSw4KSo4KWHLCDgpIXgpKjgpYHgpLXgpL7gpKYg4KSV4KSw4KSo4KWHIOCkl+CkleCljeCksCBTRUVLVkVSQSDgpJXgpYcg4KSG4KSC4KSm4KSwIOCkuOCkuOClgCDgpLjgpYfgpJXgpY3gpLbgpKgsIOCkuOCkh+CkteCkviDgpK8gpL4g4KSF4KS14KS44KSwIOCkpOClleCkleCkiCDgpKrgpLngpYHgpILgpJrgpKjgpYcg4KSu4KWH4KSCIOCkl+CkquCkleClgCDgpK7gpKbgpKYg4KSV4KSwIOCkuOCkleCkpOClviDgpLngpYJgpIIuIOCkheCkquCkqOClgCDgpK3gpL7gpLfgpL4g4KSu4KWH4KSCIOCksOCkleCkquCkqSDgpKjgpL7gpK8gpL4g4KSs4KWL4KSy4KWH4KSC4KWkJyxwdDonU291IG8gYXNzaXN0ZW50ZSBkZSBJQSBkYSBTRUVLVkVSQS4gUG9zc28gYWp1ZGFyIGEgcGVzcXVpc2FyLCBjb21wYXJhciwgdHJhZHV6aXIgZSBlbmNvbnRyYXIgYSBzZcOnw6NvLCBvIHNlcnZpw6dvIG91IGEgb3BvcnR1bmlkYWRlIGNlcnRhIGRlbnRybyBkYSBTRUVLVkVSQS4gRXNjcmV2YSBvdSBmYWxlIG5vIHNldSBpZGlvbWEuJyxkZTonSWNoIGJpbiBkZXIgU0VFS1ZFUkEtS0ktQXNzaXN0ZW50LiBJY2ggaGVsZmUgYmVpbSBTdWNoZW4sIFZlcmdsZWljaGVuLCDDnGJlcnNldHplbiB1bmQgZGFiZWksIGRlbiByaWNodGlnZW4gQmVyZWljaCwgRGllbnN0IG9kZXIgZGllIHBhc3NlbmRlIE3Dtm
+          import re,json
+          p=Path('global-ui.js')
+          s=p.read_text(encoding='utf-8')
+          missing={
+            'ja':'私はSEEKVERAのAIアシスタントです。検索、比較、翻訳、SEEKVERA内のサービス探しをお手伝いします。あなたの言語で入力または話してください。',
+            'ko':'저는 SEEKVERA AI 도우미입니다. 검색, 비교, 번역과 SEEKVERA 안의 서비스 찾기를 도와드립니다. 원하는 언어로 입력하거나 말하세요.',
+            'id':'Saya asisten AI SEEKVERA. Saya membantu mencari, membandingkan, menerjemahkan, dan menemukan layanan di SEEKVERA. Ketik atau bicara dalam bahasa Anda.',
+            'ur':'میں SEEKVERA کا AI اسسٹنٹ ہوں۔ میں تلاش، موازنہ، ترجمہ اور SEEKVERA کے اندر خدمات تلاش کرنے میں مدد کر سکتا ہوں۔ اپنی زبان میں لکھیں یا بولیں۔',
+            'bn':'আমি SEEKVERA AI সহকারী। আমি খোঁজা, তুলনা, অনুবাদ এবং SEEKVERA-এর ভেতরে সেবা খুঁজে পেতে সাহায্য করতে পারি। আপনার ভাষায় লিখুন বা বলুন।',
+            'vi':'Tôi là trợ lý AI của SEEKVERA. Tôi có thể giúp tìm kiếm, so sánh, dịch và tìm dịch vụ trong SEEKVERA. Hãy nhập hoặc nói bằng ngôn ngữ của bạn.',
+            'it':'Sono l’assistente AI di SEEKVERA. Posso aiutarti a cercare, confrontare, tradurre e trovare servizi in SEEKVERA. Scrivi o parla nella tua lingua.',
+            'sw':'Mimi ni msaidizi wa AI wa SEEKVERA. Ninaweza kusaidia kutafuta, kulinganisha, kutafsiri na kupata huduma ndani ya SEEKVERA. Andika au zungumza kwa lugha yako.',
+            'th':'ฉันคือผู้ช่วย AI ของ SEEKVERA ฉันช่วยค้นหา เปรียบเทียบ แปล และค้นหาบริการใน SEEKVERA ได้ พิมพ์หรือพูดด้วยภาษาของคุณ',
+            'fa':'من دستیار هوش مصنوعی SEEKVERA هستم. می‌توانم در جستجو، مقایسه، ترجمه و پیدا کردن خدمات در SEEKVERA کمک کنم. به زبان خودتان بنویسید یا صحبت کنید.',
+            'pl':'Jestem asystentem AI SEEKVERA. Mogę pomóc wyszukiwać, porównywać, tłumaczyć i znaleźć usługi w SEEKVERA. Pisz lub mów w swoim języku.',
+            'nl':'Ik ben de AI-assistent van SEEKVERA. Ik kan helpen zoeken, vergelijken, vertalen en diensten binnen SEEKVERA vinden. Typ of spreek in uw taal.',
+            'ms':'Saya pembantu AI SEEKVERA. Saya boleh membantu mencari, membandingkan, menterjemah dan mencari perkhidmatan dalam SEEKVERA. Taip atau bercakap dalam bahasa anda.',
+            'fil':'Ako ang SEEKVERA AI assistant. Matutulungan kitang maghanap, maghambing, magsalin at mahanap ang mga serbisyo sa SEEKVERA. Mag-type o magsalita sa iyong wika.',
+            'ha':'Ni ne mataimakin AI na SEEKVERA. Zan taimaka maka wajen nema, kwatantawa, fassara da gano sabis a cikin SEEKVERA. Rubuta ko yi magana da harshenka.',
+            'yo':'Èmi ni olùrànlọ́wọ́ AI SEEKVERA. Mo lè ràn ọ́ lọ́wọ́ láti wá, fiwé, túmọ̀ àti rí iṣẹ́ nínú SEEKVERA. Kọ tàbí sọ̀rọ̀ ní èdè rẹ.',
+            'ig':'Abụ m onye enyemaka AI SEEKVERA. Enwere m ike inyere gị aka ịchọ, tụnyere, tụgharịa asụsụ ma chọta ọrụ n’ime SEEKVERA. Dee ma ọ bụ kwuo n’asụsụ gị.',
+            'am':'እኔ የSEEKVERA AI ረዳት ነኝ። በSEEKVERA ውስጥ ለመፈለግ፣ ለማወዳደር፣ ለመተርጎም እና አገልግሎቶችን ለማግኘት እረዳዎታለሁ። በቋንቋዎ ይጻፉ ወይም ይናገሩ።'
+          }
+          m=re.search(r'const AI_INTRO=\{.*?\};',s,re.S)
+          if not m: raise SystemExit('AI_INTRO block missing')
+          block=m.group(0)
+          additions=[]
+          for code,text in missing.items():
+              if not re.search(r'(?m)^\s*'+re.escape(code)+r"\s*:",block):
+                  additions.append(code+':'+json.dumps(text,ensure_ascii=False))
+          if additions:
+              newblock=block[:-2]+',\n'+',\n'.join(additions)+'};'
+              s=s[:m.start()]+newblock+s[m.end():]
+              p.write_text(s,encoding='utf-8')
+          print('added',len(additions),'welcome languages')
+      - name: Validate all 28 welcome languages
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check global-ui.js
+          for code in en ar fr zh es hi pt de ja ko id tr ru ur bn vi it sw th fa pl nl ms fil ha yo ig am; do grep -Eq "^[[:space:]]*${code}:" global-ui.js; done
+          git diff --check
+      - name: Commit welcome localization
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'SEEKVERA automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add global-ui.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Localize SEEKVERA AI welcome in all 28 UI languages'
+            git push origin HEAD:main
+          fi
