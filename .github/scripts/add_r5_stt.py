@@ -1,0 +1,48 @@
+from pathlib import Path
+
+w=Path('worker.js')
+s=w.read_text(encoding='utf-8')
+if "@cf/openai/whisper-large-v3-turbo" not in s:
+    s=s.replace("const RELEASE='2026-09-23-ai-media-r3'", "const RELEASE='2026-09-23-market-r5-stt'")
+    old="const PRIMARY='@cf/google/gemma-4-26b-a4b-it',FALLBACK='@cf/zai-org/glm-4.7-flash',LIGHT='@cf/qwen/qwen3-30b-a3b-fp8',FASTCHAT='@cf/meta/llama-3.1-8b-instruct-fast',VISION='@cf/meta/llama-3.2-11b-vision-instruct';"
+    new="const PRIMARY='@cf/google/gemma-4-26b-a4b-it',FALLBACK='@cf/zai-org/glm-4.7-flash',LIGHT='@cf/qwen/qwen3-30b-a3b-fp8',FASTCHAT='@cf/meta/llama-3.1-8b-instruct-fast',VISION='@cf/meta/llama-3.2-11b-vision-instruct',ASR='@cf/openai/whisper-large-v3-turbo';"
+    if old not in s: raise SystemExit('AI model constants marker missing')
+    s=s.replace(old,new,1)
+    old="visionModel:VISION,aiResilience:'fast-chat-language-lock-v4',visionRuntime:'license-aware-v2',voiceRuntime:'plain-speech-v2'"
+    new="visionModel:VISION,asrModel:ASR,aiResilience:'fast-chat-language-lock-v4',visionRuntime:'license-aware-v2',voiceRuntime:'native-plus-server-asr-v1',voiceInputFallback:'server-asr-v1'"
+    if old not in s: raise SystemExit('health marker missing')
+    s=s.replace(old,new,1)
+    marker="if(u.pathname==='/api/moderate'||u.pathname==='/api/safety')"
+    route="""if(u.pathname==='/api/transcribe'){try{if(!env.AI)return j(request,{ok:false,error:'Speech AI unavailable'},503);if(Number(request.headers.get('content-length')||0)>8*1024*1024)return j(request,{ok:false,error:'Audio request too large'},413);const b=await request.json(),raw=String(b.audio||''),m=raw.match(/^data:(audio\\/(?:webm|mp4|mpeg|wav|ogg|x-m4a|aac|3gpp))(?:;codecs=[^;,]+)?;base64,([A-Za-z0-9+/=]+)$/i);if(!m)return j(request,{ok:false,error:'Valid recorded audio is required'},400);const approx=Math.floor(m[2].length*3/4);if(approx<80||approx>5*1024*1024)return j(request,{ok:false,error:'Audio size is invalid'},400);const lc=clean(b.language,20).toLowerCase(),lang=/^[a-z]{2,3}(?:-[a-z]{2})?$/i.test(lc)&&lc!=='auto'?lc.split('-')[0]:undefined;const input={audio:m[2],task:'transcribe',vad_filter:true};if(lang)input.language=lang;const r=await env.AI.run(ASR,input),text=clean(r?.text||r?.result?.text||'',3500);if(!text)return j(request,{ok:false,error:'No speech detected',retryable:true},422);return j(request,{ok:true,text,model:ASR,language:lang||'auto'})}catch(e){console.warn('Speech transcription fallback',e);return j(request,{ok:false,error:'Voice transcription is temporarily unavailable',retryable:true},503)}}
+"""
+    if marker not in s: raise SystemExit('API route insertion marker missing')
+    s=s.replace(marker,route+marker,1)
+    w.write_text(s,encoding='utf-8')
+
+v=Path('voice-ai.js')
+t=v.read_text(encoding='utf-8')
+if 'async function serverVoice' not in t:
+    old="let recognition=null,lastAnswer='',lastLocale='',muted=localStorage.getItem('seekvera_voice_muted')==='1',activeButton=null,voiceConversation=false,speakToken=0;"
+    new="let recognition=null,lastAnswer='',lastLocale='',muted=localStorage.getItem('seekvera_voice_muted')==='1',activeButton=null,voiceConversation=false,speakToken=0,recording=false,mediaRecorder=null,mediaStream=null,recordChunks=[],recordTimer=null;"
+    if old not in t: raise SystemExit('voice state marker missing')
+    t=t.replace(old,new,1)
+    marker="function setMic(on){if(!activeButton)return;activeButton.classList.toggle('listening',on);activeButton.textContent=on?'■':'🎤';activeButton.setAttribute('aria-label',on?'Stop listening':'Speak to SEEKVERA AI')}"
+    addition=r"""
+function apiBase(){return /(^|\.)seekveraglobal\.com$/i.test(location.hostname)||location.hostname.endsWith('.workers.dev')?'':'https://seekvera-main.seekvera-global.workers.dev'}
+function selectedLang(){const e=document.getElementById('lang');const c=String(e?.value||localStorage.getItem('seekvera_lang')||'auto').toLowerCase();return c==='auto'?'':c.split(/[-_]/)[0]}
+function blobDataURL(blob){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result||''));r.onerror=()=>reject(r.error||Error('audio read failed'));r.readAsDataURL(blob)})}
+function releaseStream(){if(recordTimer){clearTimeout(recordTimer);recordTimer=null}try{mediaStream?.getTracks?.().forEach(x=>x.stop())}catch(_){}mediaStream=null;mediaRecorder=null;recording=false;recordChunks=[];setMic(false)}
+async function serverVoice(targetId,button){activeButton=button||document.getElementById('aiChatMic')||document.querySelector('.sv-global-compose .mic');const i=document.getElementById(targetId||'aiChatInput');if(recording){try{mediaRecorder?.stop()}catch(_){releaseStream()}return}if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){voiceConversation=false;if(i)i.placeholder='Voice input is unavailable on this browser — please type your message.';return}try{stopSpeech();enableVoiceConversation();mediaStream=await navigator.mediaDevices.getUserMedia({audio:true});recordChunks=[];let opts={};for(const mt of ['audio/webm;codecs=opus','audio/mp4','audio/webm','audio/ogg;codecs=opus']){try{if(MediaRecorder.isTypeSupported?.(mt)){opts={mimeType:mt};break}}catch(_){}}mediaRecorder=new MediaRecorder(mediaStream,opts);recording=true;mediaRecorder.ondataavailable=e=>{if(e.data?.size)recordChunks.push(e.data)};mediaRecorder.onerror=()=>{if(i)i.placeholder='Microphone recording failed — please type your message.';voiceConversation=false;releaseStream()};mediaRecorder.onstop=async()=>{const chunks=[...recordChunks],type=mediaRecorder?.mimeType||chunks[0]?.type||'audio/webm';if(recordTimer){clearTimeout(recordTimer);recordTimer=null}try{mediaStream?.getTracks?.().forEach(x=>x.stop())}catch(_){}mediaStream=null;mediaRecorder=null;recording=false;recordChunks=[];setMic(false);if(!chunks.length){voiceConversation=false;if(i)i.placeholder='No speech recorded — tap the microphone and try again.';return}try{if(i)i.placeholder='Transcribing your voice…';const blob=new Blob(chunks,{type}),audio=await blobDataURL(blob);const res=await fetch(apiBase()+'/api/transcribe',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({audio,language:selectedLang()||'auto'})});const d=await res.json().catch(()=>({}));if(!res.ok||!d.text)throw Error(d.error||'transcription failed');if(i){i.value=String(d.text).trim();i.placeholder='Message SEEKVERA AI…';if(i.value)setTimeout(()=>i.form?.requestSubmit?.(),120)}}catch(e){voiceConversation=false;if(i)i.placeholder='Voice could not be transcribed — please type or try again.'}};mediaRecorder.start(250);setMic(true);if(i)i.placeholder='Listening… tap ■ to stop';recordTimer=setTimeout(()=>{if(recording&&mediaRecorder?.state==='recording')mediaRecorder.stop()},12000)}catch(e){voiceConversation=false;releaseStream();if(i)i.placeholder=e?.name==='NotAllowedError'?'Microphone permission was not allowed — please enable it or type your message.':'Microphone is unavailable — please type your message.'}}
+"""
+    if marker not in t: raise SystemExit('voice setMic marker missing')
+    t=t.replace(marker,marker+addition,1)
+    old="function start(targetId,button){if(recognition){try{recognition.stop()}catch(_){}return}stopSpeech();enableVoiceConversation();activeButton=button||document.getElementById('aiChatMic')||document.querySelector('.sv-global-compose .mic');const i=document.getElementById(targetId||'aiChatInput');if(!SpeechRecognition){voiceConversation=false;if(i)i.placeholder='Voice recognition is unavailable here — please type your message.';return}"
+    new="function start(targetId,button){if(recording){try{mediaRecorder?.stop()}catch(_){releaseStream()}return}if(recognition){try{recognition.stop()}catch(_){}return}stopSpeech();enableVoiceConversation();activeButton=button||document.getElementById('aiChatMic')||document.querySelector('.sv-global-compose .mic');const i=document.getElementById(targetId||'aiChatInput');if(!SpeechRecognition){serverVoice(targetId,activeButton);return}"
+    if old not in t: raise SystemExit('voice start marker missing')
+    t=t.replace(old,new,1)
+    v.write_text(t,encoding='utf-8')
+
+p=Path('superapp.js')
+x=p.read_text(encoding='utf-8')
+x=x.replace("const RELEASE='2026-09-23-worldwide-r4';","const RELEASE='2026-09-23-market-r5';",1)
+p.write_text(x,encoding='utf-8')
