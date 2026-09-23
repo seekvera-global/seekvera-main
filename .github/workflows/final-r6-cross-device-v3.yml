@@ -1,0 +1,57 @@
+name: Final R6 Cross Device V3
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/final-r6-cross-device-v3.yml'
+permissions:
+  contents: read
+jobs:
+  devices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Playwright and browser dependencies
+        run: |
+          npm i --no-save playwright@1.58.2 >/dev/null 2>&1
+          npx playwright install --with-deps chromium webkit firefox >/dev/null 2>&1
+      - name: Audit all target devices
+        run: |
+          cat > r6-device-audit.cjs <<'JS'
+          const {chromium,webkit,firefox}=require('playwright');
+          (async()=>{
+            const profiles=[
+              ['Android Chrome',chromium,{viewport:{width:360,height:800},userAgent:'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'}],
+              ['iPhone Safari',webkit,{viewport:{width:390,height:844},userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 Version/19.0 Mobile/15E148 Safari/604.1'}],
+              ['iPad Safari',webkit,{viewport:{width:820,height:1180},userAgent:'Mozilla/5.0 (iPad; CPU OS 19_0 like Mac OS X) AppleWebKit/605.1.15 Version/19.0 Mobile/15E148 Safari/604.1'}],
+              ['Desktop Chrome Edge',chromium,{viewport:{width:1366,height:768}}],
+              ['Desktop Firefox',firefox,{viewport:{width:1366,height:768}}]
+            ];
+            for(const [name,engine,opt] of profiles){
+              const b=await engine.launch({headless:true});
+              const c=await b.newContext(opt);
+              const p=await c.newPage();
+              await p.goto('https://seekveraglobal.com/?r6-device-v3=1',{waitUntil:'domcontentloaded',timeout:60000});
+              await p.waitForTimeout(2200);
+              const base=await p.evaluate(()=>({release:document.body.dataset.release||'',countries:document.querySelector('#country')?.options.length||0,languages:document.querySelector('#lang')?.options.length||0,tiles:document.querySelectorAll('.r5-tile').length,media:!!document.querySelector('a[href="media.html"]'),chat:!!document.querySelector('#aiChat'),mic:!!document.querySelector('#aiChatMic'),camera:!!document.querySelector('#aiChatCamera'),speaker:!!document.querySelector('#aiChatSpeaker'),overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth}));
+              if(base.release!=='20260923-final-market-r6'||base.countries<249||base.languages!==29||base.tiles<16||!base.media||!base.chat||!base.mic||!base.camera||!base.speaker||base.overflow>4)throw Error(name+' BASE '+JSON.stringify(base));
+              await p.selectOption('#lang','pt'); await p.waitForTimeout(5200);
+              const pt=await p.evaluate(()=>({intro:document.querySelector('#aiMessages .ai-msg.bot')?.textContent||'',toggle:document.querySelector('.sv-request-toggle')?.textContent||'',dir:document.documentElement.dir}));
+              if(!/assistente/i.test(pt.intro)||/[\u0600-\u06ff]/.test(pt.toggle)||pt.dir==='rtl')throw Error(name+' PT '+JSON.stringify(pt));
+              await p.selectOption('#lang','en'); await p.waitForTimeout(1200);
+              const en=await p.evaluate(()=>({intro:document.querySelector('#aiMessages .ai-msg.bot')?.textContent||'',toggle:document.querySelector('.sv-request-toggle')?.textContent||'',dir:document.documentElement.dir}));
+              if(/[\u0600-\u06ff]/.test(en.toggle)||!/SEEKVERA AI assistant/i.test(en.intro)||en.dir==='rtl')throw Error(name+' EN '+JSON.stringify(en));
+              await p.selectOption('#lang','ar'); await p.waitForTimeout(1200);
+              const ar=await p.evaluate(()=>({intro:document.querySelector('#aiMessages .ai-msg.bot')?.textContent||'',dir:document.documentElement.dir}));
+              if(ar.dir!=='rtl'||!/[\u0600-\u06ff]/.test(ar.intro))throw Error(name+' AR '+JSON.stringify(ar));
+              console.log(name,'PASS',JSON.stringify(base));
+              await b.close();
+            }
+            console.log('ALL R6 DEVICE PROFILES PASS');
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          node r6-device-audit.cjs
+      - name: Result
+        run: echo 'R6 FINAL CROSS DEVICE PASS'
