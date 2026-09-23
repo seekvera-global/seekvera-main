@@ -64,10 +64,7 @@ jobs:
               chat:!!document.querySelector('#aiChatInput')&&!!document.querySelector('#aiChatMic')&&!!document.querySelector('#aiChatSpeaker'),
               media:!!document.querySelector('a[href="media.html"]'),
               games:!!document.querySelector('a[href="games.html"]'),
-              overflow:Math.max(0,document.documentElement.scrollWidth-window.innerWidth),
-              bodyW:document.body.getBoundingClientRect().width,
-              viewport:window.innerWidth,
-              dir:document.documentElement.dir||'ltr'
+              overflow:Math.max(0,document.documentElement.scrollWidth-window.innerWidth)
             }));
             console.log(p.name,s);
             assert(s.release==='20260923-market-r5',p.name+' is not on R5');
@@ -82,7 +79,6 @@ jobs:
             assert(s.overflow<=3,p.name+' horizontal overflow: '+s.overflow);
             assert(pageErrors.length===0,p.name+' page errors: '+pageErrors.join(' | '));
 
-            // Switch to Arabic and confirm RTL/localized Worldwide without breaking layout.
             await page.selectOption('#lang','ar'); await page.dispatchEvent('#lang','change');
             await page.waitForFunction(()=>document.documentElement.dir==='rtl',null,{timeout:30000});
             await page.waitForTimeout(350);
@@ -91,13 +87,11 @@ jobs:
             assert(/[\u0600-\u06ff]/.test(ar.intro),p.name+' Arabic AI intro missing');
             assert(ar.overflow<=3,p.name+' RTL overflow: '+ar.overflow);
 
-            // Return to English and prove text chat works on every engine even if native speech recognition is absent.
             await page.selectOption('#lang','en'); await page.dispatchEvent('#lang','change');
             await page.fill('#aiChatInput','Reply only with: Hello.');
             await page.click('#aiChatForm .send');
             await page.waitForFunction(()=>[...document.querySelectorAll('#aiMessages .ai-msg.bot')].some(x=>/hello/i.test(x.textContent||'')),null,{timeout:75000});
 
-            // Mic button must never crash unsupported browsers; it must either start native recognition or expose the text fallback.
             await page.click('#aiChatMic').catch(()=>{}); await page.waitForTimeout(300);
             const mic=await page.evaluate(()=>({placeholder:document.querySelector('#aiChatInput')?.placeholder||'',hasSR:!!(window.SpeechRecognition||window.webkitSpeechRecognition),hasTTS:'speechSynthesis'in window}));
             if(!mic.hasSR)assert(/unavailable|message/i.test(mic.placeholder),p.name+' has no speech recognition and no text fallback');
@@ -108,7 +102,6 @@ jobs:
             for(const p of profiles)await checkProfile(p);
             const browser=await chromium.launch({headless:true});
             const page=await browser.newPage();
-            // app.html must redirect instead of iframe nesting.
             await page.goto(SITE+'/app.html#home',{waitUntil:'domcontentloaded',timeout:60000});
             await page.waitForURL(/\/index\.html\?v=20260923-market-r5/,{timeout:30000});
             assert(!(await page.locator('iframe').count()),'app shell still contains an iframe');
@@ -126,4 +119,3 @@ jobs:
           })().catch(e=>{console.error(e);process.exit(1)});
           JS
           node cross-device-r5.js
-JS
