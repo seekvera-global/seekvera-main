@@ -1,0 +1,33 @@
+name: SEEKVERA R5 live voice diagnostic
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r5-live-voice-diagnostic.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check live R5 voice stack
+        shell: bash
+        run: |
+          set -u
+          SITE='https://seekveraglobal.com'
+          curl -fsS --max-time 20 "$SITE/api/health?diag=1" -o /tmp/health.json
+          curl -fsS --max-time 20 "$SITE/voice-ai.js?diag=1" -o /tmp/voice.js
+          curl -fsS --max-time 20 "$SITE/app.html?diag=1" -o /tmp/app.html
+          echo '--- health ---'; cat /tmp/health.json; echo
+          echo 'HEALTH_SAFETY:'; grep -q '"centralSafetyGate":"enabled"' /tmp/health.json; echo $?
+          echo 'HEALTH_FAILCLOSED:'; grep -q '"failClosed":true' /tmp/health.json; echo $?
+          echo 'HEALTH_ASR:'; grep -q '@cf/openai/whisper-large-v3-turbo' /tmp/health.json; echo $?
+          echo 'VOICE_SERVER:'; grep -q 'serverVoice' /tmp/voice.js; echo $?
+          echo 'VOICE_MEDIARECORDER:'; grep -q 'MediaRecorder' /tmp/voice.js; echo $?
+          echo 'APP_REDIRECT:'; grep -q 'location.replace' /tmp/app.html; echo $?
+          echo 'APP_IFRAME_COUNT:'; grep -c '<iframe' /tmp/app.html || true
+          code="$(curl -sS -o /tmp/stt.json -w '%{http_code}' --max-time 20 -X POST "$SITE/api/transcribe" -H 'Content-Type: application/json' --data '{"audio":"invalid","language":"en"}')"
+          echo "STT_CODE:$code"; cat /tmp/stt.json; echo
+          curl -fsS --max-time 40 -X POST "$SITE/api/ai" -H 'Content-Type: application/json' --data '{"message":"Reply only with: Hello.","country":"Worldwide","language":"English","scope":"worldwide","fast":true}' -o /tmp/ai.json
+          echo '--- ai ---'; cat /tmp/ai.json; echo
