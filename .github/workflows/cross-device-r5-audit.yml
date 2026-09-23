@@ -1,0 +1,129 @@
+name: SEEKVERA R5 cross-device audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'app.html'
+      - 'home-marketplace-r5.css'
+      - 'superapp.js'
+      - 'voice-ai.js'
+      - 'global-ui.js'
+      - 'i18n-ui.js'
+      - 'i18n-premium.css'
+      - 'manifest.webmanifest'
+      - 'sw.js'
+      - '.github/workflows/cross-device-r5-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Playwright browsers
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install --with-deps chromium firefox webkit
+      - name: Audit live app on Android iPhone iPad Safari Firefox and desktop
+        shell: bash
+        run: |
+          cat > cross-device-r5.js <<'JS'
+          const { chromium, firefox, webkit, devices } = require('playwright');
+          const SITE='https://seekveraglobal.com';
+          const assert=(v,m)=>{if(!v)throw new Error(m)};
+          const profiles=[
+            {name:'Android Chrome / Samsung-class',engine:chromium,ctx:{...devices['Pixel 5']}},
+            {name:'iPhone Safari / WebKit',engine:webkit,ctx:{...devices['iPhone 13']}},
+            {name:'iPad Safari / WebKit',engine:webkit,ctx:{...devices['iPad Pro 11']}},
+            {name:'Desktop Chrome / Edge-class',engine:chromium,ctx:{viewport:{width:1440,height:900},userAgent:'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/140 Safari/537.36'}},
+            {name:'Desktop Firefox',engine:firefox,ctx:{viewport:{width:1366,height:850}}},
+            {name:'Desktop Safari / WebKit',engine:webkit,ctx:{viewport:{width:1440,height:900},userAgent:'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/18.0 Safari/605.1.15'}}
+          ];
+          async function checkProfile(p){
+            const browser=await p.engine.launch({headless:true});
+            const context=await browser.newContext({...p.ctx});
+            const page=await context.newPage();
+            const pageErrors=[]; page.on('pageerror',e=>pageErrors.push(String(e)));
+            await page.goto(SITE+'/?r5-cross-device=1',{waitUntil:'domcontentloaded',timeout:60000});
+            await page.waitForFunction(()=>document.querySelector('#country')?.options?.length>240 && document.querySelector('#lang')?.options?.length>=29,null,{timeout:60000});
+            await page.waitForTimeout(900);
+            const s=await page.evaluate(()=>({
+              release:document.body.dataset.release,
+              country:document.querySelector('#country')?.value,
+              countryText:document.querySelector('#country')?.selectedOptions?.[0]?.textContent?.trim(),
+              countries:document.querySelector('#country')?.options?.length,
+              langs:document.querySelector('#lang')?.options?.length,
+              tiles:[...document.querySelectorAll('.r5-tile')].map(x=>({text:x.innerText.trim(),w:x.getBoundingClientRect().width,h:x.getBoundingClientRect().height})),
+              chat:!!document.querySelector('#aiChatInput')&&!!document.querySelector('#aiChatMic')&&!!document.querySelector('#aiChatSpeaker'),
+              media:!!document.querySelector('a[href="media.html"]'),
+              games:!!document.querySelector('a[href="games.html"]'),
+              overflow:Math.max(0,document.documentElement.scrollWidth-window.innerWidth),
+              bodyW:document.body.getBoundingClientRect().width,
+              viewport:window.innerWidth,
+              dir:document.documentElement.dir||'ltr'
+            }));
+            console.log(p.name,s);
+            assert(s.release==='20260923-market-r5',p.name+' is not on R5');
+            assert(s.country==='WW',p.name+' did not start Worldwide');
+            assert(/Worldwide/i.test(s.countryText||''),p.name+' Worldwide label missing');
+            assert(s.countries>=249,p.name+' country list incomplete: '+s.countries);
+            assert(s.langs===29,p.name+' expected Auto + 28 languages: '+s.langs);
+            assert(s.tiles.length>=16,p.name+' marketplace tiles missing: '+s.tiles.length);
+            assert(s.tiles.every(t=>t.text.length>2&&t.w>70&&t.h>45),p.name+' has blank/collapsed marketplace tile');
+            assert(s.chat,p.name+' chat/voice controls missing');
+            assert(s.media&&s.games,p.name+' Media/Games routes missing');
+            assert(s.overflow<=3,p.name+' horizontal overflow: '+s.overflow);
+            assert(pageErrors.length===0,p.name+' page errors: '+pageErrors.join(' | '));
+
+            // Switch to Arabic and confirm RTL/localized Worldwide without breaking layout.
+            await page.selectOption('#lang','ar'); await page.dispatchEvent('#lang','change');
+            await page.waitForFunction(()=>document.documentElement.dir==='rtl',null,{timeout:30000});
+            await page.waitForTimeout(350);
+            const ar=await page.evaluate(()=>({text:document.querySelector('#country')?.selectedOptions?.[0]?.textContent||'',overflow:Math.max(0,document.documentElement.scrollWidth-window.innerWidth),intro:document.querySelector('#aiMessages .ai-msg.bot')?.textContent||''}));
+            assert(/العالم/.test(ar.text),p.name+' Arabic Worldwide label missing');
+            assert(/[\u0600-\u06ff]/.test(ar.intro),p.name+' Arabic AI intro missing');
+            assert(ar.overflow<=3,p.name+' RTL overflow: '+ar.overflow);
+
+            // Return to English and prove text chat works on every engine even if native speech recognition is absent.
+            await page.selectOption('#lang','en'); await page.dispatchEvent('#lang','change');
+            await page.fill('#aiChatInput','Reply only with: Hello.');
+            await page.click('#aiChatForm .send');
+            await page.waitForFunction(()=>[...document.querySelectorAll('#aiMessages .ai-msg.bot')].some(x=>/hello/i.test(x.textContent||'')),null,{timeout:75000});
+
+            // Mic button must never crash unsupported browsers; it must either start native recognition or expose the text fallback.
+            await page.click('#aiChatMic').catch(()=>{}); await page.waitForTimeout(300);
+            const mic=await page.evaluate(()=>({placeholder:document.querySelector('#aiChatInput')?.placeholder||'',hasSR:!!(window.SpeechRecognition||window.webkitSpeechRecognition),hasTTS:'speechSynthesis'in window}));
+            if(!mic.hasSR)assert(/unavailable|message/i.test(mic.placeholder),p.name+' has no speech recognition and no text fallback');
+            console.log('VOICE_CAPABILITY',p.name,mic);
+            await browser.close();
+          }
+          (async()=>{
+            for(const p of profiles)await checkProfile(p);
+            const browser=await chromium.launch({headless:true});
+            const page=await browser.newPage();
+            // app.html must redirect instead of iframe nesting.
+            await page.goto(SITE+'/app.html#home',{waitUntil:'domcontentloaded',timeout:60000});
+            await page.waitForURL(/\/index\.html\?v=20260923-market-r5/,{timeout:30000});
+            assert(!(await page.locator('iframe').count()),'app shell still contains an iframe');
+            const [manifest,sw,voice]=await Promise.all([
+              page.request.get(SITE+'/manifest.webmanifest?r5=1').then(r=>r.text()),
+              page.request.get(SITE+'/sw.js?r5=1').then(r=>r.text()),
+              page.request.get(SITE+'/voice-ai.js?r5=1').then(r=>r.text())
+            ]);
+            assert(manifest.includes('index.html?v=20260923-market-r5'),'PWA start_url is not R5 direct home');
+            assert(sw.includes('seekvera-market-r5-20260923')&&sw.includes('home-marketplace-r5.css'),'R5 service worker cache missing');
+            assert(voice.includes('window.SpeechRecognition||window.webkitSpeechRecognition'),'cross-browser speech recognition detection missing');
+            assert(voice.includes("if(!c.length)return null"),'wrong-language voice fallback protection missing');
+            await browser.close();
+            console.log('SEEKVERA R5 CROSS-DEVICE AUDIT PASS');
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          node cross-device-r5.js
+JS
