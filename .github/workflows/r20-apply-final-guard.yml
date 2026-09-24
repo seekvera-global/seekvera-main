@@ -1,0 +1,86 @@
+name: SEEKVERA R20 final UI rollout
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r20-apply-final-guard.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  rollout:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply R20 guard to every public page
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          tag='<script src="r20-final-guard.js?v=20260925-r20" defer></script>'
+          count=0
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google'):
+                  continue
+              s=p.read_text(encoding='utf-8')
+              s=re.sub(r'\n?<script src="r20-final-guard\.js\?v=[^"]+" defer></script>\n?','\n',s)
+              s=re.sub(r'i18n-ui\.js\?v=[^"\']+','i18n-ui.js?v=20260925-r20',s)
+              s=re.sub(r'sw\.js\?v=[^"\']+','sw.js?v=20260925-r20',s)
+              anchor=re.search(r'<script src="locale-r15\.js[^>]*></script>',s)
+              if anchor:
+                  s=s[:anchor.start()]+tag+'\n'+s[anchor.start():]
+              elif '</body>' in s:
+                  s=s.replace('</body>',tag+'\n</body>',1)
+              else:
+                  s+='\n'+tag+'\n'
+              if p.name=='index.html':
+                  s=re.sub(r'2026-09-25 · R\d+','2026-09-25 · R20',s)
+              p.write_text(s,encoding='utf-8')
+              count+=1
+          sw=Path('sw.js').read_text(encoding='utf-8')
+          sw=re.sub(r"const CACHE='[^']+'","const CACHE='seekvera-r20-final-ui-20260925'",sw,1)
+          if "'./r20-final-guard.js'" not in sw:
+              sw=sw.replace("'./i18n-ui.js'","'./i18n-ui.js','./r20-final-guard.js'",1)
+          sw=sw.replace('locale-r14-categories)\\.js$','locale-r14-categories|r20-final-guard)\\.js$')
+          Path('sw.js').write_text(sw,encoding='utf-8')
+          print('R20 patched pages:',count)
+          PY
+          node --check r20-final-guard.js
+          node --check i18n-ui.js
+          node --check navigation.js
+          node --check sw.js
+          python - <<'PY'
+          from pathlib import Path
+          pages=[]
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google'): continue
+              t=p.read_text(encoding='utf-8')
+              assert 'r20-final-guard.js?v=20260925-r20' in t,p.name
+              assert 'i18n-ui.js?v=20260925-r20' in t,p.name
+              pages.append(p.name)
+          assert len(pages)>=44,len(pages)
+          sw=Path('sw.js').read_text(encoding='utf-8')
+          assert "seekvera-r20-final-ui-20260925" in sw
+          assert "'./r20-final-guard.js'" in sw
+          print('R20 source rollout PASS:',len(pages),'pages')
+          PY
+      - name: Commit R20 rollout
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'SEEKVERA AI Fix'
+          git config user.email 'actions@users.noreply.github.com'
+          git add '*.html' sw.js
+          if git diff --cached --quiet; then
+            echo 'Already applied'
+          else
+            git commit -m 'R20: apply final multilingual and mobile stability guard'
+            git push origin main
+          fi
