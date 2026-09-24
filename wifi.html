@@ -11,8 +11,8 @@ async function loadWifi(lat,lon){statusEl.textContent='Searching nearby public p
 function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 document.getElementById('nearbyBtn').onclick=()=>{if(!navigator.geolocation){statusEl.textContent='Location is not supported on this device.';return}statusEl.textContent='Waiting for location permission…';navigator.geolocation.getCurrentPosition(p=>{const {latitude,longitude}=p.coords;maps.href=`https://www.google.com/maps/search/free+wifi/@${latitude},${longitude},14z`;loadWifi(latitude,longitude)},()=>statusEl.textContent='Location permission was not granted. Type a city/country below or use Maps search.',{enableHighAccuracy:false,timeout:12000,maximumAge:300000})};
 document.getElementById('placeForm').onsubmit=e=>{e.preventDefault();const v=place.value.trim();if(!v)return;mapsSearch('free wifi in '+v);window.open(maps.href,'_blank','noopener')};const p=new URLSearchParams(location.search).get('place');if(p){place.value=p;mapsSearch('free wifi in '+p)}else mapsSearch('free wifi near me');
-</script><script src="voice-ai.js?v=20260924-final-r9d" defer></script>
-<script src="global-ui.js?v=20260924-az-r8" defer></script>
-<script src="i18n-ui.js?v=20260924-final-r9d" defer></script>
+</script><script src="voice-ai.js?v=20260924-final-r9e" defer></script>
+<script src="global-ui.js?v=20260924-final-r9e" defer></script>
+<script src="i18n-ui.js?v=20260924-final-r9e" defer></script>
 <script src="navigation.js?v=20260924-nav-v1" defer></script>
 </body></html>
