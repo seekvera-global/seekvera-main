@@ -1,4 +1,4 @@
-# final proof rerun: deterministic map helper, no timing-sensitive click assertion
+# final proof rerun: deterministic map helper, clean root-only commit
 name: SEEKVERA R15 Final Stable Locale Proof
 
 on:
@@ -44,7 +44,8 @@ jobs:
         run: |
           set -euo pipefail
           git config user.name 'seekvera-global';git config user.email 'seekvera.global@gmail.com'
-          git add -- '*.html' locale-r15.js locale-r14.js locale-r14-categories.js global-ui.js i18n-ui.js navigation.js sw.js .github/workflows/deploy-cloudflare.yml tools/r15_browser_audit.mjs
+          git checkout -- .github/workflows/deploy-cloudflare.yml
+          git add ./*.html locale-r15.js locale-r14.js locale-r14-categories.js global-ui.js i18n-ui.js navigation.js sw.js tools/r15_browser_audit.mjs
           if ! git diff --cached --quiet;then git commit -m 'R15: final atomic locale stability across all departments';git push origin HEAD:main;fi
       - name: Deploy proven R15 to Cloudflare
         uses: cloudflare/wrangler-action@v4
