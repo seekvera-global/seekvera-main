@@ -22,12 +22,14 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Validate R9b source
+      - name: Validate R9c source
         run: |
           set -euo pipefail
           node --check i18n-ui.js
           node --check voice-ai.js
           grep -q 'SEEKVERA R9 visible-UI locale guard' i18n-ui.js
+          grep -q 'window.__SEEKVERA_R9_QUICK=QUICK' i18n-ui.js
+          grep -q 'window.__SEEKVERA_R9_QUICK?.\[l\]' i18n-ui.js
           grep -q 'VOICE_SILENCE_MS=3200' voice-ai.js
           grep -q 'Android|iPhone|iPad|iPod' voice-ai.js
           grep -q "'AI & Search':'الذكاء والبحث'" i18n-ui.js
@@ -41,7 +43,7 @@ jobs:
               s=p.read_text(encoding='utf-8')
               if 'i18n-ui.js' in s:
                   assert 'locale-guard-r9.js' not in s,p.name
-                  assert 'i18n-ui.js?v=20260924-final-r9b' in s,p.name
+                  assert 'i18n-ui.js?v=20260924-final-r9c' in s,p.name
                   pages.append(p.name)
           assert len(pages)>=44,len(pages)
           g=Path('global-ui.js').read_text(encoding='utf-8')
@@ -49,34 +51,35 @@ jobs:
           assert m
           profiles={x.split(':',1)[0]:x.split(':',1)[1] for x in m.group(1).split(';') if x}
           assert len(profiles)==248,len(profiles)
-          print('R9b source pages',len(pages),'countries',len(profiles))
+          print('R9c source pages',len(pages),'countries',len(profiles))
           PY
-      - name: Deploy R9b to Cloudflare
+      - name: Deploy R9c to Cloudflare
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
-      - name: Verify R9b live assets and AI
+      - name: Verify R9c live assets and AI
         run: |
           set -euo pipefail
           SITE='https://seekveraglobal.com'
           ok=0
           for i in $(seq 1 25); do
-            curl -L -fsS --max-time 20 -H 'Cache-Control: no-cache' "$SITE/?r9b=$i" -o /tmp/home.html || true
-            if grep -q 'i18n-ui.js?v=20260924-final-r9b' /tmp/home.html && grep -q 'voice-ai.js?v=20260924-final-r9b' /tmp/home.html; then ok=1; break; fi
+            curl -L -fsS --max-time 20 -H 'Cache-Control: no-cache' "$SITE/?r9c=$i" -o /tmp/home.html || true
+            if grep -q 'i18n-ui.js?v=20260924-final-r9c' /tmp/home.html && grep -q 'voice-ai.js?v=20260924-final-r9c' /tmp/home.html; then ok=1; break; fi
             sleep 4
           done
           test "$ok" = 1
-          curl -L -fsS --max-time 20 "$SITE/i18n-ui.js?v=20260924-final-r9b" -o /tmp/i18n.js
+          curl -L -fsS --max-time 20 "$SITE/i18n-ui.js?v=20260924-final-r9c" -o /tmp/i18n.js
           grep -q 'SEEKVERA R9 visible-UI locale guard' /tmp/i18n.js
+          grep -q 'window.__SEEKVERA_R9_QUICK=QUICK' /tmp/i18n.js
           grep -q "'AI & Search':'الذكاء والبحث'" /tmp/i18n.js
           grep -q "'Flights':'الرحلات الجوية'" /tmp/i18n.js
-          curl -L -fsS --max-time 20 "$SITE/voice-ai.js?v=20260924-final-r9b" -o /tmp/voice.js
+          curl -L -fsS --max-time 20 "$SITE/voice-ai.js?v=20260924-final-r9c" -o /tmp/voice.js
           grep -q 'VOICE_SILENCE_MS=3200' /tmp/voice.js
           grep -q 'Android|iPhone|iPad|iPod' /tmp/voice.js
           UA='Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
           curl -fsS --max-time 60 -X POST "$SITE/api/ai" -H "User-Agent: $UA" -H "Origin: $SITE" -H 'Content-Type: application/json' --data '{"message":"mechanic","country":"France","language":"English","scope":"country","fast":true,"history":[{"role":"user","content":"I need a job in France"},{"role":"assistant","content":"What kind of job are you looking for?"}]}' -o /tmp/ai.json
           grep -q '"category":"jobs"' /tmp/ai.json
           grep -q '"route":"jobs.html"' /tmp/ai.json
-          echo 'R9B LIVE DEPLOY + AI PASS'
+          echo 'R9C LIVE DEPLOY + AI PASS'
