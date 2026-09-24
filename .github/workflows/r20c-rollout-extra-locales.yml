@@ -1,0 +1,78 @@
+name: SEEKVERA R20C rollout 98 static locales
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r20c-rollout-extra-locales.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  rollout:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Wire extra category locales across every public page
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          tag='<script src="r20-extra-categories.js?v=20260925-r20c" defer></script>'
+          count=0
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google'):
+                  continue
+              s=p.read_text(encoding='utf-8')
+              s=re.sub(r'\n?<script src="r20-extra-categories\.js\?v=[^"]+" defer></script>\n?','\n',s)
+              m=re.search(r'<script src="locale-r14-categories\.js\?v=[^"]+" defer></script>',s)
+              if not m:
+                  raise SystemExit(f'missing locale-r14-categories.js in {p.name}')
+              s=s[:m.end()]+'\n'+tag+s[m.end():]
+              p.write_text(s,encoding='utf-8')
+              count+=1
+          if count < 44:
+              raise SystemExit(f'only {count} public pages patched')
+          swp=Path('sw.js'); sw=swp.read_text(encoding='utf-8')
+          if "'./r20-extra-categories.js'" not in sw:
+              sw=sw.replace("'./r20-final-guard.js'","'./r20-final-guard.js','./r20-extra-categories.js'",1)
+          sw=sw.replace('locale-r14-categories|r20-final-guard)\\.js$','locale-r14-categories|r20-final-guard|r20-extra-categories)\\.js$')
+          swp.write_text(sw,encoding='utf-8')
+          print('R20C patched pages:',count)
+          PY
+          node --check r20-extra-categories.js
+          node --check sw.js
+          python - <<'PY'
+          from pathlib import Path
+          pages=[]
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google'): continue
+              t=p.read_text(encoding='utf-8')
+              assert 'r20-extra-categories.js?v=20260925-r20c' in t,p.name
+              assert t.index('locale-r14-categories.js') < t.index('r20-extra-categories.js'),p.name
+              pages.append(p.name)
+          assert len(pages)>=44,len(pages)
+          sw=Path('sw.js').read_text(encoding='utf-8')
+          assert "'./r20-extra-categories.js'" in sw
+          assert 'r20-extra-categories' in sw
+          print('R20C rollout source PASS:',len(pages),'pages')
+          PY
+      - name: Commit R20C rollout
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'SEEKVERA AI Fix'
+          git config user.email 'actions@users.noreply.github.com'
+          git add '*.html' sw.js
+          if git diff --cached --quiet; then
+            echo 'Already applied'
+          else
+            git commit -m 'R20C: load all 98 static category locales everywhere'
+            git push origin main
+          fi
