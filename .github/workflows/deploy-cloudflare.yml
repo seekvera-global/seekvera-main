@@ -1,5 +1,5 @@
 name: Deploy SEEKVERA to Cloudflare
-# Production deployment: R10 worldwide locale + voice hardening + conversational AI + single departments section
+# Final R10 production deployment: worldwide locale + voice hardening + AI country control + single departments section
 
 on:
   push:
