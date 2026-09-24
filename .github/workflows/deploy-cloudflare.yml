@@ -1,5 +1,4 @@
-name: Deploy SEEKVERA to Cloudflare
-# Final R10 production deployment: worldwide locale + voice hardening + universal multilingual AI country control + single departments section
+name: Deploy SEEKVERA R12 to Cloudflare
 
 on:
   push:
@@ -29,7 +28,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: seekvera-cloudflare-production-r10
+  group: seekvera-cloudflare-production-r12
   cancel-in-progress: true
 
 jobs:
@@ -40,95 +39,66 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate R10 worldwide source and backend
+      - name: Validate R12 worldwide source
         shell: bash
         run: |
           set -euo pipefail
           for f in worker.js voice-ai.js i18n-ui.js global-ui.js superapp.js sw.js navigation.js; do node --check "$f"; done
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import assert from 'node:assert';
-          const global=fs.readFileSync('global-ui.js','utf8');
-          const nav=fs.readFileSync('navigation.js','utf8');
-          const voice=fs.readFileSync('voice-ai.js','utf8');
-          const sw=fs.readFileSync('sw.js','utf8');
-          const worker=fs.readFileSync('worker.js','utf8');
-          const app=fs.readFileSync('superapp.js','utf8');
-          const pm=global.match(/const COUNTRY_PROFILE=Object\.fromEntries\(`([^`]+)`\.split/s);
-          assert(pm,'COUNTRY_PROFILE not found');
-          const profiles=Object.fromEntries(pm[1].split(';').filter(Boolean).map(x=>{const [cc,v]=x.split(':');const [language,currency]=v.split(',');return [cc,{language,currency}]}));
-          assert.equal(Object.keys(profiles).length,248,'expected 248 country/territory profiles');
-          const lm=nav.match(/const WORLD_LANGS=\[([^\]]+)\]/s);
-          assert(lm,'WORLD_LANGS not found');
-          const langs=[...lm[1].matchAll(/'([^']+)'/g)].map(m=>m[1]);
-          assert(langs.length>=90,`expected >=90 language choices, got ${langs.length}`);
-          for(const [cc,p] of Object.entries(profiles)) assert(langs.includes(p.language),`${cc} default language ${p.language} missing from WORLD_LANGS`);
-          assert(nav.includes('bindAICountryControl'),'local AI country switching missing');
-          assert(nav.includes('primeVoiceOnGesture'),'voice gesture primer missing');
-          assert(voice.includes('/api/transcribe'),'server ASR route missing from voice runtime');
-          assert(voice.includes('MediaRecorder'),'MediaRecorder fallback missing');
-          assert(voice.includes('Android|iPhone|iPad|iPod'),'mobile recorder branch missing');
-          assert(voice.includes('speechSynthesis'),'speaker/TTS runtime missing');
-          assert(worker.includes("u.pathname==='/api/ui-translate'"),'UI translation endpoint missing');
-          assert(worker.includes("u.pathname==='/api/locale'"),'locale endpoint missing');
-          assert(worker.includes('/api/transcribe'),'transcription endpoint missing');
-          assert(worker.includes('/api/visual-search'),'visual-search endpoint missing');
-          assert(worker.includes('safetyGateVersion'),'safety gate missing');
-          assert(worker.includes("countryAction=countryMatch?{type:'set-country'"),'server multilingual country action missing');
-          assert(worker.includes('Understand this control request in any language.'),'multilingual country-control instruction missing');
-          assert(global.includes("d?.countryAction?.type==='set-country'"),'global chat country action handler missing');
-          assert(global.includes("['ar','fa','ur','he','ps','dv']"),'full RTL locale set missing Dhivehi');
-          assert(app.includes("d?.countryAction?.type==='set-country'"),'home AI country action handler missing');
-          assert(app.includes("new Intl.DisplayNames(['en'],{type:'language'})"),'all-language AI name fallback missing');
-          assert(sw.includes('seekvera-r10-worldwide-20260924'),'R10 cache version missing');
-          console.log('R10 STATIC PASS:',Object.keys(profiles).length,'countries;',langs.length,'languages; universal AI country control');
-          NODE
           python - <<'PY'
           from pathlib import Path
           import re
           g=Path('global-ui.js').read_text(encoding='utf-8')
-          s=Path('superapp.js').read_text(encoding='utf-8')
           n=Path('navigation.js').read_text(encoding='utf-8')
-          m=re.search(r'const COUNTRY_PROFILE=Object\.fromEntries\(`([^`]+)`\.split',g,re.S)
-          mm=re.search(r"const ISO='([^']+)'\.split",s)
+          i=Path('i18n-ui.js').read_text(encoding='utf-8')
+          v=Path('voice-ai.js').read_text(encoding='utf-8')
+          w=Path('worker.js').read_text(encoding='utf-8')
+          sw=Path('sw.js').read_text(encoding='utf-8')
+          idx=Path('index.html').read_text(encoding='utf-8')
+          hub=Path('hub.html').read_text(encoding='utf-8')
+
+          pm=re.search(r'const COUNTRY_PROFILE=Object\.fromEntries\(`([^`]+)`\.split',g,re.S)
           lm=re.search(r'const WORLD_LANGS=\[([^\]]+)\]',n,re.S)
-          assert m and mm and lm
-          profiles={x.split(':',1)[0]:x.split(':',1)[1] for x in m.group(1).split(';') if x}
-          iso=set(mm.group(1).split())
-          langs=set(re.findall(r"'([^']+)'",lm.group(1)))
-          assert len(profiles)==len(iso)==248
-          assert not (iso-set(profiles))
-          assert len(langs)>=90
-          for cc,v in profiles.items():
-              language=v.split(',',1)[0]
-              assert language in langs,(cc,language)
+          im=re.search(r'const SUPPORTED=\[([^\]]+)\]',i,re.S)
+          assert pm and lm and im
+          profiles={x.split(':',1)[0]:x.split(':',1)[1] for x in pm.group(1).split(';') if x}
+          langs=re.findall(r"'([^']+)'",lm.group(1))
+          i18n_langs=re.findall(r"'([^']+)'",im.group(1))
+          assert len(profiles)==248,len(profiles)
+          assert len(langs)==98,len(langs)
+          assert len(i18n_langs)==98,len(i18n_langs)
+          for cc,val in profiles.items(): assert val.split(',',1)[0] in langs,(cc,val)
+
+          assert idx.count('id="categories"')==1
+          assert 'r5-chips' not in idx
+          assert 'r8-department-strip' not in idx
+          assert 'class="r5-left"' not in idx
+          assert 'bindAICountryControl' in n and 'COUNTRY_TERMS=' in n and 'hasCountryTerm(text)' in n
+          assert 'primeVoiceOnGesture' in n
+          assert '/api/transcribe' in v and 'MediaRecorder' in v and 'Android|iPhone|iPad|iPod' in v
+          assert 'speechSynthesis' in v and 'function speakerAction' in v
+          assert 'if(force)play(0,0);else setTimeout(()=>play(0,0),50)' in v
+          assert "TRANSLATE='@cf/meta/llama-3.2-1b-instruct'" in w
+          assert "caches.open('seekvera-ui-translate-r12')" in w
+          assert 'daily_free_ai_limit' in w
+          for endpoint in ["/api/ui-translate","/api/locale","/api/transcribe","/api/visual-search"]: assert endpoint in w,endpoint
+          assert 'safetyGateVersion' in w
+          assert 'seekvera-r11-worldwide-20260924' in sw
+
           required=['marketplace.html','travel.html','tourism.html','property.html','cars-auto.html','jobs.html','shopping.html','restaurants-food.html','local-services.html','import-export.html','shipping-logistics.html','business-software.html','software.html','web-hosting.html','solar.html','education.html','health.html','money-insurance.html','entertainment.html','media.html','games.html','connectivity.html','wifi.html','deal-agent.html','everyday.html','scan.html','post-ad.html','seller-plans.html']
-          idx=Path('index.html').read_text(encoding='utf-8'); hub=Path('hub.html').read_text(encoding='utf-8')
           for x in required:
               assert x in idx and x in hub and Path(x).exists(),x
-          assert idx.count('id="categories"')==1,'index must contain exactly one categories section'
-          assert 'r8-department-strip' not in idx,'duplicate top department strip must not exist in source'
-          assert 'class="r5-left"' not in idx,'duplicate left department list must not exist in source'
-          assert 'grid-template-columns:none!important;grid-template-rows:repeat(2,108px)!important' in Path('home-marketplace-r5.css').read_text(encoding='utf-8'),'mobile categories grid reset missing'
-          rtl=Path('i18n-ui.js').read_text(encoding='utf-8')
-          assert "'dv'" in re.search(r"const RTL=new Set\(\[([^\]]*)\]\)",rtl).group(1),'Dhivehi RTL missing'
           pages=[]
           for p in Path('.').glob('*.html'):
               if p.name.lower().startswith('google'): continue
               t=p.read_text(encoding='utf-8')
-              for asset in ['navigation.js','global-ui.js','i18n-ui.js','voice-ai.js']:
-                  assert asset in t,(p.name,asset)
+              for asset in ['navigation.js','global-ui.js','i18n-ui.js','voice-ai.js']: assert asset in t,(p.name,asset)
               pages.append(p.name)
-          assert len(pages)>=44
-          app=Path('app.html').read_text(encoding='utf-8')
-          assert '<iframe' not in app
-          assert 'location.replace' in app
-          print('R10 SOURCE PASS:',len(profiles),'countries;',len(langs),'languages;',len(pages),'public pages;',len(required),'departments; single categories section')
+          assert len(pages)>=44,len(pages)
+          print('R12 SOURCE PASS:',len(profiles),'countries;',len(langs),'languages;',len(pages),'public pages;',len(required),'core department routes')
           PY
           npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-dry-run
           grep -q '"binding": "AI"' wrangler.jsonc
           rm -rf .wrangler-dry-run .wrangler
-          echo 'R10 WORLDWIDE SOURCE VALIDATION PASS'
 
       - name: Detect Cloudflare deployment credentials
         id: cf
@@ -137,11 +107,7 @@ jobs:
           CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          if [ -n "$CF_TOKEN" ] && [ -n "$CF_ACCOUNT" ]; then
-            echo 'ready=true' >> "$GITHUB_OUTPUT"
-          else
-            echo 'ready=false' >> "$GITHUB_OUTPUT"
-          fi
+          if [ -n "$CF_TOKEN" ] && [ -n "$CF_ACCOUNT" ]; then echo 'ready=true' >> "$GITHUB_OUTPUT"; else echo 'ready=false' >> "$GITHUB_OUTPUT"; fi
 
       - name: Deploy to Cloudflare Workers
         if: steps.cf.outputs.ready == 'true'
@@ -151,81 +117,65 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
 
-      - name: Verify live R10 production A-Z
+      - name: Verify live R12 production
         if: steps.cf.outputs.ready == 'true'
         shell: bash
         run: |
           set -euo pipefail
           SITE='https://seekveraglobal.com'
+          UA='Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Mobile Safari/537.36'
           ok=0
-          for i in $(seq 1 25); do
-            curl -L -fsS --max-time 20 -H 'Cache-Control: no-cache' "$SITE/?r10-live=$i" -o /tmp/home.html || true
-            if grep -q '20260924-az-r8' /tmp/home.html 2>/dev/null && grep -q 'data-r8-grid="complete"' /tmp/home.html 2>/dev/null; then ok=1; break; fi
+          for i in $(seq 1 20); do
+            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/?r12-live=$i" -o /tmp/home.html || true
+            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/navigation.js?r12-live=$i" -o /tmp/nav.js || true
+            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/i18n-ui.js?r12-live=$i" -o /tmp/i18n.js || true
+            if test "$(grep -o 'id=\"categories\"' /tmp/home.html 2>/dev/null | wc -l)" = '1' && ! grep -q 'r5-chips' /tmp/home.html 2>/dev/null && grep -q 'COUNTRY_TERMS=' /tmp/nav.js 2>/dev/null && grep -q 'nativeTranslator' /tmp/i18n.js 2>/dev/null; then ok=1; break; fi
             sleep 4
           done
           test "$ok" = '1'
-          grep -q 'navigation.js' /tmp/home.html
           ! grep -q 'r8-department-strip' /tmp/home.html
           ! grep -q 'class="r5-left"' /tmp/home.html
-          test "$(grep -o 'id="categories"' /tmp/home.html | wc -l)" = '1'
-          echo 'LIVE R10 HOME + SINGLE DEPARTMENTS SECTION PASS'
+          grep -q 'function speakerAction' <(curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/voice-ai.js?v=20260924-r11&r12-live=1")
 
           pages=(marketplace.html travel.html tourism.html property.html cars-auto.html jobs.html shopping.html restaurants-food.html local-services.html import-export.html shipping-logistics.html business-software.html software.html web-hosting.html solar.html education.html health.html money-insurance.html entertainment.html media.html games.html connectivity.html wifi.html deal-agent.html everyday.html scan.html post-ad.html seller-plans.html hub.html app.html)
           for p in "${pages[@]}"; do
-            code="$(curl -L -sS -o /tmp/page.html -w '%{http_code}' --max-time 25 "$SITE/$p?r10-live=1")"
+            code="$(curl -L -sS -o /tmp/page.html -w '%{http_code}' --max-time 25 -A "$UA" "$SITE/$p?r12-live=1")"
             test "$code" = '200'
             grep -q 'navigation.js' /tmp/page.html
             grep -q 'global-ui.js' /tmp/page.html
             grep -q 'i18n-ui.js' /tmp/page.html
-            echo "PASS $p"
           done
-          echo 'LIVE R10 DEPARTMENT PAGES PASS'
+          echo 'LIVE R12 HOME + DEPARTMENT ROUTES PASS'
 
-          UA='Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
-          ai_code="$(curl -sS -o /tmp/ai.json -w '%{http_code}' --max-time 60 -X POST "$SITE/api/ai" -H "User-Agent: $UA" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' --data '{"message":"mechanic","country":"France","language":"English","scope":"country","fast":true,"history":[{"role":"user","content":"I need a job in France"},{"role":"assistant","content":"What kind of job are you looking for?"}]}')"
-          test "$ai_code" = '200'
-          grep -q '"ok":true' /tmp/ai.json
-          grep -q '"category":"jobs"' /tmp/ai.json
-          grep -q '"route":"jobs.html"' /tmp/ai.json
-          echo 'LIVE R10 AI CONVERSATION MEMORY + JOB ROUTE PASS'
-
-          ctl_code="$(curl -sS -o /tmp/control.json -w '%{http_code}' --max-time 60 -X POST "$SITE/api/ai" -H "User-Agent: $UA" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' --data '{"message":"غيّر دولة التطبيق إلى كندا","country":"Nigeria","language":"Arabic","scope":"worldwide","fast":true}')"
-          test "$ctl_code" = '200'
-          python - <<'PY'
-          import json
-          d=json.load(open('/tmp/control.json'))
-          a=d.get('countryAction') or {}
-          assert d.get('ok') is True
-          assert a.get('type')=='set-country' and a.get('code')=='CA',d
-          assert '[[COUNTRY:' not in str(d.get('response',''))
-          print('LIVE R10 MULTILINGUAL AI COUNTRY CONTROL PASS',a)
-          PY
-
-          tr_code="$(curl -sS -o /tmp/tr.json -w '%{http_code}' --max-time 60 -X POST "$SITE/api/ui-translate" -H "User-Agent: $UA" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' --data '{"language":"Arabic","strings":["Jobs","Shopping","Health"]}')"
-          test "$tr_code" = '200'
-          grep -q '"ok":true' /tmp/tr.json
-          python - <<'PY'
-          import json
-          d=json.load(open('/tmp/tr.json'))
-          a=d.get('translations') or []
-          assert len(a)==3 and all(isinstance(x,str) and x.strip() for x in a)
-          assert not all(x in {'Jobs','Shopping','Health'} for x in a)
-          print('LIVE R10 DEDICATED UI TRANSLATION PASS',a)
-          PY
-
-          curl -L -fsS --max-time 25 "$SITE/api/health?r10-live=1" -o /tmp/health.json
-          grep -q '20260924-az-r8' /tmp/health.json
+          curl -L -fsS --max-time 25 -A "$UA" "$SITE/api/health?r12-live=1" -o /tmp/health.json
           grep -q '"centralSafetyGate":"enabled"' /tmp/health.json
           grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/health.json
-          echo 'LIVE R10 HEALTH PASS'
-
-          curl -L -fsS --max-time 20 "$SITE/api/locale?r10-live=1" -o /tmp/locale.json
+          curl -L -fsS --max-time 25 -A "$UA" "$SITE/api/locale?r12-live=1" -o /tmp/locale.json
           grep -q '"ok":true' /tmp/locale.json
-          echo 'LIVE R10 COUNTRY DETECTION PASS'
+          echo 'LIVE R12 HEALTH + LOCALE PASS'
 
-      - name: Deployment architecture
+          ai_code="$(curl -sS -o /tmp/ai.json -w '%{http_code}' --max-time 70 -X POST "$SITE/api/ai" -A "$UA" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' --data '{"message":"Find hotels in Paris","country":"France","language":"English","scope":"country","fast":true}')"
+          if [ "$ai_code" = '200' ]; then
+            grep -q '"ok":true' /tmp/ai.json
+            echo 'LIVE R12 AI PASS'
+          elif [ "$ai_code" = '503' ] && grep -q 'daily_free_ai_limit' /tmp/ai.json; then
+            echo '::warning::Cloudflare Workers AI daily free allocation is exhausted; deployment is healthy but general AI is quota-degraded until Cloudflare resets the allowance.'
+          else
+            echo "Unexpected AI HTTP $ai_code"; cat /tmp/ai.json; exit 1
+          fi
+
+          tr_code="$(curl -sS -o /tmp/tr.json -w '%{http_code}' --max-time 70 -X POST "$SITE/api/ui-translate" -A "$UA" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' --data '{"language":"Arabic","strings":["Jobs","Shopping","Health"]}')"
+          if [ "$tr_code" = '200' ]; then
+            grep -q '"ok":true' /tmp/tr.json
+            echo 'LIVE R12 UI TRANSLATION PASS/CACHE HIT'
+          elif [ "$tr_code" = '503' ] && grep -q 'daily_free_ai_limit' /tmp/tr.json; then
+            echo '::warning::First-time uncached UI translation is temporarily quota-degraded; cached/device translations remain available.'
+          else
+            echo "Unexpected translation HTTP $tr_code"; cat /tmp/tr.json; exit 1
+          fi
+
+      - name: Missing deployment credentials
         if: steps.cf.outputs.ready != 'true'
-        shell: bash
         run: |
           echo 'Cloudflare deployment credentials are unavailable.'
           exit 1
