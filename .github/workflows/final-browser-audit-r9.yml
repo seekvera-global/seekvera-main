@@ -1,0 +1,132 @@
+name: SEEKVERA R9 final live browser audit
+
+on:
+  push:
+    paths:
+      - '.github/workflows/final-browser-audit-r9.yml'
+      - 'app.html'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Chromium browser test runtime
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Run live country, locale, section, AI and voice audit
+        run: |
+          node <<'NODE'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          const assert = require('assert');
+          const BASE='https://seekveraglobal.com';
+          const src=fs.readFileSync('global-ui.js','utf8');
+          const m=src.match(/const COUNTRY_PROFILE=Object\.fromEntries\(`([^`]+)`\.split/s);
+          assert(m,'COUNTRY_PROFILE not found');
+          const profiles=Object.fromEntries(m[1].split(';').filter(Boolean).map(x=>{const [cc,v]=x.split(':');const [language,currency]=v.split(',');return [cc,{language,currency}]}));
+          assert.equal(Object.keys(profiles).length,248,'expected 248 country/territory profiles');
+
+          const browser=await chromium.launch({headless:true});
+          try {
+            // 1) Every country/territory: select it in the real live UI and verify country, language, currency and document locale.
+            const c1=await browser.newContext({locale:'en-US'});
+            const p1=await c1.newPage();
+            await p1.route('**/api/ui-translate',r=>r.abort());
+            await p1.goto(BASE+'/?audit=country-'+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
+            await p1.evaluate(()=>localStorage.clear());
+            await p1.reload({waitUntil:'domcontentloaded'});
+            await p1.waitForFunction(()=>document.querySelectorAll('#country option').length>=249,null,{timeout:15000});
+            const liveCodes=await p1.locator('#country option').evaluateAll(opts=>opts.map(o=>o.value));
+            for(const cc of Object.keys(profiles)) assert(liveCodes.includes(cc),`country option missing ${cc}`);
+            let checked=0;
+            for(const [cc,prof] of Object.entries(profiles)){
+              await p1.selectOption('#country',cc);
+              const state=await p1.evaluate(()=>({country:document.querySelector('#country')?.value,lang:document.querySelector('#lang')?.value,currency:document.querySelector('#currency')?.value,docLang:document.documentElement.lang,dir:document.documentElement.dir,lsCountry:localStorage.getItem('seekvera_country'),lsLang:localStorage.getItem('seekvera_lang'),lsCurrency:localStorage.getItem('seekvera_currency')}));
+              assert.equal(state.country,cc,`${cc} country select`);
+              assert.equal(state.lang,prof.language,`${cc} language`);
+              assert.equal(state.currency,prof.currency,`${cc} currency`);
+              assert.equal(state.docLang,prof.language,`${cc} document language`);
+              assert.equal(state.lsCountry,cc,`${cc} stored country`);
+              assert.equal(state.lsLang,prof.language,`${cc} stored language`);
+              assert.equal(state.lsCurrency,prof.currency,`${cc} stored currency`);
+              const rtl=['ar','fa','ur','he','ps'].includes(prof.language);
+              assert.equal(state.dir,rtl?'rtl':'ltr',`${cc} direction`);
+              checked++;
+            }
+            assert.equal(checked,248);
+            console.log('COUNTRY UI PASS:',checked,'profiles selected and verified one-by-one');
+            await c1.close();
+
+            // 2) Visible text: verify the exact screen text changes in representative language families.
+            const c2=await browser.newContext({locale:'en-US'});
+            const p2=await c2.newPage();
+            await p2.goto(BASE+'/?audit=visible-'+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
+            await p2.evaluate(()=>localStorage.clear());
+            await p2.reload({waitUntil:'domcontentloaded'});
+            await p2.waitForFunction(()=>document.querySelectorAll('#country option').length>=249,null,{timeout:15000});
+            const visible=[
+              ['MA','ar',['الذكاء والبحث','الرحلات الجوية']],
+              ['FR','fr',['IA et recherche','Vols']],
+              ['IN','hi',['एआई और खोज','उड़ानें']],
+              ['CN','zh',['AI 与搜索','航班']]
+            ];
+            for(const [cc,lang,need] of visible){
+              await p2.selectOption('#country',cc);
+              await p2.waitForFunction(({lang,need})=>document.documentElement.lang===lang && need.every(t=>document.body.innerText.includes(t)),{lang,need},{timeout:30000});
+              const body=await p2.locator('body').innerText();
+              for(const t of need) assert(body.includes(t),`${cc} visible translation missing ${t}`);
+              console.log('VISIBLE LOCALE PASS:',cc,lang);
+            }
+            await c2.close();
+
+            // 3) Every public page using the app i18n runtime: live HTTP + browser script marker.
+            const pages=fs.readdirSync('.').filter(f=>f.endsWith('.html')&&!f.toLowerCase().startsWith('google')).filter(f=>fs.readFileSync(f,'utf8').includes('i18n-ui.js'));
+            assert(pages.length>=44,`expected >=44 localized pages, got ${pages.length}`);
+            const c3=await browser.newContext();
+            const p3=await c3.newPage();
+            await p3.route('**/api/ui-translate',r=>r.abort());
+            for(const f of pages){
+              const resp=await p3.goto(BASE+'/'+f+'?audit=page-'+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
+              assert(resp && resp.ok(),`${f} HTTP ${resp?.status()}`);
+              const has=await p3.evaluate(()=>[...document.scripts].some(s=>(s.src||'').includes('i18n-ui.js?v=20260924-final-r9b')));
+              assert(has,`${f} missing final R9b i18n runtime`);
+            }
+            console.log('ALL LOCALIZED PAGES PASS:',pages.length);
+            await c3.close();
+
+            // 4) AI conversation continuity: a follow-up role must route without re-asking known country/context.
+            const c4=await browser.newContext();
+            const req=c4.request;
+            const started=Date.now();
+            const ai=await req.post(BASE+'/api/ai',{data:{message:'mechanic',country:'France',language:'English',scope:'country',fast:true,history:[{role:'user',content:'I need a job in France'},{role:'assistant',content:'What kind of job are you looking for?'}]},timeout:60000});
+            const ms=Date.now()-started;
+            assert(ai.ok(),`AI HTTP ${ai.status()}`);
+            const data=await ai.json();
+            assert.equal(data.ok,true,'AI ok');
+            assert.equal(data.category,'jobs','AI category');
+            assert.equal(data.route,'jobs.html','AI route');
+            console.log('AI CONVERSATION PASS:',ms+'ms');
+            await c4.close();
+
+            // 5) Live voice runtime must use 3.2s silence and Android/iPhone recorder path.
+            const voice=await (await fetch(BASE+'/voice-ai.js?v=20260924-final-r9b',{cache:'no-store'})).text();
+            assert(voice.includes('VOICE_SILENCE_MS=3200'),'voice silence must be 3200ms');
+            assert(voice.includes('Android|iPhone|iPad|iPod'),'mobile recorder branch missing');
+            const i18n=await (await fetch(BASE+'/i18n-ui.js?v=20260924-final-r9b',{cache:'no-store'})).text();
+            assert(i18n.includes('SEEKVERA R9 visible-UI locale guard'),'embedded R9 guard missing live');
+            const sw=await (await fetch(BASE+'/sw.js?v=20260924-final-r9b',{cache:'no-store'})).text();
+            assert(sw.includes("seekvera-final-r9b-20260924"),'final service-worker cache missing live');
+            console.log('VOICE + PWA CACHE PASS');
+          } finally { await browser.close(); }
+          console.log('FINAL R9 LIVE BROWSER AUDIT PASS');
+          NODE
