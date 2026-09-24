@@ -49,8 +49,9 @@ jobs:
           assert len(langs)==98,len(langs)
           assert len(ilangs)==98,len(ilangs)
           for cc,val in profiles.items(): assert val.split(',',1)[0] in langs,(cc,val)
-          assert "const VERSION='20260925-r20'" in guard
+          assert "const VERSION='20260925-r20c'" in guard
           assert 'EN_DESC=new Set' in guard and 'fixCategories' in guard
+          assert 'EXTRA_TITLES' in guard and 'fillMissingTitles' in guard
           assert 'max-height:128px' in guard and 'sv-r20-untranslated' in guard
           assert "const CACHE='seekvera-r20-final-ui-20260925'" in sw
           assert "'./r20-final-guard.js'" in sw
@@ -67,7 +68,7 @@ jobs:
               assert 'i18n-ui.js?v=20260925-r20' in t,p.name
               pages.append(p.name)
           assert len(pages)>=44,len(pages)
-          print('R20B SOURCE PASS',len(profiles),'countries',len(langs),'languages',len(pages),'pages')
+          print('R20C SOURCE PASS',len(profiles),'countries',len(langs),'languages',len(pages),'pages')
           PY
           npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-r20b-dry
           grep -q '"binding": "AI"' wrangler.jsonc
@@ -96,23 +97,24 @@ jobs:
           UA='Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0 Mobile Safari/537.36'
           ok=0
           for i in $(seq 1 30); do
-            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/?r20b=$i" -o /tmp/home.html || true
-            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/r20-final-guard.js?r20b=$i" -o /tmp/guard.js || true
-            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/sw.js?r20b=$i" -o /tmp/sw.js || true
-            if grep -q 'r20-final-guard.js?v=20260925-r20' /tmp/home.html 2>/dev/null && grep -q '20260925-r20' /tmp/guard.js 2>/dev/null && grep -q 'seekvera-r20-final-ui-20260925' /tmp/sw.js 2>/dev/null; then ok=1; break; fi
+            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/?r20c=$i" -o /tmp/home.html || true
+            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/r20-final-guard.js?r20c=$i" -o /tmp/guard.js || true
+            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/sw.js?r20c=$i" -o /tmp/sw.js || true
+            if grep -q 'r20-final-guard.js?v=20260925-r20' /tmp/home.html 2>/dev/null && grep -q '20260925-r20c' /tmp/guard.js 2>/dev/null && grep -q 'seekvera-r20-final-ui-20260925' /tmp/sw.js 2>/dev/null; then ok=1; break; fi
             sleep 4
           done
           test "$ok" = '1'
           grep -q '2026-09-25 · R20' /tmp/home.html
           grep -q 'max-height:128px' /tmp/guard.js
+          grep -q 'EXTRA_TITLES' /tmp/guard.js
           grep -q 'sv-r20-untranslated' /tmp/guard.js
-          curl -L -fsS --max-time 25 -A "$UA" "$SITE/api/health?r20b=1" -o /tmp/health.json
+          curl -L -fsS --max-time 25 -A "$UA" "$SITE/api/health?r20c=1" -o /tmp/health.json
           grep -q '20260924-ai-r17' /tmp/health.json
           ai_code="$(curl -sS -o /tmp/ai.json -w '%{http_code}' --max-time 70 -X POST "$SITE/api/ai" -A "$UA" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' --data '{"message":"Hello. The interface can be Hindi, but I am speaking English. Reply briefly in English.","country":"India","language":"auto","scope":"worldwide","fast":true}')"
           test "$ai_code" = '200'
           grep -q '"ok":true' /tmp/ai.json
           grep -q '"response"' /tmp/ai.json
-          echo 'LIVE R20B ASSETS + AI PASS'
+          echo 'LIVE R20C ASSETS + AI PASS'
       - name: Missing credentials
         if: steps.cf.outputs.ready != 'true'
         run: exit 1
