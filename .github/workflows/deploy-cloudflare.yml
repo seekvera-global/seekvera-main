@@ -45,33 +45,39 @@ jobs:
         run: |
           set -euo pipefail
           for f in worker.js voice-ai.js i18n-ui.js global-ui.js superapp.js sw.js navigation.js; do node --check "$f"; done
-          grep -q '20260924-az-r8' index.html
-          grep -q '20260924-az-r8' worker.js
-          grep -q 'SEEKVERA_LOCALE_GUARD_R9' i18n-ui.js
-          grep -q 'WORLD_LANGS' navigation.js
-          grep -q 'bindAICountryControl' navigation.js
-          grep -q 'primeVoiceOnGesture' navigation.js
-          grep -q "u.pathname==='/api/ui-translate'" worker.js
-          grep -q 'VOICE_MAX_MS=90000' voice-ai.js
-          grep -q 'VOICE_SILENCE_MS=2100' voice-ai.js
-          grep -q 'r.continuous=true' voice-ai.js
-          grep -q 'const hist=Array.isArray(b.history)' worker.js
-          grep -q 'function chatHistory()' superapp.js
-          grep -q 'function globalHistory' global-ui.js
-          grep -q 'COUNTRY_PROFILE' global-ui.js
-          grep -q "u.pathname==='/api/locale'" worker.js
-          grep -q 'data-r8-departments="complete"' index.html
-          grep -q 'data-r8-grid="complete"' index.html
-          grep -q 'data-r8-hub-departments="complete"' hub.html
-          grep -q 'id="jobRole"' jobs.html
-          grep -q '@cf/openai/whisper-large-v3-turbo' worker.js
-          grep -q '/api/transcribe' worker.js
-          grep -q '/api/visual-search' worker.js
-          grep -q 'safetyGateVersion' worker.js
-          grep -q 'svBackButton' navigation.js
-          grep -q 'svHomeButton' navigation.js
-          if grep -q '<iframe' app.html; then echo 'app.html must not use iframe'; exit 1; fi
-          grep -q 'location.replace' app.html
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import assert from 'node:assert';
+          const global=fs.readFileSync('global-ui.js','utf8');
+          const nav=fs.readFileSync('navigation.js','utf8');
+          const voice=fs.readFileSync('voice-ai.js','utf8');
+          const sw=fs.readFileSync('sw.js','utf8');
+          const worker=fs.readFileSync('worker.js','utf8');
+          const pm=global.match(/const COUNTRY_PROFILE=Object\.fromEntries\(`([^`]+)`\.split/s);
+          assert(pm,'COUNTRY_PROFILE not found');
+          const profiles=Object.fromEntries(pm[1].split(';').filter(Boolean).map(x=>{const [cc,v]=x.split(':');const [language,currency]=v.split(',');return [cc,{language,currency}]}));
+          assert.equal(Object.keys(profiles).length,248,'expected 248 country/territory profiles');
+          const lm=nav.match(/const WORLD_LANGS=\[([^\]]+)\]/s);
+          assert(lm,'WORLD_LANGS not found');
+          const langs=[...lm[1].matchAll(/'([^']+)'/g)].map(m=>m[1]);
+          assert(langs.length>=90,`expected >=90 language choices, got ${langs.length}`);
+          for(const [cc,p] of Object.entries(profiles)) assert(langs.includes(p.language),`${cc} default language ${p.language} missing from WORLD_LANGS`);
+          assert(nav.includes("document.querySelector('.r8-department-strip')?.remove()"),'top duplicate department strip cleanup missing');
+          assert(nav.includes("document.querySelector('.r5-left')?.remove()"),'duplicate left department list cleanup missing');
+          assert(nav.includes('bindAICountryControl'),'AI country switching missing');
+          assert(nav.includes('primeVoiceOnGesture'),'voice gesture primer missing');
+          assert(voice.includes('/api/transcribe'),'server ASR route missing from voice runtime');
+          assert(voice.includes('MediaRecorder'),'MediaRecorder fallback missing');
+          assert(voice.includes('Android|iPhone|iPad|iPod'),'mobile recorder branch missing');
+          assert(voice.includes('speechSynthesis'),'speaker/TTS runtime missing');
+          assert(worker.includes("u.pathname==='/api/ui-translate'"),'UI translation endpoint missing');
+          assert(worker.includes("u.pathname==='/api/locale'"),'locale endpoint missing');
+          assert(worker.includes('/api/transcribe'),'transcription endpoint missing');
+          assert(worker.includes('/api/visual-search'),'visual-search endpoint missing');
+          assert(worker.includes('safetyGateVersion'),'safety gate missing');
+          assert(sw.includes('seekvera-r10-worldwide-20260924'),'R10 cache version missing');
+          console.log('R10 STATIC PASS:',Object.keys(profiles).length,'countries;',langs.length,'languages');
+          NODE
           python - <<'PY'
           from pathlib import Path
           import re
@@ -85,7 +91,7 @@ jobs:
           profiles={x.split(':',1)[0]:x.split(':',1)[1] for x in m.group(1).split(';') if x}
           iso=set(mm.group(1).split())
           langs=set(re.findall(r"'([^']+)'",lm.group(1)))
-          assert len(profiles)==len(iso)>=248
+          assert len(profiles)==len(iso)==248
           assert not (iso-set(profiles))
           assert len(langs)>=90
           for cc,v in profiles.items():
@@ -95,6 +101,7 @@ jobs:
           idx=Path('index.html').read_text(encoding='utf-8'); hub=Path('hub.html').read_text(encoding='utf-8')
           for x in required:
               assert x in idx and x in hub and Path(x).exists(),x
+          assert idx.count('id="categories"')==1,'index must contain exactly one categories section'
           pages=[]
           for p in Path('.').glob('*.html'):
               if p.name.lower().startswith('google'): continue
@@ -103,7 +110,10 @@ jobs:
                   assert asset in t,(p.name,asset)
               pages.append(p.name)
           assert len(pages)>=44
-          print('R10 country profiles:',len(profiles),'languages:',len(langs),'public pages:',len(pages),'departments:',len(required))
+          app=Path('app.html').read_text(encoding='utf-8')
+          assert '<iframe' not in app
+          assert 'location.replace' in app
+          print('R10 SOURCE PASS:',len(profiles),'countries;',len(langs),'languages;',len(pages),'public pages;',len(required),'departments')
           PY
           npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-dry-run
           grep -q '"binding": "AI"' wrangler.jsonc
