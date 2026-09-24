@@ -33,6 +33,46 @@ jobs:
           p.write_text(s,encoding='utf-8')
           PY
 
+      - name: Ensure worldwide runtime on every public page
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          VER='20260924-az-r8'
+          css=f'<link rel="stylesheet" href="global-ui.css?v={VER}">'
+          i18ncss=f'<link rel="stylesheet" href="i18n-premium.css?v={VER}">'
+          voice=f'<script src="voice-ai.js?v={VER}" defer></script>'
+          gui=f'<script src="global-ui.js?v={VER}" defer></script>'
+          i18n=f'<script src="i18n-ui.js?v={VER}" defer></script>'
+          nav='<script src="navigation.js?v=20260924-nav-v1" defer></script>'
+          updated=[]
+          for p in sorted(Path('.').glob('*.html')):
+              if p.name.lower().startswith('google'):
+                  continue
+              s=p.read_text(encoding='utf-8')
+              old=s
+              s=re.sub(r'<link rel="stylesheet" href="global-ui\.css(?:\?v=[^"]+)?">',css,s)
+              s=re.sub(r'<link rel="stylesheet" href="i18n-premium\.css(?:\?v=[^"]+)?">',i18ncss,s)
+              if 'global-ui.css' not in s:
+                  s=s.replace('</head>',css+'\n'+i18ncss+'\n</head>',1) if '</head>' in s else css+'\n'+i18ncss+'\n'+s
+              elif 'i18n-premium.css' not in s:
+                  s=s.replace('</head>',i18ncss+'\n</head>',1) if '</head>' in s else i18ncss+'\n'+s
+              pairs=[
+                  (r'<script src="voice-ai\.js(?:\?v=[^"]+)?" defer></script>',voice,'voice-ai.js'),
+                  (r'<script src="global-ui\.js(?:\?v=[^"]+)?" defer></script>',gui,'global-ui.js'),
+                  (r'<script src="i18n-ui\.js(?:\?v=[^"]+)?" defer></script>',i18n,'i18n-ui.js'),
+                  (r'<script src="navigation\.js(?:\?v=[^"]+)?" defer></script>',nav,'navigation.js'),
+              ]
+              for pattern,tag,key in pairs:
+                  s=re.sub(pattern,tag,s)
+                  if key not in s:
+                      s=s.replace('</body>',tag+'\n</body>',1) if '</body>' in s else s+'\n'+tag+'\n'
+              if s!=old:
+                  p.write_text(s,encoding='utf-8')
+                  updated.append(p.name)
+          print('Runtime normalized on',len(updated),'pages')
+          PY
+
       - name: Validate JavaScript
         run: |
           set -euo pipefail
@@ -89,6 +129,7 @@ jobs:
               assert 'navigation.js' in t, f'{p.name}: missing navigation'
               assert 'global-ui.js' in t, f'{p.name}: missing global UI'
               assert 'i18n-ui.js' in t, f'{p.name}: missing i18n'
+              assert 'voice-ai.js' in t, f'{p.name}: missing voice'
               pages.append(p.name)
           assert len(pages)>=44, len(pages)
           print('COUNTRY_PROFILE_COUNT',len(profiles))
