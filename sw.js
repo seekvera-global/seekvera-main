@@ -1,4 +1,4 @@
-const CACHE='seekvera-final-market-r6-20260923';
+const CACHE='seekvera-country-sync-r7-20260924';
 const CORE=['./','./index.html','./app.html','./premium.css','./superapp.js','./voice-ai.js','./global-ui.js','./global-ui.css','./i18n-ui.js','./i18n-premium.css','./games.html','./media.html','./home-marketplace-r5.css','./games.js','./connectivity.html','./deal-agent.html','./deal-agent.js','./marketplace.html','./post-ad.html','./travel.html','./tourism.html','./wifi.html','./scan.html','./hub.html','./manifest.webmanifest','./favicon.svg'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE).catch(()=>{})).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
