@@ -6,5 +6,8 @@
 <script>const url='https://seekvera-global.github.io/seekvera-main/';let installPrompt=null;const installBtn=document.getElementById('install');window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;installBtn.textContent='⬇️ Install SEEKVERA'});window.addEventListener('appinstalled',()=>{installPrompt=null;installBtn.textContent='Installed ✓'});installBtn.onclick=async()=>{if(installPrompt){installPrompt.prompt();try{await installPrompt.userChoice}catch{}installPrompt=null;return}alert('Open your browser menu and choose Install app or Add to Home screen.');};document.getElementById('share').onclick=async()=>{try{if(navigator.share)await navigator.share({title:'SEEKVERA',text:'Everything you need. One search.',url});else{await navigator.clipboard.writeText(url);alert('SEEKVERA link copied.')}}catch{}};document.getElementById('copy').onclick=async()=>{try{await navigator.clipboard.writeText(url);document.getElementById('copy').textContent='Copied ✓';setTimeout(()=>document.getElementById('copy').textContent='Copy link',1300)}catch{}};</script><script src="voice-ai.js?v=20260924-r11" defer></script>
 <script src="global-ui.js?v=20260924-final-r9e" defer></script>
 <script src="i18n-ui.js?v=20260924-r13" defer></script>
+<script src="locale-r14-categories.js?v=20260924-r14" defer></script>
+<script src="locale-r14.js?v=20260924-r14" defer></script>
+
 <script src="navigation.js?v=20260924-r13" defer></script>
 </body></html>
