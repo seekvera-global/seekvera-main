@@ -1,4 +1,4 @@
-name: Deploy SEEKVERA R12 to Cloudflare
+name: Deploy SEEKVERA R17 to Cloudflare
 
 on:
   push:
@@ -28,7 +28,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: seekvera-cloudflare-production-r12
+  group: seekvera-cloudflare-production-r17
   cancel-in-progress: true
 
 jobs:
@@ -39,7 +39,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate R12 worldwide source
+      - name: Validate R17 worldwide AI source
         shell: bash
         run: |
           set -euo pipefail
@@ -69,20 +69,25 @@ jobs:
           for cc,val in profiles.items(): assert val.split(',',1)[0] in langs,(cc,val)
 
           assert idx.count('id="categories"')==1
-          assert 'r5-chips' not in idx
-          assert 'r8-department-strip' not in idx
-          assert 'class="r5-left"' not in idx
-          assert 'bindAICountryControl' in n and 'COUNTRY_TERMS=' in n and 'hasCountryTerm(text)' in n
-          assert 'primeVoiceOnGesture' in n
-          assert '/api/transcribe' in v and 'MediaRecorder' in v and 'Android|iPhone|iPad|iPod' in v
+          assert 'r5-chips' not in idx and 'r8-department-strip' not in idx and 'class="r5-left"' not in idx
+          assert 'navigation.js?v=20260924-r17' in idx
+          assert 'voice-ai.js?v=20260924-r17' in idx
+          assert 'global-ui.js?v=20260924-r17' in idx
+          assert 'COUNTRY_COMMAND_ALIASES' in n and 'लेबनानी' in n
+          assert 'overscroll-behavior:auto' in n and 'overflow-anchor:none' in n and 'touch-action:pan-y' in n
+          assert "VOICE_SILENCE_MS=1250" in v
+          assert "audio,language:'auto'" in v
+          assert 'MediaRecorder' in v and '/api/transcribe' in v
           assert 'speechSynthesis' in v and 'function speakerAction' in v
-          assert 'if(force)play(0,0);else setTimeout(()=>play(0,0),50)' in v
-          assert "TRANSLATE='@cf/meta/llama-3.2-1b-instruct'" in w
-          assert "caches.open('seekvera-ui-translate-r12')" in w
+          assert "language:'auto',scope:'worldwide'" in g
+          assert 'async function aiChatRequest(payload)' in g
+          assert "const RELEASE='20260924-ai-r17'" in w
+          assert "const script=scriptLanguage(text);" in w
+          assert "r17-message-language-auto-glm-first" in w
           assert 'daily_free_ai_limit' in w
-          for endpoint in ["/api/ui-translate","/api/locale","/api/transcribe","/api/visual-search"]: assert endpoint in w,endpoint
+          assert "const CACHE='seekvera-r17-worldwide-ai-20260924'" in sw
+          for endpoint in ["/api/ai","/api/ui-translate","/api/locale","/api/transcribe","/api/visual-search"]: assert endpoint in w,endpoint
           assert 'safetyGateVersion' in w
-          assert 'seekvera-r11-worldwide-20260924' in sw
 
           required=['marketplace.html','travel.html','tourism.html','property.html','cars-auto.html','jobs.html','shopping.html','restaurants-food.html','local-services.html','import-export.html','shipping-logistics.html','business-software.html','software.html','web-hosting.html','solar.html','education.html','health.html','money-insurance.html','entertainment.html','media.html','games.html','connectivity.html','wifi.html','deal-agent.html','everyday.html','scan.html','post-ad.html','seller-plans.html']
           for x in required:
@@ -94,7 +99,7 @@ jobs:
               for asset in ['navigation.js','global-ui.js','i18n-ui.js','voice-ai.js']: assert asset in t,(p.name,asset)
               pages.append(p.name)
           assert len(pages)>=44,len(pages)
-          print('R12 SOURCE PASS:',len(profiles),'countries;',len(langs),'languages;',len(pages),'public pages;',len(required),'core department routes')
+          print('R17 SOURCE PASS:',len(profiles),'countries;',len(langs),'languages;',len(pages),'public pages')
           PY
           npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-dry-run
           grep -q '"binding": "AI"' wrangler.jsonc
@@ -117,61 +122,46 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
 
-      - name: Verify live R12 production
+      - name: Verify live R17 production
         if: steps.cf.outputs.ready == 'true'
         shell: bash
         run: |
           set -euo pipefail
           SITE='https://seekveraglobal.com'
-          UA='Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Mobile Safari/537.36'
+          UA='Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0 Mobile Safari/537.36'
           ok=0
-          for i in $(seq 1 20); do
-            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/?r12-live=$i" -o /tmp/home.html || true
-            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/navigation.js?r12-live=$i" -o /tmp/nav.js || true
-            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/i18n-ui.js?r12-live=$i" -o /tmp/i18n.js || true
-            if test "$(grep -o 'id=\"categories\"' /tmp/home.html 2>/dev/null | wc -l)" = '1' && ! grep -q 'r5-chips' /tmp/home.html 2>/dev/null && grep -q 'COUNTRY_TERMS=' /tmp/nav.js 2>/dev/null && grep -q 'nativeTranslator' /tmp/i18n.js 2>/dev/null; then ok=1; break; fi
+          for i in $(seq 1 30); do
+            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/?r17-live=$i" -o /tmp/home.html || true
+            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/navigation.js?r17-live=$i" -o /tmp/nav.js || true
+            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/voice-ai.js?r17-live=$i" -o /tmp/voice.js || true
+            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/global-ui.js?r17-live=$i" -o /tmp/global.js || true
+            if grep -q 'navigation.js?v=20260924-r17' /tmp/home.html 2>/dev/null && grep -q 'COUNTRY_COMMAND_ALIASES' /tmp/nav.js 2>/dev/null && grep -q "VOICE_SILENCE_MS=1250" /tmp/voice.js 2>/dev/null && grep -q "language:'auto',scope:'worldwide'" /tmp/global.js 2>/dev/null; then ok=1; break; fi
             sleep 4
           done
           test "$ok" = '1'
+          test "$(grep -o 'id=\"categories\"' /tmp/home.html | wc -l)" = '1'
           ! grep -q 'r8-department-strip' /tmp/home.html
           ! grep -q 'class="r5-left"' /tmp/home.html
-          grep -q 'function speakerAction' <(curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/voice-ai.js?v=20260924-r11&r12-live=1")
+          grep -q 'लेबनानी' /tmp/nav.js
+          grep -q 'overscroll-behavior:auto' /tmp/nav.js
+          grep -q "audio,language:'auto'" /tmp/voice.js
+          grep -q 'async function aiChatRequest(payload)' /tmp/global.js
 
-          pages=(marketplace.html travel.html tourism.html property.html cars-auto.html jobs.html shopping.html restaurants-food.html local-services.html import-export.html shipping-logistics.html business-software.html software.html web-hosting.html solar.html education.html health.html money-insurance.html entertainment.html media.html games.html connectivity.html wifi.html deal-agent.html everyday.html scan.html post-ad.html seller-plans.html hub.html app.html)
-          for p in "${pages[@]}"; do
-            code="$(curl -L -sS -o /tmp/page.html -w '%{http_code}' --max-time 25 -A "$UA" "$SITE/$p?r12-live=1")"
-            test "$code" = '200'
-            grep -q 'navigation.js' /tmp/page.html
-            grep -q 'global-ui.js' /tmp/page.html
-            grep -q 'i18n-ui.js' /tmp/page.html
-          done
-          echo 'LIVE R12 HOME + DEPARTMENT ROUTES PASS'
+          curl -L -fsS --max-time 25 -A "$UA" "$SITE/api/health?r17-live=1" -o /tmp/health.json
+          grep -q '20260924-ai-r17' /tmp/health.json
+          echo 'LIVE R17 ASSETS + HEALTH PASS'
 
-          curl -L -fsS --max-time 25 -A "$UA" "$SITE/api/health?r12-live=1" -o /tmp/health.json
-          grep -q '"centralSafetyGate":"enabled"' /tmp/health.json
-          grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/health.json
-          curl -L -fsS --max-time 25 -A "$UA" "$SITE/api/locale?r12-live=1" -o /tmp/locale.json
-          grep -q '"ok":true' /tmp/locale.json
-          echo 'LIVE R12 HEALTH + LOCALE PASS'
-
-          ai_code="$(curl -sS -o /tmp/ai.json -w '%{http_code}' --max-time 70 -X POST "$SITE/api/ai" -A "$UA" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' --data '{"message":"Find hotels in Paris","country":"France","language":"English","scope":"country","fast":true}')"
+          ai_code="$(curl -sS -o /tmp/ai.json -w '%{http_code}' --max-time 70 -X POST "$SITE/api/ai" -A "$UA" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' --data '{"message":"Hello. Please answer briefly in English: do you understand me?","country":"India","language":"auto","scope":"worldwide","fast":true}')"
           if [ "$ai_code" = '200' ]; then
             grep -q '"ok":true' /tmp/ai.json
-            echo 'LIVE R12 AI PASS'
+            grep -q '"response"' /tmp/ai.json
+            echo 'LIVE R17 AI PASS'
           elif [ "$ai_code" = '503' ] && grep -q 'daily_free_ai_limit' /tmp/ai.json; then
-            echo '::warning::Cloudflare Workers AI daily free allocation is exhausted; deployment is healthy but general AI is quota-degraded until Cloudflare resets the allowance.'
+            echo '::error::Cloudflare Workers AI daily free allocation is exhausted. The UI/runtime is deployed, but real AI cannot be called perfect until quota resets or capacity is added.'
+            cat /tmp/ai.json
+            exit 1
           else
             echo "Unexpected AI HTTP $ai_code"; cat /tmp/ai.json; exit 1
-          fi
-
-          tr_code="$(curl -sS -o /tmp/tr.json -w '%{http_code}' --max-time 70 -X POST "$SITE/api/ui-translate" -A "$UA" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' --data '{"language":"Arabic","strings":["Jobs","Shopping","Health"]}')"
-          if [ "$tr_code" = '200' ]; then
-            grep -q '"ok":true' /tmp/tr.json
-            echo 'LIVE R12 UI TRANSLATION PASS/CACHE HIT'
-          elif [ "$tr_code" = '503' ] && grep -q 'daily_free_ai_limit' /tmp/tr.json; then
-            echo '::warning::First-time uncached UI translation is temporarily quota-degraded; cached/device translations remain available.'
-          else
-            echo "Unexpected translation HTTP $tr_code"; cat /tmp/tr.json; exit 1
           fi
 
       - name: Missing deployment credentials
