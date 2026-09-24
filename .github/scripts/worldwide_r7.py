@@ -1,0 +1,140 @@
+from pathlib import Path
+import re
+
+VER='20260924-country-sync-r7'
+
+# global-ui.js: one country tap => language + currency everywhere
+p=Path('global-ui.js')
+s=p.read_text(encoding='utf-8')
+anchor="const api=p=>`${W}${p}`;const $=s=>document.querySelector(s);const lang=()=>localStorage.getItem('seekvera_lang')||document.documentElement.lang||navigator.language||'auto';"
+profile="""const COUNTRY_PROFILE=Object.fromEntries(`AF:fa,AFN;AL:sq,ALL;DZ:ar,DZD;AS:en,USD;AD:ca,EUR;AO:pt,AOA;AI:en,XCD;AQ:en,USD;AG:en,XCD;AR:es,ARS;AM:hy,AMD;AW:nl,AWG;AU:en,AUD;AT:de,EUR;AZ:az,AZN;BS:en,BSD;BH:ar,BHD;BD:bn,BDT;BB:en,BBD;BY:be,BYN;BE:nl,EUR;BZ:en,BZD;BJ:fr,XOF;BM:en,BMD;BT:dz,BTN;BO:es,BOB;BQ:nl,USD;BA:bs,BAM;BW:en,BWP;BV:no,NOK;BR:pt,BRL;IO:en,USD;BN:ms,BND;BG:bg,BGN;BF:fr,XOF;BI:fr,BIF;CV:pt,CVE;KH:km,KHR;CM:fr,XAF;CA:en,CAD;KY:en,KYD;CF:fr,XAF;TD:fr,XAF;CL:es,CLP;CN:zh,CNY;CX:en,AUD;CC:en,AUD;CO:es,COP;KM:fr,KMF;CD:fr,CDF;CG:fr,XAF;CK:en,NZD;CR:es,CRC;CI:fr,XOF;HR:hr,EUR;CU:es,CUP;CW:nl,ANG;CY:el,EUR;CZ:cs,CZK;DK:da,DKK;DJ:fr,DJF;DM:en,XCD;DO:es,DOP;EC:es,USD;EG:ar,EGP;SV:es,USD;GQ:es,XAF;ER:ti,ERN;EE:et,EUR;SZ:en,SZL;ET:am,ETB;FK:en,FKP;FO:fo,DKK;FJ:en,FJD;FI:fi,EUR;FR:fr,EUR;GF:fr,EUR;PF:fr,XPF;TF:fr,EUR;GA:fr,XAF;GM:en,GMD;GE:ka,GEL;DE:de,EUR;GH:en,GHS;GI:en,GIP;GR:el,EUR;GL:kl,DKK;GD:en,XCD;GP:fr,EUR;GU:en,USD;GT:es,GTQ;GG:en,GBP;GN:fr,GNF;GW:pt,XOF;GY:en,GYD;HT:fr,HTG;HM:en,AUD;VA:it,EUR;HN:es,HNL;HK:zh,HKD;HU:hu,HUF;IS:is,ISK;IN:hi,INR;ID:id,IDR;IR:fa,IRR;IQ:ar,IQD;IE:en,EUR;IM:en,GBP;IL:he,ILS;IT:it,EUR;JM:en,JMD;JP:ja,JPY;JE:en,GBP;JO:ar,JOD;KZ:kk,KZT;KE:sw,KES;KI:en,AUD;KP:ko,KPW;KR:ko,KRW;KW:ar,KWD;KG:ky,KGS;LA:lo,LAK;LV:lv,EUR;LB:ar,LBP;LS:en,LSL;LR:en,LRD;LY:ar,LYD;LI:de,CHF;LT:lt,EUR;LU:fr,EUR;MO:zh,MOP;MG:mg,MGA;MW:en,MWK;MY:ms,MYR;MV:dv,MVR;ML:fr,XOF;MT:mt,EUR;MH:en,USD;MQ:fr,EUR;MR:ar,MRU;MU:en,MUR;YT:fr,EUR;MX:es,MXN;FM:en,USD;MD:ro,MDL;MC:fr,EUR;MN:mn,MNT;ME:sr,EUR;MS:en,XCD;MA:ar,MAD;MZ:pt,MZN;MM:my,MMK;NA:en,NAD;NR:en,AUD;NP:ne,NPR;NL:nl,EUR;NC:fr,XPF;NZ:en,NZD;NI:es,NIO;NE:fr,XOF;NG:en,NGN;NU:en,NZD;NF:en,AUD;MK:mk,MKD;MP:en,USD;NO:no,NOK;OM:ar,OMR;PK:ur,PKR;PW:en,USD;PS:ar,ILS;PA:es,PAB;PG:en,PGK;PY:es,PYG;PE:es,PEN;PH:fil,PHP;PN:en,NZD;PL:pl,PLN;PT:pt,EUR;PR:es,USD;QA:ar,QAR;RE:fr,EUR;RO:ro,RON;RU:ru,RUB;RW:rw,RWF;BL:fr,EUR;SH:en,SHP;KN:en,XCD;LC:en,XCD;MF:fr,EUR;PM:fr,EUR;VC:en,XCD;WS:sm,WST;SM:it,EUR;ST:pt,STN;SA:ar,SAR;SN:fr,XOF;RS:sr,RSD;SC:en,SCR;SL:en,SLE;SG:en,SGD;SX:nl,ANG;SK:sk,EUR;SI:sl,EUR;SB:en,SBD;SO:so,SOS;ZA:en,ZAR;GS:en,GBP;SS:en,SSP;ES:es,EUR;LK:si,LKR;SD:ar,SDG;SR:nl,SRD;SJ:no,NOK;SE:sv,SEK;CH:de,CHF;SY:ar,SYP;TW:zh,TWD;TJ:tg,TJS;TZ:sw,TZS;TH:th,THB;TL:pt,USD;TG:fr,XOF;TK:en,NZD;TO:to,TOP;TT:en,TTD;TN:ar,TND;TR:tr,TRY;TM:tk,TMT;TC:en,USD;TV:en,AUD;UG:en,UGX;UA:uk,UAH;AE:ar,AED;GB:en,GBP;UM:en,USD;US:en,USD;UY:es,UYU;UZ:uz,UZS;VU:fr,VUV;VE:es,VES;VN:vi,VND;VG:en,USD;VI:en,USD;WF:fr,XPF;EH:ar,MAD;YE:ar,YER;ZM:en,ZMW;ZW:en,ZWG`.split(';').map(x=>{const [cc,v]=x.split(':'),[language,currency]=v.split(',');return[cc,{language,currency}]}));
+const RTL_LANGS=new Set(['ar','fa','ur','he','ps']);
+function languageDisplayName(code,displayLocale='en'){try{return new Intl.DisplayNames([displayLocale],{type:'language'}).of(code)||code.toUpperCase()}catch{return code.toUpperCase()}}
+function ensureLanguageOption(code){const el=$('#lang');if(!el||!code||code==='auto')return;if(![...el.options].some(o=>o.value===code)){const o=document.createElement('option');o.value=code;o.textContent=languageDisplayName(code,code);el.appendChild(o)}}
+function ensureCurrencyOption(code){const el=$('#currency');if(!el||!code)return;if(![...el.options].some(o=>o.value===code)){const o=document.createElement('option');o.value=code;o.textContent=code;el.appendChild(o)}}
+let localeSyncing=false;
+function applyCountryProfile(code,{markExplicit=false}={}){code=String(code||'').toUpperCase();const prof=COUNTRY_PROFILE[code];if(!prof)return false;localeSyncing=true;localStorage.setItem('seekvera_country',code);localStorage.setItem('seekvera_lang',prof.language);localStorage.setItem('seekvera_currency',prof.currency);if(markExplicit)localStorage.setItem('seekvera_country_explicit','1');const c=$('#country');if(c&&[...c.options].some(o=>o.value===code))c.value=code;const l=$('#lang');ensureLanguageOption(prof.language);if(l){l.value=prof.language;l.dispatchEvent(new Event('change',{bubbles:true}))}const cur=$('#currency');ensureCurrencyOption(prof.currency);if(cur){cur.value=prof.currency;cur.dispatchEvent(new Event('change',{bubbles:true}))}document.documentElement.lang=prof.language;document.documentElement.dir=RTL_LANGS.has(prof.language)?'rtl':'ltr';window.SEEKVERA_I18N?.apply?.();setTimeout(()=>window.SEEKVERA_I18N?.apply?.(),120);localeSyncing=false;return true}
+function regionFromDevice(){for(const x of navigator.languages||[navigator.language]){const m=String(x||'').match(/[-_]([A-Z]{2})\\b/i);if(m)return m[1].toUpperCase()}return''}
+async function autoCountryLocale(){const saved=String(localStorage.getItem('seekvera_country')||'').toUpperCase();if(localStorage.getItem('seekvera_country_explicit')==='1'&&saved&&saved!=='WW'){applyCountryProfile(saved);return}let code='';try{const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),2600);const r=await fetch(api('/api/locale'),{signal:ctrl.signal,cache:'no-store'});clearTimeout(timer);if(r.ok){const d=await r.json();if(/^[A-Z]{2}$/.test(d?.country||''))code=d.country}}catch{}if(!code)code=regionFromDevice();if(code&&COUNTRY_PROFILE[code])applyCountryProfile(code);}
+"""
+if 'const COUNTRY_PROFILE=' not in s:
+    if anchor not in s:
+        raise SystemExit('global-ui api anchor not found')
+    s=s.replace(anchor,anchor+'\n'+profile,1)
+old="function bindLocaleControls(){localizeControls();$('#lang')?.addEventListener('change',()=>{setTimeout(localizeControls,0);setTimeout(localizeControls,120)});$('#country')?.addEventListener('change',()=>setTimeout(localizeControls,0))}"
+new="function bindLocaleControls(){localizeControls();$('#lang')?.addEventListener('change',()=>{setTimeout(localizeControls,0);setTimeout(localizeControls,120)});$('#country')?.addEventListener('change',e=>{const code=String(e.target.value||'').toUpperCase();if(!localeSyncing&&code!=='WW')applyCountryProfile(code,{markExplicit:true});setTimeout(localizeControls,0)})}"
+if old in s:
+    s=s.replace(old,new,1)
+elif 'applyCountryProfile(code,{markExplicit:true})' not in s:
+    raise SystemExit('global-ui bindLocaleControls anchor not found')
+old="function aiLanguageName(){const c=langCode();return AI_LANGUAGE_NAME[c]||c}"
+new="function aiLanguageName(){const c=langCode();return AI_LANGUAGE_NAME[c]||languageDisplayName(c,'en')||c}"
+if old in s:
+    s=s.replace(old,new,1)
+old="p.textContent=answer;p.classList.remove('thinking');window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text:answer,language:plain(d?.language)||lang()}}))"
+new="p.textContent=answer;p.classList.remove('thinking');if(d?.route){const a=document.createElement('a');a.className='sv-ai-direct-route';a.href=String(d.route)+(String(d.route).includes('?')?'&':'?')+'q='+encodeURIComponent(q)+'&country='+encodeURIComponent(localStorage.getItem('seekvera_country')||'WW');a.textContent=tx(d?.category==='jobs'?'Open jobs now →':'Open matching section →');p.insertAdjacentElement('afterend',a)}window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text:answer,language:plain(d?.language)||lang()}}))"
+if old in s:
+    s=s.replace(old,new,1)
+old="function init(){document.documentElement.classList.add('sv-global-ui');document.body.classList.add('sv-global-ready');bindLocaleControls();"
+new="function init(){document.documentElement.classList.add('sv-global-ui');document.body.classList.add('sv-global-ready');bindLocaleControls();autoCountryLocale();"
+if old in s:
+    s=s.replace(old,new,1)
+elif 'bindLocaleControls();autoCountryLocale();' not in s:
+    raise SystemExit('global-ui init anchor not found')
+p.write_text(s,encoding='utf-8')
+
+# superapp.js: dynamic language option + country-aware direct routes
+p=Path('superapp.js')
+s=p.read_text(encoding='utf-8')
+s=re.sub(r"const RELEASE='[^']+';",f"const RELEASE='{VER}';",s,1)
+old="function populateLanguage(){const el=$('#lang');if(!el)return;el.innerHTML=LANGS.map(([v,n])=>`<option value=\"${v}\">${n}</option>`).join('');const saved=localStorage.getItem('seekvera_lang');if(saved&&LANGS.some(x=>x[0]===saved))el.value=saved;else el.value='auto';"
+new="function populateLanguage(){const el=$('#lang');if(!el)return;const saved=localStorage.getItem('seekvera_lang');let list=[...LANGS];if(saved&&saved!=='auto'&&!list.some(x=>x[0]===saved)){let name=saved.toUpperCase();try{name=new Intl.DisplayNames([saved],{type:'language'}).of(saved)||name}catch{}list.push([saved,name])}el.innerHTML=list.map(([v,n])=>`<option value=\"${v}\">${n}</option>`).join('');if(saved&&list.some(x=>x[0]===saved))el.value=saved;else el.value='auto';"
+if old in s:
+    s=s.replace(old,new,1)
+elif 'let list=[...LANGS]' not in s:
+    raise SystemExit('superapp populateLanguage anchor not found')
+old="function actionLinks(cat,q){const route=routeFor(cat),encoded=encodeURIComponent(q);const links=[`<a href=\"${route}?q=${encoded}\">Open ${esc(cat)} section</a>`];if(cat==='connectivity')links.push('<a href=\"wifi.html\">Free Wi-Fi finder</a>');if(cat==='business'||cat==='import')links.push('<a href=\"deal-agent.html\">AI Deal Agent</a>');links.push(`<a href=\"marketplace.html?q=${encoded}\">Search marketplace</a>`);return links.join('')}"
+new="function actionLinks(cat,q){const route=routeFor(cat),encoded=encodeURIComponent(q),cc=$('#country')?.value||localStorage.getItem('seekvera_country')||'WW',cn=selectedCountryName(),cp='&country='+encodeURIComponent(cc);const links=[`<a href=\"${route}?q=${encoded}${cp}\">Open ${esc(cat)} now</a>`];if(cat==='jobs'){const loc=encodeURIComponent(cn);links.push(`<a target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://www.linkedin.com/jobs/search/?keywords=${encoded}&location=${loc}\">LinkedIn jobs in ${esc(cn)}</a>`);links.push(`<a target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://www.google.com/search?q=${encoded}+jobs+in+${loc}\">More job results</a>`)}if(cat==='connectivity')links.push('<a href=\"wifi.html\">Free Wi-Fi finder</a>');if(cat==='business'||cat==='import')links.push('<a href=\"deal-agent.html\">AI Deal Agent</a>');links.push(`<a href=\"marketplace.html?q=${encoded}${cp}\">Search marketplace</a>`);return links.join('')}"
+if old in s:
+    s=s.replace(old,new,1)
+elif 'LinkedIn jobs in' not in s:
+    raise SystemExit('superapp actionLinks anchor not found')
+p.write_text(s,encoding='utf-8')
+
+# i18n-ui.js: allow any valid locale code and refresh cache
+p=Path('i18n-ui.js')
+s=p.read_text(encoding='utf-8')
+s=s.replace("const RTL=new Set(['ar','fa','ur']);","const RTL=new Set(['ar','fa','ur','he','ps']);",1)
+old="function currentLang(){const sel=document.getElementById('lang');let v=(sel?.value||localStorage.getItem('seekvera_lang')||'auto').toLowerCase();if(v==='auto')v=(navigator.language||'en').toLowerCase();v=v.split(/[-_]/)[0];return SUPPORTED.includes(v)?v:'en'}"
+new="function currentLang(){const sel=document.getElementById('lang');let v=(sel?.value||localStorage.getItem('seekvera_lang')||'auto').toLowerCase();if(v==='auto')v=(navigator.language||'en').toLowerCase();v=v.split(/[-_]/)[0];return /^[a-z]{2,3}$/.test(v)?v:'en'}"
+if old in s:
+    s=s.replace(old,new,1)
+s=s.replace('sv_i18n_r6_','sv_i18n_r7_')
+old="async function translateBatch(l,batch){const name=LANG_NAME[l]||l;"
+new="async function translateBatch(l,batch){let name=LANG_NAME[l]||l;try{name=LANG_NAME[l]||new Intl.DisplayNames(['en'],{type:'language'}).of(l)||l}catch{};"
+if old in s:
+    s=s.replace(old,new,1)
+s=s.replace("if(!k.startsWith('sv_i18n_r6_'))","if(!k.startsWith('sv_i18n_r7_'))")
+s=s.replace('sw.js?v=20260923-final-market-r6',f'sw.js?v={VER}')
+p.write_text(s,encoding='utf-8')
+
+# worker.js: geo locale endpoint + no repetitive job questioning
+p=Path('worker.js')
+s=p.read_text(encoding='utf-8')
+s=re.sub(r"const RELEASE='[^']+'",f"const RELEASE='{VER}'",s,1)
+if "u.pathname==='/api/locale'" not in s:
+    idx=s.find("if(request.method!=='POST')return j(request,{ok:false,error:'Method not allowed'},405);")
+    if idx<0:
+        raise SystemExit('worker method marker not found')
+    route="if(u.pathname==='/api/locale')return j(request,{ok:true,country:/^[A-Z]{2}$/.test(String(request.cf?.country||''))?String(request.cf.country):'',continent:String(request.cf?.continent||''),timezone:String(request.cf?.timezone||'')});"
+    s=s[:idx]+route+s[idx:]
+needle='Ask at most one useful follow-up question when truly needed. Give practical next steps instead of vague filler.'
+repl='Do not repeat a question or fact the user has already answered. Ask at most one useful follow-up question only when an essential detail is truly missing. For jobs, when the role and country are already known, answer immediately, route the user to the Jobs section, and do not ask for the role or country again. Prefer direct next actions and app routes over generic advice. Give practical next steps instead of vague filler.'
+if needle in s:
+    s=s.replace(needle,repl,1)
+p.write_text(s,encoding='utf-8')
+
+# jobs.html: practical worldwide search panel
+p=Path('jobs.html')
+s=p.read_text(encoding='utf-8')
+if 'id="jobRole"' not in s:
+    target='<p class="lead">Search jobs without paying the wrong people</p>'
+    panel='''<p class="lead">Search jobs without paying the wrong people</p><section class="job-live"><div class="country-badge" id="jobCountryBadge">🌍 Worldwide jobs</div><h2>Find a job now</h2><p>Enter the role once. SEEKVERA uses your selected country automatically and opens live job-search sources for that market.</p><div class="job-search-row"><input id="jobRole" autocomplete="off" placeholder="Job title, skill or company"><button id="jobGo" type="button">Find jobs</button></div><div class="job-direct" id="jobDirect"></div><small>SEEKVERA does not invent vacancies. These buttons open live external job-search sources; verify the employer and apply through official channels.</small></section>'''
+    if target not in s:
+        raise SystemExit('jobs lead anchor missing')
+    s=s.replace(target,panel,1)
+    s=s.replace('</style>', '''.job-live{margin:0 0 26px;border:1px solid #315073;background:linear-gradient(180deg,#10243a,#0b1929);border-radius:20px;padding:20px}.job-live h2{margin:.45rem 0}.job-search-row{display:flex;gap:8px;margin:14px 0}.job-search-row input{flex:1;min-width:0;padding:13px 14px;border-radius:12px;border:1px solid #36516f;background:#071421;color:#fff}.job-search-row button,.job-direct a{border:0;border-radius:11px;padding:12px 14px;background:#76efb8;color:#07111f;font-weight:900}.job-direct{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.job-direct a{display:inline-block}.job-live small{color:#9fb0c5}@media(max-width:560px){.job-search-row{flex-direction:column}.job-direct{display:grid;grid-template-columns:1fr 1fr}.job-direct a{text-align:center;padding:11px 8px;font-size:.84rem}}</style>''',1)
+    script='''<script>(function(){const role=document.getElementById('jobRole'),out=document.getElementById('jobDirect'),badge=document.getElementById('jobCountryBadge');const p=new URLSearchParams(location.search);if(p.get('q'))role.value=p.get('q');function countryCode(){return (p.get('country')||localStorage.getItem('seekvera_country')||'WW').toUpperCase()}function countryName(){const c=countryCode();if(c==='WW')return'Worldwide';try{return new Intl.DisplayNames([localStorage.getItem('seekvera_lang')||navigator.language||'en'],{type:'region'}).of(c)||c}catch{return c}}function render(){const q=(role.value||'').trim(),cn=countryName();badge.textContent='🌍 '+cn+' jobs';if(!q){out.innerHTML='';return}const e=encodeURIComponent(q),l=encodeURIComponent(cn);out.innerHTML='<a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/jobs/search/?keywords='+e+'&location='+l+'">LinkedIn Jobs</a><a target="_blank" rel="noopener noreferrer" href="https://www.google.com/search?q='+e+'+jobs+in+'+l+'">Google job results</a><a target="_blank" rel="noopener noreferrer" href="https://www.indeed.com/jobs?q='+e+'&l='+l+'">Indeed</a><a target="_blank" rel="noopener noreferrer" href="https://www.google.com/search?q='+e+'+'+l+'+official+company+careers">Official employer pages</a>'}document.getElementById('jobGo').onclick=render;role.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();render()}});window.addEventListener('storage',render);render()})();</script>'''
+    s=s.replace('<script src="voice-ai.js',script+'\n<script src="voice-ai.js',1)
+p.write_text(s,encoding='utf-8')
+
+# index copy
+p=Path('index.html')
+s=p.read_text(encoding='utf-8')
+s=s.replace('SEEKVERA follows your selected language — country/location never changes it. Voice uses the device/browser when available and secure server speech recognition as fallback; text stays available everywhere.','Choose a country once and SEEKVERA switches the app language, currency, AI context and country-aware sections automatically. You can still change language manually if you want.')
+p.write_text(s,encoding='utf-8')
+
+# Amazon-like compact shelves
+p=Path('home-marketplace-r5.css')
+s=p.read_text(encoding='utf-8')
+if 'SEEKVERA R7 AMAZON-LIKE COMPACT HOME' not in s:
+    s += '''\n/* SEEKVERA R7 AMAZON-LIKE COMPACT HOME */\n@media(min-width:980px){body.sv-home-global .r5-market{grid-template-columns:220px minmax(0,1fr) 240px;align-items:start}body.sv-home-global .r5-left,body.sv-home-global .r5-right{position:sticky;top:86px;max-height:calc(100vh - 100px);overflow:auto}body.sv-home-global .r5-hero{padding:18px}body.sv-home-global .r5-section{padding:16px 0}}\n@media(max-width:760px){body.sv-home-global .r5-shell{padding:6px 8px 78px}body.sv-home-global .r5-hero{padding:12px;border-radius:14px}body.sv-home-global .r5-kicker{white-space:nowrap;overflow-x:auto}body.sv-home-global .r5-grid{display:grid!important;grid-template-rows:repeat(2,108px)!important;grid-auto-flow:column;grid-auto-columns:minmax(132px,42vw);overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x proximity;gap:8px;padding-bottom:6px}body.sv-home-global .r5-tile{scroll-snap-align:start;min-height:0!important}body.sv-home-global .r5-tile .r5-thumb{min-height:50px;font-size:1.55rem}body.sv-home-global .r5-tile-body{padding:7px 8px}body.sv-home-global .r5-tile-body small{display:none}body.sv-home-global .r5-section{padding:10px 0}body.sv-home-global .r5-section-head p{display:none}body.sv-home-global .r5-chips{display:flex;overflow-x:auto;flex-wrap:nowrap;padding-bottom:5px}body.sv-home-global .r5-chips a{white-space:nowrap}body.sv-home-global .r5-live{display:flex;overflow-x:auto;gap:8px}body.sv-home-global .r5-live>*{min-width:78vw}body.sv-home-global .sv-request-compact{margin-bottom:6px}}\n'''
+p.write_text(s,encoding='utf-8')
+
+# Cache-bust all pages/PWA
+for hp in Path('.').glob('*.html'):
+    t=hp.read_text(encoding='utf-8')
+    t=t.replace('20260923-final-market-r6',VER).replace('20260922-i18n-premium2',VER)
+    hp.write_text(t,encoding='utf-8')
+for fn in ['manifest.webmanifest','sw.js']:
+    q=Path(fn)
+    if q.exists():
+        t=q.read_text(encoding='utf-8').replace('20260923-final-market-r6',VER).replace('seekvera-final-market-r6-20260923','seekvera-country-sync-r7-20260924')
+        q.write_text(t,encoding='utf-8')
+
+# Deploy workflow validates R7
+p=Path('.github/workflows/deploy-cloudflare.yml')
+s=p.read_text(encoding='utf-8')
+s=s.replace("grep -q '20260923-final-market-r6' index.html",f"grep -q '{VER}' index.html")
+s=s.replace('# Final production deployment: R6 visual marketplace + multilingual AI + Voice + News/Media + Safety','# Production deployment: R7 worldwide country-language-currency + actionable AI + jobs')
+p.write_text(s,encoding='utf-8')
