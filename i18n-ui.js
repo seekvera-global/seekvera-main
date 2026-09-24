@@ -1,7 +1,7 @@
 /* SEEKVERA R9 visible-UI locale guard */
 (()=>{'use strict';
 if(window.__seekveraLocaleGuardR9)return;window.__seekveraLocaleGuardR9=true;
-const VERSION='20260924-final-r9e';
+const VERSION='20260925-r19-no-mixed-language';
 const textSource=new WeakMap(),attrSource=new WeakMap(),memory=new Map(),nativeTranslators=new Map();
 let applying=false,pending=false,timer=0,seq=0;
 const SKIP='script,style,noscript,code,pre,svg,select,option,textarea,#aiMessages,#aiResult,.ai-msg,.sv-ai-answer,.sv-ai-actions,[data-no-translate]';
@@ -11,6 +11,10 @@ const QUICK={
  hi:{'AI & Search':'एआई और खोज','Flights':'उड़ानें','Find it faster. Compare it better.':'तेज़ी से खोजें। बेहतर तुलना करें।','Worldwide':'दुनिया भर','AI assisted':'एआई सहायक','Voice + Chat':'आवाज़ + चैट','Browse categories':'श्रेणियाँ देखें','Popular categories':'लोकप्रिय श्रेणियाँ'},
  zh:{'AI & Search':'AI 与搜索','Flights':'航班','Find it faster. Compare it better.':'更快找到，更好比较。','Worldwide':'全球','AI assisted':'AI 辅助','Voice + Chat':'语音 + 聊天','Browse categories':'浏览分类','Popular categories':'热门分类'}
 };
+Object.assign(QUICK.hi,{
+'Clear visual routes, like a marketplace — no empty cards.':'मार्केटप्लेस जैसे स्पष्ट विकल्प — कोई खाली कार्ड नहीं।',
+'ALL CATEGORIES →':'सभी श्रेणियाँ →','Buy, sell and compare worldwide':'दुनिया भर में खरीदें, बेचें और तुलना करें','Trips, transport and stays':'यात्राएँ, परिवहन और ठहरने की जगहें','Search flight routes':'उड़ान मार्ग खोजें','Search stays worldwide':'दुनिया भर में ठहरने की जगहें खोजें','Places and experiences':'स्थान और अनुभव','Homes, land and rentals':'घर, ज़मीन और किराये','Vehicles, parts and auto':'वाहन, पार्ट्स और ऑटो','Local and global careers':'स्थानीय और वैश्विक नौकरियाँ','Products and deals':'उत्पाद और ऑफ़र','Food, cafes and dining':'भोजन, कैफ़े और डाइनिंग','Everyday skilled help':'रोज़मर्रा की कुशल सेवाएँ','Machines and equipment':'मशीनें और उपकरण','Boats and marine listings':'नाव और समुद्री लिस्टिंग','Factories and suppliers':'कारखाने और आपूर्तिकर्ता','Freight, cargo and delivery':'फ्रेट, कार्गो और डिलीवरी','POS, accounting and SaaS':'POS, अकाउंटिंग और SaaS','Apps and digital tools':'ऐप्स और डिजिटल टूल्स','Domains, hosting and websites':'डोमेन, होस्टिंग और वेबसाइटें','Power and energy solutions':'बिजली और ऊर्जा समाधान','Schools, courses and skills':'स्कूल, कोर्स और कौशल','Clinics, labs and pharmacies':'क्लिनिक, लैब और फ़ार्मेसी','Licensed provider discovery':'लाइसेंस प्राप्त प्रदाता खोजें','Movies, music and family':'फ़िल्में, संगीत और परिवार','Trusted media and official sources':'विश्वसनीय मीडिया और आधिकारिक स्रोत','Play inside SEEKVERA':'SEEKVERA के अंदर खेलें','Internet, SIM and eSIM':'इंटरनेट, SIM और eSIM','Public Wi‑Fi discovery':'सार्वजनिक Wi‑Fi खोजें','Sourcing and business missions':'सोर्सिंग और व्यावसायिक मिशन','Nearby daily needs':'पास की रोज़मर्रा की ज़रूरतें','Share and install SEEKVERA':'SEEKVERA साझा और इंस्टॉल करें','Business plans and promotion':'बिज़नेस प्लान और प्रमोशन','Live marketplace':'लाइव बाज़ार','Approved real listings only.':'केवल स्वीकृत वास्तविक लिस्टिंग।','OPEN MARKETPLACE →':'मार्केटप्लेस खोलें →','Request anything':'कुछ भी माँगें','Tell SEEKVERA what you need anywhere in the world.':'दुनिया में कहीं भी आपको जो चाहिए, SEEKVERA को बताएं।','About':'विवरण','Privacy':'प्राइवेसी','Terms':'शर्तें','Contact':'संपर्क','Disclosure':'डिस्क्लोज़र'
+});
 window.__SEEKVERA_R9_QUICK=QUICK;
 function api(path){return location.hostname==='seekveraglobal.com'||location.hostname==='www.seekveraglobal.com'||location.hostname.endsWith('workers.dev')?path:'https://seekvera-main.seekvera-global.workers.dev'+path}
 function lang(){let v=document.getElementById('lang')?.value||document.documentElement.lang||navigator.language||'en';if(v==='auto')v=navigator.language||'en';return String(v).toLowerCase().split('-')[0]||'en'}
@@ -28,14 +32,22 @@ function cached(l,s){const mem=memory.get(cacheKey(l,s))||QUICK[l]?.[s]||'';if(m
 function put(l,s,v){v=String(v||'').trim();if(!v)return;memory.set(cacheKey(l,s),v);try{localStorage.setItem(diskKey(l,s),v)}catch{}}
 async function nativeTranslator(l){if(!('Translator'in self)||l==='en')return null;if(nativeTranslators.has(l))return nativeTranslators.get(l);try{const a=await Translator.availability({sourceLanguage:'en',targetLanguage:l});if(a!=='available')return null;const t=await Translator.create({sourceLanguage:'en',targetLanguage:l});nativeTranslators.set(l,t);return t}catch{return null}}
 async function nativeBatch(l,arr){const out=new Map(),t=await nativeTranslator(l);if(!t)return out;for(const s of arr){try{const v=String(await t.translate(s)||'').trim();if(v&&v!==s){put(l,s,v);out.set(s,v)}}catch{}}return out}
-async function batchTranslate(l,arr){if(!arr.length)return new Map();const out=await nativeBatch(l,arr),remaining=arr.filter(s=>!out.has(s)&&!cached(l,s));for(let i=0;i<remaining.length;i+=12){const batch=remaining.slice(i,i+12);try{const r=await fetch(api('/api/ui-translate'),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language:langName(l),strings:batch})});const d=await r.json().catch(()=>null);if(r.ok&&Array.isArray(d?.translations)&&d.translations.length===batch.length){batch.forEach((s,j)=>{const v=String(d.translations[j]||'').trim();if(v){put(l,s,v);out.set(s,v)}})}}catch{}}
- return out}
+async function batchTranslate(l,arr){
+ if(!arr.length)return new Map();
+ const out=await nativeBatch(l,arr);
+ const requestBatch=async(batch)=>{if(!batch.length)return;try{const r=await fetch(api('/api/ui-translate'),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language:langName(l),strings:batch})});const d=await r.json().catch(()=>null);if(r.ok&&Array.isArray(d?.translations)&&d.translations.length===batch.length){batch.forEach((src,j)=>{const v=String(d.translations[j]||'').trim();if(v&&v!==src){put(l,src,v);out.set(src,v)}})}}catch{}};
+ let remaining=arr.filter(src=>!out.has(src)&&!cached(l,src));
+ for(let i=0;i<remaining.length;i+=12)await requestBatch(remaining.slice(i,i+12));
+ remaining=arr.filter(src=>!out.has(src)&&!cached(l,src));
+ for(let i=0;i<remaining.length;i+=4)await requestBatch(remaining.slice(i,i+4));
+ return out
+}
 async function apply(){if(applying){pending=true;return}applying=true;pending=false;const my=++seq;capture(document);const l=lang();document.documentElement.lang=l;document.documentElement.dir=['ar','fa','ur','he','ps'].includes(l)?'rtl':'ltr';
  const textNodes=[],attrs=[],need=new Set();
  const w=document.createTreeWalker(document,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode())){if(skipNode(n))continue;const src=textSource.get(n);if(!src)continue;textNodes.push([n,src]);if(l!=='en'&&!cached(l,src))need.add(src)}
  for(const el of document.querySelectorAll('[placeholder],[aria-label],[title]')){const m=attrSource.get(el);if(!m||el.closest?.(SKIP))continue;for(const [a,src] of Object.entries(m)){attrs.push([el,a,src]);if(l!=='en'&&!cached(l,src))need.add(src)}}
  if(l!=='en'&&need.size)await batchTranslate(l,[...need]);if(my!==seq){applying=false;return}
- for(const [node,src] of textNodes){if(!node.isConnected)continue;const v=l==='en'?src:cached(l,src);if(v)node.nodeValue=node.nodeValue.replace(node.nodeValue.trim(),v)}
+ for(const [node,src] of textNodes){if(!node.isConnected)continue;const v=l==='en'?src:cached(l,src);if(v)node.nodeValue=node.nodeValue.replace(node.nodeValue.trim(),v);else if(l!=='en'&&node.parentElement?.closest?.('.r5-tile-body small,.r5-section-head p,.r5-ai-note,.r5-foot small'))node.nodeValue=node.nodeValue.replace(node.nodeValue.trim(),'…')}
  for(const [el,a,src] of attrs){if(!el.isConnected)continue;const v=l==='en'?src:cached(l,src);if(v)el.setAttribute(a,v)}
  applying=false;if(pending)schedule(40)}
 function schedule(ms=160){clearTimeout(timer);timer=setTimeout(apply,ms)}
