@@ -1,0 +1,104 @@
+name: SEEKVERA R8 worldwide language and AI matrix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r8-worldwide-language-matrix.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-matrix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify all country profiles one by one
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          g=Path('global-ui.js').read_text(encoding='utf-8')
+          s=Path('superapp.js').read_text(encoding='utf-8')
+          m=re.search(r'const COUNTRY_PROFILE=Object\.fromEntries\(`([^`]+)`\.split',g,re.S)
+          mm=re.search(r"const ISO='([^']+)'\.split",s)
+          assert m and mm
+          profiles={x.split(':',1)[0]:x.split(':',1)[1] for x in m.group(1).split(';') if x}
+          iso=mm.group(1).split()
+          failures=[]
+          for cc in iso:
+              raw=profiles.get(cc,'')
+              if ',' not in raw:
+                  failures.append((cc,'missing profile')); continue
+              lang,currency=raw.split(',',1)
+              if not re.fullmatch(r'[a-z]{2,3}',lang): failures.append((cc,'bad language '+lang))
+              if not re.fullmatch(r'[A-Z]{3}',currency): failures.append((cc,'bad currency '+currency))
+          assert not failures, failures
+          assert len(iso)==248 and len(profiles)==248
+          for cc in ['FR','SA','IN','CN','JP','DE','US','NG','LB']:
+              print(cc,profiles[cc])
+          print('248/248 COUNTRY-BY-COUNTRY PROFILE MATRIX PASS')
+          PY
+
+      - name: Verify live UI translation matrix
+        run: |
+          set -euo pipefail
+          SITE='https://seekveraglobal.com'
+          python - <<'PY'
+          import json,urllib.request
+          site='https://seekveraglobal.com/api/ui-translate'
+          tests={
+            'Arabic':['Jobs','Shopping','Health'],
+            'French':['Jobs','Shopping','Health'],
+            'Hindi':['Jobs','Shopping','Health'],
+            'Chinese':['Jobs','Shopping','Health'],
+            'German':['Jobs','Shopping','Health'],
+            'Japanese':['Jobs','Shopping','Health'],
+            'Spanish':['Jobs','Shopping','Health'],
+            'Albanian':['Jobs','Shopping','Health'],
+          }
+          for lang,strings in tests.items():
+              data=json.dumps({'language':lang,'strings':strings}).encode()
+              req=urllib.request.Request(site,data=data,headers={'Content-Type':'application/json','Origin':'https://seekveraglobal.com','Referer':'https://seekveraglobal.com/','User-Agent':'Mozilla/5.0 Android'},method='POST')
+              with urllib.request.urlopen(req,timeout=60) as r: d=json.loads(r.read())
+              a=d.get('translations') or []
+              assert d.get('ok') is True,(lang,d)
+              assert len(a)==len(strings),(lang,a)
+              assert all(isinstance(x,str) and x.strip() for x in a),(lang,a)
+              assert any(x not in strings for x in a),(lang,a)
+              print(lang,':',a)
+          print('LIVE UI TRANSLATION MATRIX PASS')
+          PY
+
+      - name: Verify live AI replies in requested languages and remembers context
+        run: |
+          python - <<'PY'
+          import json,urllib.request
+          url='https://seekveraglobal.com/api/ai'
+          tests=[
+            ('Arabic','أريد وظيفة ميكانيكي في فرنسا','France'),
+            ('French','Je cherche un emploi de mécanicien en France','France'),
+            ('Hindi','मुझे भारत में मैकेनिक की नौकरी चाहिए','India'),
+            ('Chinese','我想在中国找机械师的工作','China'),
+          ]
+          for lang,msg,country in tests:
+              payload={'message':msg,'country':country,'language':lang,'scope':'country','fast':True}
+              req=urllib.request.Request(url,data=json.dumps(payload,ensure_ascii=False).encode('utf-8'),headers={'Content-Type':'application/json','Origin':'https://seekveraglobal.com','Referer':'https://seekveraglobal.com/','User-Agent':'Mozilla/5.0 Android'},method='POST')
+              with urllib.request.urlopen(req,timeout=60) as r:d=json.loads(r.read())
+              assert d.get('ok') is True,(lang,d)
+              assert d.get('category')=='jobs',(lang,d)
+              assert d.get('route')=='jobs.html',(lang,d)
+              assert d.get('language') not in (None,'English','en'),(lang,d.get('language'))
+              assert isinstance(d.get('response'),str) and d['response'].strip(),lang
+              print(lang,'detected=',d.get('language'),'route=',d.get('route'))
+          payload={'message':'mechanic','country':'France','language':'English','scope':'country','fast':True,'history':[{'role':'user','content':'I need a job in France'},{'role':'assistant','content':'What kind of job are you looking for?'}]}
+          req=urllib.request.Request(url,data=json.dumps(payload).encode(),headers={'Content-Type':'application/json','Origin':'https://seekveraglobal.com','Referer':'https://seekveraglobal.com/','User-Agent':'Mozilla/5.0 Android'},method='POST')
+          with urllib.request.urlopen(req,timeout=60) as r:d=json.loads(r.read())
+          assert d.get('ok') and d.get('category')=='jobs' and d.get('route')=='jobs.html',d
+          print('AI FOLLOW-UP MEMORY PASS')
+          print('LIVE MULTILINGUAL AI MATRIX PASS')
+          PY
