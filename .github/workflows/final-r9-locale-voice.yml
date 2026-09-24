@@ -45,7 +45,7 @@ jobs:
           set -euo pipefail
           git config user.name 'seekvera-global'
           git config user.email 'seekvera.global@gmail.com'
-          git add voice-ai.js locale-guard-r9.js .github/scripts/az_quality_r8.py .github/workflows/deploy-cloudflare.yml .github/workflows/az-quality-r8.yml ./*.html
+          git add voice-ai.js locale-guard-r9.js ./*.html
           if git diff --cached --quiet; then
             echo 'No changes to commit'
           else
