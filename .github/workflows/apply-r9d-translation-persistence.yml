@@ -1,0 +1,54 @@
+name: Apply SEEKVERA R9d persistent translation fix
+
+on:
+  push:
+    paths:
+      - '.github/scripts/fix_r9d_translation_persistence.py'
+      - '.github/workflows/apply-r9d-translation-persistence.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply R9d persistent translation fix
+        run: python .github/scripts/fix_r9d_translation_persistence.py
+      - name: Validate R9d
+        run: |
+          set -euo pipefail
+          node --check i18n-ui.js
+          grep -q "const VERSION='20260924-final-r9d'" i18n-ui.js
+          grep -q 'characterData:true' i18n-ui.js
+          grep -q "serviceWorker.register('sw.js?v=20260924-final-r9d')" i18n-ui.js
+          grep -q 'i18n-ui.js?v=20260924-final-r9d' index.html
+          grep -q 'voice-ai.js?v=20260924-final-r9d' index.html
+          grep -q 'seekvera-final-r9d-20260924' sw.js
+          python - <<'PY'
+          from pathlib import Path
+          pages=[p for p in Path('.').glob('*.html') if 'i18n-ui.js' in p.read_text(encoding='utf-8') and not p.name.lower().startswith('google')]
+          assert len(pages)>=44,len(pages)
+          for p in pages:
+              s=p.read_text(encoding='utf-8')
+              assert 'i18n-ui.js?v=20260924-final-r9d' in s,p.name
+              assert 'voice-ai.js?v=20260924-final-r9d' in s,p.name
+          print('R9d localized page coverage:',len(pages))
+          PY
+      - name: Commit R9d app files
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add i18n-ui.js sw.js ./*.html
+          if git diff --cached --quiet; then
+            echo 'No R9d app changes'
+          else
+            git commit -m 'Keep visible translations persistent after dynamic UI updates R9d'
+            git push origin HEAD:main
+          fi
