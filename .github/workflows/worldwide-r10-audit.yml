@@ -1,5 +1,4 @@
-name: SEEKVERA R10 worldwide locale, navigation and voice audit
-# Final 2026-09-24 verification rerun after single-grid, mobile, voice and AI-country-control hardening.
+name: SEEKVERA R12 worldwide locale, navigation and voice audit
 
 on:
   pull_request:
@@ -27,7 +26,7 @@ permissions:
   contents: read
 
 jobs:
-  worldwide-r10-audit:
+  worldwide-r12-audit:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -37,6 +36,7 @@ jobs:
           node-version: '20'
       - name: Syntax and static worldwide coverage
         run: |
+          set -euo pipefail
           node --check navigation.js
           node --check voice-ai.js
           node --check global-ui.js
@@ -48,6 +48,8 @@ jobs:
           const global=fs.readFileSync('global-ui.js','utf8');
           const nav=fs.readFileSync('navigation.js','utf8');
           const voice=fs.readFileSync('voice-ai.js','utf8');
+          const i18n=fs.readFileSync('i18n-ui.js','utf8');
+          const idx=fs.readFileSync('index.html','utf8');
           const sw=fs.readFileSync('sw.js','utf8');
           const pm=global.match(/const COUNTRY_PROFILE=Object\.fromEntries\(`([^`]+)`\.split/s);
           assert(pm,'COUNTRY_PROFILE not found');
@@ -56,18 +58,28 @@ jobs:
           const lm=nav.match(/const WORLD_LANGS=\[([^\]]+)\]/s);
           assert(lm,'WORLD_LANGS not found');
           const langs=[...lm[1].matchAll(/'([^']+)'/g)].map(m=>m[1]);
-          assert(langs.length>=90,`expected >=90 language choices, got ${langs.length}`);
-          for(const [cc,p] of Object.entries(profiles)) assert(langs.includes(p.language),`${cc} default language ${p.language} missing from WORLD_LANGS`);
-          assert(nav.includes("document.querySelector('.r8-department-strip')?.remove()"),'top department strip cleanup missing');
-          assert(nav.includes("document.querySelector('.r5-left')?.remove()"),'duplicate left department list cleanup missing');
-          assert(nav.includes('bindAICountryControl'),'AI country switching missing');
+          assert.equal(langs.length,98,`expected 98 language choices, got ${langs.length}`);
+          const im=i18n.match(/const SUPPORTED=\[([^\]]+)\]/s);
+          assert(im,'i18n SUPPORTED not found');
+          const i18nLangs=[...im[1].matchAll(/'([^']+)'/g)].map(m=>m[1]);
+          assert.equal(i18nLangs.length,98,`expected 98 i18n languages, got ${i18nLangs.length}`);
+          for(const [cc,p] of Object.entries(profiles)) assert(langs.includes(p.language),`${cc} default language ${p.language} missing`);
+          assert.equal((idx.match(/id="categories"/g)||[]).length,1,'expected exactly one categories area');
+          assert(!idx.includes('r5-chips'),'duplicate quick categories row remains');
+          assert(!idx.includes('r8-department-strip'),'duplicate top department strip remains');
+          assert(!idx.includes('class="r5-left"'),'duplicate left department list remains');
+          assert(nav.includes('bindAICountryControl'),'local AI country switching missing');
+          assert(nav.includes('COUNTRY_TERMS='),'worldwide local country terms missing');
+          assert(nav.includes('hasCountryTerm(text)'),'worldwide country term handler missing');
           assert(nav.includes('primeVoiceOnGesture'),'voice gesture primer missing');
-          assert(voice.includes('/api/transcribe'),'server ASR route missing from voice runtime');
+          assert(voice.includes('/api/transcribe'),'server ASR route missing');
           assert(voice.includes('MediaRecorder'),'MediaRecorder fallback missing');
           assert(voice.includes('Android|iPhone|iPad|iPod'),'mobile recorder branch missing');
           assert(voice.includes('speechSynthesis'),'speaker/TTS runtime missing');
-          assert(sw.includes('seekvera-r10-worldwide-20260924'),'R10 cache version missing');
-          console.log('STATIC R10 PASS:',Object.keys(profiles).length,'countries;',langs.length,'languages');
+          assert(voice.includes('function speakerAction'),'speaker replay action missing');
+          assert(voice.includes('if(force)play(0,0);else setTimeout(()=>play(0,0),50)'),'direct mobile speaker gesture path missing');
+          assert(sw.includes('seekvera-r11-worldwide-20260924'),'current service-worker cache version missing');
+          console.log('STATIC R12 PASS:',Object.keys(profiles).length,'countries;',langs.length,'languages; one categories area');
           NODE
       - name: Install Chromium runtime
         run: |
@@ -75,12 +87,12 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Start local app
         run: |
-          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/seekvera-r10-http.log 2>&1 &
-          echo $! >/tmp/seekvera-r10-http.pid
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/seekvera-r12-http.log 2>&1 &
+          echo $! >/tmp/seekvera-r12-http.pid
           for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4173/index.html >/dev/null && exit 0; sleep 1; done
-          cat /tmp/seekvera-r10-http.log
+          cat /tmp/seekvera-r12-http.log
           exit 1
-      - name: Browser test every country and language plus AI country control
+      - name: Browser test every country and language plus quota-free AI country control
         run: |
           node --input-type=module <<'NODE'
           import { chromium } from 'playwright';
@@ -103,18 +115,20 @@ jobs:
               localStorage.setItem('seekvera_currency','USD');
             });
             const page=await context.newPage();
+            let aiCalls=0;
             await page.route('**/api/locale',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,country:'US',language:'en',currency:'USD'})}));
             await page.route('**/api/ui-translate',async route=>{
               let body={};try{body=route.request().postDataJSON()||{}}catch{}
               const strings=Array.isArray(body.strings)?body.strings:[];
               await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,translations:strings})});
             });
-            await page.route('**/api/ai',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,answer:'ok'})}));
-            await page.goto(BASE+'/index.html?audit=r10-'+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
-            await page.waitForFunction(()=>document.querySelectorAll('#country option').length>=249&&document.querySelectorAll('#lang option').length>=90,null,{timeout:15000});
+            await page.route('**/api/ai',r=>{aiCalls++;return r.fulfill({status:503,contentType:'application/json',body:JSON.stringify({ok:false,reason:'daily_free_ai_limit'})})});
+            await page.goto(BASE+'/index.html?audit=r12-'+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
+            await page.waitForFunction(()=>document.querySelectorAll('#country option').length>=249&&document.querySelectorAll('#lang option').length>=99,null,{timeout:15000});
 
             assert.equal(await page.locator('.r8-department-strip').count(),0,'top duplicate department strip still present');
             assert.equal(await page.locator('.r5-left').count(),0,'left duplicate department list still present');
+            assert.equal(await page.locator('.r5-chips').count(),0,'quick duplicate categories row still present');
             assert.equal(await page.locator('#categories').count(),1,'single categories section missing');
             assert(await page.locator('#categories').isVisible(),'categories section must stay visible');
 
@@ -141,13 +155,14 @@ jobs:
               assert.equal(s.dir,['ar','fa','ur','he','ps','dv'].includes(l)?'rtl':'ltr',`${l} direction`);
               languageChecked++;
             }
-            assert.equal(languageChecked,langs.length);
+            assert.equal(languageChecked,98);
 
             await page.selectOption('#lang','ar');
             await page.waitForTimeout(100);
             const countryName=await page.evaluate(()=>({actual:[...document.querySelector('#country').options].find(o=>o.value==='FR')?.textContent,expected:new Intl.DisplayNames(['ar'],{type:'region'}).of('FR')}));
             assert.equal(countryName.actual,countryName.expected,'country names must follow selected app language');
 
+            // These commands MUST be handled locally even though /api/ai is forced to 503.
             await page.selectOption('#lang','en');
             await page.fill('#aiChatInput','set my country to France');
             await page.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
@@ -155,7 +170,13 @@ jobs:
             await page.fill('#aiChatInput','حطلي دولة ألمانيا');
             await page.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
             await page.waitForFunction(()=>country.value==='DE'&&lang.value==='de'&&currency.value==='EUR',null,{timeout:5000});
+            assert.equal(aiCalls,0,'country-control command unexpectedly consumed /api/ai');
 
+            const speaker=await page.evaluate(()=>{
+              const b=document.querySelector('#aiChatSpeaker');
+              return {exists:!!b,label:b?.getAttribute('aria-label')||'',text:b?.textContent||'',hasSynth:!!window.speechSynthesis};
+            });
+            assert(speaker.exists,'speaker button missing');
             const prime=await page.evaluate(()=>{
               window.__svSpeakCalls=0;
               const s=window.speechSynthesis;
@@ -164,15 +185,16 @@ jobs:
               s.speak=u=>{window.__svSpeakCalls++;try{original(u)}catch{}};
               const b=document.querySelector('#aiChatSpeaker');
               b?.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));
+              b?.click();
               return {supported:true,calls:window.__svSpeakCalls};
             });
-            if(prime.supported)assert(prime.calls>=1,'speaker gesture did not prime speech synthesis');
+            if(prime.supported)assert(prime.calls>=1,'speaker gesture/replay did not call speech synthesis');
 
-            console.log('BROWSER R10 PASS:',countryChecked,'countries;',languageChecked,'languages; one categories section; AI country control');
+            console.log('BROWSER R12 PASS:',countryChecked,'countries;',languageChecked,'languages; one categories area; quota-free AI country control; speaker call path');
             await context.close();
           }finally{await browser.close()}
           NODE
       - name: Stop local app
         if: always()
         run: |
-          test ! -f /tmp/seekvera-r10-http.pid || kill "$(cat /tmp/seekvera-r10-http.pid)" || true
+          test ! -f /tmp/seekvera-r12-http.pid || kill "$(cat /tmp/seekvera-r12-http.pid)" || true
