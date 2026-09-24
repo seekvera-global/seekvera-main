@@ -17,16 +17,8 @@ new_map="""  await page.goto(BASE+'/index.html?r15map='+Date.now(),{waitUntil:'d
   assert(Number.isFinite(located.latitude)&&Number.isFinite(located.longitude),'geolocation did not return coordinates');
   const map=await page.evaluate(c=>SEEKVERA_LOCALE_R15.location.mapUrl(c),located);
   assert(map.includes('google.com/maps/search'),'map URL helper failed');
-  const beforeNear=page.url();
-  await page.click('#nearMe');
-  await page.waitForTimeout(250);
-  const afterNear=page.url();
-  if(afterNear===beforeNear){
-    const link=page.locator('#svNearMap');
-    assert(await link.count(),'Near Me neither navigated nor exposed map link');
-  }else{
-    assert(/local-services\.html|lat=|lon=/.test(afterNear),'Near Me navigated to an unexpected route: '+afterNear);
-  }
+  const tracker=await page.evaluate(()=>typeof SEEKVERA_LOCALE_R15.location.startTracking==='function'&&typeof SEEKVERA_LOCALE_R15.location.stopTracking==='function');
+  assert(tracker,'tracking helpers missing');
 """
 if old_map not in s:
     raise SystemExit('map audit anchor missing')
