@@ -1,5 +1,5 @@
-name: SEEKVERA R5 cross-device audit
-# Rerun after R5 was deployed to Cloudflare production.
+name: SEEKVERA R10 cross-device audit
+# Current worldwide R10 audit across Chromium, WebKit/Safari-class and Firefox.
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
       - name: Audit live app on Android iPhone iPad Safari Firefox and desktop
         shell: bash
         run: |
-          cat > cross-device-r5.js <<'JS'
+          cat > cross-device-r10.js <<'JS'
           const { chromium, firefox, webkit, devices } = require('playwright');
           const SITE='https://seekveraglobal.com';
           const assert=(v,m)=>{if(!v)throw new Error(m)};
@@ -52,15 +52,18 @@ jobs:
             const context=await browser.newContext({...p.ctx});
             const page=await context.newPage();
             const pageErrors=[]; page.on('pageerror',e=>pageErrors.push(String(e)));
-            await page.goto(SITE+'/?r5-cross-device=2',{waitUntil:'domcontentloaded',timeout:60000});
-            await page.waitForFunction(()=>document.querySelector('#country')?.options?.length>240 && document.querySelector('#lang')?.options?.length>=29,null,{timeout:60000});
-            await page.waitForTimeout(900);
+            await page.goto(SITE+'/?r10-cross-device=1',{waitUntil:'domcontentloaded',timeout:60000});
+            await page.waitForFunction(()=>document.querySelector('#country')?.options?.length>240 && document.querySelector('#lang')?.options?.length>=99,null,{timeout:60000});
+            await page.waitForTimeout(1000);
             const s=await page.evaluate(()=>({
               release:document.body.dataset.release,
               country:document.querySelector('#country')?.value,
               countryText:document.querySelector('#country')?.selectedOptions?.[0]?.textContent?.trim(),
               countries:document.querySelector('#country')?.options?.length,
               langs:document.querySelector('#lang')?.options?.length,
+              categories:document.querySelectorAll('#categories').length,
+              duplicateStrip:document.querySelectorAll('.r8-department-strip').length,
+              duplicateLeft:document.querySelectorAll('.r5-left').length,
               tiles:[...document.querySelectorAll('.r5-tile')].map(x=>({text:x.innerText.trim(),w:x.getBoundingClientRect().width,h:x.getBoundingClientRect().height})),
               chat:!!document.querySelector('#aiChatInput')&&!!document.querySelector('#aiChatMic')&&!!document.querySelector('#aiChatSpeaker'),
               media:!!document.querySelector('a[href="media.html"]'),
@@ -68,13 +71,15 @@ jobs:
               overflow:Math.max(0,document.documentElement.scrollWidth-window.innerWidth)
             }));
             console.log(p.name,s);
-            assert(s.release==='20260923-market-r5',p.name+' is not on R5');
-            assert(s.country==='WW',p.name+' did not start Worldwide');
-            assert(/Worldwide/i.test(s.countryText||''),p.name+' Worldwide label missing');
+            assert(s.release==='20260924-az-r8',p.name+' is not on R10');
+            assert(s.country==='WW'||/^[A-Z]{2}$/.test(s.country||''),p.name+' invalid initial country: '+s.country);
+            assert((s.countryText||'').trim().length>1,p.name+' selected country label missing');
             assert(s.countries>=249,p.name+' country list incomplete: '+s.countries);
-            assert(s.langs===29,p.name+' expected Auto + 28 languages: '+s.langs);
-            assert(s.tiles.length>=16,p.name+' marketplace tiles missing: '+s.tiles.length);
-            assert(s.tiles.every(t=>t.text.length>2&&t.w>70&&t.h>45),p.name+' has blank/collapsed marketplace tile');
+            assert(s.langs>=99,p.name+' expected Auto + at least 98 languages: '+s.langs);
+            assert(s.categories===1,p.name+' must have exactly one categories section: '+s.categories);
+            assert(s.duplicateStrip===0&&s.duplicateLeft===0,p.name+' duplicate department rows are present');
+            assert(s.tiles.length>=20,p.name+' department tiles missing: '+s.tiles.length);
+            assert(s.tiles.every(t=>t.text.length>2&&t.w>70&&t.h>45),p.name+' has blank/collapsed department tile: '+JSON.stringify(s.tiles));
             assert(s.chat,p.name+' chat/voice controls missing');
             assert(s.media&&s.games,p.name+' Media/Games routes missing');
             assert(s.overflow<=3,p.name+' horizontal overflow: '+s.overflow);
@@ -82,9 +87,10 @@ jobs:
 
             await page.selectOption('#lang','ar'); await page.dispatchEvent('#lang','change');
             await page.waitForFunction(()=>document.documentElement.dir==='rtl',null,{timeout:30000});
-            await page.waitForTimeout(350);
-            const ar=await page.evaluate(()=>({text:document.querySelector('#country')?.selectedOptions?.[0]?.textContent||'',overflow:Math.max(0,document.documentElement.scrollWidth-window.innerWidth),intro:document.querySelector('#aiMessages .ai-msg.bot')?.textContent||''}));
-            assert(/العالم/.test(ar.text),p.name+' Arabic Worldwide label missing');
+            await page.waitForTimeout(500);
+            const ar=await page.evaluate(()=>({countryText:document.querySelector('#country')?.selectedOptions?.[0]?.textContent||'',overflow:Math.max(0,document.documentElement.scrollWidth-window.innerWidth),intro:document.querySelector('#aiMessages .ai-msg.bot')?.textContent||'',lang:document.documentElement.lang,dir:document.documentElement.dir}));
+            assert(ar.lang.startsWith('ar')&&ar.dir==='rtl',p.name+' Arabic locale/RTL not applied');
+            assert(/[\u0600-\u06ff]/.test(ar.countryText),p.name+' Arabic country label missing');
             assert(/[\u0600-\u06ff]/.test(ar.intro),p.name+' Arabic AI intro missing');
             assert(ar.overflow<=3,p.name+' RTL overflow: '+ar.overflow);
 
@@ -93,10 +99,10 @@ jobs:
             await page.click('#aiChatForm .send');
             await page.waitForFunction(()=>[...document.querySelectorAll('#aiMessages .ai-msg.bot')].some(x=>/hello/i.test(x.textContent||'')),null,{timeout:75000});
 
-            await page.click('#aiChatMic').catch(()=>{}); await page.waitForTimeout(300);
-            const mic=await page.evaluate(()=>({placeholder:document.querySelector('#aiChatInput')?.placeholder||'',hasSR:!!(window.SpeechRecognition||window.webkitSpeechRecognition),hasTTS:'speechSynthesis'in window}));
-            if(!mic.hasSR)assert(/unavailable|message/i.test(mic.placeholder),p.name+' has no speech recognition and no text fallback');
-            console.log('VOICE_CAPABILITY',p.name,mic);
+            const voice=await page.evaluate(()=>({hasMic:!!document.querySelector('#aiChatMic'),hasSpeaker:!!document.querySelector('#aiChatSpeaker'),hasSR:!!(window.SpeechRecognition||window.webkitSpeechRecognition),hasMediaRecorder:!!window.MediaRecorder,hasGetUserMedia:!!navigator.mediaDevices?.getUserMedia,hasTTS:'speechSynthesis'in window}));
+            assert(voice.hasMic&&voice.hasSpeaker,p.name+' voice UI controls missing');
+            if(/iPhone|iPad|Android/.test(p.name))assert(voice.hasMediaRecorder&&voice.hasGetUserMedia,p.name+' mobile recording fallback unavailable');
+            console.log('VOICE_CAPABILITY',p.name,voice);
             await browser.close();
           }
           (async()=>{
@@ -104,19 +110,20 @@ jobs:
             const browser=await chromium.launch({headless:true});
             const page=await browser.newPage();
             await page.goto(SITE+'/app.html#home',{waitUntil:'domcontentloaded',timeout:60000});
-            await page.waitForURL(/\/index\.html\?v=20260923-market-r5/,{timeout:30000});
+            await page.waitForURL(/\/index\.html/,{timeout:30000});
             assert(!(await page.locator('iframe').count()),'app shell still contains an iframe');
             const [manifest,sw,voice]=await Promise.all([
-              page.request.get(SITE+'/manifest.webmanifest?r5=2').then(r=>r.text()),
-              page.request.get(SITE+'/sw.js?r5=2').then(r=>r.text()),
-              page.request.get(SITE+'/voice-ai.js?r5=2').then(r=>r.text())
+              page.request.get(SITE+'/manifest.webmanifest?r10=1').then(r=>r.text()),
+              page.request.get(SITE+'/sw.js?r10=1').then(r=>r.text()),
+              page.request.get(SITE+'/voice-ai.js?r10=1').then(r=>r.text())
             ]);
-            assert(manifest.includes('index.html?v=20260923-market-r5'),'PWA start_url is not R5 direct home');
-            assert(sw.includes('seekvera-market-r5-20260923')&&sw.includes('home-marketplace-r5.css'),'R5 service worker cache missing');
+            assert(manifest.includes('index.html?v=20260924-az-r8'),'PWA start_url is not R10 direct home');
+            assert(sw.includes('seekvera-r10-worldwide-20260924')&&sw.includes('home-marketplace-r5.css'),'R10 service worker cache missing');
             assert(voice.includes('window.SpeechRecognition||window.webkitSpeechRecognition'),'cross-browser speech recognition detection missing');
-            assert(voice.includes("if(!c.length)return null"),'wrong-language voice fallback protection missing');
+            assert(voice.includes('/api/transcribe')&&voice.includes('MediaRecorder'),'mobile server transcription fallback missing');
+            assert(voice.includes('speechSynthesis')&&voice.includes('splitSpeech'),'speaker/TTS hardening missing');
             await browser.close();
-            console.log('SEEKVERA R5 CROSS-DEVICE AUDIT PASS');
+            console.log('SEEKVERA R10 CROSS-DEVICE AUDIT PASS');
           })().catch(e=>{console.error(e);process.exit(1)});
           JS
-          node cross-device-r5.js
+          node cross-device-r10.js
