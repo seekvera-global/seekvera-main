@@ -1,4 +1,4 @@
-/* SEEKVERA universal navigation + worldwide locale/voice hardening R12 */
+/* SEEKVERA universal navigation + worldwide AI stability R16 */
 (()=>{'use strict';
 const HOME_PATHS=new Set(['/','/index.html','/app.html']);
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
@@ -98,8 +98,8 @@ function runLocaleEngines(){
   try{window.SEEKVERA_I18N?.apply?.()}catch{}
   try{window.SEEKVERA_LOCALE_GUARD_R9?.apply?.()}catch{}
   ensureLanguageCoverage();localizeCountryOptions();localizeDocumentDirection();
-  try{window.SEEKVERA_LOCALE_GUARD_R9?.schedule?.(20)}catch{}
   translateStaticAI();
+  hardenAIUI();
 }
 function scheduleLocalePass(){clearTimeout(localeTimer);localeTimer=setTimeout(runLocaleEngines,50)}
 function stripDuplicateDepartments(){
@@ -109,21 +109,91 @@ function stripDuplicateDepartments(){
   if(document.getElementById('svR10HomeCleanup'))return;
   const st=document.createElement('style');st.id='svR10HomeCleanup';st.textContent='@media(min-width:980px){body.sv-home-global .r5-market,.r5-market{grid-template-columns:minmax(0,1fr) 240px!important}}';document.head.appendChild(st);
 }
+
+function ensureAIStableStyles(){
+  if(document.getElementById('svR16AIStableStyles'))return;
+  const st=document.createElement('style');st.id='svR16AIStableStyles';st.textContent=`
+#aiChat,.sv-unified-chat{max-width:100%!important;min-width:0!important;overflow:hidden!important;contain:layout style!important}
+#aiChat *, .sv-unified-chat *{box-sizing:border-box}
+#aiChat .sv-chat-head,.sv-unified-chat .sv-chat-head{display:grid!important;grid-template-columns:minmax(0,1fr) auto 48px!important;align-items:center!important;gap:8px!important;min-width:0!important}
+#aiChat .sv-chat-head>div,.sv-unified-chat .sv-chat-head>div{min-width:0!important;overflow:hidden!important}
+#aiChat .sv-chat-head b,.sv-unified-chat .sv-chat-head b{display:block!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+#aiChat .sv-chat-head small,.sv-unified-chat .sv-chat-head small{display:block!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;max-width:100%!important}
+#aiChat .sv-chat-head>span,.sv-unified-chat .sv-chat-head>span{white-space:nowrap!important;min-width:0!important}
+#aiChatSpeaker,.sv-global-speaker{width:48px!important;min-width:48px!important;max-width:48px!important;height:48px!important;min-height:48px!important;padding:0!important;overflow:hidden!important;white-space:nowrap!important;font-size:0!important;line-height:1!important;display:inline-flex!important;align-items:center!important;justify-content:center!important}
+#aiChatSpeaker::before,.sv-global-speaker::before{content:'🔊';font-size:22px!important;line-height:1!important}
+#aiChat .sv-chat-messages,.sv-unified-chat .sv-chat-messages{height:220px!important;min-height:220px!important;max-height:220px!important;overflow-y:auto!important;overflow-x:hidden!important;scroll-behavior:auto!important;overscroll-behavior:contain!important}
+#aiChat .ai-msg,.sv-unified-chat .ai-msg{max-width:min(92%,560px)!important;min-width:0!important;overflow-wrap:anywhere!important;word-break:normal!important;white-space:pre-wrap!important}
+#aiChat .sv-chat-form,.sv-unified-chat .sv-chat-form{display:grid!important;grid-template-columns:44px minmax(0,1fr) 44px 44px 50px!important;gap:7px!important;align-items:center!important;min-width:0!important;width:100%!important}
+#aiChat .sv-chat-form input,.sv-unified-chat .sv-chat-form input{min-width:0!important;width:100%!important;max-width:100%!important;direction:auto!important;text-align:start!important}
+#aiChatAttach,#aiChatCamera,#aiChatMic,#aiChat .sv-chat-form .send,.sv-unified-chat .sv-chat-form .attach,.sv-unified-chat .sv-chat-form .camera,.sv-unified-chat .sv-chat-form .mic,.sv-unified-chat .sv-chat-form .send{width:44px!important;min-width:44px!important;max-width:44px!important;height:44px!important;min-height:44px!important;padding:0!important;overflow:hidden!important;white-space:nowrap!important;font-size:0!important;line-height:1!important;display:inline-flex!important;align-items:center!important;justify-content:center!important}
+#aiChat .sv-chat-form .send,.sv-unified-chat .sv-chat-form .send{width:50px!important;min-width:50px!important;max-width:50px!important}
+#aiChatAttach::before,.sv-unified-chat .sv-chat-form .attach::before{content:'📎';font-size:20px!important}
+#aiChatCamera::before,.sv-unified-chat .sv-chat-form .camera::before{content:'📷';font-size:20px!important}
+#aiChatMic::before,.sv-unified-chat .sv-chat-form .mic::before{content:'🎤';font-size:20px!important}
+#aiChat .sv-chat-form .send::before,.sv-unified-chat .sv-chat-form .send::before{content:'➤';font-size:22px!important}
+#aiActions,.sv-ai-actions{display:flex!important;position:static!important;clear:both!important;flex-wrap:wrap!important;gap:8px!important;align-items:center!important;min-width:0!important;max-width:100%!important;padding:8px 12px 12px!important;overflow:visible!important}
+#aiActions>* ,.sv-ai-actions>*{max-width:100%!important;min-width:0!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important}
+#aiChat,#aiChat *,.sv-unified-chat,.sv-unified-chat *{animation:none!important}
+html.sv-r15-applying #aiChat,html.sv-r15-applying #aiChat *{transition:none!important}
+@media(max-width:600px){
+ #aiChat .sv-chat-head,.sv-unified-chat .sv-chat-head{grid-template-columns:minmax(0,1fr) auto 44px!important;padding:10px!important;gap:6px!important}
+ #aiChatSpeaker,.sv-global-speaker{width:44px!important;min-width:44px!important;max-width:44px!important;height:44px!important;min-height:44px!important}
+ #aiChat .sv-chat-messages,.sv-unified-chat .sv-chat-messages{height:230px!important;min-height:230px!important;max-height:230px!important;padding:10px!important}
+ #aiChat .sv-chat-form,.sv-unified-chat .sv-chat-form{grid-template-columns:minmax(0,1fr) 42px 42px 48px!important;gap:6px!important;padding:8px!important}
+ #aiChatAttach,.sv-unified-chat .sv-chat-form .attach{display:none!important}
+ #aiChatCamera,#aiChatMic,.sv-unified-chat .sv-chat-form .camera,.sv-unified-chat .sv-chat-form .mic{width:42px!important;min-width:42px!important;max-width:42px!important;height:42px!important;min-height:42px!important}
+ #aiChat .sv-chat-form .send,.sv-unified-chat .sv-chat-form .send{width:48px!important;min-width:48px!important;max-width:48px!important;height:42px!important;min-height:42px!important}
+ #aiChat .sv-chat-head small,.sv-unified-chat .sv-chat-head small{font-size:9px!important}
+ #aiChat .sv-chat-head>span,.sv-unified-chat .sv-chat-head>span{font-size:10px!important}
+}
+@media(max-width:370px){
+ #aiChat .sv-chat-head,.sv-unified-chat .sv-chat-head{grid-template-columns:minmax(0,1fr) 42px!important}
+ #aiChat .sv-chat-head>span,.sv-unified-chat .sv-chat-head>span{display:none!important}
+}
+`;
+  document.head.appendChild(st);
+}
+function fixAIControlButtons(){
+  const defs=[['aiChatAttach','📎'],['aiChatCamera','📷'],['aiChatMic','🎤']];
+  for(const [id,emoji] of defs){const b=document.getElementById(id);if(!b)continue;b.setAttribute('data-no-i18n','1');b.setAttribute('data-no-translate','1');if((b.textContent||'').trim()!==emoji)b.textContent=emoji;}
+  const sp=document.getElementById('aiChatSpeaker');if(sp){sp.setAttribute('data-no-i18n','1');sp.setAttribute('data-no-translate','1');if(!/[🔊🔈🔇]/u.test(sp.textContent||''))sp.textContent='🔊';}
+  const send=document.querySelector('#aiChatForm .send,#aiChat .sv-chat-form .send');if(send){send.setAttribute('data-no-i18n','1');send.setAttribute('data-no-translate','1');if((send.textContent||'').trim()!=='➤')send.textContent='➤';}
+  const brand=document.querySelector('#aiChat .sv-chat-head b');if(brand){brand.setAttribute('data-no-i18n','1');brand.setAttribute('data-no-translate','1');if(!/SEEKVERA\s+AI/i.test(brand.textContent||''))brand.textContent='✨ SEEKVERA AI';}
+  const input=document.getElementById('aiChatInput');if(input){input.setAttribute('dir','auto');input.style.minWidth='0';}
+}
+function hardenAIUI(){
+  ensureAIStableStyles();fixAIControlButtons();
+  const chat=document.getElementById('aiChat');if(!chat||chat.dataset.r16Observed==='1')return;
+  chat.dataset.r16Observed='1';
+  const mo=new MutationObserver(ms=>{for(const m of ms){const t=m.target?.nodeType===1?m.target:m.target?.parentElement;if(t?.closest?.('#aiChatSpeaker,#aiChatAttach,#aiChatCamera,#aiChatMic,#aiChatForm .send,#aiChat .sv-chat-head b')){queueMicrotask(fixAIControlButtons);break}}});
+  mo.observe(chat,{subtree:true,childList:true,characterData:true});
+}
+
 function normalizeText(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[’'`´]/g,'').replace(/[^\p{L}\p{N}]+/gu,' ').trim()}
 const COUNTRY_TERMS='country|region|دولة|الدولة|بلد|البلد|منطقة|pays|région|国家|地区|país|región|देश|क्षेत्र|região|land|国|地域|국가|지역|negara|wilayah|ülke|bölge|страна|регион|ملک|علاقہ|দেশ|অঞ্চল|quốc gia|khu vực|paese|regione|nchi|eneo|ประเทศ|ภูมิภาค|کشور|منطقه|kraj|regio|bansa|rehiyon|ƙasa|yanki|orilẹ-ede|agbegbe|obodo|mpaghara|ሀገር|ክልል|מדינה|אזור|χώρα|περιοχή|країна|регіон|țară|regiune|země|krajina|régión|ország|régió|maa|alue|държава|država|regija|šalis|regionas|valsts|reģions|riik|piirkond|regió|herrialde|eskualde|rexión|svæði|vend|rajon|земја|ქვეყანა|რეგიონი|երկիր|տարածաշրջան|ölkə|ел|аймақ|mamlakat|hudud|өлкө|аймак|кишвар|минтақа|ýurt|sebit|රට|කලාපය|நாடு|பகுதி|దేశం|ప్రాంతం|രാജ്യം|പ്രദേശം|प्रदेश|દેશ|ਪ੍ਰਦੇਸ਼|ਦੇਸ਼|ਖੇਤਰ|ប្រទេស|តំបន់|ປະເທດ|ພາກພື້ນ|နိုင်ငံ|ဒေသ|улс|бүс|izwe|isifunda|streek|краіна|рэгіён|ሃገር|øki|nuna|igihugu|akarere|atunuu|itulagi|fonua|dal|gobol|هېواد|سیمه|ޤައުމު|ސަރަހައްދު|pajji|reġjun|firenena|faritra|tír|réigiún|gwlad|rhanbarth|whenua|rohe|lân|regioun|pajais|regiun|welat|herêm|ilizwe|ummandla|naha|sebaka|naga|kgaolo'.split('|').map(normalizeText).filter(Boolean);
 function hasCountryTerm(text){const s=normalizeText(text),pad=' '+s+' ';return COUNTRY_TERMS.some(t=>/^[a-z0-9\- ]+$/i.test(t)?pad.includes(' '+t+' '):s.includes(t))}
-function isCountryCommand(text){
-  const s=normalizeText(text);
-  return /\b(?:set|switch|change|choose|select)\b.{0,35}\b(?:country|region)\b/.test(s)
-    || /(?:حط|حطلي|اختار|اختر|غير|غيرلي|حول|حوللي).{0,30}(?:الدولة|دولة|البلد|بلد)/u.test(String(text||''))
+function isCountryCommand(text,code=''){
+  const raw=String(text||''),s=normalizeText(raw);
+  let direct=false;
+  if(code){
+    const names=countryNames(code),hasTarget=names.some(n=>n.length>=2&&(s===n||(' '+s+' ').includes(' '+n+' ')));
+    const latin=/\b(?:set|switch|change|choose|select|go|move|use|open|control|app|market|country|region|take|put)\b/.test(s);
+    const native=/(?:حط|حطلي|اختار|اختر|غير|غيرلي|حول|حوللي|انتقل|اذهب|استخدم|غيّر|حوّل|बदल|चुन|जाओ|देश|ملک|بدل|منتخب|смени|сменить|выбери|установи|cambia|elige|selecciona|change|choisis|wechsle|wähle|mudar|trocar|seç|degistir|imposta|scegli)/u.test(raw);
+    const short=s.split(/\s+/).filter(Boolean).length<=3;
+    direct=hasTarget&&(latin||native||short);
+  }
+  return direct
+    || /\b(?:set|switch|change|choose|select)\b.{0,35}\b(?:country|region)\b/.test(s)
+    || /(?:حط|حطلي|اختار|اختر|غير|غيرلي|حول|حوللي).{0,30}(?:الدولة|دولة|البلد|بلد)/u.test(raw)
     || /\b(?:mets?|change|passe|choisis?)\b.{0,35}\b(?:pays|region)\b/.test(s)
     || /\b(?:cambia|cambiar|pon|elige|selecciona)\b.{0,35}\b(?:pais|region)\b/.test(s)
     || /\b(?:ander|wechsle|wahle|setze)\b.{0,35}\b(?:land|region)\b/.test(s)
     || /\b(?:mudar|muda|trocar|troca|escolher|escolha)\b.{0,35}\b(?:pais|regiao)\b/.test(s)
-    || /\b(?:degistir|degistir|sec|seç)\b.{0,35}\b(?:ulke|ülke|bolge|bölge)\b/.test(s)
-    || /(?:смени|сменить|выбери|выбрать|установи).{0,35}(?:стран|регион)/u.test(String(text||''))
+    || /\b(?:degistir|sec|seç)\b.{0,35}\b(?:ulke|ülke|bolge|bölge)\b/.test(s)
+    || /(?:смени|сменить|выбери|выбрать|установи).{0,35}(?:стран|регион)/u.test(raw)
     || /\b(?:cambia|imposta|scegli)\b.{0,35}\b(?:paese|regione)\b/.test(s)
-    || /(?:ملک|ملک کو|ملک بدل).{0,30}(?:بدل|منتخب|چن)/u.test(String(text||''))
+    || /(?:ملک|ملک کو|ملک بدل).{0,30}(?:بدل|منتخب|چن)/u.test(raw)
     || hasCountryTerm(text);
 }
 function countryNames(code){
@@ -140,7 +210,7 @@ function resolveCountry(text){
 }
 function addCountryConfirmation(code){
   const name=displayRegion(code,langCode());
-  const box=document.getElementById('aiMessages');if(box){const m=document.createElement('div');m.className='ai-msg bot';m.dataset.noTranslate='1';m.textContent='🌍 '+name+' ✓';box.appendChild(m);box.scrollTop=box.scrollHeight;}
+  const box=document.getElementById('aiMessages');if(box){const m=document.createElement('div');m.className='ai-msg bot';m.dataset.noTranslate='1';m.dataset.noI18n='1';m.textContent='🌍 '+name+' ✓';box.appendChild(m);box.scrollTop=box.scrollHeight;}
   try{window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text:name,language:langCode()}}))}catch{}
 }
 function bindAICountryControl(){
@@ -148,8 +218,8 @@ function bindAICountryControl(){
     const form=e.target;if(!(form instanceof HTMLFormElement))return;
     if(!(form.id==='aiChatForm'||form.classList.contains('sv-global-compose')||form.closest('#aiChat')))return;
     const input=form.querySelector('#aiChatInput,input[type="text"],input:not([type])');const text=input?.value?.trim()||'';
-    if(!text||!isCountryCommand(text))return;
-    const code=resolveCountry(text);if(!code)return;
+    if(!text)return;
+    const code=resolveCountry(text);if(!code||!isCountryCommand(text,code))return;
     e.preventDefault();e.stopImmediatePropagation();
     const c=localeControl('country');
     if(window.SEEKVERA_LOCALE_R15)window.SEEKVERA_LOCALE_R15.setCountry(code);
@@ -174,6 +244,6 @@ function bindLocaleControls(){
   document.addEventListener('touchstart',primeVoiceOnGesture,{capture:true,passive:true});
   if(window.speechSynthesis){try{speechSynthesis.addEventListener?.('voiceschanged',()=>speechSynthesis.getVoices?.())}catch{}}
 }
-function init(){stripDuplicateDepartments();buildNav();bindLocaleControls();bindAICountryControl();scheduleLocalePass()}
+function init(){stripDuplicateDepartments();buildNav();hardenAIUI();bindLocaleControls();bindAICountryControl();scheduleLocalePass()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();

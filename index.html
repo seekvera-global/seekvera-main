@@ -43,14 +43,14 @@
         <div class="r5-scope sv-scope" aria-label="Search scope"><button data-scope="near" type="button">📍 Near Me</button><button data-scope="country" type="button">My Country</button><button class="active" data-scope="worldwide" type="button">🌐 Worldwide</button></div>
 
         <div class="r5-chat sv-chat-card sv-unified-chat" id="aiChat" aria-label="SEEKVERA AI Chat">
-          <div class="sv-chat-head"><div><b>✨ SEEKVERA AI</b><small>Chat · Voice · Camera · Attach</small></div><span>● Online</span><button id="aiChatSpeaker" class="sv-speaker" type="button" aria-label="Voice reply on or off">🔊</button></div>
+          <div class="sv-chat-head"><div><b data-no-i18n="1" data-no-translate="1">✨ SEEKVERA AI</b><small>Chat · Voice · Camera · Attach</small></div><span>● Online</span><button id="aiChatSpeaker" data-no-i18n="1" data-no-translate="1" class="sv-speaker" type="button" aria-label="Voice reply on or off">🔊</button></div>
           <div class="sv-chat-messages" id="aiMessages" aria-live="polite"><div class="ai-msg bot">I’m the SEEKVERA AI assistant. Tell me what you need and I’ll help you find the right section, compare options or search worldwide.</div></div>
           <form class="sv-chat-form sv-unified-compose" id="aiChatForm">
-            <button class="attach" id="aiChatAttach" type="button" aria-label="Attach image or text file">📎</button>
+            <button class="attach" id="aiChatAttach" data-no-i18n="1" data-no-translate="1" type="button" aria-label="Attach image or text file">📎</button>
             <input id="aiChatInput" type="text" autocomplete="off" maxlength="1800" placeholder="Message SEEKVERA AI…" aria-label="Message SEEKVERA AI" enterkeymode="send">
-            <button class="camera" id="aiChatCamera" type="button" aria-label="Take a photo">📷</button>
-            <button class="mic" id="aiChatMic" type="button" aria-label="Speak to SEEKVERA AI">🎤</button>
-            <button class="send" type="submit" aria-label="Send">➤</button>
+            <button class="camera" id="aiChatCamera" data-no-i18n="1" data-no-translate="1" type="button" aria-label="Take a photo">📷</button>
+            <button class="mic" id="aiChatMic" data-no-i18n="1" data-no-translate="1" type="button" aria-label="Speak to SEEKVERA AI">🎤</button>
+            <button class="send" data-no-i18n="1" data-no-translate="1" type="submit" aria-label="Send">➤</button>
             <input id="aiChatFile" type="file" accept="image/jpeg,image/png,image/webp,text/plain,.txt" hidden>
             <input id="aiChatCameraFile" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden>
           </form>
@@ -97,7 +97,7 @@
     </aside>
   </section>
 
-  <footer class="r5-foot"><div><b>SEEKVERA</b> · Find, compare, choose — worldwide.<br><small>Release 2026-09-24 · Worldwide R15</small></div><nav><a href="about.html">About</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="contact.html">Contact</a><a href="affiliate-disclosure.html">Disclosure</a></nav></footer>
+  <footer class="r5-foot"><div><b>SEEKVERA</b> · Find, compare, choose — worldwide.<br><small>Release 2026-09-24 · Worldwide R16</small></div><nav><a href="about.html">About</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="contact.html">Contact</a><a href="affiliate-disclosure.html">Disclosure</a></nav></footer>
 </main>
 
 <div class="sv-modal" id="visualModal" role="dialog" aria-modal="true" aria-labelledby="visualTitle">
@@ -116,7 +116,7 @@
 <script src="locale-r14-categories.js?v=20260924-r14" defer></script>
 <script src="locale-r14.js?v=20260924-r14" defer></script>
 
-<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=20260924-r15').catch(()=>{}))}</script>
-<script src="navigation.js?v=20260924-r13" defer></script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=20260924-r16').catch(()=>{}))}</script>
+<script src="navigation.js?v=20260924-r16" defer></script>
 </body>
 </html>
