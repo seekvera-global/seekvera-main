@@ -1,0 +1,58 @@
+name: Apply SEEKVERA R9e manual locale priority fix
+
+on:
+  push:
+    paths:
+      - '.github/scripts/fix_r9e_manual_locale_priority.py'
+      - '.github/workflows/apply-r9e-manual-locale-priority.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply R9e manual locale priority fix
+        run: python .github/scripts/fix_r9e_manual_locale_priority.py
+      - name: Validate R9e source
+        run: |
+          set -euo pipefail
+          node --check global-ui.js
+          node --check i18n-ui.js
+          grep -q "localStorage.getItem('seekvera_country_explicit')==='1')return" global-ui.js
+          grep -q "code==='WW'" global-ui.js
+          grep -q "const VERSION='20260924-final-r9e'" i18n-ui.js
+          grep -q "serviceWorker.register('sw.js?v=20260924-final-r9e')" i18n-ui.js
+          grep -q 'seekvera-final-r9e-20260924' sw.js
+          grep -q 'global-ui.js?v=20260924-final-r9e' index.html
+          grep -q 'i18n-ui.js?v=20260924-final-r9e' index.html
+          grep -q 'voice-ai.js?v=20260924-final-r9e' index.html
+          python - <<'PY'
+          from pathlib import Path
+          pages=[p for p in Path('.').glob('*.html') if 'i18n-ui.js' in p.read_text(encoding='utf-8') and not p.name.lower().startswith('google')]
+          assert len(pages)>=44,len(pages)
+          for p in pages:
+              s=p.read_text(encoding='utf-8')
+              assert 'global-ui.js?v=20260924-final-r9e' in s,p.name
+              assert 'i18n-ui.js?v=20260924-final-r9e' in s,p.name
+              assert 'voice-ai.js?v=20260924-final-r9e' in s,p.name
+          print('R9e localized page coverage:',len(pages))
+          PY
+      - name: Commit R9e app files
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add global-ui.js i18n-ui.js sw.js ./*.html
+          if git diff --cached --quiet; then
+            echo 'No R9e app changes'
+          else
+            git commit -m 'Preserve manual country choice over delayed auto detection R9e'
+            git push origin HEAD:main
+          fi
