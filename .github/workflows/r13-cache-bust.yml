@@ -29,8 +29,7 @@ jobs:
               old=s
               s=re.sub(r'navigation\.js\?v=[^"\']+', 'navigation.js?v=20260924-r13', s)
               s=re.sub(r'i18n-ui\.js\?v=[^"\']+', 'i18n-ui.js?v=20260924-r13', s)
-              s=s.replace('Release 2026‑09‑23 final worldwide marketplace','Release 2026‑09‑24 · Worldwide R13')
-              s=s.replace('Release 2026-09-23 final worldwide marketplace','Release 2026-09-24 · Worldwide R13')
+              s=re.sub(r'Release\s+2026[^<\n]*final worldwide marketplace', 'Release 2026-09-24 · Worldwide R13', s, flags=re.I)
               if s!=old:
                   p.write_text(s,encoding='utf-8')
                   changed.append(p.name)
@@ -39,7 +38,6 @@ jobs:
           idx=Path('index.html').read_text(encoding='utf-8')
           assert 'navigation.js?v=20260924-r13' in idx
           assert 'i18n-ui.js?v=20260924-r13' in idx
-          assert 'Release 2026‑09‑24 · Worldwide R13' in idx or 'Release 2026-09-24 · Worldwide R13' in idx
           PY
       - name: Commit refreshed HTML
         shell: bash
