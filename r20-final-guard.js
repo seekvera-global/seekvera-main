@@ -32,7 +32,7 @@ function fixStaticLeaks(){
   }
  });
 }
-function injectStyle(){if(document.getElementById('svR20FinalStyle'))return;const s=document.createElement('style');s.id='svR20FinalStyle';s.textContent=`
+function injectStyle(){let s=document.getElementById('svR20FinalStyle');if(s)return s;s=document.createElement('style');s.id='svR20FinalStyle';s.textContent=`
 html,body{overflow-x:hidden!important}
 #categories .r5-grid{align-items:stretch!important}
 #categories .r5-tile{min-width:0!important;width:100%!important;height:100%!important;overflow:hidden!important;contain:layout paint!important}
@@ -50,8 +50,9 @@ html,body{overflow-x:hidden!important}
  #categories .r5-tile-body{min-height:48px!important}
 }
 @media(max-width:390px){#aiChat .sv-chat-messages,.sv-unified-chat .sv-chat-messages{max-height:118px!important}}
-`;document.head.appendChild(s)}
-function apply(){injectStyle();fixCategories();fixStaticLeaks();document.documentElement.dataset.svR20='ready'}
+`;document.head.appendChild(s);return s}
+function keepStyleAuthoritative(){const s=injectStyle();if(s?.parentNode===document.head&&document.head.lastElementChild!==s)document.head.appendChild(s)}
+function apply(){keepStyleAuthoritative();fixCategories();fixStaticLeaks();document.documentElement.dataset.svR20='ready'}
 function schedule(ms=60){clearTimeout(timer);timer=setTimeout(apply,ms)}
 function bind(){remember(document);injectStyle();schedule(0);schedule(250);schedule(900);document.addEventListener('change',e=>{if(e.target?.id==='lang'||e.target?.id==='country'){schedule(30);schedule(350);schedule(1000)}},true);window.addEventListener('seekvera:languagechange',()=>schedule(40));window.addEventListener('seekvera:countrychange',()=>schedule(40));window.addEventListener('pageshow',()=>schedule(50));new MutationObserver(ms=>{let dirty=false;for(const m of ms){if(m.type==='characterData'||m.addedNodes?.length){dirty=true;for(const n of m.addedNodes||[])if(n.nodeType===1)remember(n)}}if(dirty)schedule(90)}).observe(document.documentElement,{subtree:true,childList:true,characterData:true})}
 if(document.readyState==='loading'){remember(document);document.addEventListener('DOMContentLoaded',bind,{once:true})}else bind();
