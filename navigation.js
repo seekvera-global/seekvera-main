@@ -1,9 +1,9 @@
-/* SEEKVERA universal navigation + worldwide AI stability R16 */
+/* SEEKVERA universal navigation + worldwide AI stability R18 */
 (()=>{'use strict';
 const HOME_PATHS=new Set(['/','/index.html','/app.html']);
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const WORLD_LANGS=['en','ar','fr','zh','es','hi','pt','de','ja','ko','id','tr','ru','ur','bn','vi','it','sw','th','fa','pl','nl','ms','fil','ha','yo','ig','am','he','el','uk','ro','cs','sk','hu','sv','no','da','fi','bg','hr','sr','sl','lt','lv','et','ca','eu','gl','is','sq','mk','ka','hy','az','kk','uz','ky','tg','tk','ne','si','ta','te','ml','mr','gu','pa','km','lo','my','mn','zu','af','be','bs','dz','ti','fo','kl','rw','sm','to','so','ps','dv','mt','mg','ga','cy','mi','fy','lb','rm','ku','xh','st','tn'];
-const CMD_LOCALES=['en','ar','fr','es','de','pt','tr','ru','it','nl','hi','ur'];
+const CMD_LOCALES=WORLD_LANGS;
 const STATIC_AI_SOURCE="I’m the SEEKVERA AI assistant. Tell me what you need and I’ll help you find the right section, compare options or search worldwide.";
 let localeTimer=0,translateSeq=0;
 const localeControl=id=>document.querySelector(`.sv-controls select#${id},select#${id}.sv-select`);
