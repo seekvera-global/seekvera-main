@@ -1,0 +1,211 @@
+name: SEEKVERA R15 Final Atomic Locale and Full App Audit
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r15-final-atomic-locale.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r15-final-atomic-locale
+  cancel-in-progress: true
+
+jobs:
+  final-r15:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Apply atomic locale and stability fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          # R15 must load before every older locale engine on every public page.
+          tag='<script src="locale-r15.js?v=20260924-r15" defer></script>'
+          pages=[]
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google'): continue
+              s=p.read_text(encoding='utf-8')
+              t=re.sub(r'\s*<script src="locale-r15\.js\?v=[^"]+" defer></script>','',s)
+              m=re.search(r'<script src="(?:superapp|voice-ai|global-ui|i18n-ui)\.js\?v=[^"]+" defer></script>',t)
+              if m:t=t[:m.start()]+tag+'\n'+t[m.start():]
+              elif '</body>' in t:t=t.replace('</body>',tag+'\n</body>',1)
+              else:raise SystemExit(f'No R15 anchor in {p.name}')
+              t=re.sub(r'sw\.js\?v=[^"\']+','sw.js?v=20260924-r15',t)
+              if p.name=='index.html':t=re.sub(r'Release 2026-09-24 · Worldwide R\d+','Release 2026-09-24 · Worldwide R15',t)
+              if t!=s:p.write_text(t,encoding='utf-8')
+              pages.append(p.name)
+
+          # global-ui: never confuse department filters such as marketplace input#country with locale controls.
+          p=Path('global-ui.js');s=p.read_text(encoding='utf-8')
+          old="const $=s=>document.querySelector(s);const lang="
+          new="const svLocaleControl=id=>document.querySelector(`.sv-controls select#${id},select#${id}.sv-select`);const $=s=>s==='#country'?svLocaleControl('country'):s==='#lang'?svLocaleControl('lang'):s==='#currency'?svLocaleControl('currency'):document.querySelector(s);const lang="
+          if old in s:s=s.replace(old,new,1)
+          elif 'const svLocaleControl=id=>' not in s:raise SystemExit('global-ui selector anchor missing')
+          p.write_text(s,encoding='utf-8')
+
+          # i18n-ui: same collision fix; keep department search fields independent.
+          p=Path('i18n-ui.js');s=p.read_text(encoding='utf-8')
+          if 'const i18nLocaleControl=id=>' not in s:
+              s=s.replace("const api=p=>`${WORKER}${p}`;","const api=p=>`${WORKER}${p}`;\nconst i18nLocaleControl=id=>document.querySelector(`.sv-controls select#${id},select#${id}.sv-select`);",1)
+          s=s.replace('script,style,noscript,code,pre,svg,canvas,[data-no-i18n],#country,#lang,#currency','script,style,noscript,code,pre,svg,canvas,[data-no-i18n],.sv-controls #country,.sv-controls #lang,.sv-controls #currency')
+          s=s.replace('[data-no-i18n],#country,#lang,#currency','[data-no-i18n],.sv-controls #country,.sv-controls #lang,.sv-controls #currency')
+          s=s.replace("c=document.getElementById('country'),s=document.getElementById('lang'),cur=document.getElementById('currency')","c=i18nLocaleControl('country'),s=i18nLocaleControl('lang'),cur=i18nLocaleControl('currency')")
+          s=s.replace("const s=document.getElementById('lang');if(s&&!s.dataset.i18nR3)","const s=i18nLocaleControl('lang');if(s&&!s.dataset.i18nR3)")
+          s=re.sub(r"serviceWorker\.register\('sw\.js\?v=[^']+'\)","serviceWorker.register('sw.js?v=20260924-r15')",s)
+          s=s.replace("setTimeout(()=>{bind();apply()},500)","setTimeout(()=>{bind();apply()},80)")
+          p.write_text(s,encoding='utf-8')
+
+          # navigation: scope controls, show Worldwide text, stop repeated repaint loop, use R15 for AI country commands.
+          p=Path('navigation.js');s=p.read_text(encoding='utf-8')
+          if 'const localeControl=id=>' not in s:s=s.replace("let localeTimer=0,translateSeq=0;","let localeTimer=0,translateSeq=0;\nconst localeControl=id=>document.querySelector(`.sv-controls select#${id},select#${id}.sv-select`);",1)
+          s=s.replace("document.getElementById('lang')","localeControl('lang')").replace("document.getElementById('country')","localeControl('country')")
+          s=s.replace("if(code==='WW')o.textContent='🌐';","if(code==='WW')o.textContent='🌐 '+(window.SEEKVERA_LOCALE_R14?.t?.('worldwide')||'Worldwide');")
+          s=re.sub(r"function scheduleLocalePass\(\)\{\s*clearTimeout\(localeTimer\);\s*const passes=\[0,120,500,1200\];\s*for\(const ms of passes\)setTimeout\(runLocaleEngines,ms\);\s*localeTimer=setTimeout\(runLocaleEngines,1800\);\s*\}","function scheduleLocalePass(){clearTimeout(localeTimer);localeTimer=setTimeout(runLocaleEngines,50)}",s,count=1)
+          s=s.replace("    const c=localeControl('country');if(!c)return;\n    c.value=code;c.dispatchEvent(new Event('input',{bubbles:true}));c.dispatchEvent(new Event('change',{bubbles:true}));","    const c=localeControl('country');\n    if(window.SEEKVERA_LOCALE_R15)window.SEEKVERA_LOCALE_R15.setCountry(code);\n    else {if(!c)return;c.value=code;c.dispatchEvent(new Event('input',{bubbles:true}));c.dispatchEvent(new Event('change',{bubbles:true}));}")
+          s=s.replace("  document.addEventListener('change',e=>{if(e.target?.id==='country'||e.target?.id==='lang'){if(e.target.id==='lang')localStorage.setItem('seekvera_lang',e.target.value);queueMicrotask(runLocaleEngines);scheduleLocalePass()}},true);","  document.addEventListener('change',e=>{const t=e.target;if(t&&(t===localeControl('country')||t===localeControl('lang'))){if(t===localeControl('lang'))localStorage.setItem('seekvera_lang',t.value);queueMicrotask(runLocaleEngines);scheduleLocalePass()}},true);")
+          p.write_text(s,encoding='utf-8')
+
+          # R14 visible translations: one pass only, no visual oscillation, expose local text lookup.
+          p=Path('locale-r14.js');s=p.read_text(encoding='utf-8')
+          s=s.replace("document.getElementById('lang')?.value","document.querySelector('.sv-controls select#lang,select#lang.sv-select')?.value")
+          s=s.replace("let timer=0;function schedule(ms=0){clearTimeout(timer);timer=setTimeout(()=>{apply();setTimeout(apply,80);setTimeout(apply,260)},ms)}","let timer=0;function schedule(ms=0){clearTimeout(timer);timer=setTimeout(apply,ms)}")
+          s=s.replace("window.SEEKVERA_LOCALE_R14={apply,schedule,languages:Object.keys(L),version:'20260924-r14'};","window.SEEKVERA_LOCALE_R14={apply,schedule,t:k=>{const {p}=pack();return p[IDX[k]]||L.en[IDX[k]]},languages:Object.keys(L),version:'20260924-r15'};")
+          p.write_text(s,encoding='utf-8')
+          p=Path('locale-r14-categories.js');s=p.read_text(encoding='utf-8')
+          s=s.replace("document.getElementById('lang')?.value","document.querySelector('.sv-controls select#lang,select#lang.sv-select')?.value")
+          s=s.replace("let timer=0;function schedule(ms=0){clearTimeout(timer);timer=setTimeout(()=>{apply();setTimeout(apply,100);setTimeout(apply,300)},ms)}","let timer=0;function schedule(ms=0){clearTimeout(timer);timer=setTimeout(apply,ms)}")
+          p.write_text(s,encoding='utf-8')
+
+          # R15: only real locale selects are synchronized. Add explicit-permission map/tracker helper.
+          p=Path('locale-r15.js');s=p.read_text(encoding='utf-8')
+          s=s.replace("const $=s=>document.querySelector(s);","const localeEl=id=>document.querySelector(`.sv-controls select#${id},select#${id}.sv-select`);const $=s=>s==='#country'?localeEl('country'):s==='#lang'?localeEl('lang'):s==='#currency'?localeEl('currency'):document.querySelector(s);",1)
+          s=s.replace("const t=e.target;if(!t||!['country','lang','currency'].includes(t.id))return;","const t=e.target;if(!t||!['country','lang','currency'].includes(t.id)||t!==$('#'+t.id))return;",1)
+          old="if(!e.isTrusted&&source!=='country'&&coherentProgrammaticChange(t))source='country';\n  const state=localeStateFrom(source,t.value);"
+          new="if(!e.isTrusted&&source!=='country'&&coherentProgrammaticChange(t)){let cc='US';try{cc=String(localStorage.getItem('seekvera_country')||'US').toUpperCase()}catch{};return applyState(localeStateFrom('country',cc),{explicit:false,reason:'programmatic-country'})}\n  const state=localeStateFrom(source,t.value);"
+          if old in s:s=s.replace(old,new,1)
+          if 'function locateOnce()' not in s:
+              loc=r'''\nlet locationWatchId=null;\nfunction savePosition(pos){const c=pos?.coords;if(!c)return null;const out={latitude:Number(c.latitude),longitude:Number(c.longitude),accuracy:Number(c.accuracy||0),timestamp:Date.now()};try{localStorage.setItem('seekvera_last_location',JSON.stringify(out));localStorage.setItem('seekvera_last_lat',String(out.latitude));localStorage.setItem('seekvera_last_lng',String(out.longitude))}catch{}return out}\nfunction locateOnce(){return new Promise((resolve,reject)=>{if(!navigator.geolocation)return reject(new Error('geolocation_unavailable'));navigator.geolocation.getCurrentPosition(p=>resolve(savePosition(p)),reject,{enableHighAccuracy:true,timeout:12000,maximumAge:60000})})}\nfunction mapUrl(c){return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.latitude+','+c.longitude)}`}\nfunction ensureMapLink(c){const b=$('#nearMe');if(!b||!c)return null;let a=document.getElementById('svNearMap');if(!a){a=document.createElement('a');a.id='svNearMap';a.target='_blank';a.rel='noopener noreferrer';a.textContent='🗺️';a.setAttribute('aria-label','Open current location on map');a.style.marginInlineStart='8px';b.insertAdjacentElement('afterend',a)}a.href=mapUrl(c);a.hidden=false;return a}\nfunction bindLocationTools(){const b=$('#nearMe');if(!b||b.dataset.r15Bound==='1')return;b.dataset.r15Bound='1';b.addEventListener('click',async()=>{b.disabled=true;const old=b.textContent;b.textContent='📍 …';try{const c=await locateOnce();ensureMapLink(c);b.textContent='📍 ✓'}catch{b.textContent=old}finally{b.disabled=false}})}\nfunction startLocationTracking(onUpdate){if(!navigator.geolocation)throw new Error('geolocation_unavailable');if(locationWatchId!==null)navigator.geolocation.clearWatch(locationWatchId);locationWatchId=navigator.geolocation.watchPosition(p=>{const c=savePosition(p);if(c&&typeof onUpdate==='function')onUpdate(c)},()=>{},{enableHighAccuracy:true,maximumAge:15000,timeout:20000});return locationWatchId}\nfunction stopLocationTracking(){if(locationWatchId!==null&&navigator.geolocation){navigator.geolocation.clearWatch(locationWatchId);locationWatchId=null}}\nif(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindLocationTools,{once:true});else bindLocationTools();\n'''
+              s=s.replace("const st=document.createElement('style');",loc+"const st=document.createElement('style');",1)
+              s=s.replace("debug:()=>({lastSignature,lastReason,syncing})","debug:()=>({lastSignature,lastReason,syncing}),\n  location:{locate:locateOnce,startTracking:startLocationTracking,stopTracking:stopLocationTracking,mapUrl}",1)
+          p.write_text(s,encoding='utf-8')
+
+          # New service-worker generation and network-first locale assets.
+          p=Path('sw.js');s=p.read_text(encoding='utf-8')
+          s=re.sub(r"const CACHE='[^']+';","const CACHE='seekvera-r15-atomic-20260924';",s,count=1)
+          if "'./locale-r15.js'" not in s:s=s.replace("'./i18n-ui.js','./i18n-premium.css'","'./i18n-ui.js','./locale-r15.js','./locale-r14.js','./locale-r14-categories.js','./i18n-premium.css'",1)
+          s=s.replace("(?:i18n-ui|voice-ai|global-ui|superapp|navigation)\\.js$","(?:i18n-ui|voice-ai|global-ui|superapp|navigation|locale-r15|locale-r14|locale-r14-categories)\\.js$")
+          p.write_text(s,encoding='utf-8')
+
+          # Future production deploys include locale assets.
+          p=Path('.github/workflows/deploy-cloudflare.yml');s=p.read_text(encoding='utf-8')
+          if "- 'locale-r15.js'" not in s:s=s.replace("      - 'i18n-ui.js'\n","      - 'i18n-ui.js'\n      - 'locale-r15.js'\n      - 'locale-r14.js'\n      - 'locale-r14-categories.js'\n",1)
+          s=s.replace("assert 'seekvera-r11-worldwide-20260924' in sw","assert 'seekvera-r15-atomic-20260924' in sw")
+          p.write_text(s,encoding='utf-8')
+          print('R15 patched',len(pages),'public pages')
+          PY
+
+      - name: Static A-to-Z validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in locale-r15.js locale-r14.js locale-r14-categories.js global-ui.js i18n-ui.js navigation.js voice-ai.js worker.js sw.js; do node --check "$f"; done
+          python - <<'PY'
+          from pathlib import Path
+          import re,json
+          r=Path('locale-r15.js').read_text();g=Path('global-ui.js').read_text();n=Path('navigation.js').read_text();i=Path('i18n-ui.js').read_text();a=Path('locale-r14.js').read_text();c=Path('locale-r14-categories.js').read_text();idx=Path('index.html').read_text();w=Path('worker.js').read_text();sw=Path('sw.js').read_text();v=Path('voice-ai.js').read_text()
+          def prof(x):
+              m=re.search(r'Object\.fromEntries\(`([^`]+)`\.split',x,re.S);assert m
+              return {z.split(':',1)[0]:tuple(z.split(':',1)[1].split(',',1)) for z in m.group(1).split(';') if z}
+          rp,gp=prof(r),prof(g);assert rp==gp and len(rp)==248
+          lm=re.search(r'const WORLD_LANGS=\[([^\]]+)\]',n,re.S);langs=re.findall(r"'([^']+)'",lm.group(1));assert len(langs)==98
+          lp=json.loads(re.search(r'const LANG_PRIMARY=(\{[^;]+\});',r,re.S).group(1));cp=json.loads(re.search(r'const CURRENCY_PRIMARY=(\{[^;]+\});',r,re.S).group(1));assert set(lp)==set(langs) and len(cp)>=150
+          assert all(x[0] in lp and x[1] in cp for x in rp.values())
+          dl={x[0] for x in rp.values()};al=set(re.findall(r'^([a-z]{2,3}):\[',a,re.M));cl=set(re.findall(r'^([a-z]{2,3}):\[',c,re.M));cl.add('en');assert dl<=al and dl<=cl
+          pages=[]
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google'):continue
+              s=p.read_text();assert 'locale-r15.js?v=20260924-r15' in s,p.name;pages.append(p.name)
+          assert len(pages)>=44 and idx.count('id="categories"')==1 and 'r5-chips' not in idx and 'r8-department-strip' not in idx
+          assert 'const svLocaleControl=id=>' in g and 'const i18nLocaleControl=id=>' in i and "c=document.getElementById('country')" not in i and 'const localeControl=id=>' in n
+          assert "seekvera-r15-atomic-20260924" in sw and "'./locale-r15.js'" in sw and 'function locateOnce()' in r and 'startLocationTracking' in r
+          assert 'setTimeout(apply,80)' not in a and 'setTimeout(apply,100)' not in c and "t:k=>{const {p}=pack()" in a
+          assert 'speechSynthesis' in v and '/api/transcribe' in v and 'safetyGateVersion' in w and 'centralSafetyGate' in w
+          assert 'navigator.geolocation' in Path('wifi.html').read_text() and 'google.com/maps/search' in Path('tourism.html').read_text()
+          print('STATIC R15 PASS',len(rp),'countries',len(langs),'languages',len(cp),'currencies',len(pages),'pages')
+          PY
+
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.58.2
+          npx playwright install --with-deps chromium
+
+      - name: Start local app
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/r15-http.log 2>&1 & echo $! >/tmp/r15-http.pid
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4173/index.html >/dev/null && exit 0; sleep 1; done
+          exit 1
+
+      - name: Browser audit every country, language, currency and department
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import {chromium} from 'playwright';import fs from 'node:fs';import assert from 'node:assert';
+          const B='http://127.0.0.1:4173',nav=fs.readFileSync('navigation.js','utf8'),langs=[...nav.match(/const WORLD_LANGS=\[([^\]]+)\]/s)[1].matchAll(/'([^']+)'/g)].map(x=>x[1]);
+          const routes=['marketplace.html','travel.html','tourism.html','property.html','cars-auto.html','jobs.html','shopping.html','restaurants-food.html','local-services.html','import-export.html','shipping-logistics.html','business-software.html','software.html','web-hosting.html','solar.html','education.html','health.html','money-insurance.html','entertainment.html','media.html','games.html','connectivity.html','wifi.html','deal-agent.html','everyday.html','scan.html','post-ad.html','seller-plans.html','hub.html','app.html'];
+          const b=await chromium.launch({headless:true});try{const c=await b.newContext({locale:'en-US',geolocation:{latitude:9.0765,longitude:7.3986},permissions:['geolocation']});await c.addInitScript(()=>{localStorage.setItem('seekvera_country','WW');localStorage.setItem('seekvera_lang','nl');localStorage.setItem('seekvera_currency','PHP');localStorage.setItem('seekvera_country_explicit','1');localStorage.removeItem('seekvera_locale_source')});const p=await c.newPage();let errs=[];p.on('pageerror',e=>errs.push(String(e)));await p.route('**/api/ui-translate',async r=>{let x={};try{x=r.request().postDataJSON()||{}}catch{};let s=Array.isArray(x.strings)?x.strings:[];await r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,translations:s})})});
+          await p.goto(B+'/index.html?r15=1',{waitUntil:'domcontentloaded'});await p.waitForFunction(()=>SEEKVERA_LOCALE_R15&&document.querySelector('.sv-controls select#country'));await p.waitForTimeout(250);
+          const snap=()=>p.evaluate(()=>{const q=SEEKVERA_LOCALE_R15.state();return[q.country,q.language,q.currency,document.documentElement.lang,document.documentElement.dir]});let s=await snap();assert.deepEqual(s.slice(0,3),['WW','en','USD']);
+          const d=await p.evaluate(()=>({p:SEEKVERA_LOCALE_R15.profiles,l:SEEKVERA_LOCALE_R15.languagePrimary,c:SEEKVERA_LOCALE_R15.currencyPrimary}));let nc=0;for(const [cc,x] of Object.entries(d.p)){await p.evaluate(v=>SEEKVERA_LOCALE_R15.setCountry(v),cc);s=await snap();assert.deepEqual(s.slice(0,3),[cc,x.language,x.currency]);nc++}assert.equal(nc,248);
+          for(const lg of langs){await p.evaluate(v=>SEEKVERA_LOCALE_R15.setLanguage(v),lg);s=await snap();const cc=d.l[lg];assert.deepEqual(s.slice(0,3),[cc,lg,d.p[cc].currency])}assert.equal(langs.length,98);
+          let nu=0;for(const [u,cc] of Object.entries(d.c)){await p.evaluate(v=>SEEKVERA_LOCALE_R15.setCurrency(v),u);s=await snap();assert.deepEqual(s.slice(0,3),[cc,d.p[cc].language,u]);nu++}assert(nu>=150);
+          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('WW'));assert.deepEqual((await snap()).slice(0,3),['WW','en','USD']);await p.evaluate(()=>SEEKVERA_LOCALE_R15.setLanguage('hi'));assert.deepEqual((await snap()).slice(0,3),['IN','hi','INR']);await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCurrency('USD'));assert.deepEqual((await snap()).slice(0,3),['US','en','USD']);await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('PH'));await p.waitForTimeout(100);assert.deepEqual((await snap()).slice(0,3),['PH','fil','PHP']);await p.evaluate(()=>SEEKVERA_LOCALE_R15.setLanguage('nl'));assert.deepEqual((await snap()).slice(0,3),['NL','nl','EUR']);await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('SA'));await p.waitForTimeout(100);assert.deepEqual((await snap()).slice(0,3),['SA','ar','SAR']);
+          await p.selectOption('.sv-controls select#lang','hi');await p.waitForTimeout(80);assert.deepEqual((await snap()).slice(0,3),['IN','hi','INR']);await p.selectOption('.sv-controls select#currency','USD');await p.waitForTimeout(80);assert.deepEqual((await snap()).slice(0,3),['US','en','USD']);await p.selectOption('.sv-controls select#country','SA');await p.waitForTimeout(80);assert.deepEqual((await snap()).slice(0,3),['SA','ar','SAR']);
+          let stable=[];for(let i=0;i<12;i++){await p.waitForTimeout(85);stable.push((await snap()).join('|'))}assert.equal(new Set(stable).size,1,'locale oscillation');
+          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setLanguage('nl'));await p.reload({waitUntil:'domcontentloaded'});await p.waitForFunction(()=>SEEKVERA_LOCALE_R15?.state?.());await p.waitForTimeout(120);assert.deepEqual((await snap()).slice(0,3),['NL','nl','EUR']);
+          await p.goto(B+'/index.html?r15map=1',{waitUntil:'domcontentloaded'});await p.waitForFunction(()=>SEEKVERA_LOCALE_R15?.location&&document.querySelector('#nearMe'));await p.click('#nearMe');await p.waitForSelector('#svNearMap',{state:'visible'});assert((await p.getAttribute('#svNearMap','href')).includes('google.com/maps/search'));
+          for(const r of routes){const z=await p.goto(B+'/'+r+'?r15d=1',{waitUntil:'domcontentloaded'});assert.equal(z.status(),200,r);await p.waitForFunction(()=>SEEKVERA_LOCALE_R15);await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('SA'));await p.waitForTimeout(50);let x=await p.evaluate(()=>[localStorage.getItem('seekvera_country'),localStorage.getItem('seekvera_lang'),localStorage.getItem('seekvera_currency'),document.documentElement.lang,document.documentElement.dir]);assert.deepEqual(x,['SA','ar','SAR','ar','rtl'],r);await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCurrency('USD'));await p.waitForTimeout(40);x=await p.evaluate(()=>[localStorage.getItem('seekvera_country'),localStorage.getItem('seekvera_lang'),localStorage.getItem('seekvera_currency'),document.documentElement.lang]);assert.deepEqual(x,['US','en','USD','en'],r)}
+          await p.goto(B+'/marketplace.html?r15collision=1',{waitUntil:'domcontentloaded'});await p.waitForFunction(()=>SEEKVERA_LOCALE_R15);await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('SA'));await p.fill('input#country','Nigeria');await p.locator('input#country').dispatchEvent('change');await p.waitForTimeout(50);let x=await p.evaluate(()=>[document.querySelector('input#country').value,localStorage.getItem('seekvera_country'),localStorage.getItem('seekvera_lang'),localStorage.getItem('seekvera_currency')]);assert.deepEqual(x,['Nigeria','SA','ar','SAR']);if(errs.length)throw Error(errs.join(' | '));console.log('LOCAL R15 PASS',nc,langs.length,nu,routes.length);await c.close()}finally{await b.close()}
+          NODE
+
+      - name: Stop local app
+        if: always()
+        run: test ! -f /tmp/r15-http.pid || kill "$(cat /tmp/r15-http.pid)" || true
+
+      - name: Commit tested R15
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'; git config user.email 'seekvera.global@gmail.com'
+          git add -- '*.html' locale-r15.js locale-r14.js locale-r14-categories.js global-ui.js i18n-ui.js navigation.js sw.js .github/workflows/deploy-cloudflare.yml
+          if ! git diff --cached --quiet; then git commit -m 'R15: atomic locale sync and full app stability'; git push origin HEAD:main; fi
+
+      - name: Deploy tested R15 to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Verify live R15, safety, map assets and departments
+        shell: bash
+        run: |
+          set -euo pipefail
+          S='https://seekveraglobal.com'; U='Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) AppleWebKit/537.36 Chrome/140.0 Mobile Safari/537.36'; ok=0
+          for i in $(seq 1 20); do curl -LfsS -A "$U" -H 'Cache-Control: no-cache' "$S/?r15live=$i" -o /tmp/h || true; curl -LfsS -A "$U" -H 'Cache-Control: no-cache' "$S/locale-r15.js?r15live=$i" -o /tmp/l || true; if grep -q 'locale-r15.js?v=20260924-r15' /tmp/h 2>/dev/null && grep -q 'startLocationTracking' /tmp/l 2>/dev/null;then ok=1;break;fi;sleep 4;done;test "$ok" = 1
+          curl -LfsS -A "$U" "$S/api/health?r15=1" -o /tmp/health;grep -q '"centralSafetyGate":"enabled"' /tmp/health;grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/health;grep -q '"safetyGateVersion"' /tmp/health
+          for p in marketplace.html travel.html tourism.html property.html cars-auto.html jobs.html shopping.html restaurants-food.html local-services.html import-export.html shipping-logistics.html business-software.html software.html web-hosting.html solar.html education.html health.html money-insurance.html entertainment.html media.html games.html connectivity.html wifi.html deal-agent.html everyday.html scan.html post-ad.html seller-plans.html hub.html app.html; do code=$(curl -LsS -o /tmp/p -w '%{http_code}' -A "$U" "$S/$p?r15=1");test "$code" = 200;grep -q 'locale-r15.js?v=20260924-r15' /tmp/p;done
+          node --input-type=module <<'NODE'
+          import {chromium} from 'playwright';import assert from 'node:assert';const b=await chromium.launch({headless:true});try{const c=await b.newContext({locale:'en-US'});await c.addInitScript(()=>{localStorage.setItem('seekvera_country','WW');localStorage.setItem('seekvera_lang','nl');localStorage.setItem('seekvera_currency','PHP');localStorage.setItem('seekvera_country_explicit','1');localStorage.removeItem('seekvera_locale_source')});const p=await c.newPage();await p.goto('https://seekveraglobal.com/?r15-final='+Date.now(),{waitUntil:'domcontentloaded'});await p.waitForFunction(()=>SEEKVERA_LOCALE_R15?.state?.());await p.waitForTimeout(200);let s=await p.evaluate(()=>SEEKVERA_LOCALE_R15.state());assert.deepEqual([s.country,s.language,s.currency],['WW','en','USD']);const d=await p.evaluate(()=>SEEKVERA_LOCALE_R15.profiles);let n=0;for(const [cc,x] of Object.entries(d)){await p.evaluate(v=>SEEKVERA_LOCALE_R15.setCountry(v),cc);s=await p.evaluate(()=>SEEKVERA_LOCALE_R15.state());assert.deepEqual([s.country,s.language,s.currency],[cc,x.language,x.currency]);n++}assert.equal(n,248);await p.evaluate(()=>SEEKVERA_LOCALE_R15.setLanguage('hi'));s=await p.evaluate(()=>SEEKVERA_LOCALE_R15.state());assert.deepEqual([s.country,s.language,s.currency],['IN','hi','INR']);await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCurrency('USD'));s=await p.evaluate(()=>SEEKVERA_LOCALE_R15.state());assert.deepEqual([s.country,s.language,s.currency],['US','en','USD']);await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('SA'));let q=[];for(let i=0;i<10;i++){await p.waitForTimeout(90);q.push(await p.evaluate(()=>{const s=SEEKVERA_LOCALE_R15.state();return [s.country,s.language,s.currency,document.documentElement.lang,document.documentElement.dir].join('|')}))}assert.equal(new Set(q).size,1);console.log('LIVE R15 BROWSER PASS 248 countries + stability');await c.close()}finally{await b.close()}
+          NODE
+          echo 'LIVE R15 FULL PASS'
