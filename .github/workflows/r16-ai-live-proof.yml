@@ -1,0 +1,39 @@
+name: SEEKVERA R16 Live AI Browser Proof
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r16-ai-live-proof.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install browser test runtime
+        run: |
+          npm install --no-save playwright@1.58.2
+          npx playwright install --with-deps chromium
+      - name: Confirm deployed R16 assets
+        run: |
+          set -euo pipefail
+          S='https://seekveraglobal.com'
+          U='Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140.0 Mobile Safari/537.36'
+          curl -LfsS -A "$U" -H 'Cache-Control: no-cache' "$S/?r16live=1" -o /tmp/home
+          curl -LfsS -A "$U" -H 'Cache-Control: no-cache' "$S/navigation.js?r16live=1" -o /tmp/nav
+          grep -q 'navigation.js?v=20260924-r16' /tmp/home
+          grep -q 'function hardenAIUI()' /tmp/nav
+          grep -q "function isCountryCommand(text,code='')" /tmp/nav
+          grep -q 'svR16AIStableStyles' /tmp/nav
+      - name: Live 248-country / 98-language AI proof
+        env:
+          SEEKVERA_AUDIT_BASE: https://seekveraglobal.com
+        run: node tools/r16_ai_audit.mjs
