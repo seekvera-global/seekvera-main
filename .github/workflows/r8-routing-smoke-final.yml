@@ -1,0 +1,48 @@
+name: SEEKVERA R8 focused multilingual routing smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r8-routing-smoke-final.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-routing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Verify live multilingual routing
+        run: |
+          python - <<'PY'
+          import json,urllib.request
+          url='https://seekveraglobal.com/api/ai'
+          headers={'Content-Type':'application/json','Origin':'https://seekveraglobal.com','Referer':'https://seekveraglobal.com/','User-Agent':'Mozilla/5.0 Android'}
+          tests=[
+            ('Spanish','Quiero comprar un teléfono nuevo','Spain','shopping','shopping.html'),
+            ('German','Ich suche ein Auto in Berlin','Germany','cars','cars-auto.html'),
+            ('Arabic','أريد مطعم قريب في دبي','United Arab Emirates','restaurants','restaurants-food.html'),
+            ('French','Je cherche un hôtel à Paris','France','travel','travel.html'),
+            ('Chinese','我想在上海找酒店','China','travel','travel.html'),
+            ('Hindi','मुझे दिल्ली में किराए पर अपार्टमेंट चाहिए','India','property','property.html'),
+            ('French','Je cherche un emploi de mécanicien en France','France','jobs','jobs.html'),
+            ('Chinese','我想在中国找机械师的工作','China','jobs','jobs.html'),
+          ]
+          for lang,msg,country,cat,route in tests:
+              payload={'message':msg,'country':country,'language':lang,'scope':'country','fast':True}
+              req=urllib.request.Request(url,data=json.dumps(payload,ensure_ascii=False).encode('utf-8'),headers=headers,method='POST')
+              with urllib.request.urlopen(req,timeout=60) as r:d=json.loads(r.read())
+              assert d.get('ok') is True,(lang,d)
+              assert d.get('category')==cat,(lang,cat,d)
+              assert d.get('route')==route,(lang,route,d)
+              print(lang,cat,'=>',d.get('route'))
+          payload={'message':'mechanic','country':'France','language':'English','scope':'country','fast':True,'history':[{'role':'user','content':'I need a job in France'},{'role':'assistant','content':'What kind of job are you looking for?'}]}
+          req=urllib.request.Request(url,data=json.dumps(payload).encode(),headers=headers,method='POST')
+          with urllib.request.urlopen(req,timeout=60) as r:d=json.loads(r.read())
+          assert d.get('ok') and d.get('category')=='jobs' and d.get('route')=='jobs.html',d
+          print('FOLLOW-UP MEMORY => jobs.html')
+          print('FOCUSED MULTILINGUAL ROUTING SMOKE PASS')
+          PY
