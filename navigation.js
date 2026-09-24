@@ -1,6 +1,12 @@
-/* SEEKVERA universal in-app navigation: Back + Home on every internal page */
+/* SEEKVERA universal navigation + worldwide locale/voice hardening R10 */
 (()=>{'use strict';
 const HOME_PATHS=new Set(['/','/index.html','/app.html']);
+const RTL=new Set(['ar','fa','ur','he','ps','dv']);
+const WORLD_LANGS=['en','ar','fr','zh','es','hi','pt','de','ja','ko','id','tr','ru','ur','bn','vi','it','sw','th','fa','pl','nl','ms','fil','ha','yo','ig','am','he','el','uk','ro','cs','sk','hu','sv','no','da','fi','bg','hr','sr','sl','lt','lv','et','ca','eu','gl','is','sq','mk','ka','hy','az','kk','uz','ky','tg','tk','ne','si','ta','te','ml','mr','gu','pa','km','lo','my','mn','zu','af','be','bs','dz','ti','fo','kl','rw','sm','to','so','ps','dv','mt','mg','ga','cy','mi','fy','lb','rm','ku','xh','st','tn'];
+const CMD_LOCALES=['en','ar','fr','es','de','pt','tr','ru','it','nl','hi','ur'];
+const STATIC_AI_SOURCE="I’m the SEEKVERA AI assistant. Tell me what you need and I’ll help you find the right section, compare options or search worldwide.";
+let localeTimer=0,translateSeq=0;
+
 const sameOriginReferrer=()=>{try{return document.referrer&&new URL(document.referrer).origin===location.origin}catch{return false}};
 function goHome(){location.href='index.html'}
 function goBack(){
@@ -15,7 +21,7 @@ function rememberInternalLinks(){
     try{const u=new URL(a.href,location.href);if(u.origin===location.origin){sessionStorage.setItem('seekvera_last_internal_page',location.pathname+location.search+location.hash)}}catch{}
   },true);
 }
-function build(){
+function buildNav(){
   rememberInternalLinks();
   if(HOME_PATHS.has(location.pathname))return;
   if(document.getElementById('svUniversalNav'))return;
@@ -32,5 +38,142 @@ function build(){
   document.body.appendChild(nav);
   document.getElementById('svBackButton')?.addEventListener('click',goBack);
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build,{once:true});else build();
+
+function langCode(){
+  let v=document.getElementById('lang')?.value||localStorage.getItem('seekvera_lang')||document.documentElement.lang||navigator.language||'en';
+  if(v==='auto')v=navigator.language||'en';
+  return String(v).toLowerCase().split(/[-_]/)[0]||'en';
+}
+function displayLanguage(code,display=langCode()){
+  try{return new Intl.DisplayNames([display],{type:'language'}).of(code)||code.toUpperCase()}catch{return code.toUpperCase()}
+}
+function displayRegion(code,display=langCode()){
+  try{return new Intl.DisplayNames([display],{type:'region'}).of(code)||code}catch{return code}
+}
+function ensureLanguageCoverage(){
+  const el=document.getElementById('lang');if(!el)return;
+  const selected=el.value||localStorage.getItem('seekvera_lang')||'auto';
+  if(![...el.options].some(o=>o.value==='auto'))el.insertBefore(new Option('⚙️','auto'),el.firstChild);
+  for(const code of WORLD_LANGS){if(![...el.options].some(o=>o.value===code))el.add(new Option(code.toUpperCase(),code));}
+  const d=langCode();
+  for(const o of el.options){
+    if(o.value==='auto'){
+      const device=String(navigator.language||'en').split(/[-_]/)[0];
+      o.textContent='⚙️ '+displayLanguage(device,d);
+    }else if(/^[a-z]{2,3}$/i.test(o.value))o.textContent=displayLanguage(o.value,d);
+  }
+  if([...el.options].some(o=>o.value===selected))el.value=selected;
+}
+function localizeCountryOptions(){
+  const el=document.getElementById('country');if(!el)return;
+  const d=langCode();
+  for(const o of el.options){
+    const code=String(o.value||'').toUpperCase();
+    if(code==='WW')o.textContent='🌐';
+    else if(/^[A-Z]{2}$/.test(code))o.textContent=displayRegion(code,d);
+  }
+}
+function localizeDocumentDirection(){
+  const l=langCode();document.documentElement.lang=l;document.documentElement.dir=RTL.has(l)?'rtl':'ltr';
+}
+async function translateStaticAI(){
+  const box=document.querySelector('#aiMessages .ai-msg.bot:first-child');if(!box)return;
+  const l=langCode();
+  if(!box.dataset.svSource)box.dataset.svSource=(box.textContent||STATIC_AI_SOURCE).trim();
+  const source=box.dataset.svSource||STATIC_AI_SOURCE;
+  if(l==='en'){box.textContent=source;box.dataset.svLang='en';return;}
+  if(box.dataset.svLang===l)return;
+  const key='sv_static_ai_'+l+'_'+source;
+  const cached=sessionStorage.getItem(key);if(cached){box.textContent=cached;box.dataset.svLang=l;return;}
+  const mine=++translateSeq;
+  try{
+    const language=displayLanguage(l,'en');
+    const r=await fetch('/api/ui-translate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language,strings:[source]})});
+    const d=await r.json().catch(()=>null);const t=String(d?.translations?.[0]||'').trim();
+    if(r.ok&&t&&mine===translateSeq){sessionStorage.setItem(key,t);box.textContent=t;box.dataset.svLang=l;}
+  }catch{}
+}
+function runLocaleEngines(){
+  try{window.SEEKVERA_I18N?.apply?.()}catch{}
+  try{window.SEEKVERA_LOCALE_GUARD_R9?.apply?.()}catch{}
+  ensureLanguageCoverage();localizeCountryOptions();localizeDocumentDirection();
+  try{window.SEEKVERA_LOCALE_GUARD_R9?.schedule?.(20)}catch{}
+  translateStaticAI();
+}
+function scheduleLocalePass(){
+  clearTimeout(localeTimer);
+  const passes=[0,120,500,1200];
+  for(const ms of passes)setTimeout(runLocaleEngines,ms);
+  localeTimer=setTimeout(runLocaleEngines,1800);
+}
+function stripDuplicateDepartments(){
+  if(!HOME_PATHS.has(location.pathname))return;
+  document.querySelector('.r8-department-strip')?.remove();
+  document.querySelector('.r5-left')?.remove();
+  if(document.getElementById('svR10HomeCleanup'))return;
+  const st=document.createElement('style');st.id='svR10HomeCleanup';st.textContent='@media(min-width:980px){body.sv-home-global .r5-market,.r5-market{grid-template-columns:minmax(0,1fr) 240px!important}}';document.head.appendChild(st);
+}
+function normalizeText(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[’'`´]/g,'').replace(/[^\p{L}\p{N}]+/gu,' ').trim()}
+function isCountryCommand(text){
+  const s=normalizeText(text);
+  return /\b(?:set|switch|change|choose|select)\b.{0,35}\b(?:country|region)\b/.test(s)
+    || /(?:حط|حطلي|اختار|اختر|غير|غيرلي|حول|حوللي).{0,30}(?:الدولة|دولة|البلد|بلد)/u.test(String(text||''))
+    || /\b(?:mets?|change|passe|choisis?)\b.{0,35}\b(?:pays|region)\b/.test(s)
+    || /\b(?:cambia|cambiar|pon|elige|selecciona)\b.{0,35}\b(?:pais|region)\b/.test(s)
+    || /\b(?:ander|wechsle|wahle|setze)\b.{0,35}\b(?:land|region)\b/.test(s)
+    || /\b(?:mudar|muda|trocar|troca|escolher|escolha)\b.{0,35}\b(?:pais|regiao)\b/.test(s)
+    || /\b(?:degistir|degistir|sec|seç)\b.{0,35}\b(?:ulke|ülke|bolge|bölge)\b/.test(s)
+    || /(?:смени|сменить|выбери|выбрать|установи).{0,35}(?:стран|регион)/u.test(String(text||''))
+    || /\b(?:cambia|imposta|scegli)\b.{0,35}\b(?:paese|regione)\b/.test(s)
+    || /(?:ملک|ملک کو|ملک بدل).{0,30}(?:بدل|منتخب|چن)/u.test(String(text||''));
+}
+function countryNames(code){
+  const out=new Set([code]);
+  const current=langCode();
+  for(const l of [current,...CMD_LOCALES]){try{const n=new Intl.DisplayNames([l],{type:'region'}).of(code);if(n)out.add(n)}catch{}}
+  return [...out].map(x=>normalizeText(x)).filter(Boolean).sort((a,b)=>b.length-a.length);
+}
+function resolveCountry(text){
+  const el=document.getElementById('country');if(!el)return null;
+  const s=normalizeText(text);const hits=[];
+  for(const o of el.options){const code=String(o.value||'').toUpperCase();if(!/^[A-Z]{2}$/.test(code))continue;for(const n of countryNames(code)){if(n.length>=3&&s.includes(n)){hits.push({code,n});break}}}
+  hits.sort((a,b)=>b.n.length-a.n.length);return hits[0]?.code||null;
+}
+function addCountryConfirmation(code){
+  const name=displayRegion(code,langCode());
+  const box=document.getElementById('aiMessages');if(box){const m=document.createElement('div');m.className='ai-msg bot';m.dataset.noTranslate='1';m.textContent='🌍 '+name+' ✓';box.appendChild(m);box.scrollTop=box.scrollHeight;}
+  try{window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text:name,language:langCode()}}))}catch{}
+}
+function bindAICountryControl(){
+  document.addEventListener('submit',e=>{
+    const form=e.target;if(!(form instanceof HTMLFormElement))return;
+    if(!(form.id==='aiChatForm'||form.classList.contains('sv-global-compose')||form.closest('#aiChat')))return;
+    const input=form.querySelector('#aiChatInput,input[type="text"],input:not([type])');const text=input?.value?.trim()||'';
+    if(!text||!isCountryCommand(text))return;
+    const code=resolveCountry(text);if(!code)return;
+    e.preventDefault();e.stopImmediatePropagation();
+    const c=document.getElementById('country');if(!c)return;
+    c.value=code;c.dispatchEvent(new Event('input',{bubbles:true}));c.dispatchEvent(new Event('change',{bubbles:true}));
+    if(input)input.value='';
+    setTimeout(()=>{scheduleLocalePass();addCountryConfirmation(code)},180);
+  },true);
+}
+function primeVoiceOnGesture(e){
+  if(!e.target.closest?.('#aiChatMic,#aiChatSpeaker,.sv-global-compose .mic,.sv-global-speaker'))return;
+  try{
+    const s=window.speechSynthesis;if(!s||!window.SpeechSynthesisUtterance)return;
+    s.getVoices?.();s.resume?.();
+    if(!s.speaking){const u=new SpeechSynthesisUtterance(' ');u.volume=0;u.rate=1;s.speak(u);}
+  }catch{}
+}
+function bindLocaleControls(){
+  document.addEventListener('change',e=>{if(e.target?.id==='country'||e.target?.id==='lang'){if(e.target.id==='lang')localStorage.setItem('seekvera_lang',e.target.value);scheduleLocalePass()}},true);
+  window.addEventListener('pageshow',scheduleLocalePass);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)scheduleLocalePass()});
+  document.addEventListener('pointerdown',primeVoiceOnGesture,true);
+  document.addEventListener('touchstart',primeVoiceOnGesture,{capture:true,passive:true});
+  if(window.speechSynthesis){try{speechSynthesis.addEventListener?.('voiceschanged',()=>speechSynthesis.getVoices?.())}catch{}}
+}
+function init(){stripDuplicateDepartments();buildNav();bindLocaleControls();bindAICountryControl();scheduleLocalePass()}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
