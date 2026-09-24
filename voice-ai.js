@@ -8,7 +8,7 @@ const FEMALE_HINTS=/aria|jenny|zira|samantha|victoria|karen|moira|tessa|ava|alli
 const MALE_HINTS=/david|mark|george|daniel|fred|ralph|bruce|hammad|hamed|majed|maged|male|man/i;
 const QUALITY_HINTS=/neural|natural|enhanced|premium|online|google|microsoft|siri/i;
 const TTS_RETRY_DELAYS=[240,650,1200];
-const VOICE_SILENCE_MS=3200,VOICE_MAX_MS=90000,VOICE_RMS_THRESHOLD=.018;
+const VOICE_SILENCE_MS=1250,VOICE_MAX_MS=30000,VOICE_RMS_THRESHOLD=.016;
 let recognition=null,lastAnswer='',lastLocale='',muted=localStorage.getItem('seekvera_voice_muted')==='1',activeButton=null,voiceConversation=false,speakToken=0,recording=false,mediaRecorder=null,mediaStream=null,recordChunks=[],recordTimer=null,speechSilenceTimer=null,speechHardTimer=null,audioCtx=null,audioAnalyser=null,audioSource=null,audioRaf=0,heardVoice=false,lastVoiceAt=0,recordStartedAt=0;
 function codeOf(v){let s=String(v||'').toLowerCase().trim();if(NAME_CODE[s])return NAME_CODE[s];s=s.split(/[-_ ]/)[0];if(NAME_CODE[s])return NAME_CODE[s];return /^[a-z]{2,3}$/.test(s)?s:''}
 function locale(){const e=document.getElementById('lang');let code=(e?.value||localStorage.getItem('seekvera_lang')||navigator.language||'en').toLowerCase();const label=e?.options?.[e.selectedIndex]?.textContent||'';if(code==='auto'||/auto|تلقائي|autom/i.test(label))return navigator.language||'en-US';code=codeOf(code)||code.split(/[-_]/)[0];return LANGS[code]||code||navigator.language||'en-US'}
@@ -52,7 +52,7 @@ async function serverVoice(targetId,button){
       try{
         if(i)i.placeholder='Transcribing your voice…';
         const blob=new Blob(chunks,{type}),audio=await blobDataURL(blob);
-        const res=await fetch(apiBase()+'/api/transcribe',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({audio,language:selectedLang()||'auto'})});
+        const res=await fetch(apiBase()+'/api/transcribe',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({audio,language:'auto'})});
         const d=await res.json().catch(()=>({}));if(!res.ok||!d.text)throw Error(d.error||'transcription failed');
         if(i){i.value=String(d.text).trim();i.placeholder='Message SEEKVERA AI…';if(i.value)setTimeout(()=>i.form?.requestSubmit?.(),80)}
       }catch(e){voiceConversation=false;if(i)i.placeholder='Voice could not be transcribed — please type or try again.'}
@@ -69,7 +69,7 @@ function start(targetId,button){
   stopSpeech();enableVoiceConversation();clearSpeechTimers();
   activeButton=button||document.getElementById('aiChatMic')||document.querySelector('.sv-global-compose .mic');
   const i=document.getElementById(targetId||'aiChatInput');
-  if(!SpeechRecognition||/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){serverVoice(targetId,activeButton);return}
+  if(navigator.mediaDevices?.getUserMedia&&window.MediaRecorder){serverVoice(targetId,activeButton);return}if(!SpeechRecognition){voiceConversation=false;if(i)i.placeholder='Voice recognition is unavailable here — please type your message.';return}
   const r=new SpeechRecognition();recognition=r;r.lang=locale();r.interimResults=true;r.continuous=true;r.maxAlternatives=1;
   let final='',hadError=false,heardAny=false;
   const scheduleSilence=()=>{if(speechSilenceTimer)clearTimeout(speechSilenceTimer);speechSilenceTimer=setTimeout(()=>{try{if(recognition===r)r.stop()}catch(_){}},VOICE_SILENCE_MS)};

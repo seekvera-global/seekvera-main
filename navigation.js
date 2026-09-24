@@ -113,7 +113,7 @@ function stripDuplicateDepartments(){
 function ensureAIStableStyles(){
   if(document.getElementById('svR16AIStableStyles'))return;
   const st=document.createElement('style');st.id='svR16AIStableStyles';st.textContent=`
-#aiChat,.sv-unified-chat{max-width:100%!important;min-width:0!important;overflow:hidden!important;contain:layout style!important}
+#aiChat,.sv-unified-chat{max-width:100%!important;min-width:0!important;overflow:hidden!important;contain:layout!important}
 #aiChat *, .sv-unified-chat *{box-sizing:border-box}
 #aiChat .sv-chat-head,.sv-unified-chat .sv-chat-head{display:grid!important;grid-template-columns:minmax(0,1fr) auto 48px!important;align-items:center!important;gap:8px!important;min-width:0!important}
 #aiChat .sv-chat-head>div,.sv-unified-chat .sv-chat-head>div{min-width:0!important;overflow:hidden!important}
@@ -122,7 +122,7 @@ function ensureAIStableStyles(){
 #aiChat .sv-chat-head>span,.sv-unified-chat .sv-chat-head>span{white-space:nowrap!important;min-width:0!important}
 #aiChatSpeaker,.sv-global-speaker{width:48px!important;min-width:48px!important;max-width:48px!important;height:48px!important;min-height:48px!important;padding:0!important;overflow:hidden!important;white-space:nowrap!important;font-size:0!important;line-height:1!important;display:inline-flex!important;align-items:center!important;justify-content:center!important}
 #aiChatSpeaker::before,.sv-global-speaker::before{content:'🔊';font-size:22px!important;line-height:1!important}
-#aiChat .sv-chat-messages,.sv-unified-chat .sv-chat-messages{height:220px!important;min-height:220px!important;max-height:220px!important;overflow-y:auto!important;overflow-x:hidden!important;scroll-behavior:auto!important;overscroll-behavior:contain!important}
+#aiChat .sv-chat-messages,.sv-unified-chat .sv-chat-messages{height:220px!important;min-height:220px!important;max-height:220px!important;overflow-y:auto!important;overflow-x:hidden!important;scroll-behavior:smooth!important;overscroll-behavior:auto!important;-webkit-overflow-scrolling:touch!important;touch-action:pan-y!important;overflow-anchor:none!important}
 #aiChat .ai-msg,.sv-unified-chat .ai-msg{max-width:min(92%,560px)!important;min-width:0!important;overflow-wrap:anywhere!important;word-break:normal!important;white-space:pre-wrap!important}
 #aiChat .sv-chat-form,.sv-unified-chat .sv-chat-form{display:grid!important;grid-template-columns:44px minmax(0,1fr) 44px 44px 50px!important;gap:7px!important;align-items:center!important;min-width:0!important;width:100%!important}
 #aiChat .sv-chat-form input,.sv-unified-chat .sv-chat-form input{min-width:0!important;width:100%!important;max-width:100%!important;direction:auto!important;text-align:start!important}
@@ -177,10 +177,11 @@ function isCountryCommand(text,code=''){
   const raw=String(text||''),s=normalizeText(raw);
   let direct=false;
   if(code){
-    const names=countryNames(code),hasTarget=names.some(n=>n.length>=2&&(s===n||(' '+s+' ').includes(' '+n+' ')));
+    const names=countryNames(code);
     const latin=/\b(?:set|switch|change|choose|select|go|move|use|open|control|app|market|country|region|take|put)\b/.test(s);
-    const native=/(?:حط|حطلي|اختار|اختر|غير|غيرلي|حول|حوللي|انتقل|اذهب|استخدم|غيّر|حوّل|बदल|चुन|जाओ|देश|ملک|بدل|منتخب|смени|сменить|выбери|установи|cambia|elige|selecciona|change|choisis|wechsle|wähle|mudar|trocar|seç|degistir|imposta|scegli)/u.test(raw);
+    const native=/(?:حط|حطلي|اختار|اختر|غير|غيرلي|حول|حوللي|انتقل|اذهب|استخدم|غيّر|حوّل|बदल|चुन|जाओ|देश|ऐप|परिवर्तन|ملک|بدل|منتخب|смени|сменить|выбери|установи|cambia|elige|selecciona|change|choisis|wechsle|wähle|mudar|trocar|seç|degistir|imposta|scegli)/u.test(raw);
     const short=s.split(/\s+/).filter(Boolean).length<=3;
+    const hasTarget=names.some(n=>n.length>=2&&(s===n||(' '+s+' ').includes(' '+n+' ')||((latin||native)&&s.includes(n))));
     direct=hasTarget&&(latin||native||short);
   }
   return direct
@@ -196,8 +197,9 @@ function isCountryCommand(text,code=''){
     || /(?:ملک|ملک کو|ملک بدل).{0,30}(?:بدل|منتخب|چن)/u.test(raw)
     || hasCountryTerm(text);
 }
+const COUNTRY_COMMAND_ALIASES={LB:['lebanese','libanese','libanais','libanaise','لبناني','لبنانية','لبنانيه','लेबनानी']};
 function countryNames(code){
-  const out=new Set([code]);
+  const out=new Set([code,...(COUNTRY_COMMAND_ALIASES[code]||[])]);
   const current=langCode();
   for(const l of [current,...CMD_LOCALES]){try{const n=new Intl.DisplayNames([l],{type:'region'}).of(code);if(n)out.add(n)}catch{}}
   return [...out].map(x=>normalizeText(x)).filter(Boolean).sort((a,b)=>b.length-a.length);
