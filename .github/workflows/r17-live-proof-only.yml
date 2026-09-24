@@ -1,0 +1,60 @@
+name: SEEKVERA R17 final mobile proof
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r17-live-proof-only.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.58.2
+          npx playwright install --with-deps chromium
+      - name: Live Android-style proof
+        env:
+          SITE: https://seekveraglobal.com
+        run: |
+          cat > /tmp/proof.mjs <<'JS'
+          import { chromium, devices } from 'playwright';
+          const SITE=process.env.SITE;
+          const assert=(v,m)=>{if(!v)throw new Error(m)};
+          const b=await chromium.launch({headless:true});
+          const c=await b.newContext({...devices['Pixel 5']});
+          const p=await c.newPage();
+          let ai=0;
+          p.on('request',r=>{try{if(new URL(r.url()).pathname==='/api/ai')ai++}catch{}});
+          await p.goto(SITE+'/?r17-final=1',{waitUntil:'domcontentloaded',timeout:60000});
+          await p.waitForFunction(()=>document.querySelector('#country')?.options?.length>=248&&document.querySelector('#lang')?.options?.length>=98,null,{timeout:60000});
+          const counts=await p.evaluate(()=>({countries:document.querySelector('#country').options.length,languages:document.querySelector('#lang').options.length,cats:document.querySelectorAll('#categories').length,overflow:Math.max(0,document.documentElement.scrollWidth-innerWidth)}));
+          assert(counts.countries>=248,'countries '+counts.countries); assert(counts.languages>=98,'languages '+counts.languages); assert(counts.cats===1,'category rows '+counts.cats); assert(counts.overflow<=3,'horizontal overflow '+counts.overflow);
+          await p.selectOption('#country','IN'); await p.dispatchEvent('#country','change');
+          await p.waitForFunction(()=>document.querySelector('#lang')?.value==='hi'&&document.querySelector('#currency')?.value==='INR',null,{timeout:30000});
+          ai=0;
+          await p.fill('#aiChatInput','Change the app लेबनानी');
+          await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForFunction(()=>document.querySelector('#country')?.value==='LB'&&document.querySelector('#lang')?.value==='ar'&&document.querySelector('#currency')?.value==='LBP',null,{timeout:30000});
+          await p.waitForTimeout(500); assert(ai===0,'country command called AI '+ai);
+          await p.selectOption('#country','IN'); await p.dispatchEvent('#country','change'); await p.waitForFunction(()=>document.querySelector('#lang')?.value==='hi',null,{timeout:30000});
+          const before=await p.locator('#aiMessages > *').count();
+          await p.fill('#aiChatInput','Hello. Answer briefly in English: do you understand me?');
+          await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForFunction(n=>document.querySelectorAll('#aiMessages > *').length>n,before,{timeout:10000});
+          await p.waitForFunction(()=>{const xs=[...document.querySelectorAll('#aiMessages > *')];const t=(xs.at(-1)?.textContent||'').trim();return t&&!/thinking/i.test(t)},null,{timeout:60000});
+          const answer=await p.locator('#aiMessages > *').last().innerText();
+          assert(!/temporarily unavailable|please try again/i.test(answer),'AI unavailable '+answer);
+          assert(/[A-Za-z]/.test(answer),'Not English '+answer);
+          const scroll=await p.evaluate(()=>{const m=document.querySelector('#aiMessages'),s=getComputedStyle(m);return{overscroll:s.overscrollBehaviorY||s.overscrollBehavior,touch:s.touchAction,anchor:s.overflowAnchor}});
+          assert(scroll.overscroll!=='contain','scroll trapped');
+          console.log('R17 FINAL PASS',JSON.stringify({counts,answer:answer.slice(0,160),scroll,aiRequests:ai}));
+          await b.close();
+          JS
+          node /tmp/proof.mjs
