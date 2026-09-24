@@ -100,9 +100,8 @@ $("enterJungle").onclick=()=>{game.classList.remove("wreck");game.classList.add(
 let joyActive=false,joyY=0,dist=0,lastTime=performance.now(),bgx=0,bgy=0;const joy=$("joy"),knob=$("knob"),bg=$("gamebg");function joyMove(e){if(!joyActive)return;const p=e.touches?e.touches[0]:e,r=joy.getBoundingClientRect(),dx=p.clientX-(r.left+r.width/2),dy=p.clientY-(r.top+r.height/2),lim=34,mag=Math.hypot(dx,dy)||1,sc=Math.min(1,lim/mag),x=dx*sc,y=dy*sc;knob.style.transform=`translate(${x}px,${y}px)`;joyY=-y/lim}function joyEnd(){joyActive=false;joyY=0;knob.style.transform="translate(0,0)"}joy.addEventListener("touchstart",e=>{joyActive=true;joyMove(e)},{passive:true});joy.addEventListener("touchmove",joyMove,{passive:true});joy.addEventListener("touchend",joyEnd);joy.addEventListener("pointerdown",e=>{joyActive=true;joy.setPointerCapture(e.pointerId);joyMove(e)});joy.addEventListener("pointermove",joyMove);joy.addEventListener("pointerup",joyEnd);let runHeld=false;$("run").addEventListener("pointerdown",()=>runHeld=true);["pointerup","pointercancel","pointerleave"].forEach(x=>$("run").addEventListener(x,()=>runHeld=false));function anim(now){const dt=Math.min(.05,(now-lastTime)/1000);lastTime=now;if(game.classList.contains("jungle")&&joyY>.08){const speed=(runHeld?18:9)*joyY;dist+=speed*dt;bgx+=speed*dt*.04;bgy+=speed*dt*.018;bg.style.transform=`scale(${1.06+Math.sin(dist*.04)*.004}) translate(${Math.sin(bgx)*1.7}%,${Math.sin(bgy)*.8}%)`;$("distance").textContent=Math.floor(dist)+" m";$("thirst").style.width=Math.max(30,82-dist*.17)+"%";$("hunger").style.width=Math.max(35,100-dist*.12)+"%";if(dist>40&&dist<42)showMsg("You hear water ahead.");if(dist>82&&dist<84)showMsg("Fresh animal tracks. Stay alert.");if(dist>=120){game.classList.remove("on");$("finish").classList.add("on")}}requestAnimationFrame(anim)}requestAnimationFrame(anim);
 </script>
 <script src="navigation.js?v=20260924-nav-v1" defer></script>
-<script src="voice-ai.js?v=20260924-final-r9" defer></script>
+<script src="voice-ai.js?v=20260924-final-r9b" defer></script>
 <script src="global-ui.js?v=20260924-az-r8" defer></script>
-<script src="locale-guard-r9.js?v=20260924-final-r9" defer></script>
-<script src="i18n-ui.js?v=20260924-az-r8" defer></script>
+<script src="i18n-ui.js?v=20260924-final-r9b" defer></script>
 </body>
 </html>
