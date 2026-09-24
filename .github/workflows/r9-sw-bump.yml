@@ -1,0 +1,33 @@
+name: SEEKVERA R9b service worker bump
+
+on:
+  push:
+    paths:
+      - '.github/scripts/r9_sw_bump.py'
+      - '.github/workflows/r9-sw-bump.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Update SW registration cache marker
+        run: python .github/scripts/r9_sw_bump.py
+      - name: Validate
+        run: |
+          set -euo pipefail
+          grep -q "seekvera-final-r9b-20260924" sw.js
+          grep -q "sw.js?v=20260924-final-r9b" index.html
+      - name: Commit page cache-busts
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add ./*.html
+          if git diff --cached --quiet; then echo 'No HTML changes'; else git commit -m 'Refresh PWA service worker for final R9b'; git push origin HEAD:main; fi
