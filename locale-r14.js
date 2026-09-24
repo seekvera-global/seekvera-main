@@ -87,7 +87,7 @@ mg:[`TSENA AI MANERAN-TANY`,`Firenena / Faritra`,`Fiteny`,`Vola`,`Maneran-tany`,
 };
 const RTL=new Set(['ar','fa','ur','he','dv']);
 const IDX=Object.fromEntries(K.map((k,i)=>[k,i]));
-function code(){let v=document.getElementById('lang')?.value||localStorage.getItem('seekvera_lang')||document.documentElement.lang||navigator.language||'en';if(v==='auto')v=navigator.language||'en';return String(v).toLowerCase().split(/[-_]/)[0]||'en'}
+function code(){let v=document.querySelector('.sv-controls select#lang,select#lang.sv-select')?.value||localStorage.getItem('seekvera_lang')||document.documentElement.lang||navigator.language||'en';if(v==='auto')v=navigator.language||'en';return String(v).toLowerCase().split(/[-_]/)[0]||'en'}
 function pack(){const c=code();return {c,p:L[c]||L.en}}
 function setText(el,v){if(el&&v&&el.textContent!==v)el.textContent=v}
 function setHTMLText(el,v){if(el&&v&&el.textContent.trim()!==v)el.textContent=v}
@@ -106,9 +106,9 @@ function apply(){const {c,p}=pack();const t=k=>p[IDX[k]]||L.en[IDX[k]];
  if(c!=='en'){document.documentElement.classList.add('sv-r14-localized')}else document.documentElement.classList.remove('sv-r14-localized');
  document.title='SEEKVERA — '+t('headline');
 }
-let timer=0;function schedule(ms=0){clearTimeout(timer);timer=setTimeout(()=>{apply();setTimeout(apply,80);setTimeout(apply,260)},ms)}
+let timer=0;function schedule(ms=0){clearTimeout(timer);timer=setTimeout(apply,ms)}
 function bind(){schedule();document.addEventListener('change',e=>{if(e.target?.id==='country'||e.target?.id==='lang')schedule(40)},true);window.addEventListener('seekvera:languagechange',()=>schedule(20));window.addEventListener('seekvera:countrychange',()=>schedule(20));window.addEventListener('pageshow',()=>schedule(20));new MutationObserver(ms=>{if(ms.some(m=>m.target===document.documentElement||m.target?.id==='lang'||m.target?.id==='country'))schedule(30)}).observe(document.documentElement,{attributes:true,attributeFilter:['lang','dir'],subtree:true});}
 const st=document.createElement('style');st.textContent=`html.sv-r14-localized .r5-tile small{display:none!important}html.sv-r14-localized .r5-section-head p{display:none!important}@media(max-width:780px){html.sv-r14-localized .r5-hero>p{display:block!important}}`;document.head.appendChild(st);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
-window.SEEKVERA_LOCALE_R14={apply,schedule,languages:Object.keys(L),version:'20260924-r14'};
+window.SEEKVERA_LOCALE_R14={apply,schedule,t:k=>{const {p}=pack();return p[IDX[k]]||L.en[IDX[k]]},languages:Object.keys(L),version:'20260924-r15'};
 })();

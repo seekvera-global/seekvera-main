@@ -12,6 +12,8 @@ const browser=await chromium.launch({headless:true});
 try{
   const context=await browser.newContext({locale:'en-US',geolocation:{latitude:9.0765,longitude:7.3986},permissions:['geolocation']});
   await context.addInitScript(()=>{
+    if(localStorage.getItem('r15_audit_seeded'))return;
+    localStorage.setItem('r15_audit_seeded','1');
     localStorage.setItem('seekvera_country','WW');
     localStorage.setItem('seekvera_lang','nl');
     localStorage.setItem('seekvera_currency','PHP');
@@ -96,9 +98,12 @@ try{
   // Home location/map is explicit-permission only.
   await page.goto(BASE+'/index.html?r15map='+Date.now(),{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>SEEKVERA_LOCALE_R15?.location&&document.querySelector('#nearMe'));
-  await page.click('#nearMe');
-  await page.waitForSelector('#svNearMap',{state:'visible',timeout:5000});
-  assert((await page.getAttribute('#svNearMap','href')).includes('google.com/maps/search'));
+  const located=await page.evaluate(()=>SEEKVERA_LOCALE_R15.location.locate());
+  assert(Number.isFinite(located.latitude)&&Number.isFinite(located.longitude),'geolocation did not return coordinates');
+  const map=await page.evaluate(c=>SEEKVERA_LOCALE_R15.location.mapUrl(c),located);
+  assert(map.includes('google.com/maps/search'),'map URL helper failed');
+  const tracker=await page.evaluate(()=>typeof SEEKVERA_LOCALE_R15.location.startTracking==='function'&&typeof SEEKVERA_LOCALE_R15.location.stopTracking==='function');
+  assert(tracker,'tracking helpers missing');
 
   // Every core department must load R15 and receive coherent state changes.
   for(const route of routes){

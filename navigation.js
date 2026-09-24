@@ -6,6 +6,7 @@ const WORLD_LANGS=['en','ar','fr','zh','es','hi','pt','de','ja','ko','id','tr','
 const CMD_LOCALES=['en','ar','fr','es','de','pt','tr','ru','it','nl','hi','ur'];
 const STATIC_AI_SOURCE="I’m the SEEKVERA AI assistant. Tell me what you need and I’ll help you find the right section, compare options or search worldwide.";
 let localeTimer=0,translateSeq=0;
+const localeControl=id=>document.querySelector(`.sv-controls select#${id},select#${id}.sv-select`);
 
 const sameOriginReferrer=()=>{try{return document.referrer&&new URL(document.referrer).origin===location.origin}catch{return false}};
 function goHome(){location.href='index.html'}
@@ -40,7 +41,7 @@ function buildNav(){
 }
 
 function langCode(){
-  let v=document.getElementById('lang')?.value||localStorage.getItem('seekvera_lang')||document.documentElement.lang||navigator.language||'en';
+  let v=localeControl('lang')?.value||localStorage.getItem('seekvera_lang')||document.documentElement.lang||navigator.language||'en';
   if(v==='auto')v=navigator.language||'en';
   return String(v).toLowerCase().split(/[-_]/)[0]||'en';
 }
@@ -51,7 +52,7 @@ function displayRegion(code,display=langCode()){
   try{return new Intl.DisplayNames([display],{type:'region'}).of(code)||code}catch{return code}
 }
 function ensureLanguageCoverage(){
-  const el=document.getElementById('lang');if(!el)return;
+  const el=localeControl('lang');if(!el)return;
   const selected=el.value||localStorage.getItem('seekvera_lang')||'auto';
   if(![...el.options].some(o=>o.value==='auto'))el.insertBefore(new Option('⚙️','auto'),el.firstChild);
   for(const code of WORLD_LANGS){if(![...el.options].some(o=>o.value===code))el.add(new Option(code.toUpperCase(),code));}
@@ -65,11 +66,11 @@ function ensureLanguageCoverage(){
   if([...el.options].some(o=>o.value===selected))el.value=selected;
 }
 function localizeCountryOptions(){
-  const el=document.getElementById('country');if(!el)return;
+  const el=localeControl('country');if(!el)return;
   const d=langCode();
   for(const o of el.options){
     const code=String(o.value||'').toUpperCase();
-    if(code==='WW')o.textContent='🌐';
+    if(code==='WW')o.textContent='🌐 '+(window.SEEKVERA_LOCALE_R14?.t?.('worldwide')||'Worldwide');
     else if(/^[A-Z]{2}$/.test(code))o.textContent=displayRegion(code,d);
   }
 }
@@ -100,12 +101,7 @@ function runLocaleEngines(){
   try{window.SEEKVERA_LOCALE_GUARD_R9?.schedule?.(20)}catch{}
   translateStaticAI();
 }
-function scheduleLocalePass(){
-  clearTimeout(localeTimer);
-  const passes=[0,120,500,1200];
-  for(const ms of passes)setTimeout(runLocaleEngines,ms);
-  localeTimer=setTimeout(runLocaleEngines,1800);
-}
+function scheduleLocalePass(){clearTimeout(localeTimer);localeTimer=setTimeout(runLocaleEngines,50)}
 function stripDuplicateDepartments(){
   if(!HOME_PATHS.has(location.pathname))return;
   document.querySelector('.r8-department-strip')?.remove();
@@ -137,7 +133,7 @@ function countryNames(code){
   return [...out].map(x=>normalizeText(x)).filter(Boolean).sort((a,b)=>b.length-a.length);
 }
 function resolveCountry(text){
-  const el=document.getElementById('country');if(!el)return null;
+  const el=localeControl('country');if(!el)return null;
   const s=normalizeText(text);const hits=[];
   for(const o of el.options){const code=String(o.value||'').toUpperCase();if(!/^[A-Z]{2}$/.test(code))continue;for(const n of countryNames(code)){if(n.length>=3&&s.includes(n)){hits.push({code,n});break}}}
   hits.sort((a,b)=>b.n.length-a.n.length);return hits[0]?.code||null;
@@ -155,8 +151,9 @@ function bindAICountryControl(){
     if(!text||!isCountryCommand(text))return;
     const code=resolveCountry(text);if(!code)return;
     e.preventDefault();e.stopImmediatePropagation();
-    const c=document.getElementById('country');if(!c)return;
-    c.value=code;c.dispatchEvent(new Event('input',{bubbles:true}));c.dispatchEvent(new Event('change',{bubbles:true}));
+    const c=localeControl('country');
+    if(window.SEEKVERA_LOCALE_R15)window.SEEKVERA_LOCALE_R15.setCountry(code);
+    else {if(!c)return;c.value=code;c.dispatchEvent(new Event('input',{bubbles:true}));c.dispatchEvent(new Event('change',{bubbles:true}));}
     if(input)input.value='';
     setTimeout(()=>{scheduleLocalePass();addCountryConfirmation(code)},180);
   },true);
@@ -170,7 +167,7 @@ function primeVoiceOnGesture(e){
   }catch{}
 }
 function bindLocaleControls(){
-  document.addEventListener('change',e=>{if(e.target?.id==='country'||e.target?.id==='lang'){if(e.target.id==='lang')localStorage.setItem('seekvera_lang',e.target.value);queueMicrotask(runLocaleEngines);scheduleLocalePass()}},true);
+  document.addEventListener('change',e=>{const t=e.target;if(t&&(t===localeControl('country')||t===localeControl('lang'))){if(t===localeControl('lang'))localStorage.setItem('seekvera_lang',t.value);queueMicrotask(runLocaleEngines);scheduleLocalePass()}},true);
   window.addEventListener('pageshow',scheduleLocalePass);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)scheduleLocalePass()});
   document.addEventListener('pointerdown',primeVoiceOnGesture,true);

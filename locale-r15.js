@@ -11,7 +11,7 @@ const PROFILES=Object.fromEntries(`AF:fa,AFN;AL:sq,ALL;DZ:ar,DZD;AS:en,USD;AD:ca
 const LANG_PRIMARY={"en":"US","ar":"SA","fr":"FR","zh":"CN","es":"ES","hi":"IN","pt":"PT","de":"DE","ja":"JP","ko":"KR","id":"ID","tr":"TR","ru":"RU","ur":"PK","bn":"BD","vi":"VN","it":"IT","sw":"KE","th":"TH","fa":"IR","pl":"PL","nl":"NL","ms":"MY","fil":"PH","ha":"NG","yo":"NG","ig":"NG","am":"ET","he":"IL","el":"GR","uk":"UA","ro":"RO","cs":"CZ","sk":"SK","hu":"HU","sv":"SE","no":"NO","da":"DK","fi":"FI","bg":"BG","hr":"HR","sr":"RS","sl":"SI","lt":"LT","lv":"LV","et":"EE","ca":"ES","eu":"ES","gl":"ES","is":"IS","sq":"AL","mk":"MK","ka":"GE","hy":"AM","az":"AZ","kk":"KZ","uz":"UZ","ky":"KG","tg":"TJ","tk":"TM","ne":"NP","si":"LK","ta":"IN","te":"IN","ml":"IN","mr":"IN","gu":"IN","pa":"IN","km":"KH","lo":"LA","my":"MM","mn":"MN","zu":"ZA","af":"ZA","be":"BY","bs":"BA","dz":"BT","ti":"ER","fo":"FO","kl":"GL","rw":"RW","sm":"WS","to":"TO","so":"SO","ps":"AF","dv":"MV","mt":"MT","mg":"MG","ga":"IE","cy":"GB","mi":"NZ","fy":"NL","lb":"LU","rm":"CH","ku":"IQ","xh":"ZA","st":"LS","tn":"BW"};
 const CURRENCY_PRIMARY={"AFN":"AF","ALL":"AL","DZD":"DZ","USD":"US","EUR":"DE","AOA":"AO","XCD":"AG","ARS":"AR","AMD":"AM","AWG":"AW","AUD":"AU","AZN":"AZ","BSD":"BS","BHD":"BH","BDT":"BD","BBD":"BB","BYN":"BY","BZD":"BZ","XOF":"SN","BMD":"BM","BTN":"BT","BOB":"BO","BAM":"BA","BWP":"BW","NOK":"NO","BRL":"BR","BND":"BN","BGN":"BG","BIF":"BI","CVE":"CV","KHR":"KH","XAF":"CM","CAD":"CA","KYD":"KY","CLP":"CL","CNY":"CN","COP":"CO","KMF":"KM","CDF":"CD","NZD":"NZ","CRC":"CR","CUP":"CU","ANG":"CW","CZK":"CZ","DKK":"DK","DJF":"DJ","DOP":"DO","EGP":"EG","ERN":"ER","SZL":"SZ","ETB":"ET","FKP":"FK","FJD":"FJ","XPF":"PF","GMD":"GM","GEL":"GE","GHS":"GH","GIP":"GI","GTQ":"GT","GBP":"GB","GNF":"GN","GYD":"GY","HTG":"HT","HNL":"HN","HKD":"HK","HUF":"HU","ISK":"IS","INR":"IN","IDR":"ID","IRR":"IR","IQD":"IQ","ILS":"IL","JMD":"JM","JPY":"JP","JOD":"JO","KZT":"KZ","KES":"KE","KPW":"KP","KRW":"KR","KWD":"KW","KGS":"KG","LAK":"LA","LBP":"LB","LSL":"LS","LRD":"LR","LYD":"LY","CHF":"CH","MOP":"MO","MGA":"MG","MWK":"MW","MYR":"MY","MVR":"MV","MRU":"MR","MUR":"MU","MXN":"MX","MDL":"MD","MNT":"MN","MAD":"MA","MZN":"MZ","MMK":"MM","NAD":"NA","NPR":"NP","NIO":"NI","NGN":"NG","MKD":"MK","OMR":"OM","PKR":"PK","PAB":"PA","PGK":"PG","PYG":"PY","PEN":"PE","PHP":"PH","PLN":"PL","QAR":"QA","RON":"RO","RUB":"RU","RWF":"RW","SHP":"SH","WST":"WS","STN":"ST","SAR":"SA","RSD":"RS","SCR":"SC","SLE":"SL","SGD":"SG","SBD":"SB","SOS":"SO","ZAR":"ZA","SSP":"SS","LKR":"LK","SDG":"SD","SRD":"SR","SEK":"SE","SYP":"SY","TWD":"TW","TJS":"TJ","TZS":"TZ","THB":"TH","TOP":"TO","TTD":"TT","TND":"TN","TRY":"TR","TMT":"TM","UGX":"UG","UAH":"UA","AED":"AE","UYU":"UY","UZS":"UZ","VUV":"VU","VES":"VE","VND":"VN","YER":"YE","ZMW":"ZM","ZWG":"ZW"};
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
-const $=s=>document.querySelector(s);
+const localeEl=id=>document.querySelector(`.sv-controls select#${id},select#${id}.sv-select`);const $=s=>s==='#country'?localeEl('country'):s==='#lang'?localeEl('lang'):s==='#currency'?localeEl('currency'):document.querySelector(s);
 let syncing=false,lastSignature='',lastReason='boot',settleTimer=0;
 
 function normalizeLang(v){
@@ -156,12 +156,12 @@ function coherentProgrammaticChange(target){
   return false;
 }
 function handleChange(e){
-  const t=e.target;if(!t||!['country','lang','currency'].includes(t.id))return;
+  const t=e.target;if(!t||!['country','lang','currency'].includes(t.id)||t!==$('#'+t.id))return;
   // This coordinator is the sole change owner. Stop older handlers from racing each other.
   e.stopImmediatePropagation();
   if(syncing)return;
   let source=t.id==='lang'?'language':t.id;
-  if(!e.isTrusted&&source!=='country'&&coherentProgrammaticChange(t))source='country';
+  if(!e.isTrusted&&source!=='country'&&coherentProgrammaticChange(t)){let cc='US';try{cc=String(localStorage.getItem('seekvera_country')||'US').toUpperCase()}catch{};return applyState(localeStateFrom('country',cc),{explicit:false,reason:'programmatic-country'})}
   const state=localeStateFrom(source,t.value);
   applyState(state,{explicit:true,reason:'change:'+source});
 }
@@ -182,6 +182,16 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 window.addEventListener('pageshow',()=>setTimeout(()=>reconcile({reason:'pageshow'}),0));
 window.addEventListener('storage',e=>{if(['seekvera_country','seekvera_lang','seekvera_currency','seekvera_locale_source'].includes(e.key))setTimeout(()=>reconcile({reason:'storage',explicit:false}),0)});
 
+
+let locationWatchId=null;
+function savePosition(pos){const c=pos?.coords;if(!c)return null;const out={latitude:Number(c.latitude),longitude:Number(c.longitude),accuracy:Number(c.accuracy||0),timestamp:Date.now()};try{localStorage.setItem('seekvera_last_location',JSON.stringify(out));localStorage.setItem('seekvera_last_lat',String(out.latitude));localStorage.setItem('seekvera_last_lng',String(out.longitude))}catch{}return out}
+function locateOnce(){return new Promise((resolve,reject)=>{if(!navigator.geolocation)return reject(new Error('geolocation_unavailable'));navigator.geolocation.getCurrentPosition(p=>resolve(savePosition(p)),reject,{enableHighAccuracy:true,timeout:12000,maximumAge:60000})})}
+function mapUrl(c){return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.latitude+','+c.longitude)}`}
+function ensureMapLink(c){const b=$('#nearMe');if(!b||!c)return null;let a=document.getElementById('svNearMap');if(!a){a=document.createElement('a');a.id='svNearMap';a.target='_blank';a.rel='noopener noreferrer';a.textContent='🗺️';a.setAttribute('aria-label','Open current location on map');a.style.marginInlineStart='8px';b.insertAdjacentElement('afterend',a)}a.href=mapUrl(c);a.hidden=false;return a}
+function bindLocationTools(){const b=$('#nearMe');if(!b||b.dataset.r15Bound==='1')return;b.dataset.r15Bound='1';b.addEventListener('click',async()=>{b.disabled=true;const old=b.textContent;b.textContent='📍 …';try{const c=await locateOnce();ensureMapLink(c);b.textContent='📍 ✓'}catch{b.textContent=old}finally{b.disabled=false}})}
+function startLocationTracking(onUpdate){if(!navigator.geolocation)throw new Error('geolocation_unavailable');if(locationWatchId!==null)navigator.geolocation.clearWatch(locationWatchId);locationWatchId=navigator.geolocation.watchPosition(p=>{const c=savePosition(p);if(c&&typeof onUpdate==='function')onUpdate(c)},()=>{},{enableHighAccuracy:true,maximumAge:15000,timeout:20000});return locationWatchId}
+function stopLocationTracking(){if(locationWatchId!==null&&navigator.geolocation){navigator.geolocation.clearWatch(locationWatchId);locationWatchId=null}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindLocationTools,{once:true});else bindLocationTools();
 const st=document.createElement('style');st.id='sv-r15-stability';st.textContent=`
 html.sv-r15-applying .r5-top,html.sv-r15-applying .r5-hero,html.sv-r15-applying .r5-chat,html.sv-r15-applying #categories{transition:none!important;animation:none!important}
 .sv-controls .sv-select{min-width:0;text-overflow:ellipsis}
@@ -197,6 +207,7 @@ window.SEEKVERA_LOCALE_R15={
   setCurrency:cu=>applyState(localeStateFrom('currency',cu),{explicit:true,reason:'api-currency'}),
   reconcile,
   state:()=>window.SEEKVERA_LOCALE_STATE||null,
-  debug:()=>({lastSignature,lastReason,syncing})
+  debug:()=>({lastSignature,lastReason,syncing}),
+  location:{locate:locateOnce,startTracking:startLocationTracking,stopTracking:stopLocationTracking,mapUrl}
 };
 })();
