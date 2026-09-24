@@ -1,0 +1,52 @@
+name: R13 final cache bust and release cleanup
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r13-cache-bust.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Refresh R12 asset keys on every public HTML page
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          changed=[]
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google'):
+                  continue
+              s=p.read_text(encoding='utf-8')
+              old=s
+              s=re.sub(r'navigation\.js\?v=[^"\']+', 'navigation.js?v=20260924-r13', s)
+              s=re.sub(r'i18n-ui\.js\?v=[^"\']+', 'i18n-ui.js?v=20260924-r13', s)
+              s=s.replace('Release 2026‑09‑23 final worldwide marketplace','Release 2026‑09‑24 · Worldwide R13')
+              s=s.replace('Release 2026-09-23 final worldwide marketplace','Release 2026-09-24 · Worldwide R13')
+              if s!=old:
+                  p.write_text(s,encoding='utf-8')
+                  changed.append(p.name)
+          print('updated',len(changed),'pages')
+          assert changed, 'no pages updated'
+          idx=Path('index.html').read_text(encoding='utf-8')
+          assert 'navigation.js?v=20260924-r13' in idx
+          assert 'i18n-ui.js?v=20260924-r13' in idx
+          assert 'Release 2026‑09‑24 · Worldwide R13' in idx or 'Release 2026-09-24 · Worldwide R13' in idx
+          PY
+      - name: Commit refreshed HTML
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -- '*.html'
+          git commit -m 'R13: bust locale cache and refresh visible release date'
+          git push origin HEAD:main
