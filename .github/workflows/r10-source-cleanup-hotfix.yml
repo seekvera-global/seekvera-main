@@ -32,6 +32,13 @@ jobs:
           s=re.sub(r'<aside class="r5-left"[^>]*>.*?</aside>\s*','',s,count=1,flags=re.S)
           if s.count('id="categories"') != 1: raise SystemExit('home must contain exactly one categories section')
           if 'r8-department-strip' in s or 'class="r5-left"' in s: raise SystemExit('duplicate category source still present')
+
+          # Keep business onboarding visible inside that same single grid, not in a new row/section.
+          if 'href="seller-plans.html"' not in s:
+              promo='<a class="r5-tile" href="seller-plans.html"><div class="r5-thumb">🚀</div><div class="r5-tile-body"><b>Promote / Business</b><small>Business plans and promotion</small></div></a>'
+              m=re.search(r'(<a class="r5-tile" href="scan\.html">.*?</a>)(</div>\s*</section>)',s,re.S)
+              if not m: raise SystemExit('home categories closing anchor missing')
+              s=s[:m.end(1)]+promo+s[m.end(1):]
           p.write_text(s,encoding='utf-8')
 
           # Mobile categories carousel: reset old explicit columns before column auto-flow.
@@ -60,9 +67,10 @@ jobs:
           ii=Path('i18n-ui.js').read_text(encoding='utf-8')
           assert idx.count('id="categories"')==1
           assert 'r8-department-strip' not in idx and 'class="r5-left"' not in idx
+          assert 'href="seller-plans.html"' in idx
           assert 'grid-template-columns:none!important;grid-template-rows:repeat(2,108px)!important' in css
           assert "'dv'" in re.search(r"const RTL=new Set\(\[([^\]]*)\]\)",ii).group(1)
-          print('R10 final source cleanup PASS')
+          print('R10 final source cleanup + business route PASS')
           PY
           node --check i18n-ui.js
           git diff --check
@@ -77,5 +85,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html home-marketplace-r5.css i18n-ui.js
-          git commit -m 'R10: keep one departments section and fix mobile category grid'
+          git commit -m 'R10: add business promotion route to single departments grid'
           git push origin HEAD:main
