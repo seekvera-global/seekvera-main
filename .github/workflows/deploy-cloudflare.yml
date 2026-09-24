@@ -1,5 +1,5 @@
 name: Deploy SEEKVERA to Cloudflare
-# Final production deployment: R6 visual marketplace + multilingual AI + Voice + News/Media + Safety
+# Production deployment: R7 worldwide country-language-currency + actionable AI + Voice + News/Media + Safety
 
 on:
   push:
@@ -28,7 +28,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: seekvera-cloudflare-production-r6
+  group: seekvera-cloudflare-production-r7
   cancel-in-progress: true
 
 jobs:
@@ -39,16 +39,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate R6 source and backend
+      - name: Validate R7 source and backend
         shell: bash
         run: |
           set -euo pipefail
           for f in worker.js voice-ai.js i18n-ui.js global-ui.js superapp.js sw.js; do node --check "$f"; done
-          grep -q '20260923-final-market-r6' index.html
+          grep -q '20260924-country-sync-r7' index.html
           grep -q 'News & Media' index.html
           grep -q 'Al Jazeera' media.html
           grep -q 'CNN' media.html
-          grep -q 'sv_i18n_r6_' i18n-ui.js
+          grep -q 'sv_i18n_r7_' i18n-ui.js
+          grep -q 'COUNTRY_PROFILE' global-ui.js
+          grep -q "u.pathname==='/api/locale'" worker.js
+          grep -q 'id="jobRole"' jobs.html
           grep -q 'LANGUAGE_NAME_MAP' worker.js
           grep -q '@cf/openai/whisper-large-v3-turbo' worker.js
           grep -q '/api/transcribe' worker.js
@@ -61,7 +64,7 @@ jobs:
           npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-dry-run
           grep -q '"binding": "AI"' wrangler.jsonc
           rm -rf .wrangler-dry-run .wrangler
-          echo 'R6 SOURCE VALIDATION PASS'
+          echo 'R7 SOURCE VALIDATION PASS'
 
       - name: Detect Cloudflare deployment credentials
         id: cf
@@ -84,7 +87,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
 
-      - name: Verify live R6 production
+      - name: Verify live R7 production
         if: steps.cf.outputs.ready == 'true'
         shell: bash
         run: |
@@ -92,38 +95,46 @@ jobs:
           SITE='https://seekveraglobal.com'
           ok=0
           for i in $(seq 1 25); do
-            curl -L -fsS --max-time 20 -H 'Cache-Control: no-cache' "$SITE/?r6-live=$i" -o /tmp/home.html || true
-            if grep -q '20260923-final-market-r6' /tmp/home.html 2>/dev/null && grep -q 'News & Media' /tmp/home.html 2>/dev/null; then ok=1; break; fi
+            curl -L -fsS --max-time 20 -H 'Cache-Control: no-cache' "$SITE/?r7-live=$i" -o /tmp/home.html || true
+            if grep -q '20260924-country-sync-r7' /tmp/home.html 2>/dev/null && grep -q 'News & Media' /tmp/home.html 2>/dev/null; then ok=1; break; fi
             sleep 4
           done
           test "$ok" = '1'
-          echo 'LIVE R6 HOME PASS'
+          echo 'LIVE R7 HOME PASS'
 
           pages=(marketplace.html travel.html property.html cars-auto.html jobs.html shopping.html import-export.html restaurants-food.html local-services.html media.html games.html connectivity.html deal-agent.html post-ad.html hub.html app.html)
           for p in "${pages[@]}"; do
-            code="$(curl -L -sS -o /tmp/page.html -w '%{http_code}' --max-time 25 "$SITE/$p?r6-live=1")"
+            code="$(curl -L -sS -o /tmp/page.html -w '%{http_code}' --max-time 25 "$SITE/$p?r7-live=1")"
             test "$code" = '200'
             echo "PASS $p"
           done
-          curl -L -fsS --max-time 20 "$SITE/media.html?r6-live=1" -o /tmp/media.html
+          curl -L -fsS --max-time 25 "$SITE/jobs.html?r7-live=1" -o /tmp/jobs.html
+          grep -q 'id="jobRole"' /tmp/jobs.html
+          curl -L -fsS --max-time 25 "$SITE/media.html?r7-live=1" -o /tmp/media.html
           grep -q 'Al Jazeera' /tmp/media.html
           grep -q 'Al Arabiya' /tmp/media.html
           grep -q 'CNN' /tmp/media.html
           grep -q 'BBC News' /tmp/media.html
           grep -q 'Reuters' /tmp/media.html
-          echo 'LIVE R6 PAGES + NEWS PASS'
+          echo 'LIVE R7 PAGES + JOBS + NEWS PASS'
 
           UA='Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
-          ai_code="$(curl -sS -o /tmp/ai.json -w '%{http_code}' --max-time 60 -X POST "$SITE/api/ai" -H "User-Agent: $UA" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' --data '{"message":"Reply only with: Hello.","country":"Brazil","language":"English","scope":"worldwide","fast":true}')"
+          ai_code="$(curl -sS -o /tmp/ai.json -w '%{http_code}' --max-time 60 -X POST "$SITE/api/ai" -H "User-Agent: $UA" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' --data '{"message":"I am a mechanic looking for a job in France.","country":"France","language":"English","scope":"country","fast":true}')"
           test "$ai_code" = '200'
           grep -q '"ok":true' /tmp/ai.json
-          grep -qi 'hello' /tmp/ai.json
-          echo 'LIVE R6 AI ROUTE PASS'
+          grep -q '"category":"jobs"' /tmp/ai.json
+          grep -q '"route":"jobs.html"' /tmp/ai.json
+          echo 'LIVE R7 AI JOB ROUTE PASS'
 
-          curl -L -fsS --max-time 25 "$SITE/api/health?r6-live=1" -o /tmp/health.json
+          curl -L -fsS --max-time 25 "$SITE/api/health?r7-live=1" -o /tmp/health.json
+          grep -q '20260924-country-sync-r7' /tmp/health.json
           grep -q '"centralSafetyGate":"enabled"' /tmp/health.json
           grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/health.json
-          echo 'LIVE R6 SAFETY + VOICE HEALTH PASS'
+          echo 'LIVE R7 HEALTH PASS'
+
+          curl -L -fsS --max-time 20 "$SITE/api/locale?r7-live=1" -o /tmp/locale.json
+          grep -q '"ok":true' /tmp/locale.json
+          echo 'LIVE R7 COUNTRY DETECTION PASS'
 
       - name: Deployment architecture
         if: steps.cf.outputs.ready != 'true'
