@@ -1,5 +1,5 @@
 name: Deploy SEEKVERA to Cloudflare
-# Production deployment: R7 worldwide country-language-currency + actionable AI + Voice + News/Media + Safety
+# Production deployment: R8 A-Z worldwide locale + natural voice + conversational AI + full departments
 
 on:
   push:
@@ -15,6 +15,7 @@ on:
       - 'i18n-ui.js'
       - 'i18n-premium.css'
       - 'home-marketplace-r5.css'
+      - 'navigation.js'
       - 'app.js'
       - 'superapp.js'
       - 'sw.js'
@@ -28,7 +29,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: seekvera-cloudflare-production-r7
+  group: seekvera-cloudflare-production-r8
   cancel-in-progress: true
 
 jobs:
@@ -39,32 +40,65 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate R7 source and backend
+      - name: Validate R8 A-Z source and backend
         shell: bash
         run: |
           set -euo pipefail
-          for f in worker.js voice-ai.js i18n-ui.js global-ui.js superapp.js sw.js; do node --check "$f"; done
-          grep -q '20260924-country-sync-r7' index.html
-          grep -q 'News & Media' index.html
-          grep -q 'Al Jazeera' media.html
-          grep -q 'CNN' media.html
-          grep -q 'sv_i18n_r7_' i18n-ui.js
+          for f in worker.js voice-ai.js i18n-ui.js global-ui.js superapp.js sw.js navigation.js; do node --check "$f"; done
+          grep -q '20260924-az-r8' index.html
+          grep -q '20260924-az-r8' worker.js
+          grep -q 'sv_i18n_r8_' i18n-ui.js
+          grep -q "u.pathname==='/api/ui-translate'" worker.js
+          grep -q 'VOICE_MAX_MS=90000' voice-ai.js
+          grep -q 'VOICE_SILENCE_MS=2100' voice-ai.js
+          grep -q 'r.continuous=true' voice-ai.js
+          grep -q 'const hist=Array.isArray(b.history)' worker.js
+          grep -q 'function chatHistory()' superapp.js
+          grep -q 'function globalHistory' global-ui.js
           grep -q 'COUNTRY_PROFILE' global-ui.js
           grep -q "u.pathname==='/api/locale'" worker.js
+          grep -q 'data-r8-departments="complete"' index.html
+          grep -q 'data-r8-grid="complete"' index.html
+          grep -q 'data-r8-hub-departments="complete"' hub.html
           grep -q 'id="jobRole"' jobs.html
-          grep -q 'LANGUAGE_NAME_MAP' worker.js
           grep -q '@cf/openai/whisper-large-v3-turbo' worker.js
           grep -q '/api/transcribe' worker.js
           grep -q '/api/visual-search' worker.js
           grep -q 'safetyGateVersion' worker.js
-          grep -q 'serverVoice' voice-ai.js
-          grep -q 'MediaRecorder' voice-ai.js
+          grep -q 'svBackButton' navigation.js
+          grep -q 'svHomeButton' navigation.js
           if grep -q '<iframe' app.html; then echo 'app.html must not use iframe'; exit 1; fi
           grep -q 'location.replace' app.html
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          g=Path('global-ui.js').read_text(encoding='utf-8')
+          s=Path('superapp.js').read_text(encoding='utf-8')
+          m=re.search(r'const COUNTRY_PROFILE=Object\.fromEntries\(`([^`]+)`\.split',g,re.S)
+          mm=re.search(r"const ISO='([^']+)'\.split",s)
+          assert m and mm
+          profiles={x.split(':',1)[0]:x.split(':',1)[1] for x in m.group(1).split(';') if x}
+          iso=set(mm.group(1).split())
+          assert len(profiles)==len(iso)>=248
+          assert not (iso-set(profiles))
+          required=['marketplace.html','travel.html','tourism.html','property.html','cars-auto.html','jobs.html','shopping.html','restaurants-food.html','local-services.html','import-export.html','shipping-logistics.html','business-software.html','software.html','web-hosting.html','solar.html','education.html','health.html','money-insurance.html','entertainment.html','media.html','games.html','connectivity.html','wifi.html','deal-agent.html','everyday.html','scan.html','post-ad.html','seller-plans.html']
+          idx=Path('index.html').read_text(encoding='utf-8'); hub=Path('hub.html').read_text(encoding='utf-8')
+          for x in required:
+              assert x in idx and x in hub and Path(x).exists(),x
+          pages=[]
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google'): continue
+              t=p.read_text(encoding='utf-8')
+              for asset in ['navigation.js','global-ui.js','i18n-ui.js','voice-ai.js']:
+                  assert asset in t,(p.name,asset)
+              pages.append(p.name)
+          assert len(pages)>=44
+          print('R8 country profiles:',len(profiles),'public pages:',len(pages),'departments:',len(required))
+          PY
           npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-dry-run
           grep -q '"binding": "AI"' wrangler.jsonc
           rm -rf .wrangler-dry-run .wrangler
-          echo 'R7 SOURCE VALIDATION PASS'
+          echo 'R8 A-Z SOURCE VALIDATION PASS'
 
       - name: Detect Cloudflare deployment credentials
         id: cf
@@ -87,7 +121,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
 
-      - name: Verify live R7 production
+      - name: Verify live R8 production A-Z
         if: steps.cf.outputs.ready == 'true'
         shell: bash
         run: |
@@ -95,46 +129,54 @@ jobs:
           SITE='https://seekveraglobal.com'
           ok=0
           for i in $(seq 1 25); do
-            curl -L -fsS --max-time 20 -H 'Cache-Control: no-cache' "$SITE/?r7-live=$i" -o /tmp/home.html || true
-            if grep -q '20260924-country-sync-r7' /tmp/home.html 2>/dev/null && grep -q 'News & Media' /tmp/home.html 2>/dev/null; then ok=1; break; fi
+            curl -L -fsS --max-time 20 -H 'Cache-Control: no-cache' "$SITE/?r8-live=$i" -o /tmp/home.html || true
+            if grep -q '20260924-az-r8' /tmp/home.html 2>/dev/null && grep -q 'data-r8-departments="complete"' /tmp/home.html 2>/dev/null; then ok=1; break; fi
             sleep 4
           done
           test "$ok" = '1'
-          echo 'LIVE R7 HOME PASS'
+          grep -q 'data-r8-grid="complete"' /tmp/home.html
+          echo 'LIVE R8 HOME + COMPLETE DEPARTMENTS PASS'
 
-          pages=(marketplace.html travel.html property.html cars-auto.html jobs.html shopping.html import-export.html restaurants-food.html local-services.html media.html games.html connectivity.html deal-agent.html post-ad.html hub.html app.html)
+          pages=(marketplace.html travel.html tourism.html property.html cars-auto.html jobs.html shopping.html restaurants-food.html local-services.html import-export.html shipping-logistics.html business-software.html software.html web-hosting.html solar.html education.html health.html money-insurance.html entertainment.html media.html games.html connectivity.html wifi.html deal-agent.html everyday.html scan.html post-ad.html seller-plans.html hub.html app.html)
           for p in "${pages[@]}"; do
-            code="$(curl -L -sS -o /tmp/page.html -w '%{http_code}' --max-time 25 "$SITE/$p?r7-live=1")"
+            code="$(curl -L -sS -o /tmp/page.html -w '%{http_code}' --max-time 25 "$SITE/$p?r8-live=1")"
             test "$code" = '200'
+            grep -q 'navigation.js' /tmp/page.html
+            grep -q 'global-ui.js' /tmp/page.html
+            grep -q 'i18n-ui.js' /tmp/page.html
             echo "PASS $p"
           done
-          curl -L -fsS --max-time 25 "$SITE/jobs.html?r7-live=1" -o /tmp/jobs.html
-          grep -q 'id="jobRole"' /tmp/jobs.html
-          curl -L -fsS --max-time 25 "$SITE/media.html?r7-live=1" -o /tmp/media.html
-          grep -q 'Al Jazeera' /tmp/media.html
-          grep -q 'Al Arabiya' /tmp/media.html
-          grep -q 'CNN' /tmp/media.html
-          grep -q 'BBC News' /tmp/media.html
-          grep -q 'Reuters' /tmp/media.html
-          echo 'LIVE R7 PAGES + JOBS + NEWS PASS'
+          echo 'LIVE R8 DEPARTMENT PAGES PASS'
 
           UA='Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
-          ai_code="$(curl -sS -o /tmp/ai.json -w '%{http_code}' --max-time 60 -X POST "$SITE/api/ai" -H "User-Agent: $UA" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' --data '{"message":"I am a mechanic looking for a job in France.","country":"France","language":"English","scope":"country","fast":true}')"
+          ai_code="$(curl -sS -o /tmp/ai.json -w '%{http_code}' --max-time 60 -X POST "$SITE/api/ai" -H "User-Agent: $UA" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' --data '{"message":"mechanic","country":"France","language":"English","scope":"country","fast":true,"history":[{"role":"user","content":"I need a job in France"},{"role":"assistant","content":"What kind of job are you looking for?"}]}')"
           test "$ai_code" = '200'
           grep -q '"ok":true' /tmp/ai.json
           grep -q '"category":"jobs"' /tmp/ai.json
           grep -q '"route":"jobs.html"' /tmp/ai.json
-          echo 'LIVE R7 AI JOB ROUTE PASS'
+          echo 'LIVE R8 AI CONVERSATION MEMORY + JOB ROUTE PASS'
 
-          curl -L -fsS --max-time 25 "$SITE/api/health?r7-live=1" -o /tmp/health.json
-          grep -q '20260924-country-sync-r7' /tmp/health.json
+          tr_code="$(curl -sS -o /tmp/tr.json -w '%{http_code}' --max-time 60 -X POST "$SITE/api/ui-translate" -H "User-Agent: $UA" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' --data '{"language":"Arabic","strings":["Jobs","Shopping","Health"]}')"
+          test "$tr_code" = '200'
+          grep -q '"ok":true' /tmp/tr.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/tr.json'))
+          a=d.get('translations') or []
+          assert len(a)==3 and all(isinstance(x,str) and x.strip() for x in a)
+          assert not all(x in {'Jobs','Shopping','Health'} for x in a)
+          print('LIVE R8 DEDICATED UI TRANSLATION PASS',a)
+          PY
+
+          curl -L -fsS --max-time 25 "$SITE/api/health?r8-live=1" -o /tmp/health.json
+          grep -q '20260924-az-r8' /tmp/health.json
           grep -q '"centralSafetyGate":"enabled"' /tmp/health.json
           grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/health.json
-          echo 'LIVE R7 HEALTH PASS'
+          echo 'LIVE R8 HEALTH PASS'
 
-          curl -L -fsS --max-time 20 "$SITE/api/locale?r7-live=1" -o /tmp/locale.json
+          curl -L -fsS --max-time 20 "$SITE/api/locale?r8-live=1" -o /tmp/locale.json
           grep -q '"ok":true' /tmp/locale.json
-          echo 'LIVE R7 COUNTRY DETECTION PASS'
+          echo 'LIVE R8 COUNTRY DETECTION PASS'
 
       - name: Deployment architecture
         if: steps.cf.outputs.ready != 'true'
