@@ -1,0 +1,114 @@
+name: SEEKVERA R20C strict fallback browser audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r20c-fallback-browser-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.58.2
+          npx playwright install --with-deps chromium
+      - name: Test all locales with live translation intentionally unavailable
+        env:
+          SITE: https://seekveraglobal.com
+        run: |
+          cat > r20c-fallback-audit.mjs <<'JS'
+          import { chromium } from 'playwright';
+          import assert from 'node:assert';
+          const browser=await chromium.launch({headless:true});
+          try{
+            const ctx=await browser.newContext({viewport:{width:360,height:800},locale:'en-US'});
+            const page=await ctx.newPage();
+            const errors=[];let aiCalls=0;
+            page.on('pageerror',e=>errors.push(String(e)));
+            page.on('request',r=>{try{if(new URL(r.url()).pathname==='/api/ai')aiCalls++}catch{}});
+            await page.route('**/api/ui-translate',r=>r.fulfill({status:503,contentType:'application/json',body:JSON.stringify({ok:false,error:'test translation unavailable'})}));
+            let ready=false;
+            for(let a=1;a<=25;a++){
+              await page.goto(`${process.env.SITE}/?r20c-fallback=${Date.now()}-${a}`,{waitUntil:'domcontentloaded',timeout:40000});
+              try{await page.waitForFunction(()=>window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_R14_CATEGORIES&&window.SEEKVERA_R20_FINAL&&window.SEEKVERA_R20_EXTRA_CATEGORIES&&Object.keys(SEEKVERA_R14_CATEGORIES.data).length===98,null,{timeout:3500});ready=true;break}catch{}
+              await page.waitForTimeout(1500);
+            }
+            assert(ready,'R20C 98-locale build not live');
+            const d=await page.evaluate(()=>({profiles:SEEKVERA_LOCALE_R15.profiles,langs:Object.keys(SEEKVERA_LOCALE_R15.languagePrimary),cats:Object.keys(SEEKVERA_R14_CATEGORIES.data)}));
+            assert.equal(Object.keys(d.profiles).length,248);
+            assert.equal(d.langs.length,98);
+            assert.equal(d.cats.length,98);
+
+            const get=()=>page.evaluate(()=>{
+              const s=SEEKVERA_LOCALE_R15.state(),chat=document.getElementById('aiChat'),msg=document.querySelector('#aiChat .sv-chat-messages'),form=document.getElementById('aiChatForm'),sp=document.getElementById('aiChatSpeaker'),cam=document.getElementById('aiChatCamera'),mic=document.getElementById('aiChatMic'),send=form?.querySelector('.send');
+              const R=e=>{const r=e.getBoundingClientRect();return{x:r.x,y:r.y,w:r.width,h:r.height,right:r.right,bottom:r.bottom,display:getComputedStyle(e).display,visibility:getComputedStyle(e).visibility}};
+              const cr=R(chat),controls=[sp,cam,mic,send].map(R),inside=r=>r.x>=cr.x-2&&r.right<=cr.right+2&&r.y>=cr.y-2&&r.bottom<=cr.bottom+2;
+              const english=new Set(SEEKVERA_R20_FINAL.descriptions);
+              return {state:s,htmlLang:document.documentElement.lang,titles:[...document.querySelectorAll('#categories .r5-tile-body>b')].map(e=>e.textContent.trim()),leaks:[...document.querySelectorAll('#categories .r5-tile-body>small')].filter(e=>!e.hidden&&getComputedStyle(e).display!=='none'&&english.has(e.textContent.trim())).map(e=>e.textContent.trim()),overflow:[...document.querySelectorAll('#categories .r5-tile')].map(e=>e.scrollWidth-e.clientWidth),pageOverflow:document.documentElement.scrollWidth-innerWidth,chat:cr,msgH:msg.getBoundingClientRect().height,controls,inside:controls.map(inside),r20:document.documentElement.dataset.svR20,localeCount:document.documentElement.dataset.svR20Locales,speaker:(sp.textContent||'')+getComputedStyle(sp,'::before').content};
+            });
+            const layout=(q,label)=>{
+              assert(q.chat.w>300,label+' narrow chat');
+              assert(q.msgH<=132,label+' message box too tall '+q.msgH);
+              assert(q.controls.every(r=>r.w>=30&&r.h>=30&&r.display!=='none'&&r.visibility!=='hidden'),label+' control hidden');
+              assert(q.inside.every(Boolean),label+' control escaped AI box');
+              assert(Math.max(0,...q.overflow)<=2,label+' card overflow '+Math.max(0,...q.overflow));
+              assert(q.pageOverflow<=2,label+' page horizontal overflow '+q.pageOverflow);
+              assert.equal(q.r20,'ready',label+' R20 guard missing');
+              assert.equal(q.localeCount,'98',label+' locale marker');
+              assert(q.speaker.includes('🔊'),label+' speaker missing');
+            };
+
+            let countryCount=0;
+            for(const [cc,p] of Object.entries(d.profiles)){
+              await page.evaluate(cc=>SEEKVERA_LOCALE_R15.setCountry(cc),cc);
+              const q=await get();
+              assert.deepEqual([q.state.country,q.state.language,q.state.currency],[cc,p.language,p.currency],cc+' country profile');
+              countryCount++;
+            }
+            assert.equal(countryCount,248);
+
+            let langCount=0;
+            for(const lg of d.langs){
+              await page.evaluate(lg=>{SEEKVERA_LOCALE_R15.setLanguage(lg);SEEKVERA_R14_CATEGORIES.apply();SEEKVERA_R20_FINAL.apply()},lg);
+              await page.waitForTimeout(12);
+              await page.evaluate(()=>{SEEKVERA_R14_CATEGORIES.apply();SEEKVERA_R20_FINAL.apply()});
+              const q=await get();
+              const expected=await page.evaluate(lg=>SEEKVERA_R14_CATEGORIES.data[lg],lg);
+              assert.equal(expected.length,31,lg+' static titles length');
+              assert.deepEqual(q.titles.slice(0,31),expected,lg+' static category rendering');
+              if(lg!=='en')assert.equal(q.leaks.length,0,lg+' English description leak '+q.leaks.join('|'));
+              layout(q,'lang '+lg);langCount++;
+            }
+            assert.equal(langCount,98);
+
+            const before=aiCalls;let commands=0;
+            for(const cc of Object.keys(d.profiles)){
+              await page.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('US'));
+              const nm=await page.evaluate(cc=>new Intl.DisplayNames(['en'],{type:'region'}).of(cc),cc);
+              await page.evaluate(nm=>{const i=document.getElementById('aiChatInput');i.value='switch to '+nm;document.getElementById('aiChatForm').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}))},nm);
+              assert.equal(await page.evaluate(()=>SEEKVERA_LOCALE_R15.state().country),cc,'chat country '+cc);
+              commands++;
+            }
+            assert.equal(commands,248);
+            assert.equal(aiCalls,before,'country switch should not call AI backend');
+
+            for(const lg of ['hi','ar','fr','de','zh','ja','ru','ur','bn','fil','sw','am','eu','te','ml','mr','gu','pa','ps','ga','cy','mi','fy','lb','rm','ku','xh','st','tn']){
+              await page.evaluate(lg=>{SEEKVERA_LOCALE_R15.setLanguage(lg);SEEKVERA_R14_CATEGORIES.apply();SEEKVERA_R20_FINAL.apply()},lg);
+              const seq=[];
+              for(let i=0;i<6;i++){await page.waitForTimeout(35);await page.evaluate(()=>{SEEKVERA_R14_CATEGORIES.apply();SEEKVERA_R20_FINAL.apply()});const q=await get();layout(q,'stable '+lg);seq.push([q.chat.x,q.chat.w,q.msgH].map(Math.round).join(':'))}
+              assert.equal(new Set(seq).size,1,'visual shaking in '+lg+' '+seq.join(','));
+            }
+            if(errors.length)throw new Error(errors.join(' | '));
+            console.log(`R20C STRICT FALLBACK PASS: ${countryCount} countries, ${langCount} languages, ${commands} local country chat commands, translation API unavailable with zero English category-description leaks, mobile cards/AI stable`);
+            await ctx.close();
+          }finally{await browser.close()}
+          JS
+          node r20c-fallback-audit.mjs
