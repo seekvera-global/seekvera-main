@@ -1,0 +1,103 @@
+name: R11 live mobile worldwide audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r11-live-audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  live-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current source
+        uses: actions/checkout@v4
+      - name: Verify R11 source and live production
+        shell: bash
+        run: |
+          set -euo pipefail
+          SITE='https://seekveraglobal.com'
+          UA='Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Mobile Safari/537.36'
+
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          idx=Path('index.html').read_text(encoding='utf-8')
+          nav=Path('navigation.js').read_text(encoding='utf-8')
+          gui=Path('global-ui.js').read_text(encoding='utf-8')
+          voice=Path('voice-ai.js').read_text(encoding='utf-8')
+          assert idx.count('id="categories"')==1
+          assert 'r5-chips' not in idx and 'r8-department-strip' not in idx and 'class="r5-left"' not in idx
+          assert 'voice-ai.js?v=20260924-r11' in idx
+          assert 'function speakerAction' in voice and 'speakerAction(sp)' in voice
+          assert 'if(force)play(0,0);else setTimeout(()=>play(0,0),50)' in voice
+          lm=re.search(r'const WORLD_LANGS=\[([^\]]+)\]',nav,re.S)
+          langs=re.findall(r"'([^']+)'",lm.group(1))
+          pm=re.search(r'const COUNTRY_PROFILE=Object\.fromEntries\(`([^`]+)`\.split',gui,re.S)
+          profiles=[x for x in pm.group(1).split(';') if x]
+          assert len(profiles)==248
+          assert len(langs)>=90
+          defaults=[x.split(':',1)[1].split(',',1)[0] for x in profiles]
+          assert not set(defaults)-set(langs)
+          print('SOURCE PASS:',len(profiles),'country/territory profiles;',len(langs),'languages')
+          PY
+
+          curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/?r11-audit=1" -o /tmp/home.html
+          curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/voice-ai.js?v=20260924-r11&r11-audit=1" -o /tmp/voice.js
+          test "$(grep -o 'id="categories"' /tmp/home.html | wc -l)" = '1'
+          ! grep -q 'r5-chips' /tmp/home.html
+          ! grep -q 'r8-department-strip' /tmp/home.html
+          grep -q 'voice-ai.js?v=20260924-r11' /tmp/home.html
+          grep -q 'function speakerAction' /tmp/voice.js
+          grep -q 'speakerAction(sp)' /tmp/voice.js
+          grep -q 'if(force)play(0,0);else setTimeout(()=>play(0,0),50)' /tmp/voice.js
+          echo 'LIVE HOME + SPEAKER PASS'
+
+          ai_ok=0
+          for attempt in 1 2 3 4; do
+            code="$(curl -sS -o /tmp/ai.json -w '%{http_code}' --max-time 75 -X POST "$SITE/api/ai" \
+              -A "$UA" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' \
+              --data '{"message":"غيّر دولة التطبيق إلى كندا","country":"Nigeria","language":"Arabic","scope":"worldwide","fast":true}')" || code='000'
+            echo "AI attempt $attempt HTTP $code"
+            if [ "$code" = '200' ] && grep -q '"ok":true' /tmp/ai.json 2>/dev/null; then ai_ok=1; break; fi
+            cat /tmp/ai.json 2>/dev/null || true
+            sleep $((attempt*3))
+          done
+          test "$ai_ok" = '1'
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/ai.json'))
+          a=d.get('countryAction') or {}
+          assert a.get('type')=='set-country' and a.get('code')=='CA',d
+          print('LIVE ARABIC AI COUNTRY CONTROL PASS:',a)
+          PY
+
+          tr_ok=0
+          for attempt in 1 2 3 4; do
+            code="$(curl -sS -o /tmp/tr.json -w '%{http_code}' --max-time 75 -X POST "$SITE/api/ui-translate" \
+              -A "$UA" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' \
+              --data '{"language":"Arabic","strings":["Jobs","Shopping","Health","Hotels","Cars"]}')" || code='000'
+            echo "Translation attempt $attempt HTTP $code"
+            if [ "$code" = '200' ] && grep -q '"ok":true' /tmp/tr.json 2>/dev/null; then tr_ok=1; break; fi
+            cat /tmp/tr.json 2>/dev/null || true
+            sleep $((attempt*3))
+          done
+          test "$tr_ok" = '1'
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/tr.json'))
+          a=d.get('translations') or []
+          assert len(a)==5 and all(isinstance(x,str) and x.strip() for x in a),d
+          assert not any(x in {'Jobs','Shopping','Health','Hotels','Cars'} for x in a),a
+          print('LIVE ARABIC UI TRANSLATION PASS:',a)
+          PY
+
+          curl -L -fsS --max-time 25 -A "$UA" "$SITE/api/locale?r11-audit=1" -o /tmp/locale.json
+          grep -q '"ok":true' /tmp/locale.json
+          curl -L -fsS --max-time 25 -A "$UA" "$SITE/api/health?r11-audit=1" -o /tmp/health.json
+          grep -q '"centralSafetyGate":"enabled"' /tmp/health.json
+          grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/health.json
+          echo 'LIVE LOCALE + HEALTH PASS'
