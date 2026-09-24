@@ -1,0 +1,115 @@
+name: SEEKVERA R16 Final AI All-Country Proof V2
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r16-ai-final-v2.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r16-final-ai-v2
+  cancel-in-progress: true
+
+jobs:
+  final-ai:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Apply final AI stability patch
+        run: |
+          set -euo pipefail
+          python tools/r16_patch_bootstrap.py
+          python tools/r16_ai_final_patch.py
+          node --check navigation.js
+          node --check sw.js
+          python - <<'PY'
+          from pathlib import Path
+          n=Path('navigation.js').read_text(encoding='utf-8')
+          idx=Path('index.html').read_text(encoding='utf-8')
+          sw=Path('sw.js').read_text(encoding='utf-8')
+          assert 'worldwide AI stability R16' in n
+          assert 'function hardenAIUI()' in n and 'svR16AIStableStyles' in n
+          assert "function isCountryCommand(text,code='')" in n
+          assert "if(!code||!isCountryCommand(text,code))return" in n
+          assert "seekvera-r16-ai-stable-20260924" in sw
+          assert 'navigation.js?v=20260924-r16' in idx
+          assert idx.count('data-no-i18n="1"')>=5
+          pages=[]
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google'): continue
+              t=p.read_text(encoding='utf-8')
+              assert 'navigation.js?v=20260924-r16' in t,(p.name,'r16 navigation missing')
+              pages.append(p.name)
+          assert len(pages)>=44,len(pages)
+          print('R16 STATIC AI PASS:',len(pages),'pages')
+          PY
+
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.58.2
+          npx playwright install --with-deps chromium
+
+      - name: Local all-country AI browser proof
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/r16-http.log 2>&1 & echo $! >/tmp/r16-http.pid
+          trap 'kill $(cat /tmp/r16-http.pid) 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
+          SEEKVERA_AUDIT_BASE=http://127.0.0.1:4173 node tools/r16_ai_audit.mjs
+
+      - name: Commit proven R16 app files
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add -- '*.html' navigation.js sw.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'R16: stable AI controls and country switching across all countries'
+            git push origin HEAD:main
+          fi
+
+      - name: Deploy proven R16 to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Verify R16 live source and departments
+        run: |
+          set -euo pipefail
+          S='https://seekveraglobal.com'
+          U='Mozilla/5.0 (Linux; Android 14; SM-A225F) AppleWebKit/537.36 Chrome/140.0 Mobile Safari/537.36'
+          ok=0
+          for i in $(seq 1 25); do
+            curl -LfsS -A "$U" -H 'Cache-Control: no-cache' "$S/?r16ai=$i" -o /tmp/home || true
+            curl -LfsS -A "$U" -H 'Cache-Control: no-cache' "$S/navigation.js?r16ai=$i" -o /tmp/nav || true
+            if grep -q 'navigation.js?v=20260924-r16' /tmp/home 2>/dev/null && grep -q 'function hardenAIUI()' /tmp/nav 2>/dev/null && grep -q "function isCountryCommand(text,code='')" /tmp/nav 2>/dev/null; then ok=1; break; fi
+            sleep 3
+          done
+          test "$ok" = 1
+          grep -q 'data-no-i18n="1"' /tmp/home
+          grep -q 'svR16AIStableStyles' /tmp/nav
+          pages=(marketplace.html travel.html tourism.html property.html cars-auto.html jobs.html shopping.html restaurants-food.html local-services.html import-export.html shipping-logistics.html business-software.html software.html web-hosting.html solar.html education.html health.html money-insurance.html entertainment.html media.html games.html connectivity.html wifi.html deal-agent.html everyday.html scan.html post-ad.html seller-plans.html hub.html app.html)
+          for p in "${pages[@]}"; do
+            code=$(curl -LsS -o /tmp/page -w '%{http_code}' -A "$U" "$S/$p?r16ai=1")
+            test "$code" = 200
+            grep -q 'navigation.js?v=20260924-r16' /tmp/page
+          done
+          curl -LfsS -A "$U" "$S/api/health?r16ai=1" -o /tmp/health
+          grep -q '"centralSafetyGate":"enabled"' /tmp/health
+          grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/health
+          echo 'R16 LIVE SOURCE PASS: AI runtime + 30 departments + safety/voice health'
+
+      - name: Live all-country AI browser proof
+        env:
+          SEEKVERA_AUDIT_BASE: https://seekveraglobal.com
+        run: node tools/r16_ai_audit.mjs
