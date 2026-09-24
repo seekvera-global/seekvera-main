@@ -1,0 +1,53 @@
+name: Embed SEEKVERA R9 guard into i18n
+
+on:
+  push:
+    paths:
+      - '.github/scripts/embed_r9_guard.py'
+      - '.github/workflows/embed-r9-guard.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  embed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Embed guard and bump caches
+        run: python .github/scripts/embed_r9_guard.py
+      - name: Validate
+        run: |
+          set -euo pipefail
+          node --check i18n-ui.js
+          node --check voice-ai.js
+          grep -q 'SEEKVERA R9 visible-UI locale guard' i18n-ui.js
+          grep -q 'VOICE_SILENCE_MS=3200' voice-ai.js
+          python - <<'PY'
+          from pathlib import Path
+          pages=[]
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google'): continue
+              s=p.read_text(encoding='utf-8')
+              if 'i18n-ui.js' in s:
+                  assert 'locale-guard-r9.js' not in s,p.name
+                  assert 'i18n-ui.js?v=20260924-final-r9b' in s,p.name
+                  pages.append(p.name)
+          assert len(pages)>=44,len(pages)
+          print('R9b page coverage',len(pages))
+          PY
+      - name: Commit app files
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add i18n-ui.js ./*.html
+          if git diff --cached --quiet; then
+            echo 'No app changes'
+          else
+            git commit -m 'Embed R9 visible translation into established i18n asset'
+            git push origin HEAD:main
+          fi
