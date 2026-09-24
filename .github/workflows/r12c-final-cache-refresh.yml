@@ -1,0 +1,59 @@
+name: R12C final worldwide browser cache refresh
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r12c-final-cache-refresh.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-deploy-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Refresh browser cache keys
+        run: |
+          set -euo pipefail
+          python tools/r12_cache_bust.py
+          test "$(grep -o 'id=\"categories\"' index.html | wc -l)" = '1'
+          ! grep -q 'r5-chips' index.html
+          grep -q 'i18n-ui.js?v=20260924-r12' index.html
+          grep -q 'navigation.js?v=20260924-r12' index.html
+          grep -q 'sw.js?v=20260924-r11' index.html
+          grep -q 'Release 2026‑09‑24' index.html
+      - name: Commit refreshed HTML
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -- '*.html'
+          git commit -m 'R12: refresh locale navigation and service-worker cache keys'
+          git push origin HEAD:main
+      - name: Deploy final R12 assets
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Verify final live HTML
+        run: |
+          set -euo pipefail
+          SITE='https://seekveraglobal.com'
+          UA='Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Mobile Safari/537.36'
+          ok=0
+          for i in $(seq 1 20); do
+            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/?r12c=$i" -o /tmp/home.html || true
+            if grep -q 'i18n-ui.js?v=20260924-r12' /tmp/home.html 2>/dev/null && grep -q 'navigation.js?v=20260924-r12' /tmp/home.html 2>/dev/null && test "$(grep -o 'id=\"categories\"' /tmp/home.html 2>/dev/null | wc -l)" = '1' && ! grep -q 'r5-chips' /tmp/home.html 2>/dev/null; then ok=1; break; fi
+            sleep 4
+          done
+          test "$ok" = '1'
+          grep -q 'Release 2026‑09‑24' /tmp/home.html
+          grep -q 'function speakerAction' <(curl -L -fsS --max-time 25 -A "$UA" "$SITE/voice-ai.js?v=20260924-r11&r12c=1")
+          grep -q 'COUNTRY_TERMS=' <(curl -L -fsS --max-time 25 -A "$UA" "$SITE/navigation.js?v=20260924-r12&r12c=1")
+          grep -q 'nativeTranslator' <(curl -L -fsS --max-time 25 -A "$UA" "$SITE/i18n-ui.js?v=20260924-r12&r12c=1")
+          echo 'FINAL R12C LIVE CACHE + UI PASS'
