@@ -23,7 +23,7 @@ jobs:
         env:
           SITE: https://seekveraglobal.com
         run: |
-          cat > /tmp/proof.mjs <<'JS'
+          cat > proof.mjs <<'JS'
           import { chromium, devices } from 'playwright';
           const SITE=process.env.SITE;
           const assert=(v,m)=>{if(!v)throw new Error(m)};
@@ -57,4 +57,4 @@ jobs:
           console.log('R17 FINAL PASS',JSON.stringify({counts,answer:answer.slice(0,160),scroll,aiRequests:ai}));
           await b.close();
           JS
-          node /tmp/proof.mjs
+          node proof.mjs
