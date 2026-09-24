@@ -1,4 +1,4 @@
-# final proof rerun: deterministic map helper, clean root-only commit
+# final proof rerun: deterministic map helper, clean root-only commit — retry after GitHub workflow-permission rejection
 name: SEEKVERA R15 Final Stable Locale Proof
 
 on:
