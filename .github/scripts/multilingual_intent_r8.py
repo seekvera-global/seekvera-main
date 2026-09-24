@@ -4,17 +4,25 @@ p=Path('worker.js')
 s=p.read_text(encoding='utf-8')
 
 anchor="const route=c=>({connectivity:'connectivity.html',travel:'travel.html',property:'property.html',cars:'cars-auto.html',jobs:'jobs.html',business:'import-export.html',health:'health.html',restaurants:'restaurants-food.html',shopping:'shopping.html',media:'media.html',general:'marketplace.html'})[c]||'marketplace.html';"
-helper="""const INTENT_ALLOWED=new Set(['connectivity','travel','property','cars','jobs','business','health','restaurants','shopping','media','general']);
-async function classifyIntent(env,text){
+old_prompt="Classify the user request written in ANY language into exactly ONE SEEKVERA category token. Allowed tokens only: connectivity, travel, property, cars, jobs, business, health, restaurants, shopping, media, general. Meanings: connectivity=internet Wi-Fi SIM eSIM telecom; travel=hotels flights tourism airport visa trips; property=homes apartments land rent real estate; cars=vehicles auto parts; jobs=employment careers vacancies hiring work; business=suppliers manufacturers import export procurement; health=hospitals clinics doctors pharmacies; restaurants=food restaurants cafes; shopping=products buying retail; media=news movies music TV radio; general=only when none fits. Consider the whole conversation context. Return ONLY the single lowercase token, no punctuation or explanation."
+new_prompt="Classify the user request written in ANY language into exactly ONE SEEKVERA category token. Allowed tokens only: connectivity, travel, property, cars, jobs, business, health, restaurants, shopping, media, general. Meanings and hard boundaries: connectivity=internet access, Wi-Fi, SIM, eSIM, mobile data, telecom network/service/plan; shopping=buying, pricing, comparing or finding a PHYSICAL consumer product or device such as a phone, smartphone, laptop, TV, clothing, furniture or electronics. HARD RULE: buying a phone/smartphone/device is shopping; buying a SIM/eSIM/data/internet/telecom plan is connectivity. travel=hotels, flights, tourism, airport, visa, trips; property=homes, apartments, land, rent, real estate; cars=vehicles, cars, auto parts; jobs=employment, careers, vacancies, hiring, work; business=suppliers, manufacturers, import, export, procurement; health=hospitals, clinics, doctors, pharmacies; restaurants=restaurants, cafes, prepared food/dining; media=news, movies, music, TV, radio; general=only when none fits. Prefer the user's ACTION and OBJECT together, not one ambiguous keyword. Consider the whole conversation context. Return ONLY the single lowercase token, no punctuation or explanation."
+helper=f"""const INTENT_ALLOWED=new Set(['connectivity','travel','property','cars','jobs','business','health','restaurants','shopping','media','general']);
+async function classifyIntent(env,text){{
  const quick=category(text);if(quick!=='general'||!env.AI)return quick;
- const prompt='Classify the user request written in ANY language into exactly ONE SEEKVERA category token. Allowed tokens only: connectivity, travel, property, cars, jobs, business, health, restaurants, shopping, media, general. Meanings: connectivity=internet Wi-Fi SIM eSIM telecom; travel=hotels flights tourism airport visa trips; property=homes apartments land rent real estate; cars=vehicles auto parts; jobs=employment careers vacancies hiring work; business=suppliers manufacturers import export procurement; health=hospitals clinics doctors pharmacies; restaurants=food restaurants cafes; shopping=products buying retail; media=news movies music TV radio; general=only when none fits. Consider the whole conversation context. Return ONLY the single lowercase token, no punctuation or explanation.';
- try{const r=await env.AI.run(FASTCHAT,{messages:[{role:'system',content:prompt},{role:'user',content:clean(text,5000)}],temperature:0,max_tokens:16});const raw=out(r).toLowerCase().trim();const m=raw.match(/^(connectivity|travel|property|cars|jobs|business|health|restaurants|shopping|media|general)$/);return m&&INTENT_ALLOWED.has(m[1])?m[1]:quick}catch(e){console.warn('Multilingual intent classifier fallback',e);return quick}
-}
+ const prompt={new_prompt!r};
+ try{{const r=await env.AI.run(FASTCHAT,{{messages:[{{role:'system',content:prompt}},{{role:'user',content:clean(text,5000)}}],temperature:0,max_tokens:16}});const raw=out(r).toLowerCase().trim();const m=raw.match(/^(connectivity|travel|property|cars|jobs|business|health|restaurants|shopping|media|general)$/);return m&&INTENT_ALLOWED.has(m[1])?m[1]:quick}}catch(e){{console.warn('Multilingual intent classifier fallback',e);return quick}}
+}}
 """
+
 if 'async function classifyIntent(' not in s:
     if anchor not in s:
         raise SystemExit('route anchor not found')
     s=s.replace(anchor,anchor+'\n'+helper,1)
+else:
+    if old_prompt in s:
+        s=s.replace(old_prompt,new_prompt,1)
+    elif new_prompt not in s:
+        raise SystemExit('existing classifier prompt not found')
 
 old='const detected=await detectedLanguage(env,m,b.language),c=category(contextText),p='
 new='const detected=await detectedLanguage(env,m,b.language),c=await classifyIntent(env,contextText),p='
@@ -24,4 +32,4 @@ elif new not in s:
     raise SystemExit('AI category call anchor not found')
 
 p.write_text(s,encoding='utf-8')
-print('Worldwide multilingual intent routing patch applied.')
+print('Worldwide multilingual intent routing patch applied with shopping/connectivity disambiguation.')
