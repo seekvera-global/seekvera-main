@@ -1,0 +1,65 @@
+name: SEEKVERA R15 Final Stable Locale Proof
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r15-final-repair3.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r15-final-stable-proof
+  cancel-in-progress: true
+
+jobs:
+  final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Apply fixes and audit hardening
+        run: |
+          set -euo pipefail
+          python tools/r15_final_patch.py
+          python tools/r15_audit_runtime_patch.py
+          python tools/r15_static_audit.py
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.58.2
+          npx playwright install --with-deps chromium
+      - name: Local A-to-Z browser proof
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/r15-http.log 2>&1 & echo $! >/tmp/r15-http.pid
+          trap 'kill $(cat /tmp/r15-http.pid) 2>/dev/null || true' EXIT
+          for i in $(seq 1 30);do curl -fsS http://127.0.0.1:4173/index.html >/dev/null&&break;sleep 1;done
+          SEEKVERA_AUDIT_BASE=http://127.0.0.1:4173 node tools/r15_browser_audit.mjs
+      - name: Commit fully proven R15
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global';git config user.email 'seekvera.global@gmail.com'
+          git add -- '*.html' locale-r15.js locale-r14.js locale-r14-categories.js global-ui.js i18n-ui.js navigation.js sw.js .github/workflows/deploy-cloudflare.yml tools/r15_browser_audit.mjs
+          if ! git diff --cached --quiet;then git commit -m 'R15: final atomic locale stability across all departments';git push origin HEAD:main;fi
+      - name: Deploy proven R15 to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Verify live source safety and every department
+        run: |
+          set -euo pipefail
+          S='https://seekveraglobal.com';U='Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) AppleWebKit/537.36 Chrome/140.0 Mobile Safari/537.36';ok=0
+          for i in $(seq 1 20);do curl -LfsS -A "$U" -H 'Cache-Control: no-cache' "$S/?r15final=$i" -o /tmp/h||true;curl -LfsS -A "$U" -H 'Cache-Control: no-cache' "$S/locale-r15.js?r15final=$i" -o /tmp/l||true;if grep -q 'locale-r15.js?v=20260924-r15' /tmp/h 2>/dev/null&&grep -q 'startLocationTracking' /tmp/l 2>/dev/null;then ok=1;break;fi;sleep 4;done;test "$ok" = 1
+          curl -LfsS -A "$U" "$S/api/health?r15final=1" -o /tmp/health
+          grep -q '"centralSafetyGate":"enabled"' /tmp/health;grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/health;grep -q '"safetyGateVersion"' /tmp/health
+          for p in marketplace.html travel.html tourism.html property.html cars-auto.html jobs.html shopping.html restaurants-food.html local-services.html import-export.html shipping-logistics.html business-software.html software.html web-hosting.html solar.html education.html health.html money-insurance.html entertainment.html media.html games.html connectivity.html wifi.html deal-agent.html everyday.html scan.html post-ad.html seller-plans.html hub.html app.html;do code=$(curl -LsS -o /tmp/p -w '%{http_code}' -A "$U" "$S/$p?r15final=1");test "$code" = 200;grep -q 'locale-r15.js?v=20260924-r15' /tmp/p;done
+      - name: Live A-to-Z browser proof
+        env:
+          SEEKVERA_AUDIT_BASE: https://seekveraglobal.com
+        run: node tools/r15_browser_audit.mjs
