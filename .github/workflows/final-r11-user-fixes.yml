@@ -1,0 +1,187 @@
+name: R11 final user-requested worldwide fixes
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/final-r11-user-fixes.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r11-final-fix
+  cancel-in-progress: false
+
+jobs:
+  fix-test-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Apply R11 fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          # 1) Home must expose exactly one departments/categories area.
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          before=s
+          s,n=re.subn(r'\s*<div class="r5-chips">.*?</div>', '', s, count=1, flags=re.S)
+          if n != 1:
+              raise SystemExit(f'Expected exactly one r5-chips quick department row, removed {n}')
+          p.write_text(s,encoding='utf-8')
+
+          # 2) Speaker button means PLAY/REPLAY, not an accidental mute toggle.
+          p=Path('voice-ai.js')
+          s=p.read_text(encoding='utf-8')
+          old=";setTimeout(()=>play(0,0),force?0:50)}"
+          new=";if(force)play(0,0);else setTimeout(()=>play(0,0),50)}"
+          if old not in s:
+              raise SystemExit('Expected speak scheduling pattern not found')
+          s=s.replace(old,new,1)
+          old="function toggleMute(btn){muted=!muted;voiceConversation=false;localStorage.setItem('seekvera_voice_muted',muted?'1':'0');updateSpeakerButtons();if(muted)stopSpeech();else{unlockTTS();if(lastAnswer)speak(lastAnswer,lastLocale,true)}if(btn)btn.textContent=muted?'🔇':'🔊'}"
+          new="function speakerAction(btn){voiceConversation=false;muted=false;localStorage.setItem('seekvera_voice_muted','0');updateSpeakerButtons();unlockTTS();speak(lastAnswer||'SEEKVERA',lastLocale||locale(),true);if(btn){btn.textContent='🔊';btn.setAttribute('aria-label','Play latest AI reply')}}"
+          if old not in s:
+              raise SystemExit('Expected old speaker toggle function not found')
+          s=s.replace(old,new,1)
+          old="if(sp){e.preventDefault();toggleMute(sp)}"
+          new="if(sp){e.preventDefault();speakerAction(sp)}"
+          if old not in s:
+              raise SystemExit('Expected speaker click binding not found')
+          s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+
+          # 3) Bust stale mobile/browser copies of voice runtime on every public HTML page.
+          changed_pages=0
+          for hp in Path('.').glob('*.html'):
+              t=hp.read_text(encoding='utf-8')
+              u=re.sub(r'voice-ai\.js\?v=[^\"\'&<]+', 'voice-ai.js?v=20260924-r11', t)
+              if u!=t:
+                  hp.write_text(u,encoding='utf-8')
+                  changed_pages+=1
+          if changed_pages < 40:
+              raise SystemExit(f'Expected voice cache-bust on >=40 pages, got {changed_pages}')
+
+          # 4) Force service-worker cache refresh without changing the existing release contract.
+          p=Path('sw.js')
+          s=p.read_text(encoding='utf-8')
+          if 'seekvera-r10-worldwide-20260924' in s:
+              s=s.replace('seekvera-r10-worldwide-20260924','seekvera-r11-worldwide-20260924')
+          elif 'seekvera-r11-worldwide-20260924' not in s:
+              raise SystemExit('Expected service-worker cache marker not found')
+          p.write_text(s,encoding='utf-8')
+
+          # 5) Repair stale health-check marker so it no longer reports a false failure.
+          hp=Path('.github/workflows/site-health.yml')
+          if hp.exists():
+              s=hp.read_text(encoding='utf-8')
+              s=s.replace("'Ask SEEKVERA'", "'SEEKVERA AI'")
+              hp.write_text(s,encoding='utf-8')
+
+          print('R11 patch complete; HTML pages cache-busted:',changed_pages)
+          PY
+
+      - name: Static A-Z verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check voice-ai.js
+          node --check navigation.js
+          node --check global-ui.js
+          node --check i18n-ui.js
+          node --check worker.js
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          idx=Path('index.html').read_text(encoding='utf-8')
+          voice=Path('voice-ai.js').read_text(encoding='utf-8')
+          nav=Path('navigation.js').read_text(encoding='utf-8')
+          gui=Path('global-ui.js').read_text(encoding='utf-8')
+          assert idx.count('id="categories"')==1
+          assert 'r5-chips' not in idx
+          assert 'r8-department-strip' not in idx
+          assert 'class="r5-left"' not in idx
+          assert 'function speakerAction' in voice
+          assert "if(force)play(0,0);else setTimeout(()=>play(0,0),50)" in voice
+          assert "speakerAction(sp)" in voice
+          assert 'SpeechRecognition' in voice and 'MediaRecorder' in voice and '/api/transcribe' in voice
+          lm=re.search(r'const WORLD_LANGS=\[([^\]]+)\]',nav,re.S)
+          langs=re.findall(r"'([^']+)'",lm.group(1))
+          pm=re.search(r'const COUNTRY_PROFILE=Object\.fromEntries\(`([^`]+)`\.split',gui,re.S)
+          profiles=[x for x in pm.group(1).split(';') if x]
+          assert len(langs)>=90,(len(langs),'languages')
+          assert len(profiles)==248,(len(profiles),'countries')
+          defaults=[x.split(':',1)[1].split(',',1)[0] for x in profiles]
+          assert not set(defaults)-set(langs)
+          assert 'bindAICountryControl' in nav
+          print('R11 STATIC PASS:',len(profiles),'countries;',len(langs),'languages; one departments area; speaker replay enabled')
+          PY
+
+      - name: Commit repaired source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add index.html voice-ai.js sw.js .github/workflows/site-health.yml *.html
+          if git diff --cached --quiet; then
+            echo 'No source changes to commit'
+          else
+            git commit -m 'R11: single departments area and reliable mobile speaker'
+            git push origin HEAD:main
+          fi
+
+      - name: Deploy R11 directly to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Verify live R11 essentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          SITE='https://seekveraglobal.com'
+          ok=0
+          for i in $(seq 1 20); do
+            curl -L -fsS --max-time 25 -H 'Cache-Control: no-cache' "$SITE/?r11=$i" -o /tmp/home.html || true
+            curl -L -fsS --max-time 25 -H 'Cache-Control: no-cache' "$SITE/voice-ai.js?v=20260924-r11&r11=$i" -o /tmp/voice.js || true
+            if ! grep -q 'r5-chips' /tmp/home.html 2>/dev/null && \
+               test "$(grep -o 'id="categories"' /tmp/home.html 2>/dev/null | wc -l)" = '1' && \
+               grep -q 'function speakerAction' /tmp/voice.js 2>/dev/null && \
+               grep -q 'speakerAction(sp)' /tmp/voice.js 2>/dev/null; then
+              ok=1; break
+            fi
+            sleep 4
+          done
+          test "$ok" = '1'
+          echo 'LIVE R11 HOME SINGLE-CATEGORIES + SPEAKER RUNTIME PASS'
+
+          code="$(curl -sS -o /tmp/control.json -w '%{http_code}' --max-time 60 -X POST "$SITE/api/ai" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' --data '{"message":"غيّر دولة التطبيق إلى كندا","country":"Nigeria","language":"Arabic","scope":"worldwide","fast":true}')"
+          test "$code" = '200'
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/control.json'))
+          a=d.get('countryAction') or {}
+          assert d.get('ok') is True
+          assert a.get('type')=='set-country' and a.get('code')=='CA',d
+          print('LIVE AI COUNTRY SWITCH PASS',a)
+          PY
+
+          code="$(curl -sS -o /tmp/tr.json -w '%{http_code}' --max-time 60 -X POST "$SITE/api/ui-translate" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' --data '{"language":"Arabic","strings":["Jobs","Shopping","Health"]}')"
+          test "$code" = '200'
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/tr.json')); a=d.get('translations') or []
+          assert len(a)==3 and all(str(x).strip() for x in a)
+          print('LIVE UI TRANSLATION PASS',a)
+          PY
