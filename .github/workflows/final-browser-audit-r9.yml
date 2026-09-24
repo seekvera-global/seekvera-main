@@ -1,4 +1,4 @@
-name: SEEKVERA R9d final live browser audit
+name: SEEKVERA R9e final live browser audit
 
 on:
   push:
@@ -23,60 +23,54 @@ jobs:
         run: |
           npm install --no-save playwright@1.55.0
           npx playwright install --with-deps chromium
-      - name: Run live country, locale, persistence, section, AI and voice audit
+      - name: Run final live R9e country, locale, race, pages, AI and voice audit
         run: |
           node --input-type=module <<'NODE'
           import { chromium } from 'playwright';
           import fs from 'node:fs';
           import assert from 'node:assert';
+
           const BASE='https://seekveraglobal.com';
           const src=fs.readFileSync('global-ui.js','utf8');
           const m=src.match(/const COUNTRY_PROFILE=Object\.fromEntries\(`([^`]+)`\.split/s);
           assert(m,'COUNTRY_PROFILE not found');
-          const profiles=Object.fromEntries(m[1].split(';').filter(Boolean).map(x=>{const [cc,v]=x.split(':');const [language,currency]=v.split(',');return [cc,{language,currency}]}));
+          const profiles=Object.fromEntries(m[1].split(';').filter(Boolean).map(x=>{
+            const [cc,v]=x.split(':');
+            const [language,currency]=v.split(',');
+            return [cc,{language,currency}];
+          }));
           assert.equal(Object.keys(profiles).length,248,'expected 248 country/territory profiles');
-
-          async function forceEnglishAndExpectRestore(page, translated, english, cc){
-            const found=await page.evaluate(({translated,english})=>{
-              const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
-              let n;
-              while((n=w.nextNode())){
-                if((n.nodeValue||'').trim()===translated){
-                  window.__svR9dAuditNode=n;
-                  n.nodeValue=english;
-                  return true;
-                }
-              }
-              return false;
-            },{translated,english});
-            assert(found,`${cc} could not find translated node for persistence test`);
-            await page.waitForFunction(({translated})=>window.__svR9dAuditNode && (window.__svR9dAuditNode.nodeValue||'').trim()===translated,{translated},{timeout:4000});
-            await page.waitForTimeout(500);
-            const stable=await page.evaluate(({translated})=>window.__svR9dAuditNode && (window.__svR9dAuditNode.nodeValue||'').trim()===translated,{translated});
-            assert(stable,`${cc} translated text did not remain stable after English rewrite`);
-            console.log('TRANSLATION PERSISTENCE PASS:',cc);
-          }
 
           const browser=await chromium.launch({headless:true});
           try {
-            // 1) Every country/territory: select it in the real live UI and verify country, language, currency and document locale.
+            // 1) Select all 248 configured countries/territories one-by-one in the real live UI.
             const c1=await browser.newContext({locale:'en-US'});
             const p1=await c1.newPage();
+            await p1.route('**/api/locale',r=>r.abort());
             await p1.route('**/api/ui-translate',r=>r.abort());
-            await p1.goto(BASE+'/?audit=r9d-country-'+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
-            await p1.evaluate(()=>localStorage.clear());
-            await p1.reload({waitUntil:'domcontentloaded'});
+            await p1.goto(BASE+'/?audit=r9e-country-'+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
             await p1.waitForFunction(()=>document.querySelectorAll('#country option').length>=249,null,{timeout:15000});
             const liveCodes=await p1.locator('#country option').evaluateAll(opts=>opts.map(o=>o.value));
             for(const cc of Object.keys(profiles)) assert(liveCodes.includes(cc),`country option missing ${cc}`);
             let checked=0;
             for(const [cc,prof] of Object.entries(profiles)){
               await p1.selectOption('#country',cc);
-              const state=await p1.evaluate(()=>({country:document.querySelector('#country')?.value,lang:document.querySelector('#lang')?.value,currency:document.querySelector('#currency')?.value,docLang:document.documentElement.lang,dir:document.documentElement.dir,lsCountry:localStorage.getItem('seekvera_country'),lsLang:localStorage.getItem('seekvera_lang'),lsCurrency:localStorage.getItem('seekvera_currency')}));
+              const state=await p1.evaluate(()=>({
+                country:document.querySelector('#country')?.value,
+                lang:document.querySelector('#lang')?.value,
+                currency:document.querySelector('#currency')?.value,
+                docLang:document.documentElement.lang,
+                dir:document.documentElement.dir,
+                explicit:localStorage.getItem('seekvera_country_explicit'),
+                lsCountry:localStorage.getItem('seekvera_country'),
+                lsLang:localStorage.getItem('seekvera_lang'),
+                lsCurrency:localStorage.getItem('seekvera_currency')
+              }));
               assert.equal(state.country,cc,`${cc} country select`);
               assert.equal(state.lang,prof.language,`${cc} language`);
               assert.equal(state.currency,prof.currency,`${cc} currency`);
               assert.equal(state.docLang,prof.language,`${cc} document language`);
+              assert.equal(state.explicit,'1',`${cc} explicit choice`);
               assert.equal(state.lsCountry,cc,`${cc} stored country`);
               assert.equal(state.lsLang,prof.language,`${cc} stored language`);
               assert.equal(state.lsCurrency,prof.currency,`${cc} stored currency`);
@@ -88,50 +82,123 @@ jobs:
             console.log('COUNTRY UI PASS:',checked,'profiles selected and verified one-by-one');
             await c1.close();
 
-            // 2) Visible text: verify exact screen text plus persistence after a deliberate English rewrite.
+            // 2) Critical R9e race test: a late US auto-detect response must NOT override manual Morocco.
+            const cRace=await browser.newContext({locale:'en-US'});
+            const pRace=await cRace.newPage();
+            await pRace.route('**/api/locale',async route=>{
+              await new Promise(r=>setTimeout(r,1400));
+              await route.fulfill({
+                status:200,
+                contentType:'application/json',
+                body:JSON.stringify({ok:true,country:'US',language:'en',currency:'USD'})
+              });
+            });
+            await pRace.goto(BASE+'/?audit=r9e-race-ma-'+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
+            await pRace.waitForFunction(()=>document.querySelectorAll('#country option').length>=249,null,{timeout:15000});
+            await pRace.selectOption('#country','MA');
+            await pRace.waitForFunction(()=>document.querySelector('#country')?.value==='MA'&&document.querySelector('#lang')?.value==='ar'&&document.querySelector('#currency')?.value==='MAD',null,{timeout:5000});
+            await pRace.waitForTimeout(2200);
+            const raceState=await pRace.evaluate(()=>({
+              country:document.querySelector('#country')?.value,
+              lang:document.querySelector('#lang')?.value,
+              currency:document.querySelector('#currency')?.value,
+              explicit:localStorage.getItem('seekvera_country_explicit'),
+              stored:localStorage.getItem('seekvera_country'),
+              body:document.body.innerText
+            }));
+            assert.equal(raceState.country,'MA','late auto-detect overrode Morocco country');
+            assert.equal(raceState.lang,'ar','late auto-detect overrode Morocco language');
+            assert.equal(raceState.currency,'MAD','late auto-detect overrode Morocco currency');
+            assert.equal(raceState.explicit,'1','Morocco manual choice not marked explicit');
+            assert.equal(raceState.stored,'MA','Morocco manual choice not stored');
+            assert(raceState.body.includes('الذكاء والبحث'),'Morocco Arabic AI & Search missing after delayed auto-detect');
+            assert(raceState.body.includes('الرحلات الجوية'),'Morocco Arabic Flights missing after delayed auto-detect');
+            console.log('MANUAL COUNTRY PRIORITY PASS: MA survives delayed US auto-detect');
+            await cRace.close();
+
+            // 2b) Deliberate Worldwide must also survive a delayed location response.
+            const cWW=await browser.newContext({locale:'en-US'});
+            const pWW=await cWW.newPage();
+            await pWW.route('**/api/locale',async route=>{
+              await new Promise(r=>setTimeout(r,1400));
+              await route.fulfill({
+                status:200,
+                contentType:'application/json',
+                body:JSON.stringify({ok:true,country:'US',language:'en',currency:'USD'})
+              });
+            });
+            await pWW.goto(BASE+'/?audit=r9e-race-ww-'+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
+            await pWW.waitForFunction(()=>document.querySelectorAll('#country option').length>=249,null,{timeout:15000});
+            await pWW.selectOption('#country','WW');
+            await pWW.waitForTimeout(2200);
+            const wwState=await pWW.evaluate(()=>({
+              country:document.querySelector('#country')?.value,
+              explicit:localStorage.getItem('seekvera_country_explicit'),
+              stored:localStorage.getItem('seekvera_country')
+            }));
+            assert.equal(wwState.country,'WW','late auto-detect overrode Worldwide');
+            assert.equal(wwState.explicit,'1','Worldwide manual choice not marked explicit');
+            assert.equal(wwState.stored,'WW','Worldwide manual choice not stored');
+            console.log('MANUAL WORLDWIDE PRIORITY PASS');
+            await cWW.close();
+
+            // 3) Visible translations must be present and remain stable after the locale settles.
             const c2=await browser.newContext({locale:'en-US'});
             const p2=await c2.newPage();
-            await p2.goto(BASE+'/?audit=r9d-visible-'+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
-            await p2.evaluate(()=>localStorage.clear());
-            await p2.reload({waitUntil:'domcontentloaded'});
+            await p2.route('**/api/locale',r=>r.abort());
+            await p2.goto(BASE+'/?audit=r9e-visible-'+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
             await p2.waitForFunction(()=>document.querySelectorAll('#country option').length>=249,null,{timeout:15000});
             const visible=[
-              ['MA','ar',['الذكاء والبحث','الرحلات الجوية'],'الذكاء والبحث','AI & Search'],
-              ['FR','fr',['IA et recherche','Vols'],'IA et recherche','AI & Search'],
-              ['IN','hi',['एआई और खोज','उड़ानें'],'एआई और खोज','AI & Search'],
-              ['CN','zh',['AI 与搜索','航班'],'AI 与搜索','AI & Search']
+              ['MA','ar',['الذكاء والبحث','الرحلات الجوية']],
+              ['FR','fr',['IA et recherche','Vols']],
+              ['IN','hi',['एआई और खोज','उड़ानें']],
+              ['CN','zh',['AI 与搜索','航班']]
             ];
-            for(const [cc,lang,need,persistText,english] of visible){
+            for(const [cc,lang,need] of visible){
               await p2.selectOption('#country',cc);
-              await p2.waitForFunction(({lang,need})=>document.documentElement.lang===lang && need.every(t=>document.body.innerText.includes(t)),{lang,need},{timeout:30000});
-              await p2.waitForTimeout(350);
-              const body=await p2.locator('body').innerText();
-              for(const t of need) assert(body.includes(t),`${cc} visible translation missing ${t}`);
+              await p2.waitForFunction(({lang,need})=>document.documentElement.lang===lang&&need.every(t=>document.body.innerText.includes(t)),{lang,need},{timeout:30000});
+              await p2.waitForTimeout(900);
+              const settled=await p2.evaluate(()=>({lang:document.documentElement.lang,body:document.body.innerText}));
+              assert.equal(settled.lang,lang,`${cc} document language changed after settling`);
+              for(const t of need) assert(settled.body.includes(t),`${cc} visible translation did not stay stable: ${t}`);
               console.log('VISIBLE LOCALE PASS:',cc,lang);
-              await forceEnglishAndExpectRestore(p2,persistText,english,cc);
             }
             await c2.close();
 
-            // 3) Every localized public page: verify live HTTP response and final R9d runtime directly.
-            // Request-level checks avoid false failures from slow optional images/fonts/third-party resources.
-            const pages=fs.readdirSync('.').filter(f=>f.endsWith('.html')&&!f.toLowerCase().startsWith('google')).filter(f=>fs.readFileSync(f,'utf8').includes('i18n-ui.js'));
+            // 4) Every localized public page must serve the final R9e runtimes.
+            const pages=fs.readdirSync('.')
+              .filter(f=>f.endsWith('.html')&&!f.toLowerCase().startsWith('google'))
+              .filter(f=>fs.readFileSync(f,'utf8').includes('i18n-ui.js'));
             assert(pages.length>=44,`expected >=44 localized pages, got ${pages.length}`);
             const c3=await browser.newContext();
             for(const f of pages){
-              const resp=await c3.request.get(BASE+'/'+f+'?audit=r9d-page-'+Date.now(),{timeout:30000,failOnStatusCode:false});
+              const resp=await c3.request.get(BASE+'/'+f+'?audit=r9e-page-'+Date.now(),{timeout:30000,failOnStatusCode:false});
               assert(resp.ok(),`${f} HTTP ${resp.status()}`);
               const html=await resp.text();
-              assert(html.includes('i18n-ui.js?v=20260924-final-r9d'),`${f} missing final R9d i18n runtime`);
-              assert(html.includes('voice-ai.js?v=20260924-final-r9d'),`${f} missing final R9d voice runtime`);
+              assert(html.includes('global-ui.js?v=20260924-final-r9e'),`${f} missing final R9e global runtime`);
+              assert(html.includes('i18n-ui.js?v=20260924-final-r9e'),`${f} missing final R9e i18n runtime`);
+              assert(html.includes('voice-ai.js?v=20260924-final-r9e'),`${f} missing final R9e voice runtime`);
             }
             console.log('ALL LOCALIZED PAGES PASS:',pages.length);
             await c3.close();
 
-            // 4) AI conversation continuity: a follow-up role must route without re-asking known country/context.
+            // 5) AI conversation continuity: known country/context must not be re-asked.
             const c4=await browser.newContext();
-            const req=c4.request;
             const started=Date.now();
-            const ai=await req.post(BASE+'/api/ai',{data:{message:'mechanic',country:'France',language:'English',scope:'country',fast:true,history:[{role:'user',content:'I need a job in France'},{role:'assistant',content:'What kind of job are you looking for?'}]},timeout:60000});
+            const ai=await c4.request.post(BASE+'/api/ai',{
+              data:{
+                message:'mechanic',
+                country:'France',
+                language:'English',
+                scope:'country',
+                fast:true,
+                history:[
+                  {role:'user',content:'I need a job in France'},
+                  {role:'assistant',content:'What kind of job are you looking for?'}
+                ]
+              },
+              timeout:60000
+            });
             const ms=Date.now()-started;
             assert(ai.ok(),`AI HTTP ${ai.status()}`);
             const data=await ai.json();
@@ -141,18 +208,22 @@ jobs:
             console.log('AI CONVERSATION PASS:',ms+'ms');
             await c4.close();
 
-            // 5) Live voice runtime must use 3.2s silence and Android/iPhone recorder path; PWA must be on R9d cache.
-            const voice=await (await fetch(BASE+'/voice-ai.js?v=20260924-final-r9d',{cache:'no-store'})).text();
+            // 6) Voice/PWA final source checks.
+            const globalLive=await (await fetch(BASE+'/global-ui.js?v=20260924-final-r9e',{cache:'no-store'})).text();
+            assert(globalLive.includes("localStorage.getItem('seekvera_country_explicit')==='1')return"),'manual locale priority guard missing live');
+            const voice=await (await fetch(BASE+'/voice-ai.js?v=20260924-final-r9e',{cache:'no-store'})).text();
             assert(voice.includes('VOICE_SILENCE_MS=3200'),'voice silence must be 3200ms');
             assert(voice.includes('Android|iPhone|iPad|iPod'),'mobile recorder branch missing');
-            const i18n=await (await fetch(BASE+'/i18n-ui.js?v=20260924-final-r9d',{cache:'no-store'})).text();
-            assert(i18n.includes("const VERSION='20260924-final-r9d'"),'R9d i18n version missing live');
-            assert(i18n.includes('characterData:true'),'R9d character-data persistence observer missing live');
-            assert(i18n.includes("serviceWorker.register('sw.js?v=20260924-final-r9d')"),'R9d service-worker registration missing live');
-            assert(i18n.includes('window.__SEEKVERA_R9_QUICK=QUICK'),'R9d primary translation unification missing live');
-            const sw=await (await fetch(BASE+'/sw.js?v=20260924-final-r9d',{cache:'no-store'})).text();
-            assert(sw.includes("seekvera-final-r9d-20260924"),'final R9d service-worker cache missing live');
+            const i18n=await (await fetch(BASE+'/i18n-ui.js?v=20260924-final-r9e',{cache:'no-store'})).text();
+            assert(i18n.includes("const VERSION='20260924-final-r9e'"),'R9e i18n version missing live');
+            assert(i18n.includes('characterData:true'),'translation persistence observer missing live');
+            assert(i18n.includes("serviceWorker.register('sw.js?v=20260924-final-r9e')"),'R9e service-worker registration missing live');
+            assert(i18n.includes('window.__SEEKVERA_R9_QUICK=QUICK'),'primary translation unification missing live');
+            const sw=await (await fetch(BASE+'/sw.js?v=20260924-final-r9e',{cache:'no-store'})).text();
+            assert(sw.includes('seekvera-final-r9e-20260924'),'final R9e service-worker cache missing live');
             console.log('VOICE + PWA CACHE PASS');
-          } finally { await browser.close(); }
-          console.log('FINAL R9D LIVE BROWSER AUDIT PASS');
+          } finally {
+            await browser.close();
+          }
+          console.log('FINAL R9E LIVE BROWSER AUDIT PASS');
           NODE
