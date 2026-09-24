@@ -1,0 +1,85 @@
+name: SEEKVERA R19 language cleanup
+on:
+  push:
+    paths:
+      - '.github/workflows/r19-clean-language-cache.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fix mixed-language UI and stale mobile cache
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          # Home page release/cache-busting markers.
+          p=Path('index.html'); s=p.read_text(encoding='utf-8')
+          s=s.replace('Release 2026-09-24 · Worldwide R16','2026-09-25 · R19')
+          s=s.replace('20260924-r17','20260925-r19')
+          p.write_text(s,encoding='utf-8')
+
+          # Force phones to install a fresh service-worker cache.
+          p=Path('sw.js'); s=p.read_text(encoding='utf-8')
+          s=re.sub(r"const CACHE='[^']+';","const CACHE='seekvera-r19-language-clean-20260925';",s,1)
+          p.write_text(s,encoding='utf-8')
+
+          # Strengthen runtime translation and guarantee the full popular grid in Hindi.
+          p=Path('i18n-ui.js'); s=p.read_text(encoding='utf-8')
+          s=s.replace("const VERSION='20260924-final-r9e';","const VERSION='20260925-r19-no-mixed-language';",1)
+
+          marker='window.__SEEKVERA_R9_QUICK=QUICK;'
+          addon=r'''Object.assign(QUICK.hi,{
+          'Clear visual routes, like a marketplace — no empty cards.':'मार्केटप्लेस जैसे स्पष्ट विकल्प — कोई खाली कार्ड नहीं।',
+          'ALL CATEGORIES →':'सभी श्रेणियाँ →','Buy, sell and compare worldwide':'दुनिया भर में खरीदें, बेचें और तुलना करें','Trips, transport and stays':'यात्राएँ, परिवहन और ठहरने की जगहें','Search flight routes':'उड़ान मार्ग खोजें','Search stays worldwide':'दुनिया भर में ठहरने की जगहें खोजें','Places and experiences':'स्थान और अनुभव','Homes, land and rentals':'घर, ज़मीन और किराये','Vehicles, parts and auto':'वाहन, पार्ट्स और ऑटो','Local and global careers':'स्थानीय और वैश्विक नौकरियाँ','Products and deals':'उत्पाद और ऑफ़र','Food, cafes and dining':'भोजन, कैफ़े और डाइनिंग','Everyday skilled help':'रोज़मर्रा की कुशल सेवाएँ','Machines and equipment':'मशीनें और उपकरण','Boats and marine listings':'नाव और समुद्री लिस्टिंग','Factories and suppliers':'कारखाने और आपूर्तिकर्ता','Freight, cargo and delivery':'फ्रेट, कार्गो और डिलीवरी','POS, accounting and SaaS':'POS, अकाउंटिंग और SaaS','Apps and digital tools':'ऐप्स और डिजिटल टूल्स','Domains, hosting and websites':'डोमेन, होस्टिंग और वेबसाइटें','Power and energy solutions':'बिजली और ऊर्जा समाधान','Schools, courses and skills':'स्कूल, कोर्स और कौशल','Clinics, labs and pharmacies':'क्लिनिक, लैब और फ़ार्मेसी','Licensed provider discovery':'लाइसेंस प्राप्त प्रदाता खोजें','Movies, music and family':'फ़िल्में, संगीत और परिवार','Trusted media and official sources':'विश्वसनीय मीडिया और आधिकारिक स्रोत','Play inside SEEKVERA':'SEEKVERA के अंदर खेलें','Internet, SIM and eSIM':'इंटरनेट, SIM और eSIM','Public Wi‑Fi discovery':'सार्वजनिक Wi‑Fi खोजें','Sourcing and business missions':'सोर्सिंग और व्यावसायिक मिशन','Nearby daily needs':'पास की रोज़मर्रा की ज़रूरतें','Share and install SEEKVERA':'SEEKVERA साझा और इंस्टॉल करें','Business plans and promotion':'बिज़नेस प्लान और प्रमोशन','Live marketplace':'लाइव बाज़ार','Approved real listings only.':'केवल स्वीकृत वास्तविक लिस्टिंग।','OPEN MARKETPLACE →':'मार्केटप्लेस खोलें →','Request anything':'कुछ भी माँगें','Tell SEEKVERA what you need anywhere in the world.':'दुनिया में कहीं भी आपको जो चाहिए, SEEKVERA को बताएं।','About':'विवरण','Privacy':'प्राइवेसी','Terms':'शर्तें','Contact':'संपर्क','Disclosure':'डिस्क्लोज़र'
+          });
+          '''
+          if addon.strip() not in s:
+              s=s.replace(marker,addon+marker,1)
+
+          # Retry failed translation batches in smaller groups. This reduces partial English leftovers.
+          pat=re.compile(r"async function batchTranslate\(l,arr\)\{.*?\n return out\}\nasync function apply",re.S)
+          repl=r'''async function batchTranslate(l,arr){
+           if(!arr.length)return new Map();
+           const out=await nativeBatch(l,arr);
+           const requestBatch=async(batch)=>{if(!batch.length)return;try{const r=await fetch(api('/api/ui-translate'),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language:langName(l),strings:batch})});const d=await r.json().catch(()=>null);if(r.ok&&Array.isArray(d?.translations)&&d.translations.length===batch.length){batch.forEach((src,j)=>{const v=String(d.translations[j]||'').trim();if(v&&v!==src){put(l,src,v);out.set(src,v)}})}}catch{}};
+           let remaining=arr.filter(src=>!out.has(src)&&!cached(l,src));
+           for(let i=0;i<remaining.length;i+=12)await requestBatch(remaining.slice(i,i+12));
+           remaining=arr.filter(src=>!out.has(src)&&!cached(l,src));
+           for(let i=0;i<remaining.length;i+=4)await requestBatch(remaining.slice(i,i+4));
+           return out
+          }
+          async function apply'''
+          s,n=pat.subn(repl,s,1)
+          if n!=1: raise SystemExit('batchTranslate patch target not found')
+
+          # Never leave English category/subtitle fragments mixed into a non-English page while a translation is pending.
+          old="for(const [node,src] of textNodes){if(!node.isConnected)continue;const v=l==='en'?src:cached(l,src);if(v)node.nodeValue=node.nodeValue.replace(node.nodeValue.trim(),v)}"
+          new="for(const [node,src] of textNodes){if(!node.isConnected)continue;const v=l==='en'?src:cached(l,src);if(v)node.nodeValue=node.nodeValue.replace(node.nodeValue.trim(),v);else if(l!=='en'&&node.parentElement?.closest?.('.r5-tile-body small,.r5-section-head p,.r5-ai-note,.r5-foot small'))node.nodeValue=node.nodeValue.replace(node.nodeValue.trim(),'…')}"
+          if old not in s: raise SystemExit('text render patch target not found')
+          s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          node --check i18n-ui.js
+          node --check sw.js
+          grep -q 'seekvera-r19-language-clean-20260925' sw.js
+          grep -q 'ऐप्स और डिजिटल टूल्स' i18n-ui.js
+          grep -q 'SEEKVERA के अंदर खेलें' i18n-ui.js
+          grep -q '2026-09-25 · R19' index.html
+      - name: Commit R19 language cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'SEEKVERA AI Fix'
+          git config user.email 'actions@users.noreply.github.com'
+          git add index.html sw.js i18n-ui.js
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'R19: remove mixed-language leftovers and refresh mobile cache'
+          git push origin main
