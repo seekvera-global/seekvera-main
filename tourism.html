@@ -20,7 +20,7 @@ async function buildGuide(){const d=dest.value.trim();if(!d)return;syncLinks();t
 document.getElementById('guideForm').addEventListener('submit',e=>{e.preventDefault();buildGuide()});document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{dest.value=b.dataset.d;buildGuide()});document.getElementById('anywhereBtn')?.addEventListener('click',()=>dest.focus());document.querySelectorAll('[data-trip]').forEach(b=>b.addEventListener('click',()=>{document.getElementById('interests').value=b.dataset.trip;dest.focus()}));
 document.getElementById('shareBtn').onclick=async()=>{const text=title.textContent+'\n\n'+out.textContent;try{if(navigator.share)await navigator.share({title:title.textContent,text,url:location.href});else{await navigator.clipboard.writeText(text+'\n'+location.href);alert('Trip copied for sharing.')}}catch{}};document.getElementById('copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(out.textContent);document.getElementById('copyBtn').textContent='Copied ✓';setTimeout(()=>document.getElementById('copyBtn').textContent='Copy guide',1400)}catch{}};
 const q=new URLSearchParams(location.search).get('destination');if(q){dest.value=q;buildGuide()}else syncLinks();
-</script><script src="voice-ai.js?v=20260924-final-r9e" defer></script>
+</script><script src="voice-ai.js?v=20260924-r11" defer></script>
 <script src="global-ui.js?v=20260924-final-r9e" defer></script>
 <script src="i18n-ui.js?v=20260924-final-r9e" defer></script>
 <script src="navigation.js?v=20260924-nav-v1" defer></script>
