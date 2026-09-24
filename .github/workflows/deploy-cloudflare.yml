@@ -1,5 +1,5 @@
 name: Deploy SEEKVERA to Cloudflare
-# Final R10 production deployment: worldwide locale + voice hardening + AI country control + single departments section
+# Final R10 production deployment: worldwide locale + voice hardening + universal multilingual AI country control + single departments section
 
 on:
   push:
@@ -53,6 +53,7 @@ jobs:
           const voice=fs.readFileSync('voice-ai.js','utf8');
           const sw=fs.readFileSync('sw.js','utf8');
           const worker=fs.readFileSync('worker.js','utf8');
+          const app=fs.readFileSync('superapp.js','utf8');
           const pm=global.match(/const COUNTRY_PROFILE=Object\.fromEntries\(`([^`]+)`\.split/s);
           assert(pm,'COUNTRY_PROFILE not found');
           const profiles=Object.fromEntries(pm[1].split(';').filter(Boolean).map(x=>{const [cc,v]=x.split(':');const [language,currency]=v.split(',');return [cc,{language,currency}]}));
@@ -62,7 +63,7 @@ jobs:
           const langs=[...lm[1].matchAll(/'([^']+)'/g)].map(m=>m[1]);
           assert(langs.length>=90,`expected >=90 language choices, got ${langs.length}`);
           for(const [cc,p] of Object.entries(profiles)) assert(langs.includes(p.language),`${cc} default language ${p.language} missing from WORLD_LANGS`);
-          assert(nav.includes('bindAICountryControl'),'AI country switching missing');
+          assert(nav.includes('bindAICountryControl'),'local AI country switching missing');
           assert(nav.includes('primeVoiceOnGesture'),'voice gesture primer missing');
           assert(voice.includes('/api/transcribe'),'server ASR route missing from voice runtime');
           assert(voice.includes('MediaRecorder'),'MediaRecorder fallback missing');
@@ -73,8 +74,14 @@ jobs:
           assert(worker.includes('/api/transcribe'),'transcription endpoint missing');
           assert(worker.includes('/api/visual-search'),'visual-search endpoint missing');
           assert(worker.includes('safetyGateVersion'),'safety gate missing');
+          assert(worker.includes("countryAction=countryMatch?{type:'set-country'"),'server multilingual country action missing');
+          assert(worker.includes('Understand this control request in any language.'),'multilingual country-control instruction missing');
+          assert(global.includes("d?.countryAction?.type==='set-country'"),'global chat country action handler missing');
+          assert(global.includes("['ar','fa','ur','he','ps','dv']"),'full RTL locale set missing Dhivehi');
+          assert(app.includes("d?.countryAction?.type==='set-country'"),'home AI country action handler missing');
+          assert(app.includes("new Intl.DisplayNames(['en'],{type:'language'})"),'all-language AI name fallback missing');
           assert(sw.includes('seekvera-r10-worldwide-20260924'),'R10 cache version missing');
-          console.log('R10 STATIC PASS:',Object.keys(profiles).length,'countries;',langs.length,'languages');
+          console.log('R10 STATIC PASS:',Object.keys(profiles).length,'countries;',langs.length,'languages; universal AI country control');
           NODE
           python - <<'PY'
           from pathlib import Path
@@ -181,6 +188,18 @@ jobs:
           grep -q '"category":"jobs"' /tmp/ai.json
           grep -q '"route":"jobs.html"' /tmp/ai.json
           echo 'LIVE R10 AI CONVERSATION MEMORY + JOB ROUTE PASS'
+
+          ctl_code="$(curl -sS -o /tmp/control.json -w '%{http_code}' --max-time 60 -X POST "$SITE/api/ai" -H "User-Agent: $UA" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' --data '{"message":"غيّر دولة التطبيق إلى كندا","country":"Nigeria","language":"Arabic","scope":"worldwide","fast":true}')"
+          test "$ctl_code" = '200'
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/control.json'))
+          a=d.get('countryAction') or {}
+          assert d.get('ok') is True
+          assert a.get('type')=='set-country' and a.get('code')=='CA',d
+          assert '[[COUNTRY:' not in str(d.get('response',''))
+          print('LIVE R10 MULTILINGUAL AI COUNTRY CONTROL PASS',a)
+          PY
 
           tr_code="$(curl -sS -o /tmp/tr.json -w '%{http_code}' --max-time 60 -X POST "$SITE/api/ui-translate" -H "User-Agent: $UA" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' --data '{"language":"Arabic","strings":["Jobs","Shopping","Health"]}')"
           test "$tr_code" = '200'
