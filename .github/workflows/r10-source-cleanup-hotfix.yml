@@ -1,4 +1,4 @@
-name: R10 one-shot source cleanup hotfix
+name: R10 universal multilingual AI country control hotfix
 
 on:
   push:
@@ -17,62 +17,72 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Apply final R10 source fixes
+      - name: Add universal AI app-country action and locale consistency
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
           from pathlib import Path
-          import re
 
-          # Physically keep only one complete departments/categories section.
-          p=Path('index.html')
+          # Worker: reuse the existing multilingual AI call to emit a machine-readable
+          # country action only for explicit app-country change commands.
+          p=Path('worker.js')
           s=p.read_text(encoding='utf-8')
-          s=re.sub(r'<nav class="r8-department-strip"[^>]*>.*?</nav>\s*','',s,count=1,flags=re.S)
-          s=re.sub(r'<aside class="r5-left"[^>]*>.*?</aside>\s*','',s,count=1,flags=re.S)
-          if s.count('id="categories"') != 1: raise SystemExit('home must contain exactly one categories section')
-          if 'r8-department-strip' in s or 'class="r5-left"' in s: raise SystemExit('duplicate category source still present')
-
-          # Keep business onboarding visible inside that same single grid, not in a new row/section.
-          if 'href="seller-plans.html"' not in s:
-              promo='<a class="r5-tile" href="seller-plans.html"><div class="r5-thumb">🚀</div><div class="r5-tile-body"><b>Promote / Business</b><small>Business plans and promotion</small></div></a>'
-              m=re.search(r'(<a class="r5-tile" href="scan\.html">.*?</a>)(</div>\s*</section>)',s,re.S)
-              if not m: raise SystemExit('home categories closing anchor missing')
-              s=s[:m.end(1)]+promo+s[m.end(1):]
+          old="const appctx='APP CONTEXT: selected country/market = '+clean(b.country,120)+'. Search scope = '+clean(b.scope,40)+'. Use this context when relevant; do not ask for it again if already known.';const r=await ai(env,[{role:'system',content:p},{role:'system',content:lock},{role:'system',content:appctx},...hist,{role:'user',content:m}],520,.14);return j(request,{ok:true,response:r.response,model:r.model,language:detected,category:c,route:route(c),liveData:false})"
+          new="const appctx='APP CONTEXT: selected country/market = '+clean(b.country,120)+'. Search scope = '+clean(b.scope,40)+'. Use this context when relevant; do not ask for it again if already known.';const control='APP CONTROL: If and only if the latest user message explicitly asks to set, change, switch or select the SEEKVERA app country or market, append exactly one machine token [[COUNTRY:XX]] where XX is the ISO 3166-1 alpha-2 country code. The token is exempt from LANGUAGE LOCK. Never append it for searches, travel, hotels, jobs, comparisons or statements that merely mention a country. Understand this control request in any language. Examples: switch my country to France -> [[COUNTRY:FR]]; حطلي الدولة اليابان -> [[COUNTRY:JP]]; mets mon pays sur Canada -> [[COUNTRY:CA]].';const r=await ai(env,[{role:'system',content:p},{role:'system',content:lock},{role:'system',content:appctx},{role:'system',content:control},...hist,{role:'user',content:m}],520,.14);const rawResponse=String(r.response||'');const countryMatch=rawResponse.match(/\\[\\[COUNTRY:([A-Z]{2})\\]\\]/i);const response=rawResponse.replace(/\\s*\\[\\[COUNTRY:[A-Z]{2}\\]\\]\\s*/ig,' ').replace(/\\s{2,}/g,' ').trim();const countryAction=countryMatch?{type:'set-country',code:countryMatch[1].toUpperCase()}:null;return j(request,{ok:true,response,model:r.model,language:detected,category:c,route:route(c),countryAction,liveData:false})"
+          if old not in s:
+              if 'countryAction=countryMatch?' not in s:
+                  raise SystemExit('worker AI response anchor missing')
+          else:
+              s=s.replace(old,new,1)
           p.write_text(s,encoding='utf-8')
 
-          # Mobile categories carousel: reset old explicit columns before column auto-flow.
-          p=Path('home-marketplace-r5.css')
+          # Global AI chat: apply the validated action through the same country profile
+          # function that already changes country, language, currency, RTL and i18n.
+          p=Path('global-ui.js')
           s=p.read_text(encoding='utf-8')
-          old='body.sv-home-global .r5-grid{display:grid!important;grid-template-rows:repeat(2,108px)!important;grid-auto-flow:column;grid-auto-columns:minmax(132px,42vw);'
-          new='body.sv-home-global .r5-grid{display:grid!important;grid-template-columns:none!important;grid-template-rows:repeat(2,108px)!important;grid-auto-flow:column;grid-auto-columns:minmax(132px,42vw);'
-          if old in s: s=s.replace(old,new,1)
-          elif new not in s: raise SystemExit('mobile grid anchor missing')
+          s=s.replace("const RTL_LANGS=new Set(['ar','fa','ur','he','ps']);","const RTL_LANGS=new Set(['ar','fa','ur','he','ps','dv']);",1)
+          old="if(!r.ok||!answer)throw Error(plain(d?.error)||'AI unavailable');p.textContent=answer;"
+          new="if(!r.ok||!answer)throw Error(plain(d?.error)||'AI unavailable');if(d?.countryAction?.type==='set-country'){const cc=String(d.countryAction.code||'').toUpperCase();if(COUNTRY_PROFILE[cc])applyCountryProfile(cc,{markExplicit:true})}p.textContent=answer;"
+          if old not in s:
+              if "d?.countryAction?.type==='set-country'" not in s:
+                  raise SystemExit('global chat response anchor missing')
+          else:
+              s=s.replace(old,new,1)
           p.write_text(s,encoding='utf-8')
 
-          # Dhivehi must be RTL in the dynamic UI translation layer too.
-          p=Path('i18n-ui.js')
+          # Home inline AI: send a proper human language name for all 98 languages and
+          # apply server-returned country actions by dispatching the normal selector change.
+          p=Path('superapp.js')
           s=p.read_text(encoding='utf-8')
-          m=re.search(r"const RTL=new Set\(\[([^\]]*)\]\)",s)
-          if not m: raise SystemExit('i18n RTL set missing')
-          vals=[x.strip().strip("'\"") for x in m.group(1).split(',') if x.strip()]
-          if 'dv' not in vals:
-              vals.append('dv')
-              repl="const RTL=new Set(["+','.join(repr(x) for x in vals)+'])'
-              s=s[:m.start()]+repl+s[m.end():]
+          old="function languageName(){let c=lang();if(c==='auto')c=(navigator.language||'en').split(/[-_]/)[0];return LANGUAGE_NAME[c]||c}"
+          new="function languageName(){let c=lang();if(c==='auto')c=(navigator.language||'en').split(/[-_]/)[0];if(LANGUAGE_NAME[c])return LANGUAGE_NAME[c];try{return new Intl.DisplayNames(['en'],{type:'language'}).of(c)||c}catch{return c}}"
+          if old in s:s=s.replace(old,new,1)
+          elif "new Intl.DisplayNames(['en'],{type:'language'})" not in s:raise SystemExit('superapp languageName anchor missing')
+          old="if(!r.ok||!d.response)throw new Error(d.error||'AI unavailable');if(pending){"
+          new="if(!r.ok||!d.response)throw new Error(d.error||'AI unavailable');if(d?.countryAction?.type==='set-country'){const cc=String(d.countryAction.code||'').toUpperCase(),ce=$('#country');if(ce&&[...ce.options].some(o=>o.value===cc)){ce.value=cc;ce.dispatchEvent(new Event('change',{bubbles:true}))}}if(pending){"
+          if old not in s:
+              if "d?.countryAction?.type==='set-country'" not in s:
+                  raise SystemExit('superapp AI response anchor missing')
+          else:
+              s=s.replace(old,new,1)
           p.write_text(s,encoding='utf-8')
 
-          idx=Path('index.html').read_text(encoding='utf-8')
-          css=Path('home-marketplace-r5.css').read_text(encoding='utf-8')
-          ii=Path('i18n-ui.js').read_text(encoding='utf-8')
-          assert idx.count('id="categories"')==1
-          assert 'r8-department-strip' not in idx and 'class="r5-left"' not in idx
-          assert 'href="seller-plans.html"' in idx
-          assert 'grid-template-columns:none!important;grid-template-rows:repeat(2,108px)!important' in css
-          assert "'dv'" in re.search(r"const RTL=new Set\(\[([^\]]*)\]\)",ii).group(1)
-          print('R10 final source cleanup + business route PASS')
+          # Integrity assertions.
+          w=Path('worker.js').read_text(encoding='utf-8')
+          g=Path('global-ui.js').read_text(encoding='utf-8')
+          a=Path('superapp.js').read_text(encoding='utf-8')
+          assert "countryAction=countryMatch?{type:'set-country'" in w
+          assert 'Understand this control request in any language.' in w
+          assert "d?.countryAction?.type==='set-country'" in g
+          assert "['ar','fa','ur','he','ps','dv']" in g
+          assert "d?.countryAction?.type==='set-country'" in a
+          assert "new Intl.DisplayNames(['en'],{type:'language'})" in a
+          print('R10 universal multilingual AI country control PASS')
           PY
-          node --check i18n-ui.js
+          node --check worker.js
+          node --check global-ui.js
+          node --check superapp.js
           git diff --check
       - name: Commit site source fixes
         shell: bash
@@ -84,6 +94,6 @@ jobs:
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add index.html home-marketplace-r5.css i18n-ui.js
-          git commit -m 'R10: add business promotion route to single departments grid'
+          git add worker.js global-ui.js superapp.js
+          git commit -m 'R10: support AI app-country switching in any language'
           git push origin HEAD:main
