@@ -167,7 +167,7 @@ function primeVoiceOnGesture(e){
   }catch{}
 }
 function bindLocaleControls(){
-  document.addEventListener('change',e=>{if(e.target?.id==='country'||e.target?.id==='lang'){if(e.target.id==='lang')localStorage.setItem('seekvera_lang',e.target.value);scheduleLocalePass()}},true);
+  document.addEventListener('change',e=>{if(e.target?.id==='country'||e.target?.id==='lang'){if(e.target.id==='lang')localStorage.setItem('seekvera_lang',e.target.value);queueMicrotask(runLocaleEngines);scheduleLocalePass()}},true);
   window.addEventListener('pageshow',scheduleLocalePass);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)scheduleLocalePass()});
   document.addEventListener('pointerdown',primeVoiceOnGesture,true);
