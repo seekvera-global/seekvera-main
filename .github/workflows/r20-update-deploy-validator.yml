@@ -1,0 +1,64 @@
+name: SEEKVERA R20 deploy validator update
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r20-update-deploy-validator.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Update Cloudflare deployment validation for R20
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('.github/workflows/deploy-cloudflare.yml')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('name: Deploy SEEKVERA R19 to Cloudflare','name: Deploy SEEKVERA R20 to Cloudflare')
+          s=s.replace('seekvera-cloudflare-production-r19','seekvera-cloudflare-production-r20')
+          s=s.replace('Validate R19 worldwide AI source','Validate R20 worldwide AI source')
+          s=s.replace('Verify live R19 production','Verify live R20 production')
+          s=s.replace("for f in worker.js voice-ai.js i18n-ui.js global-ui.js superapp.js sw.js navigation.js; do node --check \"$f\"; done","for f in worker.js voice-ai.js i18n-ui.js global-ui.js superapp.js sw.js navigation.js r20-final-guard.js; do node --check \"$f\"; done")
+          s=s.replace("assert 'COUNTRY_COMMAND_ALIASES' in n and 'लेबनानी' in n","assert 'r20-final-guard.js?v=20260925-r20' in idx\n          assert 'COUNTRY_COMMAND_ALIASES' in n and 'लेबनानी' in n")
+          s=s.replace("assert \"const CACHE='seekvera-r19-language-clean-20260925'\" in sw","assert \"const CACHE='seekvera-r20-final-ui-20260925'\" in sw\n          guard=Path('r20-final-guard.js').read_text(encoding='utf-8')\n          assert \"const VERSION='20260925-r20'\" in guard\n          assert 'EN_DESC=new Set' in guard and 'fixCategories' in guard")
+          s=s.replace("for asset in ['navigation.js','global-ui.js','i18n-ui.js','voice-ai.js']: assert asset in t,(p.name,asset)","for asset in ['navigation.js','global-ui.js','i18n-ui.js','voice-ai.js','r20-final-guard.js']: assert asset in t,(p.name,asset)")
+          s=s.replace("print('R19 SOURCE PASS:'","print('R20 SOURCE PASS:'")
+          s=s.replace('?r19-live=','?r20-live=')
+          s=s.replace('r19-live=1','r20-live=1')
+          s=s.replace("curl -L -fsS --max-time 25 -A \"$UA\" -H 'Cache-Control: no-cache' \"$SITE/i18n-ui.js?r20-live=$i\" -o /tmp/i18n.js || true","curl -L -fsS --max-time 25 -A \"$UA\" -H 'Cache-Control: no-cache' \"$SITE/i18n-ui.js?r20-live=$i\" -o /tmp/i18n.js || true\n            curl -L -fsS --max-time 25 -A \"$UA\" -H 'Cache-Control: no-cache' \"$SITE/r20-final-guard.js?r20-live=$i\" -o /tmp/guard.js || true")
+          old="if grep -q 'navigation.js?v=20260925-r19' /tmp/home.html 2>/dev/null && grep -q 'COUNTRY_COMMAND_ALIASES' /tmp/nav.js 2>/dev/null && grep -q \"VOICE_SILENCE_MS=1250\" /tmp/voice.js 2>/dev/null && grep -q \"language:'auto',scope:'worldwide'\" /tmp/global.js 2>/dev/null && grep -q '20260925-r19-no-mixed-language' /tmp/i18n.js 2>/dev/null; then ok=1; break; fi"
+          new="if grep -q 'navigation.js?v=20260925-r19' /tmp/home.html 2>/dev/null && grep -q 'r20-final-guard.js?v=20260925-r20' /tmp/home.html 2>/dev/null && grep -q 'COUNTRY_COMMAND_ALIASES' /tmp/nav.js 2>/dev/null && grep -q \"VOICE_SILENCE_MS=1250\" /tmp/voice.js 2>/dev/null && grep -q \"language:'auto',scope:'worldwide'\" /tmp/global.js 2>/dev/null && grep -q '20260925-r19-no-mixed-language' /tmp/i18n.js 2>/dev/null && grep -q '20260925-r20' /tmp/guard.js 2>/dev/null; then ok=1; break; fi"
+          if old not in s: raise SystemExit('live condition marker not found')
+          s=s.replace(old,new,1)
+          s=s.replace("grep -q '2026-09-25 · R19' /tmp/home.html","grep -q '2026-09-25 · R20' /tmp/home.html\n          grep -q 'EN_DESC=new Set' /tmp/guard.js\n          grep -q 'max-height:128px' /tmp/guard.js")
+          s=s.replace("echo 'LIVE R19 ASSETS + HEALTH PASS'","echo 'LIVE R20 ASSETS + HEALTH PASS'")
+          s=s.replace("echo 'LIVE R19 AI PASS'","echo 'LIVE R20 AI PASS'")
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Validate updated workflow markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'Deploy SEEKVERA R20 to Cloudflare' .github/workflows/deploy-cloudflare.yml
+          grep -q 'r20-final-guard.js?v=20260925-r20' .github/workflows/deploy-cloudflare.yml
+          grep -q 'seekvera-r20-final-ui-20260925' .github/workflows/deploy-cloudflare.yml
+          grep -q 'LIVE R20 AI PASS' .github/workflows/deploy-cloudflare.yml
+      - name: Commit validator update
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'SEEKVERA AI Fix'
+          git config user.email 'actions@users.noreply.github.com'
+          git add .github/workflows/deploy-cloudflare.yml
+          if git diff --cached --quiet; then echo 'Already updated'; else git commit -m 'R20: update Cloudflare validator and live checks'; git push origin main; fi
