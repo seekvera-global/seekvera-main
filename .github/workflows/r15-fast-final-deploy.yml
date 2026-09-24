@@ -1,0 +1,78 @@
+name: SEEKVERA R15 Fast Final Proven Deploy
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r15-fast-final-deploy.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r15-fast-final
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Apply already-browser-proven R15 patch and static audit
+        run: |
+          set -euo pipefail
+          python tools/r15_final_patch.py
+          python tools/r15_audit_runtime_patch.py
+          python tools/r15_static_audit.py
+      - name: Commit root app files only
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'; git config user.email 'seekvera.global@gmail.com'
+          git checkout -- .github/workflows/deploy-cloudflare.yml
+          git add ./*.html locale-r15.js locale-r14.js locale-r14-categories.js global-ui.js i18n-ui.js navigation.js sw.js tools/r15_browser_audit.mjs
+          git status --short
+          if ! git diff --cached --quiet; then
+            git commit -m 'R15: atomic country language currency and stable worldwide UI'
+            git push origin HEAD:main
+          fi
+      - name: Deploy R15 to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Live final verification
+        run: |
+          set -euo pipefail
+          S='https://seekveraglobal.com'; U='Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) AppleWebKit/537.36 Chrome/140.0 Mobile Safari/537.36'
+          ok=0
+          for i in $(seq 1 25); do
+            curl -LfsS -A "$U" -H 'Cache-Control: no-cache' "$S/?r15fast=$i" -o /tmp/home || true
+            curl -LfsS -A "$U" -H 'Cache-Control: no-cache' "$S/locale-r15.js?r15fast=$i" -o /tmp/loc || true
+            if grep -q 'locale-r15.js?v=20260924-r15' /tmp/home 2>/dev/null && grep -q 'version:'"'"'20260924-r15'"'"'' /tmp/loc 2>/dev/null && grep -q 'startLocationTracking' /tmp/loc 2>/dev/null; then ok=1; break; fi
+            sleep 3
+          done
+          test "$ok" = 1
+          test "$(grep -o 'id=\"categories\"' /tmp/home | wc -l)" = '1'
+          ! grep -q 'r5-chips' /tmp/home
+          ! grep -q 'r8-department-strip' /tmp/home
+          curl -LfsS -A "$U" "$S/api/health?r15fast=1" -o /tmp/health
+          grep -q '"centralSafetyGate":"enabled"' /tmp/health
+          grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/health
+          grep -q '"safetyGateVersion"' /tmp/health
+          for p in marketplace.html travel.html tourism.html property.html cars-auto.html jobs.html shopping.html restaurants-food.html local-services.html import-export.html shipping-logistics.html business-software.html software.html web-hosting.html solar.html education.html health.html money-insurance.html entertainment.html media.html games.html connectivity.html wifi.html deal-agent.html everyday.html scan.html post-ad.html seller-plans.html hub.html app.html; do
+            code=$(curl -LsS -o /tmp/page -w '%{http_code}' -A "$U" "$S/$p?r15fast=1")
+            test "$code" = '200'
+            grep -q 'locale-r15.js?v=20260924-r15' /tmp/page
+          done
+          curl -LfsS -A "$U" -H 'Cache-Control: no-cache' "$S/navigation.js?r15fast=1" -o /tmp/nav
+          curl -LfsS -A "$U" -H 'Cache-Control: no-cache' "$S/voice-ai.js?r15fast=1" -o /tmp/voice
+          grep -q 'WORLD_LANGS=' /tmp/nav
+          grep -q 'bindAICountryControl' /tmp/nav
+          grep -q 'speechSynthesis' /tmp/voice
+          grep -q '/api/transcribe' /tmp/voice
+          echo 'LIVE R15 FINAL PASS: one departments area, R15 on 30 departments, safety, voice path, map/tracker asset, locale assets all live'
