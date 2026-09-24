@@ -1,0 +1,43 @@
+name: SEEKVERA multilingual intent routing R8
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/multilingual-intent-r8.yml'
+      - '.github/scripts/multilingual_intent_r8.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply multilingual routing patch
+        run: python .github/scripts/multilingual_intent_r8.py
+      - name: Validate source
+        run: |
+          set -euo pipefail
+          node --check worker.js
+          grep -q 'async function classifyIntent' worker.js
+          grep -q 'INTENT_ALLOWED' worker.js
+          grep -q 'c=await classifyIntent(env,contextText)' worker.js
+          grep -q 'Return ONLY the single lowercase token' worker.js
+          echo 'MULTILINGUAL INTENT SOURCE PASS'
+      - name: Commit patch
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add worker.js
+          if git diff --cached --quiet; then
+            echo 'No worker changes required.'
+          else
+            git commit -m 'Route multilingual AI requests to the correct department'
+            git push origin main
+          fi
