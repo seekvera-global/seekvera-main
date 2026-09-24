@@ -1,0 +1,54 @@
+name: SEEKVERA Final R9 locale + voice
+
+on:
+  push:
+    paths:
+      - '.github/scripts/final_r9.py'
+      - '.github/workflows/final-r9-locale-voice.yml'
+      - 'locale-guard-r9.js'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply R9 patch
+        run: python .github/scripts/final_r9.py
+      - name: Validate JavaScript and page coverage
+        run: |
+          set -euo pipefail
+          node --check locale-guard-r9.js
+          node --check voice-ai.js
+          grep -q 'VOICE_SILENCE_MS=3200' voice-ai.js
+          grep -q 'Android|iPhone|iPad|iPod' voice-ai.js
+          python - <<'PY'
+          from pathlib import Path
+          pages=[]
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google'): continue
+              s=p.read_text(encoding='utf-8')
+              if 'i18n-ui.js' in s:
+                  assert 'locale-guard-r9.js' in s,p.name
+                  assert s.index('locale-guard-r9.js') < s.index('i18n-ui.js'),p.name
+                  pages.append(p.name)
+          assert len(pages)>=44,len(pages)
+          print('R9 guard coverage:',len(pages))
+          PY
+      - name: Commit R9 production changes
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add voice-ai.js locale-guard-r9.js .github/scripts/az_quality_r8.py .github/workflows/deploy-cloudflare.yml .github/workflows/az-quality-r8.yml ./*.html
+          if git diff --cached --quiet; then
+            echo 'No changes to commit'
+          else
+            git commit -m 'Finalize R9 visible translation and natural mobile voice'
+            git push origin HEAD:main
+          fi
