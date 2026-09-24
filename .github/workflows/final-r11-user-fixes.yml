@@ -30,16 +30,15 @@ jobs:
           from pathlib import Path
           import re
 
-          # 1) Home must expose exactly one departments/categories area.
+          # Home: only one departments/categories area.
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
-          before=s
           s,n=re.subn(r'\s*<div class="r5-chips">.*?</div>', '', s, count=1, flags=re.S)
           if n != 1:
               raise SystemExit(f'Expected exactly one r5-chips quick department row, removed {n}')
           p.write_text(s,encoding='utf-8')
 
-          # 2) Speaker button means PLAY/REPLAY, not an accidental mute toggle.
+          # Speaker: tap means PLAY/REPLAY and forced playback starts in the user gesture.
           p=Path('voice-ai.js')
           s=p.read_text(encoding='utf-8')
           old=";setTimeout(()=>play(0,0),force?0:50)}"
@@ -59,7 +58,7 @@ jobs:
           s=s.replace(old,new,1)
           p.write_text(s,encoding='utf-8')
 
-          # 3) Bust stale mobile/browser copies of voice runtime on every public HTML page.
+          # Bust stale voice runtime on every public HTML page.
           changed_pages=0
           for hp in Path('.').glob('*.html'):
               t=hp.read_text(encoding='utf-8')
@@ -70,7 +69,7 @@ jobs:
           if changed_pages < 40:
               raise SystemExit(f'Expected voice cache-bust on >=40 pages, got {changed_pages}')
 
-          # 4) Force service-worker cache refresh without changing the existing release contract.
+          # Force service-worker cache refresh.
           p=Path('sw.js')
           s=p.read_text(encoding='utf-8')
           if 'seekvera-r10-worldwide-20260924' in s:
@@ -78,13 +77,6 @@ jobs:
           elif 'seekvera-r11-worldwide-20260924' not in s:
               raise SystemExit('Expected service-worker cache marker not found')
           p.write_text(s,encoding='utf-8')
-
-          # 5) Repair stale health-check marker so it no longer reports a false failure.
-          hp=Path('.github/workflows/site-health.yml')
-          if hp.exists():
-              s=hp.read_text(encoding='utf-8')
-              s=s.replace("'Ask SEEKVERA'", "'SEEKVERA AI'")
-              hp.write_text(s,encoding='utf-8')
 
           print('R11 patch complete; HTML pages cache-busted:',changed_pages)
           PY
@@ -131,7 +123,7 @@ jobs:
           set -euo pipefail
           git config user.name 'seekvera-bot'
           git config user.email 'actions@users.noreply.github.com'
-          git add index.html voice-ai.js sw.js .github/workflows/site-health.yml *.html
+          git add index.html voice-ai.js sw.js *.html
           if git diff --cached --quiet; then
             echo 'No source changes to commit'
           else
