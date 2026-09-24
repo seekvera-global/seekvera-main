@@ -1,0 +1,118 @@
+name: SEEKVERA R17 worldwide AI final
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/r17_ai_worldwide_patch.py'
+      - '.github/workflows/r17-worldwide-ai-final.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  SITE: https://seekveraglobal.com
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Apply R17 AI fixes
+        run: python3 tools/r17_ai_worldwide_patch.py
+      - name: Validate JavaScript
+        run: |
+          node --check voice-ai.js
+          node --check global-ui.js
+          node --check navigation.js
+          node --check worker.js
+          grep -q "VOICE_SILENCE_MS=1250" voice-ai.js
+          grep -q "audio,language:'auto'" voice-ai.js
+          grep -q "language:'auto',scope:'worldwide'" global-ui.js
+          grep -q "COUNTRY_COMMAND_ALIASES" navigation.js
+          grep -q "लेबनानी" navigation.js
+          grep -q "r17-message-language-auto-glm-first" worker.js
+      - name: Commit corrected runtime
+        run: |
+          git config user.name 'SEEKVERA AI Fix'
+          git config user.email 'actions@users.noreply.github.com'
+          git add voice-ai.js global-ui.js navigation.js worker.js sw.js '*.html'
+          if git diff --cached --quiet; then
+            echo 'R17 already applied.'
+          else
+            git commit -m 'Fix worldwide AI language voice country control R17'
+            git push origin HEAD:main
+          fi
+
+  live-proof:
+    needs: patch
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Wait for R17 production deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          U='Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/145 Mobile Safari/537.36'
+          ok=0
+          for i in $(seq 1 60); do
+            curl -LfsS --max-time 20 -A "$U" -H 'Cache-Control: no-cache' "$SITE/?r17=$i" -o /tmp/home || true
+            if grep -q 'navigation.js?v=20260924-r17' /tmp/home 2>/dev/null && grep -q 'voice-ai.js?v=20260924-r17' /tmp/home 2>/dev/null && grep -q 'global-ui.js?v=20260924-r17' /tmp/home 2>/dev/null; then ok=1; break; fi
+            sleep 5
+          done
+          test "$ok" = 1
+          curl -LfsS --max-time 20 -A "$U" -H 'Cache-Control: no-cache' "$SITE/voice-ai.js?r17=1" -o /tmp/voice
+          curl -LfsS --max-time 20 -A "$U" -H 'Cache-Control: no-cache' "$SITE/navigation.js?r17=1" -o /tmp/nav
+          curl -LfsS --max-time 20 -A "$U" -H 'Cache-Control: no-cache' "$SITE/global-ui.js?r17=1" -o /tmp/global
+          grep -q "VOICE_SILENCE_MS=1250" /tmp/voice
+          grep -q "audio,language:'auto'" /tmp/voice
+          grep -q 'COUNTRY_COMMAND_ALIASES' /tmp/nav
+          grep -q 'लेबनानी' /tmp/nav
+          grep -q "language:'auto',scope:'worldwide'" /tmp/global
+      - name: Install browser runtime
+        run: |
+          npm install --no-save playwright@1.58.2
+          npx playwright install --with-deps chromium
+      - name: Prove exact reported case and English-inside-Hindi AI
+        run: |
+          cat > /tmp/r17-proof.mjs <<'JS'
+          import { chromium, devices } from 'playwright';
+          const SITE=process.env.SITE;
+          const assert=(v,m)=>{if(!v)throw new Error(m)};
+          const browser=await chromium.launch({headless:true});
+          const context=await browser.newContext({...devices['Pixel 5']});
+          const page=await context.newPage();
+          let aiRequests=0;
+          page.on('request',r=>{try{if(new URL(r.url()).pathname==='/api/ai')aiRequests++}catch{}});
+          await page.goto(SITE+'/?r17-browser=1',{waitUntil:'domcontentloaded',timeout:60000});
+          await page.waitForFunction(()=>document.querySelector('#country')?.options?.length>240&&document.querySelector('#lang')?.options?.length>=90,null,{timeout:60000});
+          await page.selectOption('#country','IN');await page.dispatchEvent('#country','change');
+          await page.waitForFunction(()=>document.querySelector('#lang')?.value==='hi'&&document.querySelector('#currency')?.value==='INR',null,{timeout:30000});
+          aiRequests=0;
+          await page.fill('#aiChatInput','Change the app लेबनानी');
+          await page.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await page.waitForFunction(()=>document.querySelector('#country')?.value==='LB'&&document.querySelector('#lang')?.value==='ar'&&document.querySelector('#currency')?.value==='LBP',null,{timeout:30000});
+          await page.waitForTimeout(500);
+          assert(aiRequests===0,'Lebanese country command incorrectly called /api/ai: '+aiRequests);
+          const ui=await page.evaluate(()=>{const m=document.querySelector('#aiMessages'),chat=document.querySelector('#aiChat'),c=getComputedStyle(m);const a=chat.getBoundingClientRect();return{overflow:Math.max(0,document.documentElement.scrollWidth-innerWidth),overscroll:c.overscrollBehaviorY||c.overscrollBehavior,touch:c.touchAction,y:a.y,h:a.height}});
+          assert(ui.overflow<=3,'horizontal page shake/overflow: '+JSON.stringify(ui));
+          assert(ui.overscroll!=='contain','chat still traps vertical scrolling: '+JSON.stringify(ui));
+          await page.selectOption('#country','IN');await page.dispatchEvent('#country','change');
+          await page.waitForFunction(()=>document.querySelector('#lang')?.value==='hi',null,{timeout:30000});
+          const before=await page.locator('#aiMessages > *').count();
+          await page.fill('#aiChatInput','Hello. Please answer briefly in English: do you understand me?');
+          await page.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await page.waitForFunction(n=>document.querySelectorAll('#aiMessages > *').length>n,before,{timeout:5000});
+          await page.waitForFunction(()=>{const xs=[...document.querySelectorAll('#aiMessages > *')];const t=(xs.at(-1)?.textContent||'').trim();return t&&!/thinking/i.test(t)},null,{timeout:45000});
+          const answer=await page.locator('#aiMessages > *').last().innerText();
+          assert(!/temporarily unavailable|please try again/i.test(answer),'live AI unavailable: '+answer);
+          assert(/[A-Za-z]/.test(answer),'English-in-Hindi response was not Latin/English: '+answer);
+          console.log('R17 LIVE PASS',JSON.stringify({countryCommand:'LB/ar/LBP without API',aiRequests,answer:answer.slice(0,180),ui}));
+          await browser.close();
+          JS
+          node /tmp/r17-proof.mjs
