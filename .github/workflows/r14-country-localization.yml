@@ -1,0 +1,132 @@
+name: SEEKVERA R14 Country Localization
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r14-country-localization.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r14-country-localization
+  cancel-in-progress: true
+
+jobs:
+  localize-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Inject R14 deterministic locale runtime into every public page
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          tag1='<script src="locale-r14-categories.js?v=20260924-r14" defer></script>'
+          tag2='<script src="locale-r14.js?v=20260924-r14" defer></script>'
+          changed=[]
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google'):
+                  continue
+              s=p.read_text(encoding='utf-8')
+              t=s
+              if tag1 not in t or tag2 not in t:
+                  # remove any earlier R14 tags first so ordering is deterministic
+                  t=re.sub(r'\s*<script src="locale-r14-categories\.js\?v=[^"]+" defer></script>','',t)
+                  t=re.sub(r'\s*<script src="locale-r14\.js\?v=[^"]+" defer></script>','',t)
+                  block='\n'+tag1+'\n'+tag2+'\n'
+                  anchor=re.search(r'<script src="i18n-ui\.js\?v=[^"]+" defer></script>',t)
+                  if anchor:
+                      t=t[:anchor.end()]+block+t[anchor.end():]
+                  elif '</body>' in t:
+                      t=t.replace('</body>',block+'</body>',1)
+                  else:
+                      raise SystemExit(f'No script/body anchor in {p}')
+              if t!=s:
+                  p.write_text(t,encoding='utf-8')
+                  changed.append(p.name)
+          print('R14 injected pages:',len(changed))
+          assert len(list(Path('.').glob('*.html'))) >= 44
+          PY
+
+      - name: Validate all country profiles have deterministic locale packs
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check locale-r14.js
+          node --check locale-r14-categories.js
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          g=Path('global-ui.js').read_text(encoding='utf-8')
+          core=Path('locale-r14.js').read_text(encoding='utf-8')
+          cats=Path('locale-r14-categories.js').read_text(encoding='utf-8')
+          pm=re.search(r'const COUNTRY_PROFILE=Object\.fromEntries\(`([^`]+)`\.split',g,re.S)
+          assert pm
+          profiles={x.split(':',1)[0]:x.split(':',1)[1].split(',',1)[0] for x in pm.group(1).split(';') if x}
+          assert len(profiles)==248,len(profiles)
+          core_langs=set(re.findall(r'^([a-z]{2,3}):\[',core,re.M))
+          cat_langs=set(re.findall(r'^([a-z]{2,3}):\[',cats,re.M))
+          missing_core=sorted({v for v in profiles.values() if v not in core_langs})
+          missing_cats=sorted({v for v in profiles.values() if v not in cat_langs})
+          assert not missing_core,missing_core
+          assert not missing_cats,missing_cats
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google'): continue
+              s=p.read_text(encoding='utf-8')
+              assert 'locale-r14-categories.js?v=20260924-r14' in s,p.name
+              assert 'locale-r14.js?v=20260924-r14' in s,p.name
+          idx=Path('index.html').read_text(encoding='utf-8')
+          assert idx.count('id="categories"')==1
+          assert 'GLOBAL AI MARKETPLACE' in idx
+          assert 'PANDAIGDIGANG AI MARKETPLACE' in core
+          assert 'سوق عالمي بالذكاء الاصطناعي' in core
+          assert 'Kapag binago ang bansa' in core
+          assert 'تغيير الدولة' in core
+          print('R14 COUNTRY COVERAGE PASS:',len(profiles),'country/territory profiles;',len(set(profiles.values())),'country-default languages')
+          PY
+
+      - name: Commit R14 page injection
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add -- '*.html'
+          if git diff --cached --quiet; then
+            echo 'No HTML injection changes needed.'
+          else
+            git commit -m 'R14: activate deterministic country localization on all pages'
+            git push origin HEAD:main
+          fi
+
+      - name: Deploy R14 to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Verify live R14 localization assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          SITE='https://seekveraglobal.com'
+          UA='Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Mobile Safari/537.36'
+          ok=0
+          for i in $(seq 1 20); do
+            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/?r14-live=$i" -o /tmp/home.html || true
+            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/locale-r14.js?r14-live=$i" -o /tmp/locale.js || true
+            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/locale-r14-categories.js?r14-live=$i" -o /tmp/cats.js || true
+            if grep -q 'locale-r14.js?v=20260924-r14' /tmp/home.html 2>/dev/null && grep -q 'PANDAIGDIGANG AI MARKETPLACE' /tmp/locale.js 2>/dev/null && grep -q 'سوق عالمي بالذكاء الاصطناعي' /tmp/locale.js 2>/dev/null && grep -q "fil:\['Pamilihan'" /tmp/cats.js 2>/dev/null; then ok=1; break; fi
+            sleep 4
+          done
+          test "$ok" = '1'
+          echo 'LIVE R14 COUNTRY LOCALIZATION PASS'
