@@ -23,6 +23,16 @@ jobs:
       - name: Apply R8 upgrade
         run: python .github/scripts/az_quality_r8.py
 
+      - name: Normalize voice patch boundary
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('voice-ai.js')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('function toggleMutefunction toggleMute','function toggleMute')
+          p.write_text(s,encoding='utf-8')
+          PY
+
       - name: Validate JavaScript
         run: |
           set -euo pipefail
