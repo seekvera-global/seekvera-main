@@ -48,7 +48,7 @@ if(window.__seekveraI18nFinalR3)return;window.__seekveraI18nFinalR3=true;
 const HOST=location.hostname;const WORKER=(HOST==='seekveraglobal.com'||HOST==='www.seekveraglobal.com'||HOST.endsWith('workers.dev'))?'':'https://seekvera-main.seekvera-global.workers.dev';
 const api=p=>`${WORKER}${p}`;
 const SUPPORTED=['en','ar','fr','zh','es','hi','pt','de','ja','ko','id','tr','ru','ur','bn','vi','it','sw','th','fa','pl','nl','ms','fil','ha','yo','ig','am'];
-const RTL=new Set(['ar','fa','ur','he','ps']);
+const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const LANG_NAME={en:'English',ar:'Arabic',fr:'French',zh:'Chinese',es:'Spanish',hi:'Hindi',pt:'Portuguese',de:'German',ja:'Japanese',ko:'Korean',id:'Indonesian',tr:'Turkish',ru:'Russian',ur:'Urdu',bn:'Bengali',vi:'Vietnamese',it:'Italian',sw:'Swahili',th:'Thai',fa:'Persian',pl:'Polish',nl:'Dutch',ms:'Malay',fil:'Filipino',ha:'Hausa',yo:'Yoruba',ig:'Igbo',am:'Amharic'};
 const UI={
 en:['Country / Region','Worldwide · All countries','Language','Auto · Device language','Currency','Install','Post Ad'],
