@@ -1,4 +1,4 @@
-/* SEEKVERA universal navigation + worldwide locale/voice hardening R10 */
+/* SEEKVERA universal navigation + worldwide locale/voice hardening R12 */
 (()=>{'use strict';
 const HOME_PATHS=new Set(['/','/index.html','/app.html']);
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
@@ -84,13 +84,13 @@ async function translateStaticAI(){
   if(l==='en'){box.textContent=source;box.dataset.svLang='en';return;}
   if(box.dataset.svLang===l)return;
   const key='sv_static_ai_'+l+'_'+source;
-  const cached=sessionStorage.getItem(key);if(cached){box.textContent=cached;box.dataset.svLang=l;return;}
+  let cached='';try{cached=localStorage.getItem(key)||sessionStorage.getItem(key)||''}catch{}if(cached){box.textContent=cached;box.dataset.svLang=l;return;}
   const mine=++translateSeq;
   try{
     const language=displayLanguage(l,'en');
     const r=await fetch('/api/ui-translate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language,strings:[source]})});
     const d=await r.json().catch(()=>null);const t=String(d?.translations?.[0]||'').trim();
-    if(r.ok&&t&&mine===translateSeq){sessionStorage.setItem(key,t);box.textContent=t;box.dataset.svLang=l;}
+    if(r.ok&&t&&mine===translateSeq){try{localStorage.setItem(key,t)}catch{}box.textContent=t;box.dataset.svLang=l;}
   }catch{}
 }
 function runLocaleEngines(){
@@ -114,6 +114,8 @@ function stripDuplicateDepartments(){
   const st=document.createElement('style');st.id='svR10HomeCleanup';st.textContent='@media(min-width:980px){body.sv-home-global .r5-market,.r5-market{grid-template-columns:minmax(0,1fr) 240px!important}}';document.head.appendChild(st);
 }
 function normalizeText(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[’'`´]/g,'').replace(/[^\p{L}\p{N}]+/gu,' ').trim()}
+const COUNTRY_TERMS='country|region|دولة|الدولة|بلد|البلد|منطقة|pays|région|国家|地区|país|región|देश|क्षेत्र|região|land|国|地域|국가|지역|negara|wilayah|ülke|bölge|страна|регион|ملک|علاقہ|দেশ|অঞ্চল|quốc gia|khu vực|paese|regione|nchi|eneo|ประเทศ|ภูมิภาค|کشور|منطقه|kraj|regio|bansa|rehiyon|ƙasa|yanki|orilẹ-ede|agbegbe|obodo|mpaghara|ሀገር|ክልል|מדינה|אזור|χώρα|περιοχή|країна|регіон|țară|regiune|země|krajina|régión|ország|régió|maa|alue|държава|država|regija|šalis|regionas|valsts|reģions|riik|piirkond|regió|herrialde|eskualde|rexión|svæði|vend|rajon|земја|ქვეყანა|რეგიონი|երկիր|տարածաշրջան|ölkə|ел|аймақ|mamlakat|hudud|өлкө|аймак|кишвар|минтақа|ýurt|sebit|රට|කලාපය|நாடு|பகுதி|దేశం|ప్రాంతం|രാജ്യം|പ്രദേശം|प्रदेश|દેશ|ਪ੍ਰਦੇਸ਼|ਦੇਸ਼|ਖੇਤਰ|ប្រទេស|តំបន់|ປະເທດ|ພາກພື້ນ|နိုင်ငံ|ဒေသ|улс|бүс|izwe|isifunda|streek|краіна|рэгіён|ሃገር|øki|nuna|igihugu|akarere|atunuu|itulagi|fonua|dal|gobol|هېواد|سیمه|ޤައުމު|ސަރަހައްދު|pajji|reġjun|firenena|faritra|tír|réigiún|gwlad|rhanbarth|whenua|rohe|lân|regioun|pajais|regiun|welat|herêm|ilizwe|ummandla|naha|sebaka|naga|kgaolo'.split('|').map(normalizeText).filter(Boolean);
+function hasCountryTerm(text){const s=normalizeText(text),pad=' '+s+' ';return COUNTRY_TERMS.some(t=>/^[a-z0-9\- ]+$/i.test(t)?pad.includes(' '+t+' '):s.includes(t))}
 function isCountryCommand(text){
   const s=normalizeText(text);
   return /\b(?:set|switch|change|choose|select)\b.{0,35}\b(?:country|region)\b/.test(s)
@@ -125,7 +127,8 @@ function isCountryCommand(text){
     || /\b(?:degistir|degistir|sec|seç)\b.{0,35}\b(?:ulke|ülke|bolge|bölge)\b/.test(s)
     || /(?:смени|сменить|выбери|выбрать|установи).{0,35}(?:стран|регион)/u.test(String(text||''))
     || /\b(?:cambia|imposta|scegli)\b.{0,35}\b(?:paese|regione)\b/.test(s)
-    || /(?:ملک|ملک کو|ملک بدل).{0,30}(?:بدل|منتخب|چن)/u.test(String(text||''));
+    || /(?:ملک|ملک کو|ملک بدل).{0,30}(?:بدل|منتخب|چن)/u.test(String(text||''))
+    || hasCountryTerm(text);
 }
 function countryNames(code){
   const out=new Set([code]);

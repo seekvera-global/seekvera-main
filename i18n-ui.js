@@ -2,7 +2,7 @@
 (()=>{'use strict';
 if(window.__seekveraLocaleGuardR9)return;window.__seekveraLocaleGuardR9=true;
 const VERSION='20260924-final-r9e';
-const textSource=new WeakMap(),attrSource=new WeakMap(),memory=new Map();
+const textSource=new WeakMap(),attrSource=new WeakMap(),memory=new Map(),nativeTranslators=new Map();
 let applying=false,pending=false,timer=0,seq=0;
 const SKIP='script,style,noscript,code,pre,svg,select,option,textarea,#aiMessages,#aiResult,.ai-msg,.sv-ai-answer,.sv-ai-actions,[data-no-translate]';
 const QUICK={
@@ -23,9 +23,12 @@ function capture(root=document){
  for(const el of els){if(el.closest?.(SKIP))continue;let m=attrSource.get(el);if(!m){m={};attrSource.set(el,m)}for(const a of ['placeholder','aria-label','title']){const s=el.getAttribute?.(a)?.trim();if(worth(s)&&!(a in m))m[a]=s}}
 }
 function cacheKey(l,s){return l+'\u0000'+s}
-function cached(l,s){return memory.get(cacheKey(l,s))||QUICK[l]?.[s]||''}
-function put(l,s,v){if(v&&v.trim())memory.set(cacheKey(l,s),v.trim())}
-async function batchTranslate(l,arr){if(!arr.length)return new Map();const out=new Map();for(let i=0;i<arr.length;i+=12){const batch=arr.slice(i,i+12);try{const r=await fetch(api('/api/ui-translate'),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language:langName(l),strings:batch})});const d=await r.json().catch(()=>null);if(r.ok&&Array.isArray(d?.translations)&&d.translations.length===batch.length){batch.forEach((s,j)=>{const v=String(d.translations[j]||'').trim();if(v){put(l,s,v);out.set(s,v)}})}}catch{}}
+function diskKey(l,s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return'sv_i18n_r12_'+l+'_'+(h>>>0).toString(36)}
+function cached(l,s){const mem=memory.get(cacheKey(l,s))||QUICK[l]?.[s]||'';if(mem)return mem;try{return localStorage.getItem(diskKey(l,s))||''}catch{return''}}
+function put(l,s,v){v=String(v||'').trim();if(!v)return;memory.set(cacheKey(l,s),v);try{localStorage.setItem(diskKey(l,s),v)}catch{}}
+async function nativeTranslator(l){if(!('Translator'in self)||l==='en')return null;if(nativeTranslators.has(l))return nativeTranslators.get(l);try{const a=await Translator.availability({sourceLanguage:'en',targetLanguage:l});if(a!=='available')return null;const t=await Translator.create({sourceLanguage:'en',targetLanguage:l});nativeTranslators.set(l,t);return t}catch{return null}}
+async function nativeBatch(l,arr){const out=new Map(),t=await nativeTranslator(l);if(!t)return out;for(const s of arr){try{const v=String(await t.translate(s)||'').trim();if(v&&v!==s){put(l,s,v);out.set(s,v)}}catch{}}return out}
+async function batchTranslate(l,arr){if(!arr.length)return new Map();const out=await nativeBatch(l,arr),remaining=arr.filter(s=>!out.has(s)&&!cached(l,s));for(let i=0;i<remaining.length;i+=12){const batch=remaining.slice(i,i+12);try{const r=await fetch(api('/api/ui-translate'),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language:langName(l),strings:batch})});const d=await r.json().catch(()=>null);if(r.ok&&Array.isArray(d?.translations)&&d.translations.length===batch.length){batch.forEach((s,j)=>{const v=String(d.translations[j]||'').trim();if(v){put(l,s,v);out.set(s,v)}})}}catch{}}
  return out}
 async function apply(){if(applying){pending=true;return}applying=true;pending=false;const my=++seq;capture(document);const l=lang();document.documentElement.lang=l;document.documentElement.dir=['ar','fa','ur','he','ps'].includes(l)?'rtl':'ltr';
  const textNodes=[],attrs=[],need=new Set();
@@ -47,7 +50,7 @@ window.SEEKVERA_LOCALE_GUARD_R9={apply,schedule,version:VERSION};
 if(window.__seekveraI18nFinalR3)return;window.__seekveraI18nFinalR3=true;
 const HOST=location.hostname;const WORKER=(HOST==='seekveraglobal.com'||HOST==='www.seekveraglobal.com'||HOST.endsWith('workers.dev'))?'':'https://seekvera-main.seekvera-global.workers.dev';
 const api=p=>`${WORKER}${p}`;
-const SUPPORTED=['en','ar','fr','zh','es','hi','pt','de','ja','ko','id','tr','ru','ur','bn','vi','it','sw','th','fa','pl','nl','ms','fil','ha','yo','ig','am'];
+const SUPPORTED=['en','ar','fr','zh','es','hi','pt','de','ja','ko','id','tr','ru','ur','bn','vi','it','sw','th','fa','pl','nl','ms','fil','ha','yo','ig','am','he','el','uk','ro','cs','sk','hu','sv','no','da','fi','bg','hr','sr','sl','lt','lv','et','ca','eu','gl','is','sq','mk','ka','hy','az','kk','uz','ky','tg','tk','ne','si','ta','te','ml','mr','gu','pa','km','lo','my','mn','zu','af','be','bs','dz','ti','fo','kl','rw','sm','to','so','ps','dv','mt','mg','ga','cy','mi','fy','lb','rm','ku','xh','st','tn'];
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const LANG_NAME={en:'English',ar:'Arabic',fr:'French',zh:'Chinese',es:'Spanish',hi:'Hindi',pt:'Portuguese',de:'German',ja:'Japanese',ko:'Korean',id:'Indonesian',tr:'Turkish',ru:'Russian',ur:'Urdu',bn:'Bengali',vi:'Vietnamese',it:'Italian',sw:'Swahili',th:'Thai',fa:'Persian',pl:'Polish',nl:'Dutch',ms:'Malay',fil:'Filipino',ha:'Hausa',yo:'Yoruba',ig:'Igbo',am:'Amharic'};
 const UI={
