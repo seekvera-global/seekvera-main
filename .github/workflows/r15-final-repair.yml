@@ -1,0 +1,108 @@
+name: SEEKVERA R15 Final Repair Audit Deploy
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r15-final-repair.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r15-final-repair
+  cancel-in-progress: true
+
+jobs:
+  final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Apply final patch
+        run: |
+          set -euo pipefail
+          python tools/r15_final_patch.py
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('tools/r15_browser_audit.mjs');s=p.read_text()
+          old="await context.addInitScript(()=>{\n    localStorage.setItem('seekvera_country','WW');"
+          new="await context.addInitScript(()=>{\n    if(localStorage.getItem('r15_audit_seeded'))return;\n    localStorage.setItem('r15_audit_seeded','1');\n    localStorage.setItem('seekvera_country','WW');"
+          if old not in s: raise SystemExit('audit seed anchor missing')
+          p.write_text(s.replace(old,new,1))
+          PY
+
+      - name: Static A-to-Z source audit
+        run: |
+          set -euo pipefail
+          for f in locale-r15.js locale-r14.js locale-r14-categories.js global-ui.js i18n-ui.js navigation.js voice-ai.js worker.js sw.js; do node --check "$f"; done
+          python - <<'PY'
+          from pathlib import Path
+          import re,json
+          r=Path('locale-r15.js').read_text();g=Path('global-ui.js').read_text();n=Path('navigation.js').read_text();i=Path('i18n-ui.js').read_text();a=Path('locale-r14.js').read_text();c=Path('locale-r14-categories.js').read_text();idx=Path('index.html').read_text();w=Path('worker.js').read_text();sw=Path('sw.js').read_text();v=Path('voice-ai.js').read_text()
+          def prof(x):
+              m=re.search(r'Object\.fromEntries\(`([^`]+)`\.split',x,re.S);assert m
+              return {z.split(':',1)[0]:tuple(z.split(':',1)[1].split(',',1)) for z in m.group(1).split(';') if z}
+          rp,gp=prof(r),prof(g);assert rp==gp and len(rp)==248
+          lm=re.search(r'const WORLD_LANGS=\[([^\]]+)\]',n,re.S);assert lm
+          langs=re.findall(r"'([^']+)'",lm.group(1));assert len(langs)==98
+          lp=json.loads(re.search(r'const LANG_PRIMARY=(\{[^;]+\});',r,re.S).group(1));cp=json.loads(re.search(r'const CURRENCY_PRIMARY=(\{[^;]+\});',r,re.S).group(1));assert set(lp)==set(langs) and len(cp)>=150
+          assert all(x[0] in lp and x[1] in cp for x in rp.values())
+          dl={x[0] for x in rp.values()};al=set(re.findall(r'^([a-z]{2,3}):\[',a,re.M));cl=set(re.findall(r'^([a-z]{2,3}):\[',c,re.M));cl.add('en');assert dl<=al and dl<=cl
+          pages=[]
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google'):continue
+              s=p.read_text();assert 'locale-r15.js?v=20260924-r15' in s,p.name;pages.append(p.name)
+          assert len(pages)>=44 and idx.count('id="categories"')==1 and 'r5-chips' not in idx and 'r8-department-strip' not in idx
+          assert 'const svLocaleControl=id=>' in g and 'const i18nLocaleControl=id=>' in i and "c=document.getElementById('country')" not in i and 'const localeControl=id=>' in n
+          assert "seekvera-r15-atomic-20260924" in sw and "'./locale-r15.js'" in sw and 'function locateOnce()' in r and 'startLocationTracking' in r
+          assert 'setTimeout(apply,80)' not in a and 'setTimeout(apply,100)' not in c and "t:k=>{const {p}=pack()" in a
+          assert 'speechSynthesis' in v and '/api/transcribe' in v and 'safetyGateVersion' in w and 'centralSafetyGate' in w
+          assert 'navigator.geolocation' in Path('wifi.html').read_text() and 'google.com/maps/search' in Path('tourism.html').read_text()
+          print('STATIC R15 PASS:',len(rp),'countries;',len(langs),'languages;',len(cp),'currencies;',len(pages),'pages')
+          PY
+
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.58.2
+          npx playwright install --with-deps chromium
+
+      - name: Local full browser audit
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/r15-http.log 2>&1 & echo $! >/tmp/r15-http.pid
+          trap 'kill $(cat /tmp/r15-http.pid) 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4173/index.html >/dev/null && break; sleep 1; done
+          SEEKVERA_AUDIT_BASE=http://127.0.0.1:4173 node tools/r15_browser_audit.mjs
+
+      - name: Commit fully tested R15
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global';git config user.email 'seekvera.global@gmail.com'
+          git add -- '*.html' locale-r15.js locale-r14.js locale-r14-categories.js global-ui.js i18n-ui.js navigation.js sw.js .github/workflows/deploy-cloudflare.yml tools/r15_browser_audit.mjs
+          if ! git diff --cached --quiet; then git commit -m 'R15: atomic locale, stable UI, map and department isolation';git push origin HEAD:main;fi
+
+      - name: Deploy R15 to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Live source, safety and route audit
+        run: |
+          set -euo pipefail
+          S='https://seekveraglobal.com';U='Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) AppleWebKit/537.36 Chrome/140.0 Mobile Safari/537.36';ok=0
+          for i in $(seq 1 20);do curl -LfsS -A "$U" -H 'Cache-Control: no-cache' "$S/?r15live=$i" -o /tmp/h||true;curl -LfsS -A "$U" -H 'Cache-Control: no-cache' "$S/locale-r15.js?r15live=$i" -o /tmp/l||true;if grep -q 'locale-r15.js?v=20260924-r15' /tmp/h 2>/dev/null&&grep -q 'startLocationTracking' /tmp/l 2>/dev/null;then ok=1;break;fi;sleep 4;done;test "$ok" = 1
+          curl -LfsS -A "$U" "$S/api/health?r15=1" -o /tmp/health
+          grep -q '"centralSafetyGate":"enabled"' /tmp/health;grep -q '"voiceInputFallback":"server-asr-v1"' /tmp/health;grep -q '"safetyGateVersion"' /tmp/health
+          for p in marketplace.html travel.html tourism.html property.html cars-auto.html jobs.html shopping.html restaurants-food.html local-services.html import-export.html shipping-logistics.html business-software.html software.html web-hosting.html solar.html education.html health.html money-insurance.html entertainment.html media.html games.html connectivity.html wifi.html deal-agent.html everyday.html scan.html post-ad.html seller-plans.html hub.html app.html;do code=$(curl -LsS -o /tmp/p -w '%{http_code}' -A "$U" "$S/$p?r15=1");test "$code" = 200;grep -q 'locale-r15.js?v=20260924-r15' /tmp/p;done
+
+      - name: Live browser final proof
+        env:
+          SEEKVERA_AUDIT_BASE: https://seekveraglobal.com
+        run: node tools/r15_browser_audit.mjs
