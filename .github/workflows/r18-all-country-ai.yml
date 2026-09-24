@@ -1,0 +1,56 @@
+name: SEEKVERA R18 all-country AI coverage
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r18-all-country-ai.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Expand country command recognition to every supported language
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('navigation.js')
+          s=p.read_text(encoding='utf-8')
+          old="const CMD_LOCALES=['en','ar','fr','es','de','pt','tr','ru','it','nl','hi','ur'];"
+          new="const CMD_LOCALES=WORLD_LANGS;"
+          if old in s:
+              s=s.replace(old,new,1)
+          elif new not in s:
+              raise SystemExit('CMD_LOCALES marker not found')
+          s=s.replace('/* SEEKVERA universal navigation + worldwide AI stability R16 */','/* SEEKVERA universal navigation + worldwide AI stability R18 */',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          node --check navigation.js
+          grep -q 'const CMD_LOCALES=WORLD_LANGS;' navigation.js
+          grep -q 'COUNTRY_TERMS=' navigation.js
+          grep -q 'function resolveCountry' navigation.js
+          grep -q 'language:'"'"'auto'"'"',scope:'"'"'worldwide'"'"'' global-ui.js
+
+      - name: Commit universal country coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'SEEKVERA AI Fix'
+          git config user.email 'actions@users.noreply.github.com'
+          git add navigation.js
+          if git diff --cached --quiet; then
+            echo 'Already applied'
+          else
+            git commit -m 'R18: recognize every country across all supported languages'
+            git push origin main
+          fi
