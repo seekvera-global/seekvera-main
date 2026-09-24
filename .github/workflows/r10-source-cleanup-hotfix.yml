@@ -25,17 +25,16 @@ jobs:
           from pathlib import Path
           import re
 
-          # 1) Home source: physically keep only the single complete categories grid.
+          # Physically keep only one complete departments/categories section.
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
-          s,n1=re.subn(r'<nav class="r8-department-strip"[^>]*>.*?</nav>\s*','',s,count=1,flags=re.S)
-          s,n2=re.subn(r'<aside class="r5-left"[^>]*>.*?</aside>\s*','',s,count=1,flags=re.S)
-          if n1 not in (0,1) or n2 not in (0,1): raise SystemExit('unexpected duplicate department source structure')
+          s=re.sub(r'<nav class="r8-department-strip"[^>]*>.*?</nav>\s*','',s,count=1,flags=re.S)
+          s=re.sub(r'<aside class="r5-left"[^>]*>.*?</aside>\s*','',s,count=1,flags=re.S)
           if s.count('id="categories"') != 1: raise SystemExit('home must contain exactly one categories section')
           if 'r8-department-strip' in s or 'class="r5-left"' in s: raise SystemExit('duplicate category source still present')
           p.write_text(s,encoding='utf-8')
 
-          # 2) Mobile categories carousel: reset old explicit columns before column auto-flow.
+          # Mobile categories carousel: reset old explicit columns before column auto-flow.
           p=Path('home-marketplace-r5.css')
           s=p.read_text(encoding='utf-8')
           old='body.sv-home-global .r5-grid{display:grid!important;grid-template-rows:repeat(2,108px)!important;grid-auto-flow:column;grid-auto-columns:minmax(132px,42vw);'
@@ -44,7 +43,7 @@ jobs:
           elif new not in s: raise SystemExit('mobile grid anchor missing')
           p.write_text(s,encoding='utf-8')
 
-          # 3) Dhivehi is RTL everywhere, including dynamic UI translation runtime.
+          # Dhivehi must be RTL in the dynamic UI translation layer too.
           p=Path('i18n-ui.js')
           s=p.read_text(encoding='utf-8')
           m=re.search(r"const RTL=new Set\(\[([^\]]*)\]\)",s)
@@ -56,35 +55,6 @@ jobs:
               s=s[:m.start()]+repl+s[m.end():]
           p.write_text(s,encoding='utf-8')
 
-          # 4) Production deploy gate must require no duplicate source rows.
-          p=Path('.github/workflows/deploy-cloudflare.yml')
-          s=p.read_text(encoding='utf-8')
-          s=s.replace("          assert(nav.includes(\"document.querySelector('.r8-department-strip')?.remove()\"),'top duplicate department strip cleanup missing');\n",'')
-          s=s.replace("          assert(nav.includes(\"document.querySelector('.r5-left')?.remove()\"),'duplicate left department list cleanup missing');\n",'')
-          anchor="          assert idx.count('id=\"categories\"')==1,'index must contain exactly one categories section'\n"
-          addition="          assert 'r8-department-strip' not in idx,'duplicate top department strip must not exist in source'\n          assert 'class=\"r5-left\"' not in idx,'duplicate left department list must not exist in source'\n"
-          if addition not in s:
-              if anchor not in s: raise SystemExit('deploy categories assertion anchor missing')
-              s=s.replace(anchor,anchor+addition,1)
-          s=s.replace("            if grep -q '20260924-az-r8' /tmp/home.html 2>/dev/null && grep -q 'data-r8-departments=\"complete\"' /tmp/home.html 2>/dev/null; then ok=1; break; fi","            if grep -q '20260924-az-r8' /tmp/home.html 2>/dev/null && grep -q 'data-r8-grid=\"complete\"' /tmp/home.html 2>/dev/null; then ok=1; break; fi")
-          s=s.replace("          echo 'LIVE R10 HOME + COMPLETE DEPARTMENTS PASS'","          ! grep -q 'r8-department-strip' /tmp/home.html\n          ! grep -q 'class=\"r5-left\"' /tmp/home.html\n          echo 'LIVE R10 HOME + SINGLE DEPARTMENTS SECTION PASS'")
-          p.write_text(s,encoding='utf-8')
-
-          # 5) Modernize the useful cross-device audit so it validates R10, not obsolete R5 defaults.
-          p=Path('.github/workflows/cross-device-r5-audit.yml')
-          if p.exists():
-              s=p.read_text(encoding='utf-8')
-              s=s.replace("assert(s.release==='20260923-market-r5',p.name+' is not on R5');","assert(s.release==='20260924-az-r8',p.name+' is not on R10');")
-              s=s.replace("assert(s.country==='WW',p.name+' did not start Worldwide');", "assert(/^[A-Z]{2}$/.test(s.country||'')||s.country==='WW',p.name+' invalid initial country');")
-              s=s.replace("assert(/Worldwide/i.test(s.countryText||''),p.name+' Worldwide label missing');", "assert((s.countryText||'').trim().length>1,p.name+' selected country label missing');")
-              s=s.replace("assert(s.langs===29,p.name+' expected Auto + 28 languages: '+s.langs);","assert(s.langs>=99,p.name+' expected Auto + at least 98 languages: '+s.langs);")
-              s=s.replace("await page.waitForURL(/\\/index\\.html\\?v=20260923-market-r5/,{timeout:30000});", "await page.waitForURL(/\\/index\\.html/,{timeout:30000});")
-              s=s.replace("assert(manifest.includes('index.html?v=20260923-market-r5'),'PWA start_url is not R5 direct home');", "assert(manifest.includes('index.html'),'PWA start_url is not direct home');")
-              s=s.replace("assert(sw.includes('seekvera-market-r5-20260923')&&sw.includes('home-marketplace-r5.css'),'R5 service worker cache missing');", "assert(sw.includes('seekvera-r10-worldwide-20260924')&&sw.includes('home-marketplace-r5.css'),'R10 service worker cache missing');")
-              s=s.replace("console.log('SEEKVERA R5 CROSS-DEVICE AUDIT PASS');", "console.log('SEEKVERA R10 CROSS-DEVICE AUDIT PASS');")
-              p.write_text(s,encoding='utf-8')
-
-          # Static integrity checks.
           idx=Path('index.html').read_text(encoding='utf-8')
           css=Path('home-marketplace-r5.css').read_text(encoding='utf-8')
           ii=Path('i18n-ui.js').read_text(encoding='utf-8')
@@ -96,7 +66,7 @@ jobs:
           PY
           node --check i18n-ui.js
           git diff --check
-      - name: Commit source fixes
+      - name: Commit site source fixes
         shell: bash
         run: |
           set -euo pipefail
@@ -106,6 +76,6 @@ jobs:
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add index.html home-marketplace-r5.css i18n-ui.js .github/workflows/deploy-cloudflare.yml .github/workflows/cross-device-r5-audit.yml
+          git add index.html home-marketplace-r5.css i18n-ui.js
           git commit -m 'R10: keep one departments section and fix mobile category grid'
           git push origin HEAD:main
