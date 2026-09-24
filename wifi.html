@@ -13,6 +13,6 @@ document.getElementById('nearbyBtn').onclick=()=>{if(!navigator.geolocation){sta
 document.getElementById('placeForm').onsubmit=e=>{e.preventDefault();const v=place.value.trim();if(!v)return;mapsSearch('free wifi in '+v);window.open(maps.href,'_blank','noopener')};const p=new URLSearchParams(location.search).get('place');if(p){place.value=p;mapsSearch('free wifi in '+p)}else mapsSearch('free wifi near me');
 </script><script src="voice-ai.js?v=20260924-r11" defer></script>
 <script src="global-ui.js?v=20260924-final-r9e" defer></script>
-<script src="i18n-ui.js?v=20260924-r12" defer></script>
-<script src="navigation.js?v=20260924-r12" defer></script>
+<script src="i18n-ui.js?v=20260924-r13" defer></script>
+<script src="navigation.js?v=20260924-r13" defer></script>
 </body></html>
