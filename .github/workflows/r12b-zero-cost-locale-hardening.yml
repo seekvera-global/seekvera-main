@@ -1,0 +1,82 @@
+name: R12B zero-cost worldwide locale hardening
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r12b-zero-cost-locale-hardening.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r12b-locale
+  cancel-in-progress: false
+
+jobs:
+  patch-test-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Apply patch
+        run: python tools/r12_patch.py
+
+      - name: Static verification
+        run: |
+          set -euo pipefail
+          node --check worker.js
+          node --check i18n-ui.js
+          node --check navigation.js
+          node --check voice-ai.js
+          grep -q "TRANSLATE='@cf/meta/llama-3.2-1b-instruct'" worker.js
+          grep -q "caches.open('seekvera-ui-translate-r12')" worker.js
+          grep -q "daily_free_ai_limit" worker.js
+          grep -q "nativeTranslator" i18n-ui.js
+          grep -q "sv_i18n_r12_" i18n-ui.js
+          grep -q "COUNTRY_TERMS=" navigation.js
+          grep -q "hasCountryTerm(text)" navigation.js
+          test "$(grep -o "'[^']*'" navigation.js | head -n 1 >/dev/null; python -c "import re; s=open('i18n-ui.js',encoding='utf-8').read(); m=re.search(r'const SUPPORTED=\\[([^\\]]+)\\]',s,re.S); print(len(re.findall(r\"'([^']+)'\",m.group(1))))")" = "98"
+          test "$(grep -o 'id=\"categories\"' index.html | wc -l)" = "1"
+          ! grep -q 'r5-chips' index.html
+          ! grep -q 'r8-department-strip' index.html
+          grep -q 'function speakerAction' voice-ai.js
+          echo 'R12 STATIC PASS'
+
+      - name: Commit source
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add worker.js i18n-ui.js navigation.js
+          git commit -m 'R12: quota-safe worldwide locale and translation caching'
+          git push origin HEAD:main
+
+      - name: Deploy to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Verify live non-AI essentials
+        run: |
+          set -euo pipefail
+          SITE='https://seekveraglobal.com'
+          UA='Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Mobile Safari/537.36'
+          ok=0
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/?r12b=$i" -o /tmp/home.html || true
+            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/navigation.js?r12b=$i" -o /tmp/nav.js || true
+            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/i18n-ui.js?r12b=$i" -o /tmp/i18n.js || true
+            if ! grep -q 'r5-chips' /tmp/home.html 2>/dev/null && test "$(grep -o 'id=\"categories\"' /tmp/home.html 2>/dev/null | wc -l)" = "1" && grep -q 'COUNTRY_TERMS=' /tmp/nav.js 2>/dev/null && grep -q 'nativeTranslator' /tmp/i18n.js 2>/dev/null; then ok=1; break; fi
+            sleep 4
+          done
+          test "$ok" = "1"
+          grep -q 'function speakerAction' <(curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/voice-ai.js?v=20260924-r11&r12b=1")
+          curl -L -fsS --max-time 25 -A "$UA" "$SITE/api/health?r12b=1" -o /tmp/health.json
+          grep -q '"centralSafetyGate":"enabled"' /tmp/health.json
+          echo 'R12 LIVE NON-AI ESSENTIALS PASS'
