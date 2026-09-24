@@ -23,3 +23,4 @@ package-lock.json
 .dev.vars
 .dev.vars.*
 # R19 deployment trigger
+# R20C 98-locale deployment trigger
