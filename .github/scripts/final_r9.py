@@ -10,15 +10,6 @@ s=s.replace('VOICE_SILENCE_MS=2100','VOICE_SILENCE_MS=3200')
 s=s.replace("if(!SpeechRecognition){serverVoice(targetId,activeButton);return}","if(!SpeechRecognition||/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){serverVoice(targetId,activeButton);return}")
 p.write_text(s,encoding='utf-8')
 
-# Keep the R8 patch generator aligned so a later rerun cannot roll voice back.
-p=Path('.github/scripts/az_quality_r8.py')
-s=p.read_text(encoding='utf-8').replace('VOICE_SILENCE_MS=2100','VOICE_SILENCE_MS=3200')
-p.write_text(s,encoding='utf-8')
-
-# Deploy/audit checks must validate the new silence behavior.
-for fn in ['.github/workflows/deploy-cloudflare.yml','.github/workflows/az-quality-r8.yml']:
-    p=Path(fn); s=p.read_text(encoding='utf-8').replace('VOICE_SILENCE_MS=2100','VOICE_SILENCE_MS=3200'); p.write_text(s,encoding='utf-8')
-
 # Inject R9 locale guard BEFORE legacy i18n on every public HTML page and bust voice cache.
 count=0
 for p in Path('.').glob('*.html'):
@@ -28,7 +19,6 @@ for p in Path('.').glob('*.html'):
     if 'i18n-ui.js' not in s:
         continue
     if 'locale-guard-r9.js' not in s:
-        # preserve whatever i18n query string/attributes the page already uses
         m=re.search(r'<script\s+src=["\']i18n-ui\.js[^>]*></script>',s,re.I)
         if not m:
             raise SystemExit(f'No i18n script tag anchor in {p}')
