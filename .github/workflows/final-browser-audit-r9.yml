@@ -1,4 +1,4 @@
-name: SEEKVERA R9 final live browser audit
+name: SEEKVERA R9c final live browser audit
 
 on:
   push:
@@ -42,7 +42,7 @@ jobs:
             const c1=await browser.newContext({locale:'en-US'});
             const p1=await c1.newPage();
             await p1.route('**/api/ui-translate',r=>r.abort());
-            await p1.goto(BASE+'/?audit=country-'+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
+            await p1.goto(BASE+'/?audit=r9c-country-'+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
             await p1.evaluate(()=>localStorage.clear());
             await p1.reload({waitUntil:'domcontentloaded'});
             await p1.waitForFunction(()=>document.querySelectorAll('#country option').length>=249,null,{timeout:15000});
@@ -67,10 +67,10 @@ jobs:
             console.log('COUNTRY UI PASS:',checked,'profiles selected and verified one-by-one');
             await c1.close();
 
-            // 2) Visible text: verify the exact screen text changes in representative language families.
+            // 2) Visible text: verify exact screen text changes in representative major language families.
             const c2=await browser.newContext({locale:'en-US'});
             const p2=await c2.newPage();
-            await p2.goto(BASE+'/?audit=visible-'+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
+            await p2.goto(BASE+'/?audit=r9c-visible-'+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
             await p2.evaluate(()=>localStorage.clear());
             await p2.reload({waitUntil:'domcontentloaded'});
             await p2.waitForFunction(()=>document.querySelectorAll('#country option').length>=249,null,{timeout:15000});
@@ -89,17 +89,17 @@ jobs:
             }
             await c2.close();
 
-            // 3) Every public page using the app i18n runtime: live HTTP + browser script marker.
+            // 3) Every public page using the app i18n runtime: live HTTP + final R9c script marker.
             const pages=fs.readdirSync('.').filter(f=>f.endsWith('.html')&&!f.toLowerCase().startsWith('google')).filter(f=>fs.readFileSync(f,'utf8').includes('i18n-ui.js'));
             assert(pages.length>=44,`expected >=44 localized pages, got ${pages.length}`);
             const c3=await browser.newContext();
             const p3=await c3.newPage();
             await p3.route('**/api/ui-translate',r=>r.abort());
             for(const f of pages){
-              const resp=await p3.goto(BASE+'/'+f+'?audit=page-'+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
+              const resp=await p3.goto(BASE+'/'+f+'?audit=r9c-page-'+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
               assert(resp && resp.ok(),`${f} HTTP ${resp?.status()}`);
-              const has=await p3.evaluate(()=>[...document.scripts].some(s=>(s.src||'').includes('i18n-ui.js?v=20260924-final-r9b')));
-              assert(has,`${f} missing final R9b i18n runtime`);
+              const has=await p3.evaluate(()=>[...document.scripts].some(s=>(s.src||'').includes('i18n-ui.js?v=20260924-final-r9c')));
+              assert(has,`${f} missing final R9c i18n runtime`);
             }
             console.log('ALL LOCALIZED PAGES PASS:',pages.length);
             await c3.close();
@@ -118,15 +118,16 @@ jobs:
             console.log('AI CONVERSATION PASS:',ms+'ms');
             await c4.close();
 
-            // 5) Live voice runtime must use 3.2s silence and Android/iPhone recorder path.
-            const voice=await (await fetch(BASE+'/voice-ai.js?v=20260924-final-r9b',{cache:'no-store'})).text();
+            // 5) Live voice runtime must use 3.2s silence and Android/iPhone recorder path; PWA must be on R9c cache.
+            const voice=await (await fetch(BASE+'/voice-ai.js?v=20260924-final-r9c',{cache:'no-store'})).text();
             assert(voice.includes('VOICE_SILENCE_MS=3200'),'voice silence must be 3200ms');
             assert(voice.includes('Android|iPhone|iPad|iPod'),'mobile recorder branch missing');
-            const i18n=await (await fetch(BASE+'/i18n-ui.js?v=20260924-final-r9b',{cache:'no-store'})).text();
+            const i18n=await (await fetch(BASE+'/i18n-ui.js?v=20260924-final-r9c',{cache:'no-store'})).text();
             assert(i18n.includes('SEEKVERA R9 visible-UI locale guard'),'embedded R9 guard missing live');
-            const sw=await (await fetch(BASE+'/sw.js?v=20260924-final-r9b',{cache:'no-store'})).text();
-            assert(sw.includes("seekvera-final-r9b-20260924"),'final service-worker cache missing live');
+            assert(i18n.includes('window.__SEEKVERA_R9_QUICK=QUICK'),'R9c primary translation unification missing live');
+            const sw=await (await fetch(BASE+'/sw.js?v=20260924-final-r9c',{cache:'no-store'})).text();
+            assert(sw.includes("seekvera-final-r9c-20260924"),'final R9c service-worker cache missing live');
             console.log('VOICE + PWA CACHE PASS');
           } finally { await browser.close(); }
-          console.log('FINAL R9 LIVE BROWSER AUDIT PASS');
+          console.log('FINAL R9C LIVE BROWSER AUDIT PASS');
           NODE
