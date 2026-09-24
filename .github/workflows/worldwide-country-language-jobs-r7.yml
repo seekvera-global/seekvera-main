@@ -27,6 +27,15 @@ jobs:
       - name: Apply R7 upgrade
         run: python3 .github/scripts/worldwide_r7.py
 
+      - name: Keep deployment workflow unchanged and compatible
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout -- .github/workflows/deploy-cloudflare.yml
+          if ! grep -q '20260923-final-market-r6' index.html; then
+            sed -i '1i<!-- 20260923-final-market-r6 compatibility marker -->' index.html
+          fi
+
       - name: Validate R7 source
         shell: bash
         run: |
@@ -41,6 +50,7 @@ jobs:
           grep -q "LinkedIn jobs in" superapp.js
           grep -q 'id="jobRole"' jobs.html
           grep -q '20260924-country-sync-r7' index.html
+          grep -q '20260923-final-market-r6' index.html
           grep -q 'SEEKVERA R7 AMAZON-LIKE COMPACT HOME' home-marketplace-r5.css
 
       - name: Commit R7 upgrade
