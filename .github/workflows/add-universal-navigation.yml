@@ -1,0 +1,77 @@
+name: Add universal Back and Home navigation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'navigation.js'
+      - '.github/workflows/add-universal-navigation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply-navigation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Add navigation runtime to every public page
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          tag='<script src="navigation.js?v=20260924-nav-v1" defer></script>'
+          changed=[]
+          for p in sorted(Path('.').glob('*.html')):
+              if p.name.lower().startswith('google'):
+                  continue
+              s=p.read_text(encoding='utf-8')
+              old=s
+              s=re.sub(r'<script src="navigation\.js(?:\?v=[^"]+)?" defer></script>',tag,s)
+              if 'navigation.js' not in s:
+                  if '</body>' in s:
+                      s=s.replace('</body>',tag+'\n</body>',1)
+                  else:
+                      s += '\n'+tag+'\n'
+              if s!=old:
+                  p.write_text(s,encoding='utf-8')
+                  changed.append(p.name)
+          print('Updated pages:', len(changed))
+          print('\n'.join(changed))
+          PY
+
+      - name: Validate universal navigation coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check navigation.js
+          grep -q 'svBackButton' navigation.js
+          grep -q 'svHomeButton' navigation.js
+          count=0
+          for f in *.html; do
+            case "$f" in google*) continue;; esac
+            grep -q 'navigation.js?v=20260924-nav-v1' "$f"
+            count=$((count+1))
+          done
+          echo "Navigation coverage passed on $count public HTML pages."
+
+      - name: Commit navigation coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add '*.html'
+          if git diff --cached --quiet; then
+            echo 'No HTML changes required.'
+          else
+            git commit -m 'Add Back and Home navigation across all SEEKVERA pages'
+            git push origin main
+          fi
