@@ -1,5 +1,5 @@
 name: Deploy SEEKVERA to Cloudflare
-# Production deployment: R10 worldwide locale + voice hardening + conversational AI + full departments
+# Production deployment: R10 worldwide locale + voice hardening + conversational AI + single departments section
 
 on:
   push:
@@ -62,8 +62,6 @@ jobs:
           const langs=[...lm[1].matchAll(/'([^']+)'/g)].map(m=>m[1]);
           assert(langs.length>=90,`expected >=90 language choices, got ${langs.length}`);
           for(const [cc,p] of Object.entries(profiles)) assert(langs.includes(p.language),`${cc} default language ${p.language} missing from WORLD_LANGS`);
-          assert(nav.includes("document.querySelector('.r8-department-strip')?.remove()"),'top duplicate department strip cleanup missing');
-          assert(nav.includes("document.querySelector('.r5-left')?.remove()"),'duplicate left department list cleanup missing');
           assert(nav.includes('bindAICountryControl'),'AI country switching missing');
           assert(nav.includes('primeVoiceOnGesture'),'voice gesture primer missing');
           assert(voice.includes('/api/transcribe'),'server ASR route missing from voice runtime');
@@ -102,6 +100,11 @@ jobs:
           for x in required:
               assert x in idx and x in hub and Path(x).exists(),x
           assert idx.count('id="categories"')==1,'index must contain exactly one categories section'
+          assert 'r8-department-strip' not in idx,'duplicate top department strip must not exist in source'
+          assert 'class="r5-left"' not in idx,'duplicate left department list must not exist in source'
+          assert 'grid-template-columns:none!important;grid-template-rows:repeat(2,108px)!important' in Path('home-marketplace-r5.css').read_text(encoding='utf-8'),'mobile categories grid reset missing'
+          rtl=Path('i18n-ui.js').read_text(encoding='utf-8')
+          assert "'dv'" in re.search(r"const RTL=new Set\(\[([^\]]*)\]\)",rtl).group(1),'Dhivehi RTL missing'
           pages=[]
           for p in Path('.').glob('*.html'):
               if p.name.lower().startswith('google'): continue
@@ -113,7 +116,7 @@ jobs:
           app=Path('app.html').read_text(encoding='utf-8')
           assert '<iframe' not in app
           assert 'location.replace' in app
-          print('R10 SOURCE PASS:',len(profiles),'countries;',len(langs),'languages;',len(pages),'public pages;',len(required),'departments')
+          print('R10 SOURCE PASS:',len(profiles),'countries;',len(langs),'languages;',len(pages),'public pages;',len(required),'departments; single categories section')
           PY
           npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-dry-run
           grep -q '"binding": "AI"' wrangler.jsonc
@@ -150,13 +153,15 @@ jobs:
           ok=0
           for i in $(seq 1 25); do
             curl -L -fsS --max-time 20 -H 'Cache-Control: no-cache' "$SITE/?r10-live=$i" -o /tmp/home.html || true
-            if grep -q '20260924-az-r8' /tmp/home.html 2>/dev/null && grep -q 'data-r8-departments="complete"' /tmp/home.html 2>/dev/null; then ok=1; break; fi
+            if grep -q '20260924-az-r8' /tmp/home.html 2>/dev/null && grep -q 'data-r8-grid="complete"' /tmp/home.html 2>/dev/null; then ok=1; break; fi
             sleep 4
           done
           test "$ok" = '1'
-          grep -q 'data-r8-grid="complete"' /tmp/home.html
           grep -q 'navigation.js' /tmp/home.html
-          echo 'LIVE R10 HOME + COMPLETE DEPARTMENTS PASS'
+          ! grep -q 'r8-department-strip' /tmp/home.html
+          ! grep -q 'class="r5-left"' /tmp/home.html
+          test "$(grep -o 'id="categories"' /tmp/home.html | wc -l)" = '1'
+          echo 'LIVE R10 HOME + SINGLE DEPARTMENTS SECTION PASS'
 
           pages=(marketplace.html travel.html tourism.html property.html cars-auto.html jobs.html shopping.html restaurants-food.html local-services.html import-export.html shipping-logistics.html business-software.html software.html web-hosting.html solar.html education.html health.html money-insurance.html entertainment.html media.html games.html connectivity.html wifi.html deal-agent.html everyday.html scan.html post-ad.html seller-plans.html hub.html app.html)
           for p in "${pages[@]}"; do
