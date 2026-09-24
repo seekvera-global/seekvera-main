@@ -1,0 +1,101 @@
+name: SEEKVERA A-Z worldwide quality R8
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/az-quality-r8.yml'
+      - '.github/scripts/az_quality_r8.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply R8 upgrade
+        run: python .github/scripts/az_quality_r8.py
+
+      - name: Validate JavaScript
+        run: |
+          set -euo pipefail
+          node --check worker.js
+          node --check voice-ai.js
+          node --check superapp.js
+          node --check global-ui.js
+          node --check i18n-ui.js
+          grep -q '20260924-az-r8' worker.js
+          grep -q 'VOICE_MAX_MS=90000' voice-ai.js
+          grep -q 'VOICE_SILENCE_MS=2100' voice-ai.js
+          grep -q "u.pathname==='/api/ui-translate'" worker.js
+          grep -q 'const hist=Array.isArray(b.history)' worker.js
+          grep -q 'function chatHistory()' superapp.js
+          grep -q 'function globalHistory' global-ui.js
+          grep -q '/api/ui-translate' i18n-ui.js
+          grep -q 'sv_i18n_r8_' i18n-ui.js
+          echo 'Core R8 validation passed.'
+
+      - name: Audit every country profile and every department page
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          g=Path('global-ui.js').read_text(encoding='utf-8')
+          m=re.search(r'const COUNTRY_PROFILE=Object\.fromEntries\(`([^`]+)`\.split',g,re.S)
+          assert m, 'COUNTRY_PROFILE missing'
+          rows=[x for x in m.group(1).split(';') if x]
+          profiles={x.split(':',1)[0]:x.split(':',1)[1] for x in rows}
+          assert len(profiles)>=240, f'country profiles too small: {len(profiles)}'
+          bad=[cc for cc,v in profiles.items() if ',' not in v or not v.split(',')[0] or not v.split(',')[1]]
+          assert not bad, bad
+          s=Path('superapp.js').read_text(encoding='utf-8')
+          mm=re.search(r"const ISO='([^']+)'\.split",s)
+          assert mm, 'ISO list missing'
+          iso=set(mm.group(1).split())
+          missing=sorted(iso-set(profiles))
+          assert not missing, f'missing country profiles: {missing}'
+          required=['marketplace.html','travel.html','tourism.html','property.html','cars-auto.html','jobs.html','shopping.html','restaurants-food.html','local-services.html','import-export.html','shipping-logistics.html','business-software.html','software.html','web-hosting.html','solar.html','education.html','health.html','money-insurance.html','entertainment.html','media.html','games.html','connectivity.html','wifi.html','deal-agent.html','everyday.html','scan.html','post-ad.html','seller-plans.html']
+          idx=Path('index.html').read_text(encoding='utf-8')
+          hub=Path('hub.html').read_text(encoding='utf-8')
+          for r in required:
+              assert r in idx, f'index missing {r}'
+              assert r in hub, f'hub missing {r}'
+              assert Path(r.split('?')[0]).exists(), f'route file missing {r}'
+          assert 'data-r8-departments="complete"' in idx
+          assert 'data-r8-grid="complete"' in idx
+          assert 'data-r8-hub-departments="complete"' in hub
+          pages=[]
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google'): continue
+              t=p.read_text(encoding='utf-8')
+              assert 'navigation.js' in t, f'{p.name}: missing navigation'
+              assert 'global-ui.js' in t, f'{p.name}: missing global UI'
+              assert 'i18n-ui.js' in t, f'{p.name}: missing i18n'
+              pages.append(p.name)
+          assert len(pages)>=44, len(pages)
+          print('COUNTRY_PROFILE_COUNT',len(profiles))
+          print('ISO_COUNTRY_TERRITORY_COUNT',len(iso))
+          print('PUBLIC_PAGE_COUNT',len(pages))
+          print('A-Z SOURCE AUDIT PASS')
+          PY
+
+      - name: Commit R8 application
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add worker.js voice-ai.js superapp.js global-ui.js i18n-ui.js index.html hub.html home-marketplace-r5.css sw.js manifest.webmanifest '*.html'
+          if git diff --cached --quiet; then
+            echo 'No R8 application changes required.'
+          else
+            git commit -m 'Upgrade voice, translation, AI memory and all departments R8'
+            git push origin main
+          fi
