@@ -89,17 +89,17 @@ jobs:
             }
             await c2.close();
 
-            // 3) Every public page using the app i18n runtime: live HTTP + final R9c script marker.
+            // 3) Every localized public page: verify the live HTTP response and final R9c runtime directly.
+            // Use request-level checks so a slow optional image/font/third-party resource cannot create a false page failure.
             const pages=fs.readdirSync('.').filter(f=>f.endsWith('.html')&&!f.toLowerCase().startsWith('google')).filter(f=>fs.readFileSync(f,'utf8').includes('i18n-ui.js'));
             assert(pages.length>=44,`expected >=44 localized pages, got ${pages.length}`);
             const c3=await browser.newContext();
-            const p3=await c3.newPage();
-            await p3.route('**/api/ui-translate',r=>r.abort());
             for(const f of pages){
-              const resp=await p3.goto(BASE+'/'+f+'?audit=r9c-page-'+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
-              assert(resp && resp.ok(),`${f} HTTP ${resp?.status()}`);
-              const has=await p3.evaluate(()=>[...document.scripts].some(s=>(s.src||'').includes('i18n-ui.js?v=20260924-final-r9c')));
-              assert(has,`${f} missing final R9c i18n runtime`);
+              const resp=await c3.request.get(BASE+'/'+f+'?audit=r9c-page-'+Date.now(),{timeout:30000,failOnStatusCode:false});
+              assert(resp.ok(),`${f} HTTP ${resp.status()}`);
+              const html=await resp.text();
+              assert(html.includes('i18n-ui.js?v=20260924-final-r9c'),`${f} missing final R9c i18n runtime`);
+              assert(html.includes('voice-ai.js?v=20260924-final-r9c'),`${f} missing final R9c voice runtime`);
             }
             console.log('ALL LOCALIZED PAGES PASS:',pages.length);
             await c3.close();
