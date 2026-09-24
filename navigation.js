@@ -94,9 +94,9 @@ async function translateStaticAI(){
   }catch{}
 }
 function runLocaleEngines(){
-  ensureLanguageCoverage();localizeCountryOptions();localizeDocumentDirection();
   try{window.SEEKVERA_I18N?.apply?.()}catch{}
   try{window.SEEKVERA_LOCALE_GUARD_R9?.apply?.()}catch{}
+  ensureLanguageCoverage();localizeCountryOptions();localizeDocumentDirection();
   try{window.SEEKVERA_LOCALE_GUARD_R9?.schedule?.(20)}catch{}
   translateStaticAI();
 }
