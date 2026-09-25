@@ -46,7 +46,7 @@ jobs:
           assert m['packs']==98 and len(m['languages'])==98,m
           assert live['count']==967 and local['count']==967,(live.get('count'),local.get('count'))
           assert m['sourceHash']==live['sourceHash']==local['sourceHash'],(m['sourceHash'],live['sourceHash'],local['sourceHash'])
-          open('/tmp/langs.txt','w').write('\n'.join(m['languages']))
+          open('/tmp/langs.txt','w').write('\n'.join(m['languages'])+'\n')
           print('R39 SOURCE PASS',m['sourceHash'],len(m['languages']),live['count'])
           PY
           : > /tmp/missing.txt
