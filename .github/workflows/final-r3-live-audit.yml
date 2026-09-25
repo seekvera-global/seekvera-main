@@ -1,41 +1,10 @@
-name: SEEKVERA final r3 live audit
-# Final production Android + iPhone audit — final clean retest after successful WebKit API diagnostics on 2026-09-22
-
+name: Legacy SEEKVERA final R3 audit
 on:
-  push:
-    branches: [main]
-    paths:
-      - '*.html'
-      - 'games.js'
-      - 'voice-ai.js'
-      - 'global-ui.js'
-      - 'i18n-ui.js'
-      - 'i18n-premium.css'
-      - 'manifest.webmanifest'
-      - 'sw.js'
-      - 'tools/final_r3_live_audit.js'
-      - '.github/workflows/final-r3-live-audit.yml'
   workflow_dispatch:
-
 permissions:
   contents: read
-
 jobs:
-  audit:
+  legacy:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - name: Install Playwright browsers
-        run: |
-          npm init -y >/dev/null 2>&1
-          npm install playwright@latest --no-save
-          npx playwright install --with-deps chromium webkit
-      - name: Validate JavaScript
-        run: |
-          node --check games.js
-          node --check i18n-ui.js
-          node --check global-ui.js
-          node --check voice-ai.js
-      - name: Run final production audit
-        run: node tools/final_r3_live_audit.js
+      - run: echo 'Superseded by SEEKVERA R23 final release audit.'
