@@ -1,6 +1,7 @@
 name: SEEKVERA unified chat live audit
 
 # production audit for unified one-chat mobile experience
+# manual production recheck 2026-09-25 R24
 on:
   push:
     branches: [main]
