@@ -1,0 +1,30 @@
+name: R45 live marker check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r45-live-marker-debug.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check production marker
+        shell: bash
+        run: |
+          set -euo pipefail
+          for B in https://seekveraglobal.com https://seekvera-main.seekvera-global.workers.dev; do
+            echo "BASE=$B"
+            curl -LfsS --max-time 20 "$B/api/health?r45=$RANDOM" | head -c 1200; echo
+            if curl -LfsS --max-time 20 "$B/locale-r14.js?r45=$RANDOM" | grep -q 'r44-disabled-under-r32'; then
+              echo 'R44_MARKER=YES'
+            else
+              echo 'R44_MARKER=NO'
+            fi
+          done
