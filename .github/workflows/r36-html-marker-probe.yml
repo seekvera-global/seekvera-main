@@ -1,0 +1,30 @@
+name: R36 HTML marker probe
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r36-html-marker-probe.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Test 967 HTML-tagged strings in difficult languages
+        shell: python
+        run: |
+          import html,json,re,urllib.parse,urllib.request
+          langs=['tr','fr','pt','zh','ar','dz']
+          src=[f'Approved marketplace listing number {i} is available right now for safe worldwide comparison.' for i in range(967)]
+          for lang in langs:
+              body='\n'.join(f'<span id="sv{i:04d}">{html.escape(s)}</span>' for i,s in enumerate(src))
+              data=urllib.parse.urlencode({'client':'gtx','sl':'en','tl':lang,'dt':'t','q':body}).encode()
+              req=urllib.request.Request('https://translate.googleapis.com/translate_a/single',data=data,headers={'User-Agent':'Mozilla/5.0','Content-Type':'application/x-www-form-urlencoded'})
+              with urllib.request.urlopen(req,timeout=60) as r:obj=json.loads(r.read().decode())
+              raw=''.join(x[0] for x in obj[0] if x and x[0])
+              ids=re.findall(r'<span\s+id=["\']sv(\d{4})["\']\s*>',raw,re.I)
+              print('LANG',lang,'chars',len(raw),'ids',len(ids),'first',ids[:3],'last',ids[-3:],flush=True)
+              assert len(ids)==967,(lang,len(ids),raw[:500])
+              assert ids==[f'{i:04d}' for i in range(967)],(lang,ids[:10],ids[-10:])
+          print('R36 HTML MARKER PASS')
