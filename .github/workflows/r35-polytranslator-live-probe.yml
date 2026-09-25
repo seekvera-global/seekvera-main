@@ -1,0 +1,41 @@
+name: R35 Polytranslator live Romansh probe
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r35-polytranslator-live-probe.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Test free Romansh translation with markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import requests,json,re,uuid
+          s=requests.Session();s.headers.update({'User-Agent':'Mozilla/5.0','Accept':'application/json','Referer':'https://www.polytranslator.com/english-to-romansh/','Origin':'https://www.polytranslator.com'})
+          # establish anonymous session/cookies exactly like the public free page
+          page=s.get('https://www.polytranslator.com/english-to-romansh/',timeout=30);page.raise_for_status()
+          usage=s.get('https://www.polytranslator.com/api/usage',timeout=30)
+          print('USAGE',usage.status_code,usage.text[:500])
+          lines=['Popular categories','Live marketplace','Request anything','Find a hotel in the city','Privacy and terms','Thank you. Where is the bathroom?']
+          text='\n'.join(f'ZX{i:03d}ZX {x}' for i,x in enumerate(lines))
+          r=s.post('https://www.polytranslator.com/api/translate',json={'text':text,'src':'en','tgt':'rm','romanize':False,'request_id':str(uuid.uuid4())},timeout=90)
+          print('HTTP',r.status_code);print('BODY',r.text[:5000]);r.raise_for_status()
+          d=r.json();tr=str(d.get('translation','')).strip();assert tr,tr
+          print('TRANSLATION',repr(tr))
+          hits=[]
+          for i in range(len(lines)):
+              m=re.search(rf'ZX\s*{i:03d}\s*ZX\s*(.*?)(?=\n\s*ZX\s*\d{{3}}\s*ZX|$)',tr,re.I|re.S)
+              if m:hits.append(m.group(1).strip())
+          print('PARSED',hits)
+          # Even if markers change, the raw sample must clearly look like Romansh rather than English/Spanish/German.
+          low=tr.lower();assert 'popular categories' not in low and 'live marketplace' not in low
+          romansh=['categor','martg','dumond','chattar','hotel','citad','privat','cundiziun','grazia','tualetta']
+          n=sum(x in low for x in romansh);print('ROMANSH_HITS',n,[x for x in romansh if x in low]);assert n>=4
+          print('R35 POLYTRANSLATOR ROMANSH LIVE PROBE PASS')
+          PY
