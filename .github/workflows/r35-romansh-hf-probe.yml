@@ -1,0 +1,39 @@
+name: R35 Romansh Helsinki probe
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r35-romansh-hf-probe.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Install local translation model runtime
+        run: python -m pip install --quiet 'transformers<5' sentencepiece sacremoses
+      - name: Translate Romansh samples locally
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from transformers import AutoTokenizer,AutoModelForSeq2SeqLM
+          import torch
+          name='Helsinki-NLP/opus-mt-en-roa'
+          tok=AutoTokenizer.from_pretrained(name)
+          model=AutoModelForSeq2SeqLM.from_pretrained(name)
+          tests=['Popular categories','Live marketplace','Request anything','Find a hotel in the city','Privacy and terms','Search worldwide for a house to rent']
+          inp=['>>roh<< '+x for x in tests]
+          batch=tok(inp,return_tensors='pt',padding=True,truncation=True,max_length=256)
+          with torch.no_grad():out=model.generate(**batch,max_new_tokens=160,num_beams=4)
+          vals=tok.batch_decode(out,skip_special_tokens=True)
+          for a,b in zip(tests,vals):print(a,'=>',b)
+          assert len(vals)==len(tests)
+          assert vals[0].strip()!='Popular categories'
+          assert vals[3].strip()!='Find a hotel in the city'
+          print('R35 HELSINKI ROMANSH PROBE PASS')
+          PY
