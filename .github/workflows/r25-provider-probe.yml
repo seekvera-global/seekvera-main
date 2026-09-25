@@ -1,0 +1,24 @@
+name: R25 public AI provider probe
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r25-provider-probe.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Probe public text AI
+        shell: bash
+        run: |
+          set -u
+          URL='https://text.pollinations.ai/Reply%20with%20only%3A%20SEEKVERA_OK?model=openai&private=true'
+          code=$(curl -L -sS --max-time 30 -o /tmp/body -w '%{http_code}' "$URL" || true)
+          echo "HTTP=$code"
+          head -c 800 /tmp/body 2>/dev/null || true
+          echo
+          test "$code" = 200
+          grep -qi 'SEEKVERA' /tmp/body
