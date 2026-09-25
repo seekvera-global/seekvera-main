@@ -1,0 +1,182 @@
+name: R38 recover and final production audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r38-recover-and-final.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+env:
+  PYTHONUNBUFFERED: '1'
+  SEEKVERA_BASE: https://seekveraglobal.com
+
+jobs:
+  recover-final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install build dependencies
+        run: python -m pip install --quiet beautifulsoup4 Babel
+
+      - name: Reuse the 92 already-passed language packs
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: seekvera-global/seekvera-main
+          run-id: 36185614760
+          pattern: pack-*
+          path: i18n-r35
+          merge-multiple: true
+
+      - name: Verify recovered artifacts and identify only missing languages
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r35_build_pack.py --source-only
+          python - <<'PY'
+          import json, pathlib
+          langs=json.load(open('i18n-r35-languages.json'))
+          src=json.load(open('i18n-r35-source.json'))
+          present=[l for l in langs if pathlib.Path(f'i18n-r35/{l}.json').exists()]
+          missing=[l for l in langs if l not in present]
+          print('R38 REUSED',len(present),'MISSING',missing)
+          assert len(present)>=90 and 1<=len(missing)<=8,(len(present),missing)
+          for l in present:
+              d=json.load(open(f'i18n-r35/{l}.json',encoding='utf-8'))
+              assert d['sourceHash']==src['sourceHash'] and d['count']==src['count'],l
+          PY
+
+      - name: Deploy temporary Workers-AI translation recovery endpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r32_translation_backend_fix.py
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('worker.js');s=p.read_text(encoding='utf-8')
+          s=s.replace('strings.slice(0,20)','strings.slice(0,20)',1)
+          old="||(language.toLowerCase()!=='english'&&x.trim()===strings[i].trim())"
+          new="||(language.toLowerCase()!=='english'&&x.trim()===strings[i].trim()&&/\\s/.test(strings[i].trim())&&strings[i].trim().length>12)"
+          assert old in s
+          s=s.replace(old,new,1)
+          s=s.replace('input.max_completion_tokens=1400','input.max_completion_tokens=2200').replace('input.max_tokens=1400','input.max_tokens=2200')
+          p.write_text(s,encoding='utf-8')
+          PY
+          node --check worker.js
+
+      - name: Publish temporary recovery backend
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Wait for Workers AI translation backend
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 40); do
+            code=$(curl -sS --max-time 20 -o /tmp/tr.json -w '%{http_code}' -X POST 'https://seekveraglobal.com/api/ui-translate' -H 'Origin: https://seekveraglobal.com' -H 'content-type: application/json' --data '{"language":"Arabic","strings":["Live marketplace"]}' || true)
+            if [ "$code" = 200 ] && grep -q '"ok":true' /tmp/tr.json; then cat /tmp/tr.json; exit 0; fi
+            echo "translation backend wait $i HTTP=$code"; sleep 3
+          done
+          cat /tmp/tr.json || true
+          exit 1
+
+      - name: Recover only missing static packs through SEEKVERA Workers AI
+        run: python tools/r38_recover_missing.py
+
+      - name: Assemble and validate all 98 static packs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r35_build_pack.py --source-only
+          python - <<'PY'
+          import json,re,pathlib
+          langs=json.load(open('i18n-r35-languages.json'))
+          src=json.load(open('i18n-r35-source.json',encoding='utf-8'))
+          assert len(langs)==98 and src['count']>=900
+          bad=[];providers={}
+          for l in langs:
+              p=pathlib.Path(f'i18n-r35/{l}.json');assert p.exists(),l
+              d=json.load(open(p,encoding='utf-8'))
+              assert d['sourceHash']==src['sourceHash'],(l,d.get('sourceHash'),src['sourceHash'])
+              assert d['count']==src['count'] and len(d['translations'])==src['count'],l
+              providers[d.get('provider','unknown')]=providers.get(d.get('provider','unknown'),0)+1
+              if l!='en':
+                  long=[s for s in src['strings'] if len(s)>=18 and 'SEEKVERA' not in s and re.search(r'[A-Za-z]',s) and ' ' in s]
+                  same=[s for s in long if str(d['translations'].get(s,'')).strip()==s.strip()]
+                  if len(same)>max(25,int(len(long)*.18)):bad.append((l,len(same),same[:5]))
+          assert not bad,bad[:8]
+          print('R38 PACK VALIDATION PASS',{'languages':98,'strings':src['count'],'providers':providers})
+          pathlib.Path('i18n-r32').mkdir(exist_ok=True)
+          for l in langs:pathlib.Path(f'i18n-r32/{l}.json').write_bytes(pathlib.Path(f'i18n-r35/{l}.json').read_bytes())
+          pathlib.Path('i18n-r32-source.json').write_bytes(pathlib.Path('i18n-r35-source.json').read_bytes())
+          manifest={'version':'20260925-r35-static-v3','sourceHash':src['sourceHash'],'sourceCount':src['count'],'languages':langs,'packs':98,'providers':providers}
+          pathlib.Path('i18n-r32/manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,separators=(',',':')),encoding='utf-8')
+          PY
+          test "$(find i18n-r32 -maxdepth 1 -name '*.json' | wc -l)" -eq 99
+
+      - name: Apply final deterministic runtime and remove temporary recovery behavior
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r32_pack_runtime_patch.py
+          python tools/r32_global_final.py
+          python tools/r32_ai_failover_patch.py
+          python tools/r32_translation_backend_fix.py
+          python tools/r35_finalize.py
+          node --check r32-i18n.js
+          node --check i18n-ui.js
+          node --check worker-r31.js
+          node --check worker.js
+          grep -q 'loadPack' i18n-ui.js
+          grep -q 'r35-static-v3' i18n-ui.js
+          grep -q 'r35Runtime' worker-r31.js
+          grep -q 'i18n-ui.js?v=20260925-r35-global-final' index.html
+
+      - name: Deploy final audited R35 candidate to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Wait for final production release marker
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 60); do
+            b="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/api/health?r38=$i" || true)"
+            if echo "$b" | grep -q 'parallel-static-98-language-country-category-final'; then echo "$b"; exit 0; fi
+            sleep 3
+          done
+          exit 1
+
+      - name: Final live browser and AI audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          node tools/r38_final_audit.mjs
+
+      - name: Commit only after final production PASS
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'SEEKVERA R38 Final'
+          git config user.email 'actions@users.noreply.github.com'
+          git pull --rebase origin main
+          git add i18n-r32 i18n-r32-source.json r32-i18n.js i18n-ui.js locale-r15.js worker-r31.js worker.js sw.js '*.html'
+          if git diff --cached --quiet; then echo 'No generated changes'; else git commit -m 'R38: ship verified 98-language worldwide production release'; git push origin main; fi
+          echo 'R38 FINAL PRODUCTION PASS'
