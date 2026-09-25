@@ -1,0 +1,30 @@
+name: R35 rare AI probe
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r35-rare-ai-probe.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Probe Romansh and Tswana through live SEEKVERA AI
+        shell: bash
+        run: |
+          set -euo pipefail
+          for lang in rm tn; do
+            echo "=== $lang ==="
+            curl -fsS --max-time 30 -X POST 'https://seekveraglobal.com/api/ai' \
+              -H 'Origin: https://seekveraglobal.com' -H 'Referer: https://seekveraglobal.com/' -H 'Content-Type: application/json' \
+              --data "{\"fast\":true,\"language\":\"$lang\",\"country\":\"Worldwide\",\"message\":\"Translate these three website labels into the requested language. Return exactly three translated lines in the same order, no explanation: Popular categories | Live marketplace | Request anything\"}" | tee "/tmp/$lang.json"
+            python - "$lang" <<'PY'
+          import json,sys,re
+          lang=sys.argv[1];d=json.load(open('/tmp/'+lang+'.json'))
+          r=str(d.get('response','')).strip();assert d.get('ok') and r,(lang,d)
+          assert 'Popular categories' not in r,(lang,r)
+          print('RARE_AI_PASS',lang,d.get('language'),d.get('model'),repr(r[:400]))
+          PY
+          done
