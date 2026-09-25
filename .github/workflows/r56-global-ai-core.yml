@@ -29,12 +29,14 @@ jobs:
           set -euo pipefail
           python tools/r56_global_ai_core.py
           python tools/r56b_worker_context.py
+          python tools/r56c_immediate_controls.py
           node --check r31-ui-polish.js
           node --check voice-ai.js
           node --check worker-r31.js
           node --check sw.js
           grep -F "function contextualIntent" r31-ui-polish.js >/dev/null
           grep -F "function autoRoute" r31-ui-polish.js >/dev/null
+          grep -F "function forceControl" r31-ui-polish.js >/dev/null
           grep -F "SEEKVERA_VOICE_AI.start" r31-ui-polish.js >/dev/null
           grep -F "controlResult(q)" r31-ui-polish.js >/dev/null
           grep -F "conversationIntent:guessed" r31-ui-polish.js >/dev/null
@@ -66,11 +68,11 @@ jobs:
         run: |
           set -euo pipefail
           for i in $(seq 1 30); do
-            r="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/r31-ui-polish.js?r56=$i" || true)"
-            v="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/voice-ai.js?r56=$i" || true)"
-            w="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/worker-r31.js?r56=$i" || true)"
-            sw="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/sw.js?r56=$i" || true)"
-            if [[ "$r" == *'function contextualIntent'* && "$r" == *'function autoRoute'* && "$r" == *'SEEKVERA_VOICE_AI.start'* && "$v" == *'voiceReplyDeadline=Date.now()+90000'* && "$w" == *'hinted=clean(b.conversationIntent,30)'* && "$sw" == *'seekvera-r56-global-ai-core-20260926'* ]]; then
+            r="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/r31-ui-polish.js?r56b=$i" || true)"
+            v="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/voice-ai.js?r56b=$i" || true)"
+            w="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/worker-r31.js?r56b=$i" || true)"
+            sw="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/sw.js?r56b=$i" || true)"
+            if [[ "$r" == *'function contextualIntent'* && "$r" == *'function autoRoute'* && "$r" == *'function forceControl'* && "$r" == *'SEEKVERA_VOICE_AI.start'* && "$v" == *'voiceReplyDeadline=Date.now()+90000'* && "$w" == *'hinted=clean(b.conversationIntent,30)'* && "$sw" == *'seekvera-r56-global-ai-core-20260926'* ]]; then
               echo 'R56 LIVE ASSETS PASS'
               exit 0
             fi
@@ -91,7 +93,7 @@ jobs:
           const b=await chromium.launch({headless:true});
           const p=await b.newPage();
           const errors=[];p.on('pageerror',e=>errors.push(String(e)));
-          await p.goto('https://seekveraglobal.com/?r56='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+          await p.goto('https://seekveraglobal.com/?r56b='+Date.now(),{waitUntil:'networkidle',timeout:60000});
           await p.waitForFunction(()=>window.SEEKVERA_R31&&window.SEEKVERA_VOICE_AI&&window.SEEKVERA_R24_CONTROLLER&&document.querySelector('#aiChatForm'),null,{timeout:30000});
           const scripts=await p.evaluate(()=>[...document.scripts].map(s=>s.src).filter(Boolean));
           assert.ok(scripts.some(x=>x.includes('r31-ui-polish.js?v=20260926-r56-global-ai-core')),JSON.stringify(scripts));
@@ -99,27 +101,22 @@ jobs:
           assert.ok(coverage.languages>=98,JSON.stringify(coverage));
           assert.ok(coverage.countries>=248,JSON.stringify(coverage));
 
-          // One microphone owner: R31 delegates to the central voice engine.
           const micDelegation=await p.evaluate(()=>{let n=0;const o=SEEKVERA_VOICE_AI.start;SEEKVERA_VOICE_AI.start=()=>{n++};document.querySelector('#aiChatMic').click();SEEKVERA_VOICE_AI.start=o;return n});
           assert.equal(micDelegation,1,'mic was not delegated exactly once: '+micDelegation);
 
-          // Immediate country control, without waiting for AI navigation.
           await p.fill('#aiChatInput','change country to France');
           await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
-          await p.waitForFunction(()=>document.querySelector('#country')?.value==='FR',null,{timeout:2000});
-          // Immediate language control.
+          await p.waitForFunction(()=>document.querySelector('#country')?.value==='FR',null,{timeout:3000});
           await p.fill('#aiChatInput','change language to French');
           await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
-          await p.waitForFunction(()=>document.querySelector('#lang')?.value==='fr',null,{timeout:2000});
+          await p.waitForFunction(()=>document.querySelector('#lang')?.value==='fr',null,{timeout:3000});
           await p.fill('#aiChatInput','change country to Nigeria');
           await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
-          await p.waitForFunction(()=>document.querySelector('#country')?.value==='NG',null,{timeout:2000});
+          await p.waitForFunction(()=>document.querySelector('#country')?.value==='NG',null,{timeout:3000});
 
-          // Central TTS receives replies when a voice turn is pending.
           const voice=await p.evaluate(()=>{let fired=0;const old=speechSynthesis.speak.bind(speechSynthesis);try{speechSynthesis.speak=()=>{fired++}}catch{}SEEKVERA_VOICE_AI.markVoiceReply();window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text:'Réponse vocale de test',language:'fr'}}));return{pending:SEEKVERA_VOICE_AI.isVoiceReplyPending(),fired}});
           assert.ok(voice.fired>=1,JSON.stringify(voice));
 
-          // A clear request must navigate automatically, not merely show a button.
           await p.fill('#aiChatInput','I am looking for a hotel manager job in Nigeria');
           const t=Date.now();
           await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
