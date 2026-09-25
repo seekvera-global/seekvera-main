@@ -1,0 +1,39 @@
+name: R35 Polytranslator UI probe
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r35-polytranslator-ui-probe.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Inspect public free Romansh translator page
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import re,requests,urllib.parse
+          base='https://www.polytranslator.com'
+          u=base+'/english-to-romansh/'
+          h=requests.get(u,timeout=30,headers={'User-Agent':'Mozilla/5.0'}).text
+          print('HTML',len(h),h[:300].replace('\n',' '))
+          srcs=re.findall(r'<script[^>]+src=["\']([^"\']+)',h,re.I)
+          print('SCRIPTS',len(srcs))
+          found=[]
+          for src in srcs:
+              su=urllib.parse.urljoin(base,src)
+              try:t=requests.get(su,timeout=30,headers={'User-Agent':'Mozilla/5.0'}).text
+              except Exception as e:print('ERR',su,repr(e));continue
+              hits=[]
+              for pat in [r'/api/[A-Za-z0-9_?&=./{}:-]+',r'fetch\([^)]{0,240}',r'axios[^;]{0,240}',r'translate[^;]{0,240}',r'Romansh[^;]{0,180}',r'low_resource[^;]{0,180}']:
+                  hits.extend(re.findall(pat,t,re.I))
+              if hits:
+                  print('SCRIPT',su,'LEN',len(t))
+                  for x in hits[:35]:print('HIT',x[:500].replace('\n',' '))
+                  found.extend(hits)
+          print('FOUND',len(found))
+          PY
