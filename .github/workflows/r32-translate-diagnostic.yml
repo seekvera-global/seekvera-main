@@ -1,0 +1,22 @@
+name: R32 translation diagnostic
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r32-translate-diagnostic.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe live translation endpoint
+        shell: bash
+        run: |
+          set -u
+          for lang in Arabic German Japanese Swahili; do
+            echo "=== $lang ==="
+            curl -sS --max-time 25 -w '\nHTTP=%{http_code}\n' -X POST 'https://seekveraglobal.com/api/ui-translate' \
+              -H 'Origin: https://seekveraglobal.com' -H 'Content-Type: application/json' \
+              --data "{\"language\":\"$lang\",\"strings\":[\"No approved live marketplace listings are available right now.\"]}" || true
+          done
