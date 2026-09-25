@@ -1,4 +1,8 @@
 from pathlib import Path
+
+# Browser real-chat resilience. The Cloudflare free AI pool may hit its daily limit;
+# the app then replaces the route-only emergency response with a real private text AI
+# response in the browser while preserving server safety and local app controls.
 p=Path('r24-ai-controller.js')
 s=p.read_text(encoding='utf-8')
 if 'pollinations-browser-private-backup' not in s:
@@ -9,8 +13,43 @@ window.fetch=async function(input,init){let controls={},body={};let raw=init?.bo
     if old not in s: raise SystemExit('R26 fetch wrapper anchor missing')
     s=s.replace(old,new,1)
 p.write_text(s,encoding='utf-8')
+
+# Browser translation resilience for all 98 supported UI languages. Native browser
+# Translator is preferred, server translation is second, and the private public text
+# provider is used only when both are unavailable. Cached translations remain local.
+p=Path('i18n-ui.js')
 s=p.read_text(encoding='utf-8')
-assert 'pollinations-browser-private-backup' in s
-assert "res.status===503||data?.degraded===true||data?.model==='seekvera-local-router'" in s
-assert "if(!message||base?.blocked||base?.reviewRequired)return null" in s
-print('R26 browser AI resilience patch PASS')
+if 'svBrowserTranslate' not in s:
+    old="""async function batchTranslate(l,arr){
+ if(!arr.length)return new Map();
+ const out=await nativeBatch(l,arr);
+ const requestBatch=async(batch)=>{if(!batch.length)return;try{const r=await fetch(api('/api/ui-translate'),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language:langName(l),strings:batch})});const d=await r.json().catch(()=>null);if(r.ok&&Array.isArray(d?.translations)&&d.translations.length===batch.length){batch.forEach((src,j)=>{const v=String(d.translations[j]||'').trim();if(v&&v!==src){put(l,src,v);out.set(src,v)}})}}catch{}};
+ let remaining=arr.filter(src=>!out.has(src)&&!cached(l,src));
+ for(let i=0;i<remaining.length;i+=12)await requestBatch(remaining.slice(i,i+12));
+ remaining=arr.filter(src=>!out.has(src)&&!cached(l,src));
+ for(let i=0;i<remaining.length;i+=4)await requestBatch(remaining.slice(i,i+4));
+ return out
+}"""
+    new="""async function batchTranslate(l,arr){
+ if(!arr.length)return new Map();
+ const out=await nativeBatch(l,arr);
+ const svBrowserTranslate=async(batch)=>{if(!batch.length)return false;const prompt=['Translate the following user-interface strings from English into '+langName(l)+'.','Keep brand names such as SEEKVERA unchanged. Keep numbers, currency codes and URLs intact.','Return ONLY a JSON array with exactly '+batch.length+' translated strings in the same order. No markdown and no explanation.',JSON.stringify(batch)].join('\\n');const u='https://text.pollinations.ai/'+encodeURIComponent(prompt)+'?model=openai&private=true';const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),16000);try{const r=await fetch(u,{headers:{accept:'text/plain'},signal:ctl.signal,cache:'no-store'});if(!r.ok)return false;let raw=String(await r.text()).trim().replace(/^```(?:json)?\\s*/i,'').replace(/\\s*```$/,'');const a=raw.indexOf('['),b=raw.lastIndexOf(']');if(a>=0&&b>a)raw=raw.slice(a,b+1);const vals=JSON.parse(raw);if(!Array.isArray(vals)||vals.length!==batch.length)return false;let n=0;batch.forEach((src,j)=>{const v=String(vals[j]||'').trim();if(v&&v!==src){put(l,src,v);out.set(src,v);n++}});return n>0}catch{return false}finally{clearTimeout(to)}};
+ const requestBatch=async(batch)=>{if(!batch.length)return;let done=false;try{const r=await fetch(api('/api/ui-translate'),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language:langName(l),strings:batch})});const d=await r.json().catch(()=>null);if(r.ok&&Array.isArray(d?.translations)&&d.translations.length===batch.length){batch.forEach((src,j)=>{const v=String(d.translations[j]||'').trim();if(v&&v!==src){put(l,src,v);out.set(src,v)}});done=batch.every(src=>out.has(src)||cached(l,src))}}catch{}if(!done)await svBrowserTranslate(batch.filter(src=>!out.has(src)&&!cached(l,src)))};
+ let remaining=arr.filter(src=>!out.has(src)&&!cached(l,src));
+ for(let i=0;i<remaining.length;i+=12)await requestBatch(remaining.slice(i,i+12));
+ remaining=arr.filter(src=>!out.has(src)&&!cached(l,src));
+ for(let i=0;i<remaining.length;i+=4)await requestBatch(remaining.slice(i,i+4));
+ return out
+}"""
+    if old not in s: raise SystemExit('R26 i18n batch anchor missing')
+    s=s.replace(old,new,1)
+p.write_text(s,encoding='utf-8')
+
+c=Path('r24-ai-controller.js').read_text(encoding='utf-8')
+i=Path('i18n-ui.js').read_text(encoding='utf-8')
+assert 'pollinations-browser-private-backup' in c
+assert "res.status===503||data?.degraded===true||data?.model==='seekvera-local-router'" in c
+assert "if(!message||base?.blocked||base?.reviewRequired)return null" in c
+assert 'svBrowserTranslate' in i
+assert "Return ONLY a JSON array" in i
+print('R26 browser AI + 98-language translation resilience PASS')
