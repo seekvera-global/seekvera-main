@@ -1,0 +1,60 @@
+name: R57 voice E2E diagnostic
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r57-voice-e2e-diagnostic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test live voice pipeline
+        shell: bash
+        run: |
+          set -euo pipefail
+          SITE='https://seekveraglobal.com'
+          echo '--- health ---'
+          curl -fsS "$SITE/api/health?r57diag=1" | tee /tmp/health.json
+          echo
+          echo '--- tools ---'
+          command -v espeak || true
+          command -v ffmpeg || true
+          if ! command -v espeak >/dev/null 2>&1; then
+            sudo apt-get update -qq >/dev/null
+            sudo apt-get install -y -qq espeak >/dev/null
+          fi
+          espeak -v en-us -s 145 -w /tmp/voice.wav 'I want to travel to Lebanon and I need help with a driving license' >/dev/null 2>&1
+          python - <<'PY'
+          import base64, json
+          b=open('/tmp/voice.wav','rb').read()
+          open('/tmp/body.json','w').write(json.dumps({'audio':'data:audio/wav;base64,'+base64.b64encode(b).decode(),'language':'auto'}))
+          print('audio_bytes',len(b))
+          PY
+          echo '--- transcribe ---'
+          start=$(date +%s%3N)
+          code=$(curl -sS --max-time 25 -o /tmp/transcribe.json -w '%{http_code}' -X POST "$SITE/api/transcribe" -H 'content-type: application/json' --data-binary @/tmp/body.json || true)
+          end=$(date +%s%3N)
+          echo "status=$code ms=$((end-start))"
+          cat /tmp/transcribe.json || true
+          echo
+          echo '--- ai from transcript when available ---'
+          python - <<'PY'
+          import json
+          try:d=json.load(open('/tmp/transcribe.json'))
+          except:d={}
+          t=d.get('text','')
+          open('/tmp/ai.json','w').write(json.dumps({'message':t or 'I want to travel to Lebanon and need help with a driving license','country':'Worldwide','language':'auto','fast':True}))
+          print('transcript=',repr(t))
+          PY
+          code2=$(curl -sS --max-time 15 -o /tmp/airesp.json -w '%{http_code}' -X POST "$SITE/api/ai" -H 'content-type: application/json' --data-binary @/tmp/ai.json || true)
+          echo "ai_status=$code2"
+          cat /tmp/airesp.json || true
+          echo
