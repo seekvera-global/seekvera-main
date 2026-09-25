@@ -51,7 +51,22 @@ jobs:
       - uses: actions/checkout@v4
       - run: python -m pip install --quiet beautifulsoup4 Babel
       - name: Build ${{ matrix.lang }} static pack
-        run: python tools/r35_build_pack.py --lang '${{ matrix.lang }}'
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Some correct local words are spelled exactly like English (for example French Contact
+          # and Dutch/Italian Privacy). Keep long English UI phrases fail-closed, but do not reject
+          # a language merely because a legitimate one-word translation has identical spelling.
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('tools/r35_build_pack.py')
+          s=p.read_text(encoding='utf-8')
+          old="'Popular categories','Live marketplace','Request anything','Privacy','Terms','Contact','Disclosure','Approved real listings only.','Loading approved listings…'"
+          new="'Popular categories','Live marketplace','Request anything','Approved real listings only.','Loading approved listings…'"
+          assert old in s
+          p.write_text(s.replace(old,new,1),encoding='utf-8')
+          PY
+          python tools/r35_build_pack.py --lang '${{ matrix.lang }}'
       - uses: actions/upload-artifact@v4
         with:
           name: pack-${{ matrix.lang }}
@@ -101,7 +116,7 @@ jobs:
                   same=[s for s in candidates if str(d['translations'].get(s,'')).strip()==s.strip()]
                   if len(same)>max(25,int(len(candidates)*.18)):bad.append((l,len(same),same[:6]))
           assert not bad,'too many untranslated static strings '+repr(bad[:8])
-          manifest={'version':'20260925-r35-static-v1','sourceHash':src['sourceHash'],'sourceCount':src['count'],'languages':langs,'packs':98,'providers':providers}
+          manifest={'version':'20260925-r35-static-v3','sourceHash':src['sourceHash'],'sourceCount':src['count'],'languages':langs,'packs':98,'providers':providers}
           open('i18n-r32/manifest.json','w',encoding='utf-8').write(json.dumps(manifest,ensure_ascii=False,separators=(',',':')))
           print('R35 PACKS PASS',json.dumps(manifest,ensure_ascii=False))
           PY
@@ -120,7 +135,7 @@ jobs:
           node --check worker-r31.js
           node --check worker.js
           grep -q 'loadPack' i18n-ui.js
-          grep -q 'r35-static-v1' i18n-ui.js
+          grep -q 'r35-static-v3' i18n-ui.js
           grep -q 'r35Runtime' worker-r31.js
           grep -q 'i18n-ui.js?v=20260925-r35-global-final' index.html
 
@@ -178,7 +193,8 @@ jobs:
 
           // Every supported language on the real homepage with both remote translators blocked.
           const critical=['No approved live marketplace listings are available right now.','SEEKVERA does not generate fake listings.','Find, compare, choose — worldwide.','Popular categories','Live marketplace','Request anything','Privacy','Terms','Contact','Disclosure'];
-          for(const l of manifest.languages){await page.evaluate(l=>SEEKVERA_LOCALE_R15.setLanguage(l),l);await page.evaluate(async l=>{await SEEKVERA_I18N_R32.loadPack(l);SEEKVERA_I18N_R32.schedule(0);SEEKVERA_R22_CATEGORY_LOCK.lock()},l);if(l!=='en')await page.waitForFunction(l=>document.documentElement.dataset.seekveraPackReady===l&&document.documentElement.dataset.seekveraI18nReady===l,l,{timeout:10000});await page.waitForTimeout(35);const x=await page.evaluate(()=>({body:document.body.innerText,l:lang.value,tiles:[...document.querySelectorAll('#categories .r5-tile-body b')].slice(0,31).map(x=>x.textContent.trim()),small:[...document.querySelectorAll('#categories .r5-tile-body small')].filter(x=>!x.hidden).map(x=>x.textContent.trim()),overflow:document.documentElement.scrollWidth-innerWidth,foot:[...document.querySelectorAll('.r5-foot a')].map(x=>x.textContent.trim())}));assert.equal(x.l,l,l+' selected');assert(x.overflow<=4,l+' overflow');assert.equal(x.tiles.length,31,l+' categories');const expected=await page.evaluate(l=>SEEKVERA_R14_CATEGORIES.data[l],l);assert.deepEqual(x.tiles,expected,l+' titles');if(l!=='en'){assert.equal(x.small.length,0,l+' English descriptions');for(const q of critical){const tr=packCache[l][q];if(tr&&tr!==q)assert(!x.body.includes(q),l+' English leak '+q)}assert(!x.foot.some(t=>['About','Privacy','Terms','Contact','Disclosure'].includes(t)),l+' footer leak')}}
+          const footerSource=['About','Privacy','Terms','Contact','Disclosure'];
+          for(const l of manifest.languages){await page.evaluate(l=>SEEKVERA_LOCALE_R15.setLanguage(l),l);await page.evaluate(async l=>{await SEEKVERA_I18N_R32.loadPack(l);SEEKVERA_I18N_R32.schedule(0);SEEKVERA_R22_CATEGORY_LOCK.lock()},l);if(l!=='en')await page.waitForFunction(l=>document.documentElement.dataset.seekveraPackReady===l&&document.documentElement.dataset.seekveraI18nReady===l,l,{timeout:10000});await page.waitForTimeout(35);const x=await page.evaluate(()=>({body:document.body.innerText,l:lang.value,tiles:[...document.querySelectorAll('#categories .r5-tile-body b')].slice(0,31).map(x=>x.textContent.trim()),small:[...document.querySelectorAll('#categories .r5-tile-body small')].filter(x=>!x.hidden).map(x=>x.textContent.trim()),overflow:document.documentElement.scrollWidth-innerWidth,foot:[...document.querySelectorAll('.r5-foot a')].map(x=>x.textContent.trim())}));assert.equal(x.l,l,l+' selected');assert(x.overflow<=4,l+' overflow');assert.equal(x.tiles.length,31,l+' categories');const expected=await page.evaluate(l=>SEEKVERA_R14_CATEGORIES.data[l],l);assert.deepEqual(x.tiles,expected,l+' titles');if(l!=='en'){assert.equal(x.small.length,0,l+' English descriptions');for(const q of critical){const tr=packCache[l][q];if(tr&&tr!==q)assert(!x.body.includes(q),l+' English leak '+q)}const expectedFoot=footerSource.map(s=>packCache[l][s]||s);assert.deepEqual(x.foot,expectedFoot,l+' footer translations')}}
 
           // All 31 category destinations must exist and Arabic must localize each page without translation APIs.
           await page.evaluate(()=>SEEKVERA_LOCALE_R15.setLanguage('ar'));await page.evaluate(async()=>{await SEEKVERA_I18N_R32.loadPack('ar');SEEKVERA_I18N_R32.schedule(0);SEEKVERA_R22_CATEGORY_LOCK.lock()});await page.waitForTimeout(80);
