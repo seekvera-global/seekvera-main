@@ -1,7 +1,7 @@
-// SEEKVERA R30: fast AI + full-language runtime + voice continuity
+// SEEKVERA R31: atomic locale + localized currencies + fast voice + smart AI
 {
   "name": "seekvera-main",
-  "main": "./worker-r30.js",
+  "main": "./worker-r31.js",
   "compatibility_date": "2026-09-17",
   "assets": {
     "directory": "./",
