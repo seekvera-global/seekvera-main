@@ -1,0 +1,131 @@
+name: R57 final voice
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r57-final-voice.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r57-final-voice
+  cancel-in-progress: true
+
+jobs:
+  deploy-test-persist:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply R57 voice fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r57_voice_native_first.py
+          node --check voice-ai.js
+          node --check worker-r31.js
+          node --check sw.js
+          grep -F "if(!SpeechRecognition){serverVoice(targetId,activeButton);return}" voice-ai.js >/dev/null
+          ! grep -F "if(navigator.mediaDevices?.getUserMedia&&window.MediaRecorder){serverVoice" voice-ai.js
+          grep -F "r.continuous=false" voice-ai.js >/dev/null
+          grep -F "ar-LB" voice-ai.js >/dev/null
+          grep -F "AbortSignal.timeout(5000)" voice-ai.js >/dev/null
+          grep -F "I’m taking you directly to the right section now" worker-r31.js >/dev/null
+          grep -F "voice-ai.js?v=20260926-r57-native-first" worker-r31.js >/dev/null
+          echo 'R57 BUILD PASS'
+
+      - name: Deploy R57 production
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Confirm R57 live assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 30); do
+            v="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/voice-ai.js?r57=$i" || true)"
+            w="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/worker-r31.js?r57=$i" || true)"
+            if [[ "$v" == *"if(!SpeechRecognition){serverVoice(targetId,activeButton);return}"* && "$v" == *"r.continuous=false"* && "$v" == *"ar-LB"* && "$w" == *"r57-native-first"* ]]; then
+              echo 'R57 LIVE ASSETS PASS'
+              exit 0
+            fi
+            sleep 2
+          done
+          echo 'R57 assets not live' >&2
+          exit 1
+
+      - name: Browser acceptance native voice auto-send and TTS
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > r57.mjs <<'JS'
+          import {chromium} from 'playwright';
+          import assert from 'node:assert/strict';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage({userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          await p.addInitScript(()=>{
+            window.__r57NativeStarts=0;window.__r57RecorderStarts=0;window.__r57Spoken=0;window.__r57LastLang='';
+            class FakeSR{
+              constructor(){this.lang='';this.interimResults=false;this.continuous=false;this.maxAlternatives=1;this._ended=false}
+              start(){window.__r57NativeStarts++;window.__r57LastLang=this.lang;this.onstart?.();setTimeout(()=>{const row=[{transcript:'hello assistant'}];row.isFinal=true;this.onresult?.({resultIndex:0,results:[row]})},40)}
+              stop(){if(this._ended)return;this._ended=true;setTimeout(()=>this.onend?.(),20)}
+              abort(){this.stop()}
+            }
+            Object.defineProperty(window,'SpeechRecognition',{configurable:true,value:FakeSR});
+            Object.defineProperty(window,'webkitSpeechRecognition',{configurable:true,value:FakeSR});
+            class FakeRecorder{static isTypeSupported(){return true}constructor(){window.__r57RecorderStarts++;this.state='inactive';this.mimeType='audio/webm'}start(){this.state='recording'}stop(){this.state='inactive';this.onstop?.()}}
+            Object.defineProperty(window,'MediaRecorder',{configurable:true,value:FakeRecorder});
+            try{Object.defineProperty(navigator,'mediaDevices',{configurable:true,value:{getUserMedia:async()=>({getTracks:()=>[{stop(){}}]})}})}catch{}
+          });
+          await p.route('**/api/ai',async route=>{if(route.request().method()==='POST'){window;await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,response:'Hello. How can I help you?',language:'English',category:'general',route:'marketplace.html'})})}else await route.continue()});
+          await p.goto('https://seekveraglobal.com/?r57test='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_VOICE_AI&&document.querySelector('#aiChatMic')&&document.querySelector('#aiChatForm'),null,{timeout:30000});
+          await p.evaluate(()=>{try{speechSynthesis.speak=()=>{window.__r57Spoken++}}catch{}});
+          await p.click('#aiChatMic');
+          await p.waitForFunction(()=>window.__r57NativeStarts===1,null,{timeout:3000});
+          await p.waitForFunction(()=>document.querySelector('#aiMessages')?.innerText.includes('hello assistant'),null,{timeout:5000});
+          await p.waitForFunction(()=>document.querySelector('#aiMessages')?.innerText.includes('Hello. How can I help you?'),null,{timeout:5000});
+          const state=await p.evaluate(()=>({native:window.__r57NativeStarts,recorder:window.__r57RecorderStarts,spoken:window.__r57Spoken,lastLang:window.__r57LastLang,placeholder:document.querySelector('#aiChatInput')?.placeholder||'',messages:document.querySelector('#aiMessages')?.innerText||''}));
+          assert.equal(state.native,1,JSON.stringify(state));
+          assert.equal(state.recorder,0,'server MediaRecorder path should not be primary on supported Chrome: '+JSON.stringify(state));
+          assert.ok(!/Transcribing your voice/i.test(state.placeholder),JSON.stringify(state));
+          assert.ok(state.spoken>=1,'TTS did not fire: '+JSON.stringify(state));
+          console.log('R57 NATIVE VOICE PASS',JSON.stringify(state));
+
+          // Verify Lebanese Arabic locale selection uses ar-LB while keeping the same universal voice engine.
+          await p.goto('https://seekveraglobal.com/?r57lb='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_VOICE_AI&&document.querySelector('#lang')&&document.querySelector('#country'),null,{timeout:30000});
+          await p.evaluate(()=>{const l=document.querySelector('#lang'),c=document.querySelector('#country');l.value='ar';l.dispatchEvent(new Event('change',{bubbles:true}));c.value='LB';c.dispatchEvent(new Event('change',{bubbles:true}));window.__r57NativeStarts=0;window.__r57LastLang=''});
+          await p.click('#aiChatMic');
+          await p.waitForFunction(()=>window.__r57NativeStarts===1,null,{timeout:3000});
+          const lb=await p.evaluate(()=>window.__r57LastLang);
+          assert.equal(lb,'ar-LB','Lebanese Arabic locale mismatch: '+lb);
+          console.log('R57 LEBANESE LOCALE PASS',lb);
+          await b.close();
+          JS
+          node r57.mjs
+          rm -f r57.mjs
+
+      - name: Persist R57 source to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add -- voice-ai.js worker-r31.js sw.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Persist R57 native-first voice and automatic routing guidance'
+            git push origin HEAD:main
+          fi
+          echo 'R57 FINAL RELEASE PERSISTED'
