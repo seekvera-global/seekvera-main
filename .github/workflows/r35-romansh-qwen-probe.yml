@@ -1,0 +1,59 @@
+name: R35 Romansh Qwen probe
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r35-romansh-qwen-probe.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Install CPU model runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet --index-url https://download.pytorch.org/whl/cpu torch
+          python -m pip install --quiet 'transformers<5' accelerate sentencepiece
+      - name: Probe Romansh quality
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from transformers import AutoTokenizer,AutoModelForCausalLM
+          import torch,re
+          name='Qwen/Qwen2.5-1.5B-Instruct'
+          tok=AutoTokenizer.from_pretrained(name)
+          model=AutoModelForCausalLM.from_pretrained(name,torch_dtype=torch.float32,low_cpu_mem_usage=True)
+          model.eval()
+          tests=[
+            'Popular categories','Live marketplace','Request anything','Find a hotel in the city',
+            'Privacy and terms','Search worldwide for a house to rent',
+            'No approved live marketplace listings are available right now.',
+            'Thank you. Where is the bathroom?'
+          ]
+          prompt='''You are a professional translator into standard Romansh (Rumantsch Grischun), the national language of Switzerland. Translate each numbered English website phrase into natural Rumantsch Grischun. Do not use Spanish, Portuguese, Italian, German, Romanian, or English. Return exactly 8 lines in this format: 1. translation\n2. translation ... No explanations.\n\n'''+ '\n'.join(f'{i+1}. {s}' for i,s in enumerate(tests))
+          msgs=[{'role':'system','content':'Translate only into standard Rumantsch Grischun (Romansh). Never answer the source text.'},{'role':'user','content':prompt}]
+          text=tok.apply_chat_template(msgs,tokenize=False,add_generation_prompt=True)
+          inp=tok(text,return_tensors='pt')
+          with torch.no_grad():out=model.generate(**inp,max_new_tokens=420,do_sample=False,repetition_penalty=1.03)
+          ans=tok.decode(out[0][inp.input_ids.shape[1]:],skip_special_tokens=True).strip()
+          print('QWEN_ROMANSH_OUTPUT_START');print(ans);print('QWEN_ROMANSH_OUTPUT_END')
+          lines=[re.sub(r'^\s*\d+[.)]\s*','',x).strip() for x in ans.splitlines() if re.match(r'^\s*\d+[.)]\s*',x)]
+          assert len(lines)==8,(len(lines),lines)
+          bad=('categorías populares','mercados en vivo','solicitar cualquier','en la ciudad','privacidade','términos','buscar a nivel')
+          low=' '.join(lines).lower()
+          assert not any(x in low for x in bad),low
+          assert lines[0] != tests[0] and lines[3] != tests[3]
+          # Romansh lexical sanity: several characteristic words should appear across the sample.
+          markers=['tschert','martg','dumond','chattar','citad','privat','cundiziun','chasa','locar','actualmain','naginas','grazia','tualetta','mund']
+          hits=sum(1 for m in markers if m in low)
+          print('ROMANSH_MARKER_HITS',hits,[m for m in markers if m in low])
+          assert hits>=4,(hits,lines)
+          print('R35 QWEN ROMANSH PROBE PASS')
+          PY
