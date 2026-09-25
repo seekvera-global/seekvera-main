@@ -1,9 +1,9 @@
 from __future__ import annotations
 from pathlib import Path
 from bs4 import BeautifulSoup, NavigableString
-import concurrent.futures, hashlib, json, random, re, time, urllib.parse, urllib.request
+import concurrent.futures, hashlib, json, random, re, time, urllib.error, urllib.parse, urllib.request
 
-VERSION='20260925-r32-static-v1'
+VERSION='20260925-r32-static-v2'
 OUT=Path('i18n-r32')
 OUT.mkdir(exist_ok=True)
 
@@ -98,10 +98,11 @@ for x in DYNAMIC: add(strings,x)
 SOURCE=sorted(strings,key=lambda x:(len(x),x.lower()))
 SOURCE_HASH=hashlib.sha256('\n'.join(SOURCE).encode()).hexdigest()[:16]
 Path('i18n-r32-source.json').write_text(json.dumps({'version':VERSION,'sourceHash':SOURCE_HASH,'count':len(SOURCE),'strings':SOURCE},ensure_ascii=False,separators=(',',':')),encoding='utf-8')
-print('R32 static source strings:',len(SOURCE),'hash',SOURCE_HASH)
+print('R32 static source strings:',len(SOURCE),'hash',SOURCE_HASH,'chars',sum(map(len,SOURCE)),flush=True)
 
-# Keep requests comfortably below endpoint/body limits and preserve deterministic separators.
-def chunks(items:list[str],max_items=45,max_chars=6500):
+# The endpoint reliably accepts ~70k characters per POST. Large batches cut requests from >2,000 to ~100,
+# avoiding the rate limit that stopped the first build.
+def chunks(items:list[str],max_items=1200,max_chars=90000):
     out=[]; cur=[]; n=0
     for s in items:
         extra=len(s)+(len(SEP)+2 if cur else 0)
@@ -112,10 +113,10 @@ def chunks(items:list[str],max_items=45,max_chars=6500):
 
 def google_batch(code:str,batch:list[str])->list[str]:
     tl=ALIASES.get(code,code)
-    body='\n'+SEP+'\n'.join([]) if False else ('\n'+SEP+'\n').join(batch)
+    body=('\n'+SEP+'\n').join(batch)
     data=urllib.parse.urlencode({'client':'gtx','sl':'en','tl':tl,'dt':'t','q':body}).encode()
     req=urllib.request.Request('https://translate.googleapis.com/translate_a/single',data=data,headers={'User-Agent':'Mozilla/5.0','Content-Type':'application/x-www-form-urlencoded'})
-    with urllib.request.urlopen(req,timeout=25) as r: obj=json.loads(r.read().decode('utf-8'))
+    with urllib.request.urlopen(req,timeout=45) as r: obj=json.loads(r.read().decode('utf-8'))
     text=''.join(x[0] for x in obj[0] if x and x[0])
     parts=[x.strip() for x in text.split(SEP)]
     if len(parts)!=len(batch) or any(not x for x in parts):
@@ -123,15 +124,14 @@ def google_batch(code:str,batch:list[str])->list[str]:
     return parts
 
 def pollinations_batch(code:str,batch:list[str])->list[str]:
-    # Used only when a language is not offered by the deterministic build translator (currently Romansh/rm).
     language_names={'rm':'Romansh'}
     name=language_names.get(code,code)
     prompt=(f'Translate this JSON array of user-interface strings from English into {name}. '
             f'Keep SEEKVERA, URLs, numbers, currency codes and placeholders unchanged. '
             f'Return ONLY one valid JSON array of exactly {len(batch)} strings, same order, no markdown.\n'+json.dumps(batch,ensure_ascii=False))
     url='https://text.pollinations.ai/'+urllib.parse.quote(prompt)+'?model=openai&private=true'
-    req=urllib.request.Request(url,headers={'Accept':'text/plain','User-Agent':'SEEKVERA-R32-static-builder/1.0'})
-    with urllib.request.urlopen(req,timeout=35) as r: raw=r.read().decode('utf-8').strip()
+    req=urllib.request.Request(url,headers={'Accept':'text/plain','User-Agent':'SEEKVERA-R32-static-builder/2.0'})
+    with urllib.request.urlopen(req,timeout=50) as r: raw=r.read().decode('utf-8').strip()
     raw=re.sub(r'^```(?:json)?\s*','',raw,flags=re.I);raw=re.sub(r'\s*```$','',raw)
     a,b=raw.find('['),raw.rfind(']')
     if a>=0 and b>a: raw=raw[a:b+1]
@@ -140,26 +140,39 @@ def pollinations_batch(code:str,batch:list[str])->list[str]:
         raise ValueError('bad Pollinations translation batch')
     return [str(x).strip() for x in vals]
 
-def translate_batch(code:str,batch:list[str])->list[str]:
+def translate_google(code:str,batch:list[str])->list[str]:
     last=None
-    if code!='rm':
-        for attempt in range(4):
-            try: return google_batch(code,batch)
-            except Exception as e:
-                last=e;time.sleep(.7*(attempt+1)+random.random()*.3)
-    # Rare-language fallback. Fail the build rather than silently shipping English.
-    for attempt in range(5):
-        try: return pollinations_batch(code,batch)
+    for attempt in range(7):
+        try:
+            vals=google_batch(code,batch)
+            time.sleep(.18+random.random()*.12)
+            return vals
+        except urllib.error.HTTPError as e:
+            last=e
+            if e.code==429:
+                delay=min(55,4*(2**attempt))+random.random()*2
+                print('RATE_LIMIT',code,'attempt',attempt+1,'sleep',round(delay,1),flush=True)
+                time.sleep(delay)
+            else:
+                time.sleep(min(12,1.5*(attempt+1)))
         except Exception as e:
-            last=e;time.sleep(1.5*(attempt+1))
-    raise RuntimeError(f'{code} translation failed: {last!r}')
+            last=e;time.sleep(min(12,1.5*(attempt+1))+random.random())
+    raise RuntimeError(f'{code} Google translation failed: {last!r}')
+
+def translate_rm(batch:list[str])->list[str]:
+    last=None
+    for attempt in range(7):
+        try:
+            vals=pollinations_batch('rm',batch);time.sleep(.4);return vals
+        except Exception as e:
+            last=e;time.sleep(min(40,3*(attempt+1)))
+    raise RuntimeError(f'rm translation failed: {last!r}')
 
 def build_language(code:str):
     if code=='en':
         trans={s:s for s in SOURCE}
     else:
         target=OUT/f'{code}.json'
-        # Reuse a complete same-source pack if the workflow is retried.
         if target.exists():
             try:
                 old=json.loads(target.read_text(encoding='utf-8'))
@@ -167,8 +180,9 @@ def build_language(code:str):
                     return code,len(SOURCE),'cached'
             except Exception: pass
         trans={}
-        for batch in chunks(SOURCE):
-            vals=translate_batch(code,batch)
+        batches=chunks(SOURCE,1200,90000) if code!='rm' else chunks(SOURCE,55,6000)
+        for batch in batches:
+            vals=translate_google(code,batch) if code!='rm' else translate_rm(batch)
             for src,val in zip(batch,vals): trans[src]=val
         if len(trans)!=len(SOURCE): raise RuntimeError(f'{code}: incomplete pack')
     payload={'version':VERSION,'sourceHash':SOURCE_HASH,'language':code,'count':len(SOURCE),'translations':trans}
@@ -176,7 +190,8 @@ def build_language(code:str):
     return code,len(trans),'built'
 
 results=[]
-with concurrent.futures.ThreadPoolExecutor(max_workers=8) as ex:
+# Low concurrency + very large batches is intentionally conservative and much less likely to be throttled.
+with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex:
     futs={ex.submit(build_language,c):c for c in LANGS}
     for f in concurrent.futures.as_completed(futs):
         r=f.result();results.append(r);print('PACK',r,flush=True)
@@ -184,4 +199,4 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=8) as ex:
 if len(results)!=98: raise SystemExit('Not all language packs were built')
 manifest={'version':VERSION,'sourceHash':SOURCE_HASH,'sourceCount':len(SOURCE),'languages':LANGS,'packs':98}
 (OUT/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,separators=(',',':')),encoding='utf-8')
-print('R32 STATIC PACKS PASS',json.dumps(manifest))
+print('R32 STATIC PACKS PASS',json.dumps(manifest),flush=True)
