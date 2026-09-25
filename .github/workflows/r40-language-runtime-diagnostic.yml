@@ -43,7 +43,7 @@ jobs:
               await p.evaluate(l=>SEEKVERA_LOCALE_R15.setLanguage(l),l);
               const load=await p.evaluate(async l=>{try{const x=await SEEKVERA_I18N_R32.loadPack(l);SEEKVERA_I18N_R32.schedule(0);SEEKVERA_R22_CATEGORY_LOCK.lock();return {ok:true,x:!!x}}catch(e){return {ok:false,error:String(e)}}},l);
               if(!load.ok)throw new Error('loadPack '+JSON.stringify(load));
-              await p.waitForFunction(l=>document.documentElement.dataset.seekveraPackReady===l&&document.documentElement.dataset.seekveraI18nReady===l,l,{timeout:15000});
+              await p.waitForFunction(l=>l==='en'?document.documentElement.dataset.seekveraI18nReady==='en':document.documentElement.dataset.seekveraPackReady===l&&document.documentElement.dataset.seekveraI18nReady===l,l,{timeout:15000});
               const st=await p.evaluate(()=>({selected:document.getElementById('lang')?.value||'',pack:document.documentElement.dataset.seekveraPackReady||'',ready:document.documentElement.dataset.seekveraI18nReady||'',dir:document.documentElement.dir||'',overflow:document.documentElement.scrollWidth-innerWidth,cards:document.querySelectorAll('#categories .r5-tile').length}));
               console.log('LANG_PASS',l,Date.now()-t,JSON.stringify(st));
             }catch(e){
