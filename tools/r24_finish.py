@@ -81,3 +81,4 @@ assert not missing,missing
 print(f'R24 PATCH PASS — 98 languages, {len(pages)} app pages, {injected} newly injected')
 
 # trigger: final production R24 audit
+# trigger: R28 final deploy after language-country separation and 98-language category completion
