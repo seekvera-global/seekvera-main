@@ -167,12 +167,19 @@ function handleChange(e){
 }
 document.addEventListener('change',handleChange,true);
 
-function boot(){
+function ensureAllLanguageOptions(){
+  const l=$('#lang');if(!l)return;
+  let dn=null;try{dn=new Intl.DisplayNames([normalizeLang(document.documentElement.lang||navigator.language||'en')],{type:'language'})}catch{}
+  for(const code of Object.keys(LANG_PRIMARY))ensureOption(l,code,dn?.of(code)||code);
+}
+function boot(){ensureAllLanguageOptions();
   // Existing saved selection is reconciled atomically. If there is no explicit selection,
   // allow the existing geo/device auto-country routine to choose first, then seal it.
   const s=storedState();
   if(s)applyState(s,{explicit:true,reason:'boot-saved'});
   else setTimeout(()=>{
+    const late=storedState();
+    if(late){applyState(late,{explicit:false,reason:'boot-late-user-choice'});return}
     let cc='';try{cc=String(localStorage.getItem('seekvera_country')||'').toUpperCase()}catch{}
     if(cc&&cc!=='WW'&&PROFILES[cc])applyState(localeStateFrom('country',cc),{explicit:false,reason:'boot-auto'});
     else applyState(localeStateFrom('country','WW'),{explicit:false,reason:'boot-worldwide'});
@@ -198,7 +205,7 @@ html.sv-r15-applying .r5-top,html.sv-r15-applying .r5-hero,html.sv-r15-applying 
 `;document.head.appendChild(st);
 
 window.SEEKVERA_LOCALE_R15={
-  version:'20260924-r15',
+  version:'20260925-r44-stable-locale',
   profiles:PROFILES,
   languagePrimary:LANG_PRIMARY,
   currencyPrimary:CURRENCY_PRIMARY,
