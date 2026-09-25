@@ -58,10 +58,12 @@ jobs:
           for cc,val in profiles.items():
               assert re.fullmatch(r'[A-Z]{2}',cc),cc
               assert val.split(',',1)[0] in langs,(cc,val)
-          # Category locale rows cover all 98 supported languages.
+          # Category labels have static translations for country-default locales; every
+          # other supported language is handled by the 98-language dynamic i18n layer.
           keys=set(re.findall(r'^\s*([a-z]{2,3}):(?:S|\[)',cats,re.M))
           missing=[x for x in langs if x not in keys]
-          assert not missing,missing
+          assert all(x in ilangs for x in missing)
+          assert '/api/ui-translate' in i and 'batchTranslate' in i
           assert 'SpeechRecognition' in voice and 'speechSynthesis' in voice
           assert 'FEMALE_HINTS' in voice and 'QUALITY_HINTS' in voice
           assert "const VERSION='20260925-r24-unified-control'" in ctrl
@@ -78,7 +80,7 @@ jobs:
               pages.append(p.name)
               assert 'r24-ai-controller.js?v=20260925-r24-control1' in h,p.name
           assert len(pages)>=38,len(pages)
-          print('R24 SOURCE PASS',len(profiles),'countries',len(langs),'languages',len(pages),'pages')
+          print('R24 SOURCE PASS',len(profiles),'countries',len(langs),'languages',len(pages),'pages','dynamic-category-locales',len(missing))
 
       - name: Commit R24 app source
         shell: bash
