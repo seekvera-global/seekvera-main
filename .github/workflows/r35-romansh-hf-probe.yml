@@ -12,10 +12,14 @@ permissions:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Install local translation model runtime
-        run: python -m pip install --quiet 'transformers<5' sentencepiece sacremoses
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet --index-url https://download.pytorch.org/whl/cpu torch
+          python -m pip install --quiet 'transformers<5' sentencepiece sacremoses
       - name: Translate Romansh samples locally
         shell: bash
         run: |
@@ -26,6 +30,7 @@ jobs:
           name='Helsinki-NLP/opus-mt-en-roa'
           tok=AutoTokenizer.from_pretrained(name)
           model=AutoModelForSeq2SeqLM.from_pretrained(name)
+          model.eval()
           tests=['Popular categories','Live marketplace','Request anything','Find a hotel in the city','Privacy and terms','Search worldwide for a house to rent']
           inp=['>>roh<< '+x for x in tests]
           batch=tok(inp,return_tensors='pt',padding=True,truncation=True,max_length=256)
@@ -34,6 +39,8 @@ jobs:
           for a,b in zip(tests,vals):print(a,'=>',b)
           assert len(vals)==len(tests)
           assert vals[0].strip()!='Popular categories'
+          assert vals[1].strip()!='Live marketplace'
+          assert vals[2].strip()!='Request anything'
           assert vals[3].strip()!='Find a hotel in the city'
           print('R35 HELSINKI ROMANSH PROBE PASS')
           PY
