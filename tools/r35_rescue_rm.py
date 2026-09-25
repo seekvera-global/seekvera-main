@@ -55,7 +55,7 @@ def ai_one(s):
         try:
             d=post('/api/ai',{'fast':True,'language':'rm','country':'Worldwide','message':prompt})
             v=clean_text(d.get('response','')) if isinstance(d,dict) else ''
-            v=re.sub(r'^[“”"\']+|[“”"\']+$','',v).strip()
+            v=v.strip(" \t\r\n\"'“”‘’")
             if v and v!=s:return v
             last=RuntimeError(repr(d)[:500])
         except Exception as e:last=e
@@ -66,11 +66,9 @@ def ai_one(s):
 
 def translate(batch):
     if not batch:return []
-    # Apply guaranteed human-reviewed critical UI translations before remote work.
     if len(batch)==1 and batch[0] in MANUAL:return [MANUAL[batch[0]]]
     try:
         vals=ui_batch(batch)
-        # Repair any exact English returns individually rather than rejecting the whole pack.
         out=[]
         for s,v in zip(batch,vals):
             if s in MANUAL:out.append(MANUAL[s])
