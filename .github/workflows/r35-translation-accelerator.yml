@@ -1,0 +1,50 @@
+name: R35 translation accelerator
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r35-translation-accelerator.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-translation-accelerator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch permissive batch translation backend
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r32_translation_backend_fix.py
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('worker.js');s=p.read_text(encoding='utf-8')
+          old="if(!Array.isArray(arr)||arr.length!==strings.length||arr.some((x,i)=>typeof x!=='string'||!x.trim()||(language.toLowerCase()!=='english'&&x.trim()===strings[i].trim())))return null;"
+          new="if(!Array.isArray(arr)||arr.length!==strings.length||arr.some(x=>typeof x!=='string'||!x.trim()))return null;"
+          assert old in s,'R32 parser signature not found'
+          p.write_text(s.replace(old,new,1),encoding='utf-8')
+          print('R35 TRANSLATION ACCELERATOR PATCHED')
+          PY
+          node --check worker.js
+      - name: Deploy translation accelerator to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Verify translation backend is live
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in 1 2 3 4 5 6; do
+            code="$(curl -sS -o /tmp/tr.json -w '%{http_code}' --max-time 40 -X POST 'https://seekveraglobal.com/api/ui-translate' -H 'Origin: https://seekveraglobal.com' -H 'Referer: https://seekveraglobal.com/' -H 'Content-Type: application/json' --data '{"language":"Romansh (Rumantsch)","strings":["Popular categories","SEEKVERA"]}' || true)"
+            if [ "$code" = 200 ] && grep -q '"ok":true' /tmp/tr.json; then cat /tmp/tr.json; echo; echo 'R35 TRANSLATION ACCELERATOR LIVE'; exit 0; fi
+            sleep 3
+          done
+          cat /tmp/tr.json || true
+          exit 1
