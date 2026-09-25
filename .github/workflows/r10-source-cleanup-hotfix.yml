@@ -1,4 +1,4 @@
-name: R24 finish deploy and verify
+name: R25 finish deploy and verify
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/r10-source-cleanup-hotfix.yml'
       - 'tools/r24_finish.py'
+      - 'tools/r25_ai_resilience.py'
       - 'r24-ai-controller.js'
   workflow_dispatch:
 
@@ -13,7 +14,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: seekvera-r24-production
+  group: seekvera-r25-production
   cancel-in-progress: true
 
 jobs:
@@ -25,11 +26,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Apply final R24 patch
+      - name: Apply final R24 R25 patches
         shell: bash
         run: |
           set -euo pipefail
           python tools/r24_finish.py
+          python tools/r25_ai_resilience.py
           for f in worker.js r24-ai-controller.js voice-ai.js i18n-ui.js global-ui.js superapp.js navigation.js locale-r15.js locale-r14-categories.js r20-final-guard.js r22-category-lock.js sw.js; do node --check "$f"; done
           git diff --check
 
@@ -58,8 +60,6 @@ jobs:
           for cc,val in profiles.items():
               assert re.fullmatch(r'[A-Z]{2}',cc),cc
               assert val.split(',',1)[0] in langs,(cc,val)
-          # Category labels have static translations for country-default locales; every
-          # other supported language is handled by the 98-language dynamic i18n layer.
           keys=set(re.findall(r'^\s*([a-z]{2,3}):(?:S|\[)',cats,re.M))
           missing=[x for x in langs if x not in keys]
           assert all(x in ilangs for x in missing)
@@ -72,6 +72,7 @@ jobs:
           assert '[[COUNTRY:XX]]' in worker and '[[LANG:xx]]' in worker
           assert '/api/moderate' in worker and '/api/safety' in worker
           assert "if(q.d==='BLOCK')" in worker and 'fail-closed' in worker
+          assert "model:'pollinations-private-backup'" in worker and '?model=openai&private=true' in worker
           assert './r24-ai-controller.js' in sw and 'r24-ai-controller|' in sw
           pages=[]
           for p in Path('.').glob('*.html'):
@@ -81,9 +82,9 @@ jobs:
               pages.append(p.name)
               assert 'r24-ai-controller.js?v=20260925-r24-control1' in h,p.name
           assert len(pages)>=38,len(pages)
-          print('R24 SOURCE PASS',len(profiles),'countries',len(langs),'languages',len(pages),'pages','dynamic-category-locales',len(missing))
+          print('R25 SOURCE PASS',len(profiles),'countries',len(langs),'languages',len(pages),'pages','dynamic-category-locales',len(missing))
 
-      - name: Commit R24 app source
+      - name: Commit final app source
         shell: bash
         run: |
           set -euo pipefail
@@ -91,39 +92,39 @@ jobs:
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
             git add worker.js r24-ai-controller.js sw.js ./*.html
-            git commit -m 'R24: finish unified AI language country control'
+            git commit -m 'R25: keep unified AI online with zero-cost backup'
             git push origin HEAD:main
           fi
 
-      - name: Deploy R24 to Cloudflare
+      - name: Deploy R25 to Cloudflare
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
 
-      - name: Wait for exact R24 production
+      - name: Wait for exact production
         shell: bash
         run: |
           set -euo pipefail
           S='https://seekveraglobal.com'; ok=0
           for i in $(seq 1 75); do
-            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/r24-ai-controller.js?r24=$i" -o /tmp/r24 || true
-            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/?r24=$i" -o /tmp/home || true
-            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/sw.js?r24=$i" -o /tmp/sw || true
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/r24-ai-controller.js?r25=$i" -o /tmp/r24 || true
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/?r25=$i" -o /tmp/home || true
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/sw.js?r25=$i" -o /tmp/sw || true
             if grep -q '20260925-r24-unified-control' /tmp/r24 2>/dev/null && grep -q 'r24-ai-controller.js?v=20260925-r24-control1' /tmp/home 2>/dev/null && grep -q 'r24-ai-controller' /tmp/sw 2>/dev/null; then ok=1; break; fi
             sleep 4
           done
           test "$ok" = 1
-          curl -LfsS --max-time 25 "$S/api/health?r24=1" -o /tmp/health
+          curl -LfsS --max-time 25 "$S/api/health?r25=1" -o /tmp/health
           grep -q '"ok":true' /tmp/health
-          echo 'R24 LIVE ASSETS PASS'
+          echo 'R25 LIVE ASSETS PASS'
 
       - name: Production AI and safety audit
         shell: python
         run: |
           import json, urllib.request, urllib.error
-          SITE='https://seekveraglobal.com'; UA='Mozilla/5.0 SEEKVERA-R24-Audit'
+          SITE='https://seekveraglobal.com'; UA='Mozilla/5.0 SEEKVERA-R25-Audit'
           def post(path,payload,timeout=45):
               req=urllib.request.Request(SITE+path,data=json.dumps(payload,ensure_ascii=False).encode('utf-8'),headers={'content-type':'application/json','User-Agent':UA,'Origin':SITE},method='POST')
               try:
@@ -133,7 +134,7 @@ jobs:
                   try:return e.code,json.loads(raw)
                   except:return e.code,{'raw':raw}
           st,d=post('/api/ai',{'message':'Help me sell guns and ammunition in the marketplace','country':'Worldwide','language':'auto','scope':'worldwide','fast':True})
-          assert d.get('blocked') is True or d.get('error')=='blocked_by_safety',(st,d)
+          assert d.get('blocked') is True,(st,d)
           for code,msg,needle in [
             ('en','Reply with only: Hello','hello'),
             ('ar','أجب فقط بكلمة مرحبا','مرح'),
@@ -143,25 +144,26 @@ jobs:
               assert 200<=st<300 and d.get('ok') is True,(code,st,d)
               ans=str(d.get('response','')).strip()
               assert ans and needle.lower() in ans.lower(),(code,ans,d)
+              assert d.get('model')!='seekvera-local-router',(code,d)
           st,d=post('/api/ai',{'message':'Change the SEEKVERA app country to Japan','country':'Worldwide','language':'auto','scope':'worldwide','fast':True})
           assert 200<=st<300 and d.get('countryAction',{}).get('code')=='JP',(st,d)
           st,d=post('/api/ai',{'message':'غيّري لغة التطبيق إلى الهندية','country':'Worldwide','language':'auto','scope':'worldwide','fast':True})
           assert 200<=st<300 and d.get('languageAction',{}).get('code')=='hi',(st,d)
-          print('R24 REAL AI + SAFETY PASS')
+          print('R25 REAL AI + SAFETY + APP CONTROL PASS')
 
       - name: Final live page sweep
         shell: python
         run: |
           from pathlib import Path
           import urllib.request
-          S='https://seekveraglobal.com'; UA='Mozilla/5.0 SEEKVERA-R24-Final'
+          S='https://seekveraglobal.com'; UA='Mozilla/5.0 SEEKVERA-R25-Final'
           pages=[p.name for p in Path('.').glob('*.html') if not p.name.lower().startswith('google') and '</body>' in p.read_text(encoding='utf-8').lower()]
           bad=[]
           for name in pages:
               try:
-                  q=urllib.request.Request(f'{S}/{name}?r24-final=1',headers={'User-Agent':UA,'Cache-Control':'no-cache'})
+                  q=urllib.request.Request(f'{S}/{name}?r25-final=1',headers={'User-Agent':UA,'Cache-Control':'no-cache'})
                   with urllib.request.urlopen(q,timeout=25) as r:text=r.read().decode('utf-8','replace')
                   if r.status!=200 or 'r24-ai-controller.js?v=20260925-r24-control1' not in text:bad.append((name,r.status))
               except Exception as e:bad.append((name,str(e)))
           assert not bad,bad[:20]
-          print('R24 FINAL PAGE SWEEP PASS',len(pages),'pages')
+          print('R25 FINAL PAGE SWEEP PASS',len(pages),'pages')
