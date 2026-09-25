@@ -17,7 +17,7 @@ concurrency:
 
 env:
   PYTHONUNBUFFERED: '1'
-  AUDIT_REV: 'r44-stable-locale'
+  AUDIT_REV: 'r45-pack-integrity'
 
 jobs:
   recover-deploy-audit:
@@ -28,7 +28,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Recover live packs and rebuild any missing language
+      - name: Recover live packs and rebuild missing or corrupted languages
         shell: bash
         run: |
           set -euo pipefail
@@ -48,8 +48,9 @@ jobs:
           assert live['count']==967 and local['count']==967,(live.get('count'),local.get('count'))
           assert m['sourceHash']==live['sourceHash']==local['sourceHash'],(m['sourceHash'],live['sourceHash'],local['sourceHash'])
           open('/tmp/langs.txt','w').write('\n'.join(m['languages'])+'\n')
-          print('R39 SOURCE PASS',m['sourceHash'],len(m['languages']),live['count'])
+          print('R45 SOURCE PASS',m['sourceHash'],len(m['languages']),live['count'])
           PY
+
           : > /tmp/missing.txt
           while IFS= read -r l; do
             if curl -LfsS --retry 3 --retry-all-errors --max-time 30 "$B/i18n-r32/$l.json?v=$GITHUB_SHA" -o "i18n-r32/$l.json"; then
@@ -60,16 +61,41 @@ jobs:
             fi
           done </tmp/langs.txt
           sort -u /tmp/missing.txt -o /tmp/missing.txt
-          if test -s /tmp/missing.txt; then
-            echo 'Rebuilding missing packs:'
-            cat /tmp/missing.txt
+
+          python - <<'PY'
+          import json,glob,os,re
+          source=json.load(open('i18n-r32-source.json',encoding='utf-8'))
+          bad=[]
+          for p in glob.glob('i18n-r32/*.json'):
+            if p.endswith('/manifest.json'): continue
+            l=os.path.basename(p)[:-5]
+            try:
+              d=json.load(open(p,encoding='utf-8'))
+              if d.get('sourceHash')!=source['sourceHash'] or d.get('count')!=source['count'] or len(d.get('translations') or {})!=source['count']:
+                bad.append((l,'metadata'));continue
+              for s,v in d['translations'].items():
+                a=re.sub(r'\s+',' ',str(s or '')).strip();b=re.sub(r'\s+',' ',str(v or '')).strip()
+                if not b or len(b)>max(240,len(a)*7+80):
+                  bad.append((l,f'oversized {len(a)}->{len(b)} source={a[:60]!r}'));break
+            except Exception as e: bad.append((l,f'parse {e!r}'))
+          langs=sorted({l for l,_ in bad})
+          open('/tmp/corrupt.txt','w').write(('\n'.join(langs)+'\n') if langs else '')
+          print('R45 CORRUPT LANGUAGES',len(langs),langs)
+          for x in bad[:30]: print('R45 CORRUPT DETAIL',x)
+          PY
+
+          cat /tmp/missing.txt /tmp/corrupt.txt 2>/dev/null | sed '/^$/d' | sort -u > /tmp/rebuild.txt
+          if test -s /tmp/rebuild.txt; then
+            echo 'R45 rebuilding packs:'
+            cat /tmp/rebuild.txt
             while IFS= read -r l; do
               python tools/r35_build_pack.py --lang "$l"
               cp -f "i18n-r35/$l.json" "i18n-r32/$l.json"
-            done </tmp/missing.txt
+            done </tmp/rebuild.txt
           fi
+
           python - <<'PY'
-          import json,glob,os
+          import json,glob,os,re
           m=json.load(open('i18n-r32/manifest.json',encoding='utf-8'))
           s=json.load(open('i18n-r32-source.json',encoding='utf-8'))
           files={os.path.basename(p)[:-5]:p for p in glob.glob('i18n-r32/*.json') if not p.endswith('/manifest.json')}
@@ -80,12 +106,16 @@ jobs:
             assert d['sourceHash']==s['sourceHash'],l
             assert d['count']==s['count']==967,l
             assert len(d['translations'])==967,l
+            for src,val in d['translations'].items():
+              a=re.sub(r'\s+',' ',str(src or '')).strip();b=re.sub(r'\s+',' ',str(val or '')).strip()
+              assert b and len(b)<=max(240,len(a)*7+80),(l,len(a),len(b),a[:80])
             providers[d.get('provider','unknown')]=providers.get(d.get('provider','unknown'),0)+1
           tn=json.load(open(files['tn'],encoding='utf-8'))['translations']
           assert tn.get('Popular categories') and tn['Popular categories']!='Popular categories'
           m['providers']=providers
+          m['integrity']='r45-length-sanity'
           open('i18n-r32/manifest.json','w',encoding='utf-8').write(json.dumps(m,ensure_ascii=False,separators=(',',':')))
-          print('R39 PACKS PASS',len(files),providers)
+          print('R45 PACKS PASS',len(files),providers)
           PY
 
       - name: Reproduce production runtime
@@ -114,7 +144,7 @@ jobs:
           test "$(grep -o 'id=\"categories\"' index.html | wc -l | tr -d ' ')" = '1'
           ! grep -q 'r5-chips' index.html
           ! grep -q 'r8-department-strip' index.html
-          echo 'R44 RUNTIME PASS'
+          echo 'R45 RUNTIME PASS'
 
       - name: Deploy repaired candidate to Cloudflare
         uses: cloudflare/wrangler-action@v4
@@ -128,18 +158,19 @@ jobs:
         run: |
           set -euo pipefail
           for i in $(seq 1 70); do
-            h="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/api/health?r44=$i" || true)"
-            tn="$(curl -L -sS -o /tmp/tn.json -w '%{http_code}' --max-time 15 "https://seekveraglobal.com/i18n-r32/tn.json?r44=$i" || true)"
-            ui="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/i18n-ui.js?r44=$i" || true)"
-            loc="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/locale-r15.js?r44=$i" || true)"
-            if echo "$h" | grep -q 'parallel-static-98-language-country-category-final' && test "$tn" = '200' && echo "$ui" | grep -q 'r32-static-v5' && echo "$loc" | grep -q 'boot-late-user-choice'; then
+            h="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/api/health?r45=$i" || true)"
+            tn="$(curl -L -sS -o /tmp/tn.json -w '%{http_code}' --max-time 15 "https://seekveraglobal.com/i18n-r32/tn.json?r45=$i" || true)"
+            ui="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/i18n-ui.js?r45=$i" || true)"
+            loc="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/locale-r15.js?r45=$i" || true)"
+            man="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/i18n-r32/manifest.json?r45=$i" || true)"
+            if echo "$h" | grep -q 'parallel-static-98-language-country-category-final' && test "$tn" = '200' && echo "$ui" | grep -q 'r32-static-v5' && echo "$loc" | grep -q 'boot-late-user-choice' && echo "$man" | grep -q 'r45-length-sanity'; then
               echo "$h"
-              echo 'R44 LIVE READY'
+              echo 'R45 LIVE READY'
               exit 0
             fi
             sleep 3
           done
-          echo 'R44 repaired production did not become ready' >&2
+          echo 'R45 repaired production did not become ready' >&2
           exit 1
 
       - name: Full live audit - countries languages categories voice routes and AI
@@ -167,4 +198,4 @@ jobs:
             git commit -m 'Persist audited stable 98-language production release'
             git push origin HEAD:main
           fi
-          echo 'R44 FINAL RELEASE PERSISTED'
+          echo 'R45 FINAL RELEASE PERSISTED'
