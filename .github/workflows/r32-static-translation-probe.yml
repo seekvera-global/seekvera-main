@@ -1,0 +1,30 @@
+name: R32 static translation probe
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r32-static-translation-probe.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe build-time translation
+        shell: python
+        run: |
+          import json, urllib.parse, urllib.request
+          text='No approved live marketplace listings are available right now. SEEKVERA does not generate fake listings.'
+          for lang in ['de','ja','sw','yo','ar','zh-CN']:
+              url='https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl='+urllib.parse.quote(lang)+'&dt=t&q='+urllib.parse.quote(text)
+              try:
+                  req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'})
+                  with urllib.request.urlopen(req,timeout=15) as r:
+                      raw=r.read().decode('utf-8')
+                  data=json.loads(raw)
+                  out=''.join(x[0] for x in data[0] if x and x[0])
+                  print(lang,repr(out),len(out))
+                  assert out and out!=text
+              except Exception as e:
+                  print(lang,'ERROR',repr(e))
+                  raise
