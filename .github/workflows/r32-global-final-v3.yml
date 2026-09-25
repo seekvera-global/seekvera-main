@@ -1,0 +1,86 @@
+name: R32 global final audit v3
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r32-global-final-v3.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r32-global-final-v2
+  cancel-in-progress: true
+
+jobs:
+  final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply final source
+        run: |
+          set -euo pipefail
+          python tools/r32_global_final.py
+          node --check i18n-ui.js
+          node --check worker-r31.js
+          grep -q '20260925-r32-global-final' i18n-ui.js
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Wait production
+        run: |
+          for i in $(seq 1 50); do b="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/api/health?r32v3=$i" || true)"; echo "$b" | grep -q '248-country-full-ui-language-lock-global-final' && exit 0; sleep 3; done; exit 1
+      - name: Final bounded production audit
+        run: |
+          npm install --no-save playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > audit.mjs <<'JS'
+          import {chromium} from 'playwright';import assert from 'node:assert/strict';
+          const B='https://seekveraglobal.com',browser=await chromium.launch({headless:true});
+          const ctx=await browser.newContext({viewport:{width:390,height:844},locale:'en-US',serviceWorkers:'block'}),p=await ctx.newPage();
+          const errs=[];p.on('pageerror',e=>errs.push(String(e)));
+          await p.goto(B+'/?final='+Date.now(),{waitUntil:'domcontentloaded',timeout:45000});
+          await p.waitForFunction(()=>window.SEEKVERA_I18N_R32&&window.SEEKVERA_LOCALE_R15&&document.querySelector('#country'),{timeout:20000});
+          const meta=await p.evaluate(()=>({profiles:SEEKVERA_LOCALE_R15.profiles,lp:SEEKVERA_LOCALE_R15.languagePrimary,v:SEEKVERA_I18N_R32.version}));
+          assert.equal(meta.v,'20260925-r32-global-final');assert.equal(Object.keys(meta.profiles).length,248);
+          const allLangs=Object.keys(meta.lp||{});assert(allLangs.length>=90,'supported languages '+allLangs.length);
+
+          // Exact user screenshot case first: Iraq -> Arabic + IQD, no English after dynamic updates.
+          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('IQ'));
+          await p.waitForFunction(()=>document.documentElement.dataset.seekveraI18nReady==='ar'&&document.documentElement.dir==='rtl',{timeout:20000});
+          const leaks=['No approved live marketplace listings are available right now','SEEKVERA does not generate fake listings','Find, compare, choose — worldwide','Popular categories','Live marketplace','Request anything'];
+          async function iq(label){const x=await p.evaluate(()=>({body:document.body.innerText,live:document.querySelector('#liveListings')?.innerText||'',cc:country.value,l:lang.value,c:currency.value,n:document.querySelectorAll('#categories .r5-tile').length,thumb:[...document.querySelectorAll('#categories .r5-thumb')].map(x=>(x.textContent||'').trim()),overflow:document.documentElement.scrollWidth-innerWidth}));assert.deepEqual([x.cc,x.l,x.c],['IQ','ar','IQD'],label);for(const q of leaks)assert(!x.body.includes(q),label+' '+q);assert.equal(x.n,31,label+' categories');assert(!x.thumb.some(t=>/[A-Za-z.]|seekvera/i.test(t)),label+' bad thumb '+JSON.stringify(x.thumb));assert(x.overflow<=4,label+' overflow '+x.overflow);return x}
+          await p.waitForTimeout(500);await iq('0.5s');await p.waitForTimeout(2500);await iq('3s');await p.waitForTimeout(3000);const ix=await iq('6s');assert(!/No approved live marketplace/i.test(ix.live));
+
+          // Every country profile atomically changes country, language and currency.
+          const bad=[];for(const [cc,pr] of Object.entries(meta.profiles)){await p.evaluate(cc=>SEEKVERA_LOCALE_R15.setCountry(cc),cc);await p.waitForTimeout(6);const g=await p.evaluate(()=>({cc:country.value,l:lang.value,c:currency.value}));if(g.cc!==cc||g.l!==pr.language||g.c!==pr.currency)bad.push({cc,pr,g})}assert.equal(bad.length,0,'country failures '+JSON.stringify(bad.slice(0,5)));
+
+          // All 31 category cards/routes exist and are not blank.
+          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('IQ'));await p.waitForTimeout(300);
+          const hrefs=await p.evaluate(()=>[...new Set([...document.querySelectorAll('#categories .r5-tile')].map(a=>a.getAttribute('href')).filter(Boolean))]);assert.equal(hrefs.length,31);
+          const rb=[];for(let i=0;i<hrefs.length;i+=8)await Promise.all(hrefs.slice(i,i+8).map(async h=>{try{const r=await ctx.request.get(new URL(h,B).href,{timeout:12000});const t=await r.text();if(r.status()>=400||t.length<180)rb.push({h,s:r.status(),n:t.length})}catch(e){rb.push({h,e:String(e)})}}));assert.equal(rb.length,0,'routes '+JSON.stringify(rb));
+
+          // Every supported app language must translate the exact dynamic UI sentence, with bounded requests.
+          const phrase='No approved live marketplace listings are available right now.',dn=new Intl.DisplayNames(['en'],{type:'language'});
+          async function tr(code){if(code==='en')return true;for(let a=0;a<2;a++){const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),8000);try{const r=await fetch(B+'/api/ui-translate',{method:'POST',headers:{'content-type':'application/json','Origin':B},body:JSON.stringify({language:dn.of(code)||code,strings:[phrase]}),signal:ctl.signal});const d=await r.json();const v=String(d?.translations?.[0]||'').trim();clearTimeout(to);if(r.ok&&v&&v!==phrase)return true}catch{}clearTimeout(to)}return false}
+          const lb=[];for(let i=0;i<allLangs.length;i+=10){const codes=allLangs.slice(i,i+10),z=await Promise.all(codes.map(tr));z.forEach((ok,j)=>{if(!ok)lb.push(codes[j])})}assert.equal(lb.length,0,'language translation failures '+JSON.stringify(lb));
+
+          // Real UI smoke across language families.
+          for(const cc of ['FR','DE','ES','TR','IN','CN','JP','KR','RU','IR','KE','BR']){await p.goto(B+'/?cc='+cc+'&x='+Date.now(),{waitUntil:'domcontentloaded',timeout:45000});await p.waitForFunction(()=>window.SEEKVERA_I18N_R32&&window.SEEKVERA_LOCALE_R15,{timeout:15000});await p.evaluate(cc=>SEEKVERA_LOCALE_R15.setCountry(cc),cc);const l=meta.profiles[cc].language;await p.waitForFunction(l=>document.documentElement.dataset.seekveraI18nReady===l,l,{timeout:18000});await p.waitForTimeout(700);const x=await p.evaluate(()=>({h:document.querySelector('h1')?.innerText||'',b:document.body.innerText,l:lang.value,c:currency.value}));assert.equal(x.l,l);assert.equal(x.c,meta.profiles[cc].currency);assert(!x.b.includes(phrase),cc+' dynamic English');if(l!=='en')assert.notEqual(x.h.trim(),'Find it faster. Compare it better.',cc+' hero English')}
+
+          // AI locale smoke.
+          for(const [cc,code,msg] of [['IQ','ar','مرحبا'],['DE','de','Hallo'],['FR','fr','Bonjour'],['CN','zh','你好'],['IN','hi','नमस्ते'],['RU','ru','Привет'],['TR','tr','Merhaba']]){const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),10000);const r=await fetch(B+'/api/ai',{method:'POST',headers:{'content-type':'application/json','Origin':B},body:JSON.stringify({message:msg,country:cc,language:code,fast:true}),signal:ctl.signal});clearTimeout(to);const d=await r.json();assert(d.ok&&String(d.response||'').trim(),cc+' AI empty');assert.equal(String(d.language||'').toLowerCase(),String(dn.of(code)||code).toLowerCase(),cc+' AI locale')}
+          assert.equal(errs.length,0,'page errors '+errs.join(' | '));console.log('R32 FINAL PASS',JSON.stringify({countries:248,languages:allLangs.length,categories:31,iraq:'Arabic/IQD/no-English',representatives:12,ai:7}));await browser.close();
+          JS
+          node audit.mjs
+      - name: Commit audited source
+        run: |
+          git config user.name 'SEEKVERA R32 Final'; git config user.email 'actions@users.noreply.github.com'; git add i18n-ui.js locale-r15.js worker-r31.js sw.js '*.html'; if git diff --cached --quiet; then echo 'No changes'; else git commit -m 'R32: final audited global language lock'; git push origin main; fi
