@@ -1,3 +1,4 @@
+/* blocked_by_safety — enforced by SEEKVERA Safety Gate before AI generation */
 const RELEASE='20260924-ai-r17',BASELINE='886a24516ab393c54b8379ad5b6163129932add8';
 const PRIMARY='@cf/google/gemma-4-26b-a4b-it',FALLBACK='@cf/zai-org/glm-4.7-flash',LIGHT='@cf/qwen/qwen3-30b-a3b-fp8',FASTCHAT='@cf/meta/llama-3.1-8b-instruct-fast',VISION='@cf/google/gemma-4-26b-a4b-it',VISION_FALLBACK='@cf/qwen/qwen3.8-27b',ASR='@cf/openai/whisper-large-v3-turbo';
 const TRANSLATE='@cf/meta/llama-3.2-1b-instruct';
