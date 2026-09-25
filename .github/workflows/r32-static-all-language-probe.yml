@@ -17,7 +17,7 @@ jobs:
         run: |
           import re,json,urllib.parse,urllib.request,concurrent.futures
           s=open('locale-r14-categories.js',encoding='utf-8').read()
-          langs=[]
+          langs=['en']
           for x in re.findall(r'(?:^|\n)([a-z]{2,3}):\[',s):
               if x not in langs: langs.append(x)
           print('LANGS',len(langs),langs)
@@ -39,5 +39,4 @@ jobs:
               for r in ex.map(one,langs): out.append(r); print(r[0],r[1],repr(r[2])[:180])
           bad=[c for c,ok,_ in out if not ok]
           print('SUPPORTED',len(langs)-len(bad),'BAD',len(bad),bad)
-          open('/tmp/result.json','w').write(json.dumps({'langs':langs,'bad':bad},ensure_ascii=False))
           assert len(bad)<=15,bad
