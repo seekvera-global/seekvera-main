@@ -11,6 +11,7 @@ permissions:
   actions: write
   contents: read
 
+# R32 static v3 separator-safe rerun
 jobs:
   trigger:
     runs-on: ubuntu-latest
