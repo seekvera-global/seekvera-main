@@ -1,7 +1,7 @@
 from pathlib import Path
 import re
 
-VER='20260925-r43-stable-ui'
+VER='20260925-r44-stable-locale'
 changed=[]
 
 def write(path,text):
@@ -12,7 +12,8 @@ def write(path,text):
 # Replace the old layered translation file with one deterministic universal runtime.
 write('i18n-ui.js',Path('r32-i18n.js').read_text(encoding='utf-8'))
 
-# Locale coordinator: keep 248-country source of truth and expose all 98 languages in the selector.
+# Locale coordinator: keep 248-country source of truth, expose all 98 languages, and never
+# let the delayed auto-country boot routine overwrite a user choice made just after page load.
 p=Path('locale-r15.js'); s=p.read_text(encoding='utf-8')
 s=re.sub(r"version:'[^']+'",f"version:'{VER}'",s,count=1)
 if 'function ensureAllLanguageOptions()' not in s:
@@ -25,10 +26,23 @@ if 'function ensureAllLanguageOptions()' not in s:
 function boot(){ensureAllLanguageOptions();"""
     if anchor not in s: raise SystemExit('locale-r15 boot anchor missing')
     s=s.replace(anchor,helper,1)
+old_boot="""  else setTimeout(()=>{
+    let cc='';try{cc=String(localStorage.getItem('seekvera_country')||'').toUpperCase()}catch{}
+    if(cc&&cc!=='WW'&&PROFILES[cc])applyState(localeStateFrom('country',cc),{explicit:false,reason:'boot-auto'});
+    else applyState(localeStateFrom('country','WW'),{explicit:false,reason:'boot-worldwide'});
+  },2800);"""
+new_boot="""  else setTimeout(()=>{
+    const late=storedState();
+    if(late){applyState(late,{explicit:false,reason:'boot-late-user-choice'});return}
+    let cc='';try{cc=String(localStorage.getItem('seekvera_country')||'').toUpperCase()}catch{}
+    if(cc&&cc!=='WW'&&PROFILES[cc])applyState(localeStateFrom('country',cc),{explicit:false,reason:'boot-auto'});
+    else applyState(localeStateFrom('country','WW'),{explicit:false,reason:'boot-worldwide'});
+  },2800);"""
+if old_boot in s:s=s.replace(old_boot,new_boot,1)
+elif 'boot-late-user-choice' not in s:raise SystemExit('locale-r15 delayed boot anchor missing')
 write('locale-r15.js',s)
 
-# R14 is kept only as an old-browser/fallback layer. When R32 exists it must never rewrite
-# already-localized text or direction; two active translation writers caused visible flicker/jitter.
+# R14 is fallback only. When R32 exists it must never rewrite localized text/direction.
 p=Path('locale-r14.js'); s=p.read_text(encoding='utf-8')
 s,n=re.subn(r"(fil:\[(?:`[^`]*`,){18})`Live marketplace`",r"\1`Aktuwal na pamilihan`",s,count=1)
 if n!=1 and 'Aktuwal na pamilihan' not in s: raise SystemExit('Filipino R14 live-marketplace anchor missing')
@@ -40,8 +54,7 @@ if old in s:s=s.replace(old,new,1)
 elif new not in s:raise SystemExit('R14 apply anchor missing')
 write('locale-r14.js',s)
 
-# Dynamic marketplace content is localized before it is painted. This prevents an English
-# empty-state/error message from flashing first and being replaced a moment later.
+# Dynamic marketplace content is localized before paint to avoid English flash/jitter.
 p=Path('superapp.js'); s=p.read_text(encoding='utf-8')
 s=s.replace("/^(ar|fa|ur)$/.test(el.value)","/^(ar|fa|ur|he|ps|dv)$/.test(el.value)")
 s=s.replace("/^(ar|fa|ur)$/.test(lang())","/^(ar|fa|ur|he|ps|dv)$/.test(lang())")
@@ -59,10 +72,10 @@ s,n=re.subn(pat,lambda m:new_live,s,count=1,flags=re.S)
 if n!=1 and 'async function localizedDynamic(src)' not in s:raise SystemExit('superapp live listing anchor missing')
 write('superapp.js',s)
 
-# AI: never answer a simple greeting in English when another country language is selected.
+# AI: never answer a simple greeting in English when another language is selected.
 p=Path('worker-r31.js'); s=p.read_text(encoding='utf-8')
 old="function instantGreeting(language){const x=language.toLowerCase();if(x==='arabic')return'أهلاً! أنا مساعد SEEKVERA. قل لي ماذا تحتاج وسأساعدك بسرعة وأوصلك للقسم المناسب.';if(x==='french')return'Bonjour ! Je suis l’assistant SEEKVERA. Dites-moi ce dont vous avez besoin et je vous guiderai rapidement.';if(x==='chinese')return'你好！我是 SEEKVERA 助手。告诉我你需要什么，我会快速帮你找到合适的栏目。';if(x==='hindi')return'नमस्ते! मैं SEEKVERA सहायक हूँ। बताइए आपको क्या चाहिए, मैं जल्दी सही सेक्शन तक पहुँचने में मदद करूँगा।';return'Hi! I’m the SEEKVERA assistant. Tell me what you need and I’ll quickly help you find the right section.'}"
-new="function instantGreeting(language){const x=language.toLowerCase();if(x==='english')return'Hi! I’m the SEEKVERA assistant. Tell me what you need and I’ll quickly help you find the right section.';if(x==='arabic')return'أهلاً! أنا مساعد SEEKVERA. قل لي ماذا تحتاج وسأساعدك بسرعة وأوصلك للقسم المناسب.';if(x==='french')return'Bonjour ! Je suis l’assistant SEEKVERA. Dites-moi ce dont vous avez besoin et je vous guiderai rapidement.';if(x==='chinese')return'你好！我是 SEEKVERA 助手。告诉我你需要什么，我会快速帮你找到合适的栏目。';if(x==='hindi')return'नमस्ते! मैं SEEKVERA सहायक हूँ। बताइए आपको क्या चाहिए, मैं जल्दी सही सेक्शन तक पहुँचने में मदद करूँगा。';return''}"
+new="function instantGreeting(language){const x=language.toLowerCase();if(x==='english')return'Hi! I’m the SEEKVERA assistant. Tell me what you need and I’ll quickly help you find the right section.';if(x==='arabic')return'أهلاً! أنا مساعد SEEKVERA. قل لي ماذا تحتاج وسأساعدك بسرعة وأوصلك للقسم المناسب.';if(x==='french')return'Bonjour ! Je suis l’assistant SEEKVERA. Dites-moi ce dont vous avez besoin et je vous guiderai rapidement.';if(x==='chinese')return'你好！我是 SEEKVERA 助手。告诉我你需要什么，我会快速帮你找到合适的栏目。';if(x==='hindi')return'नमस्ते! मैं SEEKVERA सहायक हूँ। बताइए आपको क्या चाहिए, मैं जल्दी सही सेक्शन तक पहुँचने में मदद करूँगा।';return''}"
 if old in s:s=s.replace(old,new,1)
 elif new not in s:raise SystemExit('instantGreeting anchor missing')
 old="if(simple(m))return json(req,{ok:true,response:instantGreeting(language),model:'seekvera-local-instant',language,category:cat,route:ROUTE[cat]||ROUTE.general,countryAction:null,languageAction:null,liveData:false,fastPath:'r31-local-instant'});"
@@ -93,12 +106,12 @@ for p in Path('.').glob('*.html'):
     t=re.sub(r'superapp\.js\?v=[^\"\']+',f'superapp.js?v={VER}',t)
     t=re.sub(r'sw\.js\?v=[^\"\']+',f'sw.js?v={VER}',t)
     if p.name=='index.html':
-        t=re.sub(r'2026-09-25 · R(?:20|31C|32)','2026-09-25 · R43',t)
+        t=re.sub(r'2026-09-25 · R(?:20|31C|32|43)','2026-09-25 · R44',t)
     if t!=before: p.write_text(t,encoding='utf-8'); changed.append(p.name)
 
 p=Path('sw.js'); s=p.read_text(encoding='utf-8')
-s=re.sub(r"const CACHE='[^']+'",f"const CACHE='seekvera-r43-stable-ui-20260925'",s,count=1)
+s=re.sub(r"const CACHE='[^']+'",f"const CACHE='seekvera-r44-stable-locale-20260925'",s,count=1)
 write('sw.js',s)
 
-print('R43 changed',len(changed),'files')
+print('R44 changed',len(changed),'files')
 for x in changed: print(x)
