@@ -1,0 +1,154 @@
+name: R56 global AI core
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r56-global-ai-core.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r56-global-ai-core
+  cancel-in-progress: true
+
+jobs:
+  deploy-audit-persist:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build R56 global AI core
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r56_global_ai_core.py
+          python tools/r56b_worker_context.py
+          node --check r31-ui-polish.js
+          node --check voice-ai.js
+          node --check worker-r31.js
+          node --check sw.js
+          grep -F "function contextualIntent" r31-ui-polish.js >/dev/null
+          grep -F "function autoRoute" r31-ui-polish.js >/dev/null
+          grep -F "SEEKVERA_VOICE_AI.start" r31-ui-polish.js >/dev/null
+          grep -F "controlResult(q)" r31-ui-polish.js >/dev/null
+          grep -F "conversationIntent:guessed" r31-ui-polish.js >/dev/null
+          grep -F "hinted=clean(b.conversationIntent,30)" worker-r31.js >/dev/null
+          grep -F "Do not tell the user to press a section button" worker-r31.js >/dev/null
+          grep -F "r31-ui-polish.js?v=20260926-r56-global-ai-core" worker-r31.js >/dev/null
+          grep -F "seekvera-r56-global-ai-core-20260926" sw.js >/dev/null
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          v=Path('voice-ai.js').read_text(encoding='utf-8')
+          r=Path('r24-ai-controller.js').read_text(encoding='utf-8')
+          m=re.search(r"const LANGS=\[(.*?)\];",r,re.S)
+          assert m and m.group(1).count("'")//2 >= 98, 'R24 language coverage below 98'
+          assert 'tn:' in v and "xh:'xh-ZA'" in v and "ar:'ar-SA'" in v and "zh:'zh-CN'" in v, 'Voice language map incomplete'
+          print('R56 LANGUAGE COVERAGE PASS')
+          PY
+          echo 'R56 BUILD PASS'
+
+      - name: Deploy R56 production
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Confirm R56 live assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 30); do
+            r="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/r31-ui-polish.js?r56=$i" || true)"
+            v="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/voice-ai.js?r56=$i" || true)"
+            w="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/worker-r31.js?r56=$i" || true)"
+            sw="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/sw.js?r56=$i" || true)"
+            if [[ "$r" == *'function contextualIntent'* && "$r" == *'function autoRoute'* && "$r" == *'SEEKVERA_VOICE_AI.start'* && "$v" == *'voiceReplyDeadline=Date.now()+90000'* && "$w" == *'hinted=clean(b.conversationIntent,30)'* && "$sw" == *'seekvera-r56-global-ai-core-20260926'* ]]; then
+              echo 'R56 LIVE ASSETS PASS'
+              exit 0
+            fi
+            sleep 2
+          done
+          echo 'R56 live assets missing' >&2
+          exit 1
+
+      - name: Browser audit global routing voice locale controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > r56-audit.mjs <<'JS'
+          import {chromium} from 'playwright';
+          import assert from 'node:assert/strict';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage();
+          const errors=[];p.on('pageerror',e=>errors.push(String(e)));
+          await p.goto('https://seekveraglobal.com/?r56='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_R31&&window.SEEKVERA_VOICE_AI&&window.SEEKVERA_R24_CONTROLLER&&document.querySelector('#aiChatForm'),null,{timeout:30000});
+          const scripts=await p.evaluate(()=>[...document.scripts].map(s=>s.src).filter(Boolean));
+          assert.ok(scripts.some(x=>x.includes('r31-ui-polish.js?v=20260926-r56-global-ai-core')),JSON.stringify(scripts));
+          const coverage=await p.evaluate(()=>({languages:window.SEEKVERA_R24_CONTROLLER?.languages?.length||0,countries:Object.keys(window.SEEKVERA_LOCALE_R15?.profiles||{}).length}));
+          assert.ok(coverage.languages>=98,JSON.stringify(coverage));
+          assert.ok(coverage.countries>=248,JSON.stringify(coverage));
+
+          // One microphone owner: R31 delegates to the central voice engine.
+          const micDelegation=await p.evaluate(()=>{let n=0;const o=SEEKVERA_VOICE_AI.start;SEEKVERA_VOICE_AI.start=()=>{n++};document.querySelector('#aiChatMic').click();SEEKVERA_VOICE_AI.start=o;return n});
+          assert.equal(micDelegation,1,'mic was not delegated exactly once: '+micDelegation);
+
+          // Immediate country control, without waiting for AI navigation.
+          await p.fill('#aiChatInput','change country to France');
+          await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForFunction(()=>document.querySelector('#country')?.value==='FR',null,{timeout:2000});
+          // Immediate language control.
+          await p.fill('#aiChatInput','change language to French');
+          await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForFunction(()=>document.querySelector('#lang')?.value==='fr',null,{timeout:2000});
+          await p.fill('#aiChatInput','change country to Nigeria');
+          await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForFunction(()=>document.querySelector('#country')?.value==='NG',null,{timeout:2000});
+
+          // Central TTS receives replies when a voice turn is pending.
+          const voice=await p.evaluate(()=>{let fired=0;const old=speechSynthesis.speak.bind(speechSynthesis);try{speechSynthesis.speak=()=>{fired++}}catch{}SEEKVERA_VOICE_AI.markVoiceReply();window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text:'Réponse vocale de test',language:'fr'}}));return{pending:SEEKVERA_VOICE_AI.isVoiceReplyPending(),fired}});
+          assert.ok(voice.fired>=1,JSON.stringify(voice));
+
+          // A clear request must navigate automatically, not merely show a button.
+          await p.fill('#aiChatInput','I am looking for a hotel manager job in Nigeria');
+          const t=Date.now();
+          await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForURL(/\/jobs\.html\?/,{timeout:10000});
+          const navMs=Date.now()-t;
+          assert.ok(navMs<10000,'automatic route too slow: '+navMs);
+          const u=new URL(p.url());
+          assert.ok(u.pathname.endsWith('/jobs.html'),p.url());
+          assert.equal(u.searchParams.get('country'),'NG',p.url());
+          assert.ok((u.searchParams.get('q')||'').toLowerCase().includes('hotel manager'),p.url());
+          const remembered=await p.evaluate(()=>sessionStorage.getItem('seekvera_ai_intent'));
+          assert.equal(remembered,'jobs',remembered);
+          console.log('R56 LIVE PASS',JSON.stringify({coverage,micDelegation,voice,navMs,url:p.url(),remembered,errors:errors.slice(0,3)}));
+          await b.close();
+          JS
+          node r56-audit.mjs
+          rm -f r56-audit.mjs
+
+      - name: Persist audited R56 production source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add -- r31-ui-polish.js voice-ai.js worker-r31.js sw.js
+          if git diff --cached --quiet; then
+            echo 'No R56 generated changes to persist'
+          else
+            git commit -m 'Persist R56 global AI routing voice and locale controls'
+            git push origin HEAD:main
+          fi
+          echo 'R56 AUDITED RELEASE PERSISTED'
