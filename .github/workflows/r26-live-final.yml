@@ -1,0 +1,66 @@
+name: R26 live final browser verification
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r26-live-final.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install browser runtime
+        run: |
+          npm install --no-save playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+      - name: Live mobile browser A-Z verification
+        shell: bash
+        run: |
+          cat > r26-browser.mjs <<'JS'
+          import { chromium } from 'playwright';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage({viewport:{width:390,height:844},locale:'en-US'});
+          const errors=[];p.on('pageerror',e=>errors.push(String(e)));
+          await p.goto('https://seekveraglobal.com/?r26-live-final=1',{waitUntil:'domcontentloaded',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_R24_CONTROLLER&&window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_I18N,{timeout:60000});
+          const base=await p.evaluate(()=>({languages:window.SEEKVERA_R24_CONTROLLER.languages.length,countries:Object.keys(window.SEEKVERA_LOCALE_R15.profiles||{}).length,mic:!!document.querySelector('#aiChatMic'),speaker:!!document.querySelector('#aiChatSpeaker'),speech:!!window.speechSynthesis}));
+          if(base.languages!==98||base.countries!==248||!base.mic||!base.speaker||!base.speech)throw Error('base '+JSON.stringify(base));
+          async function ask(message){return await p.evaluate(async message=>{const r=await fetch('/api/ai',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message,country:'Worldwide',language:'auto',scope:'worldwide',fast:true})});return{status:r.status,data:await r.json()};},message)}
+          let x=await ask('Reply with one short greeting in English.');
+          if(x.status!==200||!x.data.ok||!x.data.response||x.data.model==='seekvera-local-router')throw Error('English AI '+JSON.stringify(x));
+          console.log('English AI model:',x.data.model);
+          x=await ask('رد علي بتحية قصيرة بالعربي فقط');
+          if(x.status!==200||!x.data.ok||!/[؀-ۿ]/.test(x.data.response||'')||x.data.model==='seekvera-local-router')throw Error('Arabic AI '+JSON.stringify(x));
+          console.log('Arabic AI model:',x.data.model);
+          await ask('غيري للهندي');await p.waitForTimeout(250);let st=await p.evaluate(()=>({lang:document.querySelector('#lang')?.value,html:document.documentElement.lang,country:document.querySelector('#country')?.value}));
+          if(st.lang!=='hi'&&st.html!=='hi')throw Error('Hindi control '+JSON.stringify(st));if(st.country==='IN')throw Error('Hindi language incorrectly changed country');
+          await ask('غيري الدولة اليابان');await p.waitForTimeout(250);st=await p.evaluate(()=>({country:document.querySelector('#country')?.value,lang:document.documentElement.lang,overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth}));
+          if(st.country!=='JP'||st.overflow>8)throw Error('Japan/jitter '+JSON.stringify(st));
+          const reps=['CN','SA','FR','DE','TR','RU','KR','NG','IN','JP'];
+          for(const cc of reps){await p.evaluate(cc=>window.SEEKVERA_LOCALE_R15.setCountry(cc),cc);await p.waitForTimeout(100);const q=await p.evaluate(()=>({c:document.querySelector('#country')?.value,l:document.documentElement.lang,o:document.documentElement.scrollWidth-document.documentElement.clientWidth}));if(q.c!==cc||!q.l||q.o>8)throw Error('locale '+cc+' '+JSON.stringify(q))}
+          const matrix=await p.evaluate(()=>{const a=window.SEEKVERA_LOCALE_R15,l=new Set(window.SEEKVERA_R24_CONTROLLER.languages),bad=[];for(const[cc,v]of Object.entries(a.profiles||{})){const x=String(v).split(',')[0];if(!/^[A-Z]{2}$/.test(cc)||!l.has(x))bad.push([cc,x])}return bad});if(matrix.length)throw Error('matrix '+JSON.stringify(matrix.slice(0,10)));
+          const before=await p.evaluate(()=>localStorage.getItem('seekvera_voice_muted'));await p.locator('#aiChatSpeaker').click();await p.waitForTimeout(100);const after=await p.evaluate(()=>localStorage.getItem('seekvera_voice_muted'));if(before===after)throw Error('speaker toggle');
+          console.log('BROWSER PASS: real multilingual AI + app controls + 248 countries + 98 languages + voice + jitter');
+          if(errors.length)console.log('nonfatal page errors',errors.slice(0,5));
+          await b.close();
+          JS
+          node r26-browser.mjs
+      - name: Live 44-page sweep
+        shell: python
+        run: |
+          from pathlib import Path
+          import urllib.request
+          S='https://seekveraglobal.com';pages=[];bad=[]
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google') or '</body>' not in p.read_text(encoding='utf-8').lower():continue
+              pages.append(p.name)
+              try:
+                  q=urllib.request.Request(S+'/'+p.name+'?r26-live=1',headers={'User-Agent':'SEEKVERA-R26','Cache-Control':'no-cache'})
+                  with urllib.request.urlopen(q,timeout=25) as r:t=r.read().decode('utf-8','replace')
+                  if r.status!=200 or 'r24-ai-controller.js?v=20260925-r24-control1' not in t:bad.append((p.name,r.status))
+              except Exception as e:bad.append((p.name,str(e)))
+          assert len(pages)==44,len(pages);assert not bad,bad[:20]
+          print('LIVE PAGE PASS 44/44')
