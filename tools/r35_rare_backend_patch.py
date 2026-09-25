@@ -10,7 +10,6 @@ if "u.pathname==='/api/r35-rare-translate'" in s:
     raise SystemExit(0)
 route=r'''if(u.pathname==='/api/r35-rare-translate'){
  if(request.method!=='POST')return j(request,{ok:false,error:'Method not allowed'},405);
- if(!env.AI)return j(request,{ok:false,error:'AI binding unavailable'},503);
  let b={};try{b=await request.json()}catch{return j(request,{ok:false,error:'Invalid JSON'},400)}
  const code=clean(b.language,8).toLowerCase(),strings=Array.isArray(b.strings)?b.strings.slice(0,20).map(x=>clean(x,700)):[];
  const language=code==='rm'?'Romansh (Rumantsch)':code==='tn'?'Tswana (Setswana)':'';
@@ -26,18 +25,27 @@ route=r'''if(u.pathname==='/api/r35-rare-translate'){
    if(strings.length>=4&&same>Math.ceil(strings.length*.75))return null;
    return vals;
  }catch{return null}};
- const models=[FALLBACK,PRIMARY,LIGHT,FASTCHAT],errors=[];
- for(const model of models){try{
-   const input={messages:[{role:'system',content:system},{role:'user',content:payload}],temperature:0};
-   if(model===LIGHT||model===FASTCHAT)input.max_tokens=2200;else input.max_completion_tokens=2200;
-   const r=await env.AI.run(model,input),vals=parse(out(r));
-   if(vals)return j(request,{ok:true,language:code,translations:vals,model,source:'workers-ai-direct-r35'});
-   errors.push(model+':unparseable');
- }catch(e){errors.push(model+':'+clean(e?.message||e,140))}}
- return j(request,{ok:false,error:'Rare translation unavailable',retryable:true,errors:errors.slice(0,4)},503)
+ const errors=[];
+ if(env.AI){
+  const models=[FALLBACK,PRIMARY,LIGHT,FASTCHAT];
+  for(const model of models){try{
+    const input={messages:[{role:'system',content:system},{role:'user',content:payload}],temperature:0};
+    if(model===LIGHT||model===FASTCHAT)input.max_tokens=2200;else input.max_completion_tokens=2200;
+    const r=await env.AI.run(model,input),vals=parse(out(r));
+    if(vals)return j(request,{ok:true,language:code,translations:vals,model,source:'workers-ai-direct-r35'});
+    errors.push(model+':unparseable');
+  }catch(e){errors.push(model+':'+clean(e?.message||e,140))}}
+ }
+ try{
+   const prompt=system+'\n'+payload,signal=(typeof AbortSignal!=='undefined'&&AbortSignal.timeout)?AbortSignal.timeout(12000):undefined;
+   const br=await fetch('https://text.pollinations.ai/'+encodeURIComponent(prompt)+'?model=openai&private=true',{headers:{accept:'text/plain','user-agent':'SEEKVERA-R35/1.0'},...(signal?{signal}:{})});
+   if(br.ok){const vals=parse(await br.text());if(vals)return j(request,{ok:true,language:code,translations:vals,model:'pollinations-openai',source:'zero-cost-http-fallback-r35'});errors.push('pollinations:unparseable')}
+   else errors.push('pollinations:'+br.status)
+ }catch(e){errors.push('pollinations:'+clean(e?.message||e,140))}
+ return j(request,{ok:false,error:'Rare translation unavailable',retryable:true,errors:errors.slice(-5)},503)
 }
 
 '''
 s=s.replace(needle,route+needle,1)
 p.write_text(s,encoding='utf-8')
-print('R35 rare direct Workers AI route patched')
+print('R35 rare translator patched with zero-cost fallback')
