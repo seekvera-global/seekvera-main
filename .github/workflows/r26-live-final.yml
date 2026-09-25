@@ -64,3 +64,5 @@ jobs:
               except Exception as e:bad.append((p.name,str(e)))
           assert len(pages)==44,len(pages);assert not bad,bad[:20]
           print('LIVE PAGE PASS 44/44')
+
+# R27 final rerun trigger after controller load-order fix
