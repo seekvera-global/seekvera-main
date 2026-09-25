@@ -1,6 +1,6 @@
 from __future__ import annotations
 from pathlib import Path
-import json,re,time,urllib.request,urllib.error
+import concurrent.futures,json,re,time,urllib.request,urllib.error
 from r35_build_pack import source_meta, FORCE_UI, clean_text
 
 OUT=Path('i18n-r35'); OUT.mkdir(exist_ok=True)
@@ -60,7 +60,6 @@ def ai_one(s):
             last=RuntimeError(repr(d)[:500])
         except Exception as e:last=e
         time.sleep(1.0+a)
-    # Legitimate short Romansh words can share English spelling (e.g. Contact).
     if len(s)<18 and len(re.findall(r'[A-Za-z]+',s))<=2:return MANUAL.get(s,s)
     raise RuntimeError(f'ai single failed for {s!r}: {last!r}')
 
@@ -83,11 +82,13 @@ def translate(batch):
         return [ai_one(batch[0])]
 
 def main():
-    src,h=source_meta(); vals=[]
-    print('R35 RM RESCUE SOURCE',len(src),h,flush=True)
-    for i in range(0,len(src),20):
-        vals.extend(translate(src[i:i+20]))
-        print('R35 RM PROGRESS',min(i+20,len(src)),'/',len(src),flush=True)
+    src,h=source_meta(); chunks=[src[i:i+20] for i in range(0,len(src),20)]; vals=[]
+    print('R35 RM RESCUE SOURCE',len(src),h,'chunks',len(chunks),flush=True)
+    done=0
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex:
+        for translated in ex.map(translate,chunks):
+            vals.extend(translated);done+=len(translated)
+            print('R35 RM PROGRESS',done,'/',len(src),flush=True)
     assert len(vals)==len(src),(len(vals),len(src))
     trans={s:v for s,v in zip(src,vals)}
     for s,v in MANUAL.items():
