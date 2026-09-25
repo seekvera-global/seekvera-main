@@ -1,0 +1,31 @@
+name: R35 Polytranslator call shape
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r35-polytranslator-call-shape.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Extract call payload and Romansh language metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import requests,re
+          for url in ['https://www.polytranslator.com/_next/static/chunks/0_a_oh2yd9q5a.js','https://www.polytranslator.com/_next/static/chunks/0y6oupn~hyt-w.js']:
+            t=requests.get(url,timeout=30,headers={'User-Agent':'Mozilla/5.0'}).text
+            print('URL',url,'LEN',len(t))
+            for needle in ['translateText)(','.translateText)(','translateText','Romansh','rm_Latn','roh_Latn','google_code":"rm"']:
+              p=0;n=0
+              while True:
+                i=t.find(needle,p)
+                if i<0:break
+                print('NEEDLE',needle,'CTX',t[max(0,i-1800):min(len(t),i+2200)].replace('\n',' '))
+                p=i+len(needle);n+=1
+                if n>=4:break
+          PY
