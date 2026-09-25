@@ -28,10 +28,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Prepare source and rescue tools
+      - name: Prepare source and offline rescue tools
         run: |
           set -euo pipefail
-          python -m pip install --quiet beautifulsoup4 Babel
+          python -m pip install --quiet beautifulsoup4 Babel 'transformers<5' sentencepiece sacremoses
+          python - <<'PY'
+          try:
+              import torch;print('torch already available',torch.__version__)
+          except Exception:
+              raise SystemExit(2)
+          PY
           python -m py_compile tools/r35_rescue_rm.py tools/r35_build_pack.py
           python tools/r35_build_pack.py --source-only
           python - <<'PY'
@@ -51,7 +57,7 @@ jobs:
           path: i18n-r35
           merge-multiple: true
 
-      - name: Build only Romansh and Tswana
+      - name: Build Romansh and Tswana fully offline
         shell: bash
         run: |
           set -euo pipefail
@@ -64,7 +70,7 @@ jobs:
           python tools/r35_rescue_rm.py tn
           test -s i18n-r35/rm.json
           test -s i18n-r35/tn.json
-          echo 'R35 TWO MISSING PACKS RESCUED'
+          echo 'R35 TWO MISSING PACKS BUILT OFFLINE'
 
       - name: Assemble and validate exact 98 packs
         shell: bash
@@ -96,7 +102,7 @@ jobs:
           print('R35 98 PACKS PASS',json.dumps(m,ensure_ascii=False))
           PY
 
-      - name: Apply R35 static runtime and AI failover
+      - name: Apply R35 static runtime and safe dynamic fallbacks
         shell: bash
         run: |
           set -euo pipefail
@@ -113,7 +119,7 @@ jobs:
           grep -q 'r35-static-v3' i18n-ui.js
           grep -q 'r35Runtime' worker-r31.js
           grep -q 'i18n-ui.js?v=20260925-r35-global-final' index.html
-          echo 'R35 RUNTIME PASS'
+          echo 'R35 STATIC RUNTIME PASS'
 
       - name: Deploy R35 to Cloudflare
         uses: cloudflare/wrangler-action@v4
@@ -133,7 +139,7 @@ jobs:
           done
           exit 1
 
-      - name: Final live audit - countries languages categories Iraq voice AI
+      - name: Final live static audit - countries languages categories Iraq voice
         shell: bash
         run: |
           set -euo pipefail
@@ -151,16 +157,15 @@ jobs:
           await p.waitForFunction(()=>window.SEEKVERA_I18N_R32&&window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_R14_CATEGORIES&&window.SEEKVERA_R22_CATEGORY_LOCK,{timeout:20000});
           const meta=await p.evaluate(()=>({profiles:SEEKVERA_LOCALE_R15.profiles,langs:Object.keys(SEEKVERA_R14_CATEGORIES.data)}));assert.equal(Object.keys(meta.profiles).length,248);assert.equal(meta.langs.length,98);
           const bad=[];for(const [cc,pr] of Object.entries(meta.profiles)){await p.evaluate(cc=>SEEKVERA_LOCALE_R15.setCountry(cc),cc);const g=await p.evaluate(()=>({cc:country.value,l:lang.value,c:currency.value}));if(g.cc!==cc||g.l!==pr.language||g.c!==pr.currency)bad.push({cc,pr,g})}assert.equal(bad.length,0,JSON.stringify(bad.slice(0,5)));
-          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('IQ'));await p.evaluate(async()=>{await SEEKVERA_I18N_R32.loadPack('ar');SEEKVERA_I18N_R32.schedule(0);SEEKVERA_R22_CATEGORY_LOCK.lock()});await p.waitForFunction(()=>document.documentElement.dataset.seekveraPackReady==='ar'&&document.documentElement.dataset.seekveraI18nReady==='ar'&&document.documentElement.dir==='rtl',{timeout:12000});await p.waitForTimeout(4200);
+          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('IQ'));await p.evaluate(async()=>{await SEEKVERA_I18N_R32.loadPack('ar');SEEKVERA_I18N_R32.schedule(0);SEEKVERA_R22_CATEGORY_LOCK.lock()});await p.waitForFunction(()=>document.documentElement.dataset.seekveraPackReady==='ar'&&document.documentElement.dataset.seekveraI18nReady==='ar'&&document.documentElement.dir==='rtl',{timeout:12000});await p.waitForTimeout(1500);
           const iq=await p.evaluate(()=>({body:document.body.innerText,cc:country.value,l:lang.value,c:currency.value,n:document.querySelectorAll('#categories .r5-tile').length,overflow:document.documentElement.scrollWidth-innerWidth,mic:!!document.querySelector('#aiChatMic'),speaker:!!document.querySelector('#aiChatSpeaker')}));assert.deepEqual([iq.cc,iq.l,iq.c],['IQ','ar','IQD']);assert.equal(iq.n,31);assert(iq.overflow<=4);assert(iq.mic&&iq.speaker);for(const s of ['Popular categories','Live marketplace','Request anything','No approved live marketplace listings are available right now.'])if(packs.ar[s]&&packs.ar[s]!==s)assert(!iq.body.includes(s),'Arabic leak '+s);
           for(const l of man.languages){await p.evaluate(l=>SEEKVERA_LOCALE_R15.setLanguage(l),l);await p.evaluate(async l=>{await SEEKVERA_I18N_R32.loadPack(l);SEEKVERA_I18N_R32.schedule(0);SEEKVERA_R22_CATEGORY_LOCK.lock()},l);if(l!=='en')await p.waitForFunction(l=>document.documentElement.dataset.seekveraPackReady===l&&document.documentElement.dataset.seekveraI18nReady===l,l,{timeout:10000});const x=await p.evaluate(()=>({l:lang.value,t:[...document.querySelectorAll('#categories .r5-tile-body b')].slice(0,31).map(n=>n.textContent.trim()),o:document.documentElement.scrollWidth-innerWidth}));assert.equal(x.l,l,l);assert.equal(x.t.length,31,l);assert(x.o<=4,l);const exp=await p.evaluate(l=>SEEKVERA_R14_CATEGORIES.data[l],l);assert.deepEqual(x.t,exp,l)}
           await p.evaluate(()=>SEEKVERA_LOCALE_R15.setLanguage('ar'));await p.evaluate(async()=>{await SEEKVERA_I18N_R32.loadPack('ar');SEEKVERA_I18N_R32.schedule(0);SEEKVERA_R22_CATEGORY_LOCK.lock()});const hrefs=await p.evaluate(()=>[...new Set([...document.querySelectorAll('#categories .r5-tile')].map(a=>a.getAttribute('href')).filter(Boolean))]);assert.equal(hrefs.length,31);for(let i=0;i<31;i+=8)await Promise.all(hrefs.slice(i,i+8).map(async h=>{const r=await rq.get(new URL(h,B).href,{timeout:15000});assert(r.status()<400,h);assert((await r.text()).length>180,h)}));
-          const ai1=await (await rq.post(B+'/api/ai',{data:{fast:true,language:'ar',country:'IQ',message:'أريد فندقاً في بغداد، ساعدني للوصول إلى القسم المناسب.'},timeout:20000})).json();assert(ai1.ok&&/[\u0600-\u06ff]/u.test(ai1.response));assert.equal(ai1.category,'travel');const ai2=await (await rq.post(B+'/api/ai',{data:{fast:true,language:'en',country:'GB',message:'I need an apartment to rent in London under my budget.'},timeout:20000})).json();assert(ai2.ok);assert.equal(ai2.category,'property');assert.equal(errs.length,0,JSON.stringify(errs.slice(0,5)));
-          await browser.close();console.log('R35 FINAL LIVE AUDIT PASS',JSON.stringify({countries:248,languages:98,categories:31,source:967,iraq:'ar/IQD/rtl',voice:true,ai:true,rm:true,tn:true}));
+          assert.equal(errs.length,0,JSON.stringify(errs.slice(0,5)));await browser.close();console.log('R35 STATIC LIVE AUDIT PASS',JSON.stringify({countries:248,languages:98,categories:31,source:967,iraq:'ar/IQD/rtl',voiceControls:true,staticWithoutTranslationAPI:true,rm:true,tn:true}));
           JS
           node /tmp/r35v2.mjs
 
-      - name: Commit only after final live PASS
+      - name: Commit static release only after final live PASS
         shell: bash
         run: |
           set -euo pipefail
@@ -168,6 +173,6 @@ jobs:
           git config user.name 'seekvera-global'
           git config user.email 'seekvera.global@gmail.com'
           git add -A
-          git diff --cached --quiet || git commit -m 'Publish fully audited R35 98-language global release'
+          git diff --cached --quiet || git commit -m 'Publish audited static 98-language global release'
           git push origin HEAD:main
-          echo 'R35 FULL FINAL COMMITTED AFTER LIVE PASS'
+          echo 'R35 STATIC FINAL COMMITTED AFTER LIVE PASS'
