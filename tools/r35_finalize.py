@@ -1,6 +1,7 @@
 from pathlib import Path
 import re
 VER='20260925-r35-global-final'
+PACK='20260925-r35-static-v3'
 changed=[]
 
 def write(path,text):
@@ -10,8 +11,10 @@ def write(path,text):
 # The R32 patchers build the deterministic runtime; stamp the fully parallel-audited R35 release.
 p=Path('i18n-ui.js');s=p.read_text(encoding='utf-8')
 s=s.replace("const VERSION='20260925-r32-global-final';",f"const VERSION='{VER}';",1)
-s=s.replace('20260925-r32-static-v4','20260925-r35-static-v1')
-s=s.replace('20260925-r32-static-v3','20260925-r35-static-v1')
+s=s.replace('20260925-r32-static-v4',PACK)
+s=s.replace('20260925-r32-static-v3',PACK)
+s=s.replace('20260925-r35-static-v1',PACK)
+s=s.replace('20260925-r35-static-v2',PACK)
 write('i18n-ui.js',s)
 
 p=Path('locale-r15.js');s=p.read_text(encoding='utf-8')
@@ -35,5 +38,5 @@ for p in Path('.').glob('*.html'):
     s=re.sub(r'sw\.js\?v=[^\"\']+',f'sw.js?v={VER}',s)
     s=s.replace('2026-09-25 · R32','2026-09-25 · R35')
     if s!=before:p.write_text(s,encoding='utf-8');changed.append(p.name)
-print('R35 FINALIZED',len(changed),'files')
+print('R35 FINALIZED',len(changed),'files','pack',PACK)
 for x in changed:print(x)
