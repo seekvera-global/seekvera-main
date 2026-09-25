@@ -1,0 +1,176 @@
+name: R42 final 98-language leak repair
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r42-final-language-repair.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: seekvera-r42-final-language-repair
+  cancel-in-progress: true
+
+env:
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  repair-deploy-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Recover all live packs and identify English leaks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet beautifulsoup4 Babel
+          rm -rf i18n-r32 i18n-r35
+          mkdir -p i18n-r32 i18n-r35
+          python tools/r35_build_pack.py --source-only
+          python - <<'PY'
+          import json, pathlib, urllib.request, time
+          B='https://seekveraglobal.com'
+          def get(path):
+              last=None
+              for n in range(5):
+                  try:
+                      req=urllib.request.Request(B+path+'?r42='+str(time.time_ns()),headers={'User-Agent':'SEEKVERA-R42/1.0','Cache-Control':'no-cache'})
+                      with urllib.request.urlopen(req,timeout=30) as r:return r.read()
+                  except Exception as e:last=e;time.sleep(.5+n*.6)
+              raise last
+          manifest=json.loads(get('/i18n-r32/manifest.json'))
+          live_src=json.loads(get('/i18n-r32-source.json'))
+          local_src=json.load(open('i18n-r35-source.json',encoding='utf-8'))
+          assert manifest['packs']==98 and len(manifest['languages'])==98
+          assert live_src['count']==local_src['count']==967
+          assert manifest['sourceHash']==live_src['sourceHash']==local_src['sourceHash']
+          pathlib.Path('i18n-r32-source.json').write_bytes(json.dumps(live_src,ensure_ascii=False,separators=(',',':')).encode())
+          pathlib.Path('i18n-r32/manifest.json').write_bytes(json.dumps(manifest,ensure_ascii=False,separators=(',',':')).encode())
+          bad=[]; missing=[]
+          critical=['Popular categories','Live marketplace','Request anything','No approved live marketplace listings are available right now.','SEEKVERA does not generate fake listings.','Find, compare, choose — worldwide.']
+          for l in manifest['languages']:
+              try:
+                  raw=get('/i18n-r32/'+l+'.json'); p=pathlib.Path('i18n-r32')/(l+'.json'); p.write_bytes(raw)
+                  d=json.loads(raw); assert d['sourceHash']==manifest['sourceHash']; assert d['count']==967; assert len(d['translations'])==967
+                  if l!='en':
+                      leaks=[s for s in critical if s in d['translations'] and str(d['translations'][s]).strip()==s]
+                      if leaks: bad.append((l,leaks))
+              except Exception as e:
+                  missing.append(l)
+          rebuild=sorted(set(missing+[l for l,_ in bad]))
+          pathlib.Path('/tmp/rebuild.txt').write_text('\n'.join(rebuild)+('\n' if rebuild else ''),encoding='utf-8')
+          print('R42 RECOVERED',98-len(missing),'MISSING',missing,'LEAKS',bad,'REBUILD',rebuild)
+          PY
+
+      - name: Rebuild every missing or leaking language
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -s /tmp/rebuild.txt; then
+            while IFS= read -r l; do
+              echo "REBUILD $l"
+              python tools/r35_build_pack.py --lang "$l"
+              cp -f "i18n-r35/$l.json" "i18n-r32/$l.json"
+            done </tmp/rebuild.txt
+          fi
+          python - <<'PY'
+          import json,glob,os
+          m=json.load(open('i18n-r32/manifest.json',encoding='utf-8')); s=json.load(open('i18n-r32-source.json',encoding='utf-8'))
+          files={os.path.basename(p)[:-5]:p for p in glob.glob('i18n-r32/*.json') if not p.endswith('/manifest.json')}
+          assert set(files)==set(m['languages']),(len(files),set(m['languages'])-set(files))
+          critical=['Popular categories','Live marketplace','Request anything','No approved live marketplace listings are available right now.','SEEKVERA does not generate fake listings.','Find, compare, choose — worldwide.']
+          leaks=[]; providers={}
+          for l,p in files.items():
+              d=json.load(open(p,encoding='utf-8')); assert d['sourceHash']==s['sourceHash']; assert d['count']==967; assert len(d['translations'])==967
+              providers[d.get('provider','unknown')]=providers.get(d.get('provider','unknown'),0)+1
+              if l!='en':
+                  same=[x for x in critical if x in d['translations'] and str(d['translations'][x]).strip()==x]
+                  if same:leaks.append((l,same))
+          assert not leaks,'critical English leaks '+repr(leaks)
+          m['providers']=providers
+          open('i18n-r32/manifest.json','w',encoding='utf-8').write(json.dumps(m,ensure_ascii=False,separators=(',',':')))
+          print('R42 PACK VALIDATION PASS',len(files),providers)
+          PY
+
+      - name: Reproduce production runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r32_pack_runtime_patch.py
+          python tools/r32_global_final.py
+          python tools/r32_ai_failover_patch.py
+          python tools/r32_translation_backend_fix.py
+          python tools/r35_finalize.py
+          node --check r32-i18n.js
+          node --check i18n-ui.js
+          node --check worker-r31.js
+          node --check worker.js
+          test "$(grep -o 'id=\"categories\"' index.html | wc -l | tr -d ' ')" = '1'
+          ! grep -q 'r5-chips' index.html
+          ! grep -q 'r8-department-strip' index.html
+          echo 'R42 RUNTIME PASS'
+
+      - name: Deploy repaired production candidate
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Wait for production health and all 98 packs
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 60); do
+            h="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/api/health?r42=$i" || true)"
+            if echo "$h" | grep -q 'parallel-static-98-language-country-category-final'; then
+              python - <<'PY' && exit 0 || true
+          import json,urllib.request,time
+          B='https://seekveraglobal.com'
+          m=json.load(urllib.request.urlopen(B+'/i18n-r32/manifest.json?r42='+str(time.time_ns()),timeout=20))
+          assert len(m['languages'])==98 and m['packs']==98
+          for l in m['languages']:
+              r=urllib.request.urlopen(B+'/i18n-r32/'+l+'.json?r42='+str(time.time_ns()),timeout=15)
+              assert r.status==200 and len(r.read())>200
+          print('R42 LIVE 98 PACKS READY')
+          PY
+            fi
+            sleep 3
+          done
+          echo 'R42 production readiness timeout' >&2
+          exit 1
+
+      - name: Full live UI and AI audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          node tools/r38_final_audit.mjs
+
+      - name: Persist only fully audited production release
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf i18n-r35 i18n-r35-source.json i18n-r35-languages.json
+          find tools -type d -name __pycache__ -prune -exec rm -rf {} + || true
+          find tools -type f -name '*.pyc' -delete || true
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add -- i18n-r32 i18n-r32-source.json r32-i18n.js i18n-ui.js locale-r15.js worker-r31.js worker.js sw.js
+          git add -- '*.html'
+          if git diff --cached --quiet; then
+            echo 'No audited file changes to commit'
+          else
+            git commit -m 'Persist final audited 98-language production release'
+            git push origin HEAD:main
+          fi
+          echo 'R42 FINAL RELEASE PERSISTED'
