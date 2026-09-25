@@ -11,7 +11,7 @@ const TTS_RETRY_DELAYS=[240,650,1200];
 const VOICE_SILENCE_MS=1250,VOICE_MAX_MS=30000,VOICE_RMS_THRESHOLD=.016;
 let recognition=null,lastAnswer='',lastLocale='',muted=localStorage.getItem('seekvera_voice_muted')==='1',activeButton=null,voiceConversation=false,voiceReplyDeadline=0,speakToken=0,recording=false,mediaRecorder=null,mediaStream=null,recordChunks=[],recordTimer=null,speechSilenceTimer=null,speechHardTimer=null,audioCtx=null,audioAnalyser=null,audioSource=null,audioRaf=0,heardVoice=false,lastVoiceAt=0,recordStartedAt=0;
 function codeOf(v){let s=String(v||'').toLowerCase().trim();if(NAME_CODE[s])return NAME_CODE[s];s=s.split(/[-_ ]/)[0];if(NAME_CODE[s])return NAME_CODE[s];return /^[a-z]{2,3}$/.test(s)?s:''}
-function locale(){const e=document.getElementById('lang');let code=(e?.value||localStorage.getItem('seekvera_lang')||navigator.language||'en').toLowerCase();const label=e?.options?.[e.selectedIndex]?.textContent||'';if(code==='auto'||/auto|تلقائي|autom/i.test(label))return navigator.language||'en-US';code=codeOf(code)||code.split(/[-_]/)[0];return LANGS[code]||code||navigator.language||'en-US'}
+function locale(){const e=document.getElementById('lang');let code=(e?.value||localStorage.getItem('seekvera_lang')||navigator.language||'en').toLowerCase();const label=e?.options?.[e.selectedIndex]?.textContent||'';if(code==='auto'||/auto|تلقائي|autom/i.test(label))return navigator.language||'en-US';code=codeOf(code)||code.split(/[-_]/)[0];if(code==='ar'){const c=String(document.getElementById('country')?.value||localStorage.getItem('seekvera_country')||'').toUpperCase();const ar={LB:'ar-LB',EG:'ar-EG',AE:'ar-AE',SA:'ar-SA',JO:'ar-JO',IQ:'ar-IQ',KW:'ar-KW',QA:'ar-QA',BH:'ar-BH',OM:'ar-OM',MA:'ar-MA',DZ:'ar-DZ',TN:'ar-TN'};if(ar[c])return ar[c]}return LANGS[code]||code||navigator.language||'en-US'}
 function localeForText(t,requested){t=typeof t==='string'?t:'';const r=codeOf(requested);if(r)return LANGS[r]||r;if(/[\u0600-\u06ff]/.test(t))return 'ar-SA';if(/[\u4e00-\u9fff]/.test(t))return 'zh-CN';if(/[\u3040-\u30ff]/.test(t))return 'ja-JP';if(/[\uac00-\ud7af]/.test(t))return 'ko-KR';if(/[\u0900-\u097f]/.test(t))return 'hi-IN';if(/[\u0980-\u09ff]/.test(t))return 'bn-BD';if(/[\u0400-\u04ff]/.test(t))return 'ru-RU';if(/[\u0590-\u05ff]/.test(t))return 'he-IL';if(/[\u0370-\u03ff]/.test(t))return 'el-GR';if(/[\u0e00-\u0e7f]/.test(t))return 'th-TH';if(/[\u1200-\u137f]/.test(t))return 'am-ET';return locale()}
 function voices(){try{return window.speechSynthesis?.getVoices?.()||[]}catch(_){return []}}
 function pickVoice(l){const vs=voices();if(!vs.length)return null;const w=String(l||'').toLowerCase(),b=w.split('-')[0];let c=vs.filter(v=>String(v.lang||'').toLowerCase().startsWith(b));if(!c.length)return null;const sc=v=>{const n=(v.name||'')+' '+(v.voiceURI||''),vl=String(v.lang||'').toLowerCase();let x=0;if(vl===w)x+=120;else if(vl.startsWith(b))x+=75;if(QUALITY_HINTS.test(n))x+=40;if(FEMALE_HINTS.test(n))x+=48;if(MALE_HINTS.test(n))x-=60;if(v.default)x+=8;return x};return [...c].sort((a,b)=>sc(b)-sc(a))[0]||null}
@@ -52,7 +52,7 @@ async function serverVoice(targetId,button){
       try{
         if(i)i.placeholder='Transcribing your voice…';
         const blob=new Blob(chunks,{type}),audio=await blobDataURL(blob);
-        const res=await fetch(apiBase()+'/api/transcribe',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({audio,language:'auto'})});
+        const signal=(typeof AbortSignal!=='undefined'&&AbortSignal.timeout)?AbortSignal.timeout(5000):undefined;const res=await fetch(apiBase()+'/api/transcribe',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({audio,language:'auto'}),...(signal?{signal}:{})});
         const d=await res.json().catch(()=>({}));if(!res.ok||!d.text)throw Error(d.error||'transcription failed');
         if(i){i.value=String(d.text).trim();i.placeholder='Message SEEKVERA AI…';if(i.value){voiceReplyDeadline=Date.now()+90000;setTimeout(()=>i.form?.requestSubmit?.(),45)}}
       }catch(e){voiceConversation=false;if(i)i.placeholder='Voice could not be transcribed — please type or try again.'}
@@ -69,14 +69,14 @@ function start(targetId,button){
   stopSpeech();enableVoiceConversation();clearSpeechTimers();
   activeButton=button||document.getElementById('aiChatMic')||document.querySelector('.sv-global-compose .mic');
   const i=document.getElementById(targetId||'aiChatInput');
-  if(navigator.mediaDevices?.getUserMedia&&window.MediaRecorder){serverVoice(targetId,activeButton);return}if(!SpeechRecognition){voiceConversation=false;if(i)i.placeholder='Voice recognition is unavailable here — please type your message.';return}
-  const r=new SpeechRecognition();recognition=r;r.lang=locale();r.interimResults=true;r.continuous=true;r.maxAlternatives=1;
+  if(!SpeechRecognition){serverVoice(targetId,activeButton);return}
+  const r=new SpeechRecognition();recognition=r;r.lang=locale();r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
   let final='',hadError=false,heardAny=false;
   const scheduleSilence=()=>{if(speechSilenceTimer)clearTimeout(speechSilenceTimer);speechSilenceTimer=setTimeout(()=>{try{if(recognition===r)r.stop()}catch(_){}},VOICE_SILENCE_MS)};
-  r.onstart=()=>{setMic(true);speechHardTimer=setTimeout(()=>{try{if(recognition===r)r.stop()}catch(_){}},VOICE_MAX_MS)};
-  r.onresult=e=>{let interim='';heardAny=true;for(let x=e.resultIndex;x<e.results.length;x++){const t=e.results[x][0].transcript;if(e.results[x].isFinal)final+=(final?' ':'')+t;else interim+=t}if(i)i.value=(final+(interim?((final?' ':'')+interim):'')).trim();scheduleSilence()};
-  r.onerror=e=>{if(!['no-speech','aborted'].includes(e?.error))hadError=true;if(e?.error==='no-speech'&&!heardAny)voiceConversation=false};
-  r.onend=()=>{clearSpeechTimers();setMic(false);if(recognition===r)recognition=null;const q=i?.value?.trim();if(q&&!hadError){voiceReplyDeadline=Date.now()+90000;setTimeout(()=>i.form?.requestSubmit?.(),45)}else if(!q)voiceConversation=false};
+  r.onstart=()=>{setMic(true);if(i)i.placeholder='Listening…';speechHardTimer=setTimeout(()=>{try{if(recognition===r)r.stop()}catch(_){}},Math.min(VOICE_MAX_MS,30000))};
+  r.onresult=e=>{let interim='';heardAny=true;for(let x=e.resultIndex;x<e.results.length;x++){const t=e.results[x][0].transcript;if(e.results[x].isFinal)final+=(final?' ':'')+t;else interim+=t}if(i){i.value=(final+(interim?((final?' ':'')+interim):'')).trim();i.placeholder='Message SEEKVERA AI…'}if(final.trim()){try{if(recognition===r)r.stop()}catch(_){}}else scheduleSilence()};
+  r.onerror=e=>{if(!['no-speech','aborted'].includes(e?.error))hadError=true;if(e?.error==='no-speech'&&!heardAny){voiceConversation=false;if(i)i.placeholder='I did not hear speech — tap the microphone and speak again.'}};
+  r.onend=()=>{clearSpeechTimers();setMic(false);if(recognition===r)recognition=null;const q=i?.value?.trim();if(q){voiceReplyDeadline=Date.now()+90000;if(i)i.placeholder='Message SEEKVERA AI…';setTimeout(()=>i.form?.requestSubmit?.(),25)}else{voiceConversation=false;if(i&&hadError)i.placeholder='Voice recognition failed — tap the microphone and try again.'}};
   try{r.start()}catch(_){recognition=null;voiceConversation=false;clearSpeechTimers();setMic(false);serverVoice(targetId,activeButton)}
 }
 function speakerAction(btn){voiceConversation=false;muted=false;localStorage.setItem('seekvera_voice_muted','0');updateSpeakerButtons();unlockTTS();speak(lastAnswer||'SEEKVERA',lastLocale||locale(),true);if(btn){btn.textContent='🔊';btn.setAttribute('aria-label','Play latest AI reply')}}
