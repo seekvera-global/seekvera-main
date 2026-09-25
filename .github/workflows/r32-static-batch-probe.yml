@@ -1,0 +1,28 @@
+name: R32 static batch probe
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r32-static-batch-probe.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test batched translation delimiters
+        shell: python
+        run: |
+          import json, urllib.parse, urllib.request
+          src=['Live marketplace','No approved live marketplace listings are available right now.','Find, compare, choose — worldwide.','Request anything','Privacy','Contact']
+          for lang in ['de','ja','ar','sw']:
+              sep='\n⟦92837465⟧\n'
+              text=sep.join(src)
+              data=urllib.parse.urlencode({'client':'gtx','sl':'en','tl':lang,'dt':'t','q':text}).encode()
+              req=urllib.request.Request('https://translate.googleapis.com/translate_a/single',data=data,headers={'User-Agent':'Mozilla/5.0','Content-Type':'application/x-www-form-urlencoded'})
+              with urllib.request.urlopen(req,timeout=20) as r: obj=json.loads(r.read().decode())
+              out=''.join(x[0] for x in obj[0] if x and x[0])
+              parts=[x.strip() for x in out.split('⟦92837465⟧')]
+              print(lang,'parts',len(parts),parts)
+              assert len(parts)==len(src),(lang,out)
+              assert all(p and p!=s for p,s in zip(parts,src)),(lang,parts)
