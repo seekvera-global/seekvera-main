@@ -1,0 +1,156 @@
+name: R56 final global AI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r56-final-global-ai.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r56-final-global-ai
+  cancel-in-progress: true
+
+jobs:
+  deploy-audit-persist:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build final R56 core
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r56_global_ai_core.py
+          python tools/r56b_worker_context.py
+          python tools/r56c_immediate_controls.py
+          python tools/r56d_language_parser_fix.py
+          node --check r31-ui-polish.js
+          node --check voice-ai.js
+          node --check worker-r31.js
+          node --check r24-ai-controller.js
+          node --check sw.js
+          grep -F 'function contextualIntent' r31-ui-polish.js >/dev/null
+          grep -F 'function autoRoute' r31-ui-polish.js >/dev/null
+          grep -F 'function forceControl' r31-ui-polish.js >/dev/null
+          grep -F 'SEEKVERA_VOICE_AI.start' r31-ui-polish.js >/dev/null
+          grep -F 'conversationIntent:guessed' r31-ui-polish.js >/dev/null
+          grep -F 'hinted=clean(b.conversationIntent,30)' worker-r31.js >/dev/null
+          grep -F 'Do not tell the user to press a section button' worker-r31.js >/dev/null
+          grep -F 'Raw 2/3-letter language codes are intentionally NOT aliases' r24-ai-controller.js >/dev/null
+          grep -F 'seekvera-r56-global-ai-core-20260926' sw.js >/dev/null
+          echo 'R56 FINAL BUILD PASS'
+
+      - name: Deploy final R56
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Confirm final R56 assets live
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 30); do
+            r="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/r31-ui-polish.js?r56final=$i" || true)"
+            a="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/r24-ai-controller.js?r56final=$i" || true)"
+            v="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/voice-ai.js?r56final=$i" || true)"
+            w="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/worker-r31.js?r56final=$i" || true)"
+            sw="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/sw.js?r56final=$i" || true)"
+            if [[ "$r" == *'function contextualIntent'* && "$r" == *'function autoRoute'* && "$r" == *'function forceControl'* && "$r" == *'SEEKVERA_VOICE_AI.start'* && "$a" == *'Raw 2/3-letter language codes are intentionally NOT aliases'* && "$v" == *'voiceReplyDeadline=Date.now()+90000'* && "$w" == *'hinted=clean(b.conversationIntent,30)'* && "$sw" == *'seekvera-r56-global-ai-core-20260926'* ]]; then
+              echo 'R56 FINAL LIVE ASSETS PASS'
+              exit 0
+            fi
+            sleep 2
+          done
+          echo 'R56 final assets missing' >&2
+          exit 1
+
+      - name: Full browser audit global AI
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > r56-final-audit.mjs <<'JS'
+          import {chromium} from 'playwright';
+          import assert from 'node:assert/strict';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage();
+          const errors=[];p.on('pageerror',e=>errors.push(String(e)));
+          await p.goto('https://seekveraglobal.com/?r56final='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_R31&&window.SEEKVERA_VOICE_AI&&window.SEEKVERA_R24_CONTROLLER&&window.SEEKVERA_LOCALE_R15&&document.querySelector('#aiChatForm'),null,{timeout:30000});
+
+          const coverage=await p.evaluate(()=>({languages:SEEKVERA_R24_CONTROLLER.languages.length,countries:Object.keys(SEEKVERA_LOCALE_R15.profiles||{}).length}));
+          assert.ok(coverage.languages>=98,JSON.stringify(coverage));
+          assert.ok(coverage.countries>=248,JSON.stringify(coverage));
+
+          const detected=await p.evaluate(()=>({
+            fr:SEEKVERA_R24_CONTROLLER.detectControls('change language to French'),
+            ar:SEEKVERA_R24_CONTROLLER.detectControls('change language to Arabic'),
+            ja:SEEKVERA_R24_CONTROLLER.detectControls('change language to Japanese'),
+            to:SEEKVERA_R24_CONTROLLER.detectControls('change language to Tongan'),
+            code:SEEKVERA_R24_CONTROLLER.detectControls('language=fr'),
+            arabic:SEEKVERA_R24_CONTROLLER.detectControls('غير اللغة إلى الفرنسية')
+          }));
+          assert.equal(detected.fr.language,'fr',JSON.stringify(detected));
+          assert.equal(detected.ar.language,'ar',JSON.stringify(detected));
+          assert.equal(detected.ja.language,'ja',JSON.stringify(detected));
+          assert.equal(detected.to.language,'to',JSON.stringify(detected));
+          assert.equal(detected.code.language,'fr',JSON.stringify(detected));
+          assert.equal(detected.arabic.language,'fr',JSON.stringify(detected));
+
+          const micDelegation=await p.evaluate(()=>{let n=0;const old=SEEKVERA_VOICE_AI.start;SEEKVERA_VOICE_AI.start=()=>{n++};document.querySelector('#aiChatMic').click();SEEKVERA_VOICE_AI.start=old;return n});
+          assert.equal(micDelegation,1,'mic delegation '+micDelegation);
+
+          await p.fill('#aiChatInput','change country to France');
+          await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForFunction(()=>document.querySelector('#country')?.value==='FR',null,{timeout:3000});
+          await p.fill('#aiChatInput','change language to French');
+          await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForFunction(()=>document.querySelector('#lang')?.value==='fr'&&localStorage.getItem('seekvera_lang')==='fr',null,{timeout:3000});
+          await p.fill('#aiChatInput','change country to Nigeria');
+          await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForFunction(()=>document.querySelector('#country')?.value==='NG',null,{timeout:3000});
+
+          const voice=await p.evaluate(()=>{let fired=0;try{speechSynthesis.speak=()=>{fired++}}catch{}SEEKVERA_VOICE_AI.markVoiceReply();window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text:'Réponse vocale de test',language:'fr'}}));return{pending:SEEKVERA_VOICE_AI.isVoiceReplyPending(),fired}});
+          assert.ok(voice.fired>=1,JSON.stringify(voice));
+
+          await p.fill('#aiChatInput','I am looking for a hotel manager job in Nigeria');
+          const started=Date.now();
+          await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForURL(/\/jobs\.html\?/,{timeout:10000});
+          const navMs=Date.now()-started,u=new URL(p.url());
+          assert.ok(navMs<10000,'auto navigation '+navMs);
+          assert.ok(u.pathname.endsWith('/jobs.html'),p.url());
+          assert.equal(u.searchParams.get('country'),'NG',p.url());
+          assert.ok((u.searchParams.get('q')||'').toLowerCase().includes('hotel manager'),p.url());
+          assert.equal(await p.evaluate(()=>sessionStorage.getItem('seekvera_ai_intent')),'jobs');
+
+          console.log('R56 FINAL LIVE PASS',JSON.stringify({coverage,detected,micDelegation,voice,navMs,url:p.url(),errors:errors.slice(0,3)}));
+          await b.close();
+          JS
+          node r56-final-audit.mjs
+          rm -f r56-final-audit.mjs
+
+      - name: Persist final audited R56
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add -- r31-ui-polish.js voice-ai.js worker-r31.js r24-ai-controller.js sw.js
+          if git diff --cached --quiet; then
+            echo 'No R56 generated changes to persist'
+          else
+            git commit -m 'Persist R56 global AI auto-routing voice and locale controls'
+            git push origin HEAD:main
+          fi
+          echo 'R56 FINAL AUDITED RELEASE PERSISTED'
