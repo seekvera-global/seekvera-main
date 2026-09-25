@@ -3,7 +3,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup, NavigableString
 import concurrent.futures, hashlib, json, random, re, time, urllib.error, urllib.parse, urllib.request
 
-VERSION='20260925-r32-static-v2'
+VERSION='20260925-r32-static-v3'
 OUT=Path('i18n-r32')
 OUT.mkdir(exist_ok=True)
 
@@ -16,7 +16,8 @@ if len(LANGS)!=98:
     raise SystemExit(f'Expected 98 SEEKVERA languages, got {len(LANGS)}')
 
 ALIASES={'fil':'tl','he':'iw'}
-SEP='⟦92837465⟧'
+# Digits are deliberately used because translation engines preserve them across every tested script.
+SEP='928374659283746592837465'
 
 DYNAMIC=[
     'No approved live marketplace listings are available right now. SEEKVERA does not generate fake listings.',
@@ -100,8 +101,8 @@ SOURCE_HASH=hashlib.sha256('\n'.join(SOURCE).encode()).hexdigest()[:16]
 Path('i18n-r32-source.json').write_text(json.dumps({'version':VERSION,'sourceHash':SOURCE_HASH,'count':len(SOURCE),'strings':SOURCE},ensure_ascii=False,separators=(',',':')),encoding='utf-8')
 print('R32 static source strings:',len(SOURCE),'hash',SOURCE_HASH,'chars',sum(map(len,SOURCE)),flush=True)
 
-# The endpoint reliably accepts ~70k characters per POST. Large batches cut requests from >2,000 to ~100,
-# avoiding the rate limit that stopped the first build.
+# Use large requests to avoid throttling. If a provider ever changes/drops the separator,
+# translate_google recursively halves that batch instead of retrying the same broken shape.
 def chunks(items:list[str],max_items=1200,max_chars=90000):
     out=[]; cur=[]; n=0
     for s in items:
@@ -130,7 +131,7 @@ def pollinations_batch(code:str,batch:list[str])->list[str]:
             f'Keep SEEKVERA, URLs, numbers, currency codes and placeholders unchanged. '
             f'Return ONLY one valid JSON array of exactly {len(batch)} strings, same order, no markdown.\n'+json.dumps(batch,ensure_ascii=False))
     url='https://text.pollinations.ai/'+urllib.parse.quote(prompt)+'?model=openai&private=true'
-    req=urllib.request.Request(url,headers={'Accept':'text/plain','User-Agent':'SEEKVERA-R32-static-builder/2.0'})
+    req=urllib.request.Request(url,headers={'Accept':'text/plain','User-Agent':'SEEKVERA-R32-static-builder/3.0'})
     with urllib.request.urlopen(req,timeout=50) as r: raw=r.read().decode('utf-8').strip()
     raw=re.sub(r'^```(?:json)?\s*','',raw,flags=re.I);raw=re.sub(r'\s*```$','',raw)
     a,b=raw.find('['),raw.rfind(']')
@@ -147,6 +148,13 @@ def translate_google(code:str,batch:list[str])->list[str]:
             vals=google_batch(code,batch)
             time.sleep(.18+random.random()*.12)
             return vals
+        except ValueError as e:
+            last=e
+            if len(batch)>1:
+                mid=len(batch)//2
+                print('SPLIT_BATCH',code,len(batch),'->',mid,len(batch)-mid,flush=True)
+                return translate_google(code,batch[:mid])+translate_google(code,batch[mid:])
+            time.sleep(min(6,1+attempt))
         except urllib.error.HTTPError as e:
             last=e
             if e.code==429:
@@ -190,7 +198,7 @@ def build_language(code:str):
     return code,len(trans),'built'
 
 results=[]
-# Low concurrency + very large batches is intentionally conservative and much less likely to be throttled.
+# Low concurrency + large batches prevents quota spikes while keeping the build practical.
 with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex:
     futs={ex.submit(build_language,c):c for c in LANGS}
     for f in concurrent.futures.as_completed(futs):
