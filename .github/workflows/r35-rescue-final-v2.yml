@@ -31,12 +31,11 @@ jobs:
       - name: Prepare source and offline rescue tools
         run: |
           set -euo pipefail
+          python -m pip install --quiet torch --index-url https://download.pytorch.org/whl/cpu
           python -m pip install --quiet beautifulsoup4 Babel 'transformers<5' sentencepiece sacremoses
           python - <<'PY'
-          try:
-              import torch;print('torch already available',torch.__version__)
-          except Exception:
-              raise SystemExit(2)
+          import torch
+          print('torch ready',torch.__version__)
           PY
           python -m py_compile tools/r35_rescue_rm.py tools/r35_build_pack.py
           python tools/r35_build_pack.py --source-only
