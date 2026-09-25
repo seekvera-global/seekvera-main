@@ -1,0 +1,60 @@
+name: R35 rare direct translator
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r35-rare-direct-backend.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch direct rare translator
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r35_rare_backend_patch.py
+          node --check worker.js
+          grep -q "u.pathname==='/api/r35-rare-translate'" worker.js
+      - name: Deploy direct rare translator
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Verify Romansh and Tswana translations
+        shell: bash
+        run: |
+          set -euo pipefail
+          for lang in rm tn; do
+            ok=0
+            for attempt in 1 2 3 4 5; do
+              code="$(curl -sS -o "/tmp/$lang.json" -w '%{http_code}' --max-time 60 -X POST 'https://seekveraglobal.com/api/r35-rare-translate' \
+                -H 'Origin: https://seekveraglobal.com' -H 'Referer: https://seekveraglobal.com/' -H 'Content-Type: application/json' \
+                --data "{\"language\":\"$lang\",\"strings\":[\"Popular categories\",\"Live marketplace\",\"Request anything\",\"Find a hotel in the city\"]}" || true)"
+              if [ "$code" = 200 ]; then
+                python - "$lang" <<'PY'
+          import json,sys
+          lang=sys.argv[1];d=json.load(open('/tmp/'+lang+'.json'))
+          v=d.get('translations') or []
+          assert d.get('ok') and len(v)==4,(lang,d)
+          assert v[0] != 'Popular categories',(lang,v)
+          assert v[1] != 'Live marketplace',(lang,v)
+          assert v[2] != 'Request anything',(lang,v)
+          assert not any('I can help directly' in x for x in v),(lang,v)
+          print('R35 RARE DIRECT PASS',lang,d.get('model'),v)
+          PY
+                ok=1; break
+              fi
+              cat "/tmp/$lang.json" || true; sleep 2
+            done
+            test "$ok" -eq 1
+          done
+          echo 'R35 RARE DIRECT TRANSLATOR LIVE PASS'
