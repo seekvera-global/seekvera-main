@@ -1,0 +1,41 @@
+name: R48 language pack integrity audit
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r48-pack-integrity-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Inspect all 98 live packs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import concurrent.futures,json,re,time,urllib.request
+          B='https://seekveraglobal.com'
+          def get(p):
+              req=urllib.request.Request(B+p+'?r48='+str(time.time_ns()),headers={'User-Agent':'SEEKVERA-R48/1.0','Cache-Control':'no-cache'})
+              with urllib.request.urlopen(req,timeout=25) as r:return json.loads(r.read())
+          m=get('/i18n-r32/manifest.json');src=get('/i18n-r32-source.json');strings=src['strings'];sources=set(strings)
+          def inspect(l):
+              d=get('/i18n-r32/'+l+'.json');t=d['translations'];bad=[]
+              for s,v in t.items():
+                  v=str(v or '').strip(); sl=max(1,len(s));
+                  if len(v)>max(700,sl*12): bad.append(('expansion',s[:80],len(s),len(v),v[:120]))
+                  if len(v)>250 and sum(1 for q in ['Live marketplace','Popular categories','Request anything','Privacy','Terms','Contact','All categories','Country / Region'] if q in v)>=2: bad.append(('cross-source',s[:80],len(s),len(v),v[:160]))
+              return l,d.get('provider'),bad
+          with concurrent.futures.ThreadPoolExecutor(max_workers=16) as ex:res=list(ex.map(inspect,m['languages']))
+          badlangs=[]
+          for l,p,bad in res:
+              if bad:
+                  badlangs.append(l);print('BAD_PACK',l,p,'issues',len(bad),'sample',bad[:3])
+          print('PACK_INTEGRITY_SUMMARY',json.dumps({'languages':len(res),'badLanguages':badlangs,'badCount':len(badlangs)}))
+          print('XH_LIVE_MARKETPLACE',get('/i18n-r32/xh.json')['translations'].get('Live marketplace'))
+          print('XH_POPULAR',get('/i18n-r32/xh.json')['translations'].get('Popular categories'))
+          PY
