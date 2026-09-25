@@ -1,0 +1,25 @@
+name: R37 critical direct translation probe
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r37-critical-single-probe.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - shell: python
+        run: |
+          import json,urllib.parse,urllib.request
+          text='No approved live marketplace listings are available right now. SEEKVERA does not generate fake listings.'
+          for lang in ['ar','fr','es','de','pt','tr','ja','zh','ko','vi','ur','th','ru','id','bn','nl','fa','it','pl','sw','ms','yo','ig','ha','am','he']:
+              data=urllib.parse.urlencode({'client':'gtx','sl':'en','tl':lang,'dt':'t','q':text}).encode()
+              req=urllib.request.Request('https://translate.googleapis.com/translate_a/single',data=data,headers={'User-Agent':'Mozilla/5.0','Content-Type':'application/x-www-form-urlencoded'})
+              with urllib.request.urlopen(req,timeout=30) as r:o=json.loads(r.read().decode())
+              out=''.join(x[0] for x in o[0] if x and x[0]).strip()
+              print(lang,repr(out),flush=True)
+              assert out and out!=text,lang
+          print('R37 CRITICAL DIRECT PASS')
