@@ -70,7 +70,8 @@ jobs:
           assert 'Always identify the language of the latest user message' in worker
           assert 'languageAction=langMatch?' in worker
           assert '[[COUNTRY:XX]]' in worker and '[[LANG:xx]]' in worker
-          assert '/api/moderate' in worker and '/api/safety' in worker and 'blocked_by_safety' in worker
+          assert '/api/moderate' in worker and '/api/safety' in worker
+          assert "if(q.d==='BLOCK')" in worker and 'fail-closed' in worker
           assert './r24-ai-controller.js' in sw and 'r24-ai-controller|' in sw
           pages=[]
           for p in Path('.').glob('*.html'):
