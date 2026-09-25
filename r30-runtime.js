@@ -1,0 +1,20 @@
+(()=>{'use strict';
+if(window.__SEEKVERA_R30_RUNTIME)return;window.__SEEKVERA_R30_RUNTIME=true;
+const VERSION='20260925-r30';
+const AR=new Map([
+['No approved live marketplace listings are available right now. SEEKVERA does not generate fake listings.','لا توجد حالياً إعلانات سوق مباشرة معتمدة. لا تنشئ SEEKVERA إعلانات وهمية.'],
+['Loading approved listings…','جارٍ تحميل الإعلانات المعتمدة…'],['Live marketplace','السوق المباشر'],['Approved real listings only.','إعلانات حقيقية معتمدة فقط.'],['OPEN MARKETPLACE →','افتح السوق ←'],['Request anything','اطلب أي شيء'],['Tell SEEKVERA what you need anywhere in the world.','أخبر SEEKVERA بما تحتاج إليه في أي مكان في العالم.'],['Find, compare, choose — worldwide.','ابحث وقارن واختر — حول العالم.'],['Find, compare, choose — worldwide','ابحث وقارن واختر — حول العالم'],['Chat · Voice · Camera · Attach','دردشة · صوت · كاميرا · إرفاق'],['Online','متصل'],['About','حول'],['Privacy','الخصوصية'],['Terms','الشروط'],['Contact','تواصل'],['Disclosure','الإفصاح']
+]);
+let timer=0,busy=false,lastLang='';
+function lang(){return String(document.querySelector('#lang')?.value||document.documentElement.lang||localStorage.getItem('seekvera_lang')||'en').toLowerCase().split(/[-_]/)[0]||'en'}
+function skip(el){return !el||el.closest('script,style,noscript,code,pre,svg,#aiMessages,.ai-msg,.sv-ai-answer,[data-no-translate]')}
+function instantArabic(){if(lang()!=='ar')return;const w=document.createTreeWalker(document.body||document.documentElement,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode())){if(skip(n.parentElement))continue;const t=(n.nodeValue||'').trim();const v=AR.get(t);if(v)n.nodeValue=n.nodeValue.replace(t,v)}}
+function forceAll(){instantArabic();try{window.SEEKVERA_LOCALE_GUARD_R9?.schedule?.(0)}catch{}try{window.SEEKVERA_I18N?.apply?.()}catch{}try{window.SEEKVERA_R14_CATEGORIES?.apply?.()}catch{}try{window.SEEKVERA_NAVIGATION?.scheduleLocalePass?.()}catch{}try{window.SEEKVERA_R22_CATEGORY_LOCK?.schedule?.(10)}catch{}try{window.SEEKVERA_R20_FINAL?.schedule?.(15)}catch{}setTimeout(instantArabic,80);setTimeout(()=>{try{window.SEEKVERA_LOCALE_GUARD_R9?.schedule?.(0)}catch{}instantArabic()},350);setTimeout(()=>{try{window.SEEKVERA_LOCALE_GUARD_R9?.schedule?.(0)}catch{}instantArabic()},1200)}
+function schedule(ms=40){clearTimeout(timer);timer=setTimeout(forceAll,ms)}
+function bindLocale(){document.addEventListener('change',e=>{if(e.target?.id==='country'||e.target?.id==='lang'){schedule(0);setTimeout(forceAll,180);setTimeout(forceAll,800)}},true);new MutationObserver(ms=>{let dirty=false;for(const m of ms){if(m.type==='childList'||m.type==='characterData'){dirty=true;break}if(m.type==='attributes'&&m.target===document.documentElement){dirty=true;break}}if(dirty)schedule(90)}).observe(document.documentElement,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['lang','dir']});schedule(0)}
+function patchSpeech(){const s=window.speechSynthesis;if(!s||s.__seekveraR30)return;s.__seekveraR30=true;try{const nativeSpeak=s.speak.bind(s);s.speak=function(u){if(!u)return nativeSpeak(u);let beat=0,done=false;const start=u.onstart,end=u.onend,error=u.onerror;const clear=()=>{if(beat){clearInterval(beat);beat=0}};u.onstart=function(e){clear();beat=setInterval(()=>{if(done)return;try{if(s.speaking&&!s.paused){s.pause();setTimeout(()=>{try{s.resume()}catch{}},35)}else if(s.paused)s.resume()}catch{}},6500);try{start?.call(this,e)}catch{}};u.onend=function(e){done=true;clear();try{end?.call(this,e)}catch{}};u.onerror=function(e){clear();try{s.resume()}catch{}try{error?.call(this,e)}catch{}};if(!u.rate||u.rate<1.02)u.rate=1.03;return nativeSpeak(u)}}catch{}
+window.addEventListener('seekvera:ai-response',()=>{for(const ms of [250,2500,6500,10500,14500])setTimeout(()=>{try{if(window.speechSynthesis?.speaking||window.speechSynthesis?.paused)window.speechSynthesis.resume()}catch{}},ms)})}
+function boot(){patchSpeech();bindLocale();document.documentElement.dataset.r30=VERSION}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+window.SEEKVERA_R30={version:VERSION,refresh:forceAll};
+})();
