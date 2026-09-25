@@ -1,0 +1,126 @@
+name: R55 real chat voice release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r55-real-chat-voice-release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r55-real-chat-voice
+  cancel-in-progress: true
+
+jobs:
+  deploy-audit-persist:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build R55 real AI controller
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r54_ai_experience_fix.py
+          python tools/r54b_colloquial_jobs.py
+          python tools/r54c_cache_bust_ai.py
+          python tools/r55_real_chat_voice_fix.py
+          node --check superapp.js
+          node --check voice-ai.js
+          node --check worker-r31.js
+          node --check r31-ui-polish.js
+          node --check sw.js
+          grep -F "language:'auto'" r31-ui-polish.js >/dev/null
+          grep -F 'showRoute({category:guessed' r31-ui-polish.js >/dev/null
+          grep -F "new CustomEvent('seekvera:ai-response'" r31-ui-polish.js >/dev/null
+          grep -F 'r31-ui-polish.js?v=20260925-r55-chat-voice' worker-r31.js >/dev/null
+          grep -F "seekvera-r55-chat-voice-20260925" sw.js >/dev/null
+          echo 'R55 BUILD PASS'
+
+      - name: Deploy R55 production
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Confirm R55 live assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 30); do
+            r="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/r31-ui-polish.js?r55=$i" || true)"
+            w="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/worker-r31.js?r55=$i" || true)"
+            sw="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/sw.js?r55=$i" || true)"
+            if [[ "$r" == *"language:'auto'"* && "$r" == *'showRoute({category:guessed'* && "$r" == *"new CustomEvent('seekvera:ai-response'"* && "$w" == *'r31-ui-polish.js?v=20260925-r55-chat-voice'* && "$sw" == *'seekvera-r55-chat-voice-20260925'* ]]; then
+              echo 'R55 LIVE ASSETS PASS'
+              exit 0
+            fi
+            sleep 2
+          done
+          echo 'R55 live assets missing' >&2
+          exit 1
+
+      - name: Browser audit actual chat + Arabic jobs + voice event
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > r55-audit.mjs <<'JS'
+          import {chromium} from 'playwright';
+          import assert from 'node:assert/strict';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage();
+          const errors=[];p.on('pageerror',e=>errors.push(String(e)));
+          let reqBody=null;p.on('request',r=>{try{if(new URL(r.url()).pathname==='/api/ai')reqBody=r.postDataJSON()}catch{}});
+          await p.goto('https://seekveraglobal.com/?r55='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_R31&&window.SEEKVERA_VOICE_AI&&document.querySelector('#aiChatForm'),null,{timeout:30000});
+          const scripts=await p.evaluate(()=>[...document.scripts].map(s=>s.src).filter(Boolean));
+          assert.ok(scripts.some(x=>x.includes('r31-ui-polish.js?v=20260925-r55-chat-voice')),JSON.stringify(scripts));
+          await p.fill('#aiChatInput','عم دور على شغل');
+          const t=Date.now();
+          await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForFunction(()=>!!document.querySelector('#aiActions a[href*="jobs.html"]'),null,{timeout:1200});
+          const routeMs=Date.now()-t;
+          const immediate=await p.locator('#aiActions a').first().evaluate(a=>({text:a.textContent,href:a.getAttribute('href'),cat:a.dataset.svDirectRoute}));
+          assert.equal(immediate.cat,'jobs',JSON.stringify(immediate));
+          assert.ok(/وظائف|Jobs/i.test(immediate.text),JSON.stringify(immediate));
+          assert.ok(routeMs<1300,'route too slow '+routeMs);
+          await p.waitForFunction(()=>{const a=[...document.querySelectorAll('#aiMessages .ai-msg.bot')].at(-1);return a&&!a.classList.contains('thinking')&&a.textContent.trim().length>5},null,{timeout:9000});
+          const answer=await p.locator('#aiMessages .ai-msg.bot').last().innerText();
+          assert.ok(/[\u0600-\u06ff]/u.test(answer),'Arabic voice/text request answered non-Arabic: '+answer);
+          assert.equal(reqBody?.language,'auto',JSON.stringify(reqBody));
+          assert.ok(!/SEEKVERA AI is thinking|One moment|لحظة/u.test(answer),answer);
+          const api=await p.evaluate(async()=>{const t=performance.now();const r=await fetch('/api/ai',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message:'عم دور على شغل',country:'Worldwide',language:'auto',fast:true,history:[]})});const d=await r.json();return{status:r.status,ms:performance.now()-t,d}});
+          assert.equal(api.status,200,JSON.stringify(api));
+          assert.equal(api.d.category,'jobs',JSON.stringify(api));
+          assert.equal(api.d.route,'jobs.html',JSON.stringify(api));
+          const voice=await p.evaluate(()=>{let fired=0;const old=speechSynthesis.speak.bind(speechSynthesis);try{speechSynthesis.speak=()=>{fired++}}catch{}SEEKVERA_VOICE_AI.markVoiceReply();window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text:'اختبار الرد الصوتي',language:'ar'}}));return{pending:SEEKVERA_VOICE_AI.isVoiceReplyPending(),fired}});
+          console.log('R55 LIVE PASS',JSON.stringify({routeMs,apiMs:Math.round(api.ms),immediate,answer:answer.slice(0,180),reqBody,voice,errors:errors.slice(0,3)}));
+          await b.close();
+          JS
+          node r55-audit.mjs
+          rm -f r55-audit.mjs
+
+      - name: Persist audited R55 production source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add -- superapp.js voice-ai.js worker-r31.js r31-ui-polish.js sw.js
+          find . -maxdepth 1 -type f -name '*.html' -print0 | xargs -0 git add --
+          if git diff --cached --quiet; then
+            echo 'No R55 generated changes to persist'
+          else
+            git commit -m 'Persist R55 fast conversational AI voice and direct routing'
+            git push origin HEAD:main
+          fi
+          echo 'R55 AUDITED RELEASE PERSISTED'
