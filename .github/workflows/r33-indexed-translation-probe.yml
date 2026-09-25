@@ -15,32 +15,39 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Probe repeated q and indexed single-q formats
+      - name: Probe 967-item Unicode-digit indexed batches
         shell: python
         run: |
-          import json,re,urllib.parse,urllib.request
-          langs=['ne','dz','eu','yo','ar','zh']
-          src=['Live marketplace','No approved live marketplace listings are available right now.','Find, compare, choose — worldwide.','Request anything','Privacy','Contact']
+          import json,re,unicodedata,urllib.parse,urllib.request,time
+          langs=['ne','dz','eu']
+          src=[f'Approved marketplace listing number {i} is available worldwide for comparison and safe browsing.' for i in range(967)]
           URL='https://translate.googleapis.com/translate_a/single'
-          def call(data):
-              req=urllib.request.Request(URL,data=urllib.parse.urlencode(data,doseq=True).encode(),headers={'User-Agent':'Mozilla/5.0','Content-Type':'application/x-www-form-urlencoded'})
-              with urllib.request.urlopen(req,timeout=25) as r:return json.loads(r.read().decode())
+          def ascii_digits(s):
+              out=[]
+              for c in s:
+                  try:
+                      if unicodedata.category(c)=='Nd': out.append(str(unicodedata.digit(c)))
+                      else: out.append(c)
+                  except: out.append(c)
+              return ''.join(out)
+          def call(lang,text):
+              data=urllib.parse.urlencode({'client':'gtx','sl':'en','tl':lang,'dt':'t','q':text}).encode()
+              req=urllib.request.Request(URL,data=data,headers={'User-Agent':'Mozilla/5.0','Content-Type':'application/x-www-form-urlencoded'})
+              with urllib.request.urlopen(req,timeout=50) as r:return json.loads(r.read().decode())
           for lang in langs:
-              print('\nLANG',lang)
-              try:
-                  obj=call([('client','gtx'),('sl','en'),('tl',lang),('dt','t')]+[('q',x) for x in src])
-                  print('REPEATED_RAW',repr(obj)[:1200])
-              except Exception as e: print('REPEATED_ERROR',repr(e))
               ids=[f'98765432{i:04d}12345678' for i in range(len(src))]
               text='\n'.join(f'{ids[i]} {s}' for i,s in enumerate(src))
-              try:
-                  obj=call({'client':'gtx','sl':'en','tl':lang,'dt':'t','q':text})
-                  out=''.join(x[0] for x in obj[0] if x and x[0])
-                  print('INDEXED_OUT',repr(out))
-                  hits=[]
-                  for i,idv in enumerate(ids):
-                      m=re.search(re.escape(idv)+r'\s*(.*?)(?=\n?98765432\d{4}12345678|$)',out,re.S)
-                      hits.append(m.group(1).strip() if m else None)
-                  print('INDEXED_HITS',json.dumps(hits,ensure_ascii=False))
-                  assert all(hits), (lang,hits,out)
-              except Exception as e: print('INDEXED_ERROR',repr(e));raise
+              print('LANG',lang,'chars',len(text),flush=True)
+              obj=call(lang,text)
+              raw=''.join(x[0] for x in obj[0] if x and x[0])
+              norm=ascii_digits(raw)
+              hits=[]
+              for i,idv in enumerate(ids):
+                  m=re.search(re.escape(idv)+r'\s*(.*?)(?=\n?98765432\d{4}12345678|$)',norm,re.S)
+                  hits.append(m.group(1).strip() if m else None)
+              missing=[i for i,x in enumerate(hits) if not x]
+              print('RESULT',lang,'hits',len(hits)-len(missing),'missing',missing[:20],flush=True)
+              assert not missing,(lang,missing[:50])
+              assert all(h!=src[i] for i,h in enumerate(hits[:20])),lang
+              time.sleep(1)
+          print('R33 INDEXED 967 PASS',flush=True)
