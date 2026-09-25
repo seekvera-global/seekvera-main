@@ -72,3 +72,21 @@ jobs:
           curl -fsS --max-time 20 -H 'Cache-Control: no-cache' "$SITE/?r30=1" -o /tmp/home
           grep -q 'r30-runtime.js?v=20260925-r30' /tmp/home
           echo 'R30 PRODUCTION DEPLOY PASS'
+      - name: Verify live fast multilingual AI
+        shell: python
+        run: |
+          import json,time,urllib.request
+          site='https://seekveraglobal.com'
+          def ask(message,language,country):
+              payload={'message':message,'language':language,'country':country,'scope':'country','fast':True,'history':[]}
+              req=urllib.request.Request(site+'/api/ai',data=json.dumps(payload,ensure_ascii=False).encode(),headers={'content-type':'application/json','Origin':site,'User-Agent':'SEEKVERA-R30-LIVE'},method='POST')
+              t=time.time()
+              with urllib.request.urlopen(req,timeout=30) as r:d=json.loads(r.read().decode('utf-8','replace'))
+              return time.time()-t,d
+          tests=[('Arabic','Lebanon','مرحبا، ساعدني أجد فندقاً'),('French','France','Bonjour, aide-moi à trouver un hôtel'),('Hindi','India','नमस्ते, होटल खोजने में मेरी मदद करें')]
+          for language,country,message in tests:
+              elapsed,d=ask(message,language,country)
+              assert d.get('ok') is True and d.get('response'),(language,d)
+              assert d.get('fastPath')=='r30-one-call',(language,d)
+              assert elapsed < 20,(language,elapsed,d)
+              print(language,'FAST PASS',round(elapsed,2),'s',d.get('model'))
