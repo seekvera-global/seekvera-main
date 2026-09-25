@@ -1,0 +1,98 @@
+name: R53 persist audited R52 release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r53-persist-audited-r52.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r53-persist-audited-r52
+  cancel-in-progress: true
+
+jobs:
+  persist:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Recover exact audited live packs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import concurrent.futures,json,pathlib,time,urllib.request
+          B='https://seekveraglobal.com'
+          def get(path):
+              last=None
+              for n in range(4):
+                  try:
+                      req=urllib.request.Request(B+path+'?r53='+str(time.time_ns()),headers={'User-Agent':'SEEKVERA-R53/1.0','Cache-Control':'no-cache'})
+                      with urllib.request.urlopen(req,timeout=25) as r:return r.read()
+                  except Exception as e:last=e;time.sleep(.35+n*.5)
+              raise last
+          m=json.loads(get('/i18n-r32/manifest.json'));src=json.loads(get('/i18n-r32-source.json'))
+          assert m['packs']==98 and len(m['languages'])==98 and src['count']==967 and m['sourceHash']==src['sourceHash']
+          out=pathlib.Path('i18n-r32');out.mkdir(exist_ok=True)
+          (out/'manifest.json').write_text(json.dumps(m,ensure_ascii=False,separators=(',',':')),encoding='utf-8')
+          pathlib.Path('i18n-r32-source.json').write_text(json.dumps(src,ensure_ascii=False,separators=(',',':')),encoding='utf-8')
+          def one(l):
+              raw=get('/i18n-r32/'+l+'.json');d=json.loads(raw)
+              assert d['sourceHash']==m['sourceHash'] and d['count']==967 and len(d['translations'])==967,l
+              (out/(l+'.json')).write_bytes(raw);return l
+          with concurrent.futures.ThreadPoolExecutor(max_workers=16) as ex:got=list(ex.map(one,m['languages']))
+          assert len(got)==98
+          print('R53 LIVE PACKS RECOVERED',len(got))
+          PY
+          python tools/r49_repair_pack_integrity.py
+
+      - name: Reproduce the exact audited R52 runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r51_deep_locale_fix.py
+          python tools/r32_pack_runtime_patch.py
+          python tools/r32_global_final.py
+          python tools/r44_disable_legacy_r14.py
+          python tools/r32_ai_failover_patch.py
+          python tools/r52_ai_quota_fallback.py
+          python tools/r32_translation_backend_fix.py
+          python tools/r35_finalize.py
+          node --check deal-agent.js
+          node --check r32-i18n.js
+          node --check i18n-ui.js
+          node --check locale-r14.js
+          node --check locale-r15.js
+          node --check superapp.js
+          node --check worker-r31.js
+          node --check worker.js
+          grep -F 'seekvera-r52-ai-quota-fallback' worker-r31.js >/dev/null
+          grep -F 'sv-category-option-locale' marketplace.html >/dev/null
+          grep -F 'r44-disabled-under-r32' locale-r14.js >/dev/null
+          echo 'R53 R52 RUNTIME REPRODUCED'
+
+      - name: Persist only production source files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add -- i18n-r32 i18n-r32-source.json r32-i18n.js i18n-ui.js locale-r14.js locale-r15.js superapp.js worker-r31.js worker.js sw.js deal-agent.js marketplace.html post-ad.html
+          find . -maxdepth 1 -type f -name '*.html' -print0 | xargs -0 git add --
+          # Do not persist build dependencies or diagnostics accidentally.
+          git reset -- node_modules 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo 'No production changes to persist'
+          else
+            git commit -m 'Persist R52 fully audited global UI and resilient AI release'
+          fi
+          test -z "$(git status --porcelain --untracked-files=no)" || { echo 'Tracked unstaged changes remain:'; git status --short; exit 1; }
+          git push origin HEAD:main
+          echo 'R53 R52 AUDITED RELEASE PERSISTED TO MAIN'
