@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/r30-final-live.yml'
       - 'r30-runtime.js'
+      - 'tools/r30_final_fix.py'
   workflow_dispatch:
 
 permissions:
@@ -36,12 +37,13 @@ jobs:
           node --check worker.js
           node --check worker-r30.js
           node --check sw.js
-          grep -q 'r30-final-no-mixed-language' i18n-ui.js
+          grep -q 'r30-final2-no-mixed-language' i18n-ui.js
+          grep -q 'R30_IMMEDIATE_NON_ENGLISH_PASS' i18n-ui.js
           grep -q 'VOICE_SILENCE_MS=2100' voice-ai.js
           grep -q 'setTimeout(()=>play(index+1,0),90)' voice-ai.js
-          grep -q 'seekvera-r30-final-20260925' sw.js
-          grep -q 'i18n-ui.js?v=20260925-r30-final' index.html
-          echo 'R30 FINAL SOURCE PASS'
+          grep -q 'seekvera-r30-final2-20260925' sw.js
+          grep -q 'i18n-ui.js?v=20260925-r30-final2' index.html
+          echo 'R30 FINAL2 SOURCE PASS'
 
       - name: Deploy final R30 to Cloudflare
         uses: cloudflare/wrangler-action@v4
@@ -55,7 +57,7 @@ jobs:
         run: |
           set -euo pipefail
           for i in $(seq 1 50); do
-            body="$(curl -LfsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/api/health?r30final=$i" || true)"
+            body="$(curl -LfsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/api/health?r30final2=$i" || true)"
             if echo "$body" | grep -q '"r30":true'; then echo "$body"; exit 0; fi
             sleep 3
           done
@@ -68,13 +70,13 @@ jobs:
           S='https://seekveraglobal.com'
           cases=[('مرحبا، ساعدني أجد فندقاً.','ar'),('Bonjour, aide-moi à trouver un hôtel.','fr'),('I need a hotel in Paris tonight.','en')]
           for q,code in cases:
-              req=urllib.request.Request(S+'/api/ai',data=json.dumps({'message':q,'country':'Worldwide','language':'auto','scope':'worldwide','fast':True},ensure_ascii=False).encode(),headers={'content-type':'application/json','Origin':S,'User-Agent':'SEEKVERA-R30-FINAL'},method='POST')
+              req=urllib.request.Request(S+'/api/ai',data=json.dumps({'message':q,'country':'Worldwide','language':'auto','scope':'worldwide','fast':True},ensure_ascii=False).encode(),headers={'content-type':'application/json','Origin':S,'User-Agent':'SEEKVERA-R30-FINAL2'},method='POST')
               t=time.time()
               with urllib.request.urlopen(req,timeout=45) as r:d=json.loads(r.read().decode())
               sec=time.time()-t
               assert d.get('ok') and d.get('response'),d
               print(code,round(sec,2),d.get('model'))
-          print('R30 FINAL AI PASS')
+          print('R30 FINAL2 AI PASS')
 
       - name: Browser country language and voice audit
         shell: bash
@@ -87,30 +89,36 @@ jobs:
           const b=await chromium.launch({headless:true});
           const p=await b.newPage({viewport:{width:390,height:844},locale:'en-US'});
           const errs=[];p.on('pageerror',e=>errs.push(String(e)));
-          await p.goto('https://seekveraglobal.com/?r30final=2',{waitUntil:'domcontentloaded',timeout:60000});
+          await p.goto('https://seekveraglobal.com/?r30final2=1',{waitUntil:'domcontentloaded',timeout:60000});
           await p.waitForFunction(()=>window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_R24_CONTROLLER&&window.SEEKVERA_R30,{timeout:30000});
-          await p.waitForTimeout(1500);
+          await p.waitForTimeout(1200);
           const matrix=await p.evaluate(()=>({countries:Object.keys(SEEKVERA_LOCALE_R15.profiles).length,languages:SEEKVERA_R24_CONTROLLER.languages.length,bad:Object.entries(SEEKVERA_LOCALE_R15.profiles).filter(([cc,x])=>!SEEKVERA_R24_CONTROLLER.languages.includes(x.language)),voice:!!window.__seekveraVoiceAI,r9:!!window.SEEKVERA_LOCALE_GUARD_R9}));
-          if(matrix.countries!==248||matrix.languages!==98||matrix.bad.length||!matrix.voice)throw Error('matrix '+JSON.stringify(matrix));
+          if(matrix.countries!==248||matrix.languages!==98||matrix.bad.length||!matrix.voice||!matrix.r9)throw Error('matrix '+JSON.stringify(matrix));
           for(const cc of ['LB','SA','FR','DE','TR','IN','CN','JP','KR','BR','NG','US']){
             await p.evaluate(cc=>SEEKVERA_LOCALE_R15.setCountry(cc),cc);
-            await p.waitForTimeout(650);
+            await p.waitForTimeout(350);
             const x=await p.evaluate(()=>({cc:document.querySelector('#country')?.value,lang:document.documentElement.lang,overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth}));
             if(x.cc!==cc||!x.lang||x.overflow>8)throw Error(cc+' '+JSON.stringify(x));
           }
           await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('LB'));
           await p.waitForFunction(()=>document.documentElement.lang==='ar',{timeout:5000});
-          await p.waitForTimeout(1800);
-          const ar=await p.evaluate(()=>({text:document.body.innerText,dir:document.documentElement.dir,mic:!!document.querySelector('#aiChatMic'),speaker:!!document.querySelector('#aiChatSpeaker'),r9:!!window.SEEKVERA_LOCALE_GUARD_R9}));
-          if(ar.dir!=='rtl'||!ar.mic||!ar.speaker)throw Error('Arabic/voice '+JSON.stringify(ar));
-          for(const leak of ['No approved live marketplace listings','SEEKVERA does not generate fake listings','Find, compare, choose — worldwide'])if(ar.text.includes(leak))throw Error('Arabic English leak '+leak);
+          await p.waitForTimeout(450);
+          let ar=await p.evaluate(()=>({text:document.body.innerText,dir:document.documentElement.dir,mic:!!document.querySelector('#aiChatMic'),speaker:!!document.querySelector('#aiChatSpeaker'),r9:!!window.SEEKVERA_LOCALE_GUARD_R9}));
+          if(ar.dir!=='rtl'||!ar.mic||!ar.speaker||!ar.r9)throw Error('Arabic/voice '+JSON.stringify(ar));
+          for(const leak of ['No approved live marketplace listings','SEEKVERA does not generate fake listings','Find, compare, choose — worldwide'])if(ar.text.includes(leak))throw Error('Arabic immediate English leak '+leak);
+          await p.waitForTimeout(2200);
+          ar=await p.evaluate(()=>({text:document.body.innerText,dir:document.documentElement.dir}));
+          for(const leak of ['No approved live marketplace listings','SEEKVERA does not generate fake listings','Find, compare, choose — worldwide'])if(ar.text.includes(leak))throw Error('Arabic settled English leak '+leak);
           await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('FR'));
           await p.waitForFunction(()=>document.documentElement.lang==='fr',{timeout:5000});
+          await p.waitForTimeout(450);
+          let fr=await p.evaluate(()=>document.body.innerText);
+          if(fr.includes('No approved live marketplace listings are available right now'))throw Error('French immediate English leak');
           await p.waitForTimeout(2200);
-          const fr=await p.evaluate(()=>document.body.innerText);
-          if(fr.includes('No approved live marketplace listings are available right now'))throw Error('French English leak');
+          fr=await p.evaluate(()=>document.body.innerText);
+          if(fr.includes('No approved live marketplace listings are available right now'))throw Error('French settled English leak');
           if(errs.length)console.log('PAGE_ERRORS',JSON.stringify(errs));
-          console.log('R30 FINAL BROWSER PASS',JSON.stringify(matrix));
+          console.log('R30 FINAL2 BROWSER PASS',JSON.stringify(matrix));
           await b.close();
           JS
           node r30-final.mjs
