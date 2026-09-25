@@ -1,0 +1,136 @@
+name: R31 production audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'r31-ui-polish.js'
+      - 'worker-r31.js'
+      - 'wrangler.jsonc'
+      - '.github/workflows/r31-final-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seekvera-r31-production
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate R31 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check r31-ui-polish.js
+          node --check worker-r31.js
+          grep -q 'worker-r31.js' wrangler.jsonc
+          grep -q "type:'currency'" r31-ui-polish.js
+          grep -q "SpeechRecognition" r31-ui-polish.js
+          grep -q "r31-strong-one-call" worker-r31.js
+          echo 'R31 SOURCE PASS'
+
+      - name: Deploy R31 to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Wait for R31 production
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 50); do
+            body="$(curl -LfsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/api/health?r31=$i" || true)"
+            if echo "$body" | grep -q '"r31":true'; then echo "$body"; exit 0; fi
+            sleep 3
+          done
+          exit 1
+
+      - name: Live AI strength and speed
+        shell: python
+        run: |
+          import json,time,urllib.request
+          S='https://seekveraglobal.com'
+          cases=[
+            ('هاي','ar',4.5),
+            ('I need a three-bedroom apartment in Paris. Help me narrow the search and tell me what details you need.','en',9.0),
+            ('أريد فندقاً في بيروت لعائلتي. ساعدني أختار القسم والخطوة التالية.','ar',9.0),
+          ]
+          for q,lang,limit in cases:
+              req=urllib.request.Request(S+'/api/ai',data=json.dumps({'message':q,'country':'Worldwide','language':lang,'scope':'worldwide','fast':True},ensure_ascii=False).encode(),headers={'content-type':'application/json','Origin':S,'User-Agent':'SEEKVERA-R31'},method='POST')
+              t=time.time()
+              with urllib.request.urlopen(req,timeout=20) as r:d=json.loads(r.read().decode())
+              sec=time.time()-t
+              assert d.get('ok') and d.get('response'),d
+              assert sec<limit,(q,sec,d.get('model'))
+              print(lang,round(sec,2),d.get('model'),d.get('fastPath'))
+          print('R31 AI PASS')
+
+      - name: Browser all-country locale currency icon and chat audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat >r31-audit.mjs <<'JS'
+          import {chromium} from 'playwright';
+          import assert from 'node:assert/strict';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage({viewport:{width:390,height:844},locale:'en-US'});
+          const errors=[];p.on('pageerror',e=>errors.push(String(e)));
+          await p.goto('https://seekveraglobal.com/?r31audit=1',{waitUntil:'domcontentloaded',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_R31&&window.SEEKVERA_LOCALE_R15&&document.querySelector('#country')&&document.querySelector('#currency'),{timeout:30000});
+          await p.waitForTimeout(1000);
+          const matrix=await p.evaluate(()=>{
+            const profiles=SEEKVERA_LOCALE_R15.profiles;
+            const entries=Object.entries(profiles);
+            const badCurrency=entries.filter(([cc,x])=>!x.language||!x.currency||SEEKVERA_R31.currencyLabel(x.currency,x.language)===x.currency);
+            return {countries:entries.length,badCurrency:badCurrency.map(x=>x[0]),r31:SEEKVERA_R31.version,thumbLeak:[...document.querySelectorAll('.r5-thumb')].filter(x=>/seekvera\.com/i.test(x.textContent||'')).length};
+          });
+          assert.equal(matrix.countries,248,'country profile count');
+          assert.equal(matrix.badCurrency.length,0,'unlocalized currency names '+matrix.badCurrency.join(','));
+          assert.equal(matrix.thumbLeak,0,'category thumbnail text leak');
+
+          // Exercise every country synchronously: country, default language and currency must move together.
+          const all=await p.evaluate(async()=>{
+            const bad=[];for(const [cc,x] of Object.entries(SEEKVERA_LOCALE_R15.profiles)){
+              SEEKVERA_LOCALE_R15.setCountry(cc);await new Promise(r=>setTimeout(r,3));
+              const got={cc:document.querySelector('#country')?.value,lang:document.querySelector('#lang')?.value,cur:document.querySelector('#currency')?.value};
+              if(got.cc!==cc||got.lang!==x.language||got.cur!==x.currency)bad.push({cc,x,got});
+            }return bad;
+          });
+          assert.equal(all.length,0,'all-country sync failures '+JSON.stringify(all.slice(0,5)));
+
+          const samples=['LB','SY','SA','AE','GB','FR','DE','TR','IN','CN','JP','KR','BR','NG','US'];
+          for(const cc of samples){
+            await p.evaluate(cc=>SEEKVERA_LOCALE_R15.setCountry(cc),cc);
+            await p.waitForTimeout(800);
+            const x=await p.evaluate(()=>{
+              const pr=SEEKVERA_LOCALE_R15.profiles[document.querySelector('#country').value];
+              const cur=document.querySelector('#currency');
+              return {cc:document.querySelector('#country').value,lang:document.documentElement.lang,cur:cur.value,curText:cur.options[cur.selectedIndex]?.textContent||'',profile:pr,dir:document.documentElement.dir,thumbLeak:[...document.querySelectorAll('.r5-thumb')].some(n=>/seekvera\.com/i.test(n.textContent||''))};
+            });
+            assert.equal(x.cc,cc,cc+' country');assert.equal(x.lang,x.profile.language,cc+' language');assert.equal(x.cur,x.profile.currency,cc+' currency');assert.notEqual(x.curText.trim(),x.cur,cc+' raw currency code still visible');assert.equal(x.thumbLeak,false,cc+' category icon leak');
+            if(['LB','SY','SA','AE'].includes(cc))assert.equal(x.dir,'rtl',cc+' RTL');
+          }
+          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('LB'));await p.waitForTimeout(700);
+          const ar=await p.evaluate(()=>({lb:SEEKVERA_R31.currencyLabel('LBP','ar'),sy:SEEKVERA_R31.currencyLabel('SYP','ar'),gb:SEEKVERA_R31.currencyLabel('GBP','ar'),text:document.body.innerText}));
+          assert.notEqual(ar.lb,'LBP');assert.notEqual(ar.sy,'SYP');assert.notEqual(ar.gb,'GBP');assert(!/seekvera\.com/i.test(ar.text),'seekvera.com leaked into visible category cards');
+
+          // Real chat UI test with the exact short Arabic greeting reported by the user.
+          await p.fill('#aiChatInput','هاي');const before=await p.locator('#aiMessages .ai-msg').count();const t=Date.now();await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForFunction(n=>document.querySelectorAll('#aiMessages .ai-msg').length>=n+2&&![...document.querySelectorAll('#aiMessages .ai-msg')].some(x=>x.classList.contains('thinking')),before,{timeout:9000});
+          const ms=Date.now()-t;assert(ms<7000,'UI chat too slow '+ms);const last=await p.locator('#aiMessages .ai-msg.bot').last().innerText();assert(last.trim().length>1,'empty AI reply');
+          assert.equal(errors.length,0,'page errors '+errors.join(' | '));
+          console.log('R31 BROWSER PASS',JSON.stringify({matrix,chatMs:ms,currencies:{LBP:ar.lb,SYP:ar.sy,GBP:ar.gb},voiceFastPathSource:true}));
+          await b.close();
+          JS
+          node r31-audit.mjs
