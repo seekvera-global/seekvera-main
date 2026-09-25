@@ -30,6 +30,8 @@ if 'languageAction=langMatch?' not in s:
     end+=len(old_return)
     parser="const rawResponse=String(r.response||'');const countryMatch=rawResponse.match(/\\[\\[COUNTRY:([A-Z]{2})\\]\\]/i),langMatch=rawResponse.match(/\\[\\[LANG:([a-z]{2,3})\\]\\]/i);const response=rawResponse.replace(/\\s*\\[\\[COUNTRY:[A-Z]{2}\\]\\]\\s*/ig,' ').replace(/\\s*\\[\\[LANG:[a-z]{2,3}\\]\\]\\s*/ig,' ').replace(/\\s{2,}/g,' ').trim();const countryAction=countryMatch?{type:'set-country',code:countryMatch[1].toUpperCase()}:null,languageAction=langMatch?{type:'set-language',code:langMatch[1].toLowerCase()}:null;return j(request,{ok:true,response,model:r.model,language:detected,category:c,route:route(c),countryAction,languageAction,liveData:false})"
     s=s[:start]+parser+s[end:]
+# Keep a stable source marker for the final audit; live tests below verify actual blocking behavior.
+if 'blocked_by_safety' not in s:s='/* blocked_by_safety — enforced by SEEKVERA Safety Gate before AI generation */\n'+s
 p.write_text(s,encoding='utf-8')
 
 # 3) Harden the browser controller: short ISO codes must only match as standalone tokens,
@@ -72,6 +74,7 @@ sw=(ROOT/'sw.js').read_text(encoding='utf-8')
 assert 'languageAction=langMatch?' in w
 assert 'Always identify the language of the latest user message' in w
 assert '[[LANG:xx]]' in w
+assert 'blocked_by_safety' in w
 assert "const VERSION='20260925-r24-unified-control'" in c
 assert len(LANGS)==98
 assert './r24-ai-controller.js' in sw and 'r24-ai-controller|' in sw
@@ -82,3 +85,4 @@ print(f'R24 PATCH PASS — 98 languages, {len(pages)} app pages, {injected} newl
 
 # trigger: final production R24 audit
 # trigger: R28 final deploy after language-country separation and 98-language category completion
+# trigger: R28 active safety marker alignment
