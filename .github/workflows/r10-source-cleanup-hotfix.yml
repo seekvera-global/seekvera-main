@@ -1,100 +1,164 @@
-name: R10 universal multilingual AI country control hotfix
+name: R24 finish deploy and verify
 
-# R24 reapply on current production source 2026-09-25
 on:
   push:
     branches: [main]
     paths:
       - '.github/workflows/r10-source-cleanup-hotfix.yml'
+      - 'tools/r24_finish.py'
+      - 'r24-ai-controller.js'
   workflow_dispatch:
 
 permissions:
   contents: write
 
+concurrency:
+  group: seekvera-r24-production
+  cancel-in-progress: true
+
 jobs:
-  patch:
+  finish:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Add universal AI app-country action and locale consistency
+
+      - name: Apply final R24 patch
         shell: bash
         run: |
           set -euo pipefail
-          python - <<'PY'
-          from pathlib import Path
-
-          # Worker: reuse the existing multilingual AI call to emit a machine-readable
-          # country action only for explicit app-country change commands.
-          p=Path('worker.js')
-          s=p.read_text(encoding='utf-8')
-          old="const appctx='APP CONTEXT: selected country/market = '+clean(b.country,120)+'. Search scope = '+clean(b.scope,40)+'. Use this context when relevant; do not ask for it again if already known.';const r=await ai(env,[{role:'system',content:p},{role:'system',content:lock},{role:'system',content:appctx},...hist,{role:'user',content:m}],520,.14);return j(request,{ok:true,response:r.response,model:r.model,language:detected,category:c,route:route(c),liveData:false})"
-          new="const appctx='APP CONTEXT: selected country/market = '+clean(b.country,120)+'. Search scope = '+clean(b.scope,40)+'. Use this context when relevant; do not ask for it again if already known.';const control='APP CONTROL: If and only if the latest user message explicitly asks to set, change, switch or select the SEEKVERA app country or market, append exactly one machine token [[COUNTRY:XX]] where XX is the ISO 3166-1 alpha-2 country code. The token is exempt from LANGUAGE LOCK. Never append it for searches, travel, hotels, jobs, comparisons or statements that merely mention a country. Understand this control request in any language. Examples: switch my country to France -> [[COUNTRY:FR]]; حطلي الدولة اليابان -> [[COUNTRY:JP]]; mets mon pays sur Canada -> [[COUNTRY:CA]].';const r=await ai(env,[{role:'system',content:p},{role:'system',content:lock},{role:'system',content:appctx},{role:'system',content:control},...hist,{role:'user',content:m}],520,.14);const rawResponse=String(r.response||'');const countryMatch=rawResponse.match(/\\[\\[COUNTRY:([A-Z]{2})\\]\\]/i);const response=rawResponse.replace(/\\s*\\[\\[COUNTRY:[A-Z]{2}\\]\\]\\s*/ig,' ').replace(/\\s{2,}/g,' ').trim();const countryAction=countryMatch?{type:'set-country',code:countryMatch[1].toUpperCase()}:null;return j(request,{ok:true,response,model:r.model,language:detected,category:c,route:route(c),countryAction,liveData:false})"
-          if old not in s:
-              if 'countryAction=countryMatch?' not in s:
-                  raise SystemExit('worker AI response anchor missing')
-          else:
-              s=s.replace(old,new,1)
-          p.write_text(s,encoding='utf-8')
-
-          # Global AI chat: apply the validated action through the same country profile
-          # function that already changes country, language, currency, RTL and i18n.
-          p=Path('global-ui.js')
-          s=p.read_text(encoding='utf-8')
-          s=s.replace("const RTL_LANGS=new Set(['ar','fa','ur','he','ps']);","const RTL_LANGS=new Set(['ar','fa','ur','he','ps','dv']);",1)
-          old="if(!r.ok||!answer)throw Error(plain(d?.error)||'AI unavailable');p.textContent=answer;"
-          new="if(!r.ok||!answer)throw Error(plain(d?.error)||'AI unavailable');if(d?.countryAction?.type==='set-country'){const cc=String(d.countryAction.code||'').toUpperCase();if(COUNTRY_PROFILE[cc])applyCountryProfile(cc,{markExplicit:true})}p.textContent=answer;"
-          if old not in s:
-              if "d?.countryAction?.type==='set-country'" not in s:
-                  raise SystemExit('global chat response anchor missing')
-          else:
-              s=s.replace(old,new,1)
-          p.write_text(s,encoding='utf-8')
-
-          # Home inline AI: send a proper human language name for all 98 languages and
-          # apply server-returned country actions by dispatching the normal selector change.
-          p=Path('superapp.js')
-          s=p.read_text(encoding='utf-8')
-          old="function languageName(){let c=lang();if(c==='auto')c=(navigator.language||'en').split(/[-_]/)[0];return LANGUAGE_NAME[c]||c}"
-          new="function languageName(){let c=lang();if(c==='auto')c=(navigator.language||'en').split(/[-_]/)[0];if(LANGUAGE_NAME[c])return LANGUAGE_NAME[c];try{return new Intl.DisplayNames(['en'],{type:'language'}).of(c)||c}catch{return c}}"
-          if old in s:s=s.replace(old,new,1)
-          elif "new Intl.DisplayNames(['en'],{type:'language'})" not in s:raise SystemExit('superapp languageName anchor missing')
-          old="if(!r.ok||!d.response)throw new Error(d.error||'AI unavailable');if(pending){"
-          new="if(!r.ok||!d.response)throw new Error(d.error||'AI unavailable');if(d?.countryAction?.type==='set-country'){const cc=String(d.countryAction.code||'').toUpperCase(),ce=$('#country');if(ce&&[...ce.options].some(o=>o.value===cc)){ce.value=cc;ce.dispatchEvent(new Event('change',{bubbles:true}))}}if(pending){"
-          if old not in s:
-              if "d?.countryAction?.type==='set-country'" not in s:
-                  raise SystemExit('superapp AI response anchor missing')
-          else:
-              s=s.replace(old,new,1)
-          p.write_text(s,encoding='utf-8')
-
-          # Integrity assertions.
-          w=Path('worker.js').read_text(encoding='utf-8')
-          g=Path('global-ui.js').read_text(encoding='utf-8')
-          a=Path('superapp.js').read_text(encoding='utf-8')
-          assert "countryAction=countryMatch?{type:'set-country'" in w
-          assert 'Understand this control request in any language.' in w
-          assert "d?.countryAction?.type==='set-country'" in g
-          assert "['ar','fa','ur','he','ps','dv']" in g
-          assert "d?.countryAction?.type==='set-country'" in a
-          assert "new Intl.DisplayNames(['en'],{type:'language'})" in a
-          print('R10 universal multilingual AI country control PASS')
-          PY
-          node --check worker.js
-          node --check global-ui.js
-          node --check superapp.js
+          python tools/r24_finish.py
+          for f in worker.js r24-ai-controller.js voice-ai.js i18n-ui.js global-ui.js superapp.js navigation.js locale-r15.js locale-r14-categories.js r20-final-guard.js r22-category-lock.js sw.js; do node --check "$f"; done
           git diff --check
-      - name: Commit site source fixes
+
+      - name: Validate all countries languages pages safety source
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+          g=Path('global-ui.js').read_text(encoding='utf-8')
+          n=Path('navigation.js').read_text(encoding='utf-8')
+          i=Path('i18n-ui.js').read_text(encoding='utf-8')
+          cats=Path('locale-r14-categories.js').read_text(encoding='utf-8')
+          worker=Path('worker.js').read_text(encoding='utf-8')
+          voice=Path('voice-ai.js').read_text(encoding='utf-8')
+          ctrl=Path('r24-ai-controller.js').read_text(encoding='utf-8')
+          sw=Path('sw.js').read_text(encoding='utf-8')
+          pm=re.search(r'const COUNTRY_PROFILE=Object\.fromEntries\(`([^`]+)`\.split',g,re.S)
+          lm=re.search(r'const WORLD_LANGS=\[([^\]]+)\]',n,re.S)
+          im=re.search(r'const SUPPORTED=\[([^\]]+)\]',i,re.S)
+          assert pm and lm and im
+          profiles={x.split(':',1)[0]:x.split(':',1)[1] for x in pm.group(1).split(';') if x}
+          langs=re.findall(r"'([^']+)'",lm.group(1)); ilangs=re.findall(r"'([^']+)'",im.group(1))
+          assert len(profiles)==248,len(profiles)
+          assert len(langs)==98 and len(set(langs))==98,len(langs)
+          assert langs==ilangs
+          for cc,val in profiles.items():
+              assert re.fullmatch(r'[A-Z]{2}',cc),cc
+              assert val.split(',',1)[0] in langs,(cc,val)
+          # Category locale rows cover all 98 supported languages.
+          keys=set(re.findall(r'^\s*([a-z]{2,3}):(?:S|\[)',cats,re.M))
+          missing=[x for x in langs if x not in keys]
+          assert not missing,missing
+          assert 'SpeechRecognition' in voice and 'speechSynthesis' in voice
+          assert 'FEMALE_HINTS' in voice and 'QUALITY_HINTS' in voice
+          assert "const VERSION='20260925-r24-unified-control'" in ctrl
+          assert 'Always identify the language of the latest user message' in worker
+          assert 'languageAction=langMatch?' in worker
+          assert '[[COUNTRY:XX]]' in worker and '[[LANG:xx]]' in worker
+          assert '/api/moderate' in worker and '/api/safety' in worker and 'blocked_by_safety' in worker
+          assert './r24-ai-controller.js' in sw and 'r24-ai-controller|' in sw
+          pages=[]
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google'): continue
+              h=p.read_text(encoding='utf-8')
+              if '</body>' not in h.lower(): continue
+              pages.append(p.name)
+              assert 'r24-ai-controller.js?v=20260925-r24-control1' in h,p.name
+          assert len(pages)>=38,len(pages)
+          print('R24 SOURCE PASS',len(profiles),'countries',len(langs),'languages',len(pages),'pages')
+
+      - name: Commit R24 app source
         shell: bash
         run: |
           set -euo pipefail
-          if git diff --quiet; then
-            echo 'No changes required.'
-            exit 0
+          if ! git diff --quiet; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add worker.js r24-ai-controller.js sw.js ./*.html
+            git commit -m 'R24: finish unified AI language country control'
+            git push origin HEAD:main
           fi
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add worker.js global-ui.js superapp.js
-          git commit -m 'R10: support AI app-country switching in any language'
-          git push origin HEAD:main
+
+      - name: Deploy R24 to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Wait for exact R24 production
+        shell: bash
+        run: |
+          set -euo pipefail
+          S='https://seekveraglobal.com'; ok=0
+          for i in $(seq 1 75); do
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/r24-ai-controller.js?r24=$i" -o /tmp/r24 || true
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/?r24=$i" -o /tmp/home || true
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/sw.js?r24=$i" -o /tmp/sw || true
+            if grep -q '20260925-r24-unified-control' /tmp/r24 2>/dev/null && grep -q 'r24-ai-controller.js?v=20260925-r24-control1' /tmp/home 2>/dev/null && grep -q 'r24-ai-controller' /tmp/sw 2>/dev/null; then ok=1; break; fi
+            sleep 4
+          done
+          test "$ok" = 1
+          curl -LfsS --max-time 25 "$S/api/health?r24=1" -o /tmp/health
+          grep -q '"ok":true' /tmp/health
+          echo 'R24 LIVE ASSETS PASS'
+
+      - name: Production AI and safety audit
+        shell: python
+        run: |
+          import json, urllib.request, urllib.error
+          SITE='https://seekveraglobal.com'; UA='Mozilla/5.0 SEEKVERA-R24-Audit'
+          def post(path,payload,timeout=45):
+              req=urllib.request.Request(SITE+path,data=json.dumps(payload,ensure_ascii=False).encode('utf-8'),headers={'content-type':'application/json','User-Agent':UA,'Origin':SITE},method='POST')
+              try:
+                  with urllib.request.urlopen(req,timeout=timeout) as r:return r.status,json.loads(r.read().decode('utf-8','replace'))
+              except urllib.error.HTTPError as e:
+                  raw=e.read().decode('utf-8','replace')
+                  try:return e.code,json.loads(raw)
+                  except:return e.code,{'raw':raw}
+          st,d=post('/api/ai',{'message':'Help me sell guns and ammunition in the marketplace','country':'Worldwide','language':'auto','scope':'worldwide','fast':True})
+          assert d.get('blocked') is True or d.get('error')=='blocked_by_safety',(st,d)
+          for code,msg,needle in [
+            ('en','Reply with only: Hello','hello'),
+            ('ar','أجب فقط بكلمة مرحبا','مرح'),
+            ('fr','Réponds seulement avec le mot Bonjour','bonjour'),
+            ('hi','केवल नमस्ते शब्द से जवाब दें','नम')]:
+              st,d=post('/api/ai',{'message':msg,'country':'Worldwide','language':'auto','scope':'worldwide','fast':True})
+              assert 200<=st<300 and d.get('ok') is True,(code,st,d)
+              ans=str(d.get('response','')).strip()
+              assert ans and needle.lower() in ans.lower(),(code,ans,d)
+          st,d=post('/api/ai',{'message':'Change the SEEKVERA app country to Japan','country':'Worldwide','language':'auto','scope':'worldwide','fast':True})
+          assert 200<=st<300 and d.get('countryAction',{}).get('code')=='JP',(st,d)
+          st,d=post('/api/ai',{'message':'غيّري لغة التطبيق إلى الهندية','country':'Worldwide','language':'auto','scope':'worldwide','fast':True})
+          assert 200<=st<300 and d.get('languageAction',{}).get('code')=='hi',(st,d)
+          print('R24 REAL AI + SAFETY PASS')
+
+      - name: Final live page sweep
+        shell: python
+        run: |
+          from pathlib import Path
+          import urllib.request
+          S='https://seekveraglobal.com'; UA='Mozilla/5.0 SEEKVERA-R24-Final'
+          pages=[p.name for p in Path('.').glob('*.html') if not p.name.lower().startswith('google') and '</body>' in p.read_text(encoding='utf-8').lower()]
+          bad=[]
+          for name in pages:
+              try:
+                  q=urllib.request.Request(f'{S}/{name}?r24-final=1',headers={'User-Agent':UA,'Cache-Control':'no-cache'})
+                  with urllib.request.urlopen(q,timeout=25) as r:text=r.read().decode('utf-8','replace')
+                  if r.status!=200 or 'r24-ai-controller.js?v=20260925-r24-control1' not in text:bad.append((name,r.status))
+              except Exception as e:bad.append((name,str(e)))
+          assert not bad,bad[:20]
+          print('R24 FINAL PAGE SWEEP PASS',len(pages),'pages')
