@@ -1,0 +1,127 @@
+name: R35 final static release lock
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r35-final-lock.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r35-final-lock
+  cancel-in-progress: true
+
+jobs:
+  lock-live-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Recover the exact 98-pack release already live
+        shell: bash
+        run: |
+          set -euo pipefail
+          B='https://seekveraglobal.com'
+          rm -rf i18n-r32
+          mkdir -p i18n-r32
+          curl -LfsS --retry 3 "$B/i18n-r32/manifest.json?v=$GITHUB_SHA" -o i18n-r32/manifest.json
+          curl -LfsS --retry 3 "$B/i18n-r32-source.json?v=$GITHUB_SHA" -o i18n-r32-source.json
+          python - <<'PY'
+          import json
+          m=json.load(open('i18n-r32/manifest.json',encoding='utf-8'))
+          s=json.load(open('i18n-r32-source.json',encoding='utf-8'))
+          assert m['packs']==98 and len(m['languages'])==98,m
+          assert m['sourceHash']==s['sourceHash'] and s['count']==967,(m,s.get('count'))
+          open('/tmp/langs.txt','w').write('\n'.join(m['languages']))
+          print('LIVE MANIFEST PASS',m['sourceHash'],len(m['languages']),s['count'])
+          PY
+          while IFS= read -r l; do
+            curl -LfsS --retry 3 "$B/i18n-r32/$l.json?v=$GITHUB_SHA" -o "i18n-r32/$l.json"
+          done </tmp/langs.txt
+          python - <<'PY'
+          import json,glob,os
+          m=json.load(open('i18n-r32/manifest.json',encoding='utf-8'))
+          files={os.path.basename(x)[:-5]:x for x in glob.glob('i18n-r32/*.json') if not x.endswith('/manifest.json')}
+          assert set(files)==set(m['languages']),(len(files),set(m['languages'])-set(files),set(files)-set(m['languages']))
+          for l,p in files.items():
+            d=json.load(open(p,encoding='utf-8'))
+            assert d['sourceHash']==m['sourceHash'],l
+            assert d['count']==967 and len(d['translations'])==967,l
+          rm=json.load(open(files['rm'],encoding='utf-8'))['translations']
+          tn=json.load(open(files['tn'],encoding='utf-8'))['translations']
+          assert rm['Popular categories']!='Popular categories'
+          assert tn['Popular categories']!='Popular categories'
+          print('LIVE 98 PACK FILES PASS')
+          PY
+
+      - name: Reproduce static runtime from source and clean build-only files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r32_pack_runtime_patch.py
+          python tools/r32_global_final.py
+          python tools/r32_ai_failover_patch.py
+          python tools/r32_translation_backend_fix.py
+          python tools/r35_finalize.py
+          node --check r32-i18n.js
+          node --check i18n-ui.js
+          node --check worker-r31.js
+          node --check worker.js
+          find tools -type d -name __pycache__ -prune -exec rm -rf {} + || true
+          find tools -type f -name '*.pyc' -delete || true
+          grep -q 'r35-static-v3' i18n-ui.js
+          grep -q 'parallel-static-98-language-country-category-final' worker-r31.js
+          echo 'STATIC RUNTIME REPRODUCTION PASS'
+
+      - name: Audit production in isolated browser contexts
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat >r35-lock-audit.mjs <<'JS'
+          import {chromium} from 'playwright';import assert from 'node:assert/strict';
+          const B='https://seekveraglobal.com';
+          const browser=await chromium.launch({headless:true});
+          const apiCtx=await browser.newContext({serviceWorkers:'block'}),rq=apiCtx.request;
+          const health=await (await rq.get(B+'/api/health?v='+Date.now())).json();
+          assert.equal(health.r35,true);assert.equal(health.aiBinding,true);assert.equal(health.r35Runtime,'parallel-static-98-language-country-category-final');
+          const man=await (await rq.get(B+'/i18n-r32/manifest.json?v='+Date.now())).json();assert.equal(man.packs,98);assert.equal(man.languages.length,98);
+          const packs={};for(let i=0;i<98;i+=14)await Promise.all(man.languages.slice(i,i+14).map(async l=>{const r=await rq.get(B+'/i18n-r32/'+l+'.json?v='+man.sourceHash,{timeout:20000});assert.equal(r.status(),200,l);const d=await r.json();assert.equal(d.count,967,l);assert.equal(d.sourceHash,man.sourceHash,l);assert.equal(Object.keys(d.translations).length,967,l);packs[l]=d.translations}));
+          console.log('LIVE_PACKS_AUDITED',Object.keys(packs).length);
+
+          const openPage=async(tag)=>{const c=await browser.newContext({viewport:{width:390,height:844},locale:'en-US',serviceWorkers:'block'});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(String(e)));await p.route('**/api/ui-translate',r=>r.abort());await p.route('https://text.pollinations.ai/**',r=>r.abort());const resp=await p.goto(B+'/?r35lock='+tag+'-'+Date.now(),{waitUntil:'domcontentloaded',timeout:45000});assert.equal(resp.headers()['x-seekvera-release'],'r35-global-final');await p.waitForFunction(()=>window.SEEKVERA_I18N_R32&&window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_R14_CATEGORIES&&window.SEEKVERA_R22_CATEGORY_LOCK,null,{timeout:20000});return {c,p,errs}};
+
+          {const {c,p,errs}=await openPage('countries');const meta=await p.evaluate(()=>({profiles:SEEKVERA_LOCALE_R15.profiles,langs:Object.keys(SEEKVERA_R14_CATEGORIES.data)}));assert.equal(Object.keys(meta.profiles).length,248);assert.equal(meta.langs.length,98);const bad=[];for(const [cc,pr] of Object.entries(meta.profiles)){await p.evaluate(cc=>SEEKVERA_LOCALE_R15.setCountry(cc),cc);const g=await p.evaluate(()=>({cc:country.value,l:lang.value,c:currency.value}));if(g.cc!==cc||g.l!==pr.language||g.c!==pr.currency)bad.push({cc,pr,g})}assert.equal(bad.length,0,JSON.stringify(bad.slice(0,8)));assert.equal(errs.length,0,JSON.stringify(errs.slice(0,5)));await c.close();console.log('COUNTRY_PROFILE_PASS',248)}
+
+          {const {c,p,errs}=await openPage('iraq-ar');await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('IQ'));const pre=await p.evaluate(()=>({cc:country.value,l:lang.value,c:currency.value}));assert.deepEqual([pre.cc,pre.l,pre.c],['IQ','ar','IQD']);await p.evaluate(async()=>{await SEEKVERA_I18N_R32.loadPack('ar');await SEEKVERA_I18N_R32.apply();SEEKVERA_R22_CATEGORY_LOCK.lock()});await p.waitForTimeout(600);const s=await p.evaluate(()=>({cc:country.value,l:lang.value,c:currency.value,pack:document.documentElement.dataset.seekveraPackReady||'',ready:document.documentElement.dataset.seekveraI18nReady||'',dir:document.documentElement.dir,body:document.body.innerText,n:document.querySelectorAll('#categories .r5-tile').length,overflow:document.documentElement.scrollWidth-innerWidth,mic:!!document.querySelector('#aiChatMic'),speaker:!!document.querySelector('#aiChatSpeaker')}));console.log('IRAQ_AR_STATE',JSON.stringify({...s,body:undefined}));assert.deepEqual([s.cc,s.l,s.c],['IQ','ar','IQD']);assert.equal(s.pack,'ar');assert.equal(s.ready,'ar');assert.equal(s.dir,'rtl');assert.equal(s.n,31);assert(s.overflow<=4);assert(s.mic&&s.speaker);for(const x of ['Popular categories','Live marketplace','Request anything','No approved live marketplace listings are available right now.'])if(packs.ar[x]&&packs.ar[x]!==x)assert(!s.body.includes(x),'Arabic English leak: '+x);assert.equal(errs.length,0,JSON.stringify(errs.slice(0,5)));await c.close();console.log('IRAQ_ARABIC_FULL_UI_PASS')}
+
+          {const {c,p,errs}=await openPage('all-languages');for(const l of man.languages){await p.evaluate(l=>SEEKVERA_LOCALE_R15.setLanguage(l),l);await p.evaluate(async l=>{await SEEKVERA_I18N_R32.loadPack(l);SEEKVERA_R22_CATEGORY_LOCK.lock()},l);await p.waitForTimeout(20);const x=await p.evaluate(()=>({l:lang.value,pack:document.documentElement.dataset.seekveraPackReady||'',t:[...document.querySelectorAll('#categories .r5-tile-body b')].slice(0,31).map(n=>n.textContent.trim()),o:document.documentElement.scrollWidth-innerWidth}));assert.equal(x.l,l,l);if(l!=='en')assert.equal(x.pack,l,l+' pack');assert.equal(x.t.length,31,l);assert(x.o<=4,l);const exp=await p.evaluate(l=>SEEKVERA_R14_CATEGORIES.data[l],l);assert.deepEqual(x.t,exp,l)}assert.equal(errs.length,0,JSON.stringify(errs.slice(0,5)));await c.close();console.log('ALL_LANGUAGE_CATEGORY_RUNTIME_PASS',man.languages.length)}
+
+          for(const l of ['de','zh','ja','hi','rm','tn']){const {c,p,errs}=await openPage('full-'+l);await p.evaluate(l=>SEEKVERA_LOCALE_R15.setLanguage(l),l);await p.evaluate(async l=>{await SEEKVERA_I18N_R32.loadPack(l);await SEEKVERA_I18N_R32.apply();SEEKVERA_R22_CATEGORY_LOCK.lock()},l);await p.waitForTimeout(500);const x=await p.evaluate(()=>({l:lang.value,pack:document.documentElement.dataset.seekveraPackReady||'',ready:document.documentElement.dataset.seekveraI18nReady||'',n:document.querySelectorAll('#categories .r5-tile').length,o:document.documentElement.scrollWidth-innerWidth}));console.log('FULL_UI_STATE',l,JSON.stringify(x));assert.equal(x.l,l,l);assert.equal(x.pack,l,l);assert.equal(x.ready,l,l);assert.equal(x.n,31,l);assert(x.o<=4,l);assert.equal(errs.length,0,JSON.stringify(errs.slice(0,5)));await c.close()}
+
+          const linkCtx=await browser.newContext({serviceWorkers:'block'});const lp=await linkCtx.newPage();await lp.goto(B+'/?links='+Date.now(),{waitUntil:'domcontentloaded',timeout:45000});await lp.waitForFunction(()=>window.SEEKVERA_R22_CATEGORY_LOCK,null,{timeout:15000});const hrefs=await lp.evaluate(()=>[...new Set([...document.querySelectorAll('#categories .r5-tile')].map(a=>a.getAttribute('href')).filter(Boolean))]);assert.equal(hrefs.length,31);for(let i=0;i<31;i+=8)await Promise.all(hrefs.slice(i,i+8).map(async h=>{const r=await rq.get(new URL(h,B).href,{timeout:15000});assert(r.status()<400,h);assert((await r.text()).length>180,h)}));await linkCtx.close();
+          await apiCtx.close();await browser.close();console.log('R35 FINAL LIVE AUDIT PASS',JSON.stringify({countries:248,languages:98,categories:31,sourceStrings:967,iraq:'ar/IQD/rtl',voiceControls:true,translationApiBlocked:true,representativeFullUi:['ar','de','zh','ja','hi','rm','tn']}));
+          JS
+          node r35-lock-audit.mjs
+          rm -f r35-lock-audit.mjs
+
+      - name: Persist the audited static release in main
+        shell: bash
+        run: |
+          set -euo pipefail
+          find tools -type d -name __pycache__ -prune -exec rm -rf {} + || true
+          find tools -type f -name '*.pyc' -delete || true
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add -- i18n-r32 i18n-r32-source.json r32-i18n.js i18n-ui.js locale-r15.js worker-r31.js worker.js sw.js
+          git add -- *.html
+          git diff --cached --quiet || git commit -m 'Publish audited static 98-language global release'
+          git push origin HEAD:main
+          echo 'R35 STATIC RELEASE LOCKED IN MAIN'
