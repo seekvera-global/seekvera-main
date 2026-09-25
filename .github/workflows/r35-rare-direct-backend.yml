@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/r35-rare-direct-backend.yml'
       - 'tools/r35_rare_backend_patch.py'
+      - 'tools/r32_translation_backend_fix.py'
   workflow_dispatch:
 
 permissions:
@@ -17,21 +18,46 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-      - name: Patch direct rare translator
+      - name: Patch universal and rare translators
         shell: bash
         run: |
           set -euo pipefail
+          python tools/r32_translation_backend_fix.py
           python tools/r35_rare_backend_patch.py
           node --check worker.js
+          grep -q "u.pathname==='/api/ui-translate'" worker.js
+          grep -q 'pollinations-private-translation-backup' worker.js
           grep -q "u.pathname==='/api/r35-rare-translate'" worker.js
           grep -q 'zero-cost-http-fallback-r35' worker.js
-          echo 'Using R35 direct translator with zero-cost fallback v3'
-      - name: Deploy direct rare translator
+          echo 'Using R32 universal + R35 rare translators with zero-cost fallbacks'
+      - name: Deploy universal translation recovery
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
+      - name: Verify universal translation fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          ok=0
+          for attempt in 1 2 3 4 5; do
+            code="$(curl -sS -o /tmp/ui.json -w '%{http_code}' --max-time 60 -X POST 'https://seekveraglobal.com/api/ui-translate' \
+              -H 'Origin: https://seekveraglobal.com' -H 'Referer: https://seekveraglobal.com/' -H 'Content-Type: application/json' \
+              --data '{"language":"Arabic","strings":["Popular categories","Live marketplace","Request anything","Find a hotel in the city"]}' || true)"
+            if [ "$code" = 200 ]; then
+              python - <<'PY'
+          import json
+          d=json.load(open('/tmp/ui.json'));v=d.get('translations') or []
+          assert d.get('ok') and len(v)==4,d
+          assert all(v[i] != ['Popular categories','Live marketplace','Request anything','Find a hotel in the city'][i] for i in range(4)),v
+          print('R32 UNIVERSAL TRANSLATION PASS',d.get('model'),v)
+          PY
+              ok=1; break
+            fi
+            cat /tmp/ui.json || true; sleep 2
+          done
+          test "$ok" -eq 1
       - name: Verify Romansh and Tswana translations
         shell: bash
         run: |
