@@ -1,0 +1,60 @@
+name: R30 browser diagnostic
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r30-browser-diagnostic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check live assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in locale-r15.js r24-ai-controller.js i18n-ui.js voice-ai.js r30-runtime.js index.html; do
+            echo "=== $f ==="
+            curl -L -sS -o /tmp/a -w '%{http_code} %{content_type} %{size_download}\n' --max-time 20 "https://seekveraglobal.com/$f?r30diag=1"
+            head -c 80 /tmp/a | tr '\n' ' '; echo
+          done
+      - name: Browser globals and errors
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat >diag.mjs <<'JS'
+          import {chromium} from 'playwright';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage({viewport:{width:390,height:844},locale:'en-US'});
+          const errs=[],fails=[];
+          p.on('pageerror',e=>errs.push(String(e)));
+          p.on('requestfailed',r=>fails.push({url:r.url(),error:r.failure()?.errorText||''}));
+          const resp=await p.goto('https://seekveraglobal.com/?r30diag=1',{waitUntil:'domcontentloaded',timeout:60000});
+          await p.waitForTimeout(6000);
+          const x=await p.evaluate(()=>({
+            status:document.readyState,
+            r15:!!window.SEEKVERA_LOCALE_R15,
+            r24:!!window.SEEKVERA_R24_CONTROLLER,
+            r9:!!window.SEEKVERA_LOCALE_GUARD_R9,
+            voice:!!window.__seekveraVoiceAI,
+            r30:!!window.SEEKVERA_R30,
+            lang:document.documentElement.lang,
+            scripts:[...document.scripts].map(s=>s.src||'[inline]').filter(Boolean)
+          }));
+          console.log('HTTP',resp?.status());
+          console.log('GLOBALS',JSON.stringify(x));
+          console.log('PAGE_ERRORS',JSON.stringify(errs));
+          console.log('REQUEST_FAILS',JSON.stringify(fails));
+          await b.close();
+          if(!x.r15||!x.r24||!x.r9)process.exit(2);
+          JS
+          node diag.mjs
