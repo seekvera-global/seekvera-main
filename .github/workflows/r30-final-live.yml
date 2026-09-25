@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/r30-final-live.yml'
+      - 'r30-runtime.js'
   workflow_dispatch:
 
 permissions:
@@ -86,7 +87,7 @@ jobs:
           const b=await chromium.launch({headless:true});
           const p=await b.newPage({viewport:{width:390,height:844},locale:'en-US'});
           const errs=[];p.on('pageerror',e=>errs.push(String(e)));
-          await p.goto('https://seekveraglobal.com/?r30final=1',{waitUntil:'domcontentloaded',timeout:60000});
+          await p.goto('https://seekveraglobal.com/?r30final=2',{waitUntil:'domcontentloaded',timeout:60000});
           await p.waitForFunction(()=>window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_R24_CONTROLLER&&window.SEEKVERA_R30,{timeout:30000});
           await p.waitForTimeout(1500);
           const matrix=await p.evaluate(()=>({countries:Object.keys(SEEKVERA_LOCALE_R15.profiles).length,languages:SEEKVERA_R24_CONTROLLER.languages.length,bad:Object.entries(SEEKVERA_LOCALE_R15.profiles).filter(([cc,x])=>!SEEKVERA_R24_CONTROLLER.languages.includes(x.language)),voice:!!window.__seekveraVoiceAI,r9:!!window.SEEKVERA_LOCALE_GUARD_R9}));
