@@ -18,4 +18,4 @@ jobs:
       - name: Trigger R32 final audit on latest main
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run r32-static-final-audit.yml --ref main
+        run: gh workflow run r32-static-final-audit.yml --repo seekvera-global/seekvera-main --ref main
