@@ -1,0 +1,36 @@
+name: R56 language diagnostic
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r56-language-diagnostic.yml'
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Diagnose language control
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > diag.mjs <<'JS'
+          import {chromium} from 'playwright';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage();
+          await p.goto('https://seekveraglobal.com/?r56langdiag='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_R24_CONTROLLER&&window.SEEKVERA_R31&&document.querySelector('#lang'),null,{timeout:30000});
+          console.log('DETECT_EN',JSON.stringify(await p.evaluate(()=>SEEKVERA_R24_CONTROLLER.detectControls('change language to French'))));
+          console.log('DETECT_AR',JSON.stringify(await p.evaluate(()=>SEEKVERA_R24_CONTROLLER.detectControls('غير اللغة إلى الفرنسية'))));
+          console.log('LANG_STATE',JSON.stringify(await p.evaluate(()=>({value:document.querySelector('#lang')?.value,options:[...document.querySelector('#lang')?.options||[]].slice(0,20).map(o=>({v:o.value,t:o.textContent})),api:!!SEEKVERA_LOCALE_R15,profiles:Object.keys(SEEKVERA_LOCALE_R15?.profiles||{}).length,r24:SEEKVERA_R24_CONTROLLER.version}))));
+          await p.fill('#aiChatInput','change language to French');
+          await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForTimeout(800);
+          console.log('AFTER_SUBMIT',JSON.stringify(await p.evaluate(()=>({lang:document.querySelector('#lang')?.value,htmlLang:document.documentElement.lang,stored:localStorage.getItem('seekvera_lang'),messages:document.querySelector('#aiMessages')?.innerText.slice(-500)}))));
+          await b.close();
+          JS
+          node diag.mjs
