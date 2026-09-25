@@ -1,0 +1,98 @@
+name: R30 live language voice AI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r30-live-language-voice-ai.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seekvera-r30-live
+  cancel-in-progress: true
+
+jobs:
+  patch-test-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply R30 runtime patch
+        run: python tools/r30_language_voice_ai_fix.py
+
+      - name: Validate patched runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check i18n-ui.js
+          node --check voice-ai.js
+          node --check worker.js
+          grep -q '20260925-r30-no-mixed-language-fast' i18n-ui.js
+          grep -q 'r30-fastchat-first-parallel-language' worker.js
+          grep -q 'setTimeout(()=>play(index+1,0),90)' voice-ai.js
+          echo 'R30 SOURCE PASS'
+
+      - name: Deploy R30 to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Wait for R30 live
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 50); do
+            body="$(curl -LfsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/api/health?r30=$i" || true)"
+            if echo "$body" | grep -q '20260925-ai-r30-fast-voice-language'; then echo "$body"; exit 0; fi
+            sleep 3
+          done
+          exit 1
+
+      - name: Live multilingual AI check
+        shell: python
+        run: |
+          import json,time,urllib.request
+          S='https://seekveraglobal.com'
+          for q,code in [('Hello, help me find hotels.','en'),('مرحبا، ساعدني أجد فندقاً.','ar'),('Bonjour, aide-moi à trouver un hôtel.','fr')]:
+              req=urllib.request.Request(S+'/api/ai',data=json.dumps({'message':q,'country':'Worldwide','language':'auto','scope':'worldwide','fast':True},ensure_ascii=False).encode(),headers={'content-type':'application/json','Origin':S,'User-Agent':'SEEKVERA-R30'},method='POST')
+              t=time.time()
+              with urllib.request.urlopen(req,timeout=45) as r:d=json.loads(r.read().decode())
+              sec=time.time()-t
+              assert d.get('ok') and d.get('response'),d
+              print(code,round(sec,2),d.get('model'))
+          print('R30 LIVE AI PASS')
+
+      - name: Mobile country language and voice check
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat >r30.mjs <<'JS'
+          import {chromium} from 'playwright';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage({viewport:{width:390,height:844},locale:'en-US'});
+          await p.goto('https://seekveraglobal.com/?r30=1',{waitUntil:'domcontentloaded',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_R24_CONTROLLER&&window.SEEKVERA_LOCALE_GUARD_R9,{timeout:60000});
+          const m=await p.evaluate(()=>({countries:Object.keys(SEEKVERA_LOCALE_R15.profiles).length,languages:SEEKVERA_R24_CONTROLLER.languages.length,bad:Object.entries(SEEKVERA_LOCALE_R15.profiles).filter(([cc,x])=>!SEEKVERA_R24_CONTROLLER.languages.includes(x.language))}));
+          if(m.countries!==248||m.languages!==98||m.bad.length)throw Error(JSON.stringify(m));
+          for(const cc of ['LB','SA','FR','DE','TR','IN','CN','JP','KR','BR']){
+            await p.evaluate(cc=>SEEKVERA_LOCALE_R15.setCountry(cc),cc);await p.waitForTimeout(500);
+            const x=await p.evaluate(()=>({cc:document.querySelector('#country')?.value,lang:document.documentElement.lang,overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth}));
+            if(x.cc!==cc||!x.lang||x.overflow>8)throw Error(cc+' '+JSON.stringify(x));
+          }
+          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('LB'));
+          await p.waitForFunction(()=>document.documentElement.lang==='ar',{timeout:5000});
+          await p.waitForTimeout(1800);
+          const ar=await p.evaluate(()=>({text:document.body.innerText,dir:document.documentElement.dir,voice:window.__seekveraVoiceAI===true,mic:!!document.querySelector('#aiChatMic'),speaker:!!document.querySelector('#aiChatSpeaker')}));
+          if(ar.dir!=='rtl'||!ar.voice||!ar.mic||!ar.speaker)throw Error(JSON.stringify(ar));
+          for(const leak of ['No approved live marketplace listings','SEEKVERA does not generate fake listings','Find, compare, choose — worldwide'])if(ar.text.includes(leak))throw Error('English leak '+leak);
+          await b.close();console.log('R30 BROWSER PASS 248 countries 98 languages Arabic no mixed English voice controls');
+          JS
+          node r30.mjs
