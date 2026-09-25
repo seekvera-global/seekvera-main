@@ -1,0 +1,125 @@
+name: R46 verified worldwide production release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r46-final-verified-release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r46-verified-release
+  cancel-in-progress: true
+
+jobs:
+  verify-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Recover validated live language packs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import concurrent.futures,json,pathlib,time,urllib.request
+          B='https://seekveraglobal.com'
+          def get(path):
+              last=None
+              for n in range(4):
+                  try:
+                      req=urllib.request.Request(B+path+'?r46='+str(time.time_ns()),headers={'User-Agent':'SEEKVERA-R46/1.0','Cache-Control':'no-cache'})
+                      with urllib.request.urlopen(req,timeout=25) as r:return r.read()
+                  except Exception as e:last=e;time.sleep(.35+n*.5)
+              raise last
+          m=json.loads(get('/i18n-r32/manifest.json'));src=json.loads(get('/i18n-r32-source.json'))
+          assert m['packs']==98 and len(m['languages'])==98
+          assert src['count']==967 and m['sourceHash']==src['sourceHash']
+          out=pathlib.Path('i18n-r32');out.mkdir(exist_ok=True)
+          (out/'manifest.json').write_text(json.dumps(m,ensure_ascii=False,separators=(',',':')),encoding='utf-8')
+          pathlib.Path('i18n-r32-source.json').write_text(json.dumps(src,ensure_ascii=False,separators=(',',':')),encoding='utf-8')
+          def one(l):
+              raw=get('/i18n-r32/'+l+'.json');d=json.loads(raw)
+              assert d['sourceHash']==m['sourceHash'],l
+              assert d['count']==967 and len(d['translations'])==967,l
+              (out/(l+'.json')).write_bytes(raw);return l
+          with concurrent.futures.ThreadPoolExecutor(max_workers=16) as ex: got=list(ex.map(one,m['languages']))
+          assert len(got)==98
+          print('R46 PACKS PASS',len(got),m['sourceHash'])
+          PY
+
+      - name: Build deterministic R46 runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r32_pack_runtime_patch.py
+          python tools/r32_global_final.py
+          python tools/r44_disable_legacy_r14.py
+          python tools/r32_ai_failover_patch.py
+          python tools/r32_translation_backend_fix.py
+          python tools/r35_finalize.py
+          node --check r32-i18n.js
+          node --check i18n-ui.js
+          node --check locale-r14.js
+          node --check worker-r31.js
+          node --check worker.js
+          grep -F 'r44-disabled-under-r32' locale-r14.js >/dev/null
+          test "$(grep -o 'id=\"categories\"' index.html | wc -l | tr -d ' ')" = '1'
+          ! grep -q 'r5-chips' index.html
+          ! grep -q 'r8-department-strip' index.html
+          echo 'R46 BUILD PASS'
+
+      - name: Deploy R46 to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Verify deployed assets and AI binding without pipe false negatives
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 30); do
+            h="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/api/health?r46=$i" || true)"
+            r="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/locale-r14.js?r46=$i" || true)"
+            if [[ "$h" == *'parallel-static-98-language-country-category-final'* && "$h" == *'"aiBinding":true'* && "$r" == *'r44-disabled-under-r32'* ]]; then
+              echo "$h"
+              echo 'R46 LIVE ASSET + AI PASS'
+              exit 0
+            fi
+            sleep 2
+          done
+          echo 'R46 production asset marker not visible' >&2
+          exit 1
+
+      - name: Full live audit - 248 countries 98 languages 31 categories voice routes AI
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          node tools/r38_final_audit.mjs
+
+      - name: Persist audited release in main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add -- i18n-r32 i18n-r32-source.json r32-i18n.js i18n-ui.js locale-r14.js locale-r15.js worker-r31.js worker.js sw.js
+          git add -- '*.html'
+          if git diff --cached --quiet; then
+            echo 'No generated changes to commit'
+          else
+            git commit -m 'Persist R46 audited worldwide production release'
+          fi
+          git pull --rebase origin main
+          git push origin HEAD:main
+          echo 'R46 FINAL VERIFIED RELEASE PERSISTED'
