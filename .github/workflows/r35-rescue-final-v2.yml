@@ -1,0 +1,173 @@
+name: R35 two-pack rescue final
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r35-rescue-final-v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: seekvera-r35-two-pack-rescue
+  cancel-in-progress: true
+
+env:
+  PYTHONUNBUFFERED: '1'
+  PRIOR_RUN_ID: '36185614760'
+
+jobs:
+  final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prepare source and rescue tools
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet beautifulsoup4 Babel
+          python -m py_compile tools/r35_rescue_rm.py tools/r35_build_pack.py
+          python tools/r35_build_pack.py --source-only
+          python - <<'PY'
+          import json
+          s=json.load(open('i18n-r35-source.json'));l=json.load(open('i18n-r35-languages.json'))
+          assert s['count']==967 and len(l)==98,(s['count'],len(l))
+          print('R35 SOURCE PASS',s['count'],s['sourceHash'],'languages',len(l))
+          PY
+
+      - name: Recover 96 already-passed packs
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: seekvera-global/seekvera-main
+          run-id: ${{ env.PRIOR_RUN_ID }}
+          pattern: pack-*
+          path: i18n-r35
+          merge-multiple: true
+
+      - name: Build only Romansh and Tswana
+        shell: bash
+        run: |
+          set -euo pipefail
+          find i18n-r35 -mindepth 2 -type f -name '*.json' -exec cp -f {} i18n-r35/ \; || true
+          rm -f i18n-r35/rm.json i18n-r35/tn.json
+          before="$(find i18n-r35 -maxdepth 1 -type f -name '*.json' | wc -l | tr -d ' ')"
+          echo "Recovered static packs: $before"
+          test "$before" -eq 96
+          python tools/r35_rescue_rm.py rm
+          python tools/r35_rescue_rm.py tn
+          test -s i18n-r35/rm.json
+          test -s i18n-r35/tn.json
+          echo 'R35 TWO MISSING PACKS RESCUED'
+
+      - name: Assemble and validate exact 98 packs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import glob,json,os,re,shutil
+          src=json.load(open('i18n-r35-source.json',encoding='utf-8'));langs=json.load(open('i18n-r35-languages.json',encoding='utf-8'))
+          by={os.path.basename(p)[:-5]:p for p in glob.glob('i18n-r35/*.json')}
+          missing=[l for l in langs if l not in by];extra=[l for l in by if l not in langs]
+          assert len(langs)==98 and len(by)==98 and not missing and not extra,(len(by),missing,extra)
+          providers={};bad=[]
+          for l in langs:
+            d=json.load(open(by[l],encoding='utf-8'))
+            assert d['sourceHash']==src['sourceHash'],(l,d.get('sourceHash'),src['sourceHash'])
+            assert d['count']==src['count']==967,(l,d.get('count'))
+            assert len(d['translations'])==967,(l,len(d['translations']))
+            providers[d.get('provider','unknown')]=providers.get(d.get('provider','unknown'),0)+1
+            if l!='en':
+              cand=[s for s in src['strings'] if len(s)>=14 and 'SEEKVERA' not in s and re.search(r'[A-Za-z]',s) and ' ' in s]
+              same=[s for s in cand if str(d['translations'].get(s,'')).strip()==s.strip()]
+              if len(same)>max(25,int(len(cand)*.18)):bad.append((l,len(same),same[:5]))
+          assert not bad,bad[:8]
+          shutil.rmtree('i18n-r32',ignore_errors=True);os.makedirs('i18n-r32')
+          for l in langs:shutil.copy2(by[l],f'i18n-r32/{l}.json')
+          shutil.copy2('i18n-r35-source.json','i18n-r32-source.json')
+          m={'version':'20260925-r35-static-v3','sourceHash':src['sourceHash'],'sourceCount':967,'languages':langs,'packs':98,'providers':providers}
+          open('i18n-r32/manifest.json','w',encoding='utf-8').write(json.dumps(m,ensure_ascii=False,separators=(',',':')))
+          print('R35 98 PACKS PASS',json.dumps(m,ensure_ascii=False))
+          PY
+
+      - name: Apply R35 static runtime and AI failover
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r32_pack_runtime_patch.py
+          python tools/r32_global_final.py
+          python tools/r32_ai_failover_patch.py
+          python tools/r32_translation_backend_fix.py
+          python tools/r35_finalize.py
+          node --check r32-i18n.js
+          node --check i18n-ui.js
+          node --check worker-r31.js
+          node --check worker.js
+          grep -q 'loadPack' i18n-ui.js
+          grep -q 'r35-static-v3' i18n-ui.js
+          grep -q 'r35Runtime' worker-r31.js
+          grep -q 'i18n-ui.js?v=20260925-r35-global-final' index.html
+          echo 'R35 RUNTIME PASS'
+
+      - name: Deploy R35 to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Wait for production marker
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 60); do
+            b="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/api/health?r35v2=$i" || true)"
+            if echo "$b" | grep -q 'parallel-static-98-language-country-category-final'; then echo "$b"; exit 0; fi
+            sleep 3
+          done
+          exit 1
+
+      - name: Final live audit - countries languages categories Iraq voice AI
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat >/tmp/r35v2.mjs <<'JS'
+          import {chromium} from 'playwright';import assert from 'node:assert/strict';
+          const B='https://seekveraglobal.com';const browser=await chromium.launch({headless:true});
+          const ctx=await browser.newContext({viewport:{width:390,height:844},locale:'en-US',serviceWorkers:'block'});const rq=ctx.request;
+          const health=await (await rq.get(B+'/api/health?v='+Date.now())).json();assert.equal(health.r35,true);assert.equal(health.aiBinding,true);assert.equal(health.r35Runtime,'parallel-static-98-language-country-category-final');
+          const man=await (await rq.get(B+'/i18n-r32/manifest.json?v='+Date.now())).json();const src=await (await rq.get(B+'/i18n-r32-source.json?v='+Date.now())).json();assert.equal(man.packs,98);assert.equal(man.languages.length,98);assert.equal(src.count,967);
+          const packs={};for(let i=0;i<98;i+=14)await Promise.all(man.languages.slice(i,i+14).map(async l=>{const r=await rq.get(B+'/i18n-r32/'+l+'.json?v='+man.sourceHash,{timeout:20000});assert.equal(r.status(),200,l);const d=await r.json();assert.equal(d.sourceHash,man.sourceHash,l);assert.equal(d.count,967,l);assert.equal(Object.keys(d.translations).length,967,l);packs[l]=d.translations}));
+          assert.notEqual(packs.rm['Popular categories'],'Popular categories');assert.notEqual(packs.tn['Popular categories'],'Popular categories');
+          const p=await ctx.newPage(),errs=[];p.on('pageerror',e=>errs.push(String(e)));await p.route('**/api/ui-translate',r=>r.abort());await p.route('https://text.pollinations.ai/**',r=>r.abort());const resp=await p.goto(B+'/?r35v2='+Date.now(),{waitUntil:'domcontentloaded',timeout:45000});assert.equal(resp.headers()['x-seekvera-release'],'r35-global-final');
+          await p.waitForFunction(()=>window.SEEKVERA_I18N_R32&&window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_R14_CATEGORIES&&window.SEEKVERA_R22_CATEGORY_LOCK,{timeout:20000});
+          const meta=await p.evaluate(()=>({profiles:SEEKVERA_LOCALE_R15.profiles,langs:Object.keys(SEEKVERA_R14_CATEGORIES.data)}));assert.equal(Object.keys(meta.profiles).length,248);assert.equal(meta.langs.length,98);
+          const bad=[];for(const [cc,pr] of Object.entries(meta.profiles)){await p.evaluate(cc=>SEEKVERA_LOCALE_R15.setCountry(cc),cc);const g=await p.evaluate(()=>({cc:country.value,l:lang.value,c:currency.value}));if(g.cc!==cc||g.l!==pr.language||g.c!==pr.currency)bad.push({cc,pr,g})}assert.equal(bad.length,0,JSON.stringify(bad.slice(0,5)));
+          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('IQ'));await p.evaluate(async()=>{await SEEKVERA_I18N_R32.loadPack('ar');SEEKVERA_I18N_R32.schedule(0);SEEKVERA_R22_CATEGORY_LOCK.lock()});await p.waitForFunction(()=>document.documentElement.dataset.seekveraPackReady==='ar'&&document.documentElement.dataset.seekveraI18nReady==='ar'&&document.documentElement.dir==='rtl',{timeout:12000});await p.waitForTimeout(4200);
+          const iq=await p.evaluate(()=>({body:document.body.innerText,cc:country.value,l:lang.value,c:currency.value,n:document.querySelectorAll('#categories .r5-tile').length,overflow:document.documentElement.scrollWidth-innerWidth,mic:!!document.querySelector('#aiChatMic'),speaker:!!document.querySelector('#aiChatSpeaker')}));assert.deepEqual([iq.cc,iq.l,iq.c],['IQ','ar','IQD']);assert.equal(iq.n,31);assert(iq.overflow<=4);assert(iq.mic&&iq.speaker);for(const s of ['Popular categories','Live marketplace','Request anything','No approved live marketplace listings are available right now.'])if(packs.ar[s]&&packs.ar[s]!==s)assert(!iq.body.includes(s),'Arabic leak '+s);
+          for(const l of man.languages){await p.evaluate(l=>SEEKVERA_LOCALE_R15.setLanguage(l),l);await p.evaluate(async l=>{await SEEKVERA_I18N_R32.loadPack(l);SEEKVERA_I18N_R32.schedule(0);SEEKVERA_R22_CATEGORY_LOCK.lock()},l);if(l!=='en')await p.waitForFunction(l=>document.documentElement.dataset.seekveraPackReady===l&&document.documentElement.dataset.seekveraI18nReady===l,l,{timeout:10000});const x=await p.evaluate(()=>({l:lang.value,t:[...document.querySelectorAll('#categories .r5-tile-body b')].slice(0,31).map(n=>n.textContent.trim()),o:document.documentElement.scrollWidth-innerWidth}));assert.equal(x.l,l,l);assert.equal(x.t.length,31,l);assert(x.o<=4,l);const exp=await p.evaluate(l=>SEEKVERA_R14_CATEGORIES.data[l],l);assert.deepEqual(x.t,exp,l)}
+          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setLanguage('ar'));await p.evaluate(async()=>{await SEEKVERA_I18N_R32.loadPack('ar');SEEKVERA_I18N_R32.schedule(0);SEEKVERA_R22_CATEGORY_LOCK.lock()});const hrefs=await p.evaluate(()=>[...new Set([...document.querySelectorAll('#categories .r5-tile')].map(a=>a.getAttribute('href')).filter(Boolean))]);assert.equal(hrefs.length,31);for(let i=0;i<31;i+=8)await Promise.all(hrefs.slice(i,i+8).map(async h=>{const r=await rq.get(new URL(h,B).href,{timeout:15000});assert(r.status()<400,h);assert((await r.text()).length>180,h)}));
+          const ai1=await (await rq.post(B+'/api/ai',{data:{fast:true,language:'ar',country:'IQ',message:'أريد فندقاً في بغداد، ساعدني للوصول إلى القسم المناسب.'},timeout:20000})).json();assert(ai1.ok&&/[\u0600-\u06ff]/u.test(ai1.response));assert.equal(ai1.category,'travel');const ai2=await (await rq.post(B+'/api/ai',{data:{fast:true,language:'en',country:'GB',message:'I need an apartment to rent in London under my budget.'},timeout:20000})).json();assert(ai2.ok);assert.equal(ai2.category,'property');assert.equal(errs.length,0,JSON.stringify(errs.slice(0,5)));
+          await browser.close();console.log('R35 FINAL LIVE AUDIT PASS',JSON.stringify({countries:248,languages:98,categories:31,source:967,iraq:'ar/IQD/rtl',voice:true,ai:true,rm:true,tn:true}));
+          JS
+          node /tmp/r35v2.mjs
+
+      - name: Commit only after final live PASS
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf i18n-r35 i18n-r35-source.json i18n-r35-languages.json
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add -A
+          git diff --cached --quiet || git commit -m 'Publish fully audited R35 98-language global release'
+          git push origin HEAD:main
+          echo 'R35 FULL FINAL COMMITTED AFTER LIVE PASS'
