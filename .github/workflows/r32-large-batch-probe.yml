@@ -1,0 +1,30 @@
+name: R32 large batch probe
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r32-large-batch-probe.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe large POST batches
+        shell: python
+        run: |
+          import json, urllib.parse, urllib.request, time
+          SEP='⟦92837465⟧'
+          for n in [100,200,400,800]:
+              src=[f'Approved marketplace listing number {i} is available worldwide for comparison.' for i in range(n)]
+              text=('\n'+SEP+'\n').join(src)
+              data=urllib.parse.urlencode({'client':'gtx','sl':'en','tl':'de','dt':'t','q':text}).encode()
+              req=urllib.request.Request('https://translate.googleapis.com/translate_a/single',data=data,headers={'User-Agent':'Mozilla/5.0','Content-Type':'application/x-www-form-urlencoded'})
+              try:
+                  t=time.time()
+                  with urllib.request.urlopen(req,timeout=40) as r: obj=json.loads(r.read().decode())
+                  out=''.join(x[0] for x in obj[0] if x and x[0])
+                  parts=[x.strip() for x in out.split(SEP)]
+                  print('N',n,'chars',len(text),'http OK','parts',len(parts),'sec',round(time.time()-t,2))
+              except Exception as e:
+                  print('N',n,'chars',len(text),'ERROR',repr(e))
