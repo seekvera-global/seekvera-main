@@ -1,0 +1,113 @@
+name: R54 conversational AI speed voice routing
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r54-ai-experience.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r54-ai-experience
+  cancel-in-progress: true
+
+jobs:
+  deploy-audit-persist:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply R54 AI experience fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r54_ai_experience_fix.py
+          node --check superapp.js
+          node --check voice-ai.js
+          node --check worker-r31.js
+          grep -F 'addDirectRoute(cat,q,pending)' superapp.js >/dev/null
+          grep -F 'voiceReplyDeadline=Date.now()+45000' voice-ai.js >/dev/null
+          grep -F 'Never repeat or paraphrase the previous assistant reply' worker-r31.js >/dev/null
+          grep -F "sleep(220)" worker-r31.js >/dev/null
+          echo 'R54 BUILD PASS'
+
+      - name: Deploy R54 production
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Confirm R54 assets are live
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 30); do
+            s="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/superapp.js?r54=$i" || true)"
+            v="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/voice-ai.js?r54=$i" || true)"
+            w="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/worker-r31.js?r54=$i" || true)"
+            if [[ "$s" == *'addDirectRoute(cat,q,pending)'* && "$v" == *'voiceReplyDeadline=Date.now()+45000'* && "$w" == *'Never repeat or paraphrase the previous assistant reply'* ]]; then
+              echo 'R54 LIVE ASSETS PASS'
+              exit 0
+            fi
+            sleep 2
+          done
+          echo 'R54 assets not visible' >&2
+          exit 1
+
+      - name: Live browser audit - fast job route, conversation, voice reply
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > /tmp/r54-audit.mjs <<'JS'
+          import { chromium } from 'playwright';
+          import assert from 'node:assert/strict';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage();
+          await p.goto('https://seekveraglobal.com/?r54='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+          await p.waitForSelector('#aiChatInput',{timeout:30000});
+          await p.waitForFunction(()=>window.SEEKVERA_VOICE_AI&&document.querySelector('#aiChatForm'),null,{timeout:30000});
+          await p.fill('#aiChatInput','عم دور على شغل');
+          const t=Date.now();
+          await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForFunction(()=>!!document.querySelector('.sv-ai-direct-route[href*="jobs.html"]')||!!document.querySelector('#aiActions a[href*="jobs.html"]'),null,{timeout:1200});
+          const routeMs=Date.now()-t;
+          assert.ok(routeMs<1300,'job route was not immediate: '+routeMs);
+          await p.waitForFunction(()=>{const a=[...document.querySelectorAll('#aiMessages .ai-msg.bot')].at(-1);return a&&!a.classList.contains('thinking')&&a.textContent.trim().length>4},null,{timeout:10000});
+          const answer=await p.locator('#aiMessages .ai-msg.bot').last().innerText();
+          assert.ok(!/thinking|يفكر/i.test(answer),answer);
+          const api=await p.evaluate(async()=>{const t=performance.now();const r=await fetch('/api/ai',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message:'I am looking for a job',country:'Worldwide',language:'English',fast:true,history:[]})});const d=await r.json();return {status:r.status,ms:performance.now()-t,d}});
+          assert.equal(api.status,200,JSON.stringify(api));
+          assert.equal(api.d.category,'jobs',JSON.stringify(api));
+          assert.equal(api.d.route,'jobs.html',JSON.stringify(api));
+          assert.ok(String(api.d.response||'').length>8,JSON.stringify(api));
+          assert.ok(api.ms<9000,'AI too slow '+api.ms);
+          const voice=await p.evaluate(()=>{SEEKVERA_VOICE_AI.markVoiceReply();const before=SEEKVERA_VOICE_AI.isVoiceReplyPending();window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text:'Voice response test',language:'en'}}));return {before,after:SEEKVERA_VOICE_AI.isVoiceReplyPending()}});
+          assert.equal(voice.before,true,JSON.stringify(voice));
+          console.log('R54 LIVE PASS',JSON.stringify({routeMs,apiMs:Math.round(api.ms),answer:answer.slice(0,120),voice}));
+          await b.close();
+          JS
+          node /tmp/r54-audit.mjs
+
+      - name: Persist audited R54 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add -- superapp.js voice-ai.js worker-r31.js
+          if git diff --cached --quiet; then
+            echo 'No R54 source changes to persist'
+          else
+            git commit -m 'Persist R54 fast conversational AI voice and direct routing'
+            git push origin HEAD:main
+          fi
+          echo 'R54 AUDITED RELEASE PERSISTED'
