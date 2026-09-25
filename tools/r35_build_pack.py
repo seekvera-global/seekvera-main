@@ -3,7 +3,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup, NavigableString
 import argparse, concurrent.futures, hashlib, html as htmlmod, json, random, re, time, unicodedata, urllib.parse, urllib.request
 
-VERSION='20260925-r35-static-v3'
+VERSION='20260925-r35-static-v4'
 OUT=Path('i18n-r35')
 OUT.mkdir(exist_ok=True)
 ALIASES={'fil':'tl','he':'iw'}
@@ -75,7 +75,6 @@ def source_strings()->list[str]:
                 except Exception:pass
                 add(strings,raw)
     for x in DYNAMIC:add(strings,x)
-    # Third sort key makes source order/hash identical across parallel Python processes.
     return sorted(strings,key=lambda x:(len(x),x.lower(),x))
 
 def source_meta():
@@ -96,6 +95,14 @@ def google_request(code:str,text:str,timeout=55)->str:
     with urllib.request.urlopen(req,timeout=timeout) as r:obj=json.loads(r.read().decode('utf-8'))
     return ''.join(x[0] for x in obj[0] if x and x[0]).strip()
 
+def translation_sane(src:str,val:str)->bool:
+    a,b=clean_text(src),clean_text(val)
+    if not b:return False
+    # A short UI label must never expand into a translated copy of half the application.
+    # Natural translation expansion is normally small; this generous ceiling only catches
+    # malformed HTML-batch output where multiple markers collapse into one span.
+    return len(b)<=max(240,len(a)*7+80)
+
 def html_google_batch(code:str,batch:list[str])->list[str]:
     body='\n'.join(f'<span id="sv{i:04d}">{htmlmod.escape(s)}</span>' for i,s in enumerate(batch))
     raw=google_request(code,body)
@@ -109,6 +116,8 @@ def html_google_batch(code:str,batch:list[str])->list[str]:
     missing=[i for i,v in enumerate(vals) if not v]
     if missing:raise ValueError(f'html markers missing {code}: {missing[:12]}')
     out=[str(v) for v in vals]
+    corrupt=[i for i,(a,b) in enumerate(zip(batch,out)) if not translation_sane(a,b)]
+    if corrupt:raise ValueError(f'oversized/corrupt html translations {code}: {corrupt[:12]}')
     same=sum(1 for a,b in zip(batch,out) if clean_text(a)==clean_text(b))
     if same>max(80,int(len(batch)*.72)):raise ValueError(f'too many untranslated strings {code}: {same}/{len(batch)}')
     return out
@@ -118,7 +127,8 @@ def single_google(code:str,s:str)->str:
     for attempt in range(5):
         try:
             v=clean_text(google_request(code,s,35))
-            if v:return v
+            if v and translation_sane(s,v):return v
+            if v:raise ValueError('single translation expanded beyond sane limit')
         except Exception as e:last=e;time.sleep(.45+attempt*.65)
     raise RuntimeError(f'single google failed {code}: {last!r}')
 
@@ -143,8 +153,6 @@ def english_sentence(s:str)->bool:
     return len(words)>=2 and len(s)>=7 and not re.match(r'^(?:https?://|www\.)',s,re.I)
 
 def repair_unchanged(code:str,source:list[str],vals:list[str])->list[str]:
-    # Batch translation engines sometimes preserve a complete English UI sentence unchanged.
-    # Re-run those exact items individually so the final static pack never depends on runtime translation.
     idx=[i for i,(s,v) in enumerate(zip(source,vals)) if clean_text(s)==clean_text(v) and (s in FORCE_UI or english_sentence(s))]
     if not idx:return vals
     print('REPAIR_UNCHANGED',code,len(idx),flush=True)
@@ -171,14 +179,17 @@ def pollinations_chunk(code:str,batch:list[str])->list[str]:
             f'Keep SEEKVERA, URLs, numbers, currency codes, product names and placeholders unchanged. '
             f'Return ONLY one valid JSON array of exactly {len(batch)} strings in the same order, no markdown.\n'+json.dumps(batch,ensure_ascii=False))
     url='https://text.pollinations.ai/'+urllib.parse.quote(prompt)+'?model=openai&private=true'
-    req=urllib.request.Request(url,headers={'Accept':'text/plain','User-Agent':'SEEKVERA-R35-pack-builder/3.0'})
+    req=urllib.request.Request(url,headers={'Accept':'text/plain','User-Agent':'SEEKVERA-R35-pack-builder/4.0'})
     with urllib.request.urlopen(req,timeout=40) as r:raw=r.read().decode('utf-8').strip()
     raw=re.sub(r'^```(?:json)?\s*','',raw,flags=re.I);raw=re.sub(r'\s*```$','',raw)
     a,b=raw.find('['),raw.rfind(']')
     if a>=0 and b>a:raw=raw[a:b+1]
     vals=json.loads(raw)
     if not isinstance(vals,list) or len(vals)!=len(batch) or any(not str(x).strip() for x in vals):raise ValueError('bad pollinations batch')
-    return [str(x).strip() for x in vals]
+    vals=[str(x).strip() for x in vals]
+    bad=[i for i,(src,val) in enumerate(zip(batch,vals)) if not translation_sane(src,val)]
+    if bad:raise ValueError(f'oversized/corrupt public batch: {bad[:8]}')
+    return vals
 
 def pollinations_translate(code:str,source:list[str])->list[str]:
     out=[]
@@ -201,8 +212,9 @@ def build(code:str):
             print('GOOGLE_FATAL_FALLBACK',code,repr(e),flush=True);vals=pollinations_translate(code,source);provider='public-ai'
         vals=repair_unchanged(code,source,vals)
     if len(vals)!=len(source):raise RuntimeError(f'{code}: {len(vals)} != {len(source)}')
+    corrupt=[source[i] for i,v in enumerate(vals) if not translation_sane(source[i],v)]
+    if corrupt:raise RuntimeError(f'{code}: corrupt oversized translations: {corrupt[:8]}')
     trans={s:v for s,v in zip(source,vals)}
-    # Critical screenshot text and other obvious UI phrases are fail-closed: no English may survive.
     failed=[s for s in FORCE_UI if s in trans and clean_text(trans[s])==clean_text(s)] if code!='en' else []
     if failed:raise RuntimeError(f'{code}: forced UI remained English: {failed[:8]}')
     payload={'version':VERSION,'sourceHash':h,'language':code,'count':len(source),'provider':provider,'translations':trans}
