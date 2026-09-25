@@ -42,10 +42,18 @@ route=r'''if(u.pathname==='/api/r35-rare-translate'){
    if(br.ok){const vals=parse(await br.text());if(vals)return j(request,{ok:true,language:code,translations:vals,model:'pollinations-openai',source:'zero-cost-http-fallback-r35'});errors.push('pollinations:unparseable')}
    else errors.push('pollinations:'+br.status)
  }catch(e){errors.push('pollinations:'+clean(e?.message||e,140))}
- return j(request,{ok:false,error:'Rare translation unavailable',retryable:true,errors:errors.slice(-5)},503)
+ if(strings.every(x=>new TextEncoder().encode(x).length<=480)){
+  try{
+   const vals=await Promise.all(strings.map(async x=>{const signal=(typeof AbortSignal!=='undefined'&&AbortSignal.timeout)?AbortSignal.timeout(8000):undefined,r=await fetch('https://api.mymemory.translated.net/get?q='+encodeURIComponent(x)+'&langpair=en%7C'+encodeURIComponent(code),{headers:{accept:'application/json','user-agent':'SEEKVERA-R35/1.0'},...(signal?{signal}:{})});if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json(),t=clean(d?.responseData?.translatedText,900);if(!t||t.trim()===x.trim())throw new Error('untranslated');return t}));
+   const same=vals.filter((x,i)=>x.trim()===strings[i].trim()).length;
+   if(vals.length===strings.length&&same<=Math.ceil(strings.length*.75))return j(request,{ok:true,language:code,translations:vals,model:'mymemory-free-r35',source:'translation-memory-http-fallback-r35'});
+   errors.push('mymemory:unparseable');
+  }catch(e){errors.push('mymemory:'+clean(e?.message||e,140))}
+ }
+ return j(request,{ok:false,error:'Rare translation unavailable',retryable:true,errors:errors.slice(-6)},503)
 }
 
 '''
 s=s.replace(needle,route+needle,1)
 p.write_text(s,encoding='utf-8')
-print('R35 rare translator patched with zero-cost fallback')
+print('R35 rare translator patched with zero-cost + translation-memory fallback')
