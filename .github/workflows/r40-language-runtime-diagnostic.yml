@@ -1,0 +1,60 @@
+name: R40 live language runtime diagnostic
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r40-language-runtime-diagnostic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Diagnose every live language transition
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat >/tmp/r40.mjs <<'JS'
+          import {chromium} from 'playwright';
+          const B='https://seekveraglobal.com';
+          const browser=await chromium.launch({headless:true});
+          const ctx=await browser.newContext({viewport:{width:390,height:844},locale:'en-US',serviceWorkers:'block'});
+          const p=await ctx.newPage();
+          const errs=[];p.on('pageerror',e=>{errs.push(String(e));console.log('PAGEERROR',String(e))});
+          await p.route('**/api/ui-translate',r=>r.abort());
+          await p.route('https://text.pollinations.ai/**',r=>r.abort());
+          await p.goto(B+'/?r40='+Date.now(),{waitUntil:'domcontentloaded',timeout:45000});
+          await p.waitForFunction(()=>window.SEEKVERA_I18N_R32&&window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_R14_CATEGORIES&&window.SEEKVERA_R22_CATEGORY_LOCK,{timeout:20000});
+          const man=await (await ctx.request.get(B+'/i18n-r32/manifest.json?v='+Date.now())).json();
+          console.log('LANG_COUNT',man.languages.length,man.languages.join(','));
+          let bad=[];
+          for(const l of man.languages){
+            console.log('LANG_START',l);
+            const t=Date.now();
+            try{
+              await p.evaluate(l=>SEEKVERA_LOCALE_R15.setLanguage(l),l);
+              const load=await p.evaluate(async l=>{try{const x=await SEEKVERA_I18N_R32.loadPack(l);SEEKVERA_I18N_R32.schedule(0);SEEKVERA_R22_CATEGORY_LOCK.lock();return {ok:true,x:!!x}}catch(e){return {ok:false,error:String(e)}}},l);
+              if(!load.ok)throw new Error('loadPack '+JSON.stringify(load));
+              await p.waitForFunction(l=>document.documentElement.dataset.seekveraPackReady===l&&document.documentElement.dataset.seekveraI18nReady===l,l,{timeout:15000});
+              const st=await p.evaluate(()=>({selected:document.getElementById('lang')?.value||'',pack:document.documentElement.dataset.seekveraPackReady||'',ready:document.documentElement.dataset.seekveraI18nReady||'',dir:document.documentElement.dir||'',overflow:document.documentElement.scrollWidth-innerWidth,cards:document.querySelectorAll('#categories .r5-tile').length}));
+              console.log('LANG_PASS',l,Date.now()-t,JSON.stringify(st));
+            }catch(e){
+              const st=await p.evaluate(()=>({selected:document.getElementById('lang')?.value||'',pack:document.documentElement.dataset.seekveraPackReady||'',ready:document.documentElement.dataset.seekveraI18nReady||'',dir:document.documentElement.dir||'',overflow:document.documentElement.scrollWidth-innerWidth,cards:document.querySelectorAll('#categories .r5-tile').length,htmlLang:document.documentElement.lang||''}));
+              console.log('LANG_FAIL',l,Date.now()-t,String(e),JSON.stringify(st));
+              bad.push({l,error:String(e),state:st});
+              break;
+            }
+          }
+          console.log('R40_RESULT',JSON.stringify({bad,errors:errs.slice(0,10)}));
+          await browser.close();
+          if(bad.length||errs.length)process.exit(1);
+          JS
+          node /tmp/r40.mjs
