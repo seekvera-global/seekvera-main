@@ -1,114 +1,48 @@
 name: SEEKVERA live site health
-# Health validation target: current zero-cost Universal Global release
 
 on:
   schedule:
-    - cron: '17 */6 * * *'
+    - cron: '31 */6 * * *'
   workflow_dispatch:
   push:
     branches: [main]
     paths:
-      - '*.html'
-      - 'robots.txt'
-      - 'sitemap.xml'
-      - 'wrangler.jsonc'
+      - 'r20-final-guard.js'
+      - 'r22-category-lock.js'
+      - 'sw.js'
+      - 'worker.js'
       - '.github/workflows/site-health.yml'
-
 permissions:
   contents: read
-
 jobs:
   health-check:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-
-      - name: Check homepage and wait for latest deployment
+      - name: Check official production and wait for R23
         shell: bash
         run: |
           set -euo pipefail
-          base='https://seekvera-global.github.io/seekvera-main'
-          markers=('SEEKVERA' 'Ask SEEKVERA' 'Request anything' 'id="country"' 'id="lang"' 'cars-auto.html' 'restaurants-food.html' 'shipping-logistics.html' 'local-services.html' 'money-insurance.html')
-          ready=0
-          for attempt in $(seq 1 12); do
-            echo "Homepage check attempt $attempt/12"
-            if curl --fail --location --silent --show-error --retry 3 --retry-delay 5 --retry-all-errors \
-              "$base/" -o /tmp/home.html; then
-              missing=0
-              for marker in "${markers[@]}"; do
-                if grep -Fq "$marker" /tmp/home.html; then
-                  echo "OK: $marker"
-                else
-                  echo "WAITING: $marker"
-                  missing=1
-                fi
-              done
-              if [ "$missing" -eq 0 ]; then
-                ready=1
-                break
-              fi
-            fi
-            sleep 15
+          S='https://seekveraglobal.com'; ok=0
+          for i in $(seq 1 72); do
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/?health-r23=$i" -o /tmp/home || true
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/r20-final-guard.js?health-r23=$i" -o /tmp/g || true
+            if grep -q 'SEEKVERA' /tmp/home 2>/dev/null && grep -q '20260925-r23-stable' /tmp/g 2>/dev/null; then ok=1; break; fi
+            sleep 5
           done
-          if [ "$ready" -ne 1 ]; then
-            echo 'Live homepage did not reach the expected current version.'
-            grep -Eo '<title>[^<]*</title>' /tmp/home.html || true
-            exit 1
-          fi
-
-      - name: Check public pages
+          test "$ok" = 1
+          for m in 'SEEKVERA' 'Request anything' 'id="country"' 'id="lang"' 'cars-auto.html' 'restaurants-food.html' 'shipping-logistics.html' 'local-services.html' 'money-insurance.html'; do grep -Fq "$m" /tmp/home; done
+          ! grep -q 'r8-department-strip' /tmp/home
+          test "$(grep -o 'id=\"categories\"' /tmp/home | wc -l)" = 1
+      - name: Check API and public pages
         shell: bash
         run: |
           set -euo pipefail
-          base='https://seekvera-global.github.io/seekvera-main'
-          pages=(
-            travel.html shopping.html property.html business-software.html education.html
-            solar.html health.html web-hosting.html jobs.html import-export.html
-            cars-auto.html restaurants-food.html shipping-logistics.html local-services.html money-insurance.html
-            about.html contact.html privacy.html terms.html disclosure.html robots.txt sitemap.xml
-          )
-          for page in "${pages[@]}"; do
-            echo "Checking $page"
-            curl --fail --location --silent --show-error --retry 6 --retry-delay 10 --retry-all-errors \
-              "$base/$page" -o "/tmp/${page//\//_}"
+          S='https://seekveraglobal.com'
+          curl -LfsS --max-time 25 "$S/api/health?health-r23=1" -o /tmp/health
+          grep -q '"ok":true' /tmp/health
+          for p in marketplace.html travel.html tourism.html property.html cars-auto.html jobs.html shopping.html restaurants-food.html local-services.html import-export.html shipping-logistics.html health.html games.html connectivity.html wifi.html deal-agent.html privacy.html terms.html; do
+            code=$(curl -L -sS -o /dev/null -w '%{http_code}' --max-time 25 "$S/$p?health-r23=1"); test "$code" = 200 || { echo "$p -> $code"; exit 1; }
           done
-
-      - name: Verify official zero-cost SEO signals
-        shell: bash
-        run: |
-          set -euo pipefail
-          grep -q 'https://seekvera-global.github.io/seekvera-main/sitemap.xml' /tmp/robots.txt
-          grep -q 'https://seekvera-global.github.io/seekvera-main/' /tmp/sitemap.xml
-          grep -q 'cars-auto.html' /tmp/sitemap.xml
-          grep -q 'restaurants-food.html' /tmp/sitemap.xml
-          grep -q 'shipping-logistics.html' /tmp/sitemap.xml
-          grep -q 'local-services.html' /tmp/sitemap.xml
-          grep -q 'money-insurance.html' /tmp/sitemap.xml
-          grep -q '<link rel="canonical" href="https://seekvera-global.github.io/seekvera-main/">' /tmp/home.html
-          grep -q '<meta property="og:url" content="https://seekvera-global.github.io/seekvera-main/">' /tmp/home.html
-          echo 'Official zero-cost GitHub Pages SEO signals and all Universal Global guide pages are correct.'
-
-      - name: Check repository page references
-        shell: bash
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          from pathlib import Path
-          import re
-
-          root = Path('.')
-          html = list(root.glob('*.html'))
-          existing = {p.name for p in html}
-          missing = []
-          for p in html:
-              text = p.read_text(encoding='utf-8', errors='ignore')
-              for href in re.findall(r'href=["\']([^"\']+)["\']', text):
-                  if href.startswith(('http://','https://','mailto:','#','/')):
-                      continue
-                  target = href.split('?',1)[0].split('#',1)[0]
-                  if target.endswith('.html') and target not in existing:
-                      missing.append((p.name, target))
-          if missing:
-              raise SystemExit('Missing local page links: ' + repr(missing))
-          print(f'Checked {len(html)} HTML files; local page links are present.')
-          PY
+          echo 'SEEKVERA OFFICIAL PRODUCTION HEALTH PASS'

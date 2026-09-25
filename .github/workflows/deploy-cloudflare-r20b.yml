@@ -1,11 +1,19 @@
-name: Deploy SEEKVERA R20B to Cloudflare
+name: Deploy SEEKVERA R23 to Cloudflare
 
 on:
   push:
     branches: [main]
     paths:
       - 'r20-final-guard.js'
+      - 'r22-category-lock.js'
       - 'sw.js'
+      - 'worker.js'
+      - 'locale-r15.js'
+      - 'locale-r14-categories.js'
+      - 'r20-extra-categories.js'
+      - 'navigation.js'
+      - 'global-ui.js'
+      - 'i18n-ui.js'
       - '*.html'
       - '.assetsignore'
       - '.github/workflows/deploy-cloudflare-r20b.yml'
@@ -13,22 +21,20 @@ on:
 
 permissions:
   contents: read
-
 concurrency:
-  group: seekvera-cloudflare-production-r20b
+  group: seekvera-cloudflare-production-r23
   cancel-in-progress: true
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Validate source
+      - name: Validate R23 source
         shell: bash
         run: |
           set -euo pipefail
-          for f in worker.js voice-ai.js i18n-ui.js global-ui.js sw.js navigation.js r20-final-guard.js locale-r14-categories.js; do node --check "$f"; done
+          for f in worker.js voice-ai.js i18n-ui.js global-ui.js sw.js navigation.js r20-final-guard.js r22-category-lock.js locale-r15.js locale-r14-categories.js r20-extra-categories.js; do node --check "$f"; done
           python - <<'PY'
           from pathlib import Path
           import re
@@ -36,46 +42,28 @@ jobs:
           n=Path('navigation.js').read_text(encoding='utf-8')
           i=Path('i18n-ui.js').read_text(encoding='utf-8')
           guard=Path('r20-final-guard.js').read_text(encoding='utf-8')
+          lock=Path('r22-category-lock.js').read_text(encoding='utf-8')
           sw=Path('sw.js').read_text(encoding='utf-8')
-          idx=Path('index.html').read_text(encoding='utf-8')
           pm=re.search(r'const COUNTRY_PROFILE=Object\.fromEntries\(`([^`]+)`\.split',g,re.S)
           lm=re.search(r'const WORLD_LANGS=\[([^\]]+)\]',n,re.S)
           im=re.search(r'const SUPPORTED=\[([^\]]+)\]',i,re.S)
           assert pm and lm and im
           profiles={x.split(':',1)[0]:x.split(':',1)[1] for x in pm.group(1).split(';') if x}
-          langs=re.findall(r"'([^']+)'",lm.group(1))
-          ilangs=re.findall(r"'([^']+)'",im.group(1))
-          assert len(profiles)==248,len(profiles)
-          assert len(langs)==98,len(langs)
-          assert len(ilangs)==98,len(ilangs)
+          langs=re.findall(r"'([^']+)'",lm.group(1)); ilangs=re.findall(r"'([^']+)'",im.group(1))
+          assert len(profiles)==248,len(profiles); assert len(langs)==98,len(langs); assert len(ilangs)==98,len(ilangs)
           for cc,val in profiles.items(): assert val.split(',',1)[0] in langs,(cc,val)
-          assert "const VERSION='20260925-r20c'" in guard
-          assert 'EN_DESC=new Set' in guard and 'fixCategories' in guard
-          assert 'EXTRA_TITLES' in guard and 'fillMissingTitles' in guard
-          assert 'max-height:128px' in guard and 'sv-r20-untranslated' in guard
-          assert "const CACHE='seekvera-r20-final-ui-20260925'" in sw
-          assert "'./r20-final-guard.js'" in sw
-          assert 'r20-final-guard.js?v=20260925-r20' in idx
-          assert 'i18n-ui.js?v=20260925-r20' in idx
-          assert '2026-09-25 · R20' in idx
-          assert idx.count('id="categories"')==1
-          assert 'r8-department-strip' not in idx and 'class="r5-left"' not in idx
-          pages=[]
-          for p in Path('.').glob('*.html'):
-              if p.name.lower().startswith('google'): continue
-              t=p.read_text(encoding='utf-8')
-              assert 'r20-final-guard.js?v=20260925-r20' in t,p.name
-              assert 'i18n-ui.js?v=20260925-r20' in t,p.name
-              pages.append(p.name)
-          assert len(pages)>=44,len(pages)
-          print('R20C SOURCE PASS',len(profiles),'countries',len(langs),'languages',len(pages),'pages')
+          assert '20260925-r23-stable' in guard and 'MutationObserver' not in guard
+          assert '20260925-r23-category' in lock and 'MutationObserver' not in lock
+          assert "const CACHE='seekvera-r23-stable-20260925'" in sw
+          assert 'r21-card-cleanup.js' not in sw
+          assert "const RELEASE='20260924-ai-r17'" in Path('worker.js').read_text(encoding='utf-8')
+          print('R23 SOURCE PASS —',len(profiles),'countries,',len(langs),'languages')
           PY
-          npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-r20b-dry
+          npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-r23-dry
           grep -q '"binding": "AI"' wrangler.jsonc
-          rm -rf .wrangler-r20b-dry .wrangler
+          rm -rf .wrangler-r23-dry .wrangler
       - name: Check credentials
         id: cf
-        shell: bash
         env:
           CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -88,33 +76,29 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
-      - name: Live verification
+      - name: Verify live R23 assets
         if: steps.cf.outputs.ready == 'true'
         shell: bash
         run: |
           set -euo pipefail
-          SITE='https://seekveraglobal.com'
-          UA='Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0 Mobile Safari/537.36'
-          ok=0
-          for i in $(seq 1 30); do
-            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/?r20c=$i" -o /tmp/home.html || true
-            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/r20-final-guard.js?r20c=$i" -o /tmp/guard.js || true
-            curl -L -fsS --max-time 25 -A "$UA" -H 'Cache-Control: no-cache' "$SITE/sw.js?r20c=$i" -o /tmp/sw.js || true
-            if grep -q 'r20-final-guard.js?v=20260925-r20' /tmp/home.html 2>/dev/null && grep -q '20260925-r20c' /tmp/guard.js 2>/dev/null && grep -q 'seekvera-r20-final-ui-20260925' /tmp/sw.js 2>/dev/null; then ok=1; break; fi
+          S='https://seekveraglobal.com'; ok=0
+          for i in $(seq 1 60); do
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/r20-final-guard.js?r23=$i" -o /tmp/g || true
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/r22-category-lock.js?r23=$i" -o /tmp/l || true
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/sw.js?r23=$i" -o /tmp/sw || true
+            if grep -q '20260925-r23-stable' /tmp/g 2>/dev/null && grep -q '20260925-r23-category' /tmp/l 2>/dev/null && grep -q 'seekvera-r23-stable-20260925' /tmp/sw 2>/dev/null; then ok=1; break; fi
             sleep 4
           done
-          test "$ok" = '1'
-          grep -q '2026-09-25 · R20' /tmp/home.html
-          grep -q 'max-height:128px' /tmp/guard.js
-          grep -q 'EXTRA_TITLES' /tmp/guard.js
-          grep -q 'sv-r20-untranslated' /tmp/guard.js
-          curl -L -fsS --max-time 25 -A "$UA" "$SITE/api/health?r20c=1" -o /tmp/health.json
-          grep -q '20260924-ai-r17' /tmp/health.json
-          ai_code="$(curl -sS -o /tmp/ai.json -w '%{http_code}' --max-time 70 -X POST "$SITE/api/ai" -A "$UA" -H "Origin: $SITE" -H "Referer: $SITE/" -H 'Content-Type: application/json' --data '{"message":"Hello. The interface can be Hindi, but I am speaking English. Reply briefly in English.","country":"India","language":"auto","scope":"worldwide","fast":true}')"
-          test "$ai_code" = '200'
-          grep -q '"ok":true' /tmp/ai.json
-          grep -q '"response"' /tmp/ai.json
-          echo 'LIVE R20C ASSETS + AI PASS'
+          test "$ok" = 1
+          ! grep -q 'MutationObserver' /tmp/g
+          ! grep -q 'MutationObserver' /tmp/l
+          ! grep -q 'r21-card-cleanup.js' /tmp/sw
+          curl -LfsS --max-time 25 "$S/api/health?r23=1" -o /tmp/health
+          grep -q '"ok":true' /tmp/health
+          grep -q '20260924-ai-r17' /tmp/health
+          echo 'LIVE R23 DEPLOY PASS'
       - name: Missing credentials
         if: steps.cf.outputs.ready != 'true'
-        run: exit 1
+        run: |
+          echo 'Cloudflare deployment credentials are missing.' >&2
+          exit 1

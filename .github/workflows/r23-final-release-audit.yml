@@ -1,0 +1,107 @@
+name: SEEKVERA R23 final release audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'r20-final-guard.js'
+      - 'r22-category-lock.js'
+      - 'sw.js'
+      - 'worker.js'
+      - 'locale-r15.js'
+      - 'locale-r14-categories.js'
+      - 'r20-extra-categories.js'
+      - '.github/workflows/r23-final-release-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  release-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static release integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in worker.js global-ui.js navigation.js i18n-ui.js locale-r15.js locale-r14-categories.js r20-extra-categories.js r20-final-guard.js r22-category-lock.js sw.js voice-ai.js; do node --check "$f"; done
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          g=Path('global-ui.js').read_text(encoding='utf-8'); n=Path('navigation.js').read_text(encoding='utf-8'); i=Path('i18n-ui.js').read_text(encoding='utf-8')
+          guard=Path('r20-final-guard.js').read_text(encoding='utf-8'); lock=Path('r22-category-lock.js').read_text(encoding='utf-8'); sw=Path('sw.js').read_text(encoding='utf-8')
+          pm=re.search(r'const COUNTRY_PROFILE=Object\.fromEntries\(`([^`]+)`\.split',g,re.S); lm=re.search(r'const WORLD_LANGS=\[([^\]]+)\]',n,re.S); im=re.search(r'const SUPPORTED=\[([^\]]+)\]',i,re.S)
+          assert pm and lm and im
+          profiles={x.split(':',1)[0]:x.split(':',1)[1] for x in pm.group(1).split(';') if x}; langs=re.findall(r"'([^']+)'",lm.group(1)); ilangs=re.findall(r"'([^']+)'",im.group(1))
+          assert len(profiles)==248; assert len(langs)==98; assert len(ilangs)==98
+          assert all(v.split(',',1)[0] in langs for v in profiles.values())
+          assert 'MutationObserver' not in guard and 'MutationObserver' not in lock
+          assert 'r21-card-cleanup.js' not in sw
+          assert '20260925-r23-stable' in guard and '20260925-r23-category' in lock and 'seekvera-r23-stable-20260925' in sw
+          print('STATIC PASS — 248 countries / 98 languages / no legacy DOM polling')
+          PY
+      - name: Wait for official R23 production
+        shell: bash
+        run: |
+          set -euo pipefail
+          S='https://seekveraglobal.com'; ok=0
+          for i in $(seq 1 80); do
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/r20-final-guard.js?audit-r23=$i" -o /tmp/g || true
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/r22-category-lock.js?audit-r23=$i" -o /tmp/l || true
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/sw.js?audit-r23=$i" -o /tmp/sw || true
+            if grep -q '20260925-r23-stable' /tmp/g 2>/dev/null && grep -q '20260925-r23-category' /tmp/l 2>/dev/null && grep -q 'seekvera-r23-stable-20260925' /tmp/sw 2>/dev/null; then ok=1; break; fi
+            sleep 5
+          done
+          test "$ok" = 1
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save playwright@1.58.2
+          npx playwright install --with-deps chromium
+      - name: Browser audit — all countries, all languages, RTL and mobile stability
+        env:
+          SITE: https://seekveraglobal.com
+        shell: bash
+        run: |
+          cat > /tmp/r23.mjs <<'JS'
+          import {chromium} from 'playwright';import assert from 'node:assert/strict';
+          const browser=await chromium.launch({headless:true});
+          try{
+            const ctx=await browser.newContext({viewport:{width:360,height:800},locale:'ar-SA',serviceWorkers:'block'});
+            const p=await ctx.newPage();const errors=[];p.on('pageerror',e=>errors.push(String(e)));
+            await p.route('**/api/ui-translate',r=>r.abort());
+            await p.goto(`${process.env.SITE}/?release-r23=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45000});
+            await p.waitForFunction(()=>window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_R22_CATEGORY_LOCK&&window.SEEKVERA_R14_CATEGORIES&&Object.keys(SEEKVERA_R14_CATEGORIES.data||{}).length===98,null,{timeout:25000});
+            const countries=await p.evaluate(()=>{
+              const api=window.SEEKVERA_LOCALE_R15,profiles=api.profiles,bad=[];const old=window.SEEKVERA_I18N?.apply;if(window.SEEKVERA_I18N)window.SEEKVERA_I18N.apply=()=>{};
+              for(const [cc,prof] of Object.entries(profiles)){const s=api.setCountry(cc),c=document.querySelector('.sv-controls select#country,select#country.sv-select'),l=document.querySelector('.sv-controls select#lang,select#lang.sv-select'),cur=document.querySelector('.sv-controls select#currency,select#currency.sv-select');if(s.country!==cc||s.language!==prof.language||s.currency!==prof.currency||c?.value!==cc||l?.value!==prof.language||cur?.value!==prof.currency||document.documentElement.lang!==prof.language)bad.push({cc,s,prof,cv:c?.value,lv:l?.value,uv:cur?.value,html:document.documentElement.lang})}
+              if(window.SEEKVERA_I18N&&old)window.SEEKVERA_I18N.apply=old;return {count:Object.keys(profiles).length,bad};
+            });
+            assert.equal(countries.count,248);assert.deepEqual(countries.bad,[]);
+            const cats=await p.evaluate(()=>{const langs=Object.keys(SEEKVERA_R14_CATEGORIES.data),bad=[];for(const l of langs){const sel=document.querySelector('.sv-controls select#lang,select#lang.sv-select,#lang');if(sel){if(![...sel.options].some(o=>o.value===l))sel.add(new Option(l,l));sel.value=l}document.documentElement.lang=l;SEEKVERA_R22_CATEGORY_LOCK.lock();const expected=SEEKVERA_R14_CATEGORIES.data[l],bodies=[...document.querySelectorAll('#categories .r5-tile-body')].slice(0,31);if(bodies.length!==31){bad.push({l,reason:'count',count:bodies.length});continue}bodies.forEach((body,i)=>{const title=body.querySelector(':scope>b')?.textContent.trim()||'',bs=body.querySelectorAll(':scope>b').length,smalls=body.querySelectorAll(':scope>small').length,overflow=body.scrollWidth-body.clientWidth;if(bs!==1||title!==expected[i]||(l!=='en'&&(smalls!==0||body.children.length!==1))||overflow>2)bad.push({l,i,title,expected:expected[i],bs,smalls,children:body.children.length,overflow})});if(document.documentElement.scrollWidth-innerWidth>2)bad.push({l,reason:'page-overflow',delta:document.documentElement.scrollWidth-innerWidth})}return {count:langs.length,bad,r22:document.documentElement.dataset.svR22,r23:document.documentElement.dataset.svR23};});
+            assert.equal(cats.count,98);assert.deepEqual(cats.bad,[]);assert.equal(cats.r22,'ready');assert.equal(cats.r23,'stable');
+            await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('SA'));await p.waitForTimeout(2200);
+            const samples=[];for(let i=0;i<12;i++){samples.push(await p.evaluate(()=>{const a=document.querySelector('#aiChat,.sv-unified-chat')?.getBoundingClientRect(),c=document.querySelector('#categories')?.getBoundingClientRect();return {at:a?.top??0,ah:a?.height??0,ct:c?.top??0,ch:c?.height??0,w:document.documentElement.scrollWidth-innerWidth,dir:document.documentElement.dir,lang:document.documentElement.lang}}));await p.waitForTimeout(140)}
+            const span=k=>Math.max(...samples.map(x=>x[k]))-Math.min(...samples.map(x=>x[k]));assert(span('at')<=3,`AI top shift ${span('at')}`);assert(span('ah')<=3,`AI height shift ${span('ah')}`);assert(span('ct')<=3,`categories top shift ${span('ct')}`);assert(span('ch')<=3,`categories height shift ${span('ch')}`);assert(samples.every(x=>x.w<=2));assert(samples.every(x=>x.dir==='rtl'&&x.lang==='ar'));
+            assert.equal(errors.length,0,errors.join('\n'));
+            console.log('BROWSER PASS — 248/248 countries, 98/98 languages, RTL, 31/31 category cards, mobile layout stable');
+            await ctx.close();
+          }finally{await browser.close()}
+          JS
+          timeout 240s node /tmp/r23.mjs
+      - name: Live AI language and routing smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          S='https://seekveraglobal.com/api/ai'
+          call(){ local name="$1" body="$2"; code=$(curl -sS -o "/tmp/$name.json" -w '%{http_code}' --max-time 80 -X POST "$S" -H 'Origin: https://seekveraglobal.com' -H 'Referer: https://seekveraglobal.com/' -H 'Content-Type: application/json' --data "$body"); test "$code" = 200 || { echo "$name AI HTTP $code"; cat "/tmp/$name.json"; exit 1; }; grep -q '"ok":true' "/tmp/$name.json"; grep -q '"response"' "/tmp/$name.json"; grep -q '"route"' "/tmp/$name.json"; }
+          call en '{"message":"I need a hotel in Paris. Reply briefly in English.","country":"France","language":"English","scope":"worldwide"}'
+          call ar '{"message":"أريد فندقاً في دبي. أجب باختصار بالعربية.","country":"United Arab Emirates","language":"Arabic","scope":"worldwide"}'
+          call hi '{"message":"मुझे मुंबई में होटल चाहिए। संक्षेप में हिंदी में उत्तर दें।","country":"India","language":"Hindi","scope":"worldwide"}'
+          python - <<'PY'
+          import json,re
+          ar=json.load(open('/tmp/ar.json')); hi=json.load(open('/tmp/hi.json'))
+          assert re.search(r'[\u0600-\u06ff]',ar.get('response','')),ar
+          assert re.search(r'[\u0900-\u097f]',hi.get('response','')),hi
+          print('AI PASS — English / Arabic / Hindi real responses and routing')
+          PY
