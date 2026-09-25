@@ -17,7 +17,7 @@ concurrency:
 
 env:
   PYTHONUNBUFFERED: '1'
-  AUDIT_REV: 'r41-isolated-locale-phases'
+  AUDIT_REV: 'r42-filipino-rtl-fix'
 
 jobs:
   recover-deploy-audit:
@@ -69,7 +69,7 @@ jobs:
             done </tmp/missing.txt
           fi
           python - <<'PY'
-          import json,glob,os,re
+          import json,glob,os
           m=json.load(open('i18n-r32/manifest.json',encoding='utf-8'))
           s=json.load(open('i18n-r32-source.json',encoding='utf-8'))
           files={os.path.basename(p)[:-5]:p for p in glob.glob('i18n-r32/*.json') if not p.endswith('/manifest.json')}
@@ -99,9 +99,12 @@ jobs:
           python tools/r35_finalize.py
           node --check r32-i18n.js
           node --check i18n-ui.js
+          node --check locale-r14.js
           node --check worker-r31.js
           node --check worker.js
           grep -q 'r35-static-v3' i18n-ui.js
+          grep -q 'Aktuwal na pamilihan' locale-r14.js
+          grep -Fq "const RTL=new Set(['ar','fa','ur','he','ps','dv']);" locale-r14.js
           grep -q 'parallel-static-98-language-country-category-final' worker-r31.js
           test "$(grep -o 'id=\"categories\"' index.html | wc -l | tr -d ' ')" = '1'
           ! grep -q 'r5-chips' index.html
@@ -149,7 +152,7 @@ jobs:
           find tools -type f -name '*.pyc' -delete || true
           git config user.name 'seekvera-global'
           git config user.email 'seekvera.global@gmail.com'
-          git add -- i18n-r32 i18n-r32-source.json r32-i18n.js i18n-ui.js locale-r15.js worker-r31.js worker.js sw.js
+          git add -- i18n-r32 i18n-r32-source.json r32-i18n.js i18n-ui.js locale-r14.js locale-r15.js worker-r31.js worker.js sw.js
           git add -- '*.html'
           if git diff --cached --quiet; then
             echo 'No audited file changes to commit'
