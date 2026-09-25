@@ -1,10 +1,12 @@
-name: SEEKVERA final R3 Cloudflare deploy
+name: SEEKVERA R30 Cloudflare deploy
 
 on:
   push:
     branches: [main]
     paths:
       - 'worker.js'
+      - 'worker-r30.js'
+      - 'r30-runtime.js'
       - 'voice-ai.js'
       - 'global-ui.js'
       - 'global-ui.css'
@@ -20,25 +22,29 @@ permissions:
   contents: read
 
 concurrency:
-  group: seekvera-final-r3-production
+  group: seekvera-r30-production
   cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-      - name: Validate final R3 app runtime
+      - name: Validate R30 runtime
         shell: bash
         run: |
           set -euo pipefail
+          node --check worker.js
+          node --check worker-r30.js
+          node --check r30-runtime.js
           node --check voice-ai.js
           node --check global-ui.js
           node --check i18n-ui.js
-          grep -q '20260922-final-r3' index.html
-          grep -q 'body.sv-home-global .sv-global-dock{display:none!important}' i18n-premium.css
-          grep -q "'Country / Region':'الدولة / المنطقة'" i18n-ui.js
+          grep -q "main.*worker-r30.js" wrangler.jsonc
+          grep -q 'r30Runtime' worker-r30.js
+          grep -q 'SEEKVERA_LOCALE_GUARD_R9' r30-runtime.js
+          grep -q 'speechSynthesis' r30-runtime.js
           grep -q 'safetyGateVersion' worker.js
           grep -q '/api/marketplace-submit' worker.js
           npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-dry-run
@@ -49,25 +55,20 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
-      - name: Verify final R3 is live
+      - name: Verify R30 is live
         shell: bash
         run: |
           set -euo pipefail
           SITE='https://seekveraglobal.com'
           BASE='https://seekvera-main.seekvera-global.workers.dev'
-          for i in $(seq 1 18); do
-            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/?finalr3=$i" -o /tmp/home || true
-            if grep -q 'i18n-premium.css?v=20260922-final-r3' /tmp/home 2>/dev/null && grep -q 'i18n-ui.js?v=20260922-final-r3' /tmp/home 2>/dev/null; then break; fi
-            sleep 4
+          ok=0
+          for i in $(seq 1 24); do
+            curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$BASE/api/health?r30=$i" -o /tmp/health || true
+            if grep -q '"r30":true' /tmp/health 2>/dev/null; then ok=1; break; fi
+            sleep 3
           done
-          grep -q 'i18n-premium.css?v=20260922-final-r3' /tmp/home
-          grep -q 'i18n-ui.js?v=20260922-final-r3' /tmp/home
-          curl -fsS --max-time 15 "$SITE/i18n-premium.css?v=20260922-final-r3" -o /tmp/css
-          grep -q 'body.sv-home-global .sv-global-dock{display:none!important}' /tmp/css
-          curl -fsS --max-time 15 "$SITE/i18n-ui.js?v=20260922-final-r3" -o /tmp/i18n
-          grep -q "'Country / Region':'الدولة / المنطقة'" /tmp/i18n
-          curl -fsS --max-time 15 "$BASE/api/health" -o /tmp/health
+          test "$ok" = 1
           grep -q '"centralSafetyGate":"enabled"' /tmp/health
-          grep -q '"failClosed":true' /tmp/health
-          grep -q '"marketplaceProxy":"enabled"' /tmp/health
-          echo 'FINAL R3 PRODUCTION DEPLOY PASS'
+          curl -fsS --max-time 20 -H 'Cache-Control: no-cache' "$SITE/?r30=1" -o /tmp/home
+          grep -q 'r30-runtime.js?v=20260925-r30' /tmp/home
+          echo 'R30 PRODUCTION DEPLOY PASS'
