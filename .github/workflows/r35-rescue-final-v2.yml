@@ -144,7 +144,7 @@ jobs:
           set -euo pipefail
           npm install --no-save playwright@1.55.0 >/dev/null 2>&1
           npx playwright install chromium >/dev/null
-          cat >/tmp/r35v2.mjs <<'JS'
+          cat >r35v2.mjs <<'JS'
           import {chromium} from 'playwright';import assert from 'node:assert/strict';
           const B='https://seekveraglobal.com';const browser=await chromium.launch({headless:true});
           const ctx=await browser.newContext({viewport:{width:390,height:844},locale:'en-US',serviceWorkers:'block'});const rq=ctx.request;
@@ -162,7 +162,8 @@ jobs:
           await p.evaluate(()=>SEEKVERA_LOCALE_R15.setLanguage('ar'));await p.evaluate(async()=>{await SEEKVERA_I18N_R32.loadPack('ar');SEEKVERA_I18N_R32.schedule(0);SEEKVERA_R22_CATEGORY_LOCK.lock()});const hrefs=await p.evaluate(()=>[...new Set([...document.querySelectorAll('#categories .r5-tile')].map(a=>a.getAttribute('href')).filter(Boolean))]);assert.equal(hrefs.length,31);for(let i=0;i<31;i+=8)await Promise.all(hrefs.slice(i,i+8).map(async h=>{const r=await rq.get(new URL(h,B).href,{timeout:15000});assert(r.status()<400,h);assert((await r.text()).length>180,h)}));
           assert.equal(errs.length,0,JSON.stringify(errs.slice(0,5)));await browser.close();console.log('R35 STATIC LIVE AUDIT PASS',JSON.stringify({countries:248,languages:98,categories:31,source:967,iraq:'ar/IQD/rtl',voiceControls:true,staticWithoutTranslationAPI:true,rm:true,tn:true}));
           JS
-          node /tmp/r35v2.mjs
+          node r35v2.mjs
+          rm -f r35v2.mjs
 
       - name: Commit static release only after final live PASS
         shell: bash
