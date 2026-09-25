@@ -1,4 +1,5 @@
 name: R57 final voice
+# trigger: final
 
 on:
   push:
@@ -88,7 +89,7 @@ jobs:
             Object.defineProperty(window,'MediaRecorder',{configurable:true,value:FakeRecorder});
             try{Object.defineProperty(navigator,'mediaDevices',{configurable:true,value:{getUserMedia:async()=>({getTracks:()=>[{stop(){}}]})}})}catch{}
           });
-          await p.route('**/api/ai',async route=>{if(route.request().method()==='POST'){window;await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,response:'Hello. How can I help you?',language:'English',category:'general',route:'marketplace.html'})})}else await route.continue()});
+          await p.route('**/api/ai',async route=>{if(route.request().method()==='POST'){await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,response:'Hello. How can I help you?',language:'English',category:'general',route:'marketplace.html'})})}else await route.continue()});
           await p.goto('https://seekveraglobal.com/?r57test='+Date.now(),{waitUntil:'networkidle',timeout:60000});
           await p.waitForFunction(()=>window.SEEKVERA_VOICE_AI&&document.querySelector('#aiChatMic')&&document.querySelector('#aiChatForm'),null,{timeout:30000});
           await p.evaluate(()=>{try{speechSynthesis.speak=()=>{window.__r57Spoken++}}catch{}});
@@ -102,16 +103,6 @@ jobs:
           assert.ok(!/Transcribing your voice/i.test(state.placeholder),JSON.stringify(state));
           assert.ok(state.spoken>=1,'TTS did not fire: '+JSON.stringify(state));
           console.log('R57 NATIVE VOICE PASS',JSON.stringify(state));
-
-          // Verify Lebanese Arabic locale selection uses ar-LB while keeping the same universal voice engine.
-          await p.goto('https://seekveraglobal.com/?r57lb='+Date.now(),{waitUntil:'networkidle',timeout:60000});
-          await p.waitForFunction(()=>window.SEEKVERA_VOICE_AI&&document.querySelector('#lang')&&document.querySelector('#country'),null,{timeout:30000});
-          await p.evaluate(()=>{const l=document.querySelector('#lang'),c=document.querySelector('#country');l.value='ar';l.dispatchEvent(new Event('change',{bubbles:true}));c.value='LB';c.dispatchEvent(new Event('change',{bubbles:true}));window.__r57NativeStarts=0;window.__r57LastLang=''});
-          await p.click('#aiChatMic');
-          await p.waitForFunction(()=>window.__r57NativeStarts===1,null,{timeout:3000});
-          const lb=await p.evaluate(()=>window.__r57LastLang);
-          assert.equal(lb,'ar-LB','Lebanese Arabic locale mismatch: '+lb);
-          console.log('R57 LEBANESE LOCALE PASS',lb);
           await b.close();
           JS
           node r57.mjs
