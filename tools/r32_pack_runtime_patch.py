@@ -9,7 +9,7 @@ s=s.replace("const SRC=new WeakMap(),ATTRSRC=new WeakMap(),MEM=new Map();",
 anchor="function put(l,s,v){v=String(v||'').trim();if(!v||v===s)return;MEM.set(l+'\\u0000'+s,v);try{localStorage.setItem(k(l,s),v)}catch{}}"
 addition=anchor+"\n"+r"""async function loadPack(l){
  if(l==='en')return true;if(PACKS.has(l))return true;if(PACKING.has(l))return PACKING.get(l);
- const task=(async()=>{try{const r=await fetch('/i18n-r32/'+encodeURIComponent(l)+'.json?v=20260925-r32-static-v1',{cache:'force-cache'});if(!r.ok)throw Error('pack '+r.status);const d=await r.json();const t=d?.translations;if(!t||typeof t!=='object')throw Error('invalid pack');for(const [src,v] of Object.entries(t)){const val=String(v||'').trim();if(val)MEM.set(l+'\u0000'+src,val)}PACKS.set(l,d);document.documentElement.dataset.seekveraPackReady=l;return true}catch(e){console.warn('SEEKVERA local language pack unavailable',l,e);return false}finally{PACKING.delete(l)}})();
+ const task=(async()=>{try{const r=await fetch('/i18n-r32/'+encodeURIComponent(l)+'.json?v=20260925-r32-static-v2',{cache:'force-cache'});if(!r.ok)throw Error('pack '+r.status);const d=await r.json();const t=d?.translations;if(!t||typeof t!=='object')throw Error('invalid pack');for(const [src,v] of Object.entries(t)){const val=String(v||'').trim();if(val)MEM.set(l+'\u0000'+src,val)}PACKS.set(l,d);document.documentElement.dataset.seekveraPackReady=l;return true}catch(e){console.warn('SEEKVERA local language pack unavailable',l,e);return false}finally{PACKING.delete(l)}})();
  PACKING.set(l,task);return task
 }"""
 if anchor not in s: raise SystemExit('put anchor missing')
