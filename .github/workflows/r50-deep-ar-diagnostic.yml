@@ -1,0 +1,21 @@
+name: R50 Arabic deep-page diagnostic
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r50-deep-ar-diagnostic.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install browser
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+      - name: Diagnose deep Arabic leaks
+        run: node tools/r50_deep_ar_diag.mjs
