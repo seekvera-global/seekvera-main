@@ -24,7 +24,7 @@ document.getElementById('go').onclick=load;document.getElementById('q').addEvent
 const aiBox=document.getElementById('aiBox');document.getElementById('aiOpen').onclick=()=>aiBox.classList.add('open');document.getElementById('aiClose').onclick=()=>aiBox.classList.remove('open');document.getElementById('aiSend').onclick=async()=>{const m=document.getElementById('aiQ').value.trim();if(!m)return;const out=document.getElementById('aiAns');out.textContent='Thinking...';try{const r=await fetch('https://seekvera-main.seekvera-global.workers.dev/api/ai',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message:m,country:document.getElementById('country').value||'Worldwide',language:navigator.language||'en'})});const d=await r.json();out.textContent=d.response||'Try a more specific search.'}catch{out.textContent='AI is temporarily unavailable. Use the marketplace search above.'}};
 </script><script src="r20-final-guard.js?v=20260925-r20" defer></script>
 <script src="locale-r15.js?v=20260925-r44-stable-locale" defer></script>
-<script src="voice-ai.js?v=20260924-r17" defer></script>
+<script src="voice-ai.js?v=20260925-r54-ai-experience" defer></script>
 <script src="global-ui.js?v=20260924-r17" defer></script>
 <script src="i18n-ui.js?v=20260925-r35-global-final" defer></script>
 <script src="locale-r14-categories.js?v=20260924-r14" defer></script>
