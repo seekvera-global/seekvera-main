@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  DIAGNOSTIC_REV: 'r43-xh'
+  DIAGNOSTIC_REV: 'r44-xh-deep'
 
 permissions:
   contents: read
@@ -19,7 +19,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect Xhosa label lifecycle
+      - name: Inspect Xhosa label lifecycle after R44
         shell: bash
         run: |
           set -euo pipefail
@@ -35,23 +35,33 @@ jobs:
           await p.route('**/api/ui-translate',r=>r.abort());
           await p.route('https://text.pollinations.ai/**',r=>r.abort());
           const pack=await (await c.request.get(B+'/i18n-r32/xh.json?v='+Date.now())).json();
-          for(const q of ['Live marketplace','Approved real listings only.','OPEN MARKETPLACE →','No approved live marketplace listings are available right now. SEEKVERA does not generate fake listings.']) console.log('PACK_XH',JSON.stringify(q),'->',JSON.stringify(pack.translations?.[q]));
-          await p.goto(B+'/?r43xh='+Date.now(),{waitUntil:'domcontentloaded',timeout:45000});
+          console.log('PACK_XH_LIVE',JSON.stringify(pack.translations?.['Live marketplace']));
+          await p.goto(B+'/?r44xh='+Date.now(),{waitUntil:'domcontentloaded',timeout:45000});
           await p.waitForFunction(()=>window.SEEKVERA_I18N_R32&&window.SEEKVERA_LOCALE_R15,{timeout:20000});
           await p.evaluate(()=>SEEKVERA_LOCALE_R15.setLanguage('xh'));
           await p.evaluate(async()=>{await SEEKVERA_I18N_R32.loadPack('xh');await SEEKVERA_I18N_R32.apply()});
           await p.waitForFunction(()=>document.documentElement.dataset.seekveraI18nReady==='xh',{timeout:15000});
-          for(const ms of [0,50,250,1000,3000]){
+          for(const ms of [0,50,250,1000,3000,5000]){
             if(ms)await p.waitForTimeout(ms);
-            const x=await p.evaluate(()=>({
-              lang:document.getElementById('lang')?.value,
-              dir:document.documentElement.dir,
-              heading:[...document.querySelectorAll('.r5-section h2')].map(x=>x.textContent.trim()),
-              live:document.getElementById('liveListings')?.innerText||'',
-              t:window.SEEKVERA_I18N?.t?.('Live marketplace')||'',
-              options:document.getElementById('lang')?.options?.length||0
-            }));
-            console.log('XH_SNAP',ms,JSON.stringify(x));
+            const x=await p.evaluate(()=>{
+              const english=[];const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;
+              while((n=w.nextNode())){const t=String(n.nodeValue||'').trim();if(t.includes('Live marketplace')){const e=n.parentElement;english.push({text:t,tag:e?.tagName||'',id:e?.id||'',cls:String(e?.className||''),hidden:!!e?.hidden,outer:String(e?.outerHTML||'').slice(0,700)})}}
+              const get=k=>{try{return localStorage.getItem(k)}catch{return null}};
+              return {
+                lang:document.getElementById('lang')?.value,
+                htmlLang:document.documentElement.lang,
+                dir:document.documentElement.dir,
+                pack:document.documentElement.dataset.seekveraPackReady||'',
+                ready:document.documentElement.dataset.seekveraI18nReady||'',
+                heading:[...document.querySelectorAll('.r5-section h2')].map(x=>x.textContent.trim()),
+                live:document.getElementById('liveListings')?.innerText||'',
+                t:window.SEEKVERA_I18N?.t?.('Live marketplace')||'',
+                options:document.getElementById('lang')?.options?.length||0,
+                english,
+                stored:{lang:get('seekvera_lang'),country:get('seekvera_country'),currency:get('seekvera_currency'),source:get('seekvera_locale_source'),state:get('seekvera_locale_state')}
+              }
+            });
+            console.log('XH_R44_SNAP',ms,JSON.stringify(x));
           }
           await b.close();
           JS
