@@ -1,24 +1,19 @@
 from __future__ import annotations
 from pathlib import Path
 from bs4 import BeautifulSoup, NavigableString
-import argparse, hashlib, json, random, re, time, unicodedata, urllib.error, urllib.parse, urllib.request
+import argparse, concurrent.futures, hashlib, html as htmlmod, json, random, re, time, unicodedata, urllib.error, urllib.parse, urllib.request
 
-VERSION='20260925-r35-static-v1'
+VERSION='20260925-r35-static-v2'
 OUT=Path('i18n-r35')
 OUT.mkdir(exist_ok=True)
 ALIASES={'fil':'tl','he':'iw'}
-ID_PREFIX='98765432'
-ID_SUFFIX='12345678'
 
 DYNAMIC=[
     'No approved live marketplace listings are available right now. SEEKVERA does not generate fake listings.',
     'No approved live marketplace listings are available right now.',
     'SEEKVERA does not generate fake listings.',
-    'Loading approved listings…',
-    'Approved real listings only.',
-    'OPEN MARKETPLACE →',
-    'Find, compare, choose — worldwide.',
-    'Find, compare, choose — worldwide',
+    'Loading approved listings…','Approved real listings only.','OPEN MARKETPLACE →',
+    'Find, compare, choose — worldwide.','Find, compare, choose — worldwide',
     'I’m the SEEKVERA AI assistant. Tell me what you need and I’ll help you find the right section, compare options or search worldwide.',
     'Message SEEKVERA AI…','Online','Listening…','Thinking…','Try again','Close','Open','Send','Search',
 ]
@@ -77,53 +72,63 @@ def source_strings()->list[str]:
     return sorted(strings,key=lambda x:(len(x),x.lower()))
 
 def source_meta():
-    src=source_strings(); h=hashlib.sha256('\n'.join(src).encode()).hexdigest()[:16]
+    src=source_strings();h=hashlib.sha256('\n'.join(src).encode()).hexdigest()[:16]
     return src,h
 
 def ascii_digits(s:str)->str:
     out=[]
-    for c in s:
+    for c in str(s or ''):
         try:out.append(str(unicodedata.digit(c)) if unicodedata.category(c)=='Nd' else c)
         except Exception:out.append(c)
     return ''.join(out)
-def marker(i:int)->str:return f'{ID_PREFIX}{i:04d}{ID_SUFFIX}'
 
-def indexed_google(code:str,batch:list[str])->list[str]:
-    tl=ALIASES.get(code,code); ids=[marker(i) for i in range(len(batch))]
-    body='\n'.join(f'{ids[i]} {s}' for i,s in enumerate(batch))
-    data=urllib.parse.urlencode({'client':'gtx','sl':'en','tl':tl,'dt':'t','q':body}).encode()
+def google_request(code:str,text:str,timeout=55)->str:
+    tl=ALIASES.get(code,code)
+    data=urllib.parse.urlencode({'client':'gtx','sl':'en','tl':tl,'dt':'t','q':text}).encode()
     req=urllib.request.Request('https://translate.googleapis.com/translate_a/single',data=data,headers={'User-Agent':'Mozilla/5.0','Content-Type':'application/x-www-form-urlencoded'})
-    with urllib.request.urlopen(req,timeout=55) as r:obj=json.loads(r.read().decode('utf-8'))
-    raw=''.join(x[0] for x in obj[0] if x and x[0]); norm=ascii_digits(raw)
-    pos=[norm.find(x) for x in ids]
-    if any(p<0 for p in pos) or pos!=sorted(pos):raise ValueError(f'markers missing/reordered {code}')
-    vals=[]
-    for i,p in enumerate(pos):
-        start=p+len(ids[i]); end=pos[i+1] if i+1<len(pos) else len(raw); v=raw[start:end].strip()
-        if not v:raise ValueError(f'empty {code}/{i}')
-        vals.append(v)
-    if len(vals)!=len(batch):raise ValueError(f'count {code}')
-    same=sum(1 for a,b in zip(batch,vals) if clean_text(a)==clean_text(b))
+    with urllib.request.urlopen(req,timeout=timeout) as r:obj=json.loads(r.read().decode('utf-8'))
+    return ''.join(x[0] for x in obj[0] if x and x[0]).strip()
+
+def html_google_batch(code:str,batch:list[str])->list[str]:
+    body='\n'.join(f'<span id="sv{i:04d}">{htmlmod.escape(s)}</span>' for i,s in enumerate(batch))
+    raw=google_request(code,body)
+    soup=BeautifulSoup(raw,'html.parser');vals=[None]*len(batch)
+    for sp in soup.find_all('span'):
+        sid=ascii_digits(sp.get('id',''))
+        m=re.fullmatch(r'sv(\d{4})',sid,re.I)
+        if not m:continue
+        i=int(m.group(1))
+        if 0<=i<len(vals):vals[i]=clean_text(sp.get_text(' ',strip=True))
+    missing=[i for i,v in enumerate(vals) if not v]
+    if missing:raise ValueError(f'html markers missing {code}: {missing[:12]}')
+    out=[str(v) for v in vals]
+    same=sum(1 for a,b in zip(batch,out) if clean_text(a)==clean_text(b))
     if same>max(80,int(len(batch)*.72)):raise ValueError(f'too many untranslated strings {code}: {same}/{len(batch)}')
-    return vals
+    return out
+
+def single_google(code:str,s:str)->str:
+    last=None
+    for attempt in range(4):
+        try:
+            v=clean_text(google_request(code,s,35))
+            if v:return v
+        except Exception as e:last=e;time.sleep(.6+attempt*.7)
+    raise RuntimeError(f'single google failed {code}: {last!r}')
 
 def google_translate(code:str,batch:list[str],depth=0)->list[str]:
     last=None
-    for attempt in range(3):
+    for attempt in range(2):
         try:
-            vals=indexed_google(code,batch); time.sleep(.12+random.random()*.15); return vals
-        except ValueError as e:
-            last=e
-            if len(batch)>220 and depth<2:
-                mid=len(batch)//2
-                print('GOOGLE_SPLIT',code,len(batch),'->',mid,len(batch)-mid,flush=True)
-                return google_translate(code,batch[:mid],depth+1)+google_translate(code,batch[mid:],depth+1)
-            time.sleep(.8+attempt*.8)
-        except urllib.error.HTTPError as e:
-            last=e; print('GOOGLE_HTTP',code,e.code,'attempt',attempt+1,flush=True); time.sleep(1.5+attempt*2)
+            vals=html_google_batch(code,batch);time.sleep(.08+random.random()*.10);return vals
         except Exception as e:
-            last=e; print('GOOGLE_ERR',code,repr(e),'attempt',attempt+1,flush=True); time.sleep(1.5+attempt*2)
-    raise RuntimeError(f'google failed {code}: {last!r}')
+            last=e;print('HTML_RETRY',code,len(batch),attempt+1,repr(e),flush=True);time.sleep(.5+attempt*.6)
+    if len(batch)>48:
+        mid=len(batch)//2
+        print('HTML_SPLIT',code,len(batch),'->',mid,len(batch)-mid,flush=True)
+        return google_translate(code,batch[:mid],depth+1)+google_translate(code,batch[mid:],depth+1)
+    print('SINGLE_FALLBACK',code,len(batch),flush=True)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=6) as ex:
+        return list(ex.map(lambda s:single_google(code,s),batch))
 
 def lang_name(code:str)->str:
     try:
@@ -137,8 +142,8 @@ def pollinations_chunk(code:str,batch:list[str])->list[str]:
             f'Keep SEEKVERA, URLs, numbers, currency codes, product names and placeholders unchanged. '
             f'Return ONLY one valid JSON array of exactly {len(batch)} strings in the same order, no markdown.\n'+json.dumps(batch,ensure_ascii=False))
     url='https://text.pollinations.ai/'+urllib.parse.quote(prompt)+'?model=openai&private=true'
-    req=urllib.request.Request(url,headers={'Accept':'text/plain','User-Agent':'SEEKVERA-R35-pack-builder/1.0'})
-    with urllib.request.urlopen(req,timeout=45) as r:raw=r.read().decode('utf-8').strip()
+    req=urllib.request.Request(url,headers={'Accept':'text/plain','User-Agent':'SEEKVERA-R35-pack-builder/2.0'})
+    with urllib.request.urlopen(req,timeout=40) as r:raw=r.read().decode('utf-8').strip()
     raw=re.sub(r'^```(?:json)?\s*','',raw,flags=re.I);raw=re.sub(r'\s*```$','',raw)
     a,b=raw.find('['),raw.rfind(']')
     if a>=0 and b>a:raw=raw[a:b+1]
@@ -148,25 +153,23 @@ def pollinations_chunk(code:str,batch:list[str])->list[str]:
 
 def pollinations_translate(code:str,source:list[str])->list[str]:
     out=[]
-    for i in range(0,len(source),45):
-        batch=source[i:i+45]; last=None
+    for i in range(0,len(source),12):
+        batch=source[i:i+12];last=None
         for attempt in range(3):
-            try:
-                vals=pollinations_chunk(code,batch); out.extend(vals); break
-            except Exception as e:
-                last=e; print('PUBLIC_RETRY',code,i,attempt+1,repr(e),flush=True); time.sleep(1.5+attempt*2)
+            try:out.extend(pollinations_chunk(code,batch));break
+            except Exception as e:last=e;print('PUBLIC_RETRY',code,i,attempt+1,repr(e),flush=True);time.sleep(1+attempt*1.5)
         else:raise RuntimeError(f'public fallback failed {code}/{i}: {last!r}')
     return out
 
 def build(code:str):
     langs=languages()
     if code not in langs:raise SystemExit(f'Unsupported SEEKVERA language: {code}')
-    source,h=source_meta(); print('SOURCE',len(source),h,'LANG',code,flush=True)
-    if code=='en':vals=source[:]; provider='local'
+    source,h=source_meta();print('SOURCE',len(source),h,'LANG',code,flush=True)
+    if code=='en':vals=source[:];provider='local'
     else:
-        try:vals=google_translate(code,source); provider='google-indexed'
+        try:vals=google_translate(code,source);provider='google-html'
         except Exception as e:
-            print('GOOGLE_FALLBACK',code,repr(e),flush=True); vals=pollinations_translate(code,source); provider='public-ai'
+            print('GOOGLE_FATAL_FALLBACK',code,repr(e),flush=True);vals=pollinations_translate(code,source);provider='public-ai'
     if len(vals)!=len(source):raise RuntimeError(f'{code}: {len(vals)} != {len(source)}')
     trans={s:v for s,v in zip(source,vals)}
     critical='No approved live marketplace listings are available right now. SEEKVERA does not generate fake listings.'
@@ -176,7 +179,7 @@ def build(code:str):
     print('PACK_PASS',code,len(source),provider,p,flush=True)
 
 def write_source():
-    src,h=source_meta(); langs=languages()
+    src,h=source_meta();langs=languages()
     Path('i18n-r35-source.json').write_text(json.dumps({'version':VERSION,'sourceHash':h,'count':len(src),'strings':src},ensure_ascii=False,separators=(',',':')),encoding='utf-8')
     Path('i18n-r35-languages.json').write_text(json.dumps(langs,separators=(',',':')),encoding='utf-8')
     print('SOURCE_PASS',len(src),h,'LANGS',len(langs),flush=True)
