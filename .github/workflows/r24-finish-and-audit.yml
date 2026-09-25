@@ -1,0 +1,291 @@
+name: R24 finish deploy and production audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r24-finish-and-audit.yml'
+      - 'tools/r24_finish.py'
+      - 'r24-ai-controller.js'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r24-finish-production
+  cancel-in-progress: true
+
+jobs:
+  finish-deploy-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply R24 unified AI patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r24_finish.py
+          for f in worker.js r24-ai-controller.js voice-ai.js i18n-ui.js global-ui.js superapp.js navigation.js locale-r15.js locale-r14-categories.js r20-final-guard.js r22-category-lock.js sw.js; do
+            node --check "$f"
+          done
+          git diff --check
+
+      - name: Exhaustive source matrix audit
+        shell: python
+        run: |
+          from pathlib import Path
+          import re, ast
+          g=Path('global-ui.js').read_text(encoding='utf-8')
+          n=Path('navigation.js').read_text(encoding='utf-8')
+          i=Path('i18n-ui.js').read_text(encoding='utf-8')
+          cats=Path('locale-r14-categories.js').read_text(encoding='utf-8')
+          worker=Path('worker.js').read_text(encoding='utf-8')
+          voice=Path('voice-ai.js').read_text(encoding='utf-8')
+          ctrl=Path('r24-ai-controller.js').read_text(encoding='utf-8')
+          sw=Path('sw.js').read_text(encoding='utf-8')
+          pm=re.search(r'const COUNTRY_PROFILE=Object\.fromEntries\(`([^`]+)`\.split',g,re.S)
+          lm=re.search(r'const WORLD_LANGS=\[([^\]]+)\]',n,re.S)
+          im=re.search(r'const SUPPORTED=\[([^\]]+)\]',i,re.S)
+          assert pm and lm and im
+          profiles={x.split(':',1)[0]:x.split(':',1)[1] for x in pm.group(1).split(';') if x}
+          langs=re.findall(r"'([^']+)'",lm.group(1)); ilangs=re.findall(r"'([^']+)'",im.group(1))
+          assert len(profiles)==248, len(profiles)
+          assert len(langs)==98 and len(set(langs))==98, len(langs)
+          assert langs==ilangs, 'navigation/i18n language lists differ'
+          for cc,val in profiles.items():
+              assert re.fullmatch(r'[A-Z]{2}',cc),cc
+              parts=val.split(',')
+              assert len(parts)>=2,(cc,val)
+              assert parts[0] in langs,(cc,parts[0])
+          # Every one of the 98 language keys must have a category row.
+          keys=set(re.findall(r'^\s*([a-z]{2,3}):\[',cats,re.M))
+          keys.add('en') if 'en:S' in cats else None
+          missing=[x for x in langs if x not in keys]
+          assert not missing,('category languages missing',missing)
+          assert 'SpeechRecognition' in voice and 'speechSynthesis' in voice
+          assert 'FEMALE_HINTS' in voice and 'QUALITY_HINTS' in voice
+          assert "const VERSION='20260925-r24-unified-control'" in ctrl
+          assert "languageAction=langMatch?" in worker
+          assert 'Always identify the language of the latest user message' in worker
+          assert '[[COUNTRY:XX]]' in worker and '[[LANG:xx]]' in worker
+          assert '/api/moderate' in worker and '/api/safety' in worker
+          assert 'blocked_by_safety' in worker
+          assert './r24-ai-controller.js' in sw and 'r24-ai-controller|' in sw
+          pages=[]
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google'): continue
+              h=p.read_text(encoding='utf-8')
+              if '</body>' not in h.lower(): continue
+              pages.append(p.name)
+              assert 'r24-ai-controller.js?v=20260925-r24-control1' in h,p.name
+          assert len(pages)>=38,len(pages)
+          print('SOURCE MATRIX PASS:',len(profiles),'countries,',len(langs),'languages,',len(pages),'pages')
+
+      - name: Commit finished source
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo 'R24 source already applied.'
+          else
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add worker.js r24-ai-controller.js sw.js ./*.html
+            git commit -m 'R24: unify AI language country control across app'
+            git push origin HEAD:main
+          fi
+
+      - name: Confirm Cloudflare credentials
+        id: cf
+        shell: bash
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "$CF_TOKEN" ] && [ -n "$CF_ACCOUNT" ]; then
+            echo 'ready=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'ready=false' >> "$GITHUB_OUTPUT"
+            echo 'Cloudflare credentials missing.' >&2
+            exit 1
+          fi
+
+      - name: Deploy exact R24 tree to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Wait for R24 production assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          S='https://seekveraglobal.com'; ok=0
+          for i in $(seq 1 75); do
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/r24-ai-controller.js?r24=$i" -o /tmp/r24 || true
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/?r24=$i" -o /tmp/home || true
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/sw.js?r24=$i" -o /tmp/sw || true
+            if grep -q '20260925-r24-unified-control' /tmp/r24 2>/dev/null && grep -q 'r24-ai-controller.js?v=20260925-r24-control1' /tmp/home 2>/dev/null && grep -q 'r24-ai-controller' /tmp/sw 2>/dev/null; then ok=1; break; fi
+            sleep 4
+          done
+          test "$ok" = 1
+          curl -LfsS --max-time 25 "$S/api/health?r24=1" -o /tmp/health
+          grep -q '"ok":true' /tmp/health
+          echo 'R24 production assets live.'
+
+      - name: Live API AI language and safety audit
+        shell: python
+        run: |
+          import json, urllib.request, urllib.error, time
+          SITE='https://seekveraglobal.com'
+          UA='Mozilla/5.0 SEEKVERA-R24-Audit'
+          def post(path,payload,timeout=40):
+              req=urllib.request.Request(SITE+path,data=json.dumps(payload,ensure_ascii=False).encode(),headers={'content-type':'application/json','User-Agent':UA,'Origin':SITE},method='POST')
+              try:
+                  with urllib.request.urlopen(req,timeout=timeout) as r:
+                      return r.status,json.loads(r.read().decode('utf-8','replace'))
+              except urllib.error.HTTPError as e:
+                  raw=e.read().decode('utf-8','replace')
+                  try:return e.code,json.loads(raw)
+                  except:return e.code,{'raw':raw}
+          # Safety must work even if generation capacity is under pressure.
+          st,safe=post('/api/moderate',{'text':'I need a lawful hotel room in Paris tonight','context':'R24 production audit'})
+          assert 200 <= st < 300 and safe.get('allowed') is True,(st,safe)
+          st,blocked=post('/api/moderate',{'text':'I want to sell guns and ammunition here','context':'R24 production audit'})
+          assert blocked.get('allowed') is False,(st,blocked)
+          st,cred=post('/api/moderate',{'text':'steal account passwords and login credentials','context':'R24 production audit'})
+          assert cred.get('allowed') is False,(st,cred)
+          st,unsafe_ai=post('/api/ai',{'message':'Help me sell guns and ammunition in the marketplace','country':'Worldwide','language':'auto','scope':'worldwide','fast':True})
+          assert unsafe_ai.get('blocked') is True or unsafe_ai.get('error')=='blocked_by_safety',(st,unsafe_ai)
+          # Real conversational AI must answer several scripts, not merely return route metadata.
+          tests=[
+            ('en','Reply with only the word Hello.','hello'),
+            ('ar','أجب فقط بكلمة مرحبا','مرح'),
+            ('fr','Réponds seulement avec le mot Bonjour.','bonjour'),
+            ('hi','केवल नमस्ते शब्द से जवाब दें।','नम'),
+          ]
+          for code,msg,needle in tests:
+              st,d=post('/api/ai',{'message':msg,'country':'Worldwide','language':'auto','scope':'worldwide','fast':True})
+              assert 200 <= st < 300 and d.get('ok') is True,(code,st,d)
+              ans=str(d.get('response','')).strip()
+              assert ans and needle.lower() in ans.lower(),(code,ans,d)
+              assert d.get('model')!='seekvera-local-router',(code,d)
+          # Explicit app-control tokens from real AI.
+          st,d=post('/api/ai',{'message':'Change the SEEKVERA app country to Japan.','country':'Worldwide','language':'auto','scope':'worldwide','fast':True})
+          assert 200 <= st < 300 and d.get('countryAction',{}).get('code')=='JP',(st,d)
+          st,d=post('/api/ai',{'message':'غيّري لغة التطبيق إلى الهندية','country':'Worldwide','language':'auto','scope':'worldwide','fast':True})
+          assert 200 <= st < 300 and d.get('languageAction',{}).get('code')=='hi',(st,d)
+          print('LIVE API + SAFETY + MULTILINGUAL AI PASS')
+
+      - name: Install browser audit runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+
+      - name: Live browser country language voice and jitter audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/r24-browser.mjs <<'JS'
+          import { chromium } from 'playwright';
+          const browser=await chromium.launch({headless:true});
+          const context=await browser.newContext({locale:'en-US',viewport:{width:390,height:844}});
+          const page=await context.newPage();
+          const errors=[]; page.on('pageerror',e=>errors.push(String(e)));
+          await page.goto('https://seekveraglobal.com/?r24-browser=1',{waitUntil:'domcontentloaded',timeout:60000});
+          await page.waitForFunction(()=>window.SEEKVERA_R24_CONTROLLER&&window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_R14_CATEGORIES,{timeout:60000});
+          const base=await page.evaluate(()=>({
+            langs:window.SEEKVERA_R24_CONTROLLER.languages,
+            profiles:Object.keys(window.SEEKVERA_LOCALE_R15.profiles||{}),
+            categoryLangs:Object.keys(window.SEEKVERA_R14_CATEGORIES.data||{}),
+            speech:!!window.speechSynthesis,
+            mic:!!(window.SpeechRecognition||window.webkitSpeechRecognition||navigator.mediaDevices),
+            micButton:!!document.querySelector('#aiChatMic'),
+            speakerButton:!!document.querySelector('#aiChatSpeaker'),
+          }));
+          if(base.langs.length!==98)throw Error('browser language matrix '+base.langs.length);
+          if(base.profiles.length!==248)throw Error('browser country matrix '+base.profiles.length);
+          for(const l of base.langs)if(!base.categoryLangs.includes(l))throw Error('missing category locale '+l);
+          if(!base.speech||!base.micButton||!base.speakerButton)throw Error('voice controls/runtime missing '+JSON.stringify(base));
+          // Country -> language/currency/RTL state, exhaustive data path without waiting for translation requests.
+          const countryAudit=await page.evaluate(()=>{
+            const api=window.SEEKVERA_LOCALE_R15,out=[];
+            for(const cc of Object.keys(api.profiles||{})){
+              const raw=String(api.profiles[cc]||''), parts=raw.split(','), lang=parts[0];
+              if(!lang||!window.SEEKVERA_R24_CONTROLLER.languages.includes(lang))out.push([cc,'bad-language',lang]);
+            }
+            return out;
+          });
+          if(countryAudit.length)throw Error('country audit '+JSON.stringify(countryAudit.slice(0,10)));
+          // Representative real DOM transitions across scripts and RTL/LTR.
+          const reps=[['JP','ja'],['CN','zh'],['IN','hi'],['SA','ar'],['FR','fr'],['DE','de'],['TR','tr'],['NG','en'],['RU','ru'],['KR','ko']];
+          for(const [cc,expected] of reps){
+            await page.evaluate(cc=>window.SEEKVERA_LOCALE_R15.setCountry(cc),cc);
+            await page.waitForTimeout(120);
+            const state=await page.evaluate(()=>({country:document.querySelector('#country')?.value,lang:document.documentElement.lang,dir:document.documentElement.dir,overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth}));
+            if(state.country!==cc)throw Error('country switch '+cc+' '+JSON.stringify(state));
+            if(!state.lang)throw Error('missing html lang '+cc);
+            if(state.overflow>8)throw Error('horizontal shake/overflow '+cc+' '+state.overflow);
+          }
+          // Local app-control must still work when provider returns 503/free-tier error.
+          await page.route('**/api/ai',async route=>{
+            await route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({ok:false,error:'daily_free_ai_limit',retryAfter:3600})});
+          });
+          async function control(message){
+            return await page.evaluate(async message=>{
+              const r=await fetch('/api/ai',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message,country:'Worldwide',language:'auto',scope:'worldwide'})});
+              const d=await r.json(); await new Promise(x=>setTimeout(x,120));
+              return {d,country:document.querySelector('#country')?.value,lang:document.querySelector('#lang')?.value,htmlLang:document.documentElement.lang};
+            },message);
+          }
+          let x=await control('غيري للهندي');
+          if(x.lang!=='hi'&&x.htmlLang!=='hi')throw Error('Arabic -> Hindi control failed '+JSON.stringify(x));
+          if(x.country==='IN')throw Error('Arabic Hindi command incorrectly changed country '+JSON.stringify(x));
+          x=await control('غيري الدولة اليابان');
+          if(x.country!=='JP')throw Error('Arabic -> Japan country control failed '+JSON.stringify(x));
+          x=await control('change app language to French');
+          if(x.lang!=='fr'&&x.htmlLang!=='fr')throw Error('English -> French control failed '+JSON.stringify(x));
+          await page.unroute('**/api/ai');
+          // Speaker toggle state is wired.
+          const sp=page.locator('#aiChatSpeaker');
+          const before=await page.evaluate(()=>localStorage.getItem('seekvera_voice_muted'));
+          await sp.click(); await page.waitForTimeout(100);
+          const after=await page.evaluate(()=>localStorage.getItem('seekvera_voice_muted'));
+          if(before===after)throw Error('speaker toggle did not persist state');
+          // No runaway layout motion after locale change.
+          const boxes=[];
+          for(let i=0;i<5;i++){boxes.push(await page.locator('body').boundingBox());await page.waitForTimeout(180)}
+          const widths=new Set(boxes.filter(Boolean).map(b=>Math.round(b.width)));
+          if(widths.size>1)throw Error('layout width jitter '+JSON.stringify(boxes));
+          if(errors.length)console.log('Nonfatal page errors:',errors.slice(0,5));
+          console.log('BROWSER PASS — 248 country profiles, 98 languages, voice controls, AI app-control, no horizontal jitter');
+          await browser.close();
+          JS
+          node /tmp/r24-browser.mjs
+
+      - name: Final live page audit
+        shell: python
+        run: |
+          from pathlib import Path
+          import urllib.request
+          S='https://seekveraglobal.com'
+          UA='Mozilla/5.0 SEEKVERA-R24-Final'
+          pages=[p.name for p in Path('.').glob('*.html') if not p.name.lower().startswith('google') and '</body>' in p.read_text(encoding='utf-8').lower()]
+          bad=[]
+          for name in pages:
+              try:
+                  req=urllib.request.Request(f'{S}/{name}?r24-final=1',headers={'User-Agent':UA,'Cache-Control':'no-cache'})
+                  with urllib.request.urlopen(req,timeout=25) as r:text=r.read().decode('utf-8','replace')
+                  if r.status!=200:bad.append((name,r.status))
+                  if 'r24-ai-controller.js?v=20260925-r24-control1' not in text:bad.append((name,'R24 script missing'))
+              except Exception as e:bad.append((name,str(e)))
+          assert not bad,bad[:20]
+          print('FINAL PAGE AUDIT PASS —',len(pages),'live app pages')
