@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/r35-rare-direct-backend.yml'
+      - 'tools/r35_rare_backend_patch.py'
   workflow_dispatch:
 
 permissions:
@@ -23,7 +24,8 @@ jobs:
           python tools/r35_rare_backend_patch.py
           node --check worker.js
           grep -q "u.pathname==='/api/r35-rare-translate'" worker.js
-          echo 'Using simplified R35 direct-route syntax v2'
+          grep -q 'zero-cost-http-fallback-r35' worker.js
+          echo 'Using R35 direct translator with zero-cost fallback v3'
       - name: Deploy direct rare translator
         uses: cloudflare/wrangler-action@v4
         with:
@@ -50,7 +52,7 @@ jobs:
           assert v[1] != 'Live marketplace',(lang,v)
           assert v[2] != 'Request anything',(lang,v)
           assert not any('I can help directly' in x for x in v),(lang,v)
-          print('R35 RARE DIRECT PASS',lang,d.get('model'),v)
+          print('R35 RARE DIRECT PASS',lang,d.get('model'),d.get('source'),v)
           PY
                 ok=1; break
               fi
