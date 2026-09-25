@@ -1,0 +1,48 @@
+name: R35 free rare translator probe
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r35-free-rare-translator-probe.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Probe Google for Tswana and MyMemory for Romansh
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,urllib.parse,urllib.request
+          def google(tl,text):
+              data=urllib.parse.urlencode({'client':'gtx','sl':'en','tl':tl,'dt':'t','q':text}).encode()
+              req=urllib.request.Request('https://translate.googleapis.com/translate_a/single',data=data,headers={'User-Agent':'Mozilla/5.0','Content-Type':'application/x-www-form-urlencoded'})
+              with urllib.request.urlopen(req,timeout=30) as r:o=json.loads(r.read().decode())
+              return ''.join(x[0] for x in o[0] if x and x[0])
+          def mm(tl,text):
+              q=urllib.parse.urlencode({'q':text,'langpair':'en|'+tl,'de':'seekvera.global@gmail.com'})
+              req=urllib.request.Request('https://api.mymemory.translated.net/get?'+q,headers={'User-Agent':'SEEKVERA-R35/1.0','Accept':'application/json'})
+              with urllib.request.urlopen(req,timeout=30) as r:o=json.loads(r.read().decode())
+              return o.get('responseStatus'),o.get('responseData',{}).get('translatedText'),o
+          tests=['Popular categories','Live marketplace','Request anything','Find a hotel in the city']
+          print('GOOGLE_TN')
+          for s in tests:
+              try: print(s,'=>',google('tn',s))
+              except Exception as e: print('ERR',repr(e))
+          print('MYMEMORY_RM')
+          for s in tests:
+              try:
+                  st,v,o=mm('rm',s);print(st,s,'=>',v)
+              except Exception as e: print('ERR',repr(e))
+          print('MYMEMORY_TN')
+          for s in tests[:2]:
+              try:
+                  st,v,o=mm('tn',s);print(st,s,'=>',v)
+              except Exception as e: print('ERR',repr(e))
+          PY
