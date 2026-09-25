@@ -7,6 +7,9 @@ on:
       - '.github/workflows/r41-filipino-live-label-diagnostic.yml'
   workflow_dispatch:
 
+env:
+  DIAGNOSTIC_REV: 'r41b'
+
 permissions:
   contents: read
 
