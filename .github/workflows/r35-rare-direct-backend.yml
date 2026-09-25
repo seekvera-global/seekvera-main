@@ -23,6 +23,7 @@ jobs:
           python tools/r35_rare_backend_patch.py
           node --check worker.js
           grep -q "u.pathname==='/api/r35-rare-translate'" worker.js
+          echo 'Using simplified R35 direct-route syntax v2'
       - name: Deploy direct rare translator
         uses: cloudflare/wrangler-action@v4
         with:
