@@ -17,6 +17,17 @@ p=Path('locale-r15.js'); s=p.read_text(encoding='utf-8')
 s=re.sub(r"version:'[^']+'",f"version:'{VER}'",s,count=1)
 write('locale-r15.js',s)
 
+# The older deterministic R14 layer still runs on the homepage after R32 and can overwrite
+# a few critical labels/direction values. Keep it aligned so it cannot re-introduce English
+# or force Pashto back to LTR after the universal pack has already localized the page.
+p=Path('locale-r14.js'); s=p.read_text(encoding='utf-8')
+old=s
+s,n=re.subn(r"(fil:\[(?:`[^`]*`,){18})`Live marketplace`",r"\1`Aktuwal na pamilihan`",s,count=1)
+if n!=1 and 'Aktuwal na pamilihan' not in s: raise SystemExit('Filipino R14 live-marketplace anchor missing')
+s=s.replace("const RTL=new Set(['ar','fa','ur','he','dv']);","const RTL=new Set(['ar','fa','ur','he','ps','dv']);",1)
+if "const RTL=new Set(['ar','fa','ur','he','ps','dv']);" not in s: raise SystemExit('R14 RTL anchor missing')
+write('locale-r14.js',s)
+
 # AI: never answer a simple greeting in English when another country language is selected.
 p=Path('worker-r31.js'); s=p.read_text(encoding='utf-8')
 old="function instantGreeting(language){const x=language.toLowerCase();if(x==='arabic')return'أهلاً! أنا مساعد SEEKVERA. قل لي ماذا تحتاج وسأساعدك بسرعة وأوصلك للقسم المناسب.';if(x==='french')return'Bonjour ! Je suis l’assistant SEEKVERA. Dites-moi ce dont vous avez besoin et je vous guiderai rapidement.';if(x==='chinese')return'你好！我是 SEEKVERA 助手。告诉我你需要什么，我会快速帮你找到合适的栏目。';if(x==='hindi')return'नमस्ते! मैं SEEKVERA सहायक हूँ। बताइए आपको क्या चाहिए, मैं जल्दी सही सेक्शन तक पहुँचने में मदद करूँगा।';return'Hi! I’m the SEEKVERA assistant. Tell me what you need and I’ll quickly help you find the right section.'}"
