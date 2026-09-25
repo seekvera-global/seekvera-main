@@ -17,7 +17,7 @@ concurrency:
 
 env:
   PYTHONUNBUFFERED: '1'
-  AUDIT_REV: 'r42-filipino-rtl-fix'
+  AUDIT_REV: 'r43-stable-ui'
 
 jobs:
   recover-deploy-audit:
@@ -100,16 +100,20 @@ jobs:
           node --check r32-i18n.js
           node --check i18n-ui.js
           node --check locale-r14.js
+          node --check locale-r15.js
+          node --check superapp.js
           node --check worker-r31.js
           node --check worker.js
-          grep -q 'r35-static-v3' i18n-ui.js
-          grep -q 'Aktuwal na pamilihan' locale-r14.js
+          grep -q 'r32-static-v5' i18n-ui.js
+          grep -q 'function ensureAllLanguageOptions' locale-r15.js
+          grep -q 'window.SEEKVERA_I18N_R32?.schedule' locale-r14.js
+          grep -q 'async function localizedDynamic' superapp.js
           grep -Fq "const RTL=new Set(['ar','fa','ur','he','ps','dv']);" locale-r14.js
           grep -q 'parallel-static-98-language-country-category-final' worker-r31.js
           test "$(grep -o 'id=\"categories\"' index.html | wc -l | tr -d ' ')" = '1'
           ! grep -q 'r5-chips' index.html
           ! grep -q 'r8-department-strip' index.html
-          echo 'R39 RUNTIME PASS'
+          echo 'R43 RUNTIME PASS'
 
       - name: Deploy repaired candidate to Cloudflare
         uses: cloudflare/wrangler-action@v4
@@ -123,16 +127,17 @@ jobs:
         run: |
           set -euo pipefail
           for i in $(seq 1 70); do
-            h="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/api/health?r39=$i" || true)"
-            tn="$(curl -L -sS -o /tmp/tn.json -w '%{http_code}' --max-time 15 "https://seekveraglobal.com/i18n-r32/tn.json?r39=$i" || true)"
-            if echo "$h" | grep -q 'parallel-static-98-language-country-category-final' && test "$tn" = '200' && test -s /tmp/tn.json; then
+            h="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/api/health?r43=$i" || true)"
+            tn="$(curl -L -sS -o /tmp/tn.json -w '%{http_code}' --max-time 15 "https://seekveraglobal.com/i18n-r32/tn.json?r43=$i" || true)"
+            ui="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/i18n-ui.js?r43=$i" || true)"
+            if echo "$h" | grep -q 'parallel-static-98-language-country-category-final' && test "$tn" = '200' && echo "$ui" | grep -q 'r32-static-v5'; then
               echo "$h"
-              echo 'R39 LIVE TN READY'
+              echo 'R43 LIVE READY'
               exit 0
             fi
             sleep 3
           done
-          echo 'R39 repaired production did not become ready' >&2
+          echo 'R43 repaired production did not become ready' >&2
           exit 1
 
       - name: Full live audit - countries languages categories voice routes and AI
@@ -152,12 +157,12 @@ jobs:
           find tools -type f -name '*.pyc' -delete || true
           git config user.name 'seekvera-global'
           git config user.email 'seekvera.global@gmail.com'
-          git add -- i18n-r32 i18n-r32-source.json r32-i18n.js i18n-ui.js locale-r14.js locale-r15.js worker-r31.js worker.js sw.js
+          git add -- i18n-r32 i18n-r32-source.json r32-i18n.js i18n-ui.js locale-r14.js locale-r15.js superapp.js worker-r31.js worker.js sw.js
           git add -- '*.html'
           if git diff --cached --quiet; then
             echo 'No audited file changes to commit'
           else
-            git commit -m 'Persist audited 98-language production release'
+            git commit -m 'Persist audited stable 98-language production release'
             git push origin HEAD:main
           fi
-          echo 'R39 FINAL RELEASE PERSISTED'
+          echo 'R43 FINAL RELEASE PERSISTED'
