@@ -67,7 +67,7 @@ jobs:
           set -euo pipefail
           npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
           npx playwright install chromium >/dev/null
-          cat > /tmp/r54-audit.mjs <<'JS'
+          cat > r54-audit.mjs <<'JS'
           import { chromium } from 'playwright';
           import assert from 'node:assert/strict';
           const b=await chromium.launch({headless:true});
@@ -95,7 +95,8 @@ jobs:
           console.log('R54 LIVE PASS',JSON.stringify({routeMs,apiMs:Math.round(api.ms),answer:answer.slice(0,120),voice}));
           await b.close();
           JS
-          node /tmp/r54-audit.mjs
+          node r54-audit.mjs
+          rm -f r54-audit.mjs
 
       - name: Persist audited R54 source
         shell: bash
