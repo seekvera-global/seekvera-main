@@ -79,3 +79,5 @@ pages=[p for p in ROOT.glob('*.html') if not p.name.lower().startswith('google')
 missing=[p.name for p in pages if 'r24-ai-controller.js' not in p.read_text(encoding='utf-8')]
 assert not missing,missing
 print(f'R24 PATCH PASS — 98 languages, {len(pages)} app pages, {injected} newly injected')
+
+# trigger: final production R24 audit
