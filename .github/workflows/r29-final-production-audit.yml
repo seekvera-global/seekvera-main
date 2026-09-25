@@ -95,7 +95,7 @@ jobs:
           set -euo pipefail
           npm install --no-save playwright@1.55.0 >/dev/null 2>&1
           npx playwright install chromium >/dev/null
-          cat >/tmp/r29.mjs <<'JS'
+          cat >r29.mjs <<'JS'
           import { chromium } from 'playwright';
           const b=await chromium.launch({headless:true}); const p=await b.newPage({viewport:{width:390,height:844},locale:'en-US'});
           const errs=[]; p.on('pageerror',e=>errs.push(String(e)));
@@ -107,12 +107,12 @@ jobs:
           for(const cc of reps){await p.evaluate(cc=>window.SEEKVERA_LOCALE_R15.setCountry(cc),cc);await p.waitForTimeout(120);const x=await p.evaluate(()=>({c:document.querySelector('#country')?.value,l:document.documentElement.lang,o:document.documentElement.scrollWidth-document.documentElement.clientWidth}));if(x.c!==cc||!x.l||x.o>8)throw Error(cc+' '+JSON.stringify(x));}
           await b.close(); console.log('BROWSER PASS 248/98 voice locale jitter');
           JS
-          node /tmp/r29.mjs
+          node r29.mjs
 
       - name: Live app page sweep
         shell: python
         run: |
-          import re,urllib.request
+          import urllib.request
           from pathlib import Path
           SITE='https://seekveraglobal.com/'
           pages=sorted({p.name for p in Path('.').glob('*.html') if not p.name.lower().startswith('google') and '</body>' in p.read_text(encoding='utf-8').lower()})
