@@ -1,0 +1,25 @@
+name: R43 direct live production audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r43-live-audit-only.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit-live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit live SEEKVERA production
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          node tools/r38_final_audit.mjs
