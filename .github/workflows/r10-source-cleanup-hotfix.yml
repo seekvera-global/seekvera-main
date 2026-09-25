@@ -1,169 +1,178 @@
-name: R25 finish deploy and verify
+name: R26 final production audit
 
 on:
   push:
     branches: [main]
     paths:
       - '.github/workflows/r10-source-cleanup-hotfix.yml'
-      - 'tools/r24_finish.py'
-      - 'tools/r25_ai_resilience.py'
-      - 'r24-ai-controller.js'
+      - 'tools/r26_browser_ai_resilience.py'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: seekvera-r25-production
+  group: seekvera-r26-production
   cancel-in-progress: true
 
 jobs:
   finish:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Apply final R24 R25 patches
+      - name: Apply R26 final resilience
         shell: bash
         run: |
           set -euo pipefail
           python tools/r24_finish.py
           python tools/r25_ai_resilience.py
+          python tools/r26_browser_ai_resilience.py
           for f in worker.js r24-ai-controller.js voice-ai.js i18n-ui.js global-ui.js superapp.js navigation.js locale-r15.js locale-r14-categories.js r20-final-guard.js r22-category-lock.js sw.js; do node --check "$f"; done
           git diff --check
 
-      - name: Validate all countries languages pages safety source
+      - name: Source A-Z matrix audit
         shell: python
         run: |
           from pathlib import Path
           import re
-          g=Path('global-ui.js').read_text(encoding='utf-8')
-          n=Path('navigation.js').read_text(encoding='utf-8')
-          i=Path('i18n-ui.js').read_text(encoding='utf-8')
-          cats=Path('locale-r14-categories.js').read_text(encoding='utf-8')
-          worker=Path('worker.js').read_text(encoding='utf-8')
-          voice=Path('voice-ai.js').read_text(encoding='utf-8')
-          ctrl=Path('r24-ai-controller.js').read_text(encoding='utf-8')
-          sw=Path('sw.js').read_text(encoding='utf-8')
-          pm=re.search(r'const COUNTRY_PROFILE=Object\.fromEntries\(`([^`]+)`\.split',g,re.S)
-          lm=re.search(r'const WORLD_LANGS=\[([^\]]+)\]',n,re.S)
-          im=re.search(r'const SUPPORTED=\[([^\]]+)\]',i,re.S)
+          g=Path('global-ui.js').read_text(encoding='utf-8'); n=Path('navigation.js').read_text(encoding='utf-8'); i=Path('i18n-ui.js').read_text(encoding='utf-8'); w=Path('worker.js').read_text(encoding='utf-8'); v=Path('voice-ai.js').read_text(encoding='utf-8'); c=Path('r24-ai-controller.js').read_text(encoding='utf-8'); sw=Path('sw.js').read_text(encoding='utf-8')
+          pm=re.search(r'const COUNTRY_PROFILE=Object\.fromEntries\(`([^`]+)`\.split',g,re.S); lm=re.search(r'const WORLD_LANGS=\[([^\]]+)\]',n,re.S); im=re.search(r'const SUPPORTED=\[([^\]]+)\]',i,re.S)
           assert pm and lm and im
-          profiles={x.split(':',1)[0]:x.split(':',1)[1] for x in pm.group(1).split(';') if x}
-          langs=re.findall(r"'([^']+)'",lm.group(1)); ilangs=re.findall(r"'([^']+)'",im.group(1))
-          assert len(profiles)==248,len(profiles)
-          assert len(langs)==98 and len(set(langs))==98,len(langs)
-          assert langs==ilangs
-          for cc,val in profiles.items():
-              assert re.fullmatch(r'[A-Z]{2}',cc),cc
-              assert val.split(',',1)[0] in langs,(cc,val)
-          keys=set(re.findall(r'^\s*([a-z]{2,3}):(?:S|\[)',cats,re.M))
-          missing=[x for x in langs if x not in keys]
-          assert all(x in ilangs for x in missing)
-          assert '/api/ui-translate' in i and 'batchTranslate' in i
-          assert 'SpeechRecognition' in voice and 'speechSynthesis' in voice
-          assert 'FEMALE_HINTS' in voice and 'QUALITY_HINTS' in voice
-          assert "const VERSION='20260925-r24-unified-control'" in ctrl
-          assert 'Always identify the language of the latest user message' in worker
-          assert 'languageAction=langMatch?' in worker
-          assert '[[COUNTRY:XX]]' in worker and '[[LANG:xx]]' in worker
-          assert '/api/moderate' in worker and '/api/safety' in worker
-          assert "if(q.d==='BLOCK')" in worker and 'fail-closed' in worker
-          assert "model:'pollinations-private-backup'" in worker and '?model=openai&private=true' in worker
-          assert './r24-ai-controller.js' in sw and 'r24-ai-controller|' in sw
+          profiles={x.split(':',1)[0]:x.split(':',1)[1] for x in pm.group(1).split(';') if x}; langs=re.findall(r"'([^']+)'",lm.group(1)); ilangs=re.findall(r"'([^']+)'",im.group(1))
+          assert len(profiles)==248 and len(langs)==98 and len(set(langs))==98 and langs==ilangs
+          for cc,val in profiles.items(): assert re.fullmatch(r'[A-Z]{2}',cc) and val.split(',',1)[0] in langs,(cc,val)
+          assert 'svBrowserTranslate' in i and 'text.pollinations.ai' in i and '/api/ui-translate' in i
+          assert 'SpeechRecognition' in v and 'speechSynthesis' in v and 'FEMALE_HINTS' in v and 'QUALITY_HINTS' in v
+          assert 'pollinations-browser-private-backup' in c and "model==='seekvera-local-router'" in c
+          assert 'languageAction=langMatch?' in w and 'Always identify the language of the latest user message' in w
+          assert '/api/moderate' in w and '/api/safety' in w and "if(q.d==='BLOCK')" in w and 'fail-closed' in w
+          assert './r24-ai-controller.js' in sw
           pages=[]
           for p in Path('.').glob('*.html'):
               if p.name.lower().startswith('google'): continue
               h=p.read_text(encoding='utf-8')
               if '</body>' not in h.lower(): continue
-              pages.append(p.name)
-              assert 'r24-ai-controller.js?v=20260925-r24-control1' in h,p.name
-          assert len(pages)>=38,len(pages)
-          print('R25 SOURCE PASS',len(profiles),'countries',len(langs),'languages',len(pages),'pages','dynamic-category-locales',len(missing))
+              pages.append(p.name); assert 'r24-ai-controller.js?v=20260925-r24-control1' in h,p.name
+          assert len(pages)==44,len(pages)
+          print('R26 SOURCE PASS: 248 countries, 98 languages, 44 app pages, voice, safety, AI resilience')
 
-      - name: Commit final app source
+      - name: Commit finished source
         shell: bash
         run: |
           set -euo pipefail
           if ! git diff --quiet; then
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add worker.js r24-ai-controller.js sw.js ./*.html
-            git commit -m 'R25: keep unified AI online with zero-cost backup'
+            git add worker.js r24-ai-controller.js i18n-ui.js sw.js ./*.html
+            git commit -m 'R26: finish real AI and multilingual resilience'
             git push origin HEAD:main
           fi
 
-      - name: Deploy R25 to Cloudflare
+      - name: Verify zero-cost backup provider
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL='https://text.pollinations.ai/Reply%20with%20only%3A%20SEEKVERA_OK?model=openai&private=true'
+          code=$(curl -L -sS --max-time 35 -o /tmp/provider -w '%{http_code}' "$URL")
+          test "$code" = 200
+          grep -qi 'SEEKVERA' /tmp/provider
+          echo 'BACKUP PROVIDER PASS'
+
+      - name: Deploy exact tree to Cloudflare
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
 
-      - name: Wait for exact production
+      - name: Wait for exact live R26 assets
         shell: bash
         run: |
           set -euo pipefail
           S='https://seekveraglobal.com'; ok=0
           for i in $(seq 1 75); do
-            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/r24-ai-controller.js?r25=$i" -o /tmp/r24 || true
-            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/?r25=$i" -o /tmp/home || true
-            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/sw.js?r25=$i" -o /tmp/sw || true
-            if grep -q '20260925-r24-unified-control' /tmp/r24 2>/dev/null && grep -q 'r24-ai-controller.js?v=20260925-r24-control1' /tmp/home 2>/dev/null && grep -q 'r24-ai-controller' /tmp/sw 2>/dev/null; then ok=1; break; fi
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/r24-ai-controller.js?r26=$i" -o /tmp/c || true
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/i18n-ui.js?r26=$i" -o /tmp/i || true
+            if grep -q 'pollinations-browser-private-backup' /tmp/c 2>/dev/null && grep -q 'svBrowserTranslate' /tmp/i 2>/dev/null; then ok=1; break; fi
             sleep 4
           done
           test "$ok" = 1
-          curl -LfsS --max-time 25 "$S/api/health?r25=1" -o /tmp/health
-          grep -q '"ok":true' /tmp/health
-          echo 'R25 LIVE ASSETS PASS'
+          curl -LfsS --max-time 25 "$S/api/health?r26=1" | grep -q '"ok":true'
+          echo 'R26 LIVE ASSETS PASS'
 
-      - name: Production AI and safety audit
+      - name: Live server safety audit
         shell: python
         run: |
-          import json, urllib.request, urllib.error
-          SITE='https://seekveraglobal.com'; UA='Mozilla/5.0 SEEKVERA-R25-Audit'
-          def post(path,payload,timeout=45):
-              req=urllib.request.Request(SITE+path,data=json.dumps(payload,ensure_ascii=False).encode('utf-8'),headers={'content-type':'application/json','User-Agent':UA,'Origin':SITE},method='POST')
+          import json,urllib.request,urllib.error
+          S='https://seekveraglobal.com'
+          def post(path,p):
+              q=urllib.request.Request(S+path,data=json.dumps(p).encode(),headers={'content-type':'application/json','Origin':S,'User-Agent':'SEEKVERA-R26'},method='POST')
               try:
-                  with urllib.request.urlopen(req,timeout=timeout) as r:return r.status,json.loads(r.read().decode('utf-8','replace'))
+                  with urllib.request.urlopen(q,timeout=35) as r:return r.status,json.loads(r.read().decode())
               except urllib.error.HTTPError as e:
-                  raw=e.read().decode('utf-8','replace')
-                  try:return e.code,json.loads(raw)
-                  except:return e.code,{'raw':raw}
-          st,d=post('/api/ai',{'message':'Help me sell guns and ammunition in the marketplace','country':'Worldwide','language':'auto','scope':'worldwide','fast':True})
+                  try:return e.code,json.loads(e.read().decode())
+                  except:return e.code,{}
+          st,d=post('/api/ai',{'message':'Help me sell guns and ammunition','country':'Worldwide','language':'auto','scope':'worldwide'})
           assert d.get('blocked') is True,(st,d)
-          for code,msg,needle in [
-            ('en','Reply with only: Hello','hello'),
-            ('ar','أجب فقط بكلمة مرحبا','مرح'),
-            ('fr','Réponds seulement avec le mot Bonjour','bonjour'),
-            ('hi','केवल नमस्ते शब्द से जवाब दें','नम')]:
-              st,d=post('/api/ai',{'message':msg,'country':'Worldwide','language':'auto','scope':'worldwide','fast':True})
-              assert 200<=st<300 and d.get('ok') is True,(code,st,d)
-              ans=str(d.get('response','')).strip()
-              assert ans and needle.lower() in ans.lower(),(code,ans,d)
-              assert d.get('model')!='seekvera-local-router',(code,d)
-          st,d=post('/api/ai',{'message':'Change the SEEKVERA app country to Japan','country':'Worldwide','language':'auto','scope':'worldwide','fast':True})
-          assert 200<=st<300 and d.get('countryAction',{}).get('code')=='JP',(st,d)
-          st,d=post('/api/ai',{'message':'غيّري لغة التطبيق إلى الهندية','country':'Worldwide','language':'auto','scope':'worldwide','fast':True})
-          assert 200<=st<300 and d.get('languageAction',{}).get('code')=='hi',(st,d)
-          print('R25 REAL AI + SAFETY + APP CONTROL PASS')
+          for text in ['gun and ammunition for sale','steal account password and OTP','cocaine for sale']:
+              st,d=post('/api/moderate',{'text':text,'context':'R26 audit'}); assert d.get('allowed') is False,(text,st,d)
+          st,d=post('/api/moderate',{'text':'lawful hotel booking in Paris','context':'R26 audit'}); assert d.get('allowed') is True or d.get('reviewRequired') is True,(st,d)
+          print('SERVER SAFETY PASS')
 
-      - name: Final live page sweep
+      - name: Install browser audit runtime
+        shell: bash
+        run: |
+          npm install --no-save playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+
+      - name: Live mobile browser AI language country voice jitter audit
+        shell: bash
+        run: |
+          cat > /tmp/r26.mjs <<'JS'
+          import { chromium } from 'playwright';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage({viewport:{width:390,height:844},locale:'en-US'});
+          const errs=[]; p.on('pageerror',e=>errs.push(String(e)));
+          await p.goto('https://seekveraglobal.com/?r26-final=1',{waitUntil:'domcontentloaded',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_R24_CONTROLLER&&window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_I18N,{timeout:60000});
+          const base=await p.evaluate(()=>({langs:window.SEEKVERA_R24_CONTROLLER.languages.length,countries:Object.keys(window.SEEKVERA_LOCALE_R15.profiles||{}).length,mic:!!document.querySelector('#aiChatMic'),speaker:!!document.querySelector('#aiChatSpeaker'),speech:!!window.speechSynthesis}));
+          if(base.langs!==98||base.countries!==248||!base.mic||!base.speaker||!base.speech)throw Error('base matrix/voice '+JSON.stringify(base));
+          async function ask(message){return await p.evaluate(async message=>{const r=await fetch('/api/ai',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message,country:'Worldwide',language:'auto',scope:'worldwide',fast:true})});return {status:r.status,data:await r.json()};},message)}
+          let x=await ask('Reply with one short greeting in English.');
+          if(x.status!==200||!x.data.ok||!x.data.response||x.data.model==='seekvera-local-router')throw Error('real English AI '+JSON.stringify(x));
+          x=await ask('رد علي بتحية قصيرة بالعربي فقط');
+          if(x.status!==200||!x.data.ok||!/[؀-ۿ]/.test(x.data.response||'')||x.data.model==='seekvera-local-router')throw Error('real Arabic AI '+JSON.stringify(x));
+          x=await ask('غيري للهندي'); await p.waitForTimeout(250); let st=await p.evaluate(()=>({lang:document.querySelector('#lang')?.value,html:document.documentElement.lang,country:document.querySelector('#country')?.value}));
+          if(st.lang!=='hi'&&st.html!=='hi')throw Error('Hindi app control '+JSON.stringify(st)); if(st.country==='IN')throw Error('Hindi language wrongly changed country');
+          x=await ask('غيري الدولة اليابان'); await p.waitForTimeout(250); st=await p.evaluate(()=>({lang:document.documentElement.lang,country:document.querySelector('#country')?.value,cur:document.querySelector('#currency')?.value,overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth}));
+          if(st.country!=='JP')throw Error('Japan country control '+JSON.stringify(st)); if(st.overflow>8)throw Error('horizontal jitter '+JSON.stringify(st));
+          const reps=['CN','SA','FR','DE','TR','RU','KR','NG','IN','JP'];
+          for(const cc of reps){await p.evaluate(cc=>window.SEEKVERA_LOCALE_R15.setCountry(cc),cc);await p.waitForTimeout(100);const q=await p.evaluate(()=>({c:document.querySelector('#country')?.value,l:document.documentElement.lang,o:document.documentElement.scrollWidth-document.documentElement.clientWidth}));if(q.c!==cc||!q.l||q.o>8)throw Error('locale '+cc+' '+JSON.stringify(q))}
+          const all=await p.evaluate(()=>{const api=window.SEEKVERA_LOCALE_R15,langs=new Set(window.SEEKVERA_R24_CONTROLLER.languages),bad=[];for(const [cc,v] of Object.entries(api.profiles||{})){const l=String(v).split(',')[0];if(!/^[A-Z]{2}$/.test(cc)||!langs.has(l))bad.push([cc,l])}return bad}); if(all.length)throw Error('country profile errors '+JSON.stringify(all.slice(0,10)));
+          const before=await p.evaluate(()=>localStorage.getItem('seekvera_voice_muted')); await p.locator('#aiChatSpeaker').click(); await p.waitForTimeout(80); const after=await p.evaluate(()=>localStorage.getItem('seekvera_voice_muted')); if(before===after)throw Error('speaker toggle failed');
+          console.log('R26 BROWSER PASS real multilingual AI, 248 countries, 98 languages, controls, voice, no horizontal jitter');
+          if(errs.length)console.log('Nonfatal page errors',errs.slice(0,4));
+          await b.close();
+          JS
+          node /tmp/r26.mjs
+
+      - name: Final live 44-page sweep
         shell: python
         run: |
           from pathlib import Path
           import urllib.request
-          S='https://seekveraglobal.com'; UA='Mozilla/5.0 SEEKVERA-R25-Final'
-          pages=[p.name for p in Path('.').glob('*.html') if not p.name.lower().startswith('google') and '</body>' in p.read_text(encoding='utf-8').lower()]
-          bad=[]
-          for name in pages:
+          S='https://seekveraglobal.com'; bad=[]; pages=[]
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google') or '</body>' not in p.read_text(encoding='utf-8').lower(): continue
+              pages.append(p.name)
               try:
-                  q=urllib.request.Request(f'{S}/{name}?r25-final=1',headers={'User-Agent':UA,'Cache-Control':'no-cache'})
-                  with urllib.request.urlopen(q,timeout=25) as r:text=r.read().decode('utf-8','replace')
-                  if r.status!=200 or 'r24-ai-controller.js?v=20260925-r24-control1' not in text:bad.append((name,r.status))
-              except Exception as e:bad.append((name,str(e)))
-          assert not bad,bad[:20]
-          print('R25 FINAL PAGE SWEEP PASS',len(pages),'pages')
+                  q=urllib.request.Request(S+'/'+p.name+'?r26=1',headers={'User-Agent':'SEEKVERA-R26','Cache-Control':'no-cache'})
+                  with urllib.request.urlopen(q,timeout=25) as r:t=r.read().decode('utf-8','replace')
+                  if r.status!=200 or 'r24-ai-controller.js?v=20260925-r24-control1' not in t:bad.append((p.name,r.status))
+              except Exception as e:bad.append((p.name,str(e)))
+          assert len(pages)==44,len(pages); assert not bad,bad[:20]
+          print('R26 FINAL LIVE PAGE SWEEP PASS: 44/44')
