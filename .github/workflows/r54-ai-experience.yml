@@ -29,6 +29,7 @@ jobs:
           set -euo pipefail
           python tools/r54_ai_experience_fix.py
           python tools/r54b_colloquial_jobs.py
+          python tools/r54c_cache_bust_ai.py
           node --check superapp.js
           node --check voice-ai.js
           node --check worker-r31.js
@@ -38,6 +39,8 @@ jobs:
           grep -F 'Never repeat or paraphrase the previous assistant reply' worker-r31.js >/dev/null
           grep -F 'شغل' worker-r31.js >/dev/null
           grep -F "sleep(220)" worker-r31.js >/dev/null
+          grep -F 'superapp.js?v=20260925-r54-ai-experience' index.html >/dev/null
+          grep -F 'voice-ai.js?v=20260925-r54-ai-experience' index.html >/dev/null
           echo 'R54 BUILD PASS'
 
       - name: Deploy R54 production
@@ -52,11 +55,12 @@ jobs:
         run: |
           set -euo pipefail
           for i in $(seq 1 30); do
-            s="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/superapp.js?r54b=$i" || true)"
-            v="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/voice-ai.js?r54b=$i" || true)"
-            w="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/worker-r31.js?r54b=$i" || true)"
-            if [[ "$s" == *'addDirectRoute(cat,q,pending)'* && "$s" == *"'شغل'"* && "$v" == *'voiceReplyDeadline=Date.now()+45000'* && "$w" == *'Never repeat or paraphrase the previous assistant reply'* && "$w" == *'شغل'* ]]; then
-              echo 'R54 LIVE ASSETS PASS'
+            h="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/?r54c=$i" || true)"
+            s="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/superapp.js?r54c=$i" || true)"
+            v="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/voice-ai.js?r54c=$i" || true)"
+            w="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/worker-r31.js?r54c=$i" || true)"
+            if [[ "$h" == *'superapp.js?v=20260925-r54-ai-experience'* && "$h" == *'voice-ai.js?v=20260925-r54-ai-experience'* && "$s" == *'addDirectRoute(cat,q,pending)'* && "$s" == *"'شغل'"* && "$v" == *'voiceReplyDeadline=Date.now()+45000'* && "$w" == *'Never repeat or paraphrase the previous assistant reply'* && "$w" == *'شغل'* ]]; then
+              echo 'R54 LIVE ASSETS + HTML CACHE VERSION PASS'
               exit 0
             fi
             sleep 2
@@ -75,9 +79,12 @@ jobs:
           import assert from 'node:assert/strict';
           const b=await chromium.launch({headless:true});
           const p=await b.newPage();
-          await p.goto('https://seekveraglobal.com/?r54b='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+          await p.goto('https://seekveraglobal.com/?r54c='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
           await p.waitForSelector('#aiChatInput',{timeout:30000});
           await p.waitForFunction(()=>window.SEEKVERA_VOICE_AI&&document.querySelector('#aiChatForm'),null,{timeout:30000});
+          const versions=await p.evaluate(()=>[...document.scripts].map(s=>s.src).filter(Boolean));
+          assert.ok(versions.some(x=>x.includes('superapp.js?v=20260925-r54-ai-experience')),JSON.stringify(versions));
+          assert.ok(versions.some(x=>x.includes('voice-ai.js?v=20260925-r54-ai-experience')),JSON.stringify(versions));
           await p.fill('#aiChatInput','عم دور على شغل');
           const t=Date.now();
           await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
@@ -108,10 +115,11 @@ jobs:
           git config user.name 'seekvera-global'
           git config user.email 'seekvera.global@gmail.com'
           git add -- superapp.js voice-ai.js worker-r31.js
+          find . -maxdepth 1 -type f -name '*.html' -print0 | xargs -0 git add --
           if git diff --cached --quiet; then
             echo 'No R54 source changes to persist'
           else
-            git commit -m 'Persist R54 fast conversational AI voice and colloquial routing'
+            git commit -m 'Persist R54 fast conversational AI voice routing and fresh assets'
             git push origin HEAD:main
           fi
           echo 'R54 AUDITED RELEASE PERSISTED'
