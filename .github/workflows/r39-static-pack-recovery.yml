@@ -1,0 +1,159 @@
+name: R39 static pack recovery and final audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r39-static-pack-recovery.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: seekvera-r39-static-pack-recovery
+  cancel-in-progress: true
+
+env:
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  recover-deploy-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Recover live packs and rebuild any missing language
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet beautifulsoup4 Babel
+          B='https://seekveraglobal.com'
+          rm -rf i18n-r32 i18n-r35
+          mkdir -p i18n-r32 i18n-r35
+          curl -LfsS --retry 4 --retry-all-errors "$B/i18n-r32/manifest.json?v=$GITHUB_SHA" -o i18n-r32/manifest.json
+          curl -LfsS --retry 4 --retry-all-errors "$B/i18n-r32-source.json?v=$GITHUB_SHA" -o i18n-r32-source.json
+          python tools/r35_build_pack.py --source-only
+          python - <<'PY'
+          import json
+          m=json.load(open('i18n-r32/manifest.json',encoding='utf-8'))
+          live=json.load(open('i18n-r32-source.json',encoding='utf-8'))
+          local=json.load(open('i18n-r35-source.json',encoding='utf-8'))
+          assert m['packs']==98 and len(m['languages'])==98,m
+          assert live['count']==967 and local['count']==967,(live.get('count'),local.get('count'))
+          assert m['sourceHash']==live['sourceHash']==local['sourceHash'],(m['sourceHash'],live['sourceHash'],local['sourceHash'])
+          open('/tmp/langs.txt','w').write('\n'.join(m['languages']))
+          print('R39 SOURCE PASS',m['sourceHash'],len(m['languages']),live['count'])
+          PY
+          : > /tmp/missing.txt
+          while IFS= read -r l; do
+            if curl -LfsS --retry 3 --retry-all-errors --max-time 30 "$B/i18n-r32/$l.json?v=$GITHUB_SHA" -o "i18n-r32/$l.json"; then
+              test -s "i18n-r32/$l.json" || echo "$l" >> /tmp/missing.txt
+            else
+              rm -f "i18n-r32/$l.json"
+              echo "$l" >> /tmp/missing.txt
+            fi
+          done </tmp/langs.txt
+          sort -u /tmp/missing.txt -o /tmp/missing.txt
+          if test -s /tmp/missing.txt; then
+            echo 'Rebuilding missing packs:'
+            cat /tmp/missing.txt
+            while IFS= read -r l; do
+              python tools/r35_build_pack.py --lang "$l"
+              cp -f "i18n-r35/$l.json" "i18n-r32/$l.json"
+            done </tmp/missing.txt
+          fi
+          python - <<'PY'
+          import json,glob,os,re
+          m=json.load(open('i18n-r32/manifest.json',encoding='utf-8'))
+          s=json.load(open('i18n-r32-source.json',encoding='utf-8'))
+          files={os.path.basename(p)[:-5]:p for p in glob.glob('i18n-r32/*.json') if not p.endswith('/manifest.json')}
+          assert set(files)==set(m['languages']),(len(files),set(m['languages'])-set(files),set(files)-set(m['languages']))
+          providers={}
+          for l,p in files.items():
+            d=json.load(open(p,encoding='utf-8'))
+            assert d['sourceHash']==s['sourceHash'],l
+            assert d['count']==s['count']==967,l
+            assert len(d['translations'])==967,l
+            providers[d.get('provider','unknown')]=providers.get(d.get('provider','unknown'),0)+1
+          tn=json.load(open(files['tn'],encoding='utf-8'))['translations']
+          assert tn.get('Popular categories') and tn['Popular categories']!='Popular categories'
+          m['providers']=providers
+          open('i18n-r32/manifest.json','w',encoding='utf-8').write(json.dumps(m,ensure_ascii=False,separators=(',',':')))
+          print('R39 PACKS PASS',len(files),providers)
+          PY
+
+      - name: Reproduce production runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r32_pack_runtime_patch.py
+          python tools/r32_global_final.py
+          python tools/r32_ai_failover_patch.py
+          python tools/r32_translation_backend_fix.py
+          python tools/r35_finalize.py
+          node --check r32-i18n.js
+          node --check i18n-ui.js
+          node --check worker-r31.js
+          node --check worker.js
+          grep -q 'r35-static-v3' i18n-ui.js
+          grep -q 'parallel-static-98-language-country-category-final' worker-r31.js
+          test "$(grep -o 'id=\"categories\"' index.html | wc -l | tr -d ' ')" = '1'
+          ! grep -q 'r5-chips' index.html
+          ! grep -q 'r8-department-strip' index.html
+          echo 'R39 RUNTIME PASS'
+
+      - name: Deploy repaired candidate to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Wait for repaired production
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 70); do
+            h="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/api/health?r39=$i" || true)"
+            tn="$(curl -L -sS -o /tmp/tn.json -w '%{http_code}' --max-time 15 "https://seekveraglobal.com/i18n-r32/tn.json?r39=$i" || true)"
+            if echo "$h" | grep -q 'parallel-static-98-language-country-category-final' && test "$tn" = '200' && test -s /tmp/tn.json; then
+              echo "$h"
+              echo 'R39 LIVE TN READY'
+              exit 0
+            fi
+            sleep 3
+          done
+          echo 'R39 repaired production did not become ready' >&2
+          exit 1
+
+      - name: Full live audit - countries languages categories voice routes and AI
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          node tools/r38_final_audit.mjs
+
+      - name: Persist only the fully audited release in main
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf i18n-r35 i18n-r35-source.json i18n-r35-languages.json
+          find tools -type d -name __pycache__ -prune -exec rm -rf {} + || true
+          find tools -type f -name '*.pyc' -delete || true
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add -- i18n-r32 i18n-r32-source.json r32-i18n.js i18n-ui.js locale-r15.js worker-r31.js worker.js sw.js
+          git add -- '*.html'
+          if git diff --cached --quiet; then
+            echo 'No audited file changes to commit'
+          else
+            git commit -m 'Persist audited 98-language production release'
+            git push origin HEAD:main
+          fi
+          echo 'R39 FINAL RELEASE PERSISTED'
