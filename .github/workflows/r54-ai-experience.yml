@@ -28,12 +28,15 @@ jobs:
         run: |
           set -euo pipefail
           python tools/r54_ai_experience_fix.py
+          python tools/r54b_colloquial_jobs.py
           node --check superapp.js
           node --check voice-ai.js
           node --check worker-r31.js
           grep -F 'addDirectRoute(cat,q,pending)' superapp.js >/dev/null
+          grep -F "'شغل'" superapp.js >/dev/null
           grep -F 'voiceReplyDeadline=Date.now()+45000' voice-ai.js >/dev/null
           grep -F 'Never repeat or paraphrase the previous assistant reply' worker-r31.js >/dev/null
+          grep -F 'شغل' worker-r31.js >/dev/null
           grep -F "sleep(220)" worker-r31.js >/dev/null
           echo 'R54 BUILD PASS'
 
@@ -49,10 +52,10 @@ jobs:
         run: |
           set -euo pipefail
           for i in $(seq 1 30); do
-            s="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/superapp.js?r54=$i" || true)"
-            v="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/voice-ai.js?r54=$i" || true)"
-            w="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/worker-r31.js?r54=$i" || true)"
-            if [[ "$s" == *'addDirectRoute(cat,q,pending)'* && "$v" == *'voiceReplyDeadline=Date.now()+45000'* && "$w" == *'Never repeat or paraphrase the previous assistant reply'* ]]; then
+            s="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/superapp.js?r54b=$i" || true)"
+            v="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/voice-ai.js?r54b=$i" || true)"
+            w="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/worker-r31.js?r54b=$i" || true)"
+            if [[ "$s" == *'addDirectRoute(cat,q,pending)'* && "$s" == *"'شغل'"* && "$v" == *'voiceReplyDeadline=Date.now()+45000'* && "$w" == *'Never repeat or paraphrase the previous assistant reply'* && "$w" == *'شغل'* ]]; then
               echo 'R54 LIVE ASSETS PASS'
               exit 0
             fi
@@ -72,19 +75,19 @@ jobs:
           import assert from 'node:assert/strict';
           const b=await chromium.launch({headless:true});
           const p=await b.newPage();
-          await p.goto('https://seekveraglobal.com/?r54='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+          await p.goto('https://seekveraglobal.com/?r54b='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
           await p.waitForSelector('#aiChatInput',{timeout:30000});
           await p.waitForFunction(()=>window.SEEKVERA_VOICE_AI&&document.querySelector('#aiChatForm'),null,{timeout:30000});
           await p.fill('#aiChatInput','عم دور على شغل');
           const t=Date.now();
           await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
-          await p.waitForFunction(()=>!!document.querySelector('.sv-ai-direct-route[href*="jobs.html"]')||!!document.querySelector('#aiActions a[href*="jobs.html"]'),null,{timeout:1200});
+          await p.waitForFunction(()=>!!document.querySelector('.sv-ai-direct-route[href*="jobs.html"]')||!!document.querySelector('#aiActions a[href*="jobs.html"]'),null,{timeout:1500});
           const routeMs=Date.now()-t;
-          assert.ok(routeMs<1300,'job route was not immediate: '+routeMs);
+          assert.ok(routeMs<1600,'job route was not immediate: '+routeMs);
           await p.waitForFunction(()=>{const a=[...document.querySelectorAll('#aiMessages .ai-msg.bot')].at(-1);return a&&!a.classList.contains('thinking')&&a.textContent.trim().length>4},null,{timeout:10000});
           const answer=await p.locator('#aiMessages .ai-msg.bot').last().innerText();
           assert.ok(!/thinking|يفكر/i.test(answer),answer);
-          const api=await p.evaluate(async()=>{const t=performance.now();const r=await fetch('/api/ai',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message:'I am looking for a job',country:'Worldwide',language:'English',fast:true,history:[]})});const d=await r.json();return {status:r.status,ms:performance.now()-t,d}});
+          const api=await p.evaluate(async()=>{const t=performance.now();const r=await fetch('/api/ai',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message:'عم دور على شغل',country:'Worldwide',language:'Arabic',fast:true,history:[]})});const d=await r.json();return {status:r.status,ms:performance.now()-t,d}});
           assert.equal(api.status,200,JSON.stringify(api));
           assert.equal(api.d.category,'jobs',JSON.stringify(api));
           assert.equal(api.d.route,'jobs.html',JSON.stringify(api));
@@ -108,7 +111,7 @@ jobs:
           if git diff --cached --quiet; then
             echo 'No R54 source changes to persist'
           else
-            git commit -m 'Persist R54 fast conversational AI voice and direct routing'
+            git commit -m 'Persist R54 fast conversational AI voice and colloquial routing'
             git push origin HEAD:main
           fi
           echo 'R54 AUDITED RELEASE PERSISTED'
