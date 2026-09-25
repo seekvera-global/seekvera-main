@@ -1,5 +1,6 @@
 name: R10 universal multilingual AI country control hotfix
 
+# R24 reapply on current production source 2026-09-25
 on:
   push:
     branches: [main]
