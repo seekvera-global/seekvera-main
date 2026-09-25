@@ -17,6 +17,7 @@ concurrency:
 
 env:
   PYTHONUNBUFFERED: '1'
+  AUDIT_REV: 'r41-isolated-locale-phases'
 
 jobs:
   recover-deploy-audit:
