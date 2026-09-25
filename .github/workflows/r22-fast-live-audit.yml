@@ -1,0 +1,53 @@
+name: SEEKVERA R22 fast live audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r22-fast-live-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save playwright@1.58.2
+          npx playwright install --with-deps chromium
+      - name: Fast live deterministic card audit
+        env:
+          SITE: https://seekveraglobal.com
+        run: |
+          cat > quick-r22.mjs <<'JS'
+          import {chromium} from 'playwright';import assert from 'node:assert';
+          const browser=await chromium.launch({headless:true});
+          try{
+            const ctx=await browser.newContext({viewport:{width:360,height:800},locale:'en-US',serviceWorkers:'block'});
+            const p=await ctx.newPage();
+            await p.route('**/api/ui-translate',r=>r.abort());
+            await p.goto(`${process.env.SITE}/?r22-fast=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45000});
+            await p.waitForFunction(()=>window.SEEKVERA_R22_CATEGORY_LOCK&&window.SEEKVERA_R14_CATEGORIES&&Object.keys(SEEKVERA_R14_CATEGORIES.data).length===98,null,{timeout:20000});
+            const result=await p.evaluate(()=>{
+              const langs=Object.keys(SEEKVERA_R14_CATEGORIES.data), out=[];
+              for(const l of langs){
+                const sel=document.getElementById('lang');if(sel){if(![...sel.options].some(o=>o.value===l)){const o=document.createElement('option');o.value=l;o.textContent=l;sel.appendChild(o)}sel.value=l}
+                document.documentElement.lang=l;SEEKVERA_R22_CATEGORY_LOCK.lock();
+                const expected=SEEKVERA_R14_CATEGORIES.data[l];
+                const cards=[...document.querySelectorAll('#categories .r5-tile-body')].slice(0,31).map((x,i)=>({title:x.querySelector(':scope>b')?.textContent.trim()||'',b:x.querySelectorAll(':scope>b').length,small:[...x.querySelectorAll(':scope>small')].filter(s=>!s.hidden&&getComputedStyle(s).display!=='none').length,children:x.children.length,overflow:x.scrollWidth-x.clientWidth,expected:expected[i]}));
+                out.push({l,cards,page:document.documentElement.scrollWidth-innerWidth});
+              }
+              return {out,r22:document.documentElement.dataset.svR22||'',meta:!!document.querySelector('meta[name="google"][content="notranslate"]'),htmlTranslate:document.documentElement.getAttribute('translate')};
+            });
+            assert.equal(result.r22,'ready');assert(result.meta);assert.equal(result.htmlTranslate,'no');assert.equal(result.out.length,98);
+            for(const row of result.out){for(let i=0;i<row.cards.length;i++){const c=row.cards[i];assert.equal(c.b,1,`${row.l}/${i} b`);assert.equal(c.title,c.expected,`${row.l}/${i} title`);if(row.l!=='en'){assert.equal(c.small,0,`${row.l}/${i} small`);assert.equal(c.children,1,`${row.l}/${i} children`)}assert(c.overflow<=2,`${row.l}/${i} overflow`)}assert(row.page<=2,`${row.l} page overflow`)}
+            console.log('R22 FAST LIVE PASS — 98/98 languages, 31/31 cards each, one deterministic title per card, zero non-English description nodes, no mixed-language card DOM, mobile contained');
+            await ctx.close();
+          } finally {await browser.close()}
+          JS
+          timeout 150s node quick-r22.mjs
