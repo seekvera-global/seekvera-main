@@ -1,9 +1,9 @@
 from __future__ import annotations
 from pathlib import Path
 from bs4 import BeautifulSoup, NavigableString
-import argparse, concurrent.futures, hashlib, html as htmlmod, json, random, re, time, unicodedata, urllib.error, urllib.parse, urllib.request
+import argparse, concurrent.futures, hashlib, html as htmlmod, json, random, re, time, unicodedata, urllib.parse, urllib.request
 
-VERSION='20260925-r35-static-v2'
+VERSION='20260925-r35-static-v3'
 OUT=Path('i18n-r35')
 OUT.mkdir(exist_ok=True)
 ALIASES={'fil':'tl','he':'iw'}
@@ -19,6 +19,12 @@ DYNAMIC=[
 ]
 JS_FILES=['global-ui.js','superapp.js','voice-ai.js','navigation.js','r24-ai-controller.js','r20-final-guard.js','r22-category-lock.js','r20-extra-categories.js','app.js']
 BAD_EXACT={'SEEKVERA','R20','R31','R31C','R32','R35','HTML','CSS','JSON','GET','POST','POSTS'}
+FORCE_UI=[
+    'No approved live marketplace listings are available right now. SEEKVERA does not generate fake listings.',
+    'No approved live marketplace listings are available right now.',
+    'SEEKVERA does not generate fake listings.','Find, compare, choose — worldwide.','Find, compare, choose — worldwide',
+    'Popular categories','Live marketplace','Request anything','Privacy','Terms','Contact','Disclosure','Approved real listings only.','Loading approved listings…'
+]
 
 def clean_text(s:str)->str:return re.sub(r'\s+',' ',str(s or '')).strip()
 def worth(s:str)->bool:
@@ -69,7 +75,8 @@ def source_strings()->list[str]:
                 except Exception:pass
                 add(strings,raw)
     for x in DYNAMIC:add(strings,x)
-    return sorted(strings,key=lambda x:(len(x),x.lower()))
+    # Third sort key makes source order/hash identical across parallel Python processes.
+    return sorted(strings,key=lambda x:(len(x),x.lower(),x))
 
 def source_meta():
     src=source_strings();h=hashlib.sha256('\n'.join(src).encode()).hexdigest()[:16]
@@ -108,27 +115,49 @@ def html_google_batch(code:str,batch:list[str])->list[str]:
 
 def single_google(code:str,s:str)->str:
     last=None
-    for attempt in range(4):
+    for attempt in range(5):
         try:
             v=clean_text(google_request(code,s,35))
             if v:return v
-        except Exception as e:last=e;time.sleep(.6+attempt*.7)
+        except Exception as e:last=e;time.sleep(.45+attempt*.65)
     raise RuntimeError(f'single google failed {code}: {last!r}')
 
-def google_translate(code:str,batch:list[str],depth=0)->list[str]:
+def google_translate(code:str,batch:list[str])->list[str]:
     last=None
     for attempt in range(2):
         try:
             vals=html_google_batch(code,batch);time.sleep(.08+random.random()*.10);return vals
         except Exception as e:
-            last=e;print('HTML_RETRY',code,len(batch),attempt+1,repr(e),flush=True);time.sleep(.5+attempt*.6)
+            last=e;print('HTML_RETRY',code,len(batch),attempt+1,repr(e),flush=True);time.sleep(.4+attempt*.5)
     if len(batch)>48:
         mid=len(batch)//2
         print('HTML_SPLIT',code,len(batch),'->',mid,len(batch)-mid,flush=True)
-        return google_translate(code,batch[:mid],depth+1)+google_translate(code,batch[mid:],depth+1)
+        return google_translate(code,batch[:mid])+google_translate(code,batch[mid:])
     print('SINGLE_FALLBACK',code,len(batch),flush=True)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=6) as ex:return list(ex.map(lambda s:single_google(code,s),batch))
+
+def english_sentence(s:str)->bool:
+    s=clean_text(s)
+    if s in BAD_EXACT:return False
+    words=re.findall(r"[A-Za-z][A-Za-z'’+-]{2,}",s)
+    return len(words)>=2 and len(s)>=7 and not re.match(r'^(?:https?://|www\.)',s,re.I)
+
+def repair_unchanged(code:str,source:list[str],vals:list[str])->list[str]:
+    # Batch translation engines sometimes preserve a complete English UI sentence unchanged.
+    # Re-run those exact items individually so the final static pack never depends on runtime translation.
+    idx=[i for i,(s,v) in enumerate(zip(source,vals)) if clean_text(s)==clean_text(v) and (s in FORCE_UI or english_sentence(s))]
+    if not idx:return vals
+    print('REPAIR_UNCHANGED',code,len(idx),flush=True)
+    def one(i):
+        try:
+            v=single_google(code,source[i])
+            return i,v
+        except Exception as e:
+            print('REPAIR_FAIL',code,i,repr(e),flush=True);return i,vals[i]
     with concurrent.futures.ThreadPoolExecutor(max_workers=6) as ex:
-        return list(ex.map(lambda s:single_google(code,s),batch))
+        for i,v in ex.map(one,idx):
+            if clean_text(v):vals[i]=v
+    return vals
 
 def lang_name(code:str)->str:
     try:
@@ -142,7 +171,7 @@ def pollinations_chunk(code:str,batch:list[str])->list[str]:
             f'Keep SEEKVERA, URLs, numbers, currency codes, product names and placeholders unchanged. '
             f'Return ONLY one valid JSON array of exactly {len(batch)} strings in the same order, no markdown.\n'+json.dumps(batch,ensure_ascii=False))
     url='https://text.pollinations.ai/'+urllib.parse.quote(prompt)+'?model=openai&private=true'
-    req=urllib.request.Request(url,headers={'Accept':'text/plain','User-Agent':'SEEKVERA-R35-pack-builder/2.0'})
+    req=urllib.request.Request(url,headers={'Accept':'text/plain','User-Agent':'SEEKVERA-R35-pack-builder/3.0'})
     with urllib.request.urlopen(req,timeout=40) as r:raw=r.read().decode('utf-8').strip()
     raw=re.sub(r'^```(?:json)?\s*','',raw,flags=re.I);raw=re.sub(r'\s*```$','',raw)
     a,b=raw.find('['),raw.rfind(']')
@@ -170,10 +199,12 @@ def build(code:str):
         try:vals=google_translate(code,source);provider='google-html'
         except Exception as e:
             print('GOOGLE_FATAL_FALLBACK',code,repr(e),flush=True);vals=pollinations_translate(code,source);provider='public-ai'
+        vals=repair_unchanged(code,source,vals)
     if len(vals)!=len(source):raise RuntimeError(f'{code}: {len(vals)} != {len(source)}')
     trans={s:v for s,v in zip(source,vals)}
-    critical='No approved live marketplace listings are available right now. SEEKVERA does not generate fake listings.'
-    if code!='en' and clean_text(trans.get(critical,''))==critical:raise RuntimeError(f'{code}: critical sentence remained English')
+    # Critical screenshot text and other obvious UI phrases are fail-closed: no English may survive.
+    failed=[s for s in FORCE_UI if s in trans and clean_text(trans[s])==clean_text(s)] if code!='en' else []
+    if failed:raise RuntimeError(f'{code}: forced UI remained English: {failed[:8]}')
     payload={'version':VERSION,'sourceHash':h,'language':code,'count':len(source),'provider':provider,'translations':trans}
     p=OUT/f'{code}.json';p.write_text(json.dumps(payload,ensure_ascii=False,separators=(',',':')),encoding='utf-8')
     print('PACK_PASS',code,len(source),provider,p,flush=True)
