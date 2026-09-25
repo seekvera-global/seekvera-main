@@ -1,0 +1,42 @@
+name: R54 live chat diagnostic
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r54-live-chat-diagnostic.yml'
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Diagnose live chat submit
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > r54diag.mjs <<'JS'
+          import {chromium} from 'playwright';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage();
+          p.on('pageerror',e=>console.log('PAGEERROR',String(e)));
+          p.on('console',m=>console.log('CONSOLE',m.type(),m.text()));
+          p.on('request',r=>{try{if(new URL(r.url()).pathname==='/api/ai')console.log('AI_REQUEST',r.postData())}catch{}});
+          p.on('response',r=>{try{if(new URL(r.url()).pathname==='/api/ai')console.log('AI_RESPONSE_STATUS',r.status())}catch{}});
+          await p.goto('https://seekveraglobal.com/?r54diag='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+          await p.waitForSelector('#aiChatForm');
+          console.log('SCRIPTS',JSON.stringify(await p.evaluate(()=>[...document.scripts].map(x=>x.src).filter(Boolean))));
+          console.log('BEFORE',JSON.stringify(await p.evaluate(()=>({url:location.href,input:document.querySelector('#aiChatInput')?.value,msgs:document.querySelector('#aiMessages')?.innerHTML,actions:document.querySelector('#aiActions')?.innerHTML,form:document.querySelector('#aiChatForm')?.outerHTML.slice(0,500)}))));
+          await p.fill('#aiChatInput','عم دور على شغل');
+          await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          for(const ms of [100,500,1200,3000]){
+            await p.waitForTimeout(ms-(globalThis.prev||0));globalThis.prev=ms;
+            console.log('STATE_'+ms,JSON.stringify(await p.evaluate(()=>({url:location.href,input:document.querySelector('#aiChatInput')?.value,msgs:document.querySelector('#aiMessages')?.innerHTML,actions:document.querySelector('#aiActions')?.innerHTML,direct:[...document.querySelectorAll('.sv-ai-direct-route')].map(a=>({text:a.textContent,href:a.getAttribute('href')}))}))));
+          }
+          await b.close();
+          JS
+          node r54diag.mjs
