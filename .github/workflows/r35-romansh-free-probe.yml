@@ -1,0 +1,48 @@
+name: R35 Romansh free backend probe
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r35-romansh-free-probe.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Probe Pollinations and translatepy services for Romansh
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet translatepy || true
+          python - <<'PY'
+          import json,urllib.parse,urllib.request
+          tests=['Popular categories','Live marketplace','Request anything','Find a hotel in the city']
+          print('POLLINATIONS_RM')
+          for s in tests:
+              prompt='Translate this website label from English to natural Romansh (Rumantsch). Return ONLY the translation, no explanation or quotes. Text: '+s
+              u='https://text.pollinations.ai/'+urllib.parse.quote(prompt)+'?model=openai&private=true'
+              try:
+                  req=urllib.request.Request(u,headers={'User-Agent':'SEEKVERA-R35/1.0','Accept':'text/plain'})
+                  with urllib.request.urlopen(req,timeout=45) as r:v=r.read().decode('utf-8','replace').strip()
+                  print(s,'=>',repr(v[:500]))
+              except Exception as e: print('ERR',repr(e))
+          print('TRANSLATEPY')
+          try:
+              from translatepy import Translator
+              tr=Translator()
+              for s in tests:
+                  try:
+                      r=tr.translate(s,'Romansh');print(s,'=>',repr(str(r)),'service',getattr(r,'service',None))
+                  except Exception as e:print('TP_ERR',repr(e))
+          except Exception as e:print('IMPORT_ERR',repr(e))
+          try:
+              from translatepy.translators.bing import BingTranslate
+              b=BingTranslate()
+              for s in tests:
+                  try:print('BING',s,'=>',repr(str(b.translate(s,'Romansh'))))
+                  except Exception as e:print('BING_ERR',repr(e))
+          except Exception as e:print('BING_IMPORT_ERR',repr(e))
+          PY
