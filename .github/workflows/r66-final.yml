@@ -1,0 +1,92 @@
+name: R66 final AI command language
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r66-final.yml']
+permissions:
+  contents: write
+jobs:
+  final:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - name: Build R66
+        run: |
+          set -euo pipefail
+          python tools/r66_final_ai_command_language.py
+          node --check r66-final-controller.js
+          node --check worker-r31.js
+          node --check r24-ai-controller.js
+          node --check r31-ui-polish.js
+          node --check voice-ai.js
+          grep -F "20260926-r66-final-ai-command-language" r66-final-controller.js >/dev/null
+          grep -F "AbortSignal.timeout(6000)" worker-r31.js >/dev/null
+      - name: Deploy R66
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Wait live
+        run: |
+          set -euo pipefail
+          S=https://seekveraglobal.com
+          for i in $(seq 1 40); do
+            H="$(curl -LfsS --max-time 15 "$S/?r66=$i" || true)"
+            C="$(curl -LfsS --max-time 15 "$S/r66-final-controller.js?r66=$i" || true)"
+            W="$(curl -LfsS --max-time 15 "$S/worker-r31.js?r66=$i" || true)"
+            if [[ "$H" == *"r66-final-controller.js"* && "$C" == *"20260926-r66-final-ai-command-language"* && "$W" == *"AbortSignal.timeout(6000)"* ]]; then echo R66_LIVE; exit 0; fi
+            sleep 2
+          done
+          exit 1
+      - name: Exact real-phone command behavior
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > test.mjs <<'JS'
+          import {chromium} from 'playwright';import assert from 'node:assert/strict';
+          const b=await chromium.launch({headless:true});const p=await b.newPage({locale:'en-US',userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          await p.goto('https://seekveraglobal.com/?r66test='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_R66_FINAL&&window.SEEKVERA_R24_CONTROLLER&&document.querySelector('#aiChatForm'));
+          await p.evaluate(()=>{sessionStorage.setItem('seekvera_ai_intent','jobs');const c=document.querySelector('#country');if(c){if(![...c.options].some(o=>o.value==='NG'))c.add(new Option('Nigeria','NG'));c.value='NG'}});
+          await p.fill('#aiChatInput','Change the app to Worldwide');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForFunction(()=>document.querySelector('#country')?.value==='WW'&&document.querySelector('[data-scope="worldwide"]')?.classList.contains('active'),null,{timeout:5000});
+          let a=await p.evaluate(()=>({country:country.value,currency:currency.value,intent:sessionStorage.getItem('seekvera_ai_intent'),text:aiMessages.innerText,scope:[...document.querySelectorAll('[data-scope]')].find(x=>x.classList.contains('active'))?.dataset.scope}));
+          assert.equal(a.country,'WW');assert.equal(a.currency,'USD');assert.equal(a.intent,null);assert.equal(a.scope,'worldwide');assert.ok(/Done\. The app is now set to Worldwide\./.test(a.text));assert.ok(!/taking you directly to Jobs/i.test(a.text.split('Change the app to Worldwide').at(-1)||''));
+          await p.fill('#aiChatInput','حطني تركيا');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(()=>country.value==='TR',null,{timeout:5000});
+          const ar=await p.evaluate(()=>aiMessages.innerText);assert.ok(/تم\./.test(ar));
+          await p.fill('#aiChatInput','حطلي تركي');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(()=>lang.value==='tr',null,{timeout:5000});
+          console.log('R66 CONTROL PASS',a);await b.close();
+          JS
+          node test.mjs
+      - name: Live multilingual API independent of country
+        run: |
+          python3 - <<'PY'
+          import urllib.request,json
+          S='https://seekveraglobal.com';H={'content-type':'application/json','User-Agent':'Mozilla/5.0 R66'}
+          cases=[('ar','NG','شو فيك تساعدني اليوم؟'),('fr','NG','Bonjour, peux-tu m’aider aujourd’hui ?'),('zh','US','你好，你今天可以怎么帮助我？'),('hi','FR','नमस्ते, आज आप मेरी कैसे मदद कर सकते हैं?')]
+          for code,country,msg in cases:
+            q=urllib.request.Request(S+'/api/ai',data=json.dumps({'message':msg,'country':country,'language':'auto','browserLanguage':'en-US','fast':True},ensure_ascii=False).encode(),headers=H,method='POST')
+            with urllib.request.urlopen(q,timeout=40) as r:d=json.loads(r.read())
+            print(code,d.get('model'),d.get('response'))
+            x=d.get('response','');assert d.get('ok') and x
+            if code=='ar':assert any('\u0600'<=c<='\u06ff' for c in x)
+            if code=='zh':assert any('\u4e00'<=c<='\u9fff' for c in x)
+            if code=='hi':assert any('\u0900'<=c<='\u097f' for c in x)
+            if code=='fr':assert any(w in x.lower() for w in ('bonjour','vous','aide','besoin','assistant','pouvez','peux'))
+          print('R66 MULTILINGUAL API PASS')
+          PY
+      - name: Persist R66
+        run: |
+          set -euo pipefail
+          git config user.name seekvera-global
+          git config user.email seekvera.global@gmail.com
+          git add ./*.html r66-final-controller.js worker-r31.js r24-ai-controller.js r31-ui-polish.js voice-ai.js superapp.js r60-runtime-guard.js navigation.js sw.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Persist R66 final direct AI controls and multilingual fallback'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+          echo R66_PERSISTED
