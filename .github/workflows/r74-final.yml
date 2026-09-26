@@ -23,7 +23,7 @@ jobs:
           node --check worker-r30.js
           node --check worker-r31.js
           node --check r74-ai-failover.js
-          grep -q 'main.*worker-r31.js' wrangler.jsonc
+          grep -q '"main": "./worker-r31.js"' wrangler.jsonc
           grep -q 'seekvera-local-router-ar' worker-r31.js
           grep -q 'r74-ai-failover.js' index.html
           test "$(find i18n-r32 -maxdepth 1 -name '*.json' ! -name manifest.json | wc -l)" = 98
