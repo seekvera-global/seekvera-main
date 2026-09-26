@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/r74-final.yml'
+      - 'worker-r31.js'
   workflow_dispatch:
 permissions:
   contents: read
