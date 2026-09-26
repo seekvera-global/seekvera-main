@@ -24,6 +24,22 @@ function normalizedLanguage(v,message=''){
  const n=clean(v,80).toLowerCase();if(LANGUAGE_NAMES[n])return LANGUAGE_NAMES[n];
  const t=String(message||'');if(/[\u0600-\u06ff]/u.test(t))return'ar';if(/[\u3040-\u30ff]/u.test(t))return'ja';if(/[\u4e00-\u9fff]/u.test(t))return'zh';if(/[\uac00-\ud7af]/u.test(t))return'ko';if(/[\u0900-\u097f]/u.test(t))return'hi';if(/[\u0590-\u05ff]/u.test(t))return'he';return'en';
 }
+function messageLanguage(message,suggested=''){
+ const t=String(message||''),s=t.toLowerCase();
+ if(/[\u0600-\u06ff]/u.test(t))return'ar';
+ if(/[\u3040-\u30ff]/u.test(t))return'ja';
+ if(/[\u4e00-\u9fff]/u.test(t))return'zh';
+ if(/[\uac00-\ud7af]/u.test(t))return'ko';
+ if(/[\u0900-\u097f]/u.test(t))return'hi';
+ if(/[\u0590-\u05ff]/u.test(t))return'he';
+ if(/[\u0400-\u052f]/u.test(t)){const q=languageCode(suggested);return['ru','uk','bg','sr','mk','be'].includes(q)?q:'ru'}
+ if(/[ğüşöçıİ]/u.test(t)||/\b(uygulama|ülke|ulke|dil|değiş|degis)\b/iu.test(s))return'tr';
+ if(/[àâçéèêëîïôûùüÿœæ]/iu.test(t)||/\b(changez|langue|pays|cherche|voudrais|besoin)\b/iu.test(s))return'fr';
+ if(/[äöüß]/iu.test(t)||/\b(wechsel|sprache|land|suche|möchte|mochte)\b/iu.test(s))return'de';
+ if(/[ñáéíóúü¿¡]/iu.test(t)||/\b(cambia|idioma|país|pais|quiero|busco|necesito)\b/iu.test(s))return'es';
+ if(/\b(change|switch|set|select|app|application|country|market|region|language|worldwide)\b/i.test(s))return'en';
+ return languageCode(suggested)||normalizedLanguage('',t);
+}
 function aliasHit(s,a){a=String(a).toLowerCase();if(/^[a-z]{1,3}$/i.test(a))return new RegExp(`(?:^|[^a-z])${a.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}(?:$|[^a-z])`,'i').test(s);return s.includes(a)}
 const COUNTRY_ALIASES={
  WW:['worldwide','global','all countries','كل الدول','كل العالم','العالم كله','ورلد وايد','وورلد وايد','عالمي'],
@@ -52,19 +68,43 @@ function actionReply(lang,cc,ll){
  };
  return(r[lang]||r.en)[kind];
 }
+function actionState(message,modelCC='',modelLL=''){
+ const s=String(message||'').toLowerCase(),isControl=controlVerb(s),wantsLanguage=languageIntent(s);
+ const localCC=explicitCountryAction(message),localLL=explicitLanguageAction(message);
+ const cc=localCC||((isControl&&!wantsLanguage)?countryCode(modelCC):'');
+ const ll=localLL||((isControl&&wantsLanguage)?languageCode(modelLL):'');
+ return{cc,ll,isAction:!!(cc||ll)};
+}
 async function degradedFallback(request,env,ctx,body,message){
  const fallback=await baseWorker.fetch(request,env,ctx);let d=null;try{d=await fallback.clone().json()}catch{}
  if(!d||typeof d!=='object'){const h=new Headers(fallback.headers);h.set('x-seekvera-release',RELEASE);return new Response(fallback.body,{status:fallback.status,statusText:fallback.statusText,headers:h})}
- const language=normalizedLanguage(d.language,message),cat=category(d.category),localLL=explicitLanguageAction(message),localCC=explicitCountryAction(message),baseLL=languageCode(d?.languageAction?.code),baseCC=countryCode(d?.countryAction?.code),ll=localLL||baseLL,cc=localCC||baseCC;
- return json(request,{...d,ok:d.ok!==false,response:(cc||ll)?actionReply(language,cc,ll):clean(d.response,5000),language,category:cat,route:ROUTES[cat]||ROUTES.general,countryAction:cc?{type:'set-country',code:cc}:null,languageAction:ll?{type:'set-language',code:ll}:null,model:(cc||ll)?'seekvera-r76-local-action-fallback':d.model,fastPath:(cc||ll)?'r76-deterministic-action-fallback':(d.fastPath||'r76-base-fallback'),liveData:!!d.liveData},fallback.status||200)
+ const act=actionState(message,d?.countryAction?.code,d?.languageAction?.code),language=act.isAction?messageLanguage(message,d.language):normalizedLanguage(d.language,message),cat=category(d.category);
+ return json(request,{...d,ok:d.ok!==false,response:act.isAction?actionReply(language,act.cc,act.ll):clean(d.response,5000),language,category:cat,route:ROUTES[cat]||ROUTES.general,countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:act.isAction?'seekvera-r76-local-action-fallback':d.model,fastPath:act.isAction?'r76-deterministic-action-fallback':(d.fastPath||'r76-base-fallback'),liveData:!!d.liveData},fallback.status||200)
 }
 
 async function runStructured(env,body){
  const message=clean(body?.message??body?.prompt,2400);if(!message)return null;
  const selected=clean(body?.country,120)||'Worldwide',history=historyText(body?.history);
- const system=`You are SEEKVERA AI, the action assistant inside a worldwide marketplace and discovery app. You must understand the LATEST USER MESSAGE directly, including dialects, slang, Lebanese Arabic, mixed Arabic/English, transliteration, and any major world language. Never choose the reply language from the selected country, interface, or browser. Reply in the SAME language and script as the latest user message unless the user explicitly requests another reply language.\n\nReturn ONLY one JSON object with exactly these keys: reply, languageCode, category, countryAction, languageAction.\n- reply: a natural, concise, useful answer that appears BEFORE any app action. Do not merely say you will help; actually answer what you can.\n- languageCode: best ISO language code for the latest user message.\n- category: exactly one of ${[...CATS].join(', ')}. Choose general when no app section is relevant.\n- countryAction: ISO-3166 alpha-2 code, or WW, ONLY when the user explicitly commands the SEEKVERA APP/MARKET/COUNTRY SELECTOR to change/switch/move/set. Leave empty when the user merely searches for something in a country.\n- languageAction: supported language code ONLY when the user explicitly commands the app/interface language to change. Leave empty otherwise.\n\nAction examples: “حطني تركيا” => countryAction TR. “change the app to France” => FR. “حوّلني ورلد وايد” => WW. “حطلي تركي” when clearly asking app language => languageAction tr. “بدي فندق بفرنسا” is a search, NOT a country action. “I need a job in Germany” is jobs, NOT a country action.\nSelected market: ${selected}.\nConversation history:\n${history||'(none)'}\nLatest user message: ${message}`;
+ const system=`You are SEEKVERA AI, the action assistant inside a worldwide marketplace and discovery app. You must understand the LATEST USER MESSAGE directly, including dialects, slang, Lebanese Arabic, mixed Arabic/English, transliteration, and any major world language. Never choose the reply language from the selected country, interface, or browser. Reply in the SAME language and script as the latest user message unless the user explicitly requests another reply language.\
+\
+Return ONLY one JSON object with exactly these keys: reply, languageCode, category, countryAction, languageAction.\
+- reply: a natural, concise, useful answer that appears BEFORE any app action. Do not merely say you will help; actually answer what you can.\
+- languageCode: best ISO language code for the latest user message.\
+- category: exactly one of ${[...CATS].join(', ')}. Choose general when no app section is relevant.\
+- countryAction: ISO-3166 alpha-2 code, or WW, ONLY when the user explicitly commands the SEEKVERA APP/MARKET/COUNTRY SELECTOR to change/switch/move/set. Leave empty when the user merely searches for something in a country.\
+- languageAction: supported language code ONLY when the user explicitly commands the app/interface language to change. Leave empty otherwise.\
+\
+Action examples: “حطني تركيا” => countryAction TR. “change the app to France” => FR. “حوّلني ورلد وايد” => WW. “حطلي تركي” when clearly asking app language => languageAction tr. “بدي فندق بفرنسا” is a search, NOT a country action. “I need a job in Germany” is jobs, NOT a country action.\
+Selected market: ${selected}.\
+Conversation history:\
+${history||'(none)'}\
+Latest user message: ${message}`;
  const messages=[{role:'system',content:system},{role:'user',content:message}];
- for(const model of [PRIMARY,FALLBACK]){try{const r=await env.AI.run(model,{messages,temperature:.1,max_tokens:520});const text=modelText(r),obj=parseJSON(text);if(!obj||!clean(obj.reply,5000))continue;const language=languageCode(obj.languageCode)||'en',cat=category(obj.category),cc=countryCode(obj.countryAction),ll=languageCode(obj.languageAction);return{ok:true,response:clean(obj.reply,5000),language,category:cat,route:ROUTES[cat]||ROUTES.general,countryAction:cc?{type:'set-country',code:cc}:null,languageAction:ll?{type:'set-language',code:ll}:null,model,fastPath:'r76-single-structured-ai',liveData:false}}catch{}}
+ for(const model of [PRIMARY,FALLBACK]){try{
+   const r=await env.AI.run(model,{messages,temperature:.1,max_tokens:520}),text=modelText(r),obj=parseJSON(text);if(!obj||!clean(obj.reply,5000))continue;
+   const act=actionState(message,obj.countryAction,obj.languageAction),language=act.isAction?messageLanguage(message,obj.languageCode):(languageCode(obj.languageCode)||normalizedLanguage('',message)),cat=category(obj.category);
+   return{ok:true,response:act.isAction?actionReply(language,act.cc,act.ll):clean(obj.reply,5000),language,category:cat,route:ROUTES[cat]||ROUTES.general,countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model,fastPath:act.isAction?'r76-verified-action-first':'r76-single-structured-ai',liveData:false}
+ }catch{}}
  return null;
 }
 
