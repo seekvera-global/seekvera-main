@@ -38,7 +38,7 @@ jobs:
           path: i18n-r76
           merge-multiple: true
 
-      - name: Reuse 11 already-live R76 packs and verify source hash
+      - name: Rescue 11 missing packs concurrently and verify source hash
         shell: bash
         run: |
           set -euo pipefail
@@ -53,20 +53,8 @@ jobs:
           assert set(missing)==set(expected),(missing,expected)
           PY
           mkdir -p i18n-r76
-          UA='Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36'
-          for lang in fr it nl ro sr kl to fy rm xh tn; do
-            echo "R76_REUSE_LIVE_PACK $lang"
-            if ! curl -LfsS --retry 3 --retry-delay 1 --retry-all-errors --max-time 30 \
-              -A "$UA" -H 'Accept: application/json,text/plain,*/*' -H 'Referer: https://seekveraglobal.com/' -H 'Cache-Control: no-cache' \
-              "https://seekveraglobal.com/i18n-r32/${lang}.json?r76reuse=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
-              -o "i18n-r76/${lang}.json"; then
-              echo "custom domain limited for $lang; trying worker origin"
-              curl -LfsS --retry 3 --retry-delay 1 --retry-all-errors --max-time 30 \
-                -A "$UA" -H 'Accept: application/json,text/plain,*/*' -H 'Cache-Control: no-cache' \
-                "https://seekvera-main.seekvera-global.workers.dev/i18n-r32/${lang}.json?r76reuse=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
-                -o "i18n-r76/${lang}.json"
-            fi
-          done
+          printf '%s\n' fr it nl ro sr kl to fy rm xh tn | \
+            xargs -P3 -I{} bash -c 'set -euo pipefail; echo "R76_PARALLEL_RESCUE_START {}"; python tools/r76_incremental_rescue13.py --lang "{}"; echo "R76_PARALLEL_RESCUE_DONE {}"'
           python - <<'PY'
           import json,pathlib
           langs=json.load(open('i18n-r76-languages.json',encoding='utf-8'))
@@ -80,7 +68,7 @@ jobs:
               assert d['sourceHash']==src['sourceHash'],(lang,d.get('sourceHash'),src['sourceHash'])
               if d.get('language') is not None:
                   assert d['language']==lang,(lang,d.get('language'))
-          print('R76_98_PACKS_COMPLETE_REUSED_LIVE',len(files),src['count'],src['sourceHash'])
+          print('R76_98_PACKS_COMPLETE_PARALLEL',len(files),src['count'],src['sourceHash'])
           PY
 
       - name: Assemble audited 98-language static runtime
