@@ -111,7 +111,7 @@ function bindChat(){
  const form=document.querySelector('#aiChatForm');form?.addEventListener('submit',e=>{const q=input?.value?.trim();if(!q)return;const activeAttachment=document.querySelector('#aiAttachmentState:not([hidden])');if(activeAttachment&&activeAttachment.textContent?.trim())return;e.preventDefault();e.stopImmediatePropagation();if(recognition)cancelRecognition(true);submitAI(q,{fromVoice:false})},true);
 }
 function bindLocale(){document.addEventListener('change',e=>{if(e.target?.id==='country'||e.target?.id==='lang'||e.target?.id==='currency'){atomicLocale()}},true);new MutationObserver(ms=>{if(!ms.some(m=>m.type==='childList'))return;clearTimeout(observerTimer);observerTimer=setTimeout(()=>{repairCategoryIcons();localizeCurrencies()},90)}).observe(document.documentElement,{subtree:true,childList:true})}
-function boot(){installAtomicCSS();repairCategoryIcons();localizeCurrencies();bindLocale();bindChat();atomicLocale();replayPendingRouteVoice();document.documentElement.dataset.r31='20260926-r66-final-ai-command-language'}
+function boot(){installAtomicCSS();repairCategoryIcons();localizeCurrencies();bindLocale();bindChat();atomicLocale();replayPendingRouteVoice();document.documentElement.dataset.r31='20260926-r73-true-multilingual-voice'}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 window.SEEKVERA_R31={version:VERSION,refresh:atomicLocale,currencyLabel,repairCategoryIcons,cancelVoice:cancelRecognition,submitAI,startFastVoice,intent,translatedIntent,routeUrl,hasFastVoice:!!SpeechRecognition};
 })();

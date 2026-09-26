@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const RELEASE='20260926-r66-final-ai-command-language';
+const RELEASE='20260926-r73-true-multilingual-voice';
 const CHAT_KEY='seekvera_ai_chat_v1',CHAT_MAX=100;
 document.documentElement.dataset.seekveraRelease=RELEASE;
 function cleanVisualState(){document.documentElement.classList.remove('sv-r31-switching');try{document.body?.classList.remove('sv-r31-switching')}catch{}}

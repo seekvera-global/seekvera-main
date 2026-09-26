@@ -1,7 +1,7 @@
 (()=>{
 'use strict';
 if(window.__SEEKVERA_R66_FINAL)return;window.__SEEKVERA_R66_FINAL=true;
-const VER='20260926-r66-final-ai-command-language';
+const VER='20260926-r73-true-multilingual-voice';
 const $=s=>document.querySelector(s);
 const norm=s=>String(s||'').normalize('NFKD').replace(/[\u0300-\u036f\u064b-\u065f\u0670]/g,'').replace(/[إأآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').toLowerCase().replace(/[\s\-_]+/g,' ').trim();
 function messageLang(t){t=String(t||'');if(/[\u0600-\u06ff]/u.test(t))return'ar';if(/[\u0900-\u097f]/u.test(t))return'hi';if(/[\u4e00-\u9fff]/u.test(t))return'zh';if(/[\u3040-\u30ff]/u.test(t))return'ja';if(/[\uac00-\ud7af]/u.test(t))return'ko';if(/[\u0400-\u04ff]/u.test(t))return'ru';if(/[\u0590-\u05ff]/u.test(t))return'he';if(/[\u0370-\u03ff]/u.test(t))return'el';const n=' '+norm(t)+' ';if(/\b(bonjour|salut|je|vous|merci|comment|besoin|aide|cherche|travail|emploi)\b/.test(n))return'fr';if(/\b(hola|gracias|quiero|busco|trabajo|ayuda|como|puedes)\b/.test(n))return'es';if(/\b(ola|obrigado|quero|procuro|trabalho|ajuda|voce)\b/.test(n))return'pt';if(/\b(hallo|danke|ich|suche|arbeit|hilfe|wie)\b/.test(n))return'de';if(/\b(ciao|grazie|cerco|lavoro|aiuto|come)\b/.test(n))return'it';if(/\b(merhaba|tesekkur|teşekkür|yardim|yardım|arıyorum|istiyorum)\b/.test(n))return'tr';return'en'}

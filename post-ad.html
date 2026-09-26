@@ -60,16 +60,16 @@ let ad_ref='';const body={title:val('title'),description:val('description'),cate
 btn.disabled=true;st.textContent='Safety check…';try{const safety=await moderate(body);if(safety&&safety.allowed===false){st.textContent='Blocked by SEEKVERA Safety: this ad contains prohibited content. Please remove it and do not upload restricted items.';return}st.textContent='Submitting through secure server gate…';const r=await fetch(SUBMIT,{method:'POST',headers:{...H,'content-type':'application/json'},body:JSON.stringify(body)});const sd=await r.json().catch(()=>({}));if(!r.ok){if(sd?.blocked){st.textContent='Blocked by SEEKVERA Safety: prohibited content cannot be submitted.';return}if(sd?.rateLimited){st.textContent='Too many submissions. Please try again later.';return}throw new Error(sd?.error||'Secure submission failed')}ad_ref=sd.ad_ref;if(!ad_ref)throw new Error('Missing secure reference');for(let i=0;i<fs.length;i++){const url=await uploadFile(ad_ref,fs[i],i);const ir=await fetch(SB+'/rest/v1/marketplace_listing_images',{method:'POST',headers:{...H,'content-type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({ad_ref,image_url:url,sort_order:i})});if(!ir.ok)throw new Error('Image record failed')}st.textContent='AI Safety Gate is reviewing text and images…';let reviewStatus='pending';try{const rr=await fetch(REVIEW,{method:'POST',headers:{...H,'content-type':'application/json'},body:JSON.stringify({ad_ref})});if(rr.ok){const rd=await rr.json();reviewStatus=rd?.status||'pending';if(reviewStatus==='approved')st.textContent='Approved automatically by SEEKVERA Safety Gate. Reference: '+ad_ref;else if(reviewStatus==='rejected')st.textContent='Rejected by SEEKVERA Safety Gate. Reference: '+ad_ref;else st.textContent='Submitted safely. Reference: '+ad_ref+' — held for review and not public yet.'}else st.textContent='Submitted safely. Reference: '+ad_ref+' — held for review and not public yet.'}catch{st.textContent='Submitted safely. Reference: '+ad_ref+' — held for review and not public yet.'}e.target.reset();photos.innerHTML=''}catch(err){console.error(err);st.textContent='Could not submit the ad. Please check the details and try again.'}finally{btn.disabled=false}});
 </script><script src="r20-final-guard.js?v=20260925-r20" defer></script>
 <script src="locale-r15.js?v=20260925-r44-stable-locale" defer></script>
-<script src="voice-ai.js?v=20260926-r66-final-ai-command-language" defer></script>
+<script src="voice-ai.js?v=20260926-r73-true-multilingual-voice" defer></script>
 <script src="global-ui.js?v=20260924-r17" defer></script>
 <script src="i18n-ui.js?v=20260925-r35-global-final" defer></script>
 <script src="locale-r14-categories.js?v=20260924-r14" defer></script>
 <script src="r20-extra-categories.js?v=20260925-r20c" defer></script>
 <script src="locale-r14.js?v=20260925-r44-stable-locale" defer></script>
 
-<script src="navigation.js?v=20260926-r66-final-ai-command-language" defer></script>
+<script src="navigation.js?v=20260926-r73-true-multilingual-voice" defer></script>
 <script src="r22-category-lock.js?v=20260925-r22" defer></script>
-<script src="r24-ai-controller.js?v=20260926-r66-final-ai-command-language" data-no-i18n="1"></script>
+<script src="r24-ai-controller.js?v=20260926-r73-true-multilingual-voice" data-no-i18n="1"></script>
 <script data-no-i18n="1" id="sv-category-option-locale">
 (()=>{'use strict';
  const IDX={'Property':5,'Cars & Auto':6,'Jobs':7,'Shopping':8,'Services':10,'Equipment':11,'Boats':12,'Import & Export':13,'Shipping & Logistics':14,'Solar & Energy':18,'Education':19,'Health':20,'Food & Restaurants':9,'Technology & Software':16,'Business':30,'Aircraft':2};
@@ -96,4 +96,4 @@ btn.disabled=true;st.textContent='Safety check…';try{const safety=await modera
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',later,{once:true});else later();
 })();
 </script>
-<script src="/r60-runtime-guard.js?v=20260926-r66-final-ai-command-language" defer data-no-i18n="1"></script><script src="/r31-ui-polish.js?v=20260926-r66-final-ai-command-language" defer data-no-i18n="1"></script><script src="/r66-final-controller.js?v=20260926-r66-final-ai-command-language" data-no-i18n="1"></script></body></html>
+<script src="/r60-runtime-guard.js?v=20260926-r73-true-multilingual-voice" defer data-no-i18n="1"></script><script src="/r31-ui-polish.js?v=20260926-r73-true-multilingual-voice" defer data-no-i18n="1"></script><script src="/r66-final-controller.js?v=20260926-r73-true-multilingual-voice" data-no-i18n="1"></script></body></html>
