@@ -8,34 +8,28 @@ permissions:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 8
     steps:
-      - name: Probe regional codes for kl and rm
+      - name: Probe Google translation through Cloudflare edge
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
-          import http.cookiejar,json,re,urllib.parse,urllib.request
-          text='Find jobs and hotels near me'
-          # MyMemory code variants
-          for code in ['kl-GL','kal','rm-CH','roh']:
+          import json,urllib.request,urllib.error
+          U='https://seekveraglobal.com/api/__r76_google_translate'
+          src='Find jobs and hotels near me'
+          bad=[]
+          for lang in ['sr','kl','rm']:
+              body=json.dumps({'target':lang,'text':src}).encode()
+              req=urllib.request.Request(U,data=body,headers={'content-type':'application/json','user-agent':'SEEKVERA-R76-HYBRID'},method='POST')
               try:
-                  u='https://api.mymemory.translated.net/get?'+urllib.parse.urlencode({'q':text,'langpair':'en|'+code})
-                  req=urllib.request.Request(u,headers={'User-Agent':'Mozilla/5.0 SEEKVERA-R76'})
-                  raw=urllib.request.urlopen(req,timeout=20).read().decode('utf-8','replace')
-                  print('MYMEMORY',code,raw[:900],flush=True)
-              except Exception as e:print('MYMEMORY_ERROR',code,repr(e),flush=True)
-          # Bing variants (including Serbian variants for reference)
-          cj=http.cookiejar.CookieJar();op=urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
-          h={'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140 Safari/537.36','Accept-Language':'en-US,en;q=0.9'}
-          html=op.open(urllib.request.Request('https://www.bing.com/translator',headers=h),timeout=20).read().decode('utf-8','replace')
-          ig=(re.search(r'IG:"([^"]+)"',html) or re.search(r'"IG":"([^"]+)"',html)).group(1)
-          key,token,_=re.search(r'params_AbusePreventionHelper\s*=\s*\[(\d+),"([^"]+)",(\d+)\]',html).groups()
-          url=f'https://www.bing.com/ttranslatev3?isVertical=1&&IG={urllib.parse.quote(ig)}&IID=translator.5024.1'
-          for code in ['kl-GL','kl','rm-CH','rm','sr-Cyrl','sr-Latn']:
-              try:
-                  data=urllib.parse.urlencode({'fromLang':'en','to':code,'text':text,'token':token,'key':key}).encode()
-                  req=urllib.request.Request(url,data=data,headers={**h,'Content-Type':'application/x-www-form-urlencoded','Referer':'https://www.bing.com/translator'},method='POST')
-                  raw=op.open(req,timeout=20).read().decode('utf-8','replace');print('BING',code,raw[:700],flush=True)
-              except Exception as e:print('BING_ERROR',code,repr(e),flush=True)
+                  with urllib.request.urlopen(req,timeout=30) as r:d=json.loads(r.read().decode('utf-8','replace'))
+                  t=str(d.get('translation') or '').strip();print('EDGE',lang,'=>',t,d.get('provider'),flush=True)
+                  if not d.get('ok') or not t or t.lower()==src.lower():bad.append((lang,d))
+              except urllib.error.HTTPError as e:
+                  raw=e.read().decode('utf-8','replace');print('EDGE_HTTP',lang,e.code,raw,flush=True);bad.append((lang,raw))
+              except Exception as e:
+                  print('EDGE_ERROR',lang,repr(e),flush=True);bad.append((lang,repr(e)))
+          assert not bad,'edge bridge failures '+repr(bad)
+          print('R76_EDGE_ALL_3_PASS')
           PY
