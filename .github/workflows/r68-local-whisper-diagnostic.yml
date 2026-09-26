@@ -14,7 +14,7 @@ jobs:
           python3 -m http.server 8765 >/tmp/http.log 2>&1 &
           npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
           npx playwright install chromium >/dev/null
-          cat > /tmp/test.mjs <<'JS'
+          cat > test-local-whisper.mjs <<'JS'
           import {chromium} from 'playwright';import fs from 'node:fs';
           const b=await chromium.launch({headless:true});const p=await b.newPage();
           await p.goto('https://seekveraglobal.com/?r68audio='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
@@ -31,4 +31,4 @@ jobs:
           if(!/[\u0600-\u06ff]/u.test(String(out?.text||'')))throw Error('Arabic not transcribed');
           await b.close();
           JS
-          node /tmp/test.mjs
+          node test-local-whisper.mjs
