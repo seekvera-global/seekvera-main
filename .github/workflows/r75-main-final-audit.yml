@@ -1,0 +1,101 @@
+name: R75 final live country section AI audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r75-main-final-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seekvera-r75-final-audit
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate R75 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check i18n-ui.js
+          node --check r31-ui-polish.js
+          node --check r66-final-controller.js
+          grep -F '20260926-r75-global-country-section-sync' i18n-ui.js >/dev/null
+          grep -F '20260926-r75-global-country-section-sync' r31-ui-polish.js >/dev/null
+          grep -F '20260926-r75-global-country-section-sync' r66-final-controller.js >/dev/null
+          grep -F "setTimeout(()=>{forceControl(ctl)" r31-ui-polish.js >/dev/null
+          grep -F "SEEKVERA_CHAT?.save" r31-ui-polish.js >/dev/null
+          echo 'R75 SOURCE PASS'
+
+      - name: Live all-country section and AI audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > r75-final.mjs <<'JS'
+          import {chromium} from 'playwright';
+          import assert from 'node:assert/strict';
+          const S='https://seekveraglobal.com';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage({locale:'ar-LB',viewport:{width:390,height:844},userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          const errors=[];p.on('pageerror',e=>errors.push(String(e)));
+          await p.goto(S+'/?r75final='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_R31?.version?.includes('r75')&&window.SEEKVERA_R66_FINAL?.version?.includes('r75')&&window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_CHAT,{timeout:30000});
+          const matrix=await p.evaluate(async()=>{
+            const profiles=SEEKVERA_LOCALE_R15.profiles,bad=[];
+            const entries=Object.entries(profiles);
+            for(const [cc,x] of entries){
+              SEEKVERA_LOCALE_R15.setCountry(cc);
+              await new Promise(r=>setTimeout(r,8));
+              const got={cc:document.querySelector('#country')?.value,lang:document.querySelector('#lang')?.value,cur:document.querySelector('#currency')?.value,html:document.documentElement.lang,dir:document.documentElement.dir};
+              if(got.cc!==cc||got.lang!==x.language||got.cur!==x.currency||got.html!==x.language)bad.push({cc,x,got});
+            }
+            return {count:entries.length,bad};
+          });
+          assert.ok(matrix.count>=240,'country profile count '+matrix.count);
+          assert.equal(matrix.bad.length,0,'country sync failures '+JSON.stringify(matrix.bad.slice(0,8)));
+
+          const sections=['marketplace.html','travel.html','tourism.html','property.html','cars-auto.html','jobs.html','shopping.html','restaurants-food.html','local-services.html','import-export.html','shipping-logistics.html','business-software.html','software.html','web-hosting.html','solar.html','education.html','health.html','money-insurance.html','entertainment.html','media.html','games.html','connectivity.html','wifi.html','deal-agent.html','everyday.html','scan.html','seller-plans.html'];
+          const countries=['LB','FR','DE','TR','IN','CN','JP','KR','BR','RU','NG','US'];
+          const sectionBad=[];
+          for(let i=0;i<sections.length;i++){
+            const page=sections[i],cc=countries[i%countries.length];
+            await p.goto(S+'/'+page+'?r75sec='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+            await p.waitForFunction(()=>window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_I18N,{timeout:20000});
+            const row=await p.evaluate(async cc=>{
+              SEEKVERA_LOCALE_R15.setCountry(cc);await new Promise(r=>setTimeout(r,700));
+              const pr=SEEKVERA_LOCALE_R15.profiles[cc];
+              return {cc:document.querySelector('#country')?.value||localStorage.getItem('seekvera_country'),lang:document.documentElement.lang,expected:pr?.language||'',text:(document.body?.innerText||'').trim().slice(0,1000)};
+            },cc);
+            if(row.cc!==cc||row.lang!==row.expected||!row.text)sectionBad.push({page,cc,row});
+          }
+          assert.equal(sectionBad.length,0,'section locale failures '+JSON.stringify(sectionBad.slice(0,6)));
+
+          await p.goto(S+'/?r75ai='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_R31?.version?.includes('r75')&&window.SEEKVERA_CHAT&&document.querySelector('#aiChatForm'),{timeout:30000});
+          await p.evaluate(()=>{localStorage.removeItem('seekvera_ai_chat_v1');SEEKVERA_LOCALE_R15.setCountry('LB')});
+          await p.fill('#aiChatInput','بدي وظيفة بالمبيعات');
+          const t=Date.now(),before=p.url();
+          await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForFunction(()=>{const x=[...document.querySelectorAll('#aiMessages .ai-msg.bot')].at(-1);return x&&!x.classList.contains('thinking')&&x.textContent.trim().length>1},null,{timeout:15000});
+          const replyMs=Date.now()-t;
+          assert.equal(p.url(),before,'route happened before reply became visible');
+          await p.waitForFunction(()=>location.pathname==='/jobs'||location.pathname==='/jobs.html',null,{timeout:10000});
+          const saved=await p.evaluate(()=>localStorage.getItem('seekvera_ai_chat_v1')||'');
+          assert.ok(saved.includes('بدي وظيفة بالمبيعات'),'chat not saved before route');
+          await p.goto(S+'/?r75restore='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_CHAT&&document.querySelector('#aiMessages'),{timeout:30000});await p.waitForTimeout(400);
+          const restored=await p.locator('#aiMessages').innerText();assert.ok(restored.includes('بدي وظيفة بالمبيعات'),'chat did not restore');
+          assert.equal(errors.length,0,'page errors '+errors.join(' | '));
+          console.log('R75 FINAL LIVE PASS',JSON.stringify({countries:matrix.count,sections:sections.length,replyMs,chatSaved:true,chatRestored:true}));
+          await b.close();
+          JS
+          node r75-final.mjs
