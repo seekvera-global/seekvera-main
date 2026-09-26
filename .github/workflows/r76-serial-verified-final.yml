@@ -38,7 +38,7 @@ jobs:
           path: i18n-r76
           merge-multiple: true
 
-      - name: Rescue 11 missing packs with deterministic rare-language handling
+      - name: Rescue 11 missing packs with fast verified batches
         shell: bash
         run: |
           set -euo pipefail
@@ -55,7 +55,7 @@ jobs:
           PY
           for lang in rm kl sr fr it nl ro to fy xh tn; do
             echo "R76_FINAL_RESCUE $lang"
-            python tools/r76_incremental_rescue10.py --lang "$lang"
+            python tools/r76_incremental_rescue12.py --lang "$lang"
           done
           python - <<'PY'
           import json,pathlib
@@ -77,7 +77,7 @@ jobs:
           import json,shutil,pathlib,re
           src=json.load(open('i18n-r76-source.json',encoding='utf-8'));langs=json.load(open('i18n-r76-languages.json',encoding='utf-8'))
           out=pathlib.Path('i18n-r32');shutil.rmtree(out,ignore_errors=True);out.mkdir()
-          candidates=[s for s in src['strings'] if len(s)>=12 and len(re.findall(r"[A-Za-z][A-Za-z'’+-]{2,}",s))>=2 and 'SEEKVERA' not in s and not re.search(r'https?://|@',s)]
+          candidates=[s for s in src['strings'] if len(s)>=12 and len(re.findall(r"[A-Za-z][A-Za-z'’+-]{2,}",s))>=2 and 'SEEKVERA' not in s and not re.search(r'https?://|@/',s)]
           bad=[];providers={}
           for lang in langs:
               p=pathlib.Path('i18n-r76')/(lang+'.json');d=json.load(open(p,encoding='utf-8'))
@@ -144,7 +144,7 @@ jobs:
           set -euo pipefail
           git config user.name seekvera-global
           git config user.email seekvera.global@gmail.com
-          git add worker-r76.js wrangler.jsonc i18n-r32 i18n-r32-source.json i18n-ui.js voice-ai.js r31-ui-polish.js r24-ai-controller.js superapp.js r60-runtime-guard.js navigation.js sw.js ./*.html tools/r76_apply_release.py tools/r76_incremental_rescue6.py tools/r76_incremental_rescue7.py tools/r76_incremental_rescue8.py tools/r76_incremental_rescue9.py tools/r76_incremental_rescue10.py tools/r76_live_audit.mjs
+          git add worker-r76.js wrangler.jsonc i18n-r32 i18n-r32-source.json i18n-ui.js voice-ai.js r31-ui-polish.js r24-ai-controller.js superapp.js r60-runtime-guard.js navigation.js sw.js ./*.html tools/r76_apply_release.py tools/r76_incremental_rescue6.py tools/r76_incremental_rescue7.py tools/r76_incremental_rescue8.py tools/r76_incremental_rescue9.py tools/r76_incremental_rescue10.py tools/r76_incremental_rescue12.py tools/r76_live_audit.mjs
           if ! git diff --cached --quiet; then
             git commit -m 'R76 verified complete multilingual AI voice release'
             git pull --rebase origin main
