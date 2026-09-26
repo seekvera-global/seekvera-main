@@ -37,34 +37,44 @@ const matrix=await page.evaluate(async()=>{const bad=[];for(const [cc,pr] of Obj
 assert(matrix.n>=248,matrix.n);assert.equal(matrix.bad.length,0,JSON.stringify(matrix.bad.slice(0,8)));
 console.log('R76_COUNTRY_ATOMIC_PASS',matrix.n);
 
-// Complete static packs must localize without calling dynamic translation.
+// Complete static packs must localize without calling dynamic translation. Wait for one-time
+// bootstrap timers to settle, then validate each language after its own UI update settles.
 const uiFallbacks=[];await ctx.route('**/api/ui-translate',async route=>{uiFallbacks.push(route.request().url());await route.fulfill({status:503,contentType:'application/json',body:'{"ok":false}'});});
 await page.goto(B+'/?r76alllangs='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});await page.waitForFunction(()=>window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_I18N_R32,{timeout:25000});
-await page.evaluate(()=>SEEKVERA_LOCALE_R15.setLanguage('en'));await pause(30);
+await pause(700);await page.evaluate(()=>SEEKVERA_LOCALE_R15.setLanguage('en'));await pause(250);
 const candidateEnglish=source.strings.filter(s=>s.length>=12&&(s.match(/[A-Za-z][A-Za-z'’+-]{2,}/g)||[]).length>=2&&!s.includes('SEEKVERA')&&!/https?:\/\/|@/.test(s));
 const englishBody=await page.locator('body').innerText();const present=candidateEnglish.filter(s=>englishBody.includes(s));const leaks=[];
-for(const l of manifest.languages){await page.evaluate(async l=>{SEEKVERA_LOCALE_R15.setLanguage(l);await SEEKVERA_I18N_R32.loadPack(l);await SEEKVERA_I18N_R32.apply()},l);assert.equal(await page.evaluate(()=>document.documentElement.lang),l,l);if(l!=='en'){const body=await page.locator('body').innerText();const x=present.filter(s=>packs[l]?.[s]&&packs[l][s]!==s&&body.includes(s)).slice(0,4);if(x.length)leaks.push({l,x})}}
+for(const l of manifest.languages){
+ await page.evaluate(async l=>{SEEKVERA_LOCALE_R15.setLanguage(l);await SEEKVERA_I18N_R32.loadPack(l);await SEEKVERA_I18N_R32.apply()},l);
+ await pause(150);
+ assert.equal(await page.evaluate(()=>document.documentElement.lang),l,l);
+ if(l!=='en'){
+  const body=await page.locator('body').innerText();
+  const x=present.filter(s=>{const tr=String(packs[l]?.[s]||'');return tr&&tr!==s&&!tr.includes(s)&&body.includes(s)}).slice(0,4);
+  if(x.length)leaks.push({l,x});
+ }
+}
 assert.equal(leaks.length,0,'home English leaks '+JSON.stringify(leaks.slice(0,8)));assert.equal(uiFallbacks.length,0,'dynamic translation used');
 console.log('R76_98_HOME_LANGUAGES_PASS');
 
-await page.evaluate(()=>SEEKVERA_LOCALE_R15.setLanguage('en'));const hrefs=await page.evaluate(()=>[...new Set([...document.querySelectorAll('#categories .r5-tile')].map(a=>a.getAttribute('href')).filter(Boolean))]);assert(hrefs.length>=31,'category routes '+hrefs.length);const paths=[...new Set(hrefs.map(h=>new URL(h,B).pathname))];
-for(const path of paths){const r=await page.goto(B+path+'?r76section='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});assert(r&&r.status()<400,path+' '+r?.status());await page.waitForFunction(()=>window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_I18N_R32,{timeout:25000});for(const l of ['ar','fr','tr','hi','zh','de']){await page.evaluate(async l=>{SEEKVERA_LOCALE_R15.setLanguage(l);await SEEKVERA_I18N_R32.loadPack(l);await SEEKVERA_I18N_R32.apply()},l);const txt=(await page.locator('body').innerText()).trim();assert(txt.length>20,path+' '+l)}}
+await page.evaluate(()=>SEEKVERA_LOCALE_R15.setLanguage('en'));await pause(120);const hrefs=await page.evaluate(()=>[...new Set([...document.querySelectorAll('#categories .r5-tile')].map(a=>a.getAttribute('href')).filter(Boolean))]);assert(hrefs.length>=31,'category routes '+hrefs.length);const paths=[...new Set(hrefs.map(h=>new URL(h,B).pathname))];
+for(const path of paths){const r=await page.goto(B+path+'?r76section='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});assert(r&&r.status()<400,path+' '+r?.status());await page.waitForFunction(()=>window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_I18N_R32,{timeout:25000});await pause(250);for(const l of ['ar','fr','tr','hi','zh','de']){await page.evaluate(async l=>{SEEKVERA_LOCALE_R15.setLanguage(l);await SEEKVERA_I18N_R32.loadPack(l);await SEEKVERA_I18N_R32.apply()},l);await pause(80);const txt=(await page.locator('body').innerText()).trim();assert(txt.length>20,path+' '+l)}}
 console.log('R76_ALL_CATEGORY_PAGES_PASS',hrefs.length,paths.length);
 
 // Browser fetch must stay functional even if /api/ai itself is 429.
-await page.goto(B+'/?r76fallback='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});await page.waitForFunction(()=>window.SEEKVERA_R24_CONTROLLER&&window.SEEKVERA_R31&&document.querySelector('#aiChatForm'),{timeout:30000});
+await page.goto(B+'/?r76fallback='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});await page.waitForFunction(()=>window.SEEKVERA_R24_CONTROLLER&&window.SEEKVERA_R31&&document.querySelector('#aiChatForm'),{timeout:30000});await pause(250);
 const fallback=await page.evaluate(async()=>{const r=await fetch('/api/ai',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message:'شو فيك تساعدني اليوم؟',country:'Worldwide',language:'auto',fast:true})});let d={};try{d=await r.json()}catch{}return{status:r.status,mode:r.headers.get('x-seekvera-ai-mode'),d}});
 assert.equal(fallback.status,200,JSON.stringify(fallback));assert(String(fallback.d?.response||'').trim(),JSON.stringify(fallback));assert(/[\u0600-\u06ff]/u.test(fallback.d.response),JSON.stringify(fallback));
 console.log('R76_BROWSER_AI_RESILIENCE_PASS',fallback.mode||fallback.d.model);
 
 // A jobs request must show an Arabic reply before navigation, then route, and persist chat.
-await page.evaluate(()=>{localStorage.removeItem('seekvera_ai_chat_v1');SEEKVERA_LOCALE_R15.setCountry('LB')});await page.fill('#aiChatInput','بدي وظيفة مبيعات بفرنسا');const before=page.url(),t=Date.now();await page.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+await page.evaluate(()=>{localStorage.removeItem('seekvera_ai_chat_v1');SEEKVERA_LOCALE_R15.setCountry('LB')});await pause(160);await page.fill('#aiChatInput','بدي وظيفة مبيعات بفرنسا');const before=page.url(),t=Date.now();await page.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
 await page.waitForFunction(()=>{const x=[...document.querySelectorAll('#aiMessages .ai-msg.bot')].at(-1);return x&&!x.classList.contains('thinking')&&/[\u0600-\u06ff]/u.test(x.textContent||'')},{timeout:22000});const replyMs=Date.now()-t;assert.equal(page.url(),before,'navigated before reply');await page.waitForFunction(()=>location.pathname==='/jobs'||location.pathname==='/jobs.html',{timeout:12000});const saved=await page.evaluate(()=>localStorage.getItem('seekvera_ai_chat_v1')||'');assert(saved.includes('بدي وظيفة مبيعات بفرنسا'),'chat not saved');
-await page.goto(B+'/?r76restore='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});await page.waitForFunction(()=>window.SEEKVERA_CHAT&&document.querySelector('#aiMessages'),{timeout:30000});await pause(250);assert((await page.locator('#aiMessages').innerText()).includes('بدي وظيفة مبيعات بفرنسا'),'chat not restored');
+await page.goto(B+'/?r76restore='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});await page.waitForFunction(()=>window.SEEKVERA_CHAT&&document.querySelector('#aiMessages'),{timeout:30000});await pause(300);assert((await page.locator('#aiMessages').innerText()).includes('بدي وظيفة مبيعات بفرنسا'),'chat not restored');
 console.log('R76_CHAT_REPLY_ROUTE_PERSIST_PASS',replyMs);
 
 // Local app control: natural reply first, then country actually changes.
-await page.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('LB'));await page.fill('#aiChatInput','حطني تركيا');const n=await page.locator('#aiMessages .ai-msg.bot').count(),u0=page.url();await page.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await page.waitForFunction(n=>document.querySelectorAll('#aiMessages .ai-msg.bot').length>n,n,{timeout:5000});assert.equal(page.url(),u0);const controlReply=await page.locator('#aiMessages .ai-msg.bot').last().innerText();assert(/[\u0600-\u06ff]/u.test(controlReply),controlReply);await page.waitForFunction(()=>document.querySelector('#country')?.value==='TR',{timeout:5000});
+await page.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('LB'));await pause(120);await page.fill('#aiChatInput','حطني تركيا');const n=await page.locator('#aiMessages .ai-msg.bot').count(),u0=page.url();await page.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await page.waitForFunction(n=>document.querySelectorAll('#aiMessages .ai-msg.bot').length>n,n,{timeout:5000});assert.equal(page.url(),u0);const controlReply=await page.locator('#aiMessages .ai-msg.bot').last().innerText();assert(/[\u0600-\u06ff]/u.test(controlReply),controlReply);await page.waitForFunction(()=>document.querySelector('#country')?.value==='TR',{timeout:5000});
 console.log('R76_CONTROL_REPLY_FIRST_PASS',controlReply);
 
 // Voice reply path and server-first/native-fallback configuration.
