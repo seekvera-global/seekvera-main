@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     paths:
+      - '.github/workflows/r76-final-persisted-deploy.yml'
       - 'i18n-r32/**'
       - 'i18n-r32-source.json'
   workflow_dispatch:
