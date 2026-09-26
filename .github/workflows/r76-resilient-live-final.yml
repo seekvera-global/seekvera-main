@@ -22,7 +22,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Apply resilient AI, static language binding and exact R76 release
+      - name: Apply resilient AI, synchronized language binding and exact R76 release
         shell: bash
         run: |
           set -euo pipefail
@@ -32,6 +32,7 @@ jobs:
           node --check r24-ai-controller.js
           node --check r31-ui-polish.js
           node --check i18n-ui.js
+          node --check global-ui.js
           node --check r22-category-lock.js
           node --check superapp.js
           node --check voice-ai.js
@@ -39,6 +40,8 @@ jobs:
           grep -F 'res.status===429' r24-ai-controller.js
           grep -F 'browser-resilient-backup' r24-ai-controller.js
           grep -F 'function sweepStaticPack(l)' i18n-ui.js
+          grep -F 'SEEKVERA_GLOBAL_UI?.localizeControls' i18n-ui.js
+          grep -F 'window.SEEKVERA_GLOBAL_UI={localizeControls}' global-ui.js
           grep -F 'rt?.t?.(src,l)' superapp.js
           grep -F '2026-09-26 · R76' index.html
           ! grep -F 'r74-ai-failover.js' index.html
@@ -105,9 +108,9 @@ jobs:
           set -euo pipefail
           git config user.name seekvera-global
           git config user.email seekvera.global@gmail.com
-          git add r24-ai-controller.js r31-ui-polish.js tools/r76_apply_release.py wrangler.jsonc i18n-ui.js r22-category-lock.js voice-ai.js superapp.js r60-runtime-guard.js navigation.js sw.js ./*.html
+          git add r24-ai-controller.js r31-ui-polish.js tools/r76_apply_release.py wrangler.jsonc i18n-ui.js global-ui.js r22-category-lock.js voice-ai.js superapp.js r60-runtime-guard.js navigation.js sw.js ./*.html
           if ! git diff --cached --quiet; then
-            git commit -m 'R76 resilient AI fallback and complete static language binding'
+            git commit -m 'R76 resilient AI fallback and synchronized global language UI'
             git pull --rebase origin main
             git push origin HEAD:main
           fi
