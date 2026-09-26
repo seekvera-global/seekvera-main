@@ -1,0 +1,49 @@
+name: R63B live production diagnostic
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r63b-live-production-diagnostic.yml']
+permissions:
+  contents: read
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test real AI and voice services
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import urllib.request, urllib.error, json, time, base64
+          S='https://seekveraglobal.com'
+          def get(path):
+              with urllib.request.urlopen(S+path,timeout=30) as r:
+                  return r.status,r.headers, r.read()
+          def post(path,obj,timeout=45):
+              data=json.dumps(obj,ensure_ascii=False).encode('utf-8')
+              req=urllib.request.Request(S+path,data=data,headers={'content-type':'application/json'},method='POST')
+              try:
+                  with urllib.request.urlopen(req,timeout=timeout) as r:
+                      return r.status,r.headers,r.read()
+              except urllib.error.HTTPError as e:
+                  return e.code,e.headers,e.read()
+          status,h,b=get('/api/health')
+          print('HEALTH',status,b.decode('utf-8')[:1500])
+          assert status==200
+          for code,msg in [
+              ('ar','عم دور على شغل بامريكا'),
+              ('en','I am looking for a job in America'),
+              ('fr','Je cherche un travail aux États-Unis')]:
+              t=time.time(); status,h,b=post('/api/ai',{'message':msg,'country':'Worldwide','language':'auto','fast':True}); ms=round((time.time()-t)*1000)
+              txt=b.decode('utf-8','replace'); print('AI',code,'status',status,'ms',ms,txt[:2200])
+              assert status==200,(code,status,txt)
+              d=json.loads(txt); assert d.get('ok') is True and str(d.get('response','')).strip(),d
+              if code=='ar': assert any('\u0600'<=c<='\u06ff' for c in d['response']),d
+          status,h,b=post('/api/tts',{'text':'مرحبا، أريد أن أبحث عن عمل في أمريكا','language':'ar'})
+          print('TTS',status,h.get('content-type'),len(b)); assert status==200 and len(b)>500
+          payload={'audio':'data:audio/mpeg;base64,'+base64.b64encode(b).decode(),'language':'auto'}
+          status,h,b=post('/api/transcribe',payload,60)
+          txt=b.decode('utf-8','replace'); print('STT',status,txt[:2200])
+          assert status==200,(status,txt)
+          d=json.loads(txt); assert d.get('ok') is True and str(d.get('text','')).strip(),d
+          print('R63B_LIVE_PASS')
+          PY
