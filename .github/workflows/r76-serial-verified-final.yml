@@ -38,7 +38,7 @@ jobs:
           path: i18n-r76
           merge-multiple: true
 
-      - name: Rescue 11 missing packs with resilient providers
+      - name: Rescue 11 missing packs with deterministic Romansh
         shell: bash
         run: |
           set -euo pipefail
@@ -55,7 +55,7 @@ jobs:
           PY
           for lang in rm kl sr fr it nl ro to fy xh tn; do
             echo "R76_FINAL_RESCUE $lang"
-            python tools/r76_incremental_rescue7.py --lang "$lang"
+            python tools/r76_incremental_rescue8.py --lang "$lang"
           done
           python - <<'PY'
           import json,pathlib
@@ -144,7 +144,7 @@ jobs:
           set -euo pipefail
           git config user.name seekvera-global
           git config user.email seekvera.global@gmail.com
-          git add worker-r76.js wrangler.jsonc i18n-r32 i18n-r32-source.json i18n-ui.js voice-ai.js r31-ui-polish.js r24-ai-controller.js superapp.js r60-runtime-guard.js navigation.js sw.js ./*.html tools/r76_apply_release.py tools/r76_incremental_rescue6.py tools/r76_incremental_rescue7.py tools/r76_live_audit.mjs
+          git add worker-r76.js wrangler.jsonc i18n-r32 i18n-r32-source.json i18n-ui.js voice-ai.js r31-ui-polish.js r24-ai-controller.js superapp.js r60-runtime-guard.js navigation.js sw.js ./*.html tools/r76_apply_release.py tools/r76_incremental_rescue6.py tools/r76_incremental_rescue7.py tools/r76_incremental_rescue8.py tools/r76_live_audit.mjs
           if ! git diff --cached --quiet; then
             git commit -m 'R76 verified complete multilingual AI voice release'
             git pull --rebase origin main
