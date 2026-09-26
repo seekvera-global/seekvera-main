@@ -1,0 +1,7 @@
+{
+  "name": "seekvera-r76-builder",
+  "main": "./worker-r76-builder.js",
+  "compatibility_date": "2026-09-17",
+  "workers_dev": true,
+  "ai": { "binding": "AI" }
+}
