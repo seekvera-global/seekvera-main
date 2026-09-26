@@ -90,3 +90,4 @@ jobs:
             git push origin HEAD:main
           fi
           echo R66_PERSISTED
+# rerun corrected build anchor
