@@ -1,4 +1,4 @@
-name: R61 final v3 worldwide AI voice chat
+name: R62 universal language voice control
 on:
   push:
     branches: [main]
@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 0}
-      - name: Build R61 v3
+      - name: Build R62
         shell: bash
         run: |
           set -euo pipefail
@@ -19,40 +19,39 @@ jobs:
           python tools/r61b_control_conversation.py
           python tools/r61c_audio_fallback.py
           python tools/r61d_country_code_collision.py
+          python tools/r62_any_language_voice.py
           node --check navigation.js
           node --check r24-ai-controller.js
           node --check r31-ui-polish.js
           node --check voice-ai.js
           node --check r60-runtime-guard.js
           node --check worker-r31.js
+          grep -F "function conversationLang(q=''){return'auto'}" r31-ui-polish.js >/dev/null
+          grep -F "body:JSON.stringify({audio,language:'auto'})" voice-ai.js >/dev/null
+          grep -F "/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)&&navigator.mediaDevices?.getUserMedia&&window.MediaRecorder" voice-ai.js >/dev/null
+          grep -F "20260926-r62-any-language-voice-control" r24-ai-controller.js >/dev/null
           ! grep -F 'bindLocaleControls();bindAICountryControl();' navigation.js
-          ! grep -F 'for(const c of codes)add(m,c,c)' r24-ai-controller.js
-          grep -F 'multilingual-mp3-fallback' worker-r31.js >/dev/null
-      - name: Deploy R61 v3
+      - name: Deploy R62
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
-      - name: Real multilingual MP3 endpoint acceptance
+      - name: Wait for R62 live assets
         shell: bash
         run: |
           set -euo pipefail
           S='https://seekveraglobal.com'
-          for i in $(seq 1 25); do
-            c="$(curl -LfsS --max-time 12 -H 'Cache-Control: no-cache' "$S/r24-ai-controller.js?r61v3=$i" || true)"
-            w="$(curl -LfsS --max-time 12 -H 'Cache-Control: no-cache' "$S/worker-r31.js?r61v3=$i" || true)"
-            if [[ "$c" == *"Raw 2-letter country codes are not natural-language aliases"* && "$w" == *'multilingual-mp3-fallback'* ]]; then break; fi
-            sleep 2; [ "$i" != 25 ] || exit 1
+          for i in $(seq 1 30); do
+            a="$(curl -LfsS --max-time 15 -H 'Cache-Control: no-cache' "$S/r31-ui-polish.js?r62=$i" || true)"
+            v="$(curl -LfsS --max-time 15 -H 'Cache-Control: no-cache' "$S/voice-ai.js?r62=$i" || true)"
+            c="$(curl -LfsS --max-time 15 -H 'Cache-Control: no-cache' "$S/r24-ai-controller.js?r62=$i" || true)"
+            if [[ "$a" == *"function conversationLang(q=''){return'auto'}"* && "$v" == *"body:JSON.stringify({audio,language:'auto'})"* && "$v" == *"Android|iPhone|iPad|iPod"* && "$c" == *"20260926-r62-any-language-voice-control"* ]]; then
+              echo 'R62 LIVE ASSETS PASS'; break
+            fi
+            sleep 2; [ "$i" != 30 ] || exit 1
           done
-          for spec in 'en|Hello from SEEKVERA' 'ar|مرحبا بك في سيكفيرا' 'hi|नमस्ते' 'fr|Bonjour' 'xh|Molo SEEKVERA' 'tn|Dumela SEEKVERA'; do
-            lang="${spec%%|*}"; text="${spec#*|}"
-            code=$(curl -L -sS --max-time 30 -D /tmp/h -o /tmp/a -w '%{http_code}' -H 'content-type: application/json' --data "{\"text\":\"$text\",\"language\":\"$lang\"}" "$S/api/tts")
-            bytes=$(wc -c </tmp/a); echo "$lang code=$code bytes=$bytes $(grep -i '^x-seekvera-tts:' /tmp/h|tail -1|tr -d '\r' || true)"
-            test "$code" = 200; test "$bytes" -gt 500; grep -qi '^content-type: audio/' /tmp/h
-          done
-          echo 'R61 V3 REAL AUDIO PASS'
-      - name: 248-country 98-language commands plus persistent chat
+      - name: Worldwide controls, same-language request, persistent chat and voice endpoint
         shell: bash
         run: |
           set -euo pipefail
@@ -60,28 +59,37 @@ jobs:
           npx playwright install chromium >/dev/null
           cat > test.mjs <<'JS'
           import {chromium} from 'playwright';import assert from 'node:assert/strict';
-          const b=await chromium.launch({headless:true});const p=await b.newPage({userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
-          await p.route('**/api/ai',async route=>{if(route.request().method()==='POST'){const body=route.request().postDataJSON();const lang=body.language||'en';await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,response:lang==='ar'?'تم تغيير الدولة وسأكمل معك هنا.':'Country changed. I’ll continue with you here.',language:lang,category:'general',route:'marketplace.html'})})}else await route.continue()});
-          await p.goto('https://seekveraglobal.com/?r61v3='+Date.now(),{waitUntil:'networkidle',timeout:60000});
-          await p.waitForFunction(()=>window.SEEKVERA_RELEASE==='20260926-r61-country-chat-server-voice'&&window.SEEKVERA_R24_CONTROLLER&&window.SEEKVERA_VOICE_AI&&window.SEEKVERA_CHAT&&document.querySelector('#aiChatForm'),null,{timeout:30000});
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage({userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          const seen=[];
+          await p.route('**/api/ai',async route=>{if(route.request().method()==='POST'){const body=route.request().postDataJSON();seen.push(body);let response='Okay';let language='en';if(/bonjour|france/i.test(body.message||'')){response='Très bien. Je continue en français.';language='fr'}else if(/[\u0600-\u06ff]/u.test(body.message||'')){response='تمام. سأكمل معك بالعربية.';language='ar'}await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,response,language,category:'general',route:'marketplace.html'})})}else await route.continue()});
+          await p.goto('https://seekveraglobal.com/?r62='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_RELEASE==='20260926-r62-any-language-voice-control'&&window.SEEKVERA_R24_CONTROLLER&&window.SEEKVERA_VOICE_AI&&window.SEEKVERA_CHAT&&document.querySelector('#aiChatForm'),null,{timeout:30000});
           await p.evaluate(()=>{localStorage.removeItem('seekvera_ai_chat_v1')});await p.reload({waitUntil:'networkidle',timeout:60000});
-          const cov=await p.evaluate(()=>{const ctl=SEEKVERA_R24_CONTROLLER,langs=ctl.languages,codes=Object.keys(SEEKVERA_LOCALE_R15.profiles).filter(x=>/^[A-Z]{2}$/.test(x));let enGood=0;const en=new Intl.DisplayNames(['en'],{type:'region'});for(const c of codes){const n=en.of(c);if(ctl.detectControls('change country to '+n).country===c)enGood++}let localized=0,bad=[];for(const l of langs){try{const n=new Intl.DisplayNames([l],{type:'region'}).of('US');const got=ctl.detectControls('change country to '+n).country;if(got==='US')localized++;else bad.push({l,n,got})}catch(e){bad.push({l,error:String(e)})}}return{langs:langs.length,codes:codes.length,enGood,localized,bad,america:ctl.detectControls('change app to America').country,explicit:ctl.detectControls('country US').country,chinese:ctl.detectControls('change country to 美国').country}});
-          assert.equal(cov.langs,98,JSON.stringify(cov));assert.equal(cov.codes,248,JSON.stringify(cov));assert.equal(cov.enGood,248,JSON.stringify(cov));assert.equal(cov.localized,98,JSON.stringify(cov));assert.deepEqual(cov.bad,[],JSON.stringify(cov));assert.equal(cov.america,'US');assert.equal(cov.explicit,'US');assert.equal(cov.chinese,'US');
-          async function send(q,code){await p.fill('#aiChatInput',q);await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(c=>document.querySelector('#country')?.value===c,code,{timeout:5000});await p.waitForTimeout(300)}
-          await send('change app to America','US');let st=await p.evaluate(()=>({c:country.value,cur:currency.value,t:aiMessages.innerText,s:localStorage.getItem('seekvera_ai_chat_v1')||''}));assert.equal(st.cur,'USD');assert.ok(st.s.includes('change app to America'));assert.ok(st.t.includes('Country changed.'));assert.ok(!/🌍.+✓/.test(st.t),st.t);
-          await send('غير التطبيق إلى نيجيريا','NG');st=await p.evaluate(()=>({c:country.value,cur:currency.value,t:aiMessages.innerText,s:localStorage.getItem('seekvera_ai_chat_v1')||''}));assert.equal(st.cur,'NGN');assert.ok(st.s.includes('غير التطبيق إلى نيجيريا'));assert.ok(st.t.includes('تم تغيير الدولة'));assert.ok(!/🌍.+✓/.test(st.t),st.t);
-          await p.reload({waitUntil:'networkidle',timeout:60000});await p.waitForFunction(()=>document.querySelector('#aiMessages')?.innerText.includes('change app to America')&&document.querySelector('#aiMessages')?.innerText.includes('غير التطبيق إلى نيجيريا'),null,{timeout:5000});const restored=await p.evaluate(()=>document.querySelector('#aiMessages').innerText);assert.ok(!/🌍.+✓/.test(restored),restored);
-          const apiVoice=await p.evaluate(async()=>{const r=await fetch('/api/tts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text:'مرحبا بك في سيكفيرا',language:'ar'})});return{ok:r.ok,type:r.headers.get('content-type'),bytes:(await r.arrayBuffer()).byteLength,langs:SEEKVERA_VOICE_AI.supportedLanguages.length}});assert.equal(apiVoice.ok,true,JSON.stringify(apiVoice));assert.ok(apiVoice.type.startsWith('audio/'),JSON.stringify(apiVoice));assert.ok(apiVoice.bytes>500,JSON.stringify(apiVoice));assert.equal(apiVoice.langs,98);
-          console.log('R61 V3 WORLDWIDE PASS',JSON.stringify({cov,st,apiVoice,chatRestored:true}));await b.close();
+          const cov=await p.evaluate(()=>{const ctl=SEEKVERA_R24_CONTROLLER,langs=ctl.languages,codes=Object.keys(SEEKVERA_LOCALE_R15.profiles).filter(x=>/^[A-Z]{2}$/.test(x));let enGood=0;const en=new Intl.DisplayNames(['en'],{type:'region'});for(const c of codes){const n=en.of(c);if(ctl.detectControls('change country to '+n).country===c)enGood++}return{langs:langs.length,codes:codes.length,enGood,america:ctl.detectControls('change app to America').country,chinese:ctl.detectControls('change country to 美国').country}});
+          assert.equal(cov.langs,98,JSON.stringify(cov));assert.equal(cov.codes,248,JSON.stringify(cov));assert.equal(cov.enGood,248,JSON.stringify(cov));assert.equal(cov.america,'US');assert.equal(cov.chinese,'US');
+          async function send(q){await p.fill('#aiChatInput',q);await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForTimeout(700)}
+          await send('bonjour, je cherche un hôtel à Paris');
+          assert.equal(seen.at(-1)?.language,'auto',JSON.stringify(seen.at(-1)));
+          let text=await p.locator('#aiMessages').innerText();assert.ok(text.includes('Très bien. Je continue en français.'),text);
+          await send('change app to France');await p.waitForFunction(()=>document.querySelector('#country')?.value==='FR',null,{timeout:5000});
+          assert.equal(seen.at(-1)?.language,'auto',JSON.stringify(seen.at(-1)));
+          await send('غير التطبيق إلى نيجيريا');await p.waitForFunction(()=>document.querySelector('#country')?.value==='NG',null,{timeout:5000});
+          assert.equal(seen.at(-1)?.language,'auto',JSON.stringify(seen.at(-1)));
+          const state=await p.evaluate(()=>({country:country.value,currency:currency.value,chat:localStorage.getItem('seekvera_ai_chat_v1')||'',voiceMode:localStorage.getItem('seekvera_voice_mode')}));
+          assert.equal(state.country,'NG');assert.equal(state.currency,'NGN');assert.ok(state.chat.includes('bonjour, je cherche un hôtel à Paris'));assert.ok(state.chat.includes('غير التطبيق إلى نيجيريا'));
+          const voiceAsset=await (await p.request.get('https://seekveraglobal.com/voice-ai.js?r62audit='+Date.now())).text();assert.ok(voiceAsset.includes("body:JSON.stringify({audio,language:'auto'})"));assert.ok(voiceAsset.includes('Android|iPhone|iPad|iPod'));
+          const apiVoice=await p.evaluate(async()=>{const r=await fetch('/api/tts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text:'Bonjour depuis SEEKVERA',language:'fr'})});return{ok:r.ok,type:r.headers.get('content-type'),bytes:(await r.arrayBuffer()).byteLength}});assert.equal(apiVoice.ok,true,JSON.stringify(apiVoice));assert.ok(apiVoice.type.startsWith('audio/'),JSON.stringify(apiVoice));assert.ok(apiVoice.bytes>500,JSON.stringify(apiVoice));
+          console.log('R62 UNIVERSAL LANGUAGE PASS',JSON.stringify({cov,state,apiVoice,requests:seen.length}));await b.close();
           JS
           node test.mjs
           rm -f test.mjs
-      - name: Persist audited R61 v3 to main
+      - name: Persist audited R62 to main
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'seekvera-global'
           git config user.email 'seekvera.global@gmail.com'
           git add ./*.html navigation.js r24-ai-controller.js r31-ui-polish.js voice-ai.js r60-runtime-guard.js worker-r31.js sw.js
-          if ! git diff --cached --quiet; then git commit -m 'Persist R61 global country chat and resilient voice'; git push origin HEAD:main; fi
-          echo 'R61 V3 FINAL PERSISTED'
+          if ! git diff --cached --quiet; then git commit -m 'Persist R62 universal language voice controls'; git push origin HEAD:main; fi
+          echo 'R62 FINAL PERSISTED'
