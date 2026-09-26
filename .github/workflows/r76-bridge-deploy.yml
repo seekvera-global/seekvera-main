@@ -1,0 +1,23 @@
+name: R76 temporary translation bridge
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r76-bridge-deploy.yml']
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate bridge worker
+        run: |
+          node --check worker-r76-translation-guard.js
+          grep -F 'worker-r76-translation-guard.js' wrangler.jsonc
+      - name: Deploy bridge
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
