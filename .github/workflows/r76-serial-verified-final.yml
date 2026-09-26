@@ -3,7 +3,7 @@ name: R76 serial verified final release
 on:
   push:
     branches: [main]
-    paths: ['.github/workflows/r76-serial-verified-final.yml']
+    paths: ['.github/workflows/r76-serial-verified-final.yml', 'tools/r76_live_audit.mjs']
   workflow_dispatch:
 
 permissions:
