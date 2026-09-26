@@ -26,7 +26,7 @@ jobs:
           grep -q '"main": "./worker-r31.js"' wrangler.jsonc
           grep -q 'seekvera-local-router-ar' worker-r31.js
           grep -q 'r74-ai-failover.js' index.html
-          test "$(find i18n-r32 -maxdepth 1 -name '*.json' ! -name manifest.json | wc -l)" = 98
+          test "$(find i18n-r32 -maxdepth 1 -name '*.json' ! -name manifest.json | awk 'END{print NR}')" = 98
           npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-r74
           rm -rf .wrangler-r74 .wrangler
       - name: Deploy R74
