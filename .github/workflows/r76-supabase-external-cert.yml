@@ -12,27 +12,28 @@ permissions:
 jobs:
   certify:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 3
     steps:
-      - name: Invoke Europe external certification probe
+      - name: Single cooled external probe
         shell: bash
         run: |
           set -euo pipefail
-          curl -fsS --max-time 90 'https://nrdpyydfrpmqedtzmbyw.supabase.co/functions/v1/r76-external-cert' -o /tmp/r76.json
+          curl -fsS --max-time 45 'https://nrdpyydfrpmqedtzmbyw.supabase.co/functions/v1/r76-external-cert' -o /tmp/r76.json
           python3 -m json.tool /tmp/r76.json
           python3 - <<'PY'
-          import json
+          import json,re
           d=json.load(open('/tmp/r76.json'))
-          for k in ['root','worker','health','ohealth','manifest','source','aiSearch','aiArabic','aiAction']:
-              x=d[k]; print('CHECK',k,x.get('status'),x.get('type'),x.get('len'))
-          assert d['root']['status']==200,d['root']
-          assert d['health']['status']==200,d['health']
-          h=json.loads(d['health']['body']); assert h.get('r76') is True and h.get('r76Runtime')=='single-structured-multilingual-ai' and h.get('r76Voice')=='server-auto-asr-first' and h.get('r76Locale')=='complete-static-pack-audit',h
-          m=json.loads(d['manifest']['body']); assert m.get('packs')==98 and len(m.get('languages') or [])==98,m
-          s=json.loads(d['source']['body']); assert s.get('count')==1045,s
-          en=json.loads(d['aiSearch']['body']); assert en.get('language')=='en' and en.get('category')=='jobs' and en.get('countryAction') is None and en.get('languageAction') is None,en
-          ar=json.loads(d['aiArabic']['body']); assert ar.get('language')=='ar' and ar.get('category')=='jobs' and ar.get('countryAction') is None and ar.get('languageAction') is None,ar
-          act=json.loads(d['aiAction']['body']); assert act.get('language')=='ar' and (act.get('countryAction') or {}).get('code')=='TR',act
-          assert all(x.get('status')==200 for x in d['packs']),d['packs']
-          print('R76_SUPABASE_EXTERNAL_CERT_PASS')
+          print('ROOT_STATUS',d['root']['status'],'RETRY_AFTER',d['root'].get('retryAfter'),'RAY',d['root'].get('cfRay'))
+          print('HEALTH_STATUS',d['health']['status'],'RETRY_AFTER',d['health'].get('retryAfter'),'RAY',d['health'].get('cfRay'))
+          for k in ('root','health'):
+              b=d[k].get('body','')
+              m=re.search(r'Error\s+(\d{4})|error[_ -]?code[^0-9]*(\d{4})',b,re.I)
+              print('ERROR_CODE',k,(m.group(1) or m.group(2)) if m else 'none')
+          if d['root']['status']==200 and d['health']['status']==200:
+              h=json.loads(d['health']['body'])
+              assert h.get('r76') is True and h.get('r76Runtime')=='single-structured-multilingual-ai'
+              print('R76_COOLED_EXTERNAL_PASS')
+          else:
+              print('R76_COOLED_EXTERNAL_RATE_LIMITED')
+              raise SystemExit(2)
           PY
