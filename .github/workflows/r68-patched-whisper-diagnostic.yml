@@ -12,9 +12,8 @@ jobs:
       - name: Build patched Transformers.js
         run: |
           set -euo pipefail
-          git clone -q https://github.com/jhlee111/transformers.js.git /tmp/tjs
+          git clone -q --depth 1 --branch feat/whisper-language-detection https://github.com/jhlee111/transformers.js.git /tmp/tjs
           cd /tmp/tjs
-          git checkout -q 937ea0ad3422835f2f3f3bd09e7d2593117910
           corepack enable
           pnpm install --frozen-lockfile --silent
           cd packages/transformers
