@@ -1,12 +1,12 @@
-// SEEKVERA R31 runtime with temporary build-only translation guard
+// SEEKVERA R76 production: static assets bypass Worker quota; APIs use the Worker.
 {
   "name": "seekvera-main",
-  "main": "./worker-r76-translation-guard.js",
+  "main": "./worker-r76.js",
   "compatibility_date": "2026-09-17",
   "assets": {
     "directory": "./",
     "binding": "ASSETS",
-    "run_worker_first": true
+    "run_worker_first": ["/api/*"]
   },
   "ai": {
     "binding": "AI"
