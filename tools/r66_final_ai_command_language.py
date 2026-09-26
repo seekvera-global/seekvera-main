@@ -4,7 +4,6 @@ import re
 OLD='20260926-r65c-first-voice-auto'
 VER='20260926-r66-final-ai-command-language'
 
-# Strong direct command controller loaded after all legacy chat/runtime scripts.
 controller=r'''(()=>{
 'use strict';
 if(window.__SEEKVERA_R66_FINAL)return;window.__SEEKVERA_R66_FINAL=true;
@@ -22,33 +21,21 @@ if(ll){try{localStorage.setItem('seekvera_lang',ll);localStorage.setItem('seekve
 function addMsg(role,text){const box=$('#aiMessages');if(!box)return;const d=document.createElement('div');d.className='ai-msg '+(role==='user'?'user':'bot');d.textContent=text;box.appendChild(d);box.scrollTop=box.scrollHeight}
 function displayCountry(code){if(code==='WW')return'Worldwide';const e=$('#country');const o=e&&[...e.options].find(x=>x.value===code);return (o?.textContent||code).trim()}
 function reply(c,q){const l=messageLang(q),target=c.country?displayCountry(String(c.country).toUpperCase()):String(c.language||'').toUpperCase();if(l==='ar')return c.country==='WW'?'تم. حوّلت التطبيق إلى Worldwide.':`تم. حوّلت التطبيق إلى ${target}.`;if(l==='fr')return c.country==='WW'?"C’est fait. L’application est maintenant en mode Worldwide.":`C’est fait. J’ai changé l’application vers ${target}.`;if(l==='es')return c.country==='WW'?'Listo. La aplicación está ahora en Worldwide.':`Listo. Cambié la aplicación a ${target}.`;if(l==='tr')return c.country==='WW'?'Tamam. Uygulamayı Worldwide moduna aldım.':`Tamam. Uygulamayı ${target} olarak değiştirdim.`;return c.country==='WW'?'Done. The app is now set to Worldwide.':`Done. I changed the app to ${target}.`}
-function handleControl(form){const input=$('#aiChatInput');const q=String(input?.value||'').trim();if(!q)return false;rememberVoiceFromText(q);const c=detect(q);if(!c.country&&!c.language)return false;apply(c);addMsg('user',q);const text=reply(c,q);addMsg('bot',text);if(input)input.value='';try{window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text,language:messageLang(q),control:true}}))}catch{}return true}
-document.addEventListener('submit',e=>{const f=e.target;if(!(f instanceof HTMLFormElement)||f.id!=='aiChatForm')return;const input=$('#aiChatInput');rememberVoiceFromText(input?.value||'');if(handleControl(f)){e.preventDefault();e.stopImmediatePropagation()}},true);
+function handleControl(){const input=$('#aiChatInput');const q=String(input?.value||'').trim();if(!q)return false;rememberVoiceFromText(q);const c=detect(q);if(!c.country&&!c.language)return false;apply(c);addMsg('user',q);const text=reply(c,q);addMsg('bot',text);if(input)input.value='';try{window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text,language:messageLang(q),control:true}}))}catch{}return true}
+document.addEventListener('submit',e=>{const f=e.target;if(!(f instanceof HTMLFormElement)||f.id!=='aiChatForm')return;const input=$('#aiChatInput');rememberVoiceFromText(input?.value||'');if(handleControl()){e.preventDefault();e.stopImmediatePropagation()}},true);
 document.addEventListener('click',e=>{const b=e.target?.closest?.('[data-scope="worldwide"]');if(b)try{localStorage.setItem('seekvera_country','WW')}catch{}},true);
 window.SEEKVERA_R66_FINAL={version:VER,detect,apply,messageLang};
 })();
 '''
 Path('r66-final-controller.js').write_text(controller,encoding='utf-8')
 
-# Give the server-side zero-cost multilingual AI fallback a realistic latency budget.
 p=Path('worker-r31.js');s=p.read_text(encoding='utf-8')
 s=s.replace(OLD,VER)
 s=s.replace("AbortSignal.timeout(1800)","AbortSignal.timeout(6000)")
-# Keep served HTML no-store and inject R66 last so legacy handlers cannot win.
-s=s.replace("r31-ui-polish.js?v="+OLD,"r31-ui-polish.js?v="+VER)
-s=s.replace("r24-ai-controller.js?v="+OLD,"r24-ai-controller.js?v="+VER)
-s=s.replace("voice-ai.js?v="+OLD,"voice-ai.js?v="+VER)
-s=s.replace("superapp.js?v="+OLD,"superapp.js?v="+VER)
-s=s.replace("r60-runtime-guard.js?v="+OLD,"r60-runtime-guard.js?v="+VER)
-s=s.replace("navigation.js?v="+OLD,"navigation.js?v="+VER)
-needle="if(!text.includes('r31-currency-final.js'))text=text.replace(/<\\/body>/i,'<script src=\\\"/r31-currency-final.js?v=20260925-r31c\\\" defer></script></body>');"
-if "r66-final-controller.js" not in s:
-    repl=needle+"if(!text.includes('r66-final-controller.js'))text=text.replace(/<\\/body>/i,'<script src=\\\"/r66-final-controller.js?v="+VER+"\\\" data-no-i18n=\\\"1\\\"></script></body>');"
-    if needle in s:s=s.replace(needle,repl,1)
-    else:raise SystemExit('worker inject anchor missing')
+for name in ('r31-ui-polish.js','r24-ai-controller.js','voice-ai.js','superapp.js','r60-runtime-guard.js','navigation.js'):
+    s=s.replace(name+'?v='+OLD,name+'?v='+VER)
 p.write_text(s,encoding='utf-8')
 
-# Version all main runtime assets and load final controller last on static HTML too.
 for name in ('voice-ai.js','r24-ai-controller.js','r31-ui-polish.js','superapp.js','r60-runtime-guard.js','navigation.js','sw.js'):
     p=Path(name);x=p.read_text(encoding='utf-8').replace(OLD,VER);p.write_text(x,encoding='utf-8')
 for p in Path('.').glob('*.html'):
