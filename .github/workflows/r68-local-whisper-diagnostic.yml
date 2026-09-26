@@ -18,16 +18,16 @@ jobs:
           import {chromium} from 'playwright';import fs from 'node:fs';
           const b=await chromium.launch({headless:true});const p=await b.newPage();
           await p.goto('https://seekveraglobal.com/?r68audio='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
-          const bytes=await p.evaluate(async()=>{const r=await fetch('/api/tts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text:'مرحبا أريد أن أبحث عن عمل في أمريكا',language:'ar'})});if(!r.ok)throw Error('tts '+r.status);return Array.from(new Uint8Array(await r.arrayBuffer()))});
+          const bytes=await p.evaluate(async()=>{const r=await fetch('/api/tts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text:'مرحبا أريد أن أبحث عن عمل في أمريكا','language':'ar'})});if(!r.ok)throw Error('tts '+r.status);return Array.from(new Uint8Array(await r.arrayBuffer()))});
           fs.writeFileSync('arabic.mp3',Buffer.from(bytes));
           await p.goto('http://127.0.0.1:8765/',{waitUntil:'domcontentloaded'});
           const t=Date.now();
           const out=await p.evaluate(async()=>{
             const {pipeline}=await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1');
-            const transcriber=await pipeline('automatic-speech-recognition','Xenova/whisper-tiny',{quantized:true});
+            const transcriber=await pipeline('automatic-speech-recognition','Xenova/whisper-base',{quantized:true});
             return await transcriber('http://127.0.0.1:8765/arabic.mp3',{task:'transcribe'});
           });
-          console.log('LOCAL_WHISPER_MS',Date.now()-t,'RESULT',JSON.stringify(out));
+          console.log('LOCAL_WHISPER_BASE_MS',Date.now()-t,'RESULT',JSON.stringify(out));
           if(!/[\u0600-\u06ff]/u.test(String(out?.text||'')))throw Error('Arabic not transcribed');
           await b.close();
           JS
