@@ -22,7 +22,9 @@ p.write_text(s,encoding='utf-8')
 
 # Make local app-control acknowledgement natural and same-language before the actual switch.
 p=Path('r31-ui-polish.js');s=p.read_text(encoding='utf-8')
-s=re.sub(r"function controlReply\(c,q\)\{.*?\}\nfunction pendingVoiceOnNextPage",'''function controlReply(c,q){const t=String(q||'');if(/[\\u0600-\\u06ff]/u.test(t))return'تمام، فهمت. رح أغيّر إعداد التطبيق الآن مثل ما طلبت.';const l=lang();const r={en:'Got it. I’ll change the app setting now as requested.',fr:'Compris. Je change maintenant le réglage de l’application comme demandé.',tr:'Tamam. Uygulama ayarını şimdi istediğiniz gibi değiştiriyorum.',de:'Verstanden. Ich ändere die App-Einstellung jetzt wie gewünscht.',es:'Entendido. Ahora cambio la configuración de la app como pediste.',ru:'Понял. Сейчас изменю настройку приложения, как вы попросили.',zh:'明白了。我现在按你的要求更改应用设置。',hi:'समझ गया। अब मैं ऐप की सेटिंग आपके अनुरोध के अनुसार बदल रहा हूँ।'};return r[l]||r.en}\nfunction pendingVoiceOnNextPage''',s,count=1,flags=re.S)
+control_replacement=r'''function controlReply(c,q){const t=String(q||'');if(/[\u0600-\u06ff]/u.test(t))return'تمام، فهمت. رح أغيّر إعداد التطبيق الآن مثل ما طلبت.';const l=lang();const r={en:'Got it. I’ll change the app setting now as requested.',fr:'Compris. Je change maintenant le réglage de l’application comme demandé.',tr:'Tamam. Uygulama ayarını şimdi istediğiniz gibi değiştiriyorum.',de:'Verstanden. Ich ändere die App-Einstellung jetzt wie gewünscht.',es:'Entendido. Ahora cambio la configuración de la app como pediste.',ru:'Понял. Сейчас изменю настройку приложения, как вы попросили.',zh:'明白了。我现在按你的要求更改应用设置。',hi:'समझ गया। अब मैं ऐप की सेटिंग आपके अनुरोध के अनुसार बदल रहा हूँ।'};return r[l]||r.en}
+function pendingVoiceOnNextPage'''
+s=re.sub(r"function controlReply\(c,q\)\{.*?\}\nfunction pendingVoiceOnNextPage",lambda _m:control_replacement,s,count=1,flags=re.S)
 p.write_text(s,encoding='utf-8')
 
 # Future release stamping must also remove visible stale R74/R75 labels.
