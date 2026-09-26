@@ -1,0 +1,99 @@
+name: R65 final v2
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r65-final-v2.yml']
+permissions:
+  contents: write
+jobs:
+  final:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - name: Build
+        run: |
+          set -euo pipefail
+          python tools/r65_worldwide_chat_language.py
+          node --check r24-ai-controller.js
+          node --check r31-ui-polish.js
+          node --check voice-ai.js
+          node --check worker-r31.js
+          grep -F "WW:['worldwide'" r24-ai-controller.js >/dev/null
+          grep -F "country!=='WW'" r24-ai-controller.js >/dev/null
+          grep -F "seekvera_chat_voice_lang" voice-ai.js >/dev/null
+          grep -F "selected market must NEVER decide the reply language" worker-r31.js >/dev/null
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Wait live
+        run: |
+          set -euo pipefail
+          S=https://seekveraglobal.com
+          for i in $(seq 1 35); do
+            C="$(curl -LfsS --max-time 15 "$S/r24-ai-controller.js?r65v2=$i" || true)"
+            V="$(curl -LfsS --max-time 15 "$S/voice-ai.js?r65v2=$i" || true)"
+            W="$(curl -LfsS --max-time 15 "$S/worker-r31.js?r65v2=$i" || true)"
+            [[ "$C" == *"20260926-r65-worldwide-chat-language"* && "$C" == *"WW:['worldwide'"* && "$V" == *"seekvera_chat_voice_lang"* && "$W" == *"selected market must NEVER decide the reply language"* ]] && exit 0
+            sleep 2
+          done
+          exit 1
+      - name: Live language API
+        run: |
+          python3 - <<'PY'
+          import urllib.request,urllib.error,json
+          S='https://seekveraglobal.com';H={'User-Agent':'Mozilla/5.0 R65','content-type':'application/json'}
+          def ask(msg,country):
+            q=urllib.request.Request(S+'/api/ai',data=json.dumps({'message':msg,'country':country,'language':'auto','fast':True},ensure_ascii=False).encode(),headers=H,method='POST')
+            try:
+              with urllib.request.urlopen(q,timeout=35) as r:return r.status,json.loads(r.read())
+            except urllib.error.HTTPError as e:return e.code,json.loads(e.read())
+          cases=[('ar','NG','شو فيك تساعدني اليوم؟'),('fr','NG','Bonjour, peux-tu m’aider aujourd’hui ?'),('zh','US','你好，你今天可以怎么帮助我？'),('hi','FR','नमस्ते, आज आप मेरी कैसे मदद कर सकते हैं?')]
+          for code,country,msg in cases:
+            st,d=ask(msg,country);print(code,st,d);assert st==200 and d.get('ok') and d.get('response')
+            r=d['response']
+            if code=='ar':assert any('\u0600'<=x<='\u06ff' for x in r)
+            if code=='zh':assert any('\u4e00'<=x<='\u9fff' for x in r)
+            if code=='hi':assert any('\u0900'<=x<='\u097f' for x in r)
+            if code=='fr':assert any(x in r.lower() for x in ('je ','vous','bonjour','aide','besoin','assistant'))
+          print('R65 API PASS')
+          PY
+      - name: Browser exact screenshot scenario
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > t.mjs <<'JS'
+          import {chromium} from 'playwright';import assert from 'node:assert/strict';
+          const b=await chromium.launch({headless:true});const p=await b.newPage({userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          await p.goto('https://seekveraglobal.com/?r65v2='+Date.now(),{waitUntil:'networkidle',timeout:60000});await p.waitForFunction(()=>SEEKVERA_R24_CONTROLLER&&SEEKVERA_LOCALE_R15&&document.querySelector('#aiChatForm'));
+          const x=await p.evaluate(()=>({en:SEEKVERA_R24_CONTROLLER.detectControls('Change the app to Worldwide'),ar:SEEKVERA_R24_CONTROLLER.detectControls('غير التطبيق للعالمي'),tr:SEEKVERA_R24_CONTROLLER.detectControls('حطني تركيا'),tl:SEEKVERA_R24_CONTROLLER.detectControls('حطلي تركي')}));assert.equal(x.en.country,'WW');assert.equal(x.ar.country,'WW');assert.equal(x.tr.country,'TR');assert.equal(x.tl.language,'tr');
+          await p.evaluate(()=>{SEEKVERA_LOCALE_R15.setCountry('NG');sessionStorage.setItem('seekvera_ai_intent','jobs')});await p.fill('#aiChatInput','Change the app to Worldwide');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(()=>country.value==='WW');const s=await p.evaluate(()=>({c:country.value,cur:currency.value,i:sessionStorage.getItem('seekvera_ai_intent'),t:aiMessages.innerText}));assert.equal(s.c,'WW');assert.equal(s.cur,'USD');assert.equal(s.i,null);assert.ok(s.t.includes('✓ 🌐 Worldwide'));assert.ok(!/taking you directly to Jobs/i.test(s.t.split('Change the app to Worldwide').at(-1)||''));
+          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('NG'));await p.fill('#aiChatInput','شو فيك تساعدني اليوم؟');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(()=>/[\u0600-\u06ff]/u.test((aiMessages.innerText.split('شو فيك تساعدني اليوم؟').at(-1)||'')),null,{timeout:25000});
+          console.log('R65 CONTROL+CHAT PASS',s);await b.close();
+          JS
+          node t.mjs
+          rm -f t.mjs
+      - name: Voice language independent of country
+        run: |
+          set -euo pipefail
+          cat > v.mjs <<'JS'
+          import {chromium} from 'playwright';import assert from 'node:assert/strict';const b=await chromium.launch({headless:true});const ctx=await b.newContext({locale:'ar-LB',userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});await ctx.addInitScript(()=>{localStorage.setItem('seekvera_country','NG');localStorage.setItem('seekvera_country_explicit','1');localStorage.removeItem('seekvera_language_explicit');localStorage.removeItem('seekvera_chat_voice_lang');class SR{constructor(){this.lang=''}start(){window.__sr=this.lang;this.onstart?.()}stop(){this.onend?.()}abort(){this.onend?.()}}window.SpeechRecognition=SR;window.webkitSpeechRecognition=SR});const p=await ctx.newPage();await p.goto('https://seekveraglobal.com/?r65voice='+Date.now(),{waitUntil:'networkidle',timeout:60000});await p.waitForFunction(()=>SEEKVERA_VOICE_AI&&country.value==='NG');await p.click('#aiChatMic');await p.waitForFunction(()=>window.__sr);const s=await p.evaluate(()=>({sr:window.__sr,c:country.value,l:lang.value}));console.log(s);assert.equal(s.c,'NG');assert.equal(s.l,'en');assert.ok(/^ar(?:-|$)/i.test(s.sr));await b.close();
+          JS
+          node v.mjs
+          rm -f v.mjs
+      - name: Persist safely
+        run: |
+          set -euo pipefail
+          git config user.name seekvera-global
+          git config user.email seekvera.global@gmail.com
+          git add ./*.html r24-ai-controller.js r31-ui-polish.js voice-ai.js worker-r31.js superapp.js r60-runtime-guard.js sw.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Persist R65 worldwide multilingual chat'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+          echo R65_FINAL_PERSISTED
