@@ -1,0 +1,63 @@
+name: Final AI voice behavior
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/final-ai-voice-behavior.yml']
+permissions:
+  contents: write
+jobs:
+  final:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - name: Build
+        run: |
+          set -euo pipefail
+          python tools/r65c_first_voice_auto.py
+          node --check voice-ai.js
+          node --check r24-ai-controller.js
+          node --check r31-ui-polish.js
+          node --check worker-r31.js
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Wait for behavior live
+        run: |
+          set -euo pipefail
+          S=https://seekveraglobal.com
+          for i in $(seq 1 35); do
+            V="$(curl -LfsS --max-time 15 "$S/voice-ai.js?behavior=$i" || true)"
+            C="$(curl -LfsS --max-time 15 "$S/r24-ai-controller.js?behavior=$i" || true)"
+            if [[ "$V" == *"serverVoice(targetId,activeButton,true)"* && "$V" == *"start(targetId,button,true)"* && "$C" == *"WW:['worldwide'"* ]]; then echo BEHAVIOR_LIVE; exit 0; fi
+            sleep 2
+          done
+          exit 1
+      - name: Browser final acceptance
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > accept.mjs <<'JS'
+          import {chromium} from 'playwright';import assert from 'node:assert/strict';
+          const browser=await chromium.launch({headless:true});
+          const p=await browser.newPage({locale:'en-US',userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          await p.goto('https://seekveraglobal.com/?accept='+Date.now(),{waitUntil:'networkidle',timeout:60000});await p.waitForFunction(()=>SEEKVERA_R24_CONTROLLER&&SEEKVERA_LOCALE_R15&&document.querySelector('#aiChatForm'));
+          const ctl=await p.evaluate(()=>({ww:SEEKVERA_R24_CONTROLLER.detectControls('Change the app to Worldwide'),wwa:SEEKVERA_R24_CONTROLLER.detectControls('غير التطبيق للعالمي'),tr:SEEKVERA_R24_CONTROLLER.detectControls('حطني تركيا')}));assert.equal(ctl.ww.country,'WW');assert.equal(ctl.wwa.country,'WW');assert.equal(ctl.tr.country,'TR');
+          await p.evaluate(()=>{SEEKVERA_LOCALE_R15.setCountry('NG');sessionStorage.setItem('seekvera_ai_intent','jobs')});await p.fill('#aiChatInput','Change the app to Worldwide');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(()=>country.value==='WW',null,{timeout:5000});const x=await p.evaluate(()=>({c:country.value,cur:currency.value,intent:sessionStorage.getItem('seekvera_ai_intent'),text:aiMessages.innerText}));assert.equal(x.c,'WW');assert.equal(x.cur,'USD');assert.equal(x.intent,null);assert.ok(x.text.includes('✓ 🌐 Worldwide'));assert.ok(!/taking you directly to Jobs/i.test(x.text.split('Change the app to Worldwide').at(-1)||''));
+          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('NG'));await p.fill('#aiChatInput','شو فيك تساعدني اليوم؟');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(()=>/[\u0600-\u06ff]/u.test((aiMessages.innerText.split('شو فيك تساعدني اليوم؟').at(-1)||'')),null,{timeout:18000});await p.fill('#aiChatInput','Bonjour, peux-tu m’aider aujourd’hui ?');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(()=>/bonjour|vous|aide|besoin|assistant|pouvez/.test((aiMessages.innerText.split('Bonjour, peux-tu m’aider aujourd’hui ?').at(-1)||'').toLowerCase()),null,{timeout:18000});await p.close();
+          const ctx=await browser.newContext({locale:'en-US',userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});await ctx.addInitScript(()=>{localStorage.setItem('seekvera_country','NG');localStorage.setItem('seekvera_country_explicit','1');localStorage.removeItem('seekvera_language_explicit');localStorage.removeItem('seekvera_chat_voice_lang');class SR{constructor(){this.lang=''}start(){window.__native=(window.__native||0)+1;this.onstart?.()}stop(){this.onend?.()}abort(){this.onend?.()}}window.SpeechRecognition=SR;window.webkitSpeechRecognition=SR;class MR{static isTypeSupported(){return true}constructor(){this.state='inactive'}start(){this.state='recording';window.__server=(window.__server||0)+1;setTimeout(()=>{this.ondataavailable?.({data:new Blob(['x'],{type:'audio/webm'})});this.state='inactive';this.onstop?.()},120)}stop(){if(this.state==='recording'){this.state='inactive';this.onstop?.()}}}window.MediaRecorder=MR;navigator.mediaDevices={getUserMedia:async()=>({getTracks:()=>[{stop(){}}]})}});const v=await ctx.newPage();await v.route('**/api/transcribe',r=>r.fulfill({status:503,contentType:'application/json',body:'{"error":"quota"}'}));await v.goto('https://seekveraglobal.com/?voiceaccept='+Date.now(),{waitUntil:'networkidle',timeout:60000});await v.waitForFunction(()=>SEEKVERA_VOICE_AI&&document.querySelector('#aiChatMic'));await v.click('#aiChatMic');await v.waitForFunction(()=>window.__native>0,null,{timeout:8000});const vs=await v.evaluate(()=>({server:window.__server||0,native:window.__native||0,country:country.value}));assert.ok(vs.server>0,vs);assert.ok(vs.native>0,vs);assert.equal(vs.country,'NG');console.log('FINAL ACCEPTANCE PASS',x,vs);await browser.close();
+          JS
+          node accept.mjs
+          rm -f accept.mjs
+      - name: Persist
+        run: |
+          set -euo pipefail
+          git config user.name seekvera-global
+          git config user.email seekvera.global@gmail.com
+          git add ./*.html voice-ai.js r24-ai-controller.js r31-ui-polish.js worker-r31.js superapp.js r60-runtime-guard.js sw.js
+          if ! git diff --cached --quiet; then git commit -m 'Persist final AI voice behavior'; git pull --rebase origin main; git push origin HEAD:main; fi
+          echo FINAL_ACCEPTED
