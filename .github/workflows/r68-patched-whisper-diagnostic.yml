@@ -25,7 +25,6 @@ jobs:
           test -n "$ORT"; test -n "$COMMON"
           cp -r "$ORT" "$GITHUB_WORKSPACE/ort"
           cp -r "$COMMON" "$GITHUB_WORKSPACE/ort-common"
-          ls -lh "$GITHUB_WORKSPACE/patched-transformers.web.js"
       - name: Test Arabic auto detection
         run: |
           set -euo pipefail
@@ -46,6 +45,7 @@ jobs:
           await p.goto('http://127.0.0.1:8765/patched-test.html',{waitUntil:'domcontentloaded'});
           const t=Date.now();
           const out=await p.evaluate(async()=>{
+            window.fetch=window.fetch.bind(window);
             const {pipeline,env}=await import('/patched-transformers.web.js');
             env.backends.onnx.wasm.wasmPaths='/ort/';
             const transcriber=await pipeline('automatic-speech-recognition','Xenova/whisper-tiny',{dtype:'q8',device:'wasm'});
