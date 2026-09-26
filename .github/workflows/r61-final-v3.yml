@@ -65,7 +65,7 @@ jobs:
           const cov=await p.evaluate(()=>{const ctl=SEEKVERA_R24_CONTROLLER,langs=ctl.languages,codes=Object.keys(SEEKVERA_LOCALE_R15.profiles).filter(x=>/^[A-Z]{2}$/.test(x));let enGood=0;const en=new Intl.DisplayNames(['en'],{type:'region'});for(const c of codes){const n=en.of(c);if(ctl.detectControls('change country to '+n).country===c)enGood++}return{langs:langs.length,codes:codes.length,enGood,america:ctl.detectControls('change app to America').country,chinese:ctl.detectControls('change country to 美国').country}});
           assert.equal(cov.langs,98,JSON.stringify(cov));assert.equal(cov.codes,248,JSON.stringify(cov));assert.equal(cov.enGood,248,JSON.stringify(cov));assert.equal(cov.america,'US');assert.equal(cov.chinese,'US');
           async function send(q){await p.fill('#aiChatInput',q);await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForTimeout(700)}
-          await send('bonjour, je cherche un hôtel à Paris');
+          await send('bonjour, comment allez-vous aujourd’hui ?');
           assert.equal(seen.at(-1)?.language,'auto',JSON.stringify(seen.at(-1)));
           let text=await p.locator('#aiMessages').innerText();assert.ok(text.includes('Très bien. Je continue en français.'),text);
           await send('change app to France');await p.waitForFunction(()=>document.querySelector('#country')?.value==='FR',null,{timeout:5000});
@@ -73,7 +73,7 @@ jobs:
           await send('غير التطبيق إلى نيجيريا');await p.waitForFunction(()=>document.querySelector('#country')?.value==='NG',null,{timeout:5000});
           assert.equal(seen.at(-1)?.language,'auto',JSON.stringify(seen.at(-1)));
           const state=await p.evaluate(()=>({country:country.value,currency:currency.value,chat:localStorage.getItem('seekvera_ai_chat_v1')||'',voiceMode:localStorage.getItem('seekvera_voice_mode')}));
-          assert.equal(state.country,'NG');assert.equal(state.currency,'NGN');assert.ok(state.chat.includes('bonjour, je cherche un hôtel à Paris'));assert.ok(state.chat.includes('غير التطبيق إلى نيجيريا'));
+          assert.equal(state.country,'NG');assert.equal(state.currency,'NGN');assert.ok(state.chat.includes('bonjour, comment allez-vous aujourd’hui ?'));assert.ok(state.chat.includes('غير التطبيق إلى نيجيريا'));
           const voiceAsset=await (await p.request.get('https://seekveraglobal.com/voice-ai.js?r62audit='+Date.now())).text();assert.ok(voiceAsset.includes("body:JSON.stringify({audio,language:'auto'})"));assert.ok(voiceAsset.includes('Android|iPhone|iPad|iPod'));
           const apiVoice=await p.evaluate(async()=>{const r=await fetch('/api/tts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text:'Bonjour depuis SEEKVERA',language:'fr'})});return{ok:r.ok,type:r.headers.get('content-type'),bytes:(await r.arrayBuffer()).byteLength}});assert.equal(apiVoice.ok,true,JSON.stringify(apiVoice));assert.ok(apiVoice.type.startsWith('audio/'),JSON.stringify(apiVoice));assert.ok(apiVoice.bytes>500,JSON.stringify(apiVoice));
           console.log('R62 UNIVERSAL LANGUAGE PASS',JSON.stringify({cov,state,apiVoice,requests:seen.length}));await b.close();
