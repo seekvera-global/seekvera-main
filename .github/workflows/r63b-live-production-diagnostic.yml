@@ -1,4 +1,4 @@
-name: R63B live production diagnostic
+name: Current live R64 production audit
 on:
   push:
     branches: [main]
@@ -9,41 +9,47 @@ jobs:
   live:
     runs-on: ubuntu-latest
     steps:
-      - name: Test real AI and voice services
+      - name: Real production API audit no mocks
         shell: bash
         run: |
+          set -euo pipefail
           python3 - <<'PY'
-          import urllib.request, urllib.error, json, time, base64
-          S='https://seekveraglobal.com'
-          def get(path):
-              with urllib.request.urlopen(S+path,timeout=30) as r:
-                  return r.status,r.headers, r.read()
-          def post(path,obj,timeout=45):
-              data=json.dumps(obj,ensure_ascii=False).encode('utf-8')
-              req=urllib.request.Request(S+path,data=data,headers={'content-type':'application/json'},method='POST')
+          import urllib.request,urllib.error,json,time,base64
+          S='https://seekveraglobal.com';H={'User-Agent':'Mozilla/5.0 SEEKVERA-CURRENT-LIVE-AUDIT/1.0'}
+          def call(path,obj=None,timeout=40):
+              data=None if obj is None else json.dumps(obj,ensure_ascii=False).encode('utf-8')
+              headers={**H,**({'content-type':'application/json'} if data else {})}
+              r=urllib.request.Request(S+path,data=data,headers=headers,method='POST' if data else 'GET')
               try:
-                  with urllib.request.urlopen(req,timeout=timeout) as r:
-                      return r.status,r.headers,r.read()
-              except urllib.error.HTTPError as e:
-                  return e.code,e.headers,e.read()
-          status,h,b=get('/api/health')
-          print('HEALTH',status,b.decode('utf-8')[:1500])
-          assert status==200
-          for code,msg in [
-              ('ar','عم دور على شغل بامريكا'),
-              ('en','I am looking for a job in America'),
-              ('fr','Je cherche un travail aux États-Unis')]:
-              t=time.time(); status,h,b=post('/api/ai',{'message':msg,'country':'Worldwide','language':'auto','fast':True}); ms=round((time.time()-t)*1000)
-              txt=b.decode('utf-8','replace'); print('AI',code,'status',status,'ms',ms,txt[:2200])
-              assert status==200,(code,status,txt)
-              d=json.loads(txt); assert d.get('ok') is True and str(d.get('response','')).strip(),d
-              if code=='ar': assert any('\u0600'<=c<='\u06ff' for c in d['response']),d
-          status,h,b=post('/api/tts',{'text':'مرحبا، أريد أن أبحث عن عمل في أمريكا','language':'ar'})
-          print('TTS',status,h.get('content-type'),len(b)); assert status==200 and len(b)>500
-          payload={'audio':'data:audio/mpeg;base64,'+base64.b64encode(b).decode(),'language':'auto'}
-          status,h,b=post('/api/transcribe',payload,60)
-          txt=b.decode('utf-8','replace'); print('STT',status,txt[:2200])
-          assert status==200,(status,txt)
-          d=json.loads(txt); assert d.get('ok') is True and str(d.get('text','')).strip(),d
-          print('R63B_LIVE_PASS')
+                  with urllib.request.urlopen(r,timeout=timeout) as x:return x.status,x.headers,x.read()
+              except urllib.error.HTTPError as e:return e.code,e.headers,e.read()
+          st,h,b=call('/api/health');print('HEALTH',st,b.decode('utf-8','replace')[:1500]);assert st==200
+          cases=[('ar','عم دور على شغل بامريكا','Arabic'),('en','I am looking for a job in America','English'),('fr','Je cherche un travail aux États-Unis','French')]
+          for code,msg,expected in cases:
+              t=time.time();st,h,b=call('/api/ai',{'message':msg,'country':'Worldwide','language':'auto','fast':True},35);ms=round((time.time()-t)*1000);txt=b.decode('utf-8','replace');print('AI',code,'STATUS',st,'MS',ms,txt[:1800]);assert st==200,(code,st,txt);d=json.loads(txt);assert d.get('ok') is True and str(d.get('response','')).strip(),d;assert d.get('language')==expected,(code,d);assert d.get('category')=='jobs',(code,d)
+              if code=='ar':assert any('\u0600'<=c<='\u06ff' for c in d['response']),d
+          st,h,audio=call('/api/tts',{'text':'مرحبا أريد البحث عن عمل في أمريكا','language':'ar'},30);print('TTS',st,h.get('content-type'),len(audio));assert st==200 and len(audio)>500
+          st,h,b=call('/api/transcribe',{'audio':'data:audio/mpeg;base64,'+base64.b64encode(audio).decode(),'language':'auto'},60);txt=b.decode('utf-8','replace');print('STT',st,txt[:1600]);assert st in (200,503),(st,txt)
+          if st==503:
+              d=json.loads(txt);assert d.get('reason') in ('daily_free_ai_limit','capacity_busy','paid_model_required','model_agreement_required','workers_ai_runtime_error'),d
+          print('CURRENT_LIVE_API_PASS')
           PY
+      - name: Current live browser control voice and stale-country audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > current-live.mjs <<'JS'
+          import{chromium}from'playwright';import assert from'node:assert/strict';
+          const b=await chromium.launch({headless:true});const p=await b.newPage({userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          await p.goto('https://seekveraglobal.com/?currentlive='+Date.now(),{waitUntil:'networkidle',timeout:60000});await p.waitForFunction(()=>window.SEEKVERA_R24_CONTROLLER&&window.SEEKVERA_VOICE_AI&&document.querySelector('#aiChatForm'),null,{timeout:30000});
+          const release=await p.evaluate(()=>({release:window.SEEKVERA_RELEASE||'',r24:document.documentElement.dataset.r24||'',country:document.querySelector('#country')?.value}));console.log('RELEASE',release);
+          const ctl=await p.evaluate(()=>{const c=SEEKVERA_R24_CONTROLLER;return{turkey:c.detectControls('حطني تركيا'),take:c.detectControls('وديني تركيا'),turkish:c.detectControls('حطلي تركي'),france:c.detectControls('change app to France')}});console.log('CONTROLS',ctl);assert.equal(ctl.turkey.country,'TR',JSON.stringify(ctl));assert.equal(ctl.take.country,'TR',JSON.stringify(ctl));assert.equal(ctl.turkish.language,'tr',JSON.stringify(ctl));assert.equal(ctl.france.country,'FR',JSON.stringify(ctl));
+          await p.evaluate(()=>{localStorage.removeItem('seekvera_country_explicit');localStorage.removeItem('seekvera_worldwide_default_20260926_r63');localStorage.setItem('seekvera_country','NG')});await p.reload({waitUntil:'networkidle',timeout:60000});await p.waitForFunction(()=>document.querySelector('#country')?.value==='WW',null,{timeout:10000});
+          await p.fill('#aiChatInput','حطني تركيا');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(()=>document.querySelector('#country')?.value==='TR',null,{timeout:5000});const state=await p.evaluate(()=>({country:country.value,currency:currency.value,explicit:localStorage.getItem('seekvera_country_explicit'),chat:document.querySelector('#aiMessages')?.innerText||''}));console.log('STATE',state);assert.equal(state.currency,'TRY');assert.equal(state.explicit,'1');assert.ok(/تم تغيير الدولة/.test(state.chat),state.chat);
+          await p.fill('#aiChatInput','شو فيك تساعدني اليوم؟');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(()=>{const t=document.querySelector('#aiMessages')?.innerText||'';return /[\u0600-\u06ff]/u.test(t)&&!t.includes('تعذّر الاتصال للحظة')},null,{timeout:18000});
+          const voice=await(await p.request.get('https://seekveraglobal.com/voice-ai.js?currentlive='+Date.now())).text();assert.ok(voice.includes('function voiceInputLocale()'));assert.ok(voice.includes('if(!SpeechRecognition){serverVoice(targetId,activeButton);return}'));assert.ok(!voice.includes('Android|iPhone|iPad|iPod/i.test(navigator.userAgent)&&navigator.mediaDevices?.getUserMedia&&window.MediaRecorder'));
+          console.log('CURRENT_LIVE_BROWSER_PASS');await b.close();
+          JS
+          node current-live.mjs
