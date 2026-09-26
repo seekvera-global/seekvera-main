@@ -16,7 +16,7 @@ async function postAI(message,extra={}){
   throw last;
 }
 
-// API understanding + routing + app controls. These cases intentionally mix dialects and scripts.
+// Searches must route without mutating app country/language. Reply language must follow the latest user message.
 const languageCases=[
   ['بدي وظيفة مبيعات بفرنسا','ar','jobs'],
   ['شو فيك تساعدني اليوم؟','ar','general'],
@@ -35,13 +35,16 @@ for(const [q,lang,cat] of languageCases){
   assert(d?.ok&&String(d.response||'').trim(),[q,d]);
   assert.equal(d.category,cat,'category '+q);
   assert(String(d.language||'').toLowerCase().startsWith(lang),'language '+q+' => '+JSON.stringify(d));
+  assert.equal(d.countryAction,null,'search must not change country '+q+' => '+JSON.stringify(d));
+  assert.equal(d.languageAction,null,'search must not change language '+q+' => '+JSON.stringify(d));
 }
-for(const [q,cc,ll] of [
-  ['حطني تركيا','TR',null],['غيّر الأب على لبنان','LB',null],['change the app to France','FR',null],['حوّلني ورلد وايد','WW',null],['غير لغة التطبيق للتركي',null,'tr']
+for(const [q,cc,ll,replyLang] of [
+  ['حطني تركيا','TR',null,'ar'],['غيّر الأب على لبنان','LB',null,'ar'],['change the app to France','FR',null,'en'],['حوّلني ورلد وايد','WW',null,'ar'],['غير لغة التطبيق للتركي',null,'tr','ar']
 ]){
   const d=await postAI(q);console.log('APP_ACTION',q,JSON.stringify(d).slice(0,650));assert(String(d?.response||'').trim(),q);
-  if(cc)assert.equal(d?.countryAction?.code,cc,q);
-  if(ll)assert.equal(d?.languageAction?.code,ll,q);
+  assert.equal(d.language,replyLang,'action reply must stay in speaker language '+q+' => '+JSON.stringify(d));
+  if(cc)assert.equal(d?.countryAction?.code,cc,q);else assert.equal(d.countryAction,null,q);
+  if(ll)assert.equal(d?.languageAction?.code,ll,q);else assert.equal(d.languageAction,null,q);
 }
 const searchNotControl=await postAI('بدي فندق بفرنسا');assert(!searchNotControl.countryAction,searchNotControl);assert(['travel','tourism'].includes(searchNotControl.category),searchNotControl);
 console.log('R76_API_LANGUAGE_ACTION_PASS');
