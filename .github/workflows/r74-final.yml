@@ -1,0 +1,61 @@
+name: R74 multilingual AI final
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r74-final.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: seekvera-r74-production
+  cancel-in-progress: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate R74
+        run: |
+          set -euo pipefail
+          node --check worker.js
+          node --check worker-r30.js
+          node --check worker-r31.js
+          node --check r74-ai-failover.js
+          grep -q 'main.*worker-r31.js' wrangler.jsonc
+          grep -q 'seekvera-local-router-ar' worker-r31.js
+          grep -q 'r74-ai-failover.js' index.html
+          test "$(find i18n-r32 -maxdepth 1 -name '*.json' ! -name manifest.json | wc -l)" = 98
+          npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-r74
+          rm -rf .wrangler-r74 .wrangler
+      - name: Deploy R74
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Verify live multilingual routing
+        run: |
+          set -euo pipefail
+          S=https://seekveraglobal.com
+          for i in $(seq 1 30); do
+            curl -fsS --max-time 15 "$S/?r74=$i" -o /tmp/home || true
+            curl -fsS --max-time 15 "$S/worker-r31.js?r74=$i" -o /tmp/w || true
+            if grep -q 'r74-ai-failover.js' /tmp/home 2>/dev/null && grep -q 'seekvera-local-router-ar' /tmp/w 2>/dev/null; then break; fi
+            sleep 3
+          done
+          grep -q 'r74-ai-failover.js' /tmp/home
+          grep -q 'seekvera-local-router-ar' /tmp/w
+          python3 - <<'PY'
+          import json,urllib.request
+          cases=[('أريد فندقاً في دبي','Arabic','travel','travel.html'),('मुझे मुंबई में होटल चाहिए','Hindi','travel','travel.html'),('我想在北京找一家酒店','Chinese','travel','travel.html'),('Je cherche un emploi au Canada','French','jobs','jobs.html')]
+          for msg,lang,cat,route in cases:
+              req=urllib.request.Request('https://seekveraglobal.com/api/ai',data=json.dumps({'message':msg,'language':'English','country':'US','fast':True},ensure_ascii=False).encode(),headers={'content-type':'application/json'},method='POST')
+              with urllib.request.urlopen(req,timeout=15) as r:d=json.loads(r.read())
+              assert d.get('ok') and d.get('response'),d
+              assert d.get('language')==lang,(lang,d)
+              assert d.get('category')==cat,(cat,d)
+              assert d.get('route')==route,(route,d)
+          print('R74 LIVE PASS')
+          PY
