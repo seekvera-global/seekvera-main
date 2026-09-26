@@ -9,7 +9,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Build patched Transformers.js
+      - name: Build patched Transformers.js bundle
         run: |
           set -euo pipefail
           git clone -q --depth 1 --branch feat/whisper-language-detection https://github.com/jhlee111/transformers.js.git /tmp/tjs
@@ -18,21 +18,14 @@ jobs:
           pnpm install --frozen-lockfile --silent
           cd packages/transformers
           node scripts/build.mjs
-          test -s dist/transformers.web.js
-          cp dist/transformers.web.js "$GITHUB_WORKSPACE/patched-transformers.web.js"
-          ORT=$(find /tmp/tjs -type d -path '*/node_modules/onnxruntime-web/dist' | head -1)
-          COMMON=$(find /tmp/tjs -type d -path '*/node_modules/onnxruntime-common/dist/esm' | head -1)
-          test -n "$ORT"; test -n "$COMMON"
-          cp -r "$ORT" "$GITHUB_WORKSPACE/ort"
-          cp -r "$COMMON" "$GITHUB_WORKSPACE/ort-common"
+          test -s dist/transformers.js
+          cp dist/transformers.js "$GITHUB_WORKSPACE/patched-transformers.js"
+          cp ort-wasm-simd-threaded.jsep.mjs "$GITHUB_WORKSPACE/" 2>/dev/null || true
+          find /tmp/tjs -name 'ort-wasm-simd-threaded.jsep.wasm' -exec cp {} "$GITHUB_WORKSPACE/" \; -quit
+          ls -lh "$GITHUB_WORKSPACE/patched-transformers.js"
       - name: Test Arabic auto detection
         run: |
           set -euo pipefail
-          cat > patched-test.html <<'HTML'
-          <!doctype html><meta charset="utf-8">
-          <script type="importmap">{"imports":{"onnxruntime-common":"/ort-common/index.js","onnxruntime-web":"/ort/ort.min.mjs","onnxruntime-web/onnxruntime":"/ort/ort.min.mjs","onnxruntime-web/wasm":"/ort/ort.wasm.min.mjs","onnxruntime-web/webgpu":"/ort/ort.webgpu.min.mjs"}}</script>
-          <div>test</div>
-          HTML
           python3 -m http.server 8765 >/tmp/http.log 2>&1 &
           npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
           npx playwright install chromium >/dev/null
@@ -42,12 +35,11 @@ jobs:
           await p.goto('https://seekveraglobal.com/?patched='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
           const bytes=await p.evaluate(async()=>{const r=await fetch('/api/tts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text:'مرحبا أريد أن أبحث عن عمل في أمريكا',language:'ar'})});if(!r.ok)throw Error('tts '+r.status);return Array.from(new Uint8Array(await r.arrayBuffer()))});
           fs.writeFileSync('arabic.mp3',Buffer.from(bytes));
-          await p.goto('http://127.0.0.1:8765/patched-test.html',{waitUntil:'domcontentloaded'});
+          await p.goto('http://127.0.0.1:8765/',{waitUntil:'domcontentloaded'});
           const t=Date.now();
           const out=await p.evaluate(async()=>{
-            window.fetch=window.fetch.bind(window);
-            const {pipeline,env}=await import('/patched-transformers.web.js');
-            env.backends.onnx.wasm.wasmPaths='/ort/';
+            const {pipeline,env}=await import('/patched-transformers.js');
+            if(env?.backends?.onnx?.wasm)env.backends.onnx.wasm.wasmPaths='/';
             const transcriber=await pipeline('automatic-speech-recognition','Xenova/whisper-tiny',{dtype:'q8',device:'wasm'});
             return await transcriber('/arabic.mp3',{task:'transcribe'});
           });
