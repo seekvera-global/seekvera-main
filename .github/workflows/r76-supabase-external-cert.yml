@@ -1,0 +1,38 @@
+name: R76 Supabase external certification
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r76-supabase-external-cert.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Invoke Europe external certification probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS --max-time 90 'https://nrdpyydfrpmqedtzmbyw.supabase.co/functions/v1/r76-external-cert' -o /tmp/r76.json
+          python3 -m json.tool /tmp/r76.json
+          python3 - <<'PY'
+          import json
+          d=json.load(open('/tmp/r76.json'))
+          for k in ['root','worker','health','ohealth','manifest','source','aiSearch','aiArabic','aiAction']:
+              x=d[k]; print('CHECK',k,x.get('status'),x.get('type'),x.get('len'))
+          assert d['root']['status']==200,d['root']
+          assert d['health']['status']==200,d['health']
+          h=json.loads(d['health']['body']); assert h.get('r76') is True and h.get('r76Runtime')=='single-structured-multilingual-ai' and h.get('r76Voice')=='server-auto-asr-first' and h.get('r76Locale')=='complete-static-pack-audit',h
+          m=json.loads(d['manifest']['body']); assert m.get('packs')==98 and len(m.get('languages') or [])==98,m
+          s=json.loads(d['source']['body']); assert s.get('count')==1045,s
+          en=json.loads(d['aiSearch']['body']); assert en.get('language')=='en' and en.get('category')=='jobs' and en.get('countryAction') is None and en.get('languageAction') is None,en
+          ar=json.loads(d['aiArabic']['body']); assert ar.get('language')=='ar' and ar.get('category')=='jobs' and ar.get('countryAction') is None and ar.get('languageAction') is None,ar
+          act=json.loads(d['aiAction']['body']); assert act.get('language')=='ar' and (act.get('countryAction') or {}).get('code')=='TR',act
+          assert all(x.get('status')==200 for x in d['packs']),d['packs']
+          print('R76_SUPABASE_EXTERNAL_CERT_PASS')
+          PY
