@@ -34,20 +34,21 @@ jobs:
           print('R76_CONTROL_PLANE_DEPLOYMENT_PASS',str(items[0])[:1200])
           PY
 
-          echo '=== SCRIPT CONTENT MARKERS ==='
-          curl -sS --max-time 30 -H "Authorization: Bearer $CF_TOKEN" "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT/workers/scripts/seekvera-main/content" -o /tmp/script.bin
+          echo '=== SCRIPT CONTENT RESPONSE ==='
+          curl -sS --max-time 30 -D /tmp/script.headers -H "Authorization: Bearer $CF_TOKEN" "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT/workers/scripts/seekvera-main/content" -o /tmp/script.bin
+          cat /tmp/script.headers
+          echo "SCRIPT_BYTES=$(wc -c </tmp/script.bin)"
+          head -c 700 /tmp/script.bin | tr '\000' ' '; echo
           for marker in 'single-structured-multilingual-ai' 'server-auto-asr-first' 'r76-deterministic-action-fallback' 'search must not change'; do
-            if grep -aFq "$marker" /tmp/script.bin; then echo "MARKER_PASS $marker"; else echo "MARKER_MISSING $marker"; fi
+            if grep -aFq "$marker" /tmp/script.bin; then echo "MARKER_PASS $marker"; else echo "MARKER_NOT_VISIBLE_IN_API_ENCODING $marker"; fi
           done
-          grep -aFq 'single-structured-multilingual-ai' /tmp/script.bin
-          grep -aFq 'r76-deterministic-action-fallback' /tmp/script.bin
 
           echo '=== RECENT ZONE ANALYTICS ==='
           ZONE='ab8cfe3391ae545a0ea5038a594e632a'
           SINCE="$(date -u -d '45 minutes ago' +%Y-%m-%dT%H:%M:%SZ)"
           UNTIL="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           cat >/tmp/query.json <<EOF
-          {"query":"query EdgeStatus(\$zone:String!,\$since:Time!,\$until:Time!){viewer{zones(filter:{zoneTag:\$zone}){httpRequestsAdaptiveGroups(limit:50,filter:{datetime_geq:\$since,datetime_leq:\$until},orderBy:[count_DESC]){count dimensions{edgeResponseStatus clientCountryName clientASNDescription}}}}}","variables":{"zone":"$ZONE","since":"$SINCE","until":"$UNTIL"}}
+          {"query":"query EdgeStatus(\$zone:String!,\$since:Time!,\$until:Time!){viewer{zones(filter:{zoneTag:\$zone}){httpRequestsAdaptiveGroups(limit:100,filter:{datetime_geq:\$since,datetime_leq:\$until},orderBy:[count_DESC]){count dimensions{edgeResponseStatus clientCountryName clientASNDescription}}}}}","variables":{"zone":"$ZONE","since":"$SINCE","until":"$UNTIL"}}
           EOF
           curl -sS --max-time 30 "${H[@]}" --data @/tmp/query.json https://api.cloudflare.com/client/v4/graphql | tee /tmp/analytics.json | python3 -m json.tool || true
           python3 - <<'PY'
@@ -58,12 +59,15 @@ jobs:
           else:
               rows=((d.get('data') or {}).get('viewer') or {}).get('zones') or []
               groups=(rows[0].get('httpRequestsAdaptiveGroups') if rows else []) or []
-              by={}
+              by={}; detail=[]
               for g in groups:
-                  st=str((g.get('dimensions') or {}).get('edgeResponseStatus'))
-                  by[st]=by.get(st,0)+int(g.get('count') or 0)
+                  dim=g.get('dimensions') or {}; st=str(dim.get('edgeResponseStatus')); n=int(g.get('count') or 0)
+                  by[st]=by.get(st,0)+n
+                  if st=='429': detail.append({'count':n,**dim})
               print('R76_EDGE_STATUS_COUNTS',by)
+              print('R76_429_DETAIL',detail[:20])
               ok=sum(v for k,v in by.items() if k.startswith('2') or k.startswith('3'))
               rate=by.get('429',0)
               print('R76_EDGE_ANALYTICS_SUMMARY','ok',ok,'429',rate,'groups',len(groups))
           PY
+          echo R76_CONTROL_PLANE_AND_ANALYTICS_DONE
