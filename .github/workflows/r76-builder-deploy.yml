@@ -1,0 +1,39 @@
+name: R76 isolated translator builder
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r76-builder-deploy.yml']
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy isolated builder worker
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --config wrangler-r76-builder.jsonc
+      - name: Verify health and three translations
+        shell: bash
+        run: |
+          set -euo pipefail
+          B='https://seekvera-r76-builder.seekvera-global.workers.dev'
+          for i in $(seq 1 30); do
+            if curl -LfsS --max-time 15 "$B/health" | grep -q 'seekvera-r76-builder'; then break; fi
+            sleep 2
+          done
+          python - <<'PY'
+          import json,urllib.request
+          B='https://seekvera-r76-builder.seekvera-global.workers.dev/translate'
+          for lang in ['sr','kl','rm']:
+              body=json.dumps({'target':lang,'text':'Find jobs and hotels near me'}).encode()
+              req=urllib.request.Request(B,data=body,headers={'content-type':'application/json'},method='POST')
+              with urllib.request.urlopen(req,timeout=40) as r:d=json.loads(r.read().decode())
+              print(lang,d)
+              assert d.get('ok') and d.get('translation') and d['translation'].lower()!='find jobs and hotels near me'
+          print('R76_BUILDER_3_LANG_PASS')
+          PY
