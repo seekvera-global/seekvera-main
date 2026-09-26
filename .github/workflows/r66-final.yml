@@ -50,15 +50,15 @@ jobs:
           const b=await chromium.launch({headless:true});const p=await b.newPage({locale:'en-US',userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
           await p.goto('https://seekveraglobal.com/?r66test='+Date.now(),{waitUntil:'networkidle',timeout:60000});
           await p.waitForFunction(()=>window.SEEKVERA_R66_FINAL&&window.SEEKVERA_R24_CONTROLLER&&document.querySelector('#aiChatForm'));
-          await p.evaluate(()=>{sessionStorage.setItem('seekvera_ai_intent','jobs');const c=document.querySelector('#country');if(c){if(![...c.options].some(o=>o.value==='NG'))c.add(new Option('Nigeria','NG'));c.value='NG'}});
+          await p.evaluate(()=>{sessionStorage.setItem('seekvera_ai_intent','jobs');SEEKVERA_LOCALE_R15.setCountry('NG')});
           await p.fill('#aiChatInput','Change the app to Worldwide');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
           await p.waitForFunction(()=>document.querySelector('#country')?.value==='WW'&&document.querySelector('[data-scope="worldwide"]')?.classList.contains('active'),null,{timeout:5000});
           let a=await p.evaluate(()=>({country:country.value,currency:currency.value,intent:sessionStorage.getItem('seekvera_ai_intent'),text:aiMessages.innerText,scope:[...document.querySelectorAll('[data-scope]')].find(x=>x.classList.contains('active'))?.dataset.scope}));
           assert.equal(a.country,'WW');assert.equal(a.currency,'USD');assert.equal(a.intent,null);assert.equal(a.scope,'worldwide');assert.ok(/Done\. The app is now set to Worldwide\./.test(a.text));assert.ok(!/taking you directly to Jobs/i.test(a.text.split('Change the app to Worldwide').at(-1)||''));
           await p.fill('#aiChatInput','حطني تركيا');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(()=>country.value==='TR',null,{timeout:5000});
-          const ar=await p.evaluate(()=>aiMessages.innerText);assert.ok(/تم\./.test(ar));
-          await p.fill('#aiChatInput','حطلي تركي');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(()=>lang.value==='tr',null,{timeout:5000});
-          console.log('R66 CONTROL PASS',a);await b.close();
+          const tr=await p.evaluate(()=>({c:country.value,l:lang.value,cur:currency.value,text:aiMessages.innerText}));assert.equal(tr.c,'TR');assert.equal(tr.l,'tr');assert.equal(tr.cur,'TRY');assert.ok(/تم\./.test(tr.text));
+          await p.fill('#aiChatInput','حطلي عربي');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(()=>lang.value==='ar',null,{timeout:5000});
+          console.log('R66 CONTROL PASS',a,tr);await b.close();
           JS
           node test.mjs
       - name: Live multilingual API independent of country
@@ -90,4 +90,4 @@ jobs:
             git push origin HEAD:main
           fi
           echo R66_PERSISTED
-# rerun corrected build anchor
+# rerun after worldwide USD self-reset fix
