@@ -1,4 +1,4 @@
-name: R76 persist language packs
+name: R76 apply persisted final runtime
 on:
   push:
     branches: [main]
@@ -6,59 +6,97 @@ on:
 permissions:
   contents: write
 jobs:
-  persist:
+  final:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Download R76 source
-        uses: actions/download-artifact@v4
-        with:
-          run-id: 36254130119
-          github-token: ${{ github.token }}
-          name: r76-source
-          path: .
-      - name: Download verified packs
-        uses: actions/download-artifact@v4
-        with:
-          run-id: 36254130119
-          github-token: ${{ github.token }}
-          pattern: r76-pack-*
-          path: i18n-r76
-          merge-multiple: true
-      - name: Build missing packs and assemble final set
+      - name: Validate persisted R76 packs
+        run: |
+          python - <<'PY'
+          import json
+          m=json.load(open('i18n-r32/manifest.json',encoding='utf-8'))
+          assert m['version']=='20260926-r76-complete-global-final'
+          assert m['packs']==98 and m['sourceCount']==1045 and len(m['languages'])==98
+          assert m['sourceHash']=='b371f2422f8b5416'
+          print('R76_PERSISTED_PACKS_PASS',m['packs'],m['sourceCount'],m['sourceHash'])
+          PY
+      - name: Apply final R76 UI AI voice runtime
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --quiet beautifulsoup4 Babel
-          printf '%s\n' fr it nl ro sr kl to fy rm xh tn | xargs -P3 -I{} python tools/r76_incremental_rescue13.py --lang '{}'
+          python tools/r76_apply_release.py
           python - <<'PY'
-          import json, pathlib, shutil
-          src=json.load(open('i18n-r76-source.json',encoding='utf-8'))
-          langs=json.load(open('i18n-r76-languages.json',encoding='utf-8'))
-          out=pathlib.Path('i18n-r32'); shutil.rmtree(out,ignore_errors=True); out.mkdir()
-          providers={}
-          for lang in langs:
-              p=pathlib.Path('i18n-r76')/(lang+'.json')
-              d=json.load(open(p,encoding='utf-8'))
-              assert d['count']==1045==src['count']==len(d['translations'])
-              assert d['sourceHash']==src['sourceHash']=='b371f2422f8b5416'
-              providers[d.get('provider','unknown')]=providers.get(d.get('provider','unknown'),0)+1
-              shutil.copy2(p,out/(lang+'.json'))
-          manifest={'version':'20260926-r76-complete-global-final','sourceHash':src['sourceHash'],'sourceCount':1045,'languages':langs,'packs':98,'providers':providers}
-          (out/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,separators=(',',':')),encoding='utf-8')
-          shutil.copy2('i18n-r76-source.json','i18n-r32-source.json')
-          print('R76_PACKS_COMPLETE',len(langs),src['count'],src['sourceHash'])
+          from pathlib import Path
+          import re
+          p=Path('wrangler.jsonc');s=p.read_text(encoding='utf-8')
+          s=re.sub(r'"run_worker_first"\s*:\s*(?:true|false|\[[^\]]*\])','"run_worker_first": ["/api/*"]',s,count=1)
+          p.write_text(s,encoding='utf-8')
           PY
-      - name: Persist R76 language runtime
+          node --check worker-r76.js
+          node --check i18n-ui.js
+          node --check voice-ai.js
+          grep -F '"main": "./worker-r76.js"' wrangler.jsonc
+          grep -F '"run_worker_first": ["/api/*"]' wrangler.jsonc
+          grep -F "const VERSION='20260926-r76-complete-global-final'" i18n-ui.js
+          grep -F 'serverVoice(targetId,activeButton,true)' voice-ai.js
+          grep -F "language:'auto'" voice-ai.js
+          echo R76_FINAL_RUNTIME_LOCAL_PASS
+      - name: Persist final R76 runtime
         shell: bash
         run: |
           set -euo pipefail
           git config user.name seekvera-global
           git config user.email seekvera.global@gmail.com
-          git add i18n-r32 i18n-r32-source.json
-          git commit -m 'R76 persist complete 98-language packs'
-          git pull --rebase origin main
-          git push origin HEAD:main
+          git add wrangler.jsonc i18n-ui.js voice-ai.js r31-ui-polish.js r24-ai-controller.js superapp.js r60-runtime-guard.js navigation.js sw.js ./*.html
+          if ! git diff --cached --quiet; then
+            git commit -m 'R76 final UI AI voice static-first runtime'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+          echo R76_FINAL_RUNTIME_PERSISTED
+      - name: Deploy final R76
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Verify live static release
+        shell: bash
+        run: |
+          set -euo pipefail
+          UA='Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
+          ok=0
+          for i in $(seq 1 15); do
+            hc="$(curl -L -sS --max-time 15 -A "$UA" -o /tmp/home -w '%{http_code}' "https://seekveraglobal.com/?r76final=$i" || true)"
+            mc="$(curl -L -sS --max-time 15 -A "$UA" -o /tmp/m -w '%{http_code}' "https://seekveraglobal.com/i18n-r32/manifest.json?r76final=$i" || true)"
+            echo "LIVE_STATIC $i home=$hc manifest=$mc"
+            if [ "$hc" = 200 ] && [ "$mc" = 200 ]; then ok=1; break; fi
+            sleep 2
+          done
+          test "$ok" = 1
+          python - <<'PY'
+          import json
+          m=json.load(open('/tmp/m'))
+          assert m['version']=='20260926-r76-complete-global-final'
+          assert m['packs']==98 and m['sourceCount']==1045 and len(m['languages'])==98
+          assert m['sourceHash']=='b371f2422f8b5416'
+          print('R76_LIVE_STATIC_PASS',m['packs'],m['sourceCount'],m['sourceHash'])
+          PY
+          grep -qi SEEKVERA /tmp/home
+          code="$(curl -L -sS --max-time 12 -A "$UA" -o /tmp/h -w '%{http_code}' 'https://seekveraglobal.com/api/health?r76final=1' || true)"
+          echo "R76_API_HEALTH_STATUS=$code"
+          if [ "$code" = 200 ]; then
+            grep -F 'single-structured-multilingual-ai' /tmp/h
+            grep -F 'server-auto-asr-first' /tmp/h
+            grep -F 'complete-static-pack-audit' /tmp/h
+            echo R76_API_HEALTH_PASS
+          elif [ "$code" = 429 ]; then
+            echo R76_API_FREE_DAILY_QUOTA_EXHAUSTED
+          else
+            cat /tmp/h || true
+            exit 1
+          fi
+          echo R76_FINAL_DEPLOY_PASS
