@@ -1,0 +1,120 @@
+name: R60 persistent chat and global voice
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/r60_chat_voice.py'
+      - '.github/workflows/r60-chat-voice-final.yml'
+permissions:
+  contents: write
+jobs:
+  deploy-audit-persist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Build R60 core
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r60_chat_voice.py
+          node --check r60-runtime-guard.js
+          node --check voice-ai.js
+          node --check r31-ui-polish.js
+          node --check worker-r31.js
+          node --check sw.js
+          grep -F "20260926-r60-chat-voice-persist" index.html >/dev/null
+          grep -F "seekvera_ai_chat_v1" r60-runtime-guard.js >/dev/null
+          grep -F "supportedLanguages:Object.keys(LANGS)" voice-ai.js >/dev/null
+          grep -F "seekvera_voice_mode" voice-ai.js >/dev/null
+          if grep -F "self.addEventListener('fetch'" sw.js; then exit 1; fi
+          echo 'R60 BUILD PASS'
+      - name: Deploy R60 production
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Confirm live R60 assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 30); do
+            h="$(curl -LfsS --max-time 15 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/?r60live=$i" || true)"
+            g="$(curl -LfsS --max-time 15 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/r60-runtime-guard.js?r60live=$i" || true)"
+            v="$(curl -LfsS --max-time 15 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/voice-ai.js?r60live=$i" || true)"
+            if [[ "$h" == *'20260926-r60-chat-voice-persist'* && "$g" == *'seekvera_ai_chat_v1'* && "$v" == *'supportedLanguages:Object.keys(LANGS)'* && "$v" == *'seekvera_voice_mode'* ]]; then
+              echo 'R60 LIVE ASSETS PASS'; exit 0
+            fi
+            sleep 2
+          done
+          exit 1
+      - name: Mobile chat persistence and 98-language voice acceptance
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > r60.mjs <<'JS'
+          import {chromium} from 'playwright';
+          import assert from 'node:assert/strict';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage({userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          await p.addInitScript(()=>{
+            window.__spoken=[];window.__tts=0;
+            window.addEventListener('seekvera:tts-start',()=>window.__tts++);
+            try{Object.defineProperty(window.speechSynthesis,'speak',{configurable:true,value:(u)=>{window.__spoken.push({text:u.text,lang:u.lang});setTimeout(()=>u.onstart?.(),15);setTimeout(()=>u.onend?.(),50)}})}catch{}
+          });
+          await p.route('**/api/ai',async route=>{
+            if(route.request().method()==='POST'){
+              const body=route.request().postDataJSON();
+              await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,response:'Persistent assistant reply',language:'English',category:'general',route:'marketplace.html'})});
+            }else await route.continue();
+          });
+          await p.goto('https://seekveraglobal.com/?r60test='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_RELEASE==='20260926-r60-chat-voice-persist'&&window.SEEKVERA_VOICE_AI&&document.querySelector('#aiChatForm'),null,{timeout:30000});
+          const coverage=await p.evaluate(()=>({langs:SEEKVERA_VOICE_AI.supportedLanguages.length,countries:document.querySelector('#country')?.options?.length||0,samples:{ar:SEEKVERA_VOICE_AI.resolveLocale('مرحبا','ar'),hi:SEEKVERA_VOICE_AI.resolveLocale('नमस्ते','hi'),xh:SEEKVERA_VOICE_AI.resolveLocale('molo','xh'),tn:SEEKVERA_VOICE_AI.resolveLocale('dumela','tn'),ja:SEEKVERA_VOICE_AI.resolveLocale('こんにちは','ja')}}));
+          assert.ok(coverage.langs>=98,JSON.stringify(coverage));
+          assert.ok(coverage.countries>=248,JSON.stringify(coverage));
+          for(const x of Object.values(coverage.samples))assert.ok(String(x||'').length>=2,JSON.stringify(coverage));
+          await p.fill('#aiChatInput','What did I just ask you to remember?');
+          await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForFunction(()=>document.querySelector('#aiMessages')?.innerText.includes('Persistent assistant reply'),null,{timeout:5000});
+          const before=await p.evaluate(()=>({stored:localStorage.getItem('seekvera_ai_chat_v1')||'',text:document.querySelector('#aiMessages')?.innerText||''}));
+          assert.ok(before.stored.includes('Persistent assistant reply'),JSON.stringify(before));
+          assert.ok(before.stored.includes('What did I just ask you to remember?'),JSON.stringify(before));
+          await p.reload({waitUntil:'networkidle',timeout:60000});
+          await p.waitForFunction(()=>document.querySelector('#aiMessages')?.innerText.includes('Persistent assistant reply'),null,{timeout:5000});
+          const restored=await p.evaluate(()=>document.querySelector('#aiMessages')?.innerText||'');
+          assert.ok(restored.includes('What did I just ask you to remember?'),restored);
+          await p.evaluate(()=>SEEKVERA_VOICE_AI.markVoiceReply());
+          await p.evaluate(()=>window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text:'Bonjour, réponse vocale.',language:'fr'}})));
+          await p.waitForFunction(()=>window.__spoken.length>=1&&window.__tts>=1,null,{timeout:3000});
+          const firstVoice=await p.evaluate(()=>({spoken:window.__spoken.slice(),mode:localStorage.getItem('seekvera_voice_mode')}));
+          assert.equal(firstVoice.mode,'1');
+          assert.ok(firstVoice.spoken.some(x=>String(x.lang).toLowerCase().startsWith('fr')),JSON.stringify(firstVoice));
+          const spokenCount=firstVoice.spoken.length;
+          await p.reload({waitUntil:'networkidle',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_VOICE_AI,null,{timeout:5000});
+          await p.evaluate(()=>window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text:'नमस्ते, यह आवाज़ का उत्तर है।',language:'hi'}})));
+          await p.waitForFunction(n=>window.__spoken.length>n,spokenCount,{timeout:3000});
+          const after=await p.evaluate(()=>window.__spoken.slice(-1)[0]);
+          assert.ok(String(after.lang).toLowerCase().startsWith('hi'),JSON.stringify(after));
+          console.log('R60 MOBILE FULL PASS',JSON.stringify({coverage,restored:true,firstVoice,after}));
+          await b.close();
+          JS
+          node r60.mjs
+          rm -f r60.mjs
+      - name: Persist R60 source to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add -- '*.html' r60-runtime-guard.js sw.js r31-ui-polish.js voice-ai.js worker-r31.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Persist R60 chat history and global voice runtime'
+            git push origin HEAD:main
+          fi
+          echo 'R60 FINAL RELEASE PERSISTED'
