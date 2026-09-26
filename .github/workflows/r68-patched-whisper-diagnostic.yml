@@ -21,17 +21,17 @@ jobs:
           test -s dist/transformers.web.js
           cp dist/transformers.web.js "$GITHUB_WORKSPACE/patched-transformers.web.js"
           ORT=$(find /tmp/tjs -type d -path '*/node_modules/onnxruntime-web/dist' | head -1)
-          test -n "$ORT"
+          COMMON=$(find /tmp/tjs -type d -path '*/node_modules/onnxruntime-common/dist/esm' | head -1)
+          test -n "$ORT"; test -n "$COMMON"
           cp -r "$ORT" "$GITHUB_WORKSPACE/ort"
+          cp -r "$COMMON" "$GITHUB_WORKSPACE/ort-common"
           ls -lh "$GITHUB_WORKSPACE/patched-transformers.web.js"
-          ls "$GITHUB_WORKSPACE/ort" | head -30
-          grep -oE 'onnxruntime-web(/[a-z]+)?' "$GITHUB_WORKSPACE/patched-transformers.web.js" | sort -u || true
       - name: Test Arabic auto detection
         run: |
           set -euo pipefail
           cat > patched-test.html <<'HTML'
           <!doctype html><meta charset="utf-8">
-          <script type="importmap">{"imports":{"onnxruntime-web":"/ort/ort.min.mjs","onnxruntime-web/wasm":"/ort/ort.wasm.min.mjs","onnxruntime-web/webgpu":"/ort/ort.webgpu.min.mjs"}}</script>
+          <script type="importmap">{"imports":{"onnxruntime-common":"/ort-common/index.js","onnxruntime-web":"/ort/ort.min.mjs","onnxruntime-web/onnxruntime":"/ort/ort.min.mjs","onnxruntime-web/wasm":"/ort/ort.wasm.min.mjs","onnxruntime-web/webgpu":"/ort/ort.webgpu.min.mjs"}}</script>
           <div>test</div>
           HTML
           python3 -m http.server 8765 >/tmp/http.log 2>&1 &
