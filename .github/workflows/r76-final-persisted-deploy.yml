@@ -1,0 +1,109 @@
+name: R76 final persisted deploy and certification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'i18n-r32/**'
+      - 'i18n-r32-source.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy-certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate persisted 98-language runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, pathlib
+          m=json.load(open('i18n-r32/manifest.json',encoding='utf-8'))
+          s=json.load(open('i18n-r32-source.json',encoding='utf-8'))
+          assert m['version']=='20260926-r76-complete-global-final',m
+          assert m['packs']==98 and len(m['languages'])==98,m
+          assert s['count']==1045,s.get('count')
+          assert m['sourceHash']==s['sourceHash']=='b371f2422f8b5416',(m.get('sourceHash'),s.get('sourceHash'))
+          for lang in m['languages']:
+              p=pathlib.Path('i18n-r32')/(lang+'.json')
+              assert p.exists(),lang
+              d=json.load(open(p,encoding='utf-8'))
+              assert d['count']==1045==len(d['translations']),lang
+              assert d['sourceHash']==m['sourceHash'],lang
+          print('R76_PERSISTED_98_PACKS_PASS',m['sourceHash'])
+          PY
+
+      - name: Apply one R76 runtime and cache version
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r76_apply_release.py
+          node --check worker-r76.js
+          node --check worker-r31.js
+          node --check i18n-ui.js
+          node --check voice-ai.js
+          node --check r31-ui-polish.js
+          node --check r24-ai-controller.js
+          grep -F '"run_worker_first": ["/api/*"]' wrangler.jsonc
+          ! grep -F 'r66-final-controller.js' index.html
+          ! grep -F 'r74-ai-failover.js' index.html
+          grep -F '20260926-r76-complete-global-final' index.html
+          echo R76_RUNTIME_PATCH_PASS
+
+      - name: Deploy exact R76 to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Wait for exact live R76 API
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 50); do
+            body="$(curl -LfsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/api/health?r76final=$i" || true)"
+            if echo "$body" | grep -q 'single-structured-multilingual-ai' && echo "$body" | grep -q 'complete-static-pack-audit'; then
+              echo R76_EXACT_LIVE_API_PASS
+              exit 0
+            fi
+            sleep 3
+          done
+          echo R76_EXACT_LIVE_API_FAIL
+          exit 1
+
+      - name: Install browser
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null
+
+      - name: Certify live R76 end to end
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/r76_final_live_certification.mjs
+          echo R76_VERIFIED_FINAL
+
+      - name: Persist certified R76 runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name seekvera-global
+          git config user.email seekvera.global@gmail.com
+          git add wrangler.jsonc i18n-ui.js voice-ai.js r31-ui-polish.js r24-ai-controller.js superapp.js r60-runtime-guard.js navigation.js sw.js ./*.html
+          if ! git diff --cached --quiet; then
+            git commit -m 'R76 persist certified runtime and cache version'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+          echo R76_CERTIFIED_RUNTIME_PERSISTED
