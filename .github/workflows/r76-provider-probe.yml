@@ -8,19 +8,26 @@ permissions:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 8
     steps:
-      - name: Inspect guarded Cloudflare AI bridge
+      - name: Probe MyMemory for sr kl rm
         shell: bash
         run: |
+          set -euo pipefail
           python - <<'PY'
-          import json,urllib.request,urllib.error
-          U='https://seekveraglobal.com/api/__r76_translate_builder'
-          body=json.dumps({'target':'sr','text':'Find jobs and hotels near me'}).encode()
-          req=urllib.request.Request(U,data=body,headers={'content-type':'application/json','user-agent':'SEEKVERA-R76-HYBRID'},method='POST')
-          try:
-              with urllib.request.urlopen(req,timeout=50) as r:
-                  raw=r.read().decode();print('STATUS',r.status,'BODY',raw);d=json.loads(raw);assert d.get('ok')
-          except urllib.error.HTTPError as e:
-              raw=e.read().decode('utf-8','replace');print('STATUS',e.code,'BODY',raw);raise
+          import json,urllib.parse,urllib.request
+          text='Find jobs and hotels near me'
+          bad=[]
+          for lang in ['sr','kl','rm']:
+              u='https://api.mymemory.translated.net/get?'+urllib.parse.urlencode({'q':text,'langpair':'en|'+lang})
+              try:
+                  req=urllib.request.Request(u,headers={'User-Agent':'Mozilla/5.0 SEEKVERA-R76'})
+                  with urllib.request.urlopen(req,timeout=25) as r:d=json.loads(r.read().decode('utf-8','replace'))
+                  t=str((d.get('responseData') or {}).get('translatedText') or '').strip()
+                  print('MYMEMORY',lang,'=>',t,'STATUS',d.get('responseStatus'),flush=True)
+                  if not t or t.lower()==text.lower() or str(d.get('responseStatus')) not in ('200',''):bad.append((lang,t,d.get('responseStatus')))
+              except Exception as e:
+                  print('MYMEMORY_ERROR',lang,repr(e),flush=True);bad.append((lang,repr(e),None))
+          assert not bad,'MyMemory failed '+repr(bad)
+          print('MYMEMORY_ALL_3_PASS')
           PY
