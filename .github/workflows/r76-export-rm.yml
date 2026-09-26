@@ -1,0 +1,17 @@
+name: R76 export Romansh base
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r76-export-rm.yml']
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: r76-rm-base
+          path: i18n-r32/rm.json
+          retention-days: 1
