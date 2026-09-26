@@ -1,0 +1,21 @@
+name: R61 TTS diagnose
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r61-tts-diagnose.yml']
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe English and Arabic audio
+        shell: bash
+        run: |
+          set +e
+          S='https://seekveraglobal.com/api/tts'
+          for lang in en ar; do
+            if [ "$lang" = en ]; then text='Hello from SEEKVERA'; else text='مرحبا بك في سيكفيرا'; fi
+            code=$(curl -L -sS --max-time 30 -D /tmp/h-$lang -o /tmp/b-$lang -w '%{http_code}' -H 'content-type: application/json' --data "{\"text\":\"$text\",\"language\":\"$lang\"}" "$S")
+            echo "LANG=$lang CODE=$code BYTES=$(wc -c </tmp/b-$lang)"
+            cat /tmp/h-$lang
+            if [ "$code" != 200 ]; then cat /tmp/b-$lang; echo; fi
+          done
