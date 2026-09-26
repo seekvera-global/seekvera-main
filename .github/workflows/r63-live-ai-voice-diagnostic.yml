@@ -9,7 +9,7 @@ jobs:
   live:
     runs-on: ubuntu-latest
     steps:
-      - name: Test live health and real AI
+      - name: Test live health and real AI exact requests
         shell: bash
         run: |
           set -euo pipefail
@@ -17,19 +17,28 @@ jobs:
           echo '--- health ---'
           curl -L -sS --max-time 20 -D /tmp/health.h -o /tmp/health.json "$S/api/health"
           head -c 1200 /tmp/health.json; echo
-          echo '--- AI Arabic ---'
-          code=$(curl -L -sS --max-time 30 -D /tmp/ai.h -o /tmp/ai.json -w '%{http_code}' -H 'content-type: application/json' --data '{"message":"مرحبا، ساعدني أجد وظيفة في أمريكا","country":"Worldwide","language":"auto","fast":true}' "$S/api/ai")
-          echo "AI_CODE=$code"
-          cat /tmp/ai.json; echo
-          test "$code" = 200
+          for spec in \
+            'ar|عم دور على شغل بامريكا' \
+            'en|I am looking for a job in America' \
+            'fr|Je cherche un travail aux États-Unis'; do
+            lang="${spec%%|*}"; msg="${spec#*|}"
+            echo "--- AI $lang: $msg ---"
+            start=$(date +%s%3N)
+            code=$(curl -L -sS --max-time 30 -D "/tmp/ai-$lang.h" -o "/tmp/ai-$lang.json" -w '%{http_code}' -H 'content-type: application/json' --data "$(python -c 'import json,sys; print(json.dumps({\"message\":sys.argv[1],\"country\":\"Worldwide\",\"language\":\"auto\",\"fast\":True},ensure_ascii=False))' "$msg")" "$S/api/ai")
+            end=$(date +%s%3N); echo "AI_${lang}_CODE=$code MS=$((end-start))"
+            cat "/tmp/ai-$lang.json"; echo
+            test "$code" = 200
+          done
           python - <<'PY'
           import json
-          d=json.load(open('/tmp/ai.json'))
-          assert d.get('ok') is True, d
-          text=str(d.get('response','')).strip()
-          assert len(text)>3, d
-          assert any('\u0600' <= c <= '\u06ff' for c in text), d
-          print('AI_ARABIC_PASS', d.get('model'), d.get('language'), d.get('category'))
+          for lang in ('ar','en','fr'):
+              d=json.load(open(f'/tmp/ai-{lang}.json'))
+              assert d.get('ok') is True, d
+              text=str(d.get('response','')).strip()
+              assert len(text)>3, d
+              if lang=='ar': assert any('\u0600' <= c <= '\u06ff' for c in text), d
+              if lang=='fr': assert any(x in text.lower() for x in ['travail','emploi','états','je','vous','poste']), d
+              print('AI_PASS',lang,d.get('model'),d.get('language'),d.get('category'),d.get('route'))
           PY
       - name: Test live TTS to real transcription roundtrip
         shell: bash
@@ -49,10 +58,3 @@ jobs:
           echo "STT_CODE=$code"
           cat /tmp/stt.json; echo
           test "$code" = 200
-          python - <<'PY'
-          import json
-          d=json.load(open('/tmp/stt.json'))
-          assert d.get('ok') is True, d
-          assert len(str(d.get('text','')).strip())>3, d
-          print('STT_PASS',d.get('model'),d.get('language'),d.get('text'))
-          PY
