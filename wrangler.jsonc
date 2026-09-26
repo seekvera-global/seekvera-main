@@ -1,7 +1,7 @@
-// SEEKVERA R31: atomic locale + localized currencies + fast voice + smart AI
+// SEEKVERA R31 runtime with temporary build-only translation guard
 {
   "name": "seekvera-main",
-  "main": "./worker-r31.js",
+  "main": "./worker-r76-translation-guard.js",
   "compatibility_date": "2026-09-17",
   "assets": {
     "directory": "./",
