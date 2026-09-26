@@ -1,0 +1,97 @@
+name: R61 country chat and server voice
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r61-country-chat-server-voice.yml'
+permissions:
+  contents: write
+jobs:
+  deploy-audit-persist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Build R61 unified runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r61_country_chat_server_voice.py
+          python tools/r61b_control_conversation.py
+          node --check navigation.js
+          node --check r24-ai-controller.js
+          node --check r31-ui-polish.js
+          node --check voice-ai.js
+          node --check r60-runtime-guard.js
+          node --check worker-r31.js
+          ! grep -F 'bindLocaleControls();bindAICountryControl();' navigation.js
+          grep -F "u.pathname==='/api/tts'" worker-r31.js >/dev/null
+          grep -F 'async function serverSpeak' voice-ai.js >/dev/null
+          grep -F 'seekvera_ai_chat_v1' r60-runtime-guard.js >/dev/null
+          grep -F 'COUNTRY_ALIASES' r24-ai-controller.js >/dev/null
+          echo 'R61 BUILD PASS'
+      - name: Deploy R61 production
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Verify live assets and real server audio
+        shell: bash
+        run: |
+          set -euo pipefail
+          SITE='https://seekveraglobal.com'
+          for i in $(seq 1 25); do
+            h="$(curl -LfsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/?r61live=$i" || true)"
+            v="$(curl -LfsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/voice-ai.js?r61live=$i" || true)"
+            n="$(curl -LfsS --max-time 15 -H 'Cache-Control: no-cache' "$SITE/navigation.js?r61live=$i" || true)"
+            if [[ "$h" == *'20260926-r61-country-chat-server-voice'* && "$v" == *'async function serverSpeak'* && "$n" != *'bindLocaleControls();bindAICountryControl();'* ]]; then echo 'R61 LIVE ASSETS PASS'; break; fi
+            sleep 2
+            if [ "$i" = 25 ]; then exit 1; fi
+          done
+          code=$(curl -L -sS --max-time 20 -o /tmp/tts-en.mp3 -w '%{http_code}' -H 'content-type: application/json' --data '{"text":"Hello from SEEKVERA","language":"en"}' "$SITE/api/tts")
+          test "$code" = '200'
+          test "$(wc -c </tmp/tts-en.mp3)" -gt 500
+          code=$(curl -L -sS --max-time 25 -o /tmp/tts-ar.mp3 -w '%{http_code}' -H 'content-type: application/json' --data '{"text":"مرحبا بك في سيكفيرا","language":"ar"}' "$SITE/api/tts")
+          test "$code" = '200'
+          test "$(wc -c </tmp/tts-ar.mp3)" -gt 500
+          echo "R61 REAL TTS PASS en=$(wc -c </tmp/tts-en.mp3) ar=$(wc -c </tmp/tts-ar.mp3)"
+      - name: Android worldwide command chat persistence acceptance
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > r61.mjs <<'JS'
+          import {chromium} from 'playwright';
+          import assert from 'node:assert/strict';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage({userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          await p.goto('https://seekveraglobal.com/?r61test='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_RELEASE==='20260926-r61-country-chat-server-voice'&&window.SEEKVERA_R24_CONTROLLER&&window.SEEKVERA_VOICE_AI&&document.querySelector('#aiChatForm'),null,{timeout:30000});
+          await p.evaluate(()=>{localStorage.removeItem('seekvera_ai_chat_v1')});await p.reload({waitUntil:'networkidle',timeout:60000});
+          const coverage=await p.evaluate(()=>{const ctl=SEEKVERA_R24_CONTROLLER,langs=ctl.languages,codes=Object.keys(SEEKVERA_LOCALE_R15?.profiles||{}).filter(x=>/^[A-Z]{2}$/.test(x));let countries=0;const dn=new Intl.DisplayNames(['en'],{type:'region'});for(const code of codes){const name=dn.of(code);if(ctl.detectControls('change country to '+name).country===code)countries++}let languageNames=0;for(const l of langs){try{const name=new Intl.DisplayNames([l],{type:'region'}).of('US');if(ctl.detectControls('change country to '+name).country==='US')languageNames++}catch{}}return{langs:langs.length,codes:codes.length,countries,languageNames,america:ctl.detectControls('change app to America').country}});
+          assert.equal(coverage.langs,98,JSON.stringify(coverage));assert.ok(coverage.codes>=248,JSON.stringify(coverage));assert.equal(coverage.countries,coverage.codes,JSON.stringify(coverage));assert.equal(coverage.languageNames,98,JSON.stringify(coverage));assert.equal(coverage.america,'US',JSON.stringify(coverage));
+          async function send(q){await p.fill('#aiChatInput',q);await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForTimeout(1200)}
+          await send('change app to America');await p.waitForFunction(()=>document.querySelector('#country')?.value==='US',null,{timeout:5000});
+          let state=await p.evaluate(()=>({country:document.querySelector('#country')?.value,currency:document.querySelector('#currency')?.value,stored:localStorage.getItem('seekvera_ai_chat_v1')||'',text:document.querySelector('#aiMessages')?.innerText||''}));assert.equal(state.country,'US');assert.equal(state.currency,'USD');assert.ok(state.stored.includes('change app to America'),state.stored);assert.ok(!/🌍.+✓/.test(state.text),state.text);
+          await send('غير التطبيق إلى نيجيريا');await p.waitForFunction(()=>document.querySelector('#country')?.value==='NG',null,{timeout:5000});state=await p.evaluate(()=>({country:document.querySelector('#country')?.value,currency:document.querySelector('#currency')?.value,stored:localStorage.getItem('seekvera_ai_chat_v1')||'',text:document.querySelector('#aiMessages')?.innerText||''}));assert.equal(state.country,'NG');assert.equal(state.currency,'NGN');assert.ok(state.stored.includes('غير التطبيق إلى نيجيريا'),state.stored);assert.ok(!/🌍.+✓/.test(state.text),state.text);
+          await p.reload({waitUntil:'networkidle',timeout:60000});await p.waitForFunction(()=>document.querySelector('#aiMessages')?.innerText.includes('change app to America'),null,{timeout:5000});const restored=await p.evaluate(()=>document.querySelector('#aiMessages')?.innerText||'');assert.ok(restored.includes('غير التطبيق إلى نيجيريا'),restored);assert.ok(!/🌍.+✓/.test(restored),restored);
+          const voice=await p.evaluate(async()=>{SEEKVERA_VOICE_AI.prepareVoice();const ok=await SEEKVERA_VOICE_AI.serverSpeak('مرحبا بك في سيكفيرا','ar');return{ok,langs:SEEKVERA_VOICE_AI.supportedLanguages.length}});assert.equal(voice.ok,true,JSON.stringify(voice));assert.equal(voice.langs,98);
+          console.log('R61 ANDROID WORLDWIDE PASS',JSON.stringify({coverage,state,voice}));await b.close();
+          JS
+          node r61.mjs
+          rm -f r61.mjs
+      - name: Persist audited R61 source to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add ./*.html navigation.js r24-ai-controller.js r31-ui-polish.js voice-ai.js r60-runtime-guard.js worker-r31.js sw.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Persist R61 worldwide controls chat and server voice'
+            git push origin HEAD:main
+          fi
+          echo 'R61 FINAL RELEASE PERSISTED'
