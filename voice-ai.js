@@ -39,7 +39,7 @@ function stopAudioMonitor(){if(audioRaf){cancelAnimationFrame(audioRaf);audioRaf
 function clearSpeechTimers(){if(speechSilenceTimer){clearTimeout(speechSilenceTimer);speechSilenceTimer=null}if(speechHardTimer){clearTimeout(speechHardTimer);speechHardTimer=null}}
 function releaseStream(){if(recordTimer){clearTimeout(recordTimer);recordTimer=null}clearSpeechTimers();stopAudioMonitor();try{mediaStream?.getTracks?.().forEach(x=>x.stop())}catch(_){}mediaStream=null;mediaRecorder=null;recording=false;recordChunks=[];setMic(false)}
 function startAudioMonitor(stream,onSilence){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;audioCtx=new AC();audioSource=audioCtx.createMediaStreamSource(stream);audioAnalyser=audioCtx.createAnalyser();audioAnalyser.fftSize=1024;audioAnalyser.smoothingTimeConstant=.25;audioSource.connect(audioAnalyser);const data=new Float32Array(audioAnalyser.fftSize);recordStartedAt=performance.now();const tick=()=>{if(!audioAnalyser||!recording)return;audioAnalyser.getFloatTimeDomainData(data);let sum=0;for(let i=0;i<data.length;i++)sum+=data[i]*data[i];const rms=Math.sqrt(sum/data.length),now=performance.now();if(rms>VOICE_RMS_THRESHOLD){heardVoice=true;lastVoiceAt=now}if(heardVoice&&lastVoiceAt&&now-lastVoiceAt>=VOICE_SILENCE_MS&&now-recordStartedAt>700){onSilence();return}audioRaf=requestAnimationFrame(tick)};audioRaf=requestAnimationFrame(tick)}catch(_){stopAudioMonitor()}}
-async function serverVoice(targetId,button){
+async function serverVoice(targetId,button,fallbackNative=false){
   activeButton=button||document.getElementById('aiChatMic')||document.querySelector('.sv-global-compose .mic');
   const i=document.getElementById(targetId||'aiChatInput');
   if(recording){try{mediaRecorder?.stop()}catch(_){releaseStream()}return}
@@ -63,7 +63,7 @@ async function serverVoice(targetId,button){
         const signal=(typeof AbortSignal!=='undefined'&&AbortSignal.timeout)?AbortSignal.timeout(5000):undefined;const res=await fetch(apiBase()+'/api/transcribe',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({audio,language:'auto'}),...(signal?{signal}:{})});
         const d=await res.json().catch(()=>({}));if(!res.ok||!d.text)throw Error(d.error||'transcription failed');
         if(i){i.value=String(d.text).trim();i.placeholder='Message SEEKVERA AI…';if(i.value){voiceReplyDeadline=Date.now()+90000;setTimeout(()=>i.form?.requestSubmit?.(),45)}}
-      }catch(e){voiceConversation=false;if(i)i.placeholder='Voice could not be transcribed — please type or try again.'}
+      }catch(e){voiceConversation=false;if(fallbackNative&&SpeechRecognition){if(i)i.placeholder='Switching to phone voice recognition…';setTimeout(()=>start(targetId,button,true),80)}else if(i)i.placeholder='Voice could not be transcribed — please type or try again.'}
     };
     mediaRecorder.start(250);setMic(true);if(i)i.placeholder='Listening… I will send after you finish speaking';
     startAudioMonitor(mediaStream,()=>{if(recording&&mediaRecorder?.state==='recording')mediaRecorder.stop()});
@@ -71,12 +71,14 @@ async function serverVoice(targetId,button){
   }catch(e){voiceConversation=false;releaseStream();if(i)i.placeholder=e?.name==='NotAllowedError'?'Microphone permission was not allowed — please enable it or type your message.':'Microphone is unavailable — please type your message.'}
 }
 
-function start(targetId,button){
+function start(targetId,button,forceNative=false){
   if(recording){try{mediaRecorder?.stop()}catch(_){releaseStream()}return}
   if(recognition){try{recognition.stop()}catch(_){}return}
   stopSpeech();enableVoiceConversation();clearSpeechTimers();
   activeButton=button||document.getElementById('aiChatMic')||document.querySelector('.sv-global-compose .mic');
   const i=document.getElementById(targetId||'aiChatInput');
+  let explicitVoice=false,rememberedVoice=false;try{explicitVoice=localStorage.getItem('seekvera_language_explicit')==='1';rememberedVoice=!!localStorage.getItem('seekvera_chat_voice_lang')}catch{}
+  if(!forceNative&&!explicitVoice&&!rememberedVoice&&navigator.mediaDevices?.getUserMedia&&window.MediaRecorder){serverVoice(targetId,activeButton,true);return}
   if(!SpeechRecognition){serverVoice(targetId,activeButton);return}
   const r=new SpeechRecognition();recognition=r;r.lang=voiceInputLocale();r.interimResults=true;r.continuous=false;r.maxAlternatives=3;
   let final='',hadError=false,heardAny=false;

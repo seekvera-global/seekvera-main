@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-const RELEASE='20260926-r65b-worldwide-chat-language';
+const RELEASE='20260926-r65c-first-voice-auto';
 const WORKER='';
 const SB='https://nrdpyydfrpmqedtzmbyw.supabase.co';
 const SB_KEY='sb_publishable_tqqPQxqdNowIsSlJz4bW5w_kHOC905o';
