@@ -5,7 +5,7 @@ import argparse, collections, http.cookiejar, importlib.util, json, re, time, ur
 VER='20260926-r76-complete-global-final'
 BING_LANGS={'fr','it','nl','ro','to','fy','xh','tn'}
 CF_LANGS={'sr','kl','rm'}
-BUILDER='https://seekvera-r76-builder.seekvera-global.workers.dev/translate'
+BUILDER='https://seekveraglobal.com/api/__r76_translate_builder'
 BAD_FALLBACKS={
     'i understood your request. i’m taking you directly to the best matching section now.',
     "i understood your request. i'm taking you directly to the best matching section now.",
@@ -75,8 +75,6 @@ def validate_new(b,lang,srcs,vals):
         if not v or not b.translation_sane(s,v):bad.append((s,v,'sane'))
         if v.lower() in BAD_FALLBACKS:bad.append((s,v,'generic-fallback'))
     unchanged=[s for s,v in zip(srcs,vals) if real_phrase(s) and b.clean_text(s)==b.clean_text(v)]
-    # Some product names/cognates can stay unchanged, but a rescued pack must not
-    # leave a large block of genuine English UI phrases untouched.
     if len(unchanged)>max(8,int(len(srcs)*.18)):bad.append(('unchanged',unchanged[:8],len(unchanged)))
     freq=collections.Counter(clean(v) for v in vals if clean(v))
     if freq and freq.most_common(1)[0][1]>max(5,int(len(vals)*.10)):bad.append(('duplicate-output',freq.most_common(5),'too-many'))
