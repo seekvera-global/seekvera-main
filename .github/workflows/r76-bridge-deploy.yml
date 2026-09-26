@@ -1,43 +1,64 @@
-name: R76 final static-first deploy
+name: R76 persist language packs
 on:
   push:
     branches: [main]
     paths: ['.github/workflows/r76-bridge-deploy.yml']
-  workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 jobs:
-  deploy:
+  persist:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-      - name: Validate R76 static-first production config
-        run: |
-          set -euo pipefail
-          node --check worker-r76.js
-          grep -F '"main": "./worker-r76.js"' wrangler.jsonc
-          grep -F '"run_worker_first": ["/api/*"]' wrangler.jsonc
-          grep -F 'single-structured-multilingual-ai' worker-r76.js
-          echo R76_STATIC_FIRST_CONFIG_PASS
-      - name: Deploy R76 static-first production
-        uses: cloudflare/wrangler-action@v4
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy
-      - name: Verify static homepage bypasses Worker quota
+          fetch-depth: 0
+      - name: Download R76 source
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 36254130119
+          github-token: ${{ github.token }}
+          name: r76-source
+          path: .
+      - name: Download verified packs
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 36254130119
+          github-token: ${{ github.token }}
+          pattern: r76-pack-*
+          path: i18n-r76
+          merge-multiple: true
+      - name: Build missing packs and assemble final set
         shell: bash
         run: |
           set -euo pipefail
-          for i in $(seq 1 12); do
-            code="$(curl -L -sS --max-time 15 -o /tmp/home -w '%{http_code}' -A 'Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36' "https://seekveraglobal.com/?r76static=$i" || true)"
-            echo "STATIC_PROBE $i status=$code bytes=$(wc -c </tmp/home 2>/dev/null || echo 0)"
-            if [ "$code" = "200" ] && grep -qi 'SEEKVERA' /tmp/home; then
-              echo R76_STATIC_HOMEPAGE_PASS
-              exit 0
-            fi
-            sleep 2
-          done
-          echo R76_STATIC_HOMEPAGE_NOT_READY
-          exit 1
+          python -m pip install --quiet beautifulsoup4 Babel
+          printf '%s\n' fr it nl ro sr kl to fy rm xh tn | xargs -P3 -I{} python tools/r76_incremental_rescue13.py --lang '{}'
+          python - <<'PY'
+          import json, pathlib, shutil
+          src=json.load(open('i18n-r76-source.json',encoding='utf-8'))
+          langs=json.load(open('i18n-r76-languages.json',encoding='utf-8'))
+          out=pathlib.Path('i18n-r32'); shutil.rmtree(out,ignore_errors=True); out.mkdir()
+          providers={}
+          for lang in langs:
+              p=pathlib.Path('i18n-r76')/(lang+'.json')
+              d=json.load(open(p,encoding='utf-8'))
+              assert d['count']==1045==src['count']==len(d['translations'])
+              assert d['sourceHash']==src['sourceHash']=='b371f2422f8b5416'
+              providers[d.get('provider','unknown')]=providers.get(d.get('provider','unknown'),0)+1
+              shutil.copy2(p,out/(lang+'.json'))
+          manifest={'version':'20260926-r76-complete-global-final','sourceHash':src['sourceHash'],'sourceCount':1045,'languages':langs,'packs':98,'providers':providers}
+          (out/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,separators=(',',':')),encoding='utf-8')
+          shutil.copy2('i18n-r76-source.json','i18n-r32-source.json')
+          print('R76_PACKS_COMPLETE',len(langs),src['count'],src['sourceHash'])
+          PY
+      - name: Persist R76 language runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name seekvera-global
+          git config user.email seekvera.global@gmail.com
+          git add i18n-r32 i18n-r32-source.json
+          git commit -m 'R76 persist complete 98-language packs'
+          git pull --rebase origin main
+          git push origin HEAD:main
