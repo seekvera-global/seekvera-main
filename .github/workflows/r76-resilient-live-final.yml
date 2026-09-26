@@ -7,6 +7,7 @@ on:
       - '.github/workflows/r76-resilient-live-final.yml'
       - 'tools/r76_resilience_patch.py'
       - 'tools/r76_static_binding_fix.py'
+      - 'tools/r76_apply_release.py'
       - 'tools/r76_resilient_live_certification.mjs'
   workflow_dispatch:
 
@@ -43,6 +44,9 @@ jobs:
           grep -F 'SEEKVERA_GLOBAL_UI?.localizeControls' i18n-ui.js
           grep -F 'window.SEEKVERA_GLOBAL_UI={localizeControls}' global-ui.js
           grep -F 'rt?.t?.(src,l)' superapp.js
+          grep -F 'global-ui.js?v=20260926-r76-complete-global-final' index.html
+          grep -F 'r22-category-lock.js?v=20260926-r76-complete-global-final' index.html
+          grep -F 'locale-r15.js?v=20260926-r76-complete-global-final' index.html
           grep -F '2026-09-26 · R76' index.html
           ! grep -F 'r74-ai-failover.js' index.html
           ! grep -F 'r66-final-controller.js' index.html
@@ -110,7 +114,7 @@ jobs:
           git config user.email seekvera.global@gmail.com
           git add r24-ai-controller.js r31-ui-polish.js tools/r76_apply_release.py wrangler.jsonc i18n-ui.js global-ui.js r22-category-lock.js voice-ai.js superapp.js r60-runtime-guard.js navigation.js sw.js ./*.html
           if ! git diff --cached --quiet; then
-            git commit -m 'R76 resilient AI fallback and synchronized global language UI'
+            git commit -m 'R76 resilient final with one cache key for every active controller'
             git pull --rebase origin main
             git push origin HEAD:main
           fi
