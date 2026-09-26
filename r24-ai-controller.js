@@ -1,7 +1,7 @@
 /* SEEKVERA R24 — unified AI language/country controller for every app page. */
 (()=>{'use strict';
 if(window.__SEEKVERA_R24_CONTROL)return;window.__SEEKVERA_R24_CONTROL=true;
-const VERSION='20260926-r65c-first-voice-auto';
+const VERSION='20260926-r66-final-ai-command-language';
 const LANGS=['en','ar','fr','zh','es','hi','pt','de','ja','ko','id','tr','ru','ur','bn','vi','it','sw','th','fa','pl','nl','ms','fil','ha','yo','ig','am','he','el','uk','ro','cs','sk','hu','sv','no','da','fi','bg','hr','sr','sl','lt','lv','et','ca','eu','gl','is','sq','mk','ka','hy','az','kk','uz','ky','tg','tk','ne','si','ta','te','ml','mr','gu','pa','km','lo','my','mn','zu','af','be','bs','dz','ti','fo','kl','rw','sm','to','so','ps','dv','mt','mg','ga','cy','mi','fy','lb','rm','ku','xh','st','tn'];
 const RTL=new Set(['ar','fa','ur','he','ps','dv','ku']);
 const COMMAND_RE=/(switch|change|set|select|make|use|language|country|market|locale|app|غير|غيّر|بدل|بدّل|حول|حوّل|حط|خلي|خلّي|اختار|لغة|دولة|بلد|غيّري|بدّلي|حوّلي|change|changer|mets|mettre|bascule|langue|pays|cambia|cambiar|pon|poner|idioma|país|pais|mude|mudar|altere|idioma|país|ändere|wechsel|sprache|land|बदल|भाषा|देश|切换|更改|设置|语言|国家|変更|切り替|言語|国|변경|바꿔|언어|국가|değiştir|dil|ülke|измени|переключ|язык|стран|зміни|мов|بدل|زبان|کشور|ملک|وديني|ودّيني|خذني|خدني|انقلني|نقلني|take me|move me|go to|পরিবর্তন|ভাষা|দেশ)/iu;
