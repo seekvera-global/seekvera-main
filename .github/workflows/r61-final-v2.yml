@@ -1,0 +1,86 @@
+name: R61 final worldwide voice controls chat
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r61-final-v2.yml']
+permissions:
+  contents: write
+jobs:
+  final:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - name: Build final R61
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r61_country_chat_server_voice.py
+          python tools/r61b_control_conversation.py
+          python tools/r61c_audio_fallback.py
+          node --check navigation.js
+          node --check r24-ai-controller.js
+          node --check r31-ui-polish.js
+          node --check voice-ai.js
+          node --check r60-runtime-guard.js
+          node --check worker-r31.js
+          ! grep -F 'bindLocaleControls();bindAICountryControl();' navigation.js
+          grep -F 'multilingual-mp3-fallback' worker-r31.js >/dev/null
+          grep -F 'COUNTRY_ALIASES' r24-ai-controller.js >/dev/null
+      - name: Deploy final R61
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Real MP3 voice acceptance
+        shell: bash
+        run: |
+          set -euo pipefail
+          S='https://seekveraglobal.com'
+          for i in $(seq 1 25); do
+            w="$(curl -LfsS --max-time 12 -H 'Cache-Control: no-cache' "$S/worker-r31.js?r61v2=$i" || true)"
+            if [[ "$w" == *'multilingual-mp3-fallback'* ]]; then break; fi
+            sleep 2
+            [ "$i" != 25 ] || exit 1
+          done
+          for spec in 'en|Hello from SEEKVERA' 'ar|مرحبا بك في سيكفيرا' 'hi|नमस्ते' 'fr|Bonjour' 'xh|Molo SEEKVERA' 'tn|Dumela SEEKVERA'; do
+            lang="${spec%%|*}"; text="${spec#*|}"
+            code=$(curl -L -sS --max-time 30 -D /tmp/h -o /tmp/a -w '%{http_code}' -H 'content-type: application/json' --data "{\"text\":\"$text\",\"language\":\"$lang\"}" "$S/api/tts")
+            bytes=$(wc -c </tmp/a); type=$(grep -i '^content-type:' /tmp/h|tail -1|tr -d '\r' || true); engine=$(grep -i '^x-seekvera-tts:' /tmp/h|tail -1|tr -d '\r' || true)
+            echo "$lang code=$code bytes=$bytes $type $engine"
+            test "$code" = 200; test "$bytes" -gt 500; grep -qi 'audio/' /tmp/h
+          done
+          echo 'R61 REAL MULTILINGUAL AUDIO PASS'
+      - name: Android countries chat and voice acceptance
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > test.mjs <<'JS'
+          import {chromium} from 'playwright';import assert from 'node:assert/strict';
+          const b=await chromium.launch({headless:true});const p=await b.newPage({userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          await p.goto('https://seekveraglobal.com/?r61v2='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_RELEASE==='20260926-r61-country-chat-server-voice'&&window.SEEKVERA_R24_CONTROLLER&&window.SEEKVERA_VOICE_AI&&document.querySelector('#aiChatForm'),null,{timeout:30000});
+          await p.evaluate(()=>localStorage.removeItem('seekvera_ai_chat_v1'));await p.reload({waitUntil:'networkidle',timeout:60000});
+          const cov=await p.evaluate(()=>{const ctl=SEEKVERA_R24_CONTROLLER,langs=ctl.languages,codes=Object.keys(SEEKVERA_LOCALE_R15.profiles).filter(x=>/^[A-Z]{2}$/.test(x));let good=0;const dn=new Intl.DisplayNames(['en'],{type:'region'});for(const c of codes){const n=dn.of(c);if(ctl.detectControls('change country to '+n).country===c)good++}let localized=0;for(const l of langs){try{const n=new Intl.DisplayNames([l],{type:'region'}).of('US');if(ctl.detectControls('change country to '+n).country==='US')localized++}catch{}}return{langs:langs.length,codes:codes.length,good,localized,america:ctl.detectControls('change app to America').country}});
+          assert.equal(cov.langs,98,JSON.stringify(cov));assert.equal(cov.good,cov.codes,JSON.stringify(cov));assert.equal(cov.localized,98,JSON.stringify(cov));assert.equal(cov.america,'US');
+          async function send(q,code){await p.fill('#aiChatInput',q);await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(c=>document.querySelector('#country')?.value===c,code,{timeout:5000});await p.waitForTimeout(1800)}
+          await send('change app to America','US');let st=await p.evaluate(()=>({c:country.value,cur:currency.value,t:aiMessages.innerText,s:localStorage.getItem('seekvera_ai_chat_v1')||''}));assert.equal(st.cur,'USD');assert.ok(st.s.includes('change app to America'));assert.ok(!/🌍.+✓/.test(st.t),st.t);
+          await send('غير التطبيق إلى نيجيريا','NG');st=await p.evaluate(()=>({c:country.value,cur:currency.value,t:aiMessages.innerText,s:localStorage.getItem('seekvera_ai_chat_v1')||''}));assert.equal(st.cur,'NGN');assert.ok(st.s.includes('غير التطبيق إلى نيجيريا'));assert.ok(!/🌍.+✓/.test(st.t),st.t);
+          await p.reload({waitUntil:'networkidle',timeout:60000});await p.waitForFunction(()=>aiMessages.innerText.includes('change app to America')&&aiMessages.innerText.includes('غير التطبيق إلى نيجيريا'),null,{timeout:5000});
+          const audio=await p.evaluate(async()=>{SEEKVERA_VOICE_AI.prepareVoice();return await SEEKVERA_VOICE_AI.serverSpeak('مرحبا بك في سيكفيرا','ar')});assert.equal(audio,true);
+          console.log('R61 ANDROID ACCEPTANCE PASS',JSON.stringify({cov,st,audio}));await b.close();
+          JS
+          node test.mjs
+          rm -f test.mjs
+      - name: Persist audited final R61
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add ./*.html navigation.js r24-ai-controller.js r31-ui-polish.js voice-ai.js r60-runtime-guard.js worker-r31.js sw.js
+          if ! git diff --cached --quiet; then git commit -m 'Persist final R61 worldwide controls chat and resilient voice'; git push origin HEAD:main; fi
+          echo 'R61 FINAL V2 PERSISTED'
