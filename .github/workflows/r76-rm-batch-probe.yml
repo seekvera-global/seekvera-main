@@ -1,0 +1,30 @@
+name: R76 Romansh batch probe
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r76-rm-batch-probe.yml']
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Probe Romansh JSON batch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,urllib.request
+          items=['Find jobs near me','Book a hotel tonight','Change country to Switzerland']
+          payload=json.dumps(items,ensure_ascii=False)
+          body=json.dumps({'target':'rm','text':payload},ensure_ascii=False).encode()
+          req=urllib.request.Request('https://seekveraglobal.com/api/__r76_translate_builder',data=body,headers={'content-type':'application/json','user-agent':'SEEKVERA-R76-HYBRID'},method='POST')
+          with urllib.request.urlopen(req,timeout=55) as r:d=json.loads(r.read().decode())
+          out=str(d.get('translation') or '').strip();print('RAW',out,'MODEL',d.get('model'))
+          if out.startswith('```'):out=out.split('\n',1)[-1].rsplit('```',1)[0].strip()
+          arr=json.loads(out)
+          assert isinstance(arr,list) and len(arr)==len(items),arr
+          assert all(str(x).strip() for x in arr),arr
+          print('R76_RM_BATCH_PASS',arr)
+          PY
