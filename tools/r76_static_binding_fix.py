@@ -31,10 +31,11 @@ else:
     b=s.index('async function apply()',a)
     s=s[:a]+insert+s[b:]
 old="document.documentElement.dataset.seekveraI18nReady=l;document.documentElement.dataset.seekveraI18nVersion=VERSION;applying=false}"
-new="document.documentElement.dataset.seekveraI18nReady=l;document.documentElement.dataset.seekveraI18nVersion=VERSION;sweepStaticPack(l);try{window.SEEKVERA_GLOBAL_UI?.localizeControls?.()}catch{}try{window.SEEKVERA_R22_CATEGORY_LOCK?.lock?.()}catch{}try{window.SEEKVERA_SUPERAPP_I18N?.refreshDynamicBoxes?.()}catch{}sweepStaticPack(l);applying=false}"
+new="document.documentElement.dataset.seekveraI18nReady=l;document.documentElement.dataset.seekveraI18nVersion=VERSION;sweepStaticPack(l);try{window.SEEKVERA_GLOBAL_UI?.localizeControls?.()}catch{}try{window.SEEKVERA_R22_CATEGORY_LOCK?.lock?.()}catch{}try{window.SEEKVERA_SUPERAPP_I18N?.refreshDynamicBoxes?.()}catch{}sweepStaticPack(l);const settle=()=>{if(norm(lang())===l)sweepStaticPack(l)};setTimeout(settle,35);setTimeout(settle,90);setTimeout(settle,135);applying=false}"
 if old in s:s=s.replace(old,new,1)
 else:
     candidates=[
+      "document.documentElement.dataset.seekveraI18nReady=l;document.documentElement.dataset.seekveraI18nVersion=VERSION;sweepStaticPack(l);try{window.SEEKVERA_GLOBAL_UI?.localizeControls?.()}catch{}try{window.SEEKVERA_R22_CATEGORY_LOCK?.lock?.()}catch{}try{window.SEEKVERA_SUPERAPP_I18N?.refreshDynamicBoxes?.()}catch{}sweepStaticPack(l);applying=false}",
       "document.documentElement.dataset.seekveraI18nReady=l;document.documentElement.dataset.seekveraI18nVersion=VERSION;sweepStaticPack(l);try{window.SEEKVERA_GLOBAL_UI?.localizeControls?.()}catch{}try{window.SEEKVERA_R22_CATEGORY_LOCK?.lock?.()}catch{}sweepStaticPack(l);applying=false}",
       "document.documentElement.dataset.seekveraI18nReady=l;document.documentElement.dataset.seekveraI18nVersion=VERSION;sweepStaticPack(l);applying=false}"
     ]
