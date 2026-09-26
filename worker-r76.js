@@ -17,6 +17,48 @@ function countryCode(v){v=String(v||'').trim().toUpperCase();return v==='WW'||/^
 function languageCode(v){v=String(v||'').trim().toLowerCase().split(/[-_ ]/)[0];return LANGS.has(v)?v:''}
 function category(v){v=String(v||'').trim();return CATS.has(v)?v:'general'}
 function historyText(h){if(!Array.isArray(h))return'';return h.slice(-10).map(x=>`${x?.role==='assistant'?'assistant':'user'}: ${clean(x?.content,1000)}`).filter(Boolean).join('\n').slice(-6500)}
+
+const LANGUAGE_NAMES={english:'en',arabic:'ar',french:'fr',chinese:'zh',spanish:'es',hindi:'hi',portuguese:'pt',german:'de',japanese:'ja',korean:'ko',indonesian:'id',turkish:'tr',russian:'ru',urdu:'ur',bengali:'bn',vietnamese:'vi',italian:'it',swahili:'sw',thai:'th',persian:'fa',polish:'pl',dutch:'nl',malay:'ms',filipino:'fil',hausa:'ha',yoruba:'yo',igbo:'ig',amharic:'am',hebrew:'he',greek:'el',ukrainian:'uk',romanian:'ro',czech:'cs',slovak:'sk',hungarian:'hu',swedish:'sv',norwegian:'no',danish:'da',finnish:'fi',bulgarian:'bg',croatian:'hr',serbian:'sr',slovenian:'sl',lithuanian:'lt',latvian:'lv',estonian:'et',catalan:'ca',basque:'eu',galician:'gl',icelandic:'is',albanian:'sq',macedonian:'mk',georgian:'ka',armenian:'hy',azerbaijani:'az',kazakh:'kk',uzbek:'uz',kyrgyz:'ky',tajik:'tg',turkmen:'tk',nepali:'ne',sinhala:'si',tamil:'ta',telugu:'te',malayalam:'ml',marathi:'mr',gujarati:'gu',punjabi:'pa',khmer:'km',lao:'lo',burmese:'my',mongolian:'mn',zulu:'zu',afrikaans:'af',belarusian:'be',bosnian:'bs',dzongkha:'dz',tigrinya:'ti',faroese:'fo',greenlandic:'kl',kalaallisut:'kl',kinyarwanda:'rw',samoan:'sm',tongan:'to',somali:'so',pashto:'ps',divehi:'dv',maltese:'mt',malagasy:'mg',irish:'ga',welsh:'cy',maori:'mi',frisian:'fy',luxembourgish:'lb',romansh:'rm',kurdish:'ku',xhosa:'xh',sotho:'st',tswana:'tn'};
+function normalizedLanguage(v,message=''){
+ const direct=languageCode(v);if(direct)return direct;
+ const n=clean(v,80).toLowerCase();if(LANGUAGE_NAMES[n])return LANGUAGE_NAMES[n];
+ const t=String(message||'');if(/[\u0600-\u06ff]/u.test(t))return'ar';if(/[\u3040-\u30ff]/u.test(t))return'ja';if(/[\u4e00-\u9fff]/u.test(t))return'zh';if(/[\uac00-\ud7af]/u.test(t))return'ko';if(/[\u0900-\u097f]/u.test(t))return'hi';if(/[\u0590-\u05ff]/u.test(t))return'he';return'en';
+}
+function aliasHit(s,a){a=String(a).toLowerCase();if(/^[a-z]{1,3}$/i.test(a))return new RegExp(`(?:^|[^a-z])${a.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}(?:$|[^a-z])`,'i').test(s);return s.includes(a)}
+const COUNTRY_ALIASES={
+ WW:['worldwide','global','all countries','كل الدول','كل العالم','العالم كله','ورلد وايد','وورلد وايد','عالمي'],
+ TR:['turkey','türkiye','turkiye','تركيا'],LB:['lebanon','لبنان'],FR:['france','فرنسا'],NG:['nigeria','نيجيريا'],DE:['germany','deutschland','ألمانيا','المانيا'],US:['united states','usa','america','أمريكا','امريكا'],GB:['united kingdom','britain','england','uk','بريطانيا','إنجلترا','انجلترا'],AE:['united arab emirates','uae','emirates','الإمارات','الامارات'],SA:['saudi arabia','saudi','السعودية'],QA:['qatar','قطر'],CA:['canada','كندا'],AU:['australia','أستراليا','استراليا'],EG:['egypt','مصر'],SY:['syria','سوريا'],JO:['jordan','الأردن','الاردن'],KE:['kenya','كينيا'],IN:['india','الهند'],CN:['china','الصين'],JP:['japan','اليابان'],RU:['russia','روسيا'],BR:['brazil','البرازيل'],ES:['spain','إسبانيا','اسبانيا'],IT:['italy','إيطاليا','ايطاليا'],NL:['netherlands','holland','هولندا'],CH:['switzerland','سويسرا'],SE:['sweden','السويد'],NO:['norway','النرويج'],DK:['denmark','الدنمارك'],FI:['finland','فنلندا'],ZA:['south africa','جنوب أفريقيا','جنوب افريقيا'],GH:['ghana','غانا'],MA:['morocco','المغرب'],DZ:['algeria','الجزائر'],TN:['tunisia','تونس']
+};
+const LANGUAGE_ALIASES={
+ tr:['turkish','türkçe','turkce','تركي','التركية'],ar:['arabic','عربي','العربية'],en:['english','انجليزي','إنجليزي','انكليزي','إنكليزي'],fr:['french','français','francais','فرنسي','الفرنسية'],de:['german','deutsch','ألماني','الماني','الألمانية'],es:['spanish','español','espanol','إسباني','اسباني'],zh:['chinese','中文','صيني','الصينية'],ja:['japanese','日本語','ياباني','اليابانية'],hi:['hindi','हिन्दी','हिंदी','هندي'],ru:['russian','русский','روسي','الروسية'],pt:['portuguese','português','برتغالي'],it:['italian','italiano','إيطالي','ايطالي'],nl:['dutch','nederlands','هولندي'],ko:['korean','한국어','كوري'],id:['indonesian','bahasa indonesia','إندونيسي','اندونيسي'],ur:['urdu','اردو','أردو']
+};
+function controlVerb(s){return /(?:\b(?:change|switch|set|select)\b.{0,28}\b(?:app|application|country|market|region|language)\b|\b(?:change|switch|set)\b.{0,24}\bto\b|حط(?:ني|لي)?|غي(?:ر|ّر)|حو(?:ل|ّل)|بد(?:ل|ّل)|انقل(?:ني)?|غيرلي|غير لي|حوّلني|حولني|cambia.{0,25}(?:app|pa[ií]s|idioma)|changez.{0,25}(?:application|pays|langue)|wechsel.{0,25}(?:app|land|sprache)|(?:uygulama|ülke|dil).{0,25}değiş|(?:приложение|стран|язык).{0,25}(?:смен|измен)|(?:应用|国家|语言).{0,12}(?:切换|更改|改))/iu.test(s)}
+function languageIntent(s){return /language|لغة|langue|sprache|idioma|lingua|(?:^|\W)dil(?:i)?(?:\W|$)|язык|语言|語言|言語|भाषा/iu.test(s)}
+function findAliasCode(s,map){let hits=[];for(const[code,aliases]of Object.entries(map))for(const a of aliases)if(aliasHit(s,a))hits.push([a.length,code]);hits.sort((a,b)=>b[0]-a[0]);return hits[0]?.[1]||''}
+function explicitLanguageAction(message){const s=String(message||'').toLowerCase();if(!controlVerb(s))return'';const code=findAliasCode(s,LANGUAGE_ALIASES);if(!code)return'';if(languageIntent(s))return code;if(/[\u0600-\u06ff]/u.test(s)&&/(حط(?:لي|ني)?|غي(?:ر|ّر)|حو(?:ل|ّل)|بد(?:ل|ّل))/u.test(s)&&!findAliasCode(s,COUNTRY_ALIASES))return code;return''}
+function explicitCountryAction(message){const s=String(message||'').toLowerCase();if(!controlVerb(s))return'';return findAliasCode(s,COUNTRY_ALIASES)}
+function actionReply(lang,cc,ll){
+ const kind=ll?'language':'country';
+ const r={
+  ar:{country:'تمام، فهمت. سأغيّر التطبيق الآن إلى الدولة التي طلبتها.',language:'تمام، فهمت. سأغيّر لغة التطبيق الآن.'},
+  en:{country:'Got it. I’ll switch the app to the country you requested now.',language:'Got it. I’ll change the app language now.'},
+  tr:{country:'Tamam. Uygulamayı istediğiniz ülkeye şimdi geçiriyorum.',language:'Tamam. Uygulama dilini şimdi değiştiriyorum.'},
+  fr:{country:'Compris. Je passe maintenant l’application au pays demandé.',language:'Compris. Je change maintenant la langue de l’application.'},
+  de:{country:'Verstanden. Ich stelle die App jetzt auf das gewünschte Land um.',language:'Verstanden. Ich ändere jetzt die Sprache der App.'},
+  es:{country:'Entendido. Ahora cambio la app al país que pediste.',language:'Entendido. Ahora cambio el idioma de la app.'},
+  ru:{country:'Понял. Сейчас переключу приложение на выбранную страну.',language:'Понял. Сейчас изменю язык приложения.'},
+  zh:{country:'明白了。我现在把应用切换到你指定的国家。',language:'明白了。我现在更改应用语言。'},
+  hi:{country:'समझ गया। अब ऐप को आपके चुने हुए देश पर बदल रहा हूँ।',language:'समझ गया। अब ऐप की भाषा बदल रहा हूँ।'}
+ };
+ return(r[lang]||r.en)[kind];
+}
+async function degradedFallback(request,env,ctx,body,message){
+ const fallback=await baseWorker.fetch(request,env,ctx);let d=null;try{d=await fallback.clone().json()}catch{}
+ if(!d||typeof d!=='object'){const h=new Headers(fallback.headers);h.set('x-seekvera-release',RELEASE);return new Response(fallback.body,{status:fallback.status,statusText:fallback.statusText,headers:h})}
+ const language=normalizedLanguage(d.language,message),cat=category(d.category),localLL=explicitLanguageAction(message),localCC=explicitCountryAction(message),baseLL=languageCode(d?.languageAction?.code),baseCC=countryCode(d?.countryAction?.code),ll=localLL||baseLL,cc=localCC||baseCC;
+ return json(request,{...d,ok:d.ok!==false,response:(cc||ll)?actionReply(language,cc,ll):clean(d.response,5000),language,category:cat,route:ROUTES[cat]||ROUTES.general,countryAction:cc?{type:'set-country',code:cc}:null,languageAction:ll?{type:'set-language',code:ll}:null,model:(cc||ll)?'seekvera-r76-local-action-fallback':d.model,fastPath:(cc||ll)?'r76-deterministic-action-fallback':(d.fastPath||'r76-base-fallback'),liveData:!!d.liveData},fallback.status||200)
+}
+
 async function runStructured(env,body){
  const message=clean(body?.message??body?.prompt,2400);if(!message)return null;
  const selected=clean(body?.country,120)||'Worldwide',history=historyText(body?.history);
@@ -30,14 +72,14 @@ export default{async fetch(request,env,ctx){
  const u=new URL(request.url);
  if(request.method==='OPTIONS')return new Response(null,{status:204,headers:headers(request)});
  if(u.pathname==='/api/health'){
-   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,r76:true,r76Runtime:'single-structured-multilingual-ai',r76Voice:'server-auto-asr-first',r76Locale:'complete-static-pack-audit'});
+   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,r76:true,r76Runtime:'single-structured-multilingual-ai',r76Voice:'server-auto-asr-first',r76Locale:'complete-static-pack-audit',r76Fallback:'deterministic-actions-over-base-fallback'});
  }
  if(u.pathname==='/api/ai'&&request.method==='POST'){
    let body={};try{body=await request.clone().json()}catch{return json(request,{ok:false,error:'Invalid JSON'},400)}
    const message=clean(body?.message??body?.prompt,2400);if(!message)return json(request,{ok:false,error:'Message is required'},400);
    const reason=blocked(message);if(reason)return json(request,{ok:true,blocked:true,reviewRequired:true,response:'SEEKVERA cannot help buy, sell, source or promote prohibited or illegal items or services.',reason,category:'general',route:ROUTES.general,countryAction:null,languageAction:null,model:'seekvera-r76-safety'},200);
    if(env.AI){const d=await runStructured(env,body);if(d)return json(request,d,200)}
-   const fallback=await baseWorker.fetch(request,env,ctx);const h=new Headers(fallback.headers);h.set('x-seekvera-release',RELEASE);return new Response(fallback.body,{status:fallback.status,statusText:fallback.statusText,headers:h});
+   return degradedFallback(request,env,ctx,body,message);
  }
  return baseWorker.fetch(request,env,ctx);
 }};
