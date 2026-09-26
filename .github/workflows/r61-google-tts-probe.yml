@@ -1,0 +1,22 @@
+name: R61 multilingual audio fallback probe
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r61-google-tts-probe.yml']
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe multilingual MP3 endpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          for spec in 'en|Hello from SEEKVERA' 'ar|مرحبا بك في سيكفيرا' 'hi|नमस्ते' 'fr|Bonjour' 'xh|Molo' 'tn|Dumela'; do
+            lang="${spec%%|*}"; text="${spec#*|}"
+            url="https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=$lang&q=$(python3 -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$text")"
+            code=$(curl -L -sS --max-time 20 -A 'Mozilla/5.0' -D /tmp/h -o /tmp/a -w '%{http_code}' "$url")
+            type=$(grep -i '^content-type:' /tmp/h | tail -1 | tr -d '\r' || true)
+            bytes=$(wc -c </tmp/a)
+            echo "$lang code=$code bytes=$bytes $type"
+            test "$code" = 200; test "$bytes" -gt 500
+          done
