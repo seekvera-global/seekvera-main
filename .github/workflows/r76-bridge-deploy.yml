@@ -15,6 +15,7 @@ jobs:
         run: |
           node --check worker-r76-translation-guard.js
           grep -F 'worker-r76-translation-guard.js' wrangler.jsonc
+          grep -F '/api/__r76_google_translate' worker-r76-translation-guard.js
       - name: Deploy bridge
         uses: cloudflare/wrangler-action@v4
         with:
