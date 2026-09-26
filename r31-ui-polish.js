@@ -17,7 +17,7 @@ const INTENT_STOP=new Set(['and','the','with','for','from','this','that','your',
 function normIntentText(v){return String(v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[ًٌٍَُِّْـ]/g,'').replace(/[^\p{L}\p{N}]+/gu,' ').trim()}
 function translatedIntent(q){const nq=normIntentText(q);if(!nq)return'general';const data=window.SEEKVERA_R14_CATEGORIES?.data||{};let best='general',bestScore=0;for(const arr of Object.values(data)){if(!Array.isArray(arr))continue;for(let i=0;i<Math.min(arr.length,DEPT_KEYS.length);i++){const key=DEPT_KEYS[i];if(!key||key==='general')continue;const title=normIntentText(arr[i]);if(!title)continue;const exactScore=title.length+100;if(nq.includes(title)&&exactScore>bestScore){best=key;bestScore=exactScore;continue}const toks=title.split(/\s+/).map(x=>x.replace(/^و/u,'')).filter(x=>x.length>=4&&!INTENT_STOP.has(x));for(const tok of toks){if(nq.includes(tok)&&tok.length>bestScore){best=key;bestScore=tok.length}}}}return best}
 function intent(q){const t=String(q||'').toLowerCase();const tests=[
-['jobs',/job|jobs|career|vacancy|work|employment|hiring|وظيفة|وظائف|وظايف|عمل|شغل|فرصة عمل|دوام/u],
+['jobs',/job|jobs|career|vacancy|work|employment|hiring|travail|emploi|emplois|trabajo|empleo|trabalho|emprego|lavoro|arbeit|stellen|stelle|iş|is ilanı|iş ilanı|работ|ваканси|工作|职位|仕事|求人|직업|채용|وظيفة|وظائف|وظايف|عمل|شغل|فرصة عمل|دوام/u],
 ['solar',/solar|inverter|photovoltaic|pv panel|solar panel|renewable energy|طاقة شمسية|الطاقة الشمسية|شمسي|شمسية|انفرتر|إنفرتر|الواح شمسية|ألواح شمسية/u],
 ['education',/education|school|university|course|training|college|تعليم|مدرسة|جامعة|دورة|تدريب/u],
 ['money',/insurance|bank|loan|finance|money|تأمين|بنك|قرض|تمويل/u],
