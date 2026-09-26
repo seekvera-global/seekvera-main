@@ -20,9 +20,10 @@ jobs:
           node scripts/build.mjs
           test -s dist/transformers.js
           cp dist/transformers.js "$GITHUB_WORKSPACE/patched-transformers.js"
-          cp ort-wasm-simd-threaded.jsep.mjs "$GITHUB_WORKSPACE/" 2>/dev/null || true
-          find /tmp/tjs -name 'ort-wasm-simd-threaded.jsep.wasm' -exec cp {} "$GITHUB_WORKSPACE/" \; -quit
-          ls -lh "$GITHUB_WORKSPACE/patched-transformers.js"
+          ORT=$(find /tmp/tjs -type d -path '*/node_modules/onnxruntime-web/dist' | head -1)
+          test -n "$ORT"
+          cp "$ORT"/ort-wasm* "$GITHUB_WORKSPACE/"
+          ls -lh "$GITHUB_WORKSPACE/patched-transformers.js" "$GITHUB_WORKSPACE"/ort-wasm* | head -20
       - name: Test Arabic auto detection
         run: |
           set -euo pipefail
