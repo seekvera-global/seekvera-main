@@ -1,0 +1,25 @@
+name: R61 localized country gap
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r61-country-language-gap.yml']
+jobs:
+  gap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find failing language
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > gap.mjs <<'JS'
+          import {chromium} from 'playwright';
+          const b=await chromium.launch({headless:true});const p=await b.newPage();
+          await p.goto('https://seekveraglobal.com/?r61gap='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_R24_CONTROLLER&&window.SEEKVERA_LOCALE_R15,null,{timeout:30000});
+          const x=await p.evaluate(()=>{const ctl=SEEKVERA_R24_CONTROLLER,bad=[];for(const l of ctl.languages){try{const name=new Intl.DisplayNames([l],{type:'region'}).of('US');const got=ctl.detectControls('change country to '+name).country;if(got!=='US')bad.push({l,name,got})}catch(e){bad.push({l,error:String(e)})}}return bad});
+          console.log('R61 LOCALIZED COUNTRY GAPS',JSON.stringify(x));await b.close();
+          JS
+          node gap.mjs
+          rm gap.mjs
