@@ -1,0 +1,83 @@
+name: R63C final end-to-end AI voice
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r63c-final.yml']
+permissions:
+  contents: write
+jobs:
+  final:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - name: Build R63C
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r63_unified_live_ai_voice.py
+          python tools/r63b_precision_fix.py
+          python tools/r63c_multilingual_intent_fix.py
+          node --check superapp.js
+          node --check voice-ai.js
+          node --check r24-ai-controller.js
+          node --check r31-ui-polish.js
+          node --check worker.js
+          node --check worker-r31.js
+          grep -F 'travail|emploi|emplois' worker-r31.js >/dev/null
+          grep -F 'travail|emploi|emplois' r31-ui-polish.js >/dev/null
+          grep -F "if(!mentionsLang&&!mentionsCountry){if(!country)country=findName(text,buildCountryNames());if(!country&&!language)language=findName(text,buildLanguageNames())}" r24-ai-controller.js >/dev/null
+      - name: Deploy R63C
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Real production API audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import urllib.request,urllib.error,json,time,base64
+          S='https://seekveraglobal.com'; H={'User-Agent':'Mozilla/5.0 SEEKVERA-R63C/1.0'}
+          def call(path,obj=None,timeout=35):
+              data=None if obj is None else json.dumps(obj,ensure_ascii=False).encode()
+              r=urllib.request.Request(S+path,data=data,headers={**H,**({'content-type':'application/json'} if data else {})},method='POST' if data else 'GET')
+              try:
+                  with urllib.request.urlopen(r,timeout=timeout) as x:return x.status,x.headers,x.read()
+              except urllib.error.HTTPError as e:return e.code,e.headers,e.read()
+          cases=[('ar','عم دور على شغل بامريكا','Arabic'),('en','I am looking for a job in America','English'),('fr','Je cherche un travail aux États-Unis','French')]
+          for code,msg,lang in cases:
+              t=time.time();st,h,b=call('/api/ai',{'message':msg,'country':'Worldwide','language':'auto','fast':True});ms=round((time.time()-t)*1000);d=json.loads(b.decode());print('AI',code,st,ms,d);assert st==200 and d.get('ok') is True;assert d.get('language')==lang,(code,d);assert d.get('category')=='jobs',(code,d);assert str(d.get('response','')).strip()
+          st,h,audio=call('/api/tts',{'text':'مرحبا أريد البحث عن عمل في أمريكا','language':'ar'});print('TTS',st,h.get('content-type'),len(audio));assert st==200 and len(audio)>500
+          st,h,b=call('/api/transcribe',{'audio':'data:audio/mpeg;base64,'+base64.b64encode(audio).decode(),'language':'auto'},60);txt=b.decode();print('ASR',st,txt);assert st in (200,503)
+          if st==503:
+              d=json.loads(txt);assert d.get('reason')=='daily_free_ai_limit',d
+          PY
+      - name: Browser app-control, reset, real chat and voice asset audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > test.mjs <<'JS'
+          import{chromium}from'playwright';import assert from'node:assert/strict';
+          const b=await chromium.launch({headless:true});const p=await b.newPage({userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          await p.goto('https://seekveraglobal.com/?r63c='+Date.now(),{waitUntil:'networkidle',timeout:60000});await p.waitForFunction(()=>window.SEEKVERA_R24_CONTROLLER&&window.SEEKVERA_VOICE_AI&&document.querySelector('#aiChatForm'),null,{timeout:30000});
+          const x=await p.evaluate(()=>{const c=SEEKVERA_R24_CONTROLLER;return{turkey:c.detectControls('حطني تركيا'),take:c.detectControls('وديني تركيا'),turkish:c.detectControls('حطلي تركي'),france:c.detectControls('change app to France')}});assert.equal(x.turkey.country,'TR',JSON.stringify(x));assert.equal(x.take.country,'TR',JSON.stringify(x));assert.equal(x.turkish.language,'tr',JSON.stringify(x));assert.equal(x.france.country,'FR',JSON.stringify(x));
+          await p.evaluate(()=>{localStorage.removeItem('seekvera_country_explicit');localStorage.removeItem('seekvera_worldwide_default_20260926_r63');localStorage.setItem('seekvera_country','NG')});await p.reload({waitUntil:'networkidle',timeout:60000});await p.waitForFunction(()=>document.querySelector('#country')?.value==='WW',null,{timeout:10000});
+          await p.fill('#aiChatInput','حطني تركيا');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(()=>document.querySelector('#country')?.value==='TR',null,{timeout:5000});const state=await p.evaluate(()=>({c:country.value,cur:currency.value,exp:localStorage.getItem('seekvera_country_explicit'),chat:aiMessages.innerText}));assert.equal(state.cur,'TRY');assert.equal(state.exp,'1');assert.ok(/تم تغيير الدولة/.test(state.chat),state.chat);
+          await p.fill('#aiChatInput','شو فيك تساعدني اليوم؟');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(()=>{const t=document.querySelector('#aiMessages')?.innerText||'';return /[\u0600-\u06ff]/u.test(t)&&!t.includes('تعذّر الاتصال للحظة')},null,{timeout:12000});
+          const v=await(await p.request.get('https://seekveraglobal.com/voice-ai.js?r63c='+Date.now())).text();assert.ok(v.includes('if(!SpeechRecognition){serverVoice(targetId,activeButton);return}'));assert.ok(v.includes('function voiceInputLocale()'));assert.ok(!v.includes('Android|iPhone|iPad|iPod/i.test(navigator.userAgent)&&navigator.mediaDevices?.getUserMedia&&window.MediaRecorder'));
+          console.log('R63C_BROWSER_PASS',JSON.stringify({x,state}));await b.close();
+          JS
+          node test.mjs
+      - name: Persist R63C
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add ./*.html superapp.js voice-ai.js r24-ai-controller.js r31-ui-polish.js worker.js worker-r31.js r60-runtime-guard.js sw.js
+          if ! git diff --cached --quiet; then git commit -m 'Persist R63C unified AI voice fixes';git push origin HEAD:main;fi
+          echo R63C_PERSISTED
