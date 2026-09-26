@@ -1,0 +1,103 @@
+name: R75 finalize live global release
+on:
+  push:
+    branches: [fix/r75-global-country-section-sync]
+    paths: ['.github/workflows/r75-finalize.yml']
+permissions:
+  contents: write
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+
+      - name: Prepare R75 release assets
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          VER='20260926-r75-global-country-section-sync'
+          assets=['i18n-ui.js','r31-ui-polish.js','r66-final-controller.js','r60-runtime-guard.js']
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google'): continue
+              s=p.read_text(encoding='utf-8')
+              for a in assets:s=re.sub(re.escape(a)+r'(?:\?v=[^"\'<> ]*)?',a+'?v='+VER,s)
+              s=re.sub(r'sw\.js\?v=[^"\'<> )]+','sw.js?v='+VER,s)
+              if 'data-release=' in s:s=re.sub(r'data-release="[^"]+"',f'data-release="{VER}"',s,count=1)
+              p.write_text(s,encoding='utf-8')
+          for name in ('r60-runtime-guard.js','sw.js'):
+              p=Path(name);s=p.read_text(encoding='utf-8');s=re.sub(r"(const RELEASE=)'[^']+';",r"\1'"+VER+"';",s,count=1);p.write_text(s,encoding='utf-8')
+          PY
+          node --check i18n-ui.js
+          node --check r31-ui-polish.js
+          node --check r66-final-controller.js
+          node --check r60-runtime-guard.js
+          node --check sw.js
+          test "$(find i18n-r32 -maxdepth 1 -name '*.json' ! -name manifest.json | awk 'END{print NR}')" = 98
+          grep -F '20260926-r75-global-country-section-sync' index.html >/dev/null
+
+      - name: Deploy R75
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Wait for live R75
+        run: |
+          set -euo pipefail
+          S=https://seekveraglobal.com
+          for i in $(seq 1 45); do
+            H="$(curl -LfsS --max-time 15 -H 'Cache-Control: no-cache' "$S/?r75final=$i" || true)"
+            I="$(curl -LfsS --max-time 15 -H 'Cache-Control: no-cache' "$S/i18n-ui.js?r75final=$i" || true)"
+            R="$(curl -LfsS --max-time 15 -H 'Cache-Control: no-cache' "$S/r31-ui-polish.js?r75final=$i" || true)"
+            C="$(curl -LfsS --max-time 15 -H 'Cache-Control: no-cache' "$S/r66-final-controller.js?r75final=$i" || true)"
+            if [[ "$H$I$R$C" == *'20260926-r75-global-country-section-sync'* ]]; then echo R75_FINAL_ASSETS_LIVE; exit 0; fi
+            sleep 2
+          done
+          exit 1
+
+      - name: Final live mobile audit
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > r75-final-live.mjs <<'JS'
+          import {chromium} from 'playwright';import assert from 'node:assert/strict';
+          const B='https://seekveraglobal.com';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage({locale:'en-US',viewport:{width:390,height:844},userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          await p.goto(B+'/?r75final='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_R66_FINAL?.version?.includes('r75')&&window.SEEKVERA_R31?.version?.includes('r75')&&window.SEEKVERA_I18N_R32?.version?.includes('r75'),null,{timeout:30000});
+          const countries=await p.evaluate(()=>Object.entries(SEEKVERA_LOCALE_R15.profiles).filter(([c])=>/^[A-Z]{2}$/.test(c)).map(([c,v])=>[c,v.language,v.currency]));
+          const bad=[];for(const [cc,l,cur] of countries){const g=await p.evaluate(cc=>{SEEKVERA_LOCALE_R15.setCountry(cc);return{c:country.value,l:lang.value,cur:currency.value}},cc);if(g.c!==cc||g.l!==l||g.cur!==cur)bad.push([cc,l,cur,g])}assert.deepEqual(bad,[]);assert.ok(countries.length>=190);
+          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('IQ'));await p.evaluate(async()=>{await SEEKVERA_I18N_R32.loadPack('ar');await SEEKVERA_I18N_R32.apply()});
+          const ar=await p.evaluate(()=>[...requestType.options].slice(0,5).map(x=>x.textContent.trim()));assert.deepEqual(ar,['السفر','الخاصية','التسوق','الوظائف','الأعمال']);
+          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('DE'));await p.evaluate(async()=>{await SEEKVERA_I18N_R32.loadPack('de');await SEEKVERA_I18N_R32.apply()});
+          const de=await p.evaluate(()=>[...requestType.options].slice(0,5).map(x=>x.textContent.trim()));assert.ok(!de.some(x=>/[\u0600-\u06ff]/.test(x)));assert.equal(de[4],'Geschäft');
+          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('NG'));
+          await p.fill('#aiChatInput','حوّليني على ورلد وايد');const t=Date.now();await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForFunction(()=>[...document.querySelectorAll('#aiMessages .ai-msg.bot')].some(x=>/حوّل|العالمي|Worldwide|🌐/.test(x.textContent)),null,{timeout:1500});const replyFirst=Date.now()-t;const early=await p.evaluate(()=>country.value);assert.equal(early,'NG');await p.waitForFunction(()=>country.value==='WW',null,{timeout:3000});
+          await p.evaluate(()=>{SEEKVERA_LOCALE_R15.setCountry('LB');localStorage.removeItem('seekvera_ai_chat_v1')});
+          await p.fill('#aiChatInput','بدي وظيفة بالمبيعات');const t2=Date.now();await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(()=>{const x=[...document.querySelectorAll('#aiMessages .ai-msg.bot')].at(-1);return x&&!x.classList.contains('thinking')&&x.textContent.trim().length>1},null,{timeout:12000});const aiMs=Date.now()-t2;const before=p.url();await p.waitForTimeout(250);assert.equal(p.url(),before);await p.waitForURL(/\/jobs(?:\.html)?(?:[?#]|$)/,{timeout:6000});await p.waitForTimeout(600);const chat=await p.evaluate(()=>aiMessages.innerText);assert.ok(chat.includes('بدي وظيفة بالمبيعات'));
+          const routes=['marketplace','travel','travel?q=flights','travel?q=hotels','tourism','property','cars-auto','jobs','shopping','restaurants-food','local-services','marketplace?q=equipment','marketplace?q=boats','import-export','shipping-logistics','business-software','software','web-hosting','solar','education','health','money-insurance','entertainment','media','games','connectivity','wifi','deal-agent','everyday','scan','seller-plans'];
+          for(const r of routes){const q=await b.newPage();const res=await q.goto(B+'/'+r,{waitUntil:'domcontentloaded',timeout:30000});assert.ok(res&&res.status()<400,r);await q.close()}
+          console.log('R75 FINAL LIVE PASS',{countries:countries.length,routes:routes.length,replyFirst,aiMs,ar,de,url:p.url()});await b.close();
+          JS
+          node r75-final-live.mjs
+          rm -f r75-final-live.mjs
+
+      - name: Persist R75 branch
+        run: |
+          set -euo pipefail
+          git config user.name seekvera-global
+          git config user.email seekvera.global@gmail.com
+          git add ./*.html i18n-ui.js r31-ui-polish.js r66-final-controller.js r60-runtime-guard.js sw.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Persist R75 global country and section release'
+            git pull --rebase origin fix/r75-global-country-section-sync
+            git push origin HEAD:fix/r75-global-country-section-sync
+          fi
+          echo R75_FINAL_PERSISTED
