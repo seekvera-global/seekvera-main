@@ -6,6 +6,11 @@ spec=importlib.util.spec_from_file_location('r76_rescue8',Path('tools/r76_increm
 m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 old_validate=m.validate_new
 
+# Bing's anonymous translator endpoint can revoke sessions with HTTP 401.
+# Use the already verified Google multi-host fallback for all former Bing languages.
+m.BING_LANGS=set()
+m.GOOGLE_LANGS={'fr','it','nl','ro','to','fy','xh','tn','kl'}
+
 def google_repair(lang,text):
     last=None
     for host,client,path in [('translate.google.com','at','/translate_a/single'),('clients5.google.com','dict-chrome-ex','/translate_a/t'),('translate.googleapis.com','gtx','/translate_a/single')]:
