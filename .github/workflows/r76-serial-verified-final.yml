@@ -1,0 +1,153 @@
+name: R76 serial verified final release
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r76-serial-verified-final.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  SOURCE_RUN: '36254130119'
+  VER: '20260926-r76-complete-global-final'
+
+jobs:
+  final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+
+      - name: Download exact R76 source
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ env.SOURCE_RUN }}
+          github-token: ${{ github.token }}
+          name: r76-source
+          path: .
+
+      - name: Download 87 already verified packs
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ env.SOURCE_RUN }}
+          github-token: ${{ github.token }}
+          pattern: r76-pack-*
+          path: i18n-r76
+          merge-multiple: true
+
+      - name: Rescue 11 missing packs serially with verified providers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet beautifulsoup4 Babel
+          python - <<'PY'
+          import json,pathlib
+          langs=json.load(open('i18n-r76-languages.json',encoding='utf-8'))
+          have={p.stem for p in pathlib.Path('i18n-r76').glob('*.json')}
+          missing=[x for x in langs if x not in have]
+          expected=['fr','it','nl','ro','sr','kl','to','fy','rm','xh','tn']
+          print('R76_START_PACKS',len(have),'missing',missing)
+          assert len(langs)==98 and len(have)==87,(len(langs),len(have),missing)
+          assert set(missing)==set(expected),(missing,expected)
+          PY
+          for lang in rm kl sr fr it nl ro to fy xh tn; do
+            echo "R76_FINAL_RESCUE $lang"
+            python tools/r76_incremental_rescue6.py --lang "$lang"
+          done
+          python - <<'PY'
+          import json,pathlib
+          langs=json.load(open('i18n-r76-languages.json',encoding='utf-8'));src=json.load(open('i18n-r76-source.json',encoding='utf-8'))
+          files=list(pathlib.Path('i18n-r76').glob('*.json'))
+          assert len(files)==98,(len(files),[x for x in langs if not (pathlib.Path('i18n-r76')/(x+'.json')).exists()])
+          for lang in langs:
+              d=json.load(open(pathlib.Path('i18n-r76')/(lang+'.json'),encoding='utf-8'))
+              assert d['count']==src['count']==1045==len(d['translations']),(lang,d.get('count'),src['count'],len(d.get('translations',{})))
+              assert d['sourceHash']==src['sourceHash'],lang
+          print('R76_98_PACKS_COMPLETE',len(files),src['count'],src['sourceHash'])
+          PY
+
+      - name: Assemble audited 98-language static runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,shutil,pathlib,re
+          src=json.load(open('i18n-r76-source.json',encoding='utf-8'));langs=json.load(open('i18n-r76-languages.json',encoding='utf-8'))
+          out=pathlib.Path('i18n-r32');shutil.rmtree(out,ignore_errors=True);out.mkdir()
+          candidates=[s for s in src['strings'] if len(s)>=12 and len(re.findall(r"[A-Za-z][A-Za-z'’+-]{2,}",s))>=2 and 'SEEKVERA' not in s and not re.search(r'https?://|@',s)]
+          bad=[];providers={}
+          for lang in langs:
+              p=pathlib.Path('i18n-r76')/(lang+'.json');d=json.load(open(p,encoding='utf-8'))
+              assert d['count']==src['count']==1045==len(d['translations']);assert d['sourceHash']==src['sourceHash']
+              providers[d.get('provider','unknown')]=providers.get(d.get('provider','unknown'),0)+1
+              if lang!='en':
+                  same=[s for s in candidates if str(d['translations'].get(s,'')).strip()==s.strip()]
+                  if len(same)>max(50,int(len(candidates)*.28)):bad.append((lang,len(same),same[:6]))
+              shutil.copy2(p,out/(lang+'.json'))
+          assert not bad,'excess unchanged multi-word English '+repr(bad[:10])
+          manifest={'version':'20260926-r76-complete-global-final','sourceHash':src['sourceHash'],'sourceCount':1045,'languages':langs,'packs':98,'providers':providers}
+          (out/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,separators=(',',':')),encoding='utf-8')
+          shutil.copy2('i18n-r76-source.json','i18n-r32-source.json')
+          print('R76_MANIFEST_READY',json.dumps(manifest,ensure_ascii=False))
+          PY
+
+      - name: Assemble one AI voice locale runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r76_apply_release.py
+          node --check worker-r76.js
+          node --check worker-r31.js
+          node --check i18n-ui.js
+          node --check voice-ai.js
+          node --check r31-ui-polish.js
+          node --check r24-ai-controller.js
+          grep -F 'worker-r76.js' wrangler.jsonc
+          grep -F 'serverVoice(targetId,activeButton,true)' voice-ai.js
+          grep -F "language:'auto'" voice-ai.js
+          ! grep -F 'r66-final-controller.js' index.html
+          ! grep -F 'r74-ai-failover.js' index.html
+          echo R76_RUNTIME_PASS
+
+      - name: Deploy exact R76 to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Wait for exact R76 live health markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 60); do
+            body="$(curl -LfsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/api/health?r76serial=$i" || true)"
+            if echo "$body" | grep -q 'single-structured-multilingual-ai' && echo "$body" | grep -q 'server-auto-asr-first' && echo "$body" | grep -q 'complete-static-pack-audit'; then echo "$body"; exit 0; fi
+            sleep 3
+          done
+          exit 1
+
+      - name: Deep live country language section AI voice chat audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          node tools/r76_live_audit.mjs
+
+      - name: Persist verified R76 only after every live audit passes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name seekvera-global
+          git config user.email seekvera.global@gmail.com
+          git add worker-r76.js wrangler.jsonc i18n-r32 i18n-r32-source.json i18n-ui.js voice-ai.js r31-ui-polish.js r24-ai-controller.js superapp.js r60-runtime-guard.js navigation.js sw.js ./*.html tools/r76_apply_release.py tools/r76_incremental_rescue6.py tools/r76_live_audit.mjs
+          if ! git diff --cached --quiet; then
+            git commit -m 'R76 verified complete multilingual AI voice release'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+          echo R76_VERIFIED_FINAL
