@@ -8,26 +8,28 @@ permissions:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 8
     steps:
-      - name: Inspect TranslateAPI anonymous translator page
+      - name: Probe GLM Mistral bridge for kl rm sr
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
-          import re,urllib.request
-          for url in ['https://translateapi.ai/translate/romansh/','https://translateapi.ai/']:
-              req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140 Safari/537.36'})
-              html=urllib.request.urlopen(req,timeout=25).read().decode('utf-8','replace')
-              print('PAGE',url,'LEN',len(html))
-              for pat in [r'https?://[^"\'<> ]+',r'/api/[^"\'<> ]+',r'<script[^>]+src=["\']([^"\']+)']:
-                  vals=[]
-                  for m in re.finditer(pat,html,re.I):
-                      v=m.group(1) if m.lastindex else m.group(0)
-                      if v not in vals: vals.append(v)
-                  print('MATCHES',pat,vals[:100])
-              for line in html.splitlines():
-                  low=line.lower()
-                  if 'translate' in low and ('fetch(' in low or 'axios' in low or '/api/' in low or 'endpoint' in low):
-                      print('INLINE',line[:1500])
+          import json,urllib.request,urllib.error
+          U='https://seekveraglobal.com/api/__r76_translate_builder'
+          src='Find jobs and hotels near me'
+          bad=[]
+          for lang in ['kl','rm','sr']:
+              body=json.dumps({'target':lang,'text':src}).encode()
+              req=urllib.request.Request(U,data=body,headers={'content-type':'application/json','user-agent':'SEEKVERA-R76-HYBRID'},method='POST')
+              try:
+                  with urllib.request.urlopen(req,timeout=45) as r:d=json.loads(r.read().decode('utf-8','replace'))
+                  t=str(d.get('translation') or '').strip();print('AI_BRIDGE',lang,'=>',t,'MODEL',d.get('model'),flush=True)
+                  if not d.get('ok') or not t or t.lower()==src.lower():bad.append((lang,d))
+              except urllib.error.HTTPError as e:
+                  raw=e.read().decode('utf-8','replace');print('AI_BRIDGE_HTTP',lang,e.code,raw,flush=True);bad.append((lang,raw))
+              except Exception as e:
+                  print('AI_BRIDGE_ERROR',lang,repr(e),flush=True);bad.append((lang,repr(e)))
+          assert not bad,'bridge failed '+repr(bad)
+          print('R76_RARE_AI_BRIDGE_PASS')
           PY
