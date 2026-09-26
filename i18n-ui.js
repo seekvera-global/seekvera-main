@@ -1,11 +1,11 @@
-/* SEEKVERA R32 universal locale runtime: one country -> one language/currency -> every visible UI string. */
+/* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20260925-r35-global-final';
+const VERSION='20260926-r75-global-country-section-sync';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
-const RTL=new Set(['ar','fa','ur','he','ps','dv']);
+const RTL=new Set(['ar','fa','ur','he','ps','dv','ku']);
 const ATTRS=['placeholder','aria-label','title'];
-const SKIP='script,style,noscript,code,pre,svg,select,option,textarea,[data-no-translate],[data-user-content],.ai-msg.user';
+const SKIP='script,style,noscript,code,pre,svg,textarea,[data-no-translate],[data-user-content],.ai-msg';
 const INITIAL_AI='I’m the SEEKVERA AI assistant. Tell me what you need and I’ll help you find the right section, compare options or search worldwide.';
 const QUICK={ar:{
 'GLOBAL AI MARKETPLACE':'سوق عالمي بالذكاء الاصطناعي','Country / Region':'الدولة / المنطقة','Language':'اللغة','Currency':'العملة','Install':'تثبيت','Post Ad':'أضف إعلاناً',
@@ -19,7 +19,7 @@ function norm(v){v=String(v||'').trim().toLowerCase().replace('_','-');if(!v||v=
 function lang(){return norm(document.querySelector('#lang')?.value||window.SEEKVERA_LOCALE_STATE?.language||document.documentElement.lang||'en')}
 function langName(l){try{return new Intl.DisplayNames(['en'],{type:'language'}).of(l)||l}catch{return l}}
 function worth(s){s=String(s||'').trim();if(!s||s.length<2||s.length>1200)return false;if(/^SEEKVERA$/i.test(s))return false;if(/^(https?:\/\/|www\.)/i.test(s)||/\b\S+@\S+\.\S+\b/.test(s))return false;if(/^[A-Z0-9]{2,5}$/.test(s))return false;if(/^[\d\s.,:+\-/%$€£₦¥₹]+$/.test(s))return false;return /[A-Za-z\u00C0-\u024F\u0400-\u052F\u0600-\u06FF\u0900-\u097F\u3040-\u30FF\u3400-\u9FFF]/.test(s)}
-function skipped(n){const p=n?.parentElement;return !p||!!p.closest(SKIP)}
+function skipped(n){const p=n?.parentElement;if(!p||p.closest(SKIP))return true;const s=p.closest?.('select');return !!s&&['country','lang','currency'].includes(s.id)}
 function capture(root=document){
  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode())){if(skipped(n))continue;const s=n.nodeValue?.trim();if(worth(s)&&!SRC.has(n))SRC.set(n,s)}
  const els=root===document?[...document.querySelectorAll('[placeholder],[aria-label],[title]')]:[...(root.querySelectorAll?.('[placeholder],[aria-label],[title]')||[])];
@@ -28,14 +28,12 @@ function capture(root=document){
 function k(l,s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return'sv_r32_'+l+'_'+(h>>>0).toString(36)}
 function get(l,s){const q=QUICK[l]?.[s];if(q)return q;const m=MEM.get(l+'\u0000'+s);if(m)return m;try{return localStorage.getItem(k(l,s))||''}catch{return''}}
 function put(l,s,v){v=String(v||'').trim();if(!v||v===s)return;MEM.set(l+'\u0000'+s,v);try{localStorage.setItem(k(l,s),v)}catch{}}
-/* r32-static-v5: atomic local packs + render/source separation */
 async function loadPack(l){
  l=norm(l);if(l==='en')return true;if(PACKS.has(l))return true;if(PACKING.has(l))return PACKING.get(l);
  const task=(async()=>{try{const r=await fetch('/i18n-r32/'+encodeURIComponent(l)+'.json?v=20260925-r32-static-v5',{cache:'force-cache'});if(!r.ok)throw Error('pack '+r.status);const d=await r.json();const t=d?.translations;if(!t||typeof t!=='object')throw Error('invalid pack');for(const [src,v] of Object.entries(t)){const val=String(v||'').trim();if(val&&val!==src)MEM.set(l+'\u0000'+src,val)}PACKS.set(l,d);document.documentElement.dataset.seekveraPackReady=l;return true}catch(e){console.warn('SEEKVERA local language pack unavailable',l,e);return false}finally{PACKING.delete(l)}})();
  PACKING.set(l,task);return task
 }
 function markAttr(el,a,v){let m=RENDERED_ATTR.get(el);if(!m){m={};RENDERED_ATTR.set(el,m)}m[a]=String(v||'').trim()}
-
 function valid(v,src){v=String(v||'').trim();return !!v&&v!==src&&!/^undefined|null$/i.test(v)&&!/^\[object Object\]$/i.test(v)}
 async function cloudTranslate(l,batch){for(let attempt=0;attempt<3;attempt++)try{const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),12000);const r=await fetch(api('/api/ui-translate'),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language:langName(l),strings:batch}),signal:ctl.signal,cache:'no-store'});clearTimeout(to);const d=await r.json().catch(()=>null);if(r.ok&&Array.isArray(d?.translations)&&d.translations.length===batch.length){const vals=d.translations.map((v,i)=>valid(v,batch[i])?String(v).trim():'');if(vals.some(Boolean))return vals}}catch{};return null}
 async function publicTranslate(l,batch){try{const prompt=['Translate these user-interface strings from English into '+langName(l)+'.','Keep SEEKVERA, URLs, numbers and currency codes unchanged.','Return ONLY a JSON array with exactly '+batch.length+' strings in the same order.',JSON.stringify(batch)].join('\n');const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),15000);const r=await fetch('https://text.pollinations.ai/'+encodeURIComponent(prompt)+'?model=openai&private=true',{headers:{accept:'text/plain'},signal:ctl.signal,cache:'no-store'});clearTimeout(to);if(!r.ok)return null;let raw=String(await r.text()).trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'');const a=raw.indexOf('['),b=raw.lastIndexOf(']');if(a>=0&&b>a)raw=raw.slice(a,b+1);const vals=JSON.parse(raw);if(!Array.isArray(vals)||vals.length!==batch.length)return null;return vals.map((v,i)=>valid(v,batch[i])?String(v).trim():'')}catch{return null}}
@@ -47,7 +45,7 @@ async function apply(){const my=++seq,l=lang();if(l!=='en'){await loadPack(l);if
  for(const [n,src] of entriesText()){if(!n.isConnected)continue;texts.push([n,src]);if(l!=='en'&&!get(l,src))need.push(src);setText(n,src,l)}
  for(const [el,m] of entriesAttr()){if(!el.isConnected)continue;for(const [a,src] of Object.entries(m)){attrs.push([el,a,src]);if(l!=='en'&&!get(l,src))need.push(src);setAttr(el,a,src,l)}}
  const ai=document.querySelector('#aiMessages .ai-msg.bot:first-child');if(ai&&ai.textContent?.trim()===INITIAL_AI){if(l==='en')ai.textContent=INITIAL_AI;else{const q=get(l,INITIAL_AI);ai.textContent=q||'…';if(!q)need.push(INITIAL_AI)}}
- applying=false;if(l!=='en'&&need.length)await translate(l,need);if(my!==seq)return;applying=true;for(const [n,src] of texts)if(n.isConnected)setText(n,src,l);for(const [el,a,src] of attrs)if(el.isConnected)setAttr(el,a,src,l);const ai2=document.querySelector('#aiMessages .ai-msg.bot:first-child');if(ai2&&(!ai2.closest('.user'))){const q=l==='en'?INITIAL_AI:get(l,INITIAL_AI);if(q&&(/SEEKVERA AI assistant/.test(ai2.textContent||'')||(ai2.textContent||'').trim()==='…'))ai2.textContent=q}document.documentElement.dataset.seekveraI18nReady=l;document.documentElement.dataset.seekveraI18nVersion=VERSION;applying=false}
+ applying=false;if(l!=='en'&&need.length)await translate(l,need);if(my!==seq)return;applying=true;for(const [n,src] of texts)if(n.isConnected)setText(n,src,l);for(const [el,a,src] of attrs)if(el.isConnected)setAttr(el,a,src,l);const ai2=document.querySelector('#aiMessages .ai-msg.bot:first-child');if(ai2){const q=l==='en'?INITIAL_AI:get(l,INITIAL_AI);if(q&&(/SEEKVERA AI assistant/.test(ai2.textContent||'')||(ai2.textContent||'').trim()==='…'))ai2.textContent=q}document.documentElement.dataset.seekveraI18nReady=l;document.documentElement.dataset.seekveraI18nVersion=VERSION;applying=false}
 function entriesText(){const out=[];const w=document.createTreeWalker(document,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode())){const s=SRC.get(n);if(s)out.push([n,s])}return out}
 function entriesAttr(){const out=[];for(const el of document.querySelectorAll('[placeholder],[aria-label],[title]')){const m=ATTRSRC.get(el);if(m)out.push([el,m])}return out}
 function schedule(ms=80){clearTimeout(timer);timer=setTimeout(()=>apply().catch(()=>{}),ms)}
