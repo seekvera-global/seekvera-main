@@ -1,0 +1,96 @@
+name: R58B global assistant core
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r58b-global-assistant.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r58b-global-assistant
+  cancel-in-progress: true
+
+jobs:
+  deploy-audit-persist:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply R58 core safely
+        run: |
+          set -euo pipefail
+          sed -i "s/s=pat.sub(replacement,s,count=1)/s=pat.sub(lambda _m: replacement,s,count=1)/" tools/r58_assistant_core.py
+          python tools/r58_assistant_core.py
+          node --check r31-ui-polish.js
+          node --check voice-ai.js
+          node --check worker-r31.js
+          node --check sw.js
+          grep -F "solar:'solar.html'" r31-ui-polish.js >/dev/null
+          grep -F 'translatedIntent' r31-ui-polish.js >/dev/null
+          grep -F "(guessed&&guessed!=='general')?guessed" r31-ui-polish.js >/dev/null
+          grep -F 'seekvera:tts-start' voice-ai.js >/dev/null
+          grep -F '20260926-r58-global-assistant' worker-r31.js >/dev/null
+          echo 'R58 BUILD PASS'
+
+      - name: Deploy R58 production
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Confirm R58 live assets
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 30); do
+            h="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/?r58b=$i" || true)"
+            r="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/r31-ui-polish.js?r58b=$i" || true)"
+            v="$(curl -LfsS --max-time 15 "https://seekveraglobal.com/voice-ai.js?r58b=$i" || true)"
+            if [[ "$r" == *"translatedIntent"* && "$r" == *"solar:'solar.html'"* && "$v" == *"seekvera:tts-start"* && "$h" == *"20260926-r58-global-assistant"* ]]; then
+              echo 'R58 LIVE ASSETS PASS'
+              exit 0
+            fi
+            sleep 2
+          done
+          exit 1
+
+      - name: Global browser acceptance
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > r58.mjs <<'JS'
+          import {chromium} from 'playwright';
+          import assert from 'node:assert/strict';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage({userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          await p.addInitScript(()=>{window.__r58Spoken=0;window.__r58TTSStart=0;window.addEventListener('seekvera:tts-start',()=>window.__r58TTSStart++)});
+          await p.route('**/api/ai',async route=>{if(route.request().method()==='POST')await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,response:'Generic fallback response',language:'Arabic',category:'general',route:'marketplace.html',model:'test-general-fallback'})});else await route.continue()});
+          await p.goto('https://seekveraglobal.com/?r58btest='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_R31?.intent&&window.SEEKVERA_VOICE_AI&&window.SEEKVERA_R14_CATEGORIES?.data&&document.querySelector('#aiChatForm'),null,{timeout:30000});
+          const coverage=await p.evaluate(()=>{const data=SEEKVERA_R14_CATEGORIES.data||{},langs=Object.keys(data).filter(k=>Array.isArray(data[k])&&data[k].length>=31);let solar=0,jobs=0,fail=[];for(const l of langs){const a=data[l],si=SEEKVERA_R31.intent(a[18]),ji=SEEKVERA_R31.intent(a[7]);if(si==='solar')solar++;else fail.push([l,'solar',a[18],si]);if(ji==='jobs')jobs++;else fail.push([l,'jobs',a[7],ji])}return{langs:langs.length,solar,jobs,fail:fail.slice(0,8),ar:SEEKVERA_R31.intent('في ارخص طاقه شمسيه بلبنان'),en:SEEKVERA_R31.intent('cheapest solar energy in Lebanon')}});
+          assert.ok(coverage.langs>=98,JSON.stringify(coverage));assert.equal(coverage.solar,coverage.langs,JSON.stringify(coverage));assert.equal(coverage.jobs,coverage.langs,JSON.stringify(coverage));assert.equal(coverage.ar,'solar');assert.equal(coverage.en,'solar');
+          await p.fill('#aiChatInput','في ارخص طاقه شمسيه بلبنان');const t=Date.now();await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForURL(/\/solar(?:\.html)?\?/,{timeout:6000});const navMs=Date.now()-t,u=new URL(p.url());assert.ok(['/solar','/solar.html'].includes(u.pathname),p.url());assert.ok((u.searchParams.get('q')||'').includes('طاقه شمسيه'),p.url());assert.ok(navMs<4500,'slow '+navMs);
+          await p.goto('https://seekveraglobal.com/?r58bvoice='+Date.now(),{waitUntil:'networkidle',timeout:60000});await p.waitForFunction(()=>window.SEEKVERA_VOICE_AI,null,{timeout:30000});await p.evaluate(()=>{try{speechSynthesis.speak=(u)=>{window.__r58Spoken++;setTimeout(()=>u.onstart?.(),10);setTimeout(()=>u.onend?.(),35)}}catch{}SEEKVERA_VOICE_AI.markVoiceReply();window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text:'This is a spoken SEEKVERA reply.',language:'en'}}))});await p.waitForFunction(()=>window.__r58Spoken>=1&&window.__r58TTSStart>=1,null,{timeout:3000});const voice=await p.evaluate(()=>({spoken:window.__r58Spoken,tts:window.__r58TTSStart}));assert.ok(voice.spoken>=1&&voice.tts>=1,JSON.stringify(voice));console.log('R58 GLOBAL ACCEPTANCE PASS',JSON.stringify({coverage,navMs,voice}));await b.close();
+          JS
+          node r58.mjs
+          rm -f r58.mjs
+
+      - name: Persist R58 source to main
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add -- r31-ui-polish.js voice-ai.js worker-r31.js sw.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Persist R58 global assistant routing and voice reliability'
+            git push origin HEAD:main
+          fi
+          echo 'R58 FINAL RELEASE PERSISTED'
