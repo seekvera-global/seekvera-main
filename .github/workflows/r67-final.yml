@@ -1,0 +1,97 @@
+name: R67 multilingual voice AI
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r67-final.yml']
+permissions:
+  contents: write
+jobs:
+  final:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - name: Build R67
+        run: |
+          set -euo pipefail
+          python tools/r67_multilingual_voice_ai.py
+          node --check voice-ai.js
+          node --check worker-r31.js
+          node --check r66-final-controller.js
+          grep -F "async function multilingualTranscribe(blob)" voice-ai.js >/dev/null
+          grep -F "puter.ai.speech2txt(blob,{provider:'xai'})" voice-ai.js >/dev/null
+          grep -F "await sleep(1400)" worker-r31.js >/dev/null
+          grep -F "AbortSignal.timeout(3500)" worker-r31.js >/dev/null
+      - name: Deploy R67
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Wait for R67 live
+        run: |
+          set -euo pipefail
+          S=https://seekveraglobal.com
+          for i in $(seq 1 35); do
+            H="$(curl -LfsS --max-time 15 "$S/?r67=$i" || true)"
+            V="$(curl -LfsS --max-time 15 "$S/voice-ai.js?r67=$i" || true)"
+            W="$(curl -LfsS --max-time 15 "$S/worker-r31.js?r67=$i" || true)"
+            if [[ "$H" == *"20260926-r67-multilingual-voice-ai"* && "$V" == *"multilingualTranscribe"* && "$V" == *"puter.ai.speech2txt"* && "$W" == *"await sleep(1400)"* ]]; then echo R67_LIVE; exit 0; fi
+            sleep 2
+          done
+          exit 1
+      - name: Live multilingual text AI
+        run: |
+          python3 - <<'PY'
+          import urllib.request,json
+          S='https://seekveraglobal.com';H={'content-type':'application/json','User-Agent':'Mozilla/5.0 R67'}
+          cases=[('ar','NG','كيف فيك تساعدني اليوم؟'),('fr','NG','Bonjour, comment pouvez-vous m’aider aujourd’hui ?'),('zh','US','你好，你今天可以怎么帮助我？'),('hi','FR','नमस्ते, आज आप मेरी कैसे मदद कर सकते हैं?')]
+          for code,country,msg in cases:
+            q=urllib.request.Request(S+'/api/ai',data=json.dumps({'message':msg,'country':country,'language':'auto','browserLanguage':'en-US','fast':True},ensure_ascii=False).encode(),headers=H,method='POST')
+            with urllib.request.urlopen(q,timeout=35) as r:d=json.loads(r.read())
+            x=d.get('response','');print(code,d.get('model'),x[:180]);assert d.get('ok') and x
+            if code=='ar':assert any('\u0600'<=c<='\u06ff' for c in x)
+            if code=='zh':assert any('\u4e00'<=c<='\u9fff' for c in x)
+            if code=='hi':assert any('\u0900'<=c<='\u097f' for c in x)
+            if code=='fr':assert any(w in x.lower() for w in ('vous','aide','besoin','pouvez','peux','bonjour'))
+          print('R67 MULTILINGUAL TEXT PASS')
+          PY
+      - name: Live automatic Arabic speech transcription
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > voice-r67.mjs <<'JS'
+          import {chromium} from 'playwright';import assert from 'node:assert/strict';
+          const b=await chromium.launch({headless:true});const p=await b.newPage({locale:'en-US',userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          await p.goto('https://seekveraglobal.com/?r67voice='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+          const out=await p.evaluate(async()=>{
+            const t=await fetch('/api/tts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text:'مرحبا أريد أن أبحث عن عمل في أمريكا',language:'ar'})});
+            if(!t.ok)return{tts:t.status};const blob=await t.blob();
+            const data=await new Promise((res,rej)=>{const f=new FileReader();f.onload=()=>res(String(f.result));f.onerror=()=>rej(f.error);f.readAsDataURL(blob)});
+            let server=null;try{const r=await fetch('/api/transcribe',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({audio:data,language:'auto'})});server={status:r.status,...await r.json().catch(()=>({}))}}catch(e){server={error:String(e)}}
+            let puter=null;try{
+              if(!window.puter?.ai?.speech2txt){await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://js.puter.com/v2/';s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
+              const r=await Promise.race([window.puter.ai.speech2txt(blob,{provider:'xai'}),new Promise((_,rej)=>setTimeout(()=>rej(Error('timeout')),12000))]);puter={text:typeof r==='string'?r:r?.text||'',language:r?.language||''}
+            }catch(e){puter={error:String(e)}}
+            return{server,puter,size:blob.size};
+          });
+          console.log('R67 VOICE',JSON.stringify(out));
+          const ar=s=>[...String(s||'')].some(c=>c>='\u0600'&&c<='\u06ff');
+          assert.ok(out.size>500,'Arabic TTS audio missing');
+          assert.ok(ar(out.server?.text)||ar(out.puter?.text),'Neither automatic ASR engine transcribed Arabic');
+          await b.close();console.log('R67 ARABIC VOICE PASS');
+          JS
+          node voice-r67.mjs
+      - name: Persist R67
+        run: |
+          set -euo pipefail
+          git config user.name seekvera-global
+          git config user.email seekvera.global@gmail.com
+          git add ./*.html voice-ai.js worker-r31.js r24-ai-controller.js r31-ui-polish.js superapp.js r60-runtime-guard.js navigation.js r66-final-controller.js sw.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Persist R67 automatic multilingual voice AI'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+          echo R67_PERSISTED
