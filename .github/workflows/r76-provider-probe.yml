@@ -10,23 +10,30 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - name: Probe LibreTranslate mirrors
+      - name: Probe Bing translator web session
         shell: bash
         run: |
-          set -u
-          for base in \
-            https://libretranslate.de \
-            https://translate.mentality.rip \
-            https://translate.argosopentech.com \
-            https://translate.api.skitzen.com \
-            https://trans.zillyhuhn.com \
-            https://translate.terraprint.co \
-            https://lt.psf.lt \
-            https://translate.flossboxin.org.in \
-            https://lt.blitzw.in
-          do
-            echo "=== $base ==="
-            code=$(curl -L -sS --max-time 12 -o /tmp/out -w '%{http_code}' -H 'content-type: application/json' \
-              --data '{"q":"Hello world","source":"en","target":"fr","format":"text"}' "$base/translate" || true)
-            echo "HTTP=$code BODY=$(head -c 500 /tmp/out 2>/dev/null || true)"
-          done
+          set -euo pipefail
+          python - <<'PY'
+          import http.cookiejar,json,re,urllib.parse,urllib.request
+          cj=http.cookiejar.CookieJar()
+          op=urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+          headers={'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140 Safari/537.36','Accept-Language':'en-US,en;q=0.9'}
+          req=urllib.request.Request('https://www.bing.com/translator',headers=headers)
+          html=op.open(req,timeout=20).read().decode('utf-8','replace')
+          print('PAGE',len(html),html[:120].replace('\n',' '))
+          igm=re.search(r'IG:"([^"]+)"',html) or re.search(r'"IG":"([^"]+)"',html)
+          ab=re.search(r'params_AbusePreventionHelper\s*=\s*\[(\d+),"([^"]+)",(\d+)\]',html)
+          print('IG',igm.group(1) if igm else None,'AB',ab.groups() if ab else None)
+          if not igm or not ab:
+              open('/tmp/bing.html','w').write(html)
+              raise SystemExit('bing session markers missing')
+          key,token,_=ab.groups();ig=igm.group(1)
+          data=urllib.parse.urlencode({'fromLang':'en','to':'fr','text':'Hello world','token':token,'key':key,'tryFetchingGenderDebiasedTranslations':'true'}).encode()
+          url=f'https://www.bing.com/ttranslatev3?isVertical=1&&IG={urllib.parse.quote(ig)}&IID=translator.5024.1'
+          req=urllib.request.Request(url,data=data,headers={**headers,'Content-Type':'application/x-www-form-urlencoded','Referer':'https://www.bing.com/translator'},method='POST')
+          raw=op.open(req,timeout=20).read().decode('utf-8','replace')
+          print('RESPONSE',raw[:1000])
+          d=json.loads(raw);text=d[0]['translations'][0]['text'];assert text and text.lower()!='hello world'
+          print('BING_TRANSLATION_PASS',text)
+          PY
