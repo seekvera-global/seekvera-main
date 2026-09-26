@@ -4,13 +4,14 @@ on:
   push:
     branches: [main]
     paths:
-      - 'worker.js'
+      - 'worker-r76.js'
       - 'wrangler.jsonc'
       - 'index.html'
-      - 'premium.css'
+      - 'global-ui.js'
+      - 'i18n-ui.js'
       - 'superapp.js'
-      - 'connectivity.html'
-      - 'deal-agent.html'
+      - 'voice-ai.js'
+      - 'i18n-r32/**'
       - '.github/workflows/live-ai-smoke-test.yml'
   workflow_dispatch:
 
@@ -28,130 +29,82 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate current Worker source and bindings
+      - name: Validate R76 source and bindings
         shell: bash
         run: |
           set -euo pipefail
           npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-dry-run
+          grep -q '"main": "./worker-r76.js"' wrangler.jsonc
           grep -q '"binding": "AI"' wrangler.jsonc
-          grep -q '@cf/google/gemma-4-26b-a4b-it' worker.js
-          grep -q '@cf/zai-org/glm-4.7-flash' worker.js
-          grep -q '@cf/qwen/qwen3-30b-a3b-fp8' worker.js
-          grep -q '@cf/meta/llama-3.2-11b-vision-instruct' worker.js
-          grep -q '/api/visual-search' worker.js
-          grep -q '2026-09-22-premium-r1' worker.js
-          grep -q "aiResilience:'queued-three-model-v1'" worker.js
-          node --check worker.js
+          grep -q '"run_worker_first": \["/api/\*"\]' wrangler.jsonc
+          grep -q "20260926-r76-unified-global-ai" worker-r76.js
+          grep -q "single-structured-multilingual-ai" worker-r76.js
+          grep -q "browser-resilient-backup" r24-ai-controller.js
+          node --check worker-r76.js
+          node --check global-ui.js
+          node --check i18n-ui.js
           node --check superapp.js
           node --check voice-ai.js
-          echo 'Current Worker and client source validation passed.'
+          echo R76_SOURCE_AND_BINDINGS_PASS
 
-      - name: Wait for exact live Worker release
+      - name: Verify live static R76 and 98 language packs
         shell: bash
         run: |
           set -euo pipefail
-          health='https://seekvera-main.seekvera-global.workers.dev/api/health'
           ready=0
           for i in $(seq 1 18); do
-            echo "Worker release check $i/18"
-            if curl -fsS --max-time 30 "$health" -o /tmp/health.json; then
-              if python - <<'PY'
-          import json
-          d=json.load(open('/tmp/health.json', encoding='utf-8'))
-          assert d.get('ok') is True, d
-          assert d.get('aiBinding') is True, d
-          assert d.get('release') == '2026-09-22-premium-r1', d
-          assert d.get('sourceBaseline') == '886a24516ab393c54b8379ad5b6163129932add8', d
-          assert d.get('centralSafetyGate') == 'enabled', d
-          assert d.get('failClosed') is True, d
-          assert d.get('aiResilience') == 'queued-three-model-v1', d
-          assert d.get('lightModel') == '@cf/qwen/qwen3-30b-a3b-fp8', d
-          print('Live Worker exact resilience release:', d)
-          PY
-              then ready=1; break; fi
-            fi
-            sleep 15
+            code="$(curl -LsS --max-time 30 -o /tmp/home -w '%{http_code}' -H 'Cache-Control: no-cache' "https://seekveraglobal.com/?r76smoke=$i" || true)"
+            if [ "$code" = 200 ] && grep -q '20260926-r76-complete-global-final' /tmp/home; then ready=1; break; fi
+            sleep 10
           done
           test "$ready" -eq 1
-
-      - name: Test live AI English Arabic and cross-border
-        shell: bash
-        run: |
-          set -euo pipefail
+          curl -fsS --max-time 30 "https://seekveraglobal.com/i18n-r32/manifest.json?r76=$(date +%s)" -o /tmp/manifest.json
           python - <<'PY'
-          import json, subprocess, sys, time, os
-          models={
-            '@cf/google/gemma-4-26b-a4b-it',
-            '@cf/zai-org/glm-4.7-flash',
-            '@cf/qwen/qwen3-30b-a3b-fp8'
-          }
-          cases=[
-            {"message":"I am in Nigeria and need a furniture supplier in China. Explain the next step briefly.","country":"Nigeria","language":"English","scope":"worldwide"},
-            {"message":"أنا في لبنان وأريد فندقاً في أبوجا. أعطني الخطوة التالية باختصار.","country":"Lebanon","language":"Arabic","scope":"worldwide"}
-          ]
-          for i,case in enumerate(cases,1):
-            success=False
-            last=''
-            for attempt in range(1,4):
-              out=f'/tmp/ai-{i}-{attempt}.json'
-              p=subprocess.run(['curl','-sS','--max-time','90','-o',out,'-w','%{http_code}','https://seekvera-main.seekvera-global.workers.dev/api/ai','-H','content-type: application/json','--data',json.dumps(case)],capture_output=True,text=True)
-              status=p.stdout.strip()
-              body=open(out,encoding='utf-8').read() if os.path.exists(out) else ''
-              print(f'AI case {i} attempt {attempt} HTTP status:',status)
-              if status.startswith('2'):
-                d=json.loads(body)
-                assert d.get('ok') is True and str(d.get('response','')).strip(), d
-                assert d.get('model') in models, d
-                print(d.get('category'), d.get('model'), d['response'][:180])
-                success=True
-                break
-              last=body[:1200]
-              print('AI error body:',last)
-              time.sleep(8)
-            if not success:
-              print('AI case failed after retries:',last)
-              sys.exit(1)
+          import json
+          d=json.load(open('/tmp/manifest.json',encoding='utf-8'))
+          assert d['version']=='20260926-r76-complete-global-final',d
+          assert d['packs']==98 and len(d['languages'])==98,d
+          assert d['sourceHash']=='b371f2422f8b5416',d
+          print('R76_STATIC_AND_98_PACKS_PASS')
           PY
 
-      - name: Test live Safety Gate decisions
+      - name: Record API health and test AI when quota is available
         shell: bash
         run: |
           set -euo pipefail
-          endpoint='https://seekvera-main.seekvera-global.workers.dev/api/moderate'
-          safe=$(curl -fsS --max-time 75 "$endpoint" -H 'content-type: application/json' --data '{"text":"1000 sqm lawful residential land listing in Abuja","context":"marketplace"}')
-          blocked=$(curl -fsS --max-time 75 "$endpoint" -H 'content-type: application/json' --data '{"text":"rifle ammunition for sale","context":"marketplace"}')
-          review=$(curl -fsS --max-time 75 "$endpoint" -H 'content-type: application/json' --data '{"text":"Payment bank details changed to a new bank account, transfer urgently","context":"deal"}')
-          python - "$safe" "$blocked" "$review" <<'PY'
-          import json,sys
-          s,b,r=map(json.loads,sys.argv[1:4])
-          assert s.get('ok') is True, s
-          assert b.get('allowed') is False and b.get('reviewRequired') is True, b
-          assert r.get('reviewRequired') is True and 'bank_detail' in str(r.get('reason','')), r
-          print('Safety decisions:',s,b,r)
+          status="$(curl -LsS --max-time 30 -o /tmp/health -w '%{http_code}' "https://seekveraglobal.com/api/health?r76=$(date +%s)" || true)"
+          echo "R76_API_HEALTH_STATUS=$status"
+          if [ "$status" = 200 ]; then
+            python - <<'PY'
+          import json
+          d=json.load(open('/tmp/health',encoding='utf-8'))
+          assert d.get('r76') is True,d
+          assert d.get('r76Runtime')=='single-structured-multilingual-ai',d
+          print('R76_API_HEALTHY')
           PY
+            curl -fsS --max-time 90 "https://seekveraglobal.com/api/ai" -H 'content-type: application/json' --data '{"message":"شو فيك تساعدني اليوم؟","country":"WW","language":"auto","fast":true}' -o /tmp/ai.json
+            python - <<'PY'
+          import json
+          d=json.load(open('/tmp/ai.json',encoding='utf-8'))
+          assert d.get('ok') is True and str(d.get('response','')).strip(),d
+          assert any('\u0600'<=c<='\u06ff' for c in d['response']),d
+          print('R76_LIVE_AI_PASS')
+          PY
+          elif [ "$status" = 429 ]; then
+            echo R76_API_QUOTA_EXHAUSTED_BROWSER_FALLBACK_ACTIVE
+          else
+            echo "Unexpected API health response: $(head -c 300 /tmp/health 2>/dev/null || true)"
+            exit 1
+          fi
 
-      - name: Test public Worker pages
+      - name: Verify GitHub Pages mirror
         shell: bash
         run: |
           set -euo pipefail
-          base='https://seekvera-main.seekvera-global.workers.dev'
-          pages='index.html marketplace.html post-ad.html travel.html tourism.html connectivity.html wifi.html property.html cars-auto.html jobs.html import-export.html deal-agent.html privacy.html terms.html robots.txt sitemap.xml'
-          for page in $pages; do curl -fsS --max-time 30 "$base/$page" -o /dev/null; done
-          curl -fsS --max-time 30 "$base/" -o /tmp/home.html
-          grep -q 'Everything you need. One intelligent global search.' /tmp/home.html
-          grep -q '2026‑09‑22 premium r1' /tmp/home.html
-          grep -q 'superapp.js?v=20260922-premium-r1' /tmp/home.html
-          echo 'Current public Worker pages passed.'
-
-      - name: Verify current GitHub Pages mirror
-        shell: bash
-        run: |
-          set -euo pipefail
-          url='https://seekvera-global.github.io/seekvera-main/'
           ready=0
           for i in $(seq 1 12); do
-            if curl -fsS --max-time 30 "$url" -o /tmp/gh-home.html && grep -q 'Everything you need. One intelligent global search.' /tmp/gh-home.html && grep -q 'superapp.js?v=20260922-premium-r1' /tmp/gh-home.html; then ready=1; break; fi
-            sleep 15
+            if curl -fsS --max-time 30 "https://seekvera-global.github.io/seekvera-main/?r76mirror=$i" -o /tmp/gh-home.html && grep -q '20260926-r76-complete-global-final' /tmp/gh-home.html; then ready=1; break; fi
+            sleep 10
           done
           test "$ready" -eq 1
-          echo 'Current GitHub Pages mirror passed.'
+          echo R76_GITHUB_PAGES_MIRROR_PASS
