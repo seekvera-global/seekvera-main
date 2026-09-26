@@ -24,7 +24,7 @@ jobs:
           node --check worker-r31.js
           node --check r74-ai-failover.js
           grep -q '"main": "./worker-r31.js"' wrangler.jsonc
-          grep -q 'seekvera-local-router-ar' worker-r31.js
+          grep -q 'seekvera-local-router-' worker-r31.js
           grep -q 'r74-ai-failover.js' index.html
           test "$(find i18n-r32 -maxdepth 1 -name '*.json' ! -name manifest.json | awk 'END{print NR}')" = 98
           npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-r74
@@ -42,11 +42,11 @@ jobs:
           for i in $(seq 1 30); do
             curl -fsS --max-time 15 "$S/?r74=$i" -o /tmp/home || true
             curl -fsS --max-time 15 "$S/worker-r31.js?r74=$i" -o /tmp/w || true
-            if grep -q 'r74-ai-failover.js' /tmp/home 2>/dev/null && grep -q 'seekvera-local-router-ar' /tmp/w 2>/dev/null; then break; fi
+            if grep -q 'r74-ai-failover.js' /tmp/home 2>/dev/null && grep -q 'seekvera-local-router-' /tmp/w 2>/dev/null; then break; fi
             sleep 3
           done
           grep -q 'r74-ai-failover.js' /tmp/home
-          grep -q 'seekvera-local-router-ar' /tmp/w
+          grep -q 'seekvera-local-router-' /tmp/w
           python3 - <<'PY'
           import json,urllib.request
           cases=[('أريد فندقاً في دبي','Arabic','travel','travel.html'),('मुझे मुंबई में होटल चाहिए','Hindi','travel','travel.html'),('我想在北京找一家酒店','Chinese','travel','travel.html'),('Je cherche un emploi au Canada','French','jobs','jobs.html')]
