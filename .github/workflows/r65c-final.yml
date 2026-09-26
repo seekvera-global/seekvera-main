@@ -1,0 +1,100 @@
+name: Final unified AI voice controls
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r65c-final.yml']
+permissions:
+  contents: write
+jobs:
+  final:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - name: Build final
+        run: |
+          set -euo pipefail
+          python tools/r65c_first_voice_auto.py
+          node --check voice-ai.js
+          node --check r24-ai-controller.js
+          node --check r31-ui-polish.js
+          node --check worker-r31.js
+          grep -F "async function serverVoice(targetId,button,fallbackNative=false)" voice-ai.js >/dev/null
+          grep -F "serverVoice(targetId,activeButton,true)" voice-ai.js >/dev/null
+          grep -F "start(targetId,button,true)" voice-ai.js >/dev/null
+          grep -F "20260926-r65c-first-voice-auto" voice-ai.js >/dev/null
+          grep -F "WW:['worldwide'" r24-ai-controller.js >/dev/null
+      - name: Deploy final
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Wait live
+        run: |
+          set -euo pipefail
+          S=https://seekveraglobal.com
+          for i in $(seq 1 35); do
+            V="$(curl -LfsS --max-time 15 "$S/voice-ai.js?final=$i" || true)"
+            C="$(curl -LfsS --max-time 15 "$S/r24-ai-controller.js?final=$i" || true)"
+            W="$(curl -LfsS --max-time 15 "$S/worker-r31.js?final=$i" || true)"
+            if [[ "$V" == *"20260926-r65c-first-voice-auto"* && "$V" == *"serverVoice(targetId,activeButton,true)"* && "$C" == *"WW:['worldwide'"* && "$W" == *"function detectMessageLanguageCode"* ]]; then echo FINAL_LIVE; exit 0; fi
+            sleep 2
+          done
+          exit 1
+      - name: Live multilingual and control audit
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import urllib.request,json
+          S='https://seekveraglobal.com';H={'User-Agent':'Mozilla/5.0 FINAL','content-type':'application/json'}
+          cases=[('ar','NG','شو فيك تساعدني اليوم؟'),('fr','NG','Bonjour, peux-tu m’aider aujourd’hui ?'),('zh','US','你好，你今天可以怎么帮助我？'),('hi','FR','नमस्ते, आज आप मेरी कैसे मदद कर सकते हैं?')]
+          for code,country,msg in cases:
+            q=urllib.request.Request(S+'/api/ai',data=json.dumps({'message':msg,'country':country,'language':'auto','browserLanguage':'en-US','fast':True},ensure_ascii=False).encode(),headers=H,method='POST')
+            with urllib.request.urlopen(q,timeout=35) as r:d=json.loads(r.read())
+            assert d.get('ok') and d.get('response'),d
+            x=d['response']
+            if code=='ar':assert any('\u0600'<=c<='\u06ff' for c in x),d
+            if code=='zh':assert any('\u4e00'<=c<='\u9fff' for c in x),d
+            if code=='hi':assert any('\u0900'<=c<='\u097f' for c in x),d
+            if code=='fr':assert any(w in x.lower() for w in ('bonjour','vous','aide','besoin','assistant','pouvez')),d
+          print('FINAL API PASS')
+          PY
+      - name: Exact Worldwide screenshot scenario
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > exact.mjs <<'JS'
+          import {chromium} from 'playwright';import assert from 'node:assert/strict';
+          const b=await chromium.launch({headless:true});const p=await b.newPage({locale:'en-US',userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          await p.goto('https://seekveraglobal.com/?final='+Date.now(),{waitUntil:'networkidle',timeout:60000});await p.waitForFunction(()=>SEEKVERA_R24_CONTROLLER&&SEEKVERA_LOCALE_R15&&document.querySelector('#aiChatForm'));
+          const ctl=await p.evaluate(()=>({ww:SEEKVERA_R24_CONTROLLER.detectControls('Change the app to Worldwide'),wwa:SEEKVERA_R24_CONTROLLER.detectControls('غير التطبيق للعالمي'),tr:SEEKVERA_R24_CONTROLLER.detectControls('حطني تركيا'),tl:SEEKVERA_R24_CONTROLLER.detectControls('حطلي تركي')}));assert.equal(ctl.ww.country,'WW');assert.equal(ctl.wwa.country,'WW');assert.equal(ctl.tr.country,'TR');assert.equal(ctl.tl.language,'tr');
+          await p.evaluate(()=>{SEEKVERA_LOCALE_R15.setCountry('NG');sessionStorage.setItem('seekvera_ai_intent','jobs')});await p.fill('#aiChatInput','Change the app to Worldwide');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(()=>country.value==='WW',null,{timeout:5000});const x=await p.evaluate(()=>({country:country.value,currency:currency.value,intent:sessionStorage.getItem('seekvera_ai_intent'),text:aiMessages.innerText}));assert.equal(x.country,'WW');assert.equal(x.currency,'USD');assert.equal(x.intent,null);assert.ok(x.text.includes('✓ 🌐 Worldwide'));assert.ok(!/taking you directly to Jobs/i.test(x.text.split('Change the app to Worldwide').at(-1)||''));
+          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('NG'));await p.fill('#aiChatInput','شو فيك تساعدني اليوم؟');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(()=>/[\u0600-\u06ff]/u.test((aiMessages.innerText.split('شو فيك تساعدني اليوم؟').at(-1)||'')),null,{timeout:18000});console.log('EXACT PASS',x);await b.close();
+          JS
+          node exact.mjs
+          rm -f exact.mjs
+      - name: First voice auto then native fallback audit
+        run: |
+          set -euo pipefail
+          cat > voice.mjs <<'JS'
+          import {chromium} from 'playwright';import assert from 'node:assert/strict';
+          const b=await chromium.launch({headless:true});const ctx=await b.newContext({locale:'en-US',userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          await ctx.addInitScript(()=>{localStorage.setItem('seekvera_country','NG');localStorage.setItem('seekvera_country_explicit','1');localStorage.removeItem('seekvera_language_explicit');localStorage.removeItem('seekvera_chat_voice_lang');class SR{constructor(){this.lang=''}start(){window.__nativeStarted=(window.__nativeStarted||0)+1;window.__nativeLang=this.lang;this.onstart?.()}stop(){this.onend?.()}abort(){this.onend?.()}}window.SpeechRecognition=SR;window.webkitSpeechRecognition=SR;class MR{static isTypeSupported(){return true}constructor(){this.state='inactive'}start(){this.state='recording';window.__serverStarted=(window.__serverStarted||0)+1;setTimeout(()=>{this.ondataavailable?.({data:new Blob(['abc'],{type:'audio/webm'})});this.state='inactive';this.onstop?.()},120)}stop(){if(this.state==='recording'){this.state='inactive';this.onstop?.()}}}window.MediaRecorder=MR;navigator.mediaDevices={getUserMedia:async()=>({getTracks:()=>[{stop(){}}]})}});
+          const p=await ctx.newPage();await p.route('**/api/transcribe',r=>r.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'quota'})}));await p.goto('https://seekveraglobal.com/?voicefinal='+Date.now(),{waitUntil:'networkidle',timeout:60000});await p.waitForFunction(()=>SEEKVERA_VOICE_AI&&country.value==='NG');await p.click('#aiChatMic');await p.waitForFunction(()=>window.__nativeStarted>0,null,{timeout:8000});const s=await p.evaluate(()=>({server:window.__serverStarted||0,native:window.__nativeStarted||0,country:country.value}));assert.ok(s.server>0,s);assert.ok(s.native>0,s);assert.equal(s.country,'NG');console.log('VOICE AUTO FALLBACK PASS',s);await b.close();
+          JS
+          node voice.mjs
+          rm -f voice.mjs
+      - name: Persist final
+        run: |
+          set -euo pipefail
+          git config user.name seekvera-global
+          git config user.email seekvera.global@gmail.com
+          git add ./*.html voice-ai.js r24-ai-controller.js r31-ui-polish.js worker-r31.js superapp.js r60-runtime-guard.js sw.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Persist final unified AI voice controls'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+          echo FINAL_AI_VOICE_PERSISTED
