@@ -1,0 +1,84 @@
+name: R58C global assistant final
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r58c-global-assistant.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r58c-global-assistant
+  cancel-in-progress: true
+
+jobs:
+  deploy-audit-persist:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build corrected R58
+        run: |
+          set -euo pipefail
+          sed -i "s/s=pat.sub(replacement,s,count=1)/s=pat.sub(lambda _m: replacement,s,count=1)/" tools/r58_assistant_core.py
+          python tools/r58_assistant_core.py
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('r31-ui-polish.js');s=p.read_text(encoding='utf-8')
+          old="if(nq.includes(title)&&title.length>bestScore){best=key;bestScore=title.length+100;continue}"
+          new="const exactScore=title.length+100;if(nq.includes(title)&&exactScore>bestScore){best=key;bestScore=exactScore;continue}"
+          if old not in s: raise SystemExit('translated exact-score anchor missing')
+          p.write_text(s.replace(old,new,1),encoding='utf-8')
+          PY
+          node --check r31-ui-polish.js
+          node --check voice-ai.js
+          node --check worker-r31.js
+          node --check sw.js
+          echo 'R58C BUILD PASS'
+
+      - name: Deploy corrected R58
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Full 98-language router acceptance
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > r58c.mjs <<'JS'
+          import {chromium} from 'playwright';
+          import assert from 'node:assert/strict';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage({userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          await p.addInitScript(()=>{window.__spoken=0;window.__tts=0;window.addEventListener('seekvera:tts-start',()=>window.__tts++)});
+          await p.route('**/api/ai',async route=>{if(route.request().method()==='POST')await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,response:'Generic fallback response',language:'Arabic',category:'general',route:'marketplace.html',model:'weak-general'})});else await route.continue()});
+          await p.goto('https://seekveraglobal.com/?r58c='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+          await p.waitForFunction(()=>SEEKVERA_R31?.intent&&SEEKVERA_R14_CATEGORIES?.data&&SEEKVERA_VOICE_AI,null,{timeout:30000});
+          const cv=await p.evaluate(()=>{const data=SEEKVERA_R14_CATEGORIES.data||{},langs=Object.keys(data).filter(k=>Array.isArray(data[k])&&data[k].length>=31);let solar=0,jobs=0,fail=[];for(const l of langs){const a=data[l],si=SEEKVERA_R31.intent(a[18]),ji=SEEKVERA_R31.intent(a[7]);if(si==='solar')solar++;else fail.push([l,'solar',a[18],si]);if(ji==='jobs')jobs++;else fail.push([l,'jobs',a[7],ji])}return{langs:langs.length,solar,jobs,fail,ar:SEEKVERA_R31.intent('في ارخص طاقه شمسيه بلبنان'),en:SEEKVERA_R31.intent('cheapest solar energy in Lebanon'),th:SEEKVERA_R31.intent(data.th?.[18]||'')}});
+          assert.ok(cv.langs>=98,JSON.stringify(cv));assert.equal(cv.solar,cv.langs,JSON.stringify(cv));assert.equal(cv.jobs,cv.langs,JSON.stringify(cv));assert.equal(cv.ar,'solar');assert.equal(cv.en,'solar');assert.equal(cv.th,'solar');
+          await p.fill('#aiChatInput','في ارخص طاقه شمسيه بلبنان');const t=Date.now();await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForURL(/\/solar(?:\.html)?\?/,{timeout:6000});const navMs=Date.now()-t;assert.ok(navMs<4500,'slow '+navMs);
+          await p.goto('https://seekveraglobal.com/?r58cvoice='+Date.now(),{waitUntil:'networkidle',timeout:60000});await p.waitForFunction(()=>SEEKVERA_VOICE_AI,null,{timeout:30000});await p.evaluate(()=>{try{speechSynthesis.speak=(u)=>{window.__spoken++;setTimeout(()=>u.onstart?.(),10);setTimeout(()=>u.onend?.(),35)}}catch{}SEEKVERA_VOICE_AI.markVoiceReply();window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text:'Spoken reply test',language:'en'}}))});await p.waitForFunction(()=>window.__spoken>=1&&window.__tts>=1,null,{timeout:3000});const voice=await p.evaluate(()=>({spoken:window.__spoken,tts:window.__tts}));assert.ok(voice.spoken>=1&&voice.tts>=1,JSON.stringify(voice));console.log('R58C FULL PASS',JSON.stringify({cv,navMs,voice}));await b.close();
+          JS
+          node r58c.mjs
+          rm -f r58c.mjs
+
+      - name: Persist corrected R58 to main
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add -- r31-ui-polish.js voice-ai.js worker-r31.js sw.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Persist R58 global assistant with 98-language exact routing'
+            git push origin HEAD:main
+          fi
+          echo 'R58C FINAL RELEASE PERSISTED'
