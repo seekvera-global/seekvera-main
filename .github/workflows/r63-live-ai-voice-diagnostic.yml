@@ -23,8 +23,13 @@ jobs:
             'fr|Je cherche un travail aux États-Unis'; do
             lang="${spec%%|*}"; msg="${spec#*|}"
             echo "--- AI $lang: $msg ---"
+            MSG="$msg" python - <<'PY'
+          import json, os
+          with open('/tmp/payload.json','w',encoding='utf-8') as f:
+              json.dump({'message':os.environ['MSG'],'country':'Worldwide','language':'auto','fast':True},f,ensure_ascii=False)
+          PY
             start=$(date +%s%3N)
-            code=$(curl -L -sS --max-time 30 -D "/tmp/ai-$lang.h" -o "/tmp/ai-$lang.json" -w '%{http_code}' -H 'content-type: application/json' --data "$(python -c 'import json,sys; print(json.dumps({\"message\":sys.argv[1],\"country\":\"Worldwide\",\"language\":\"auto\",\"fast\":True},ensure_ascii=False))' "$msg")" "$S/api/ai")
+            code=$(curl -L -sS --max-time 30 -D "/tmp/ai-$lang.h" -o "/tmp/ai-$lang.json" -w '%{http_code}' -H 'content-type: application/json' --data-binary @/tmp/payload.json "$S/api/ai")
             end=$(date +%s%3N); echo "AI_${lang}_CODE=$code MS=$((end-start))"
             cat "/tmp/ai-$lang.json"; echo
             test "$code" = 200
@@ -32,7 +37,7 @@ jobs:
           python - <<'PY'
           import json
           for lang in ('ar','en','fr'):
-              d=json.load(open(f'/tmp/ai-{lang}.json'))
+              d=json.load(open(f'/tmp/ai-{lang}.json',encoding='utf-8'))
               assert d.get('ok') is True, d
               text=str(d.get('response','')).strip()
               assert len(text)>3, d
@@ -41,6 +46,7 @@ jobs:
               print('AI_PASS',lang,d.get('model'),d.get('language'),d.get('category'),d.get('route'))
           PY
       - name: Test live TTS to real transcription roundtrip
+        if: always()
         shell: bash
         run: |
           set -euo pipefail
