@@ -246,6 +246,6 @@ function bindLocaleControls(){
   document.addEventListener('touchstart',primeVoiceOnGesture,{capture:true,passive:true});
   if(window.speechSynthesis){try{speechSynthesis.addEventListener?.('voiceschanged',()=>speechSynthesis.getVoices?.())}catch{}}
 }
-function init(){stripDuplicateDepartments();buildNav();hardenAIUI();bindLocaleControls();bindAICountryControl();scheduleLocalePass()}
+function init(){stripDuplicateDepartments();buildNav();hardenAIUI();bindLocaleControls();scheduleLocalePass()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
