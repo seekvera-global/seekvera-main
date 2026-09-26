@@ -1,0 +1,27 @@
+name: R66 command diagnostic
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r66-diagnostic.yml']
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > diag.mjs <<'JS'
+          import {chromium} from 'playwright';
+          const b=await chromium.launch({headless:true});const p=await b.newPage({locale:'en-US',userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          await p.goto('https://seekveraglobal.com/?r66diag='+Date.now(),{waitUntil:'networkidle',timeout:60000});await p.waitForFunction(()=>SEEKVERA_R66_FINAL&&SEEKVERA_LOCALE_R15&&SEEKVERA_R24_CONTROLLER);
+          console.log('DETECT',await p.evaluate(()=>({r66:SEEKVERA_R66_FINAL.detect('Change the app to Worldwide'),r24:SEEKVERA_R24_CONTROLLER.detectControls('Change the app to Worldwide')})));
+          console.log('BEFORE',await p.evaluate(()=>({c:country.value,l:lang.value,cur:currency.value,scope:localStorage.getItem('seekvera_scope')})));
+          console.log('APPLYRET',await p.evaluate(()=>SEEKVERA_R66_FINAL.apply({country:'WW'})));await p.waitForTimeout(400);
+          console.log('AFTER_DIRECT',await p.evaluate(()=>({c:country.value,l:lang.value,cur:currency.value,scope:localStorage.getItem('seekvera_scope'),state:SEEKVERA_LOCALE_R15.state()})));
+          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('NG'));await p.waitForTimeout(200);await p.fill('#aiChatInput','Change the app to Worldwide');
+          console.log('DISPATCH',await p.locator('#aiChatForm').evaluate(f=>f.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}))));await p.waitForTimeout(500);
+          console.log('AFTER_SUBMIT',await p.evaluate(()=>({c:country.value,l:lang.value,cur:currency.value,scope:localStorage.getItem('seekvera_scope'),text:aiMessages.innerText,state:SEEKVERA_LOCALE_R15.state()})));
+          await b.close();
+          JS
+          node diag.mjs
