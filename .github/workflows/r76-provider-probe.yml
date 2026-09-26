@@ -10,33 +10,19 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Probe Bing for all missing R76 languages
+      - name: Probe guarded Cloudflare AI bridge
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
-          import http.cookiejar,json,re,urllib.parse,urllib.request,time
-          langs=['fr','it','nl','ro','sr','kl','to','fy','rm','xh','tn']
-          cj=http.cookiejar.CookieJar();op=urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
-          headers={'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140 Safari/537.36','Accept-Language':'en-US,en;q=0.9'}
-          html=op.open(urllib.request.Request('https://www.bing.com/translator',headers=headers),timeout=20).read().decode('utf-8','replace')
-          igm=re.search(r'IG:"([^"]+)"',html) or re.search(r'"IG":"([^"]+)"',html)
-          ab=re.search(r'params_AbusePreventionHelper\s*=\s*\[(\d+),"([^"]+)",(\d+)\]',html)
-          assert igm and ab,'session markers missing'
-          key,token,_=ab.groups();ig=igm.group(1)
-          url=f'https://www.bing.com/ttranslatev3?isVertical=1&&IG={urllib.parse.quote(ig)}&IID=translator.5024.1'
-          bad=[]
-          for lang in langs:
-              try:
-                  data=urllib.parse.urlencode({'fromLang':'en','to':lang,'text':'Find jobs and hotels near me','token':token,'key':key,'tryFetchingGenderDebiasedTranslations':'true'}).encode()
-                  req=urllib.request.Request(url,data=data,headers={**headers,'Content-Type':'application/x-www-form-urlencoded','Referer':'https://www.bing.com/translator'},method='POST')
-                  raw=op.open(req,timeout=20).read().decode('utf-8','replace')
-                  d=json.loads(raw);t=d[0]['translations'][0]['text'].strip()
-                  print('BING_LANG',lang,'=>',t,flush=True)
-                  if not t or t.lower()=='find jobs and hotels near me':bad.append((lang,t))
-              except Exception as e:
-                  print('BING_LANG_ERROR',lang,repr(e),flush=True);bad.append((lang,repr(e)))
-              time.sleep(.25)
-          assert not bad,'unsupported/failed languages '+repr(bad)
-          print('BING_ALL_11_PASS')
+          import json,urllib.request
+          U='https://seekveraglobal.com/api/__r76_translate_builder'
+          for lang in ['sr','kl','rm']:
+              body=json.dumps({'target':lang,'text':'Find jobs and hotels near me'}).encode()
+              req=urllib.request.Request(U,data=body,headers={'content-type':'application/json','user-agent':'SEEKVERA-R76-HYBRID'},method='POST')
+              with urllib.request.urlopen(req,timeout=50) as r:d=json.loads(r.read().decode())
+              print('BRIDGE',lang,d,flush=True)
+              t=str(d.get('translation') or '').strip()
+              assert d.get('ok') and t and t.lower()!='find jobs and hotels near me'
+          print('R76_BRIDGE_3_LANG_PASS')
           PY
