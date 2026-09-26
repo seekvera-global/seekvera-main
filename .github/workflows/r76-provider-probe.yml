@@ -8,26 +8,28 @@ permissions:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10
     steps:
-      - name: Probe TranslateAPI anonymous web translator for kl rm
+      - name: Probe private Pollinations structured multilingual replies
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
-          import json,urllib.request,urllib.error
-          U='https://translateapi.ai/translate/'
-          src='Find jobs and hotels near me'
-          body=json.dumps({'text':src,'source_language':'en','target_languages':['kl','rm']}).encode()
-          req=urllib.request.Request(U,data=body,headers={'content-type':'application/json','user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140 Safari/537.36','accept':'application/json'},method='POST')
-          try:
-              with urllib.request.urlopen(req,timeout=40) as r:
-                  raw=r.read().decode('utf-8','replace');print('STATUS',r.status,'BODY',raw,flush=True);d=json.loads(raw)
-          except urllib.error.HTTPError as e:
-              raw=e.read().decode('utf-8','replace');print('HTTP',e.code,'BODY',raw,flush=True);raise
-          assert d.get('success'),d
-          tr=d.get('translations') or {}
-          for lang in ['kl','rm']:
-              t=str(tr.get(lang) or '').strip();print('TRANSLATION',lang,'=>',t,flush=True);assert t and t.lower()!=src.lower()
-          print('TRANSLATEAPI_KL_RM_PASS')
+          import json,urllib.parse,urllib.request
+          system='''You are SEEKVERA AI. Understand any language or dialect. Return ONLY JSON with keys reply,languageCode,category,countryAction,languageAction. Reply in the same language/script as the latest message. Categories include general,jobs,travel,property,cars,shopping,services. countryAction only for an explicit app-country change, never a search.'''
+          cases=[
+            ('بدي وظيفة مبيعات بفرنسا','ar','jobs'),
+            ('حطني تركيا','ar','general'),
+            ('Türkiye’de satış işi arıyorum','tr','jobs'),
+          ]
+          for msg,lang,cat in cases:
+              prompt=system+'\nLatest user message: '+msg
+              url='https://text.pollinations.ai/'+urllib.parse.quote(prompt,safe='')+'?model=openai&private=true&seed=76'
+              req=urllib.request.Request(url,headers={'accept':'text/plain','user-agent':'SEEKVERA-R76-PROBE/1.0'})
+              with urllib.request.urlopen(req,timeout=35) as r:raw=r.read().decode('utf-8','replace').strip()
+              print('RAW',msg,raw[:1200],flush=True)
+              raw=raw.removeprefix('```json').removeprefix('```').removesuffix('```').strip()
+              a=raw.find('{');b=raw.rfind('}');assert a>=0 and b>a,raw
+              d=json.loads(raw[a:b+1]);assert d.get('reply');assert str(d.get('languageCode','')).startswith(lang),(msg,d);assert d.get('category')==cat,(msg,d)
+          print('R76_PUBLIC_STRUCTURED_AI_PASS')
           PY
