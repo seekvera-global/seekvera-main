@@ -1,0 +1,24 @@
+name: R61 TTS language matrix
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r61-tts-language-matrix.yml']
+jobs:
+  matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe 98 language codes
+        shell: bash
+        run: |
+          set +e
+          langs='en ar fr zh es hi pt de ja ko id tr ru ur bn vi it sw th fa pl nl ms fil ha yo ig am he el uk ro cs sk hu sv no da fi bg hr sr sl lt lv et ca eu gl is sq mk ka hy az kk uz ky tg tk ne si ta te ml mr gu pa km lo my mn zu af be bs dz ti fo kl rw sm to so ps dv mt mg ga cy mi fy lb rm ku xh st tn'
+          ok=''; bad=''
+          for lang in $langs; do
+            url="https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=$lang&q=SEEKVERA"
+            code=$(curl -L -sS --max-time 8 -A 'Mozilla/5.0' -o /tmp/a -w '%{http_code}' "$url")
+            bytes=$(wc -c </tmp/a)
+            if [ "$code" = 200 ] && [ "$bytes" -gt 500 ]; then ok="$ok $lang"; else bad="$bad $lang"; fi
+          done
+          echo "SUPPORTED:$ok"
+          echo "UNSUPPORTED:$bad"
+          echo "SUPPORTED_COUNT=$(wc -w <<< "$ok") UNSUPPORTED_COUNT=$(wc -w <<< "$bad")"
