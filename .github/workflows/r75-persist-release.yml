@@ -1,0 +1,50 @@
+name: R75 persist validated release
+on:
+  push:
+    branches: [fix/r75-global-country-section-sync]
+    paths: ['.github/workflows/r75-persist-release.yml']
+permissions:
+  contents: write
+jobs:
+  persist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - name: Recreate validated R75 release tree
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          VER='20260926-r75-global-country-section-sync'
+          assets=['i18n-ui.js','r31-ui-polish.js','r66-final-controller.js','r60-runtime-guard.js']
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google'): continue
+              s=p.read_text(encoding='utf-8')
+              for a in assets:s=re.sub(re.escape(a)+r'(?:\?v=[^"\'<> ]*)?',a+'?v='+VER,s)
+              s=re.sub(r'sw\.js\?v=[^"\'<> )]+','sw.js?v='+VER,s)
+              if 'data-release=' in s:s=re.sub(r'data-release="[^"]+"',f'data-release="{VER}"',s,count=1)
+              p.write_text(s,encoding='utf-8')
+          for name in ('r60-runtime-guard.js','sw.js'):
+              p=Path(name);s=p.read_text(encoding='utf-8');s=re.sub(r"(const RELEASE=)'[^']+';",r"\1'"+VER+"';",s,count=1);p.write_text(s,encoding='utf-8')
+          PY
+          node --check i18n-ui.js
+          node --check r31-ui-polish.js
+          node --check r66-final-controller.js
+          node --check r60-runtime-guard.js
+          node --check sw.js
+          test "$(find i18n-r32 -maxdepth 1 -name '*.json' ! -name manifest.json | awk 'END{print NR}')" = 98
+          test "$(grep -l 'i18n-ui.js?v=20260926-r75-global-country-section-sync' ./*.html | wc -l)" -ge 40
+      - name: Commit validated tree
+        run: |
+          set -euo pipefail
+          git config user.name seekvera-global
+          git config user.email seekvera.global@gmail.com
+          git add ./*.html i18n-ui.js r31-ui-polish.js r66-final-controller.js r60-runtime-guard.js sw.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Persist R75 validated global release assets'
+            git pull --rebase origin fix/r75-global-country-section-sync
+            git push origin HEAD:fix/r75-global-country-section-sync
+          fi
+          echo R75_RELEASE_TREE_PERSISTED

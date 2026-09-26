@@ -1,0 +1,173 @@
+name: R75 global country and section sync
+on:
+  push:
+    branches: [fix/r75-global-country-section-sync]
+    paths: ['.github/workflows/r75-global-country-section-sync.yml']
+permissions:
+  contents: write
+jobs:
+  final:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+
+      - name: Build R75 global runtime
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          VER='20260926-r75-global-country-section-sync'
+          assets=['i18n-ui.js','r31-ui-polish.js','r66-final-controller.js','r60-runtime-guard.js']
+          for p in Path('.').glob('*.html'):
+              if p.name.lower().startswith('google'): continue
+              s=p.read_text(encoding='utf-8')
+              for a in assets:
+                  s=re.sub(re.escape(a)+r'(?:\?v=[^"\'<> ]*)?',a+'?v='+VER,s)
+              s=re.sub(r'sw\.js\?v=[^"\'<> )]+','sw.js?v='+VER,s)
+              if 'data-release=' in s:
+                  s=re.sub(r'data-release="[^"]+"',f'data-release="{VER}"',s,count=1)
+              p.write_text(s,encoding='utf-8')
+          for name in ('r60-runtime-guard.js','sw.js'):
+              p=Path(name);s=p.read_text(encoding='utf-8')
+              s=re.sub(r"(const RELEASE=)'[^']+';",r"\1'"+VER+"';",s,count=1)
+              p.write_text(s,encoding='utf-8')
+          print('R75 cache-bust applied to all HTML entry points')
+          PY
+          node --check r31-ui-polish.js
+          node --check r66-final-controller.js
+          node --check i18n-ui.js
+          node --check r60-runtime-guard.js
+          node --check sw.js
+          grep -F "20260926-r75-global-country-section-sync" r31-ui-polish.js >/dev/null
+          grep -F "20260926-r75-global-country-section-sync" r66-final-controller.js >/dev/null
+          grep -F "20260926-r75-global-country-section-sync" i18n-ui.js >/dev/null
+          test "$(find i18n-r32 -maxdepth 1 -name '*.json' ! -name manifest.json | awk 'END{print NR}')" = 98
+          python3 - <<'PY'
+          from pathlib import Path
+          html=[p for p in Path('.').glob('*.html') if not p.name.lower().startswith('google')]
+          refs={'i18n-ui.js':0,'r31-ui-polish.js':0,'r66-final-controller.js':0,'r60-runtime-guard.js':0}
+          bad=[];ver='20260926-r75-global-country-section-sync'
+          for p in html:
+              s=p.read_text(encoding='utf-8')
+              for a in refs:
+                  if a in s:
+                      refs[a]+=1
+                      if f'{a}?v={ver}' not in s: bad.append((p.name,a))
+          assert not bad,bad[:20]
+          assert refs['i18n-ui.js']>=40,refs
+          assert refs['r31-ui-polish.js']>=40,refs
+          assert refs['r66-final-controller.js']>=40,refs
+          print('R75 HTML REF PASS',refs)
+          PY
+
+      - name: Browser audit every country and all department routes
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/r75-http.log 2>&1 &
+          HTTP_PID=$!
+          trap 'kill $HTTP_PID 2>/dev/null || true' EXIT
+          for i in $(seq 1 20); do curl -fsS http://127.0.0.1:4173/index.html >/dev/null && break; sleep .25; done
+          cat > r75-test.mjs <<'JS'
+          import {chromium} from 'playwright';
+          import assert from 'node:assert/strict';
+          const root='http://127.0.0.1:4173/';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage({locale:'en-US',viewport:{width:390,height:844}});
+          await p.goto(root+'index.html',{waitUntil:'domcontentloaded'});
+          await p.waitForFunction(()=>window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_I18N_R32&&window.SEEKVERA_R31&&window.SEEKVERA_R66_FINAL,null,{timeout:15000});
+          const countries=await p.evaluate(()=>Object.entries(SEEKVERA_LOCALE_R15.profiles).filter(([c])=>/^[A-Z]{2}$/.test(c)).map(([c,v])=>[c,v.language,v.currency]));
+          assert.ok(countries.length>=190,'country profiles '+countries.length);
+          const bad=[];
+          for(const [cc,l,cur] of countries){
+            const got=await p.evaluate(cc=>{SEEKVERA_LOCALE_R15.setCountry(cc);return {c:document.querySelector('#country')?.value,l:document.querySelector('#lang')?.value,cur:document.querySelector('#currency')?.value}},cc);
+            if(got.c!==cc||got.l!==l||got.cur!==cur)bad.push([cc,l,cur,got]);
+          }
+          assert.deepEqual(bad,[],'country mapping failures');
+          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('IQ'));
+          await p.waitForFunction(()=>document.documentElement.lang==='ar'&&document.documentElement.dir==='rtl',null,{timeout:5000});
+          await p.evaluate(async()=>{await SEEKVERA_I18N_R32.loadPack('ar');await SEEKVERA_I18N_R32.apply()});
+          const ar=await p.evaluate(()=>({type:[...document.querySelectorAll('#requestType option')].map(x=>x.textContent.trim()).slice(0,5),values:[...document.querySelectorAll('#requestType option')].map(x=>x.value).slice(0,5),lang:document.documentElement.lang,cur:document.querySelector('#currency')?.value}));
+          assert.equal(ar.lang,'ar');assert.equal(ar.cur,'IQD');assert.ok(!ar.type.includes('Business'),JSON.stringify(ar));assert.ok(ar.type.some(x=>/[\u0600-\u06ff]/.test(x)),JSON.stringify(ar));
+          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('DE'));
+          await p.waitForFunction(()=>document.documentElement.lang==='de',null,{timeout:5000});
+          await p.evaluate(async()=>{await SEEKVERA_I18N_R32.loadPack('de');await SEEKVERA_I18N_R32.apply()});
+          const de=await p.evaluate(()=>({type:[...document.querySelectorAll('#requestType option')].map(x=>x.textContent.trim()).slice(0,5),values:[...document.querySelectorAll('#requestType option')].map(x=>x.value).slice(0,5),cur:document.querySelector('#currency')?.value}));
+          assert.equal(de.cur,'EUR');assert.ok(!de.type.some(x=>/[\u0600-\u06ff]/.test(x)),JSON.stringify(de));assert.ok(!de.type.includes('Business'),JSON.stringify(de));
+          assert.deepEqual(de.values,ar.values,'option values changed with translation');
+          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('IQ'));
+          await p.evaluate(async()=>{await SEEKVERA_I18N_R32.apply()});
+          const ar2=await p.evaluate(()=>[...document.querySelectorAll('#requestType option')].map(x=>x.textContent.trim()).slice(0,5));
+          assert.ok(!ar2.includes('Business')&&!ar2.some(x=>/^(Reisen|Eigenschaft|Einkaufen|Geschäft)$/.test(x)),JSON.stringify(ar2));
+          const tiles=await p.evaluate(()=>[...document.querySelectorAll('.r5-grid .r5-tile')].map(a=>a.getAttribute('href')).filter(Boolean));
+          assert.ok(tiles.length>=31,'home categories '+tiles.length);
+          const routes=['marketplace.html','travel.html','travel.html?q=flights','travel.html?q=hotels','tourism.html','property.html','cars-auto.html','jobs.html','shopping.html','restaurants-food.html','local-services.html','marketplace.html?q=equipment','marketplace.html?q=boats','import-export.html','shipping-logistics.html','business-software.html','software.html','web-hosting.html','solar.html','education.html','health.html','money-insurance.html','entertainment.html','media.html','games.html','connectivity.html','wifi.html','deal-agent.html','everyday.html','scan.html','seller-plans.html'];
+          for(const r of routes){const q=await b.newPage({locale:'ar-IQ'});await q.goto(root+r,{waitUntil:'domcontentloaded'});await q.waitForTimeout(30);assert.ok((await q.title()).length>0,r);await q.close()}
+          console.log('R75 STATIC PASS',countries.length,'countries',routes.length,'category routes',ar,de,ar2);
+          await b.close();
+          JS
+          node r75-test.mjs
+          rm -f r75-test.mjs
+
+      - name: Deploy R75 worker
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Wait for R75 live assets
+        run: |
+          set -euo pipefail
+          S=https://seekveraglobal.com
+          for i in $(seq 1 45); do
+            H="$(curl -LfsS --max-time 15 -H 'Cache-Control: no-cache' "$S/?r75=$i" || true)"
+            A="$(curl -LfsS --max-time 15 -H 'Cache-Control: no-cache' "$S/r31-ui-polish.js?r75=$i" || true)"
+            I="$(curl -LfsS --max-time 15 -H 'Cache-Control: no-cache' "$S/i18n-ui.js?r75=$i" || true)"
+            C="$(curl -LfsS --max-time 15 -H 'Cache-Control: no-cache' "$S/r66-final-controller.js?r75=$i" || true)"
+            if [[ "$H" == *'20260926-r75-global-country-section-sync'* && "$A" == *'20260926-r75-global-country-section-sync'* && "$I" == *'20260926-r75-global-country-section-sync'* && "$C" == *'20260926-r75-global-country-section-sync'* ]]; then echo R75_LIVE_ASSETS_PASS; exit 0; fi
+            sleep 2
+          done
+          echo 'R75 live assets did not converge'; exit 1
+
+      - name: Live phone audit reply first then route
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > r75-live.mjs <<'JS'
+          import {chromium} from 'playwright';import assert from 'node:assert/strict';
+          const b=await chromium.launch({headless:true});const p=await b.newPage({locale:'en-US',userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          await p.goto('https://seekveraglobal.com/?r75live='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_R66_FINAL?.version?.includes('r75')&&window.SEEKVERA_R31?.version?.includes('r75')&&window.SEEKVERA_I18N_R32?.version?.includes('r75'),null,{timeout:30000});
+          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('NG'));
+          await p.fill('#aiChatInput','حوّليني على ورلد وايد');const t=Date.now();await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForFunction(()=>[...document.querySelectorAll('#aiMessages .ai-msg.bot')].some(x=>/حوّل|العالمي|Worldwide|🌐/.test(x.textContent)),null,{timeout:1500});
+          const replied=Date.now()-t;assert.ok(replied<1500,'control reply slow '+replied);const early=await p.evaluate(()=>country.value);assert.equal(early,'NG','country changed before reply window');
+          await p.waitForFunction(()=>country.value==='WW',null,{timeout:3000});
+          await p.evaluate(()=>{SEEKVERA_LOCALE_R15.setCountry('LB');localStorage.removeItem('seekvera_ai_chat_v1')});
+          await p.fill('#aiChatInput','بدي وظيفة بالمبيعات');const t2=Date.now();await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForFunction(()=>{const a=[...document.querySelectorAll('#aiMessages .ai-msg.bot')].at(-1);return a&&!a.classList.contains('thinking')&&a.textContent.trim().length>1},null,{timeout:12000});
+          const replyMs=Date.now()-t2;const before=p.url();await p.waitForTimeout(250);assert.equal(p.url(),before,'routed before reply was visible');
+          await p.waitForURL(/jobs\.html/,{timeout:5000});await p.waitForTimeout(500);
+          const persisted=await p.evaluate(()=>document.querySelector('#aiMessages')?.innerText||'');assert.ok(persisted.includes('بدي وظيفة بالمبيعات'),'chat did not persist across route');
+          console.log('R75 LIVE PASS',{replied,replyMs,url:p.url(),persisted:persisted.slice(-240)});await b.close();
+          JS
+          node r75-live.mjs
+          rm -f r75-live.mjs
+
+      - name: Persist R75 branch
+        run: |
+          set -euo pipefail
+          git config user.name seekvera-global
+          git config user.email seekvera.global@gmail.com
+          git add ./*.html r31-ui-polish.js r66-final-controller.js i18n-ui.js r60-runtime-guard.js sw.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Persist R75 global country section sync'
+            git pull --rebase origin fix/r75-global-country-section-sync
+            git push origin HEAD:fix/r75-global-country-section-sync
+          fi
+          echo R75_PERSISTED
