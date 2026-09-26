@@ -22,6 +22,11 @@ function sweepStaticPack(l){
   for(const a of ATTRS){const src=String(el.getAttribute(a)||'').trim(),v=translatedDecorated(t,src);if(src&&v&&v!==src)el.setAttribute(a,v)}
  }
 }
+let staticGuardStarted=false,staticGuardQueued=false;
+function ensureStaticGuard(){
+ if(staticGuardStarted||!document.documentElement)return;staticGuardStarted=true;
+ new MutationObserver(ms=>{if(norm(lang())==='en')return;if(!ms.some(m=>m.type==='characterData'||m.type==='attributes'||(m.addedNodes&&m.addedNodes.length)))return;if(staticGuardQueued)return;staticGuardQueued=true;queueMicrotask(()=>{staticGuardQueued=false;sweepStaticPack(lang())})}).observe(document.documentElement,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:ATTRS});
+}
 '''
 if 'function sweepStaticPack(l)' not in s:
     if anchor not in s: raise SystemExit('i18n sweep insert anchor missing')
@@ -31,10 +36,11 @@ else:
     b=s.index('async function apply()',a)
     s=s[:a]+insert+s[b:]
 old="document.documentElement.dataset.seekveraI18nReady=l;document.documentElement.dataset.seekveraI18nVersion=VERSION;applying=false}"
-new="document.documentElement.dataset.seekveraI18nReady=l;document.documentElement.dataset.seekveraI18nVersion=VERSION;sweepStaticPack(l);try{window.SEEKVERA_GLOBAL_UI?.localizeControls?.()}catch{}try{window.SEEKVERA_R22_CATEGORY_LOCK?.lock?.()}catch{}try{window.SEEKVERA_SUPERAPP_I18N?.refreshDynamicBoxes?.()}catch{}sweepStaticPack(l);const settle=()=>{if(norm(lang())===l)sweepStaticPack(l)};setTimeout(settle,35);setTimeout(settle,90);setTimeout(settle,135);applying=false}"
+new="document.documentElement.dataset.seekveraI18nReady=l;document.documentElement.dataset.seekveraI18nVersion=VERSION;ensureStaticGuard();sweepStaticPack(l);try{window.SEEKVERA_GLOBAL_UI?.localizeControls?.()}catch{}try{window.SEEKVERA_R22_CATEGORY_LOCK?.lock?.()}catch{}try{window.SEEKVERA_SUPERAPP_I18N?.refreshDynamicBoxes?.()}catch{}sweepStaticPack(l);const settle=()=>{if(norm(lang())===l)sweepStaticPack(l)};setTimeout(settle,35);setTimeout(settle,90);setTimeout(settle,135);applying=false}"
 if old in s:s=s.replace(old,new,1)
 else:
     candidates=[
+      "document.documentElement.dataset.seekveraI18nReady=l;document.documentElement.dataset.seekveraI18nVersion=VERSION;sweepStaticPack(l);try{window.SEEKVERA_GLOBAL_UI?.localizeControls?.()}catch{}try{window.SEEKVERA_R22_CATEGORY_LOCK?.lock?.()}catch{}try{window.SEEKVERA_SUPERAPP_I18N?.refreshDynamicBoxes?.()}catch{}sweepStaticPack(l);const settle=()=>{if(norm(lang())===l)sweepStaticPack(l)};setTimeout(settle,35);setTimeout(settle,90);setTimeout(settle,135);applying=false}",
       "document.documentElement.dataset.seekveraI18nReady=l;document.documentElement.dataset.seekveraI18nVersion=VERSION;sweepStaticPack(l);try{window.SEEKVERA_GLOBAL_UI?.localizeControls?.()}catch{}try{window.SEEKVERA_R22_CATEGORY_LOCK?.lock?.()}catch{}try{window.SEEKVERA_SUPERAPP_I18N?.refreshDynamicBoxes?.()}catch{}sweepStaticPack(l);applying=false}",
       "document.documentElement.dataset.seekveraI18nReady=l;document.documentElement.dataset.seekveraI18nVersion=VERSION;sweepStaticPack(l);try{window.SEEKVERA_GLOBAL_UI?.localizeControls?.()}catch{}try{window.SEEKVERA_R22_CATEGORY_LOCK?.lock?.()}catch{}sweepStaticPack(l);applying=false}",
       "document.documentElement.dataset.seekveraI18nReady=l;document.documentElement.dataset.seekveraI18nVersion=VERSION;sweepStaticPack(l);applying=false}"
