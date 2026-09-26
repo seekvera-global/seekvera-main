@@ -75,7 +75,7 @@ function start(targetId,button){
   stopSpeech();enableVoiceConversation();clearSpeechTimers();
   activeButton=button||document.getElementById('aiChatMic')||document.querySelector('.sv-global-compose .mic');
   const i=document.getElementById(targetId||'aiChatInput');
-  if(!SpeechRecognition){serverVoice(targetId,activeButton);return}
+  if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)&&navigator.mediaDevices?.getUserMedia&&window.MediaRecorder){serverVoice(targetId,activeButton);return}if(!SpeechRecognition){serverVoice(targetId,activeButton);return}
   const r=new SpeechRecognition();recognition=r;r.lang=locale();r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
   let final='',hadError=false,heardAny=false;
   const scheduleSilence=()=>{if(speechSilenceTimer)clearTimeout(speechSilenceTimer);speechSilenceTimer=setTimeout(()=>{try{if(recognition===r)r.stop()}catch(_){}},VOICE_SILENCE_MS)};
