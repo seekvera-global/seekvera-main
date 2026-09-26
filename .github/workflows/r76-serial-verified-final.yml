@@ -38,11 +38,10 @@ jobs:
           path: i18n-r76
           merge-multiple: true
 
-      - name: Rescue 11 missing packs with fast providers and repair
+      - name: Reuse 11 already-live R76 packs and verify source hash
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --quiet beautifulsoup4 Babel
           python - <<'PY'
           import json,pathlib
           langs=json.load(open('i18n-r76-languages.json',encoding='utf-8'))
@@ -53,20 +52,28 @@ jobs:
           assert len(langs)==98 and len(have)==87,(len(langs),len(have),missing)
           assert set(missing)==set(expected),(missing,expected)
           PY
-          for lang in rm kl sr fr it nl ro to fy xh tn; do
-            echo "R76_FINAL_RESCUE $lang"
-            python tools/r76_incremental_rescue13.py --lang "$lang"
+          mkdir -p i18n-r76
+          for lang in fr it nl ro sr kl to fy rm xh tn; do
+            echo "R76_REUSE_LIVE_PACK $lang"
+            curl -LfsS --retry 4 --retry-delay 1 --max-time 30 \
+              -H 'Cache-Control: no-cache' \
+              "https://seekveraglobal.com/i18n-r32/${lang}.json?r76reuse=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+              -o "i18n-r76/${lang}.json"
           done
           python - <<'PY'
           import json,pathlib
-          langs=json.load(open('i18n-r76-languages.json',encoding='utf-8'));src=json.load(open('i18n-r76-source.json',encoding='utf-8'))
+          langs=json.load(open('i18n-r76-languages.json',encoding='utf-8'))
+          src=json.load(open('i18n-r76-source.json',encoding='utf-8'))
           files=list(pathlib.Path('i18n-r76').glob('*.json'))
           assert len(files)==98,(len(files),[x for x in langs if not (pathlib.Path('i18n-r76')/(x+'.json')).exists()])
           for lang in langs:
-              d=json.load(open(pathlib.Path('i18n-r76')/(lang+'.json'),encoding='utf-8'))
+              p=pathlib.Path('i18n-r76')/(lang+'.json')
+              d=json.load(open(p,encoding='utf-8'))
               assert d['count']==src['count']==1045==len(d['translations']),(lang,d.get('count'),src['count'],len(d.get('translations',{})))
-              assert d['sourceHash']==src['sourceHash'],lang
-          print('R76_98_PACKS_COMPLETE',len(files),src['count'],src['sourceHash'])
+              assert d['sourceHash']==src['sourceHash'],(lang,d.get('sourceHash'),src['sourceHash'])
+              if d.get('language') is not None:
+                  assert d['language']==lang,(lang,d.get('language'))
+          print('R76_98_PACKS_COMPLETE_REUSED_LIVE',len(files),src['count'],src['sourceHash'])
           PY
 
       - name: Assemble audited 98-language static runtime
