@@ -36,7 +36,7 @@ jobs:
           npx -y wrangler@4 deploy --dry-run --outdir=.wrangler-dry-run
           grep -Fq '"main": "./worker-r76.js"' wrangler.jsonc
           grep -Fq '"binding": "AI"' wrangler.jsonc
-          grep -Fq '"run_worker_first": \["/api/\*"\]' wrangler.jsonc
+          grep -Fq '"run_worker_first": ["/api/*"]' wrangler.jsonc
           grep -Fq "20260926-r76-unified-global-ai" worker-r76.js
           grep -Fq "single-structured-multilingual-ai" worker-r76.js
           grep -Fq "browser-resilient-backup" r24-ai-controller.js
