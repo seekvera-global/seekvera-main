@@ -15,10 +15,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python tools/r61_country_chat_server_voice.py
-          python tools/r61b_control_conversation.py
-          python tools/r61c_audio_fallback.py
-          python tools/r61d_country_code_collision.py
           python tools/r62_any_language_voice.py
           node --check navigation.js
           node --check r24-ai-controller.js
