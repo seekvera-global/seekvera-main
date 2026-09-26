@@ -9,7 +9,21 @@ on:
       - 'tools/r76_static_binding_fix.py'
       - 'tools/r76_apply_release.py'
       - 'tools/r76_resilient_live_certification.mjs'
+      - 'worker-r76.js'
+      - 'wrangler.jsonc'
+      - 'index.html'
+      - 'global-ui.js'
+      - 'i18n-ui.js'
+      - 'r22-category-lock.js'
+      - 'r24-ai-controller.js'
+      - 'voice-ai.js'
+      - 'superapp.js'
+      - 'i18n-r32/**'
   workflow_dispatch:
+
+concurrency:
+  group: seekvera-r76-resilient-final
+  cancel-in-progress: true
 
 permissions:
   contents: write
