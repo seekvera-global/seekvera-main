@@ -15,11 +15,11 @@ function sweepStaticPack(l){
  while((n=w.nextNode())){
   const p=n.parentElement;if(!p||p.closest('script,style,noscript,code,pre,textarea,[data-user-content],.ai-msg'))continue;
   const raw=String(n.nodeValue||''),src=raw.trim(),v=translatedDecorated(t,src);
-  if(src&&v&&v!==src)n.nodeValue=raw.replace(src,v);
+  if(src&&v&&v!==src){const next=raw.replace(src,v);RENDERED_TEXT.set(n,String(next).trim());n.nodeValue=next}
  }
  for(const el of document.querySelectorAll('[placeholder],[aria-label],[title]')){
   if(el.closest?.('[data-user-content],.ai-msg'))continue;
-  for(const a of ATTRS){const src=String(el.getAttribute(a)||'').trim(),v=translatedDecorated(t,src);if(src&&v&&v!==src)el.setAttribute(a,v)}
+  for(const a of ATTRS){const src=String(el.getAttribute(a)||'').trim(),v=translatedDecorated(t,src);if(src&&v&&v!==src){markAttr(el,a,v);el.setAttribute(a,v)}}
  }
 }
 let staticGuardStarted=false,staticGuardQueued=false;
@@ -40,6 +40,7 @@ new="document.documentElement.dataset.seekveraI18nReady=l;document.documentEleme
 if old in s:s=s.replace(old,new,1)
 else:
     candidates=[
+      "document.documentElement.dataset.seekveraI18nReady=l;document.documentElement.dataset.seekveraI18nVersion=VERSION;ensureStaticGuard();sweepStaticPack(l);try{window.SEEKVERA_GLOBAL_UI?.localizeControls?.()}catch{}try{window.SEEKVERA_R22_CATEGORY_LOCK?.lock?.()}catch{}try{window.SEEKVERA_SUPERAPP_I18N?.refreshDynamicBoxes?.()}catch{}sweepStaticPack(l);const settle=()=>{if(norm(lang())===l)sweepStaticPack(l)};setTimeout(settle,35);setTimeout(settle,90);setTimeout(settle,135);applying=false}",
       "document.documentElement.dataset.seekveraI18nReady=l;document.documentElement.dataset.seekveraI18nVersion=VERSION;sweepStaticPack(l);try{window.SEEKVERA_GLOBAL_UI?.localizeControls?.()}catch{}try{window.SEEKVERA_R22_CATEGORY_LOCK?.lock?.()}catch{}try{window.SEEKVERA_SUPERAPP_I18N?.refreshDynamicBoxes?.()}catch{}sweepStaticPack(l);const settle=()=>{if(norm(lang())===l)sweepStaticPack(l)};setTimeout(settle,35);setTimeout(settle,90);setTimeout(settle,135);applying=false}",
       "document.documentElement.dataset.seekveraI18nReady=l;document.documentElement.dataset.seekveraI18nVersion=VERSION;sweepStaticPack(l);try{window.SEEKVERA_GLOBAL_UI?.localizeControls?.()}catch{}try{window.SEEKVERA_R22_CATEGORY_LOCK?.lock?.()}catch{}try{window.SEEKVERA_SUPERAPP_I18N?.refreshDynamicBoxes?.()}catch{}sweepStaticPack(l);applying=false}",
       "document.documentElement.dataset.seekveraI18nReady=l;document.documentElement.dataset.seekveraI18nVersion=VERSION;sweepStaticPack(l);try{window.SEEKVERA_GLOBAL_UI?.localizeControls?.()}catch{}try{window.SEEKVERA_R22_CATEGORY_LOCK?.lock?.()}catch{}sweepStaticPack(l);applying=false}",
