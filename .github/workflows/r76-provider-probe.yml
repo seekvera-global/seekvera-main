@@ -10,18 +10,24 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - name: Inspect TranslateAPI web POST payload
+      - name: Probe TranslateAPI anonymous web translator for kl rm
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
-          import urllib.request
-          u='https://translateapi.ai/translate/romansh/'
-          req=urllib.request.Request(u,headers={'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140 Safari/537.36'})
-          h=urllib.request.urlopen(req,timeout=25).read().decode('utf-8','replace')
-          needle="fetch('/translate/'"
-          i=h.find(needle)
-          print('INDEX',i,'LEN',len(h))
-          assert i>=0
-          print(h[max(0,i-5000):i+8000])
+          import json,urllib.request,urllib.error
+          U='https://translateapi.ai/translate/'
+          src='Find jobs and hotels near me'
+          body=json.dumps({'text':src,'source_language':'en','target_languages':['kl','rm']}).encode()
+          req=urllib.request.Request(U,data=body,headers={'content-type':'application/json','user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140 Safari/537.36','accept':'application/json'},method='POST')
+          try:
+              with urllib.request.urlopen(req,timeout=40) as r:
+                  raw=r.read().decode('utf-8','replace');print('STATUS',r.status,'BODY',raw,flush=True);d=json.loads(raw)
+          except urllib.error.HTTPError as e:
+              raw=e.read().decode('utf-8','replace');print('HTTP',e.code,'BODY',raw,flush=True);raise
+          assert d.get('success'),d
+          tr=d.get('translations') or {}
+          for lang in ['kl','rm']:
+              t=str(tr.get(lang) or '').strip();print('TRANSLATION',lang,'=>',t,flush=True);assert t and t.lower()!=src.lower()
+          print('TRANSLATEAPI_KL_RM_PASS')
           PY
