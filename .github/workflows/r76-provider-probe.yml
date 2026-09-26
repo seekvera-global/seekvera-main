@@ -1,0 +1,33 @@
+name: R76 translation provider probe
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r76-provider-probe.yml']
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Probe independent translation relays
+        shell: bash
+        run: |
+          set -u
+          for base in \
+            https://lingva.ml \
+            https://translate.jae.fi \
+            https://translate.projectsegfau.lt \
+            https://translate.dr460nf1r3.org \
+            https://lingva.garudalinux.org \
+            https://translate.plausibility.cloud
+          do
+            echo "=== $base ==="
+            code=$(curl -L -sS --max-time 10 -o /tmp/out -w '%{http_code}' "$base/api/v1/en/fr/Hello%20world" || true)
+            echo "HTTP=$code BODY=$(head -c 300 /tmp/out 2>/dev/null || true)"
+          done
+          echo '=== SEEKVERA AI ==='
+          code=$(curl -L -sS --max-time 25 -o /tmp/ai -w '%{http_code}' -H 'content-type: application/json' \
+            --data '{"message":"Translate ONLY this text into French. Return only the translation: Hello world","country":"Worldwide","language":"fr","scope":"worldwide","fast":true}' \
+            https://seekveraglobal.com/api/ai || true)
+          echo "HTTP=$code BODY=$(head -c 1000 /tmp/ai 2>/dev/null || true)"
