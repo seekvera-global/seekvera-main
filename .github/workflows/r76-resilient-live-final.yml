@@ -1,0 +1,107 @@
+name: R76 resilient live final release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r76-resilient-live-final.yml'
+      - 'tools/r76_resilience_patch.py'
+      - 'tools/r76_resilient_live_certification.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  resilient-final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply Worker-quota resilience and exact R76 release
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r76_resilience_patch.py
+          python tools/r76_apply_release.py
+          node --check r24-ai-controller.js
+          node --check r31-ui-polish.js
+          node --check voice-ai.js
+          node --check worker-r76.js
+          grep -F 'res.status===429' r24-ai-controller.js
+          grep -F 'browser-resilient-backup' r24-ai-controller.js
+          grep -F '2026-09-26 · R76' index.html
+          ! grep -F 'r74-ai-failover.js' index.html
+          ! grep -F 'r66-final-controller.js' index.html
+          echo R76_RESILIENCE_PATCH_PASS
+
+      - name: Validate 98 persisted language packs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,pathlib
+          m=json.load(open('i18n-r32/manifest.json',encoding='utf-8'));s=json.load(open('i18n-r32-source.json',encoding='utf-8'))
+          assert m['version']=='20260926-r76-complete-global-final'
+          assert m['packs']==98 and len(m['languages'])==98
+          assert s['count']==1045 and m['sourceHash']==s['sourceHash']=='b371f2422f8b5416'
+          for l in m['languages']:
+              d=json.load(open(pathlib.Path('i18n-r32')/(l+'.json'),encoding='utf-8'))
+              assert d['count']==1045==len(d['translations']),l
+              assert d['sourceHash']==m['sourceHash'],l
+          print('R76_98_PACKS_VALIDATED')
+          PY
+
+      - name: Deploy resilient R76 to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Probe static site and record API state
+        shell: bash
+        run: |
+          set -euo pipefail
+          ok=0
+          for i in $(seq 1 12); do
+            code="$(curl -LsS --max-time 20 -o /tmp/home -w '%{http_code}' -H 'Cache-Control: no-cache' "https://seekveraglobal.com/?r76resilient=$i" || true)"
+            echo "STATIC_PROBE $i status=$code bytes=$(wc -c </tmp/home 2>/dev/null || echo 0)"
+            if [ "$code" = 200 ] && grep -q '20260926-r76-complete-global-final' /tmp/home; then ok=1; break; fi
+            sleep 2
+          done
+          [ "$ok" = 1 ] || { echo R76_STATIC_LIVE_FAIL; exit 1; }
+          code="$(curl -LsS --max-time 20 -o /tmp/health -w '%{http_code}' -H 'Cache-Control: no-cache' "https://seekveraglobal.com/api/health?r76state=$(date +%s)" || true)"
+          echo "R76_API_STATE status=$code body=$(head -c 180 /tmp/health 2>/dev/null || true)"
+          if [ "$code" = 200 ] && grep -q 'single-structured-multilingual-ai' /tmp/health; then echo R76_SERVER_AI_HEALTHY; else echo R76_SERVER_AI_DEGRADED_BROWSER_FALLBACK_REQUIRED; fi
+
+      - name: Install browser
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null
+
+      - name: Run resilient live certification
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/r76_resilient_live_certification.mjs
+          echo R76_RESILIENT_LIVE_FINAL_PASS
+
+      - name: Persist only the certified release
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name seekvera-global
+          git config user.email seekvera.global@gmail.com
+          git add r24-ai-controller.js r31-ui-polish.js tools/r76_apply_release.py wrangler.jsonc i18n-ui.js voice-ai.js superapp.js r60-runtime-guard.js navigation.js sw.js ./*.html
+          if ! git diff --cached --quiet; then
+            git commit -m 'R76 resilient AI fallback and final cache release'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+          echo R76_CERTIFIED_RELEASE_PERSISTED
