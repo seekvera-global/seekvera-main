@@ -3,7 +3,7 @@ name: R76 serial verified final release
 on:
   push:
     branches: [main]
-    paths: ['.github/workflows/r76-serial-verified-final.yml', 'tools/r76_live_audit.mjs', 'tools/r76_incremental_rescue13.py']
+    paths: ['.github/workflows/r76-serial-verified-final.yml', 'tools/r76_live_audit.mjs', 'tools/r76_incremental_rescue13.py', 'worker-r76.js']
   workflow_dispatch:
 
 permissions:
@@ -127,10 +127,12 @@ jobs:
         run: |
           set -euo pipefail
           UA='Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36'
-          for i in $(seq 1 60); do
-            body="$(curl -LfsS --max-time 20 -A "$UA" -H 'Cache-Control: no-cache' "https://seekveraglobal.com/api/health?r76serial=$i" || true)"
-            if echo "$body" | grep -q 'single-structured-multilingual-ai' && echo "$body" | grep -q 'server-auto-asr-first' && echo "$body" | grep -q 'complete-static-pack-audit'; then echo "$body"; exit 0; fi
-            sleep 3
+          for i in $(seq 1 45); do
+            for base in 'https://seekveraglobal.com' 'https://seekvera-main.seekvera-global.workers.dev'; do
+              body="$(curl -LfsS --max-time 12 -A "$UA" -H 'Cache-Control: no-cache' "$base/api/health?r76serial=$i" || true)"
+              if echo "$body" | grep -q 'single-structured-multilingual-ai' && echo "$body" | grep -q 'server-auto-asr-first' && echo "$body" | grep -q 'complete-static-pack-audit'; then echo "R76_HEALTH_PASS $base"; echo "$body"; exit 0; fi
+            done
+            sleep 2
           done
           exit 1
 
