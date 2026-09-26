@@ -42,6 +42,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python -m pip install --quiet beautifulsoup4 Babel
           python - <<'PY'
           import json,pathlib
           langs=json.load(open('i18n-r76-languages.json',encoding='utf-8'))
