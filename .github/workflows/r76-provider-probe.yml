@@ -10,26 +10,44 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Probe private Pollinations structured multilingual replies
+      - name: Probe live AI while Cloudflare AI quota is exhausted
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
-          import json,urllib.parse,urllib.request
-          system='''You are SEEKVERA AI. Understand any language or dialect. Return ONLY JSON with keys reply,languageCode,category,countryAction,languageAction. Reply in the same language/script as the latest message. Categories include general,jobs,travel,property,cars,shopping,services. countryAction only for an explicit app-country change, never a search.'''
+          import json,urllib.request,time
+          U='https://seekveraglobal.com/api/ai'
+          def post(msg):
+              body=json.dumps({'message':msg,'country':'Worldwide','language':'auto','scope':'worldwide','fast':True},ensure_ascii=False).encode()
+              req=urllib.request.Request(U,data=body,headers={'content-type':'application/json','user-agent':'SEEKVERA-R76-DEGRADED-PROBE'},method='POST')
+              with urllib.request.urlopen(req,timeout=30) as r:return json.loads(r.read().decode('utf-8','replace'))
           cases=[
             ('بدي وظيفة مبيعات بفرنسا','ar','jobs'),
-            ('حطني تركيا','ar','general'),
+            ('شو فيك تساعدني اليوم؟','ar','general'),
             ('Türkiye’de satış işi arıyorum','tr','jobs'),
+            ('Je cherche un emploi commercial en Allemagne','fr','jobs'),
+            ('I need a sales job in Germany','en','jobs'),
           ]
+          bad=[]
           for msg,lang,cat in cases:
-              prompt=system+'\nLatest user message: '+msg
-              url='https://text.pollinations.ai/'+urllib.parse.quote(prompt,safe='')+'?model=openai&private=true&seed=76'
-              req=urllib.request.Request(url,headers={'accept':'text/plain','user-agent':'SEEKVERA-R76-PROBE/1.0'})
-              with urllib.request.urlopen(req,timeout=35) as r:raw=r.read().decode('utf-8','replace').strip()
-              print('RAW',msg,raw[:1200],flush=True)
-              raw=raw.removeprefix('```json').removeprefix('```').removesuffix('```').strip()
-              a=raw.find('{');b=raw.rfind('}');assert a>=0 and b>a,raw
-              d=json.loads(raw[a:b+1]);assert d.get('reply');assert str(d.get('languageCode','')).startswith(lang),(msg,d);assert d.get('category')==cat,(msg,d)
-          print('R76_PUBLIC_STRUCTURED_AI_PASS')
+              d=post(msg);print('AI',msg,json.dumps(d,ensure_ascii=False)[:1200],flush=True)
+              if not d.get('response') or d.get('category')!=cat or not str(d.get('language','')).lower().startswith(lang):bad.append((msg,d))
+          controls=[
+            ('حطني تركيا','TR',None),
+            ('غيّر الأب على لبنان','LB',None),
+            ('change the app to France','FR',None),
+            ('حوّلني ورلد وايد','WW',None),
+            ('غير لغة التطبيق للتركي',None,'tr'),
+          ]
+          for msg,cc,ll in controls:
+              d=post(msg);print('CONTROL',msg,json.dumps(d,ensure_ascii=False)[:1200],flush=True)
+              if not d.get('response'):bad.append((msg,d))
+              if cc and (d.get('countryAction') or {}).get('code')!=cc:bad.append((msg,d))
+              if ll and (d.get('languageAction') or {}).get('code')!=ll:bad.append((msg,d))
+          d=post('بدي فندق بفرنسا');print('SEARCH_NOT_CONTROL',json.dumps(d,ensure_ascii=False)[:1200],flush=True)
+          if d.get('countryAction') or d.get('category') not in ('travel','tourism'):bad.append(('بدي فندق بفرنسا',d))
+          if bad:
+              print('R76_DEGRADED_AI_BAD',json.dumps(bad,ensure_ascii=False)[:6000],flush=True)
+              raise SystemExit(1)
+          print('R76_DEGRADED_AI_PASS')
           PY
