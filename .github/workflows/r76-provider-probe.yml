@@ -8,26 +8,34 @@ permissions:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10
     steps:
-      - name: Probe MyMemory for sr kl rm
+      - name: Probe regional codes for kl and rm
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
-          import json,urllib.parse,urllib.request
+          import http.cookiejar,json,re,urllib.parse,urllib.request
           text='Find jobs and hotels near me'
-          bad=[]
-          for lang in ['sr','kl','rm']:
-              u='https://api.mymemory.translated.net/get?'+urllib.parse.urlencode({'q':text,'langpair':'en|'+lang})
+          # MyMemory code variants
+          for code in ['kl-GL','kal','rm-CH','roh']:
               try:
+                  u='https://api.mymemory.translated.net/get?'+urllib.parse.urlencode({'q':text,'langpair':'en|'+code})
                   req=urllib.request.Request(u,headers={'User-Agent':'Mozilla/5.0 SEEKVERA-R76'})
-                  with urllib.request.urlopen(req,timeout=25) as r:d=json.loads(r.read().decode('utf-8','replace'))
-                  t=str((d.get('responseData') or {}).get('translatedText') or '').strip()
-                  print('MYMEMORY',lang,'=>',t,'STATUS',d.get('responseStatus'),flush=True)
-                  if not t or t.lower()==text.lower() or str(d.get('responseStatus')) not in ('200',''):bad.append((lang,t,d.get('responseStatus')))
-              except Exception as e:
-                  print('MYMEMORY_ERROR',lang,repr(e),flush=True);bad.append((lang,repr(e),None))
-          assert not bad,'MyMemory failed '+repr(bad)
-          print('MYMEMORY_ALL_3_PASS')
+                  raw=urllib.request.urlopen(req,timeout=20).read().decode('utf-8','replace')
+                  print('MYMEMORY',code,raw[:900],flush=True)
+              except Exception as e:print('MYMEMORY_ERROR',code,repr(e),flush=True)
+          # Bing variants (including Serbian variants for reference)
+          cj=http.cookiejar.CookieJar();op=urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+          h={'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140 Safari/537.36','Accept-Language':'en-US,en;q=0.9'}
+          html=op.open(urllib.request.Request('https://www.bing.com/translator',headers=h),timeout=20).read().decode('utf-8','replace')
+          ig=(re.search(r'IG:"([^"]+)"',html) or re.search(r'"IG":"([^"]+)"',html)).group(1)
+          key,token,_=re.search(r'params_AbusePreventionHelper\s*=\s*\[(\d+),"([^"]+)",(\d+)\]',html).groups()
+          url=f'https://www.bing.com/ttranslatev3?isVertical=1&&IG={urllib.parse.quote(ig)}&IID=translator.5024.1'
+          for code in ['kl-GL','kl','rm-CH','rm','sr-Cyrl','sr-Latn']:
+              try:
+                  data=urllib.parse.urlencode({'fromLang':'en','to':code,'text':text,'token':token,'key':key}).encode()
+                  req=urllib.request.Request(url,data=data,headers={**h,'Content-Type':'application/x-www-form-urlencoded','Referer':'https://www.bing.com/translator'},method='POST')
+                  raw=op.open(req,timeout=20).read().decode('utf-8','replace');print('BING',code,raw[:700],flush=True)
+              except Exception as e:print('BING_ERROR',code,repr(e),flush=True)
           PY
