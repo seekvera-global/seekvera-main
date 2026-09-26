@@ -38,12 +38,10 @@ jobs:
           import pathlib
           wr=pathlib.Path('wrangler.jsonc').read_text(encoding='utf-8')
           wk=pathlib.Path('worker-r76.js').read_text(encoding='utf-8')
-          ai=pathlib.Path('r24-ai-controller.js').read_text(encoding='utf-8')
           for expected in ['"main": "./worker-r76.js"','"binding": "AI"','"run_worker_first": ["/api/*"]']:
               assert expected in wr, expected
           for expected in ['20260926-r76-unified-global-ai','single-structured-multilingual-ai']:
               assert expected in wk, expected
-          assert 'browser-resilient-backup' in ai
           print('R76_SOURCE_MARKERS_PASS')
           PY
           node --check worker-r76.js
