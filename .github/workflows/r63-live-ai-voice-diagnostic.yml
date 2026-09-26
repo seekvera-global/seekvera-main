@@ -1,0 +1,58 @@
+name: R63 live production AI voice diagnostic
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r63-live-ai-voice-diagnostic.yml']
+permissions:
+  contents: read
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test live health and real AI
+        shell: bash
+        run: |
+          set -euo pipefail
+          S='https://seekveraglobal.com'
+          echo '--- health ---'
+          curl -L -sS --max-time 20 -D /tmp/health.h -o /tmp/health.json "$S/api/health"
+          head -c 1200 /tmp/health.json; echo
+          echo '--- AI Arabic ---'
+          code=$(curl -L -sS --max-time 30 -D /tmp/ai.h -o /tmp/ai.json -w '%{http_code}' -H 'content-type: application/json' --data '{"message":"مرحبا، ساعدني أجد وظيفة في أمريكا","country":"Worldwide","language":"auto","fast":true}' "$S/api/ai")
+          echo "AI_CODE=$code"
+          cat /tmp/ai.json; echo
+          test "$code" = 200
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/ai.json'))
+          assert d.get('ok') is True, d
+          text=str(d.get('response','')).strip()
+          assert len(text)>3, d
+          assert any('\u0600' <= c <= '\u06ff' for c in text), d
+          print('AI_ARABIC_PASS', d.get('model'), d.get('language'), d.get('category'))
+          PY
+      - name: Test live TTS to real transcription roundtrip
+        shell: bash
+        run: |
+          set -euo pipefail
+          S='https://seekveraglobal.com'
+          code=$(curl -L -sS --max-time 30 -D /tmp/tts.h -o /tmp/voice.mp3 -w '%{http_code}' -H 'content-type: application/json' --data '{"text":"مرحبا، أريد أن أبحث عن عمل في أمريكا","language":"ar"}' "$S/api/tts")
+          echo "TTS_CODE=$code BYTES=$(wc -c </tmp/voice.mp3) TYPE=$(grep -i '^content-type:' /tmp/tts.h|tail -1|tr -d '\r')"
+          test "$code" = 200
+          test "$(wc -c </tmp/voice.mp3)" -gt 500
+          python - <<'PY'
+          import base64,json
+          b=open('/tmp/voice.mp3','rb').read()
+          json.dump({'audio':'data:audio/mpeg;base64,'+base64.b64encode(b).decode(),'language':'auto'},open('/tmp/transcribe.json','w'))
+          PY
+          code=$(curl -L -sS --max-time 45 -D /tmp/stt.h -o /tmp/stt.json -w '%{http_code}' -H 'content-type: application/json' --data-binary @/tmp/transcribe.json "$S/api/transcribe")
+          echo "STT_CODE=$code"
+          cat /tmp/stt.json; echo
+          test "$code" = 200
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/stt.json'))
+          assert d.get('ok') is True, d
+          assert len(str(d.get('text','')).strip())>3, d
+          print('STT_PASS',d.get('model'),d.get('language'),d.get('text'))
+          PY
