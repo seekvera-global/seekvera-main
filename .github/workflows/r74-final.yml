@@ -49,11 +49,12 @@ jobs:
           grep -q 'r74-ai-failover.js' /tmp/home
           grep -q 'seekvera-local-router-' /tmp/w
           python3 - <<'PY'
-          import json,urllib.request
+          import json,subprocess
           cases=[('أريد فندقاً في دبي','Arabic','travel','travel.html'),('मुझे मुंबई में होटल चाहिए','Hindi','travel','travel.html'),('我想在北京找一家酒店','Chinese','travel','travel.html'),('Je cherche un emploi au Canada','French','jobs','jobs.html')]
           for msg,lang,cat,route in cases:
-              req=urllib.request.Request('https://seekveraglobal.com/api/ai',data=json.dumps({'message':msg,'language':'English','country':'US','fast':True},ensure_ascii=False).encode(),headers={'content-type':'application/json'},method='POST')
-              with urllib.request.urlopen(req,timeout=15) as r:d=json.loads(r.read())
+              payload=json.dumps({'message':msg,'language':'English','country':'US','fast':True},ensure_ascii=False)
+              raw=subprocess.check_output(['curl','-fsS','--max-time','20','-H','content-type: application/json','--data-binary',payload,'https://seekveraglobal.com/api/ai'])
+              d=json.loads(raw)
               assert d.get('ok') and d.get('response'),d
               assert d.get('language')==lang,(lang,d)
               assert d.get('category')==cat,(cat,d)
