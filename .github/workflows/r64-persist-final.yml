@@ -1,0 +1,48 @@
+name: R64 persist audited final
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r64-persist-final.yml']
+permissions:
+  contents: write
+jobs:
+  persist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - name: Rebuild exact audited R64 on latest main
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r64_final_country_language_fix.py
+          node --check superapp.js
+          node --check voice-ai.js
+          node --check r24-ai-controller.js
+          node --check r31-ui-polish.js
+          node --check worker.js
+          node --check worker-r31.js
+          grep -F "20260926-r64-final-ai-voice" r24-ai-controller.js >/dev/null
+          grep -F "if(!country)country=findName(text,buildCountryNames())" r24-ai-controller.js >/dev/null
+          grep -F "if(!SpeechRecognition){serverVoice(targetId,activeButton);return}" voice-ai.js >/dev/null
+      - name: Commit and rebase safely
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add ./*.html superapp.js voice-ai.js r24-ai-controller.js r31-ui-polish.js worker.js worker-r31.js r60-runtime-guard.js sw.js
+          if git diff --cached --quiet; then echo 'R64 already persisted'; exit 0; fi
+          git commit -m 'Persist audited R64 final AI voice build'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
+          echo 'R64 PERSISTED ON MAIN'
+      - name: Confirm main contains final release
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git show origin/main:r24-ai-controller.js | grep -F "20260926-r64-final-ai-voice" >/dev/null
+          git show origin/main:voice-ai.js | grep -F "if(!SpeechRecognition){serverVoice(targetId,activeButton);return}" >/dev/null
+          echo 'R64 MAIN CONFIRMED'
