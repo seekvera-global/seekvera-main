@@ -20,11 +20,8 @@ jobs:
           node scripts/build.mjs
           test -s dist/transformers.js
           cp dist/transformers.js "$GITHUB_WORKSPACE/patched-transformers.js"
-          ORT=$(find /tmp/tjs -type d -path '*/node_modules/onnxruntime-web/dist' | head -1)
-          test -n "$ORT"
-          cp "$ORT"/ort-wasm* "$GITHUB_WORKSPACE/"
-          ls -lh "$GITHUB_WORKSPACE/patched-transformers.js" "$GITHUB_WORKSPACE"/ort-wasm* | head -20
-      - name: Test Arabic auto detection
+          ls -lh "$GITHUB_WORKSPACE/patched-transformers.js"
+      - name: Test Arabic auto detection with CDN runtime
         run: |
           set -euo pipefail
           python3 -m http.server 8765 >/tmp/http.log 2>&1 &
@@ -33,18 +30,18 @@ jobs:
           cat > test-patched.mjs <<'JS'
           import {chromium} from 'playwright';import fs from 'node:fs';
           const b=await chromium.launch({headless:true});const p=await b.newPage();
-          await p.goto('https://seekveraglobal.com/?patched='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+          await p.goto('https://seekveraglobal.com/?patchedcdn='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
           const bytes=await p.evaluate(async()=>{const r=await fetch('/api/tts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text:'مرحبا أريد أن أبحث عن عمل في أمريكا',language:'ar'})});if(!r.ok)throw Error('tts '+r.status);return Array.from(new Uint8Array(await r.arrayBuffer()))});
           fs.writeFileSync('arabic.mp3',Buffer.from(bytes));
           await p.goto('http://127.0.0.1:8765/',{waitUntil:'domcontentloaded'});
           const t=Date.now();
           const out=await p.evaluate(async()=>{
             const {pipeline,env}=await import('/patched-transformers.js');
-            if(env?.backends?.onnx?.wasm)env.backends.onnx.wasm.wasmPaths='/';
+            env.backends.onnx.wasm.wasmPaths='https://cdn.jsdelivr.net/npm/onnxruntime-web@1.25.0-dev.20260212-1a71a5f46e/dist/';
             const transcriber=await pipeline('automatic-speech-recognition','Xenova/whisper-tiny',{dtype:'q8',device:'wasm'});
             return await transcriber('/arabic.mp3',{task:'transcribe'});
           });
-          console.log('PATCHED_TINY_MS',Date.now()-t,'RESULT',JSON.stringify(out));
+          console.log('PATCHED_CDN_MS',Date.now()-t,'RESULT',JSON.stringify(out));
           if(!/[\u0600-\u06ff]/u.test(String(out?.text||'')))throw Error('Arabic not auto-transcribed');
           await b.close();
           JS
