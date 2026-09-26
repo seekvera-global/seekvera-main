@@ -1,0 +1,272 @@
+name: R76 complete global language AI voice final
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r76-complete-global-final.yml'
+      - 'worker-r76.js'
+      - 'tools/r76_apply_release.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  PYTHONUNBUFFERED: '1'
+  R76_VERSION: '20260926-r76-complete-global-final'
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    outputs:
+      languages: ${{ steps.meta.outputs.languages }}
+      source_count: ${{ steps.meta.outputs.source_count }}
+      source_hash: ${{ steps.meta.outputs.source_hash }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python -m pip install --quiet beautifulsoup4 Babel
+      - name: Prepare complete current-site translation source
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          src=Path('tools/r35_build_pack.py').read_text(encoding='utf-8')
+          src=re.sub(r"VERSION='[^']+'","VERSION='20260926-r76-complete-global-final'",src,count=1)
+          src=src.replace("OUT=Path('i18n-r35')","OUT=Path('i18n-r76')")
+          src=re.sub(r"JS_FILES=\[[^\n]+\]","JS_FILES=[p.name for p in Path('.').glob('*.js')]",src,count=1)
+          src=src.replace("        for opt in soup.find_all('option'):opt.decompose()\n","")
+          src=src.replace("Path('i18n-r35-source.json')","Path('i18n-r76-source.json')")
+          src=src.replace("Path('i18n-r35-languages.json')","Path('i18n-r76-languages.json')")
+          Path('tools/r76_build_pack.py').write_text(src,encoding='utf-8')
+          PY
+          python tools/r76_build_pack.py --source-only
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          s=json.load(open('i18n-r76-source.json',encoding='utf-8'));l=json.load(open('i18n-r76-languages.json',encoding='utf-8'))
+          assert len(l)==98,(len(l),l)
+          assert s['count']>967,('R76 must cover more than the stale 967 strings',s['count'])
+          print('languages='+json.dumps(l,separators=(',',':')))
+          print('source_count='+str(s['count']))
+          print('source_hash='+s['sourceHash'])
+          PY
+          echo "R76 SOURCE: $(python -c "import json;d=json.load(open('i18n-r76-source.json'));print(d['count'],d['sourceHash'])")"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: r76-source
+          path: |
+            i18n-r76-source.json
+            i18n-r76-languages.json
+            tools/r76_build_pack.py
+          retention-days: 1
+
+  packs:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        lang: ${{ fromJSON(needs.prepare.outputs.languages) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: r76-source
+          path: .
+      - run: python -m pip install --quiet beautifulsoup4 Babel
+      - name: Build ${{ matrix.lang }} complete static pack
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/r76_build_pack.py --lang '${{ matrix.lang }}'
+          python - <<'PY'
+          import json,os
+          lang=os.environ['LANG_CODE'];src=json.load(open('i18n-r76-source.json',encoding='utf-8'));d=json.load(open('i18n-r76/'+lang+'.json',encoding='utf-8'))
+          assert d['count']==src['count']==len(d['translations']),(lang,d.get('count'),src['count'],len(d.get('translations',{})))
+          assert d['sourceHash']==src['sourceHash'],lang
+          print('PACK_OK',lang,d['count'],d.get('provider'))
+          PY
+        env:
+          LANG_CODE: ${{ matrix.lang }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: r76-pack-${{ matrix.lang }}
+          path: i18n-r76/${{ matrix.lang }}.json
+          retention-days: 1
+          if-no-files-found: error
+
+  final:
+    needs: [prepare,packs]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          name: r76-source
+          path: .
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: r76-pack-*
+          path: i18n-r76
+          merge-multiple: true
+      - name: Assemble 98 complete packs and patch R76 runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,shutil,pathlib,re
+          src=json.load(open('i18n-r76-source.json',encoding='utf-8'));langs=json.load(open('i18n-r76-languages.json',encoding='utf-8'))
+          files=list(pathlib.Path('i18n-r76').glob('*.json'));assert len(files)==98,len(files)
+          out=pathlib.Path('i18n-r32');shutil.rmtree(out,ignore_errors=True);out.mkdir()
+          providers={};bad=[]
+          for lang in langs:
+              p=pathlib.Path('i18n-r76')/(lang+'.json');assert p.exists(),lang
+              d=json.load(open(p,encoding='utf-8'));assert d['count']==src['count']==len(d['translations']),(lang,d.get('count'));assert d['sourceHash']==src['sourceHash'],lang
+              providers[d.get('provider','unknown')]=providers.get(d.get('provider','unknown'),0)+1
+              if lang!='en':
+                  candidates=[s for s in src['strings'] if len(s)>=12 and len(re.findall(r"[A-Za-z][A-Za-z'’+-]{2,}",s))>=2 and 'SEEKVERA' not in s and not re.search(r'https?://|@',s)]
+                  same=[s for s in candidates if str(d['translations'].get(s,'')).strip()==s.strip()]
+                  if len(same)>max(35,int(len(candidates)*.20)):bad.append((lang,len(same),same[:6]))
+              shutil.copy2(p,out/(lang+'.json'))
+          assert not bad,'excess untranslated English: '+repr(bad[:10])
+          manifest={'version':'20260926-r76-complete-global-final','sourceHash':src['sourceHash'],'sourceCount':src['count'],'languages':langs,'packs':98,'providers':providers}
+          (out/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,separators=(',',':')),encoding='utf-8')
+          shutil.copy2('i18n-r76-source.json','i18n-r32-source.json')
+          print('R76_PACKS_READY',json.dumps(manifest,ensure_ascii=False))
+          PY
+          python tools/r76_apply_release.py
+          node --check worker-r76.js
+          node --check worker-r31.js
+          node --check i18n-ui.js
+          node --check voice-ai.js
+          node --check r31-ui-polish.js
+          node --check r24-ai-controller.js
+          grep -F 'worker-r76.js' wrangler.jsonc
+          grep -F 'serverVoice(targetId,activeButton,true)' voice-ai.js
+          ! grep -F 'r66-final-controller.js' index.html
+          ! grep -F 'r74-ai-failover.js' index.html
+
+      - name: Deploy R76 to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Wait for exact R76 live release
+        shell: bash
+        run: |
+          set -euo pipefail
+          S='https://seekveraglobal.com'
+          for i in $(seq 1 60); do
+            body="$(curl -LfsS --max-time 20 -H 'Cache-Control: no-cache' "$S/api/health?r76=$i" || true)"
+            if echo "$body" | grep -q 'single-structured-multilingual-ai' && echo "$body" | grep -q 'complete-static-pack-audit'; then echo "$body"; exit 0; fi
+            sleep 3
+          done
+          exit 1
+
+      - name: Deep live API language action audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,urllib.request,urllib.error,time,re
+          S='https://seekveraglobal.com'
+          def post(msg,**extra):
+              obj={'message':msg,'country':'Worldwide','language':'auto','scope':'worldwide','fast':True,**extra}
+              req=urllib.request.Request(S+'/api/ai',data=json.dumps(obj,ensure_ascii=False).encode(),headers={'content-type':'application/json','User-Agent':'SEEKVERA-R76-DEEP'},method='POST')
+              with urllib.request.urlopen(req,timeout=25) as r:return json.loads(r.read().decode())
+          cases=[
+            ('بدي وظيفة مبيعات بفرنسا','ar','jobs',None),
+            ('شو فيك تساعدني اليوم؟','ar','general',None),
+            ('I need a sales job in Germany','en','jobs',None),
+            ('Je cherche un emploi commercial en Allemagne','fr','jobs',None),
+            ('Türkiye’de satış işi arıyorum','tr','jobs',None),
+            ('मुझे जर्मनी में सेल्स की नौकरी चाहिए','hi','jobs',None),
+            ('我想在德国找销售工作','zh','jobs',None),
+            ('Мне нужна работа в продажах в Германии','ru','jobs',None),
+            ('Busco trabajo de ventas en Alemania','es','jobs',None),
+          ]
+          for msg,lang,cat,_ in cases:
+              d=post(msg);print('CASE',lang,cat,json.dumps(d,ensure_ascii=False)[:900]);assert d.get('ok') and d.get('response'),d;assert d.get('category')==cat,(msg,d);assert str(d.get('language','')).lower().startswith(lang),(msg,d)
+          controls=[
+            ('حطني تركيا','TR',None),('غيّر الأب على لبنان','LB',None),('change the app to France','FR',None),('حوّلني ورلد وايد','WW',None),('غير لغة التطبيق للتركي',None,'tr')
+          ]
+          for msg,cc,ll in controls:
+              d=post(msg);print('CONTROL',msg,json.dumps(d,ensure_ascii=False)[:900]);assert d.get('response'),d
+              if cc: assert (d.get('countryAction') or {}).get('code')==cc,(msg,d)
+              if ll: assert (d.get('languageAction') or {}).get('code')==ll,(msg,d)
+          # Searching in a country must not accidentally change the app country.
+          d=post('بدي فندق بفرنسا');assert not d.get('countryAction'),d;assert d.get('category') in ('travel','tourism'),d
+          print('R76_API_PASS')
+          PY
+
+      - name: Deep browser 248 countries x 98 languages x all section pages plus AI voice chat
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > r76-deep.mjs <<'JS'
+          import {chromium} from 'playwright';import assert from 'node:assert/strict';
+          const B='https://seekveraglobal.com';
+          const browser=await chromium.launch({headless:true});
+          const ctx=await browser.newContext({viewport:{width:390,height:844},locale:'ar-LB',serviceWorkers:'block',userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          const p=await ctx.newPage();const errors=[];p.on('pageerror',e=>errors.push(String(e)));
+          await p.goto(B+'/?r76deep='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_I18N_R32&&window.SEEKVERA_R31&&window.SEEKVERA_CHAT,{timeout:30000});
+          const manifest=await (await ctx.request.get(B+'/i18n-r32/manifest.json?v='+Date.now())).json();const source=await (await ctx.request.get(B+'/i18n-r32-source.json?v='+Date.now())).json();
+          assert.equal(manifest.version,'20260926-r76-complete-global-final');assert.equal(manifest.packs,98);assert.equal(manifest.languages.length,98);assert(source.count>967);
+          const packs={};for(let i=0;i<manifest.languages.length;i+=14){await Promise.all(manifest.languages.slice(i,i+14).map(async l=>{const r=await ctx.request.get(B+'/i18n-r32/'+l+'.json?v='+manifest.sourceHash,{timeout:25000});assert.equal(r.status(),200,l);const d=await r.json();assert.equal(d.count,source.count,l);packs[l]=d.translations}))}
+          const matrix=await p.evaluate(async()=>{const bad=[];for(const [cc,pr] of Object.entries(SEEKVERA_LOCALE_R15.profiles)){SEEKVERA_LOCALE_R15.setCountry(cc);await new Promise(r=>setTimeout(r,2));const g={cc:country.value,l:lang.value,c:currency.value,html:document.documentElement.lang};if(g.cc!==cc||g.l!==pr.language||g.c!==pr.currency||g.html!==pr.language)bad.push({cc,pr,g})}return{n:Object.keys(SEEKVERA_LOCALE_R15.profiles).length,bad}});assert(matrix.n>=248,matrix.n);assert.equal(matrix.bad.length,0,JSON.stringify(matrix.bad.slice(0,6)));
+          const hrefs=await p.evaluate(()=>[...new Set([...document.querySelectorAll('#categories .r5-tile')].map(a=>a.getAttribute('href')).filter(Boolean))]);assert.equal(hrefs.length,31,'31 category routes');
+          const paths=[...new Set(hrefs.map(h=>new URL(h,B).pathname))];
+          const longEnglish=source.strings.filter(s=>s.length>=12&&(s.match(/[A-Za-z][A-Za-z'’+-]{2,}/g)||[]).length>=2&&!s.includes('SEEKVERA')&&!/https?:\/\/|@/.test(s));
+          let combinations=0;const leakBad=[];
+          for(const path of paths){
+            await p.goto(B+path+'?r76lang='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});await p.waitForFunction(()=>window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_I18N_R32,{timeout:25000});
+            await p.evaluate(()=>SEEKVERA_LOCALE_R15.setLanguage('en'));await p.waitForTimeout(50);const english=await p.locator('body').innerText();const candidates=longEnglish.filter(s=>english.includes(s));
+            for(const l of manifest.languages){
+              await p.evaluate(async l=>{SEEKVERA_LOCALE_R15.setLanguage(l);await SEEKVERA_I18N_R32.loadPack(l);await SEEKVERA_I18N_R32.apply()},l);await p.waitForTimeout(8);combinations++;
+              if(l==='en')continue;const body=await p.locator('body').innerText();const leaks=candidates.filter(s=>packs[l]?.[s]&&packs[l][s]!==s&&body.includes(s)).slice(0,5);if(leaks.length){leakBad.push({path,l,leaks});break}
+            }
+            if(leakBad.length>10)break;
+          }
+          assert.equal(leakBad.length,0,'English leaks '+JSON.stringify(leakBad.slice(0,10)));
+          // AI: answer must appear before route, then route, and chat must persist/restore.
+          await p.goto(B+'/?r76chat='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});await p.waitForFunction(()=>window.SEEKVERA_R31&&window.SEEKVERA_CHAT&&document.querySelector('#aiChatForm'),{timeout:30000});
+          await p.evaluate(()=>{localStorage.removeItem('seekvera_ai_chat_v1');SEEKVERA_LOCALE_R15.setCountry('LB')});await p.fill('#aiChatInput','بدي وظيفة مبيعات بفرنسا');const before=p.url(),t=Date.now();await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(()=>{const x=[...document.querySelectorAll('#aiMessages .ai-msg.bot')].at(-1);return x&&!x.classList.contains('thinking')&&/[\u0600-\u06ff]/u.test(x.textContent||'')},{timeout:18000});const replyMs=Date.now()-t;assert.equal(p.url(),before,'route before visible reply');await p.waitForFunction(()=>location.pathname==='/jobs'||location.pathname==='/jobs.html',{timeout:12000});let saved=await p.evaluate(()=>localStorage.getItem('seekvera_ai_chat_v1')||'');assert(saved.includes('بدي وظيفة مبيعات بفرنسا'),saved);
+          await p.goto(B+'/?r76restore='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});await p.waitForFunction(()=>window.SEEKVERA_CHAT&&document.querySelector('#aiMessages'),{timeout:30000});await p.waitForTimeout(350);assert((await p.locator('#aiMessages').innerText()).includes('بدي وظيفة مبيعات بفرنسا'));
+          // Local app control: visible reply first, actual country change after it.
+          await p.evaluate(()=>SEEKVERA_LOCALE_R15.setCountry('LB'));await p.fill('#aiChatInput','حطني تركيا');const bcount=await p.locator('#aiMessages .ai-msg.bot').count();await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(n=>document.querySelectorAll('#aiMessages .ai-msg.bot').length>n,bcount,{timeout:5000});await p.waitForFunction(()=>document.querySelector('#country')?.value==='TR',{timeout:5000});
+          // TTS event path: a microphone-origin reply must call speechSynthesis.speak.
+          const spoken=await p.evaluate(async()=>{window.__r76spoken=0;try{speechSynthesis.speak=()=>{window.__r76spoken++}}catch{};SEEKVERA_VOICE_AI?.markVoiceReply?.();window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text:'مرحبا، كيف فيني ساعدك؟',language:'ar'}}));await new Promise(r=>setTimeout(r,500));return window.__r76spoken});assert(spoken>0,'voice reply did not invoke TTS');
+          const voiceText=await (await ctx.request.get(B+'/voice-ai.js?v='+Date.now())).text();assert(voiceText.includes('serverVoice(targetId,activeButton,true)'),'server ASR not first');assert(voiceText.includes("language:'auto'"),'ASR not auto-language');
+          assert.equal(errors.length,0,'page errors '+errors.slice(0,10).join(' | '));
+          console.log('R76_DEEP_BROWSER_PASS',JSON.stringify({countries:matrix.n,languages:manifest.languages.length,categoryRoutes:hrefs.length,sectionPaths:paths.length,languageSectionCombinations:combinations,sourceStrings:source.count,replyMs,chatSaved:true,chatRestored:true,ttsCalls:spoken}));
+          await browser.close();
+          JS
+          node r76-deep.mjs
+
+      - name: Persist only after every live audit passes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add worker-r76.js wrangler.jsonc i18n-r32 i18n-r32-source.json i18n-ui.js voice-ai.js r31-ui-polish.js r24-ai-controller.js superapp.js r60-runtime-guard.js navigation.js sw.js ./*.html tools/r76_apply_release.py
+          if ! git diff --cached --quiet; then
+            git commit -m 'R76 complete global language AI voice release'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+          echo 'R76 FINAL VERIFIED AND PERSISTED'
