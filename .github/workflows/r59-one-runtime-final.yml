@@ -1,0 +1,125 @@
+name: R59 one runtime final
+on:
+  push:
+    paths:
+      - 'tools/r59_one_runtime.py'
+      - '.github/workflows/r59-one-runtime-final.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  deploy-audit-persist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Build R59 single runtime
+        run: |
+          set -euo pipefail
+          python tools/r59_one_runtime.py
+          node --check r31-ui-polish.js
+          node --check voice-ai.js
+          node --check worker-r31.js
+          node --check sw.js
+          node --check r59-runtime-guard.js
+          grep -F "20260926-r59-one-runtime" index.html >/dev/null
+          grep -F "r31-ui-polish.js?v=20260926-r59-one-runtime" index.html >/dev/null
+          grep -F "voice-ai.js?v=20260926-r59-one-runtime" index.html >/dev/null
+          grep -F "r59-runtime-guard.js?v=20260926-r59-one-runtime" index.html >/dev/null
+          if grep -F "self.addEventListener('fetch'" sw.js; then echo 'SW still intercepts fetch'; exit 1; fi
+          grep -F "pendingVoiceOnNextPage(reply,language)" r31-ui-polish.js >/dev/null
+          echo 'R59 BUILD PASS'
+      - name: Deploy R59 production
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Confirm live R59 assets
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 30); do
+            h="$(curl -LfsS --max-time 15 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/?r59live=$i" || true)"
+            v="$(curl -LfsS --max-time 15 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/voice-ai.js?r59live=$i" || true)"
+            r="$(curl -LfsS --max-time 15 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/r31-ui-polish.js?r59live=$i" || true)"
+            sw="$(curl -LfsS --max-time 15 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/sw.js?r59live=$i" || true)"
+            if [[ "$h" == *'20260926-r59-one-runtime'* && "$v" == *'AudioContext'* && "$r" == *'pendingVoiceOnNextPage(reply,language)'* && "$sw" == *"RELEASE='20260926-r59-one-runtime'"* && "$sw" != *"addEventListener('fetch'"* ]]; then
+              echo 'R59 LIVE ASSETS PASS'; exit 0
+            fi
+            sleep 2
+          done
+          exit 1
+      - name: Mobile end-to-end acceptance
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > r59.mjs <<'JS'
+          import {chromium} from 'playwright';
+          import assert from 'node:assert/strict';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage({userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          await p.addInitScript(()=>{
+            window.__svSpoken=0;window.__svTTS=0;
+            window.addEventListener('seekvera:tts-start',()=>window.__svTTS++);
+            try{const real=window.speechSynthesis;Object.defineProperty(real,'speak',{configurable:true,value:(u)=>{window.__svSpoken++;setTimeout(()=>u.onstart?.(),15);setTimeout(()=>u.onend?.(),70)}})}catch{}
+          });
+          await p.route('**/api/ai',async route=>{
+            if(route.request().method()==='POST'){
+              const body=route.request().postDataJSON();
+              const solar=/شمسي|شمسية|solar/i.test(body?.message||'');
+              await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,response:solar?'وجدت طلب الطاقة الشمسية وسأفتح لك قسم الطاقة الآن.':'سأساعدك مباشرة.',language:'Arabic',category:solar?'solar':'general',route:solar?'solar.html':'marketplace.html'})});
+            }else await route.continue();
+          });
+          await p.goto('https://seekveraglobal.com/?r59test='+Date.now(),{waitUntil:'networkidle',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_R31&&window.SEEKVERA_VOICE_AI&&window.SEEKVERA_RELEASE==='20260926-r59-one-runtime',null,{timeout:30000});
+          const scripts=await p.evaluate(()=>[...document.scripts].map(s=>s.src).filter(Boolean));
+          assert.ok(scripts.some(x=>x.includes('voice-ai.js?v=20260926-r59-one-runtime')),JSON.stringify(scripts));
+          assert.ok(scripts.some(x=>x.includes('r31-ui-polish.js?v=20260926-r59-one-runtime')),JSON.stringify(scripts));
+          // Voice-origin request -> fast route -> spoken answer on destination.
+          await p.evaluate(()=>SEEKVERA_VOICE_AI.markVoiceReply());
+          await p.fill('#aiChatInput','في ارخص طاقة شمسية بلبنان');
+          const t=Date.now();
+          await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForURL(/\/solar(?:\.html)?\?/,{timeout:5000});
+          const navMs=Date.now()-t;
+          await p.waitForFunction(()=>window.__svTTS>=1&&window.__svSpoken>=1,null,{timeout:5000});
+          const voice=await p.evaluate(()=>({tts:window.__svTTS,spoken:window.__svSpoken,release:window.SEEKVERA_RELEASE}));
+          assert.ok(navMs<1800,'route too slow '+navMs);
+          assert.ok(voice.tts>=1&&voice.spoken>=1,JSON.stringify(voice));
+          // Browser back must restore useful content quickly, without SW network interception.
+          const tb=Date.now();
+          await p.goBack({waitUntil:'domcontentloaded',timeout:10000});
+          await p.waitForSelector('#aiChatForm',{state:'visible',timeout:2500});
+          const backMs=Date.now()-tb;
+          const visible=await p.evaluate(()=>({text:(document.body?.innerText||'').trim().length,release:window.SEEKVERA_RELEASE,sw:!!navigator.serviceWorker}));
+          assert.ok(backMs<2500,'back too slow '+backMs);
+          assert.ok(visible.text>200,JSON.stringify(visible));
+          // SW file must be non-intercepting.
+          const sw=await (await p.request.get('https://seekveraglobal.com/sw.js?r59audit='+Date.now())).text();
+          assert.ok(!sw.includes("addEventListener('fetch'"),sw);
+          console.log('R59 MOBILE FULL PASS',JSON.stringify({navMs,backMs,voice,visible}));
+          await b.close();
+          JS
+          node r59.mjs
+          rm -f r59.mjs
+      - name: Live AI category check
+        run: |
+          set -euo pipefail
+          body='{"message":"في أرخص طاقة شمسية بلبنان","country":"Lebanon","countryCode":"LB","language":"auto","uiLanguage":"ar","scope":"country","fast":true,"conversationIntent":"solar"}'
+          out="$(curl -fsS --max-time 12 -H 'content-type: application/json' -d "$body" https://seekveraglobal.com/api/ai)"
+          echo "$out" | grep -q '"ok":true'
+          echo "$out" | grep -q '"category":"solar"'
+          echo 'R59 LIVE AI PASS'
+      - name: Persist R59 source to main
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add -- '*.html' r59-runtime-guard.js sw.js r31-ui-polish.js voice-ai.js worker-r31.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Persist R59 single runtime fast navigation and voice'
+            git push origin HEAD:main
+          fi
+          echo 'R59 FINAL RELEASE PERSISTED'
