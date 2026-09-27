@@ -1,0 +1,105 @@
+name: R83b multilingual voice and routing hotfix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r83b-unified-voice-ai-fix.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch R83b
+        shell: python
+        run: |
+          from pathlib import Path
+          VER='20260927-r83-unified-multilingual-voice-ai'
+
+          p=Path('voice-ai.js'); s=p.read_text(encoding='utf-8')
+          s=s.replace('const VOICE_SILENCE_MS=2600,VOICE_MAX_MS=30000,VOICE_RMS_THRESHOLD=.016;','const VOICE_SILENCE_MS=3200,VOICE_MAX_MS=30000,VOICE_RMS_THRESHOLD=.016;',1)
+          s=s.replace('const audio=await blobDataURL(blob),ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),3500);','const audio=await blobDataURL(blob),ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),14000);',1)
+          old="  if(!SpeechRecognition&&navigator.mediaDevices?.getUserMedia&&window.MediaRecorder){serverVoice(targetId,activeButton);return}\n  if(!SpeechRecognition){serverVoice(targetId,activeButton);return}\n  const r=new SpeechRecognition();recognition=r;r.lang=voiceInputLocale();"
+          new="  if(navigator.mediaDevices?.getUserMedia&&window.MediaRecorder&&!forceNative){serverVoice(targetId,activeButton,true);return}\n  if(!SpeechRecognition){serverVoice(targetId,activeButton);return}\n  const r=new SpeechRecognition();recognition=r;r.lang=voiceInputLocale();"
+          if old not in s: raise SystemExit('voice anchor missing')
+          s=s.replace(old,new,1); p.write_text(s,encoding='utf-8')
+
+          p=Path('superapp.js'); s=p.read_text(encoding='utf-8')
+          s=s.replace('const RELEASE = "20260927-r81-natural-conversation";',f'const RELEASE = "{VER}";',1)
+          old='      const finalCat =\n        d.category && d.category !== "general" ? d.category : localCat;'
+          if old not in s: raise SystemExit('superapp category anchor missing')
+          s=s.replace(old,'      const finalCat = d.category ? d.category : localCat;',1)
+          s=s.replace('      "vacancy",\n      "work",\n      "employment",','      "vacancy",\n      "employment",',1)
+          s=s.replace('      "وظايف",\n      "عمل",\n      "شغل",\n      "فرصة عمل",','      "وظايف",\n      "فرصة عمل",',1)
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('r31-ui-polish.js'); s=p.read_text(encoding='utf-8')
+          s=s.replace('const VERSION = "20260926-r76-complete-global-final";',f'const VERSION = "{VER}";',1)
+          old='/job|jobs|career|vacancy|work|employment|hiring|travail|emploi|emplois|trabajo|empleo|trabalho|emprego|lavoro|arbeit|stellen|stelle|iş|is ilanı|iş ilanı|работ|ваканси|工作|职位|仕事|求人|직업|채용|وظيفة|وظائف|وظايف|عمل|شغل|فرصة عمل|دوام/u,'
+          new='/job|jobs|career|vacancy|employment|hiring|looking for work|need work|find work|travail|emploi|emplois|trabajo|empleo|trabalho|emprego|lavoro|arbeit|stellen|stelle|is ilanı|iş ilanı|работ|ваканси|工作|职位|仕事|求人|직업|채용|وظيفة|وظائف|وظايف|فرصة عمل|أبحث عن عمل|ابحث عن عمل|عم دور على شغل|بدي شغل|دوام/u,'
+          if old not in s: raise SystemExit('r31 jobs anchor missing')
+          s=s.replace(old,new,1); p.write_text(s,encoding='utf-8')
+
+          p=Path('worker-r76.js'); s=p.read_text(encoding='utf-8')
+          s=s.replace("const RELEASE='20260927-r81-natural-conversation';",f"const RELEASE='{VER}';",1)
+          anchor='function conversationalFallback(message,language)'
+          helper="function employmentIntent(message){const s=String(message||'').toLowerCase();return /\\b(?:job|jobs|career|vacancy|employment|hiring|job opening|looking for work|need work|find work)\\b|وظيف|وظائف|وظايف|فرصة عمل|أبحث عن عمل|ابحث عن عمل|عم دور على شغل|بدي شغل|بدور على شغل|دوام|emploi|emplois|travail|trabajo|empleo|trabalho|emprego|lavoro|arbeit|stellen|stelle|iş ilanı|is ilanı|ваканси|работу ищ|工作|职位|求人|채용/iu.test(s)}\n"
+          if anchor not in s: raise SystemExit('worker helper anchor missing')
+          if 'function employmentIntent(message)' not in s: s=s.replace(anchor,helper+anchor,1)
+          old="chat=conversationOnly(message),cat=chat?'general':category(d.category),response="
+          new="chat=conversationOnly(message),cat=chat?'general':(category(d.category)==='jobs'&&!employmentIntent(message)?'general':category(d.category)),response="
+          if old not in s: raise SystemExit('worker fallback category anchor missing')
+          s=s.replace(old,new,1)
+          old="cat=conversationOnly(message)?'general':category(obj.category);"
+          new="cat=conversationOnly(message)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));"
+          if old not in s: raise SystemExit('worker structured category anchor missing')
+          s=s.replace(old,new,1)
+          phrase='Choose general when no app section is relevant.'
+          replacement='Choose general for greetings, small talk, casual conversation, meta questions, incomplete or vague requests, and clarification turns. Choose a section only when the latest user message clearly asks to find, search, book, buy, sell, apply for, compare, or use something in that section. Never classify casual uses of work/عمل/شغل as Jobs unless the person is actually seeking employment.'
+          if phrase not in s: raise SystemExit('worker prompt phrase missing')
+          s=s.replace(phrase,replacement,1)
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('index.html'); s=p.read_text(encoding='utf-8')
+          s=s.replace('superapp.js?v=20260927-r82-reply-before-navigation',f'superapp.js?v={VER}',1)
+          s=s.replace('voice-ai.js?v=20260927-r81-natural-conversation',f'voice-ai.js?v={VER}',1)
+          s=s.replace('/r31-ui-polish.js?v=20260927-r82-reply-before-navigation',f'/r31-ui-polish.js?v={VER}',1)
+          s=s.replace('sw.js?v=20260927-r81-natural-conversation',f'sw.js?v={VER}',1)
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('sw.js'); s=p.read_text(encoding='utf-8')
+          s=s.replace("const RELEASE='20260927-r81-natural-conversation';",f"const RELEASE='{VER}';",1)
+          p.write_text(s,encoding='utf-8')
+
+      - name: Verify patched source
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check voice-ai.js
+          node --check superapp.js
+          node --check r31-ui-polish.js
+          node --check worker-r76.js
+          grep -F 'serverVoice(targetId,activeButton,true)' voice-ai.js
+          grep -F 'setTimeout(()=>ctl.abort(),14000)' voice-ai.js
+          grep -F 'const finalCat = d.category ? d.category : localCat;' superapp.js
+          grep -F 'function employmentIntent(message)' worker-r76.js
+          grep -F '20260927-r83-unified-multilingual-voice-ai' index.html
+
+      - name: Commit and push
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add voice-ai.js superapp.js r31-ui-polish.js worker-r76.js index.html sw.js
+          git commit -m 'R83 unify multilingual voice and natural conversation routing'
+          git push origin HEAD:main
