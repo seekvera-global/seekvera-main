@@ -64,13 +64,24 @@ function actionReply(lang,cc,ll){
   es:{country:'Entendido. Ahora cambio la app al país que pediste.',language:'Entendido. Ahora cambio el idioma de la app.'},
   ru:{country:'Понял. Сейчас переключу приложение на выбранную страну.',language:'Понял. Сейчас изменю язык приложения.'},
   zh:{country:'明白了。我现在把应用切换到你指定的国家。',language:'明白了。我现在更改应用语言。'},
-  hi:{country:'समझ गया। अब ऐप को आपके चुने हुए देश पर बदल रहा हूँ।',language:'समझ गया। अब ऐप की भाषा बदल रहा हूँ।'}
+  ja:{country:'了解しました。アプリを指定された国に切り替えます。',language:'了解しました。アプリの言語を変更します。'},
+  ko:{country:'알겠습니다. 앱을 요청하신 국가로 변경합니다.',language:'알겠습니다. 앱 언어를 변경합니다.'},
+  hi:{country:'समझ गया। अब ऐप को आपके चुने हुए देश पर बदल रहा हूँ।',language:'समझ गया। अब ऐप की भाषा बदल रहा हूँ।'},
+  pt:{country:'Entendido. Vou mudar o aplicativo para o país solicitado agora.',language:'Entendido. Vou mudar o idioma do aplicativo agora.'},
+  it:{country:'Capito. Ora imposto l’app sul Paese richiesto.',language:'Capito. Ora cambio la lingua dell’app.'},
+  id:{country:'Baik. Saya akan mengubah aplikasi ke negara yang Anda minta sekarang.',language:'Baik. Saya akan mengubah bahasa aplikasi sekarang.'},
+  th:{country:'เข้าใจแล้ว ตอนนี้ฉันจะเปลี่ยนแอปเป็นประเทศที่คุณขอ',language:'เข้าใจแล้ว ตอนนี้ฉันจะเปลี่ยนภาษาของแอป'},
+  sw:{country:'Nimeelewa. Sasa ninabadilisha programu kwenda nchi uliyoomba.',language:'Nimeelewa. Sasa ninabadilisha lugha ya programu.'},
+  ur:{country:'سمجھ گیا۔ اب ایپ کو آپ کے منتخب کردہ ملک پر تبدیل کر رہا ہوں۔',language:'سمجھ گیا۔ اب ایپ کی زبان تبدیل کر رہا ہوں۔'},
+  fa:{country:'متوجه شدم. اکنون برنامه را به کشور درخواستی تغییر می‌دهم.',language:'متوجه شدم. اکنون زبان برنامه را تغییر می‌دهم.'},
+  bn:{country:'বুঝেছি। এখন অ্যাপটি আপনার চাওয়া দেশে পরিবর্তন করছি।',language:'বুঝেছি। এখন অ্যাপের ভাষা পরিবর্তন করছি।'},
+  vi:{country:'Đã hiểu. Tôi sẽ chuyển ứng dụng sang quốc gia bạn yêu cầu ngay.',language:'Đã hiểu. Tôi sẽ đổi ngôn ngữ ứng dụng ngay.'}
  };
  return(r[lang]||r.en)[kind];
 }
-function actionState(message,modelCC='',modelLL=''){
+function actionState(message,modelCC='',modelLL='',clientControls={}){
  const s=String(message||'').toLowerCase(),isControl=controlVerb(s),wantsLanguage=languageIntent(s);
- const localCC=explicitCountryAction(message),localLL=explicitLanguageAction(message);
+ const localCC=explicitCountryAction(message)||countryCode(clientControls?.country),localLL=explicitLanguageAction(message)||languageCode(clientControls?.language);
  const cc=localCC||((isControl&&!wantsLanguage)?countryCode(modelCC):'');
  const ll=localLL||((isControl&&wantsLanguage)?languageCode(modelLL):'');
  return{cc,ll,isAction:!!(cc||ll)};
@@ -95,7 +106,7 @@ function conversationalFallback(message,language){const l=languageCode(language)
 async function degradedFallback(request,env,ctx,body,message){
  const fallback=await baseWorker.fetch(request,env,ctx);let d=null;try{d=await fallback.clone().json()}catch{}
  if(!d||typeof d!=='object'){const h=new Headers(fallback.headers);h.set('x-seekvera-release',RELEASE);return new Response(fallback.body,{status:fallback.status,statusText:fallback.statusText,headers:h})}
- const act=actionState(message,d?.countryAction?.code,d?.languageAction?.code),language=act.isAction?messageLanguage(message,d.language):normalizedLanguage(d.language,message),chat=conversationOnly(message),cat=chat?'general':category(d.category),response=act.isAction?actionReply(language,act.cc,act.ll):chat?conversationalFallback(message,language):clean(d.response,5000);
+ const act=actionState(message,d?.countryAction?.code,d?.languageAction?.code,body?.clientControls),language=act.isAction?messageLanguage(message,d.language):normalizedLanguage(d.language,message),chat=conversationOnly(message),cat=chat?'general':category(d.category),response=act.isAction?actionReply(language,act.cc,act.ll):chat?conversationalFallback(message,language):clean(d.response,5000);
  return json(request,{...d,ok:d.ok!==false,response,language,category:cat,route:ROUTES[cat]||ROUTES.general,countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:act.isAction?'seekvera-r81-local-action-fallback':chat?'seekvera-r81-local-conversation-fallback':d.model,fastPath:act.isAction?'r81-deterministic-action-fallback':chat?'r81-natural-conversation-fallback':(d.fastPath||'r81-base-fallback'),liveData:!!d.liveData},fallback.status||200)
 }
 
@@ -119,7 +130,7 @@ Latest user message: ${message}`;
  const messages=[{role:'system',content:system},{role:'user',content:message}];
  for(const model of [PRIMARY,FALLBACK]){try{
    const r=await env.AI.run(model,{messages,temperature:.1,max_tokens:520}),text=modelText(r),obj=parseJSON(text);if(!obj||!clean(obj.reply,5000))continue;
-   const act=actionState(message,obj.countryAction,obj.languageAction),language=act.isAction?messageLanguage(message,obj.languageCode):(languageCode(obj.languageCode)||normalizedLanguage('',message)),cat=conversationOnly(message)?'general':category(obj.category);
+   const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=act.isAction?messageLanguage(message,obj.languageCode):(languageCode(obj.languageCode)||normalizedLanguage('',message)),cat=conversationOnly(message)?'general':category(obj.category);
    return{ok:true,response:act.isAction?actionReply(language,act.cc,act.ll):clean(obj.reply,5000),language,category:cat,route:ROUTES[cat]||ROUTES.general,countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model,fastPath:act.isAction?'r76-verified-action-first':'r76-single-structured-ai',liveData:false}
  }catch{}}
  return null;
