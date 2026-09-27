@@ -1,0 +1,52 @@
+name: R107 live language AI polish
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r107-live.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seekvera-r107-live
+  cancel-in-progress: true
+
+jobs:
+  deploy-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify R107 source
+        run: |
+          set -e
+          node --check navigation.js
+          node --check voice-ai.js
+          grep -F "R107 remove mixed-language" <(git log -1 --pretty=%B navigation.js)
+          grep -F "b.setAttribute('aria-label',muted?'🔇':'🔊')" voice-ai.js
+          grep -F "2026-09-27 · R106" navigation.js
+      - name: Deploy R107
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Verify live assets and APIs
+        run: |
+          set -e
+          BASE='https://seekveraglobal.com'
+          for i in $(seq 1 10); do
+            S="$(date +%s)-$i"
+            curl -fsSL --max-time 25 "$BASE/navigation.js?r107=$S" -o /tmp/navigation.js
+            curl -fsSL --max-time 25 "$BASE/voice-ai.js?r107=$S" -o /tmp/voice-ai.js
+            curl -fsSL --max-time 25 "$BASE/api/health?r107=$S" -o /tmp/health.json
+            if grep -q "2026-09-27 · R106" /tmp/navigation.js               && grep -q "aria-label',muted?'🔇':'🔊" /tmp/voice-ai.js               && jq -e '.ok==true' /tmp/health.json >/dev/null; then
+              echo R107_LIVE_ASSET_PASS
+              exit 0
+            fi
+            sleep 5
+          done
+          exit 1
