@@ -1,6 +1,6 @@
 import baseWorker from './worker-r31.js';
 
-const RELEASE='20260927-r89-native-multilingual-voice';
+const RELEASE='20260927-r92-live-asr-repair';
 const PRIMARY='@cf/zai-org/glm-4.7-flash';
 const FALLBACK='@cf/qwen/qwen3-30b-a3b-fp8';
 const ASR_PRIMARY='@cf/openai/whisper-large-v3-turbo',ASR_FALLBACK='@cf/openai/whisper';
@@ -136,15 +136,21 @@ async function transcribeAudio(request,env){
  const raw=String(b.audio||''),m=raw.match(/^data:(audio\/(?:webm|mp4|mpeg|wav|ogg|x-m4a|aac|3gpp))(?:;codecs=[^;,]+)?;base64,([A-Za-z0-9+/=]+)$/i);
  if(!m)return json(request,{ok:false,error:'Valid recorded audio is required'},400);
  const approx=Math.floor(m[2].length*3/4);if(approx<80||approx>6*1024*1024)return json(request,{ok:false,error:'Audio size is invalid'},400);
- const bin=atob(m[2]),audio=Array.from(bin,c=>c.charCodeAt(0));
- const base={audio,task:'transcribe',vad_filter:true,condition_on_previous_text:false,beam_size:5,no_speech_threshold:.72};
+ const bin=atob(m[2]),audioBytes=Array.from(bin,c=>c.charCodeAt(0));
+ const common={task:'transcribe',vad_filter:true,condition_on_previous_text:false,beam_size:5,no_speech_threshold:.72};
+ // Cloudflare Whisper Large v3 Turbo accepts base64 audio; the legacy Whisper model accepts byte arrays.
+ // Use the native payload for each model and keep language unset so speech language is detected automatically.
+ const attempts=[
+   [ASR_PRIMARY,{...common,audio:m[2]},'base64'],
+   [ASR_FALLBACK,{...common,audio:audioBytes},'bytes']
+ ];
  const errors=[];
- for(const model of [ASR_PRIMARY,ASR_FALLBACK]){try{
-   const r=await Promise.race([env.AI.run(model,base),new Promise((_,reject)=>setTimeout(()=>reject(Error('asr timeout')),8000))]),text=clean(r?.text||r?.result?.text||r?.result||'',5000);
-   if(text){const language=messageLanguage(text,'');return json(request,{ok:true,text,language,detectedLanguage:language,model,autoLanguage:true},200)}
-   errors.push(model+':empty');
- }catch(e){errors.push(model+':'+clean(e?.message||e,180))}}
- return json(request,{ok:false,error:'Voice transcription is temporarily unavailable',retryable:true,detail:errors.slice(-2).join(' | ')},503)
+ for(const [model,input,format] of attempts){try{
+   const r=await Promise.race([env.AI.run(model,input),new Promise((_,reject)=>setTimeout(()=>reject(Error('asr timeout')),10000))]),text=clean(r?.text||r?.result?.text||r?.result||'',5000);
+   if(text){const detected=clean(r?.language||r?.detected_language||r?.result?.language||'',24),language=languageCode(detected)||messageLanguage(text,'');return json(request,{ok:true,text,language,detectedLanguage:language,model,audioFormat:format,autoLanguage:true},200)}
+   errors.push(model+'('+format+'):empty');
+ }catch(e){errors.push(model+'('+format+'):'+clean(e?.message||e,180))}}
+ return json(request,{ok:false,error:'Voice transcription is temporarily unavailable',retryable:true,detail:errors.join(' | ')},503)
 }
 
 async function degradedFallback(request,env,ctx,body,message){
@@ -200,7 +206,7 @@ export default{async fetch(request,env,ctx){
  const u=new URL(request.url);
  if(request.method==='OPTIONS')return new Response(null,{status:204,headers:headers(request)});
  if(u.pathname==='/api/health'){
-   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,r86:true,r86Runtime:'conversation-first-multilingual-ai',r89:true,r89Runtime:'workers-ai-whisper-byte-array-no-consent',r88:true,r88Runtime:'fast-auto-asr-server-first-tts-natural-fallback',r87:true,r87Runtime:'latest-message-language-plus-real-ai-fallback',r86Routing:'goal-aware-not-keyword-first',r86Voice:'whisper-auto-language-independent-of-ui',r86Asr:ASR_PRIMARY,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
+   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,r86:true,r86Runtime:'conversation-first-multilingual-ai',r92:true,r92Runtime:'native-asr-payload-per-model-auto-language',r89:true,r89Runtime:'workers-ai-whisper-byte-array-no-consent',r88:true,r88Runtime:'fast-auto-asr-server-first-tts-natural-fallback',r87:true,r87Runtime:'latest-message-language-plus-real-ai-fallback',r86Routing:'goal-aware-not-keyword-first',r86Voice:'whisper-auto-language-independent-of-ui',r86Asr:ASR_PRIMARY,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
  }
  if(u.pathname==='/api/transcribe'&&request.method==='POST')return transcribeAudio(request,env);
  if(u.pathname==='/api/ai'&&request.method==='POST'){
