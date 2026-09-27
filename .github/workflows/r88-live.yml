@@ -27,18 +27,34 @@ jobs:
           node --check sw.js
           grep -F '20260927-r89-native-multilingual-voice' worker-r76.js
           grep -F 'voice-ai.js?v=20260927-r89-native-multilingual-voice' index.html
-      - name: Commit files
+          ! grep -q 'js.puter.com' voice-ai.js
+      - name: Commit files if needed
         run: |
           git config user.name 'seekvera-global'
           git config user.email 'seekvera.global@gmail.com'
           git add worker-r76.js voice-ai.js index.html sw.js
-          git commit -m 'R89 fix multilingual voice core'
-          git push origin HEAD:main
+          if ! git diff --cached --quiet; then git commit -m 'R89 fix multilingual voice core'; git push origin HEAD:main; fi
       - name: Deploy
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
+      - name: Verify R89 live voice core
+        shell: bash
+        run: |
+          set -e
+          BASE='https://seekveraglobal.com'
+          stamp=$(date +%s)
+          curl -LsS --max-time 20 "$BASE/api/health?r89=$stamp" -o /tmp/health
+          curl -LsS --max-time 20 "$BASE/voice-ai.js?r89=$stamp" -o /tmp/voice
+          curl -LsS --max-time 25 -H 'content-type: application/json' -d '{"text":"مرحبا كيفك اليوم","language":"ar"}' "$BASE/api/tts?r89=$stamp" -o /tmp/ar.mp3
+          B64=$(base64 -w0 /tmp/ar.mp3)
+          printf '{"audio":"data:audio/mpeg;base64,%s","language":"auto"}' "$B64" > /tmp/asr.json
+          curl -LsS --max-time 25 -H 'content-type: application/json' --data-binary @/tmp/asr.json "$BASE/api/transcribe?r89=$stamp" -o /tmp/asr
+          cat /tmp/asr
+          jq -e '.r89==true' /tmp/health >/dev/null
+          ! grep -q 'js.puter.com' /tmp/voice
+          jq -e '.ok==true and (.text|length>2)' /tmp/asr >/dev/null
 
-# trigger-r89-idempotent
+# trigger-r89-deploy-final
