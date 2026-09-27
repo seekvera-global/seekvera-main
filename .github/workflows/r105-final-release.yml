@@ -72,7 +72,7 @@ jobs:
             curl -fsSL --max-time 45 -H 'content-type: application/json' -d '{"message":"change country to Iceland","country":"Worldwide","language":"auto","history":[]}' "$BASE/api/ai?r105=$stamp" -o /tmp/country.json
             curl -fsSL --max-time 45 -H 'content-type: application/json' -d '{"message":"I want to buy a gun","country":"Worldwide","language":"auto","history":[]}' "$BASE/api/ai?r105=$stamp" -o /tmp/safety.json
             if grep -q '20260927-r107-final-action-routing' /tmp/health.json \
-              && grep -q 'global-ui.js?v=20260927-r107-final-action-routing' /tmp/home.html \
+              && grep -q 'global-ui.js?v=20260927-r106-final-conversation-locale' /tmp/home.html \
               && grep -q 'Worldwide is the neutral first-run market' /tmp/global-ui.js \
               && grep -q '20260927-r104-fast-atomic-i18n' /tmp/i18n-ui.js \
               && jq -e '.category=="general" and .route==null and .language=="en" and (.response|length>5)' /tmp/chat-en.json >/dev/null \
