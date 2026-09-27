@@ -1,4 +1,4 @@
-name: R89 deploy
+name: R90 local multilingual voice
 
 on:
   push:
@@ -18,43 +18,44 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Apply patch
-        run: python tools/r89_voice_core_fix.py
-      - name: Check files
+      - name: Apply R90
+        run: python tools/r90_local_multilingual_voice.py
+      - name: Verify source
         run: |
+          set -e
           node --check voice-ai.js
           node --check worker-r76.js
           node --check sw.js
-          grep -F '20260927-r89-native-multilingual-voice' worker-r76.js
-          grep -F 'voice-ai.js?v=20260927-r89-native-multilingual-voice' index.html
+          grep -F "mod.env.remoteHost='https://huggingface.co/'" voice-ai.js
+          grep -F "local multilingual ASR timeout" voice-ai.js
+          grep -F "localWhisperEngine().catch(()=>{});" voice-ai.js
+          grep -F 'voice-ai.js?v=20260927-r90-local-multilingual-voice' index.html
           ! grep -q 'js.puter.com' voice-ai.js
-      - name: Commit files if needed
+      - name: Commit R90 if needed
         run: |
           git config user.name 'seekvera-global'
           git config user.email 'seekvera.global@gmail.com'
-          git add worker-r76.js voice-ai.js index.html sw.js
-          if ! git diff --cached --quiet; then git commit -m 'R89 fix multilingual voice core'; git push origin HEAD:main; fi
-      - name: Deploy
+          git add voice-ai.js index.html sw.js
+          if ! git diff --cached --quiet; then git commit -m 'R90 use local multilingual Whisper and native speech output'; git push origin HEAD:main; fi
+      - name: Deploy R90
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
-      - name: Verify R89 live voice core
+      - name: Verify live R90 assets and voice output
         shell: bash
         run: |
           set -e
           BASE='https://seekveraglobal.com'
           stamp=$(date +%s)
-          curl -LsS --max-time 20 "$BASE/api/health?r89=$stamp" -o /tmp/health
-          curl -LsS --max-time 20 "$BASE/voice-ai.js?r89=$stamp" -o /tmp/voice
-          curl -LsS --max-time 25 -H 'content-type: application/json' -d '{"text":"مرحبا كيفك اليوم","language":"ar"}' "$BASE/api/tts?r89=$stamp" -o /tmp/ar.mp3
-          B64=$(base64 -w0 /tmp/ar.mp3)
-          printf '{"audio":"data:audio/mpeg;base64,%s","language":"auto"}' "$B64" > /tmp/asr.json
-          curl -LsS --max-time 25 -H 'content-type: application/json' --data-binary @/tmp/asr.json "$BASE/api/transcribe?r89=$stamp" -o /tmp/asr
-          cat /tmp/asr
-          jq -e '.r89==true' /tmp/health >/dev/null
+          curl -LsS --max-time 20 -H 'cache-control: no-cache' "$BASE/?r90=$stamp" -o /tmp/home
+          curl -LsS --max-time 20 -H 'cache-control: no-cache' "$BASE/voice-ai.js?r90=$stamp" -o /tmp/voice
+          curl -LsS --max-time 20 -I 'https://huggingface.co/Xenova/whisper-tiny/resolve/main/config.json' -o /tmp/hf
+          curl -LsS --max-time 25 -H 'content-type: application/json' -d '{"text":"مرحبا، كيف حالك؟","language":"ar"}' "$BASE/api/tts?r90=$stamp" -o /tmp/tts
+          grep -q 'voice-ai.js?v=20260927-r90-local-multilingual-voice' /tmp/home
+          grep -q "mod.env.remoteHost='https://huggingface.co/'" /tmp/voice
+          grep -q 'local multilingual ASR timeout' /tmp/voice
           ! grep -q 'js.puter.com' /tmp/voice
-          jq -e '.ok==true and (.text|length>2)' /tmp/asr >/dev/null
-
-# trigger-r89-deploy-final
+          test $(wc -c < /tmp/tts) -gt 500
+          echo R90_LIVE_ASSETS_PASS
