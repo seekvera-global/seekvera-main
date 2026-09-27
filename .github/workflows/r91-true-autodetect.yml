@@ -1,0 +1,135 @@
+name: R91 true multilingual voice autodetect
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r91-true-autodetect.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-certify-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install build and browser tools
+        run: |
+          set -e
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak-ng >/dev/null
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+
+      - name: Build Transformers.js with Whisper auto language detection
+        shell: bash
+        run: |
+          set -e
+          git clone --depth 1 https://github.com/jhlee111/transformers.js /tmp/tjs
+          cd /tmp/tjs
+          git fetch --depth 1 origin 937ea0ad3422835f2f3f3f3bd09e7d2593117910
+          git checkout 937ea0ad3422835f2f3f3f3bd09e7d2593117910
+          corepack enable
+          corepack prepare pnpm@10.28.1 --activate
+          pnpm install --frozen-lockfile
+          pnpm --filter @huggingface/transformers build
+          test -s packages/transformers/dist/transformers.web.js
+          cp packages/transformers/dist/transformers.web.js "$GITHUB_WORKSPACE/patched-transformers-r91.js"
+          grep -q 'detect_language' packages/transformers/src/models/whisper/modeling_whisper.js
+
+      - name: Prepare SEEKVERA R91
+        run: |
+          python tools/r91_install_autodetect_bundle.py
+          node --check voice-ai.js
+          node --check patched-transformers-r91.js
+          grep -F 'patched-transformers-r91.js?v=20260927-r91-true-language-autodetect' voice-ai.js
+          grep -F "'onnx-community/whisper-tiny'" voice-ai.js
+
+      - name: Generate English and Arabic voice fixtures
+        run: |
+          espeak-ng -v en-us -s 125 -w /tmp/en.wav 'hello seekvera how are you today I need a hotel in Beirut'
+          espeak-ng -v ar -s 120 -w /tmp/ar.wav 'مرحبا كيف حالك اليوم انا اتكلم معك بالعربي واريد فندق في بيروت'
+
+      - name: Certify patched auto detection locally in Chromium
+        shell: bash
+        run: |
+          set -e
+          python3 -m http.server 8765 >/tmp/http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          cat > r91-cert.mjs <<'JS'
+          import {chromium} from 'playwright';
+          import fs from 'node:fs';
+          const browser=await chromium.launch({headless:true});
+          const page=await browser.newPage();
+          page.on('console',m=>console.log('BROWSER',m.type(),m.text()));
+          page.on('pageerror',e=>console.log('PAGEERROR',e.message));
+          await page.goto('http://127.0.0.1:8765/?r91=local-cert',{waitUntil:'domcontentloaded',timeout:60000});
+          const en=fs.readFileSync('/tmp/en.wav').toString('base64');
+          const ar=fs.readFileSync('/tmp/ar.wav').toString('base64');
+          const out=await page.evaluate(async({en,ar})=>{
+            const mod=await import('/patched-transformers-r91.js?v=cert');
+            mod.env.allowRemoteModels=true;
+            mod.env.remoteHost='https://huggingface.co/';
+            mod.env.remotePathTemplate='{model}/resolve/{revision}/';
+            mod.env.useBrowserCache=true;
+            const pipe=await mod.pipeline('automatic-speech-recognition','onnx-community/whisper-tiny',{dtype:'q8',device:'wasm'});
+            const blob=b64=>{const x=atob(b64),u=new Uint8Array(x.length);for(let i=0;i<x.length;i++)u[i]=x.charCodeAt(i);return new Blob([u],{type:'audio/wav'})};
+            async function tr(b64){const u=URL.createObjectURL(blob(b64));try{return await pipe(u,{task:'transcribe'})}finally{URL.revokeObjectURL(u)}}
+            return {en:await tr(en),ar:await tr(ar)};
+          },{en,ar});
+          console.log('R91_RESULT',JSON.stringify(out));
+          const et=String(out.en?.text||''),at=String(out.ar?.text||'');
+          if(!/hello|hotel|beirut/i.test(et))throw new Error('English transcript failed: '+et);
+          if(!/[\u0600-\u06ff]/.test(at))throw new Error('Arabic language detection failed: '+at);
+          if(!/مرحبا|بيروت|فندق|العربي|حال/.test(at))throw new Error('Arabic transcript content failed: '+at);
+          await browser.close();
+          JS
+          node r91-cert.mjs
+
+      - name: Commit R91 certified bundle
+        run: |
+          set -e
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add patched-transformers-r91.js voice-ai.js index.html sw.js
+          git commit -m 'R91 true multilingual Whisper language autodetection'
+          git push origin HEAD:main
+
+      - name: Deploy R91
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Certify R91 live assets and AI reply languages
+        shell: bash
+        run: |
+          set -e
+          BASE='https://seekveraglobal.com'
+          for i in $(seq 1 8); do
+            stamp="$(date +%s)-$i"
+            curl -LsS --max-time 20 -H 'cache-control: no-cache' "$BASE/?r91=$stamp" -o /tmp/home
+            curl -LsS --max-time 20 -H 'cache-control: no-cache' "$BASE/voice-ai.js?r91=$stamp" -o /tmp/voice
+            curl -LsS --max-time 20 -H 'cache-control: no-cache' "$BASE/patched-transformers-r91.js?r91=$stamp" -o /tmp/lib
+            curl -LsS --max-time 25 -H 'content-type: application/json' -d '{"message":"كيفك اليوم؟","country":"Lebanon","language":"English","history":[]}' "$BASE/api/ai?r91=$stamp" -o /tmp/ar
+            curl -LsS --max-time 25 -H 'content-type: application/json' -d '{"message":"How are you today?","country":"Lebanon","language":"Arabic","history":[]}' "$BASE/api/ai?r91=$stamp" -o /tmp/en
+            if grep -q 'voice-ai.js?v=20260927-r91-true-language-autodetect' /tmp/home \
+              && grep -q 'patched-transformers-r91.js?v=20260927-r91-true-language-autodetect' /tmp/voice \
+              && test $(wc -c < /tmp/lib) -gt 500000 \
+              && jq -e '.language=="ar" and (.response|length>3)' /tmp/ar >/dev/null \
+              && jq -e '.language=="en" and (.response|length>3)' /tmp/en >/dev/null; then
+              echo R91_LIVE_PASS
+              exit 0
+            fi
+            sleep 3
+          done
+          exit 1
