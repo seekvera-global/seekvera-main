@@ -1,0 +1,69 @@
+name: R88 voice diagnostic
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r88-voice-diagnostic.yml'
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Test live TTS and ASR roundtrip
+        shell: bash
+        run: |
+          set -u
+          BASE='https://seekveraglobal.com'
+          echo '--- health ---'
+          curl -LsS --max-time 20 "$BASE/api/health?r88diag=$(date +%s)" -o /tmp/health.json
+          cat /tmp/health.json; echo
+
+          echo '--- English TTS ---'
+          curl -LsS --max-time 25 -D /tmp/en.h -H 'content-type: application/json' \
+            -d '{"text":"Hello, how are you today?","language":"en"}' \
+            "$BASE/api/tts?r88diag=$(date +%s)" -o /tmp/en.audio || true
+          cat /tmp/en.h || true
+          wc -c /tmp/en.audio || true
+          ENB64=$(base64 -w0 /tmp/en.audio 2>/dev/null || true)
+          if [ -n "$ENB64" ]; then
+            python - <<'PY'
+import base64,json,pathlib
+p=pathlib.Path('/tmp/en.audio')
+data=base64.b64encode(p.read_bytes()).decode()
+pathlib.Path('/tmp/en.json').write_text(json.dumps({'audio':'data:audio/mpeg;base64,'+data,'language':'auto'}))
+PY
+            curl -LsS --max-time 35 -H 'content-type: application/json' --data-binary @/tmp/en.json \
+              "$BASE/api/transcribe?r88diag=$(date +%s)" -o /tmp/en.asr || true
+            cat /tmp/en.asr || true; echo
+          fi
+
+          echo '--- Arabic TTS ---'
+          curl -LsS --max-time 25 -D /tmp/ar.h -H 'content-type: application/json' \
+            -d '{"text":"مرحبا، كيف حالك اليوم؟","language":"ar"}' \
+            "$BASE/api/tts?r88diag=$(date +%s)" -o /tmp/ar.audio || true
+          cat /tmp/ar.h || true
+          wc -c /tmp/ar.audio || true
+          if [ -s /tmp/ar.audio ]; then
+            python - <<'PY'
+import base64,json,pathlib
+p=pathlib.Path('/tmp/ar.audio')
+data=base64.b64encode(p.read_bytes()).decode()
+pathlib.Path('/tmp/ar.json').write_text(json.dumps({'audio':'data:audio/mpeg;base64,'+data,'language':'auto'},ensure_ascii=False))
+PY
+            curl -LsS --max-time 35 -H 'content-type: application/json' --data-binary @/tmp/ar.json \
+              "$BASE/api/transcribe?r88diag=$(date +%s)" -o /tmp/ar.asr || true
+            cat /tmp/ar.asr || true; echo
+          fi
+
+          echo '--- AI language independence ---'
+          curl -LsS --max-time 25 -H 'content-type: application/json' \
+            -d '{"message":"How are you today?","country":"Lebanon","language":"Arabic","history":[]}' \
+            "$BASE/api/ai?r88diag=$(date +%s)" -o /tmp/ai-en || true
+          cat /tmp/ai-en; echo
+          curl -LsS --max-time 25 -H 'content-type: application/json' \
+            -d '{"message":"كيفك اليوم؟ شو عم تعمل؟","country":"United States","language":"English","history":[]}' \
+            "$BASE/api/ai?r88diag=$(date +%s)" -o /tmp/ai-ar || true
+          cat /tmp/ai-ar; echo
