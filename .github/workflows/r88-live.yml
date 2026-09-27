@@ -1,0 +1,87 @@
+name: R88 live voice speaker final
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r88-live.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply R88 patch
+        run: python tools/r88_voice_speaker_final.py
+
+      - name: Verify source
+        run: |
+          set -e
+          node --check voice-ai.js
+          node --check worker-r76.js
+          node --check r31-ui-polish.js
+          node --check sw.js
+          grep -F '20260927-r88-live-voice-speaker-final' worker-r76.js
+          grep -F 'puterAutoTranscribe' voice-ai.js
+          grep -F 'Promise.any([seekveraAutoTranscribe(blob),puterAutoTranscribe(blob)])' voice-ai.js
+          grep -F 'serverSpeakSequence' voice-ai.js
+          grep -F 'SEEKVERA_R31?.submitAI(spoken,{fromVoice:true})' voice-ai.js
+          grep -F 'voice-ai.js?v=20260927-r88-live-voice-speaker-final' index.html
+
+      - name: Commit R88 source
+        run: |
+          set -e
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add worker-r76.js voice-ai.js index.html sw.js
+          git commit -m 'R88 fix multilingual microphone and spoken replies'
+          git push origin HEAD:main
+
+      - name: Deploy R88
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Verify live R88
+        shell: bash
+        run: |
+          set -e
+          for i in $(seq 1 10); do
+            stamp="$(date +%s)-$i"
+            curl -LsS --max-time 20 -H 'cache-control: no-cache' "https://seekveraglobal.com/?r88=$stamp" -o /tmp/home
+            curl -LsS --max-time 20 -H 'cache-control: no-cache' "https://seekveraglobal.com/voice-ai.js?r88=$stamp" -o /tmp/voice
+            curl -LsS --max-time 20 "https://seekveraglobal.com/api/health?r88=$stamp" -o /tmp/health
+            curl -LsS --max-time 25 -H 'content-type: application/json' -d '{"message":"كيفك اليوم؟ شو عم تعمل؟","country":"United States","language":"English","history":[]}' "https://seekveraglobal.com/api/ai?r88=$stamp" -o /tmp/ar
+            curl -LsS --max-time 25 -H 'content-type: application/json' -d '{"message":"How are you today? What are you doing?","country":"Lebanon","language":"Arabic","history":[]}' "https://seekveraglobal.com/api/ai?r88=$stamp" -o /tmp/en
+            curl -LsS --max-time 25 -D /tmp/tts.h -H 'content-type: application/json' -d '{"text":"أهلاً، أنا أفهمك وسأرد عليك بالصوت.","language":"ar"}' "https://seekveraglobal.com/api/tts?r88=$stamp" -o /tmp/tts.bin || true
+            bytes=$(wc -c < /tmp/tts.bin 2>/dev/null || echo 0)
+            if grep -q 'voice-ai.js?v=20260927-r88-live-voice-speaker-final' /tmp/home \
+              && grep -q 'puterAutoTranscribe' /tmp/voice \
+              && grep -q 'serverSpeakSequence' /tmp/voice \
+              && jq -e '.r88==true' /tmp/health >/dev/null \
+              && jq -e '.category=="general" and .language=="ar" and (.response|length>5)' /tmp/ar >/dev/null \
+              && jq -e '.category=="general" and .language=="en" and (.response|length>5)' /tmp/en >/dev/null \
+              && [ "$bytes" -gt 500 ] \
+              && ! grep -q 'voice generation unavailable' /tmp/tts.bin; then
+              echo "R88_LIVE_PASS TTS_BYTES=$bytes"
+              exit 0
+            fi
+            sleep 3
+          done
+          echo '--- HEALTH ---'; cat /tmp/health || true
+          echo '--- AR ---'; cat /tmp/ar || true
+          echo '--- EN ---'; cat /tmp/en || true
+          echo '--- TTS HEADERS ---'; cat /tmp/tts.h || true
+          echo '--- TTS BYTES ---'; wc -c /tmp/tts.bin || true
+          echo '--- TTS BODY IF TEXT ---'; head -c 500 /tmp/tts.bin || true; echo
+          exit 1
