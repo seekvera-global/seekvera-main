@@ -98,8 +98,12 @@ async function translateResidualUI(){
   const l=langCode();if(l==='en')return;
   const selectors=['.r5-hero p','.sv-global-tip'];
   const els=[...document.querySelectorAll(selectors.join(','))].filter(e=>!e.closest('#aiMessages')&&(e.textContent||'').trim());
+  const CORE={
+    ja:{'Hotels, homes, cars, jobs, products, suppliers, media and services — from one global marketplace.':'ホテル、住宅、車、仕事、商品、サプライヤー、メディア、サービスを1つのグローバル市場で。','Categories':'カテゴリー','AI Chat':'AI チャット','Safety':'安全'},
+    ar:{'Hotels, homes, cars, jobs, products, suppliers, media and services — from one global marketplace.':'فنادق ومنازل وسيارات ووظائف ومنتجات وموردون وإعلام وخدمات — من سوق عالمي واحد.','Categories':'الأقسام','AI Chat':'محادثة AI','Safety':'الأمان'}
+  };
   const sources=[],targets=[];
-  for(const e of els){const t=(e.dataset.svResidualSource||e.textContent||'').trim();if(!t)continue;e.dataset.svResidualSource=t;if(e.dataset.svResidualLang===l)continue;sources.push(t);targets.push(e)}
+  for(const e of els){const t=(e.dataset.svResidualSource||e.textContent||'').trim().replace(/\s+/g,' ');if(!t)continue;e.dataset.svResidualSource=t;if(e.dataset.svResidualLang===l)continue;let fixed=CORE[l]?.[t]||'';if(!fixed)try{fixed=window.SEEKVERA_I18N?.t?.(t)||window.SEEKVERA_LOCALE_R14?.t?.(t)||''}catch{}if(fixed&&fixed!==t){e.textContent=fixed;e.dataset.svResidualLang=l;continue}sources.push(t);targets.push(e)}
   if(!sources.length)return;
   try{const language=displayLanguage(l,'en'),r=await fetch('/api/ui-translate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language,strings:sources})}),d=await r.json();if(!r.ok||!Array.isArray(d.translations))return;targets.forEach((e,i)=>{const t=String(d.translations[i]||'').trim();if(t&&t!==sources[i]){e.textContent=t;e.dataset.svResidualLang=l}})}catch{}
 }
