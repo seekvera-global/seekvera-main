@@ -1,4 +1,4 @@
-name: R80 unified multilingual voice actions
+name: R81 natural multilingual conversation
 
 on:
   push:
@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: seekvera-r80-production
+  group: seekvera-r81-production
   cancel-in-progress: true
 
 jobs:
@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Verify R80 source
+      - name: Verify R81 source
         shell: bash
         run: |
           set -euo pipefail
@@ -33,21 +33,23 @@ jobs:
           node --check r24-ai-controller.js
           node --check voice-ai.js
           node --check superapp.js
-          grep -F '20260927-r80-unified-voice-actions' index.html
+          grep -F '20260927-r81-natural-conversation' index.html
+          grep -F "let best='general'" superapp.js
+          grep -F 'conversationOnly' worker-r76.js
           grep -F 'VOICE_MAX_MS=30000' voice-ai.js
           grep -F 'mergeTranscript' voice-ai.js
           grep -F 'compactScript' r24-ai-controller.js
           grep -F 'navigateAfterReply' superapp.js
           grep -F 'ANY country in the world' worker-r76.js
 
-      - name: Deploy R80 to Cloudflare
+      - name: Deploy R81 to Cloudflare
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
 
-      - name: Verify live R80
+      - name: Verify live R81
         shell: bash
         run: |
           set -euo pipefail
@@ -57,14 +59,20 @@ jobs:
             curl -LsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/voice-ai.js?r80=$stamp" -o /tmp/voice
             curl -LsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/r24-ai-controller.js?r80=$stamp" -o /tmp/control
             curl -LsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/superapp.js?r80=$stamp" -o /tmp/app
-            if grep -q '20260927-r80-unified-voice-actions' /tmp/home \
+            curl -LsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/api/health?r81=$stamp" -o /tmp/health
+            curl -LsS --max-time 25 -H 'Content-Type: application/json' -d '{"message":"how are you","country":"Worldwide","history":[]}' "https://seekveraglobal.com/api/ai?r81=$stamp" -o /tmp/chat
+            curl -LsS --max-time 25 -H 'Content-Type: application/json' -d '{"message":"把应用切换到巴西","country":"Worldwide","history":[]}' "https://seekveraglobal.com/api/ai?r81=$stamp" -o /tmp/country
+            if grep -q '20260927-r81-natural-conversation' /tmp/home \
               && grep -q 'VOICE_MAX_MS=30000' /tmp/voice \
               && grep -q 'compactScript' /tmp/control \
-              && grep -q 'navigateAfterReply' /tmp/app; then
-              echo R80_LIVE_PASS
+              && grep -q "let best='general'" /tmp/app \
+              && jq -e '.r81 == true and .r81Routing == "explicit-intent-only"' /tmp/health >/dev/null \
+              && jq -e '.category == "general" and (.response | length > 2)' /tmp/chat >/dev/null \
+              && jq -e '.countryAction.code == "BR"' /tmp/country >/dev/null; then
+              echo R81_LIVE_PASS
               exit 0
             fi
             sleep 3
           done
-          echo R80_LIVE_FAIL
+          echo R81_LIVE_FAIL
           exit 1
