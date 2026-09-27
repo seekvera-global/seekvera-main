@@ -23,22 +23,20 @@ jobs:
         run: |
           espeak-ng -v en-us -s 130 -w /tmp/en.wav 'hello seekvera how are you today'
           espeak-ng -v ar -s 125 -w /tmp/ar.wav 'مرحبا كيف حالك اليوم'
-          base64 -w0 /tmp/en.wav > /tmp/en.b64
-          base64 -w0 /tmp/ar.wav > /tmp/ar.b64
       - name: Test live browser-side multilingual Whisper
         shell: bash
         run: |
-          EN=$(cat /tmp/en.b64)
-          AR=$(cat /tmp/ar.b64)
           cat > /tmp/r90-test.mjs <<'JS'
           import {chromium} from 'playwright';
+          import fs from 'node:fs';
           const browser=await chromium.launch({headless:true});
           const page=await browser.newPage();
           page.on('console',m=>console.log('BROWSER',m.type(),m.text()));
           page.on('pageerror',e=>console.log('PAGEERROR',e.message));
-          await page.goto('https://seekveraglobal.com/?r90=browser-cert',{waitUntil:'domcontentloaded',timeout:60000});
+          await page.goto('https://seekveraglobal.com/?r90=browser-cert2',{waitUntil:'domcontentloaded',timeout:60000});
           await page.waitForFunction(()=>!!window.SEEKVERA_VOICE_AI?.localWhisperTranscribe,{timeout:30000});
-          const en=process.env.EN_B64, ar=process.env.AR_B64;
+          const en=fs.readFileSync('/tmp/en.wav').toString('base64');
+          const ar=fs.readFileSync('/tmp/ar.wav').toString('base64');
           const result=await page.evaluate(async({en,ar})=>{
             const mk=b64=>{const bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new Blob([u],{type:'audio/wav'})};
             const a=await window.SEEKVERA_VOICE_AI.localWhisperTranscribe(mk(en));
@@ -50,4 +48,4 @@ jobs:
           if(!/[\u0600-\u06ff]/.test(result.ar.text))throw new Error('Arabic audio was not transcribed as Arabic: '+result.ar.text);
           await browser.close();
           JS
-          EN_B64="$EN" AR_B64="$AR" node /tmp/r90-test.mjs
+          node /tmp/r90-test.mjs
