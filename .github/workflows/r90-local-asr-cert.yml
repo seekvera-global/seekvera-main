@@ -10,7 +10,7 @@ on:
 jobs:
   certify:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - name: Install browser and speech fixture tools
@@ -21,9 +21,9 @@ jobs:
           npx playwright install chromium >/dev/null
       - name: Generate multilingual audio fixtures
         run: |
-          espeak-ng -v en-us -s 130 -w /tmp/en.wav 'hello seekvera how are you today'
-          espeak-ng -v ar -s 125 -w /tmp/ar.wav 'مرحبا كيف حالك اليوم'
-      - name: Test live browser-side multilingual Whisper
+          espeak-ng -v en-us -s 125 -w /tmp/en.wav 'hello seekvera how are you today I am looking for a hotel and I want to speak naturally with you'
+          espeak-ng -v ar -s 120 -w /tmp/ar.wav 'مرحبا كيف حالك اليوم انا اتكلم معك بالعربي واريد ان تفهم كلامي وترد علي بالعربي'
+      - name: Test stronger browser-side multilingual Whisper base
         shell: bash
         run: |
           cat > r90-test.mjs <<'JS'
@@ -33,19 +33,29 @@ jobs:
           const page=await browser.newPage();
           page.on('console',m=>console.log('BROWSER',m.type(),m.text()));
           page.on('pageerror',e=>console.log('PAGEERROR',e.message));
-          await page.goto('https://seekveraglobal.com/?r90=browser-cert3',{waitUntil:'domcontentloaded',timeout:60000});
-          await page.waitForFunction(()=>!!window.SEEKVERA_VOICE_AI?.localWhisperTranscribe,{timeout:30000});
+          await page.goto('https://seekveraglobal.com/?r90=base-cert',{waitUntil:'domcontentloaded',timeout:60000});
           const en=fs.readFileSync('/tmp/en.wav').toString('base64');
           const ar=fs.readFileSync('/tmp/ar.wav').toString('base64');
           const result=await page.evaluate(async({en,ar})=>{
+            const mod=await import('/patched-transformers.js?v=r90-base-cert');
+            mod.env.allowRemoteModels=true;
+            mod.env.remoteHost='https://huggingface.co/';
+            mod.env.remotePathTemplate='{model}/resolve/{revision}/';
+            mod.env.useBrowserCache=true;
+            mod.env.backends.onnx.wasm.wasmPaths='https://cdn.jsdelivr.net/npm/onnxruntime-web@1.25.0-dev.20260212-1a71a5f46e/dist/';
+            const pipe=await mod.pipeline('automatic-speech-recognition','Xenova/whisper-base',{dtype:'q8',device:'wasm'});
             const mk=b64=>{const bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new Blob([u],{type:'audio/wav'})};
-            const a=await window.SEEKVERA_VOICE_AI.localWhisperTranscribe(mk(en));
-            const b=await window.SEEKVERA_VOICE_AI.localWhisperTranscribe(mk(ar));
-            return {en:a,ar:b};
+            const url1=URL.createObjectURL(mk(en)),url2=URL.createObjectURL(mk(ar));
+            try{
+              const a=await pipe(url1,{task:'transcribe'});
+              const b=await pipe(url2,{task:'transcribe'});
+              return {en:a,ar:b};
+            } finally {URL.revokeObjectURL(url1);URL.revokeObjectURL(url2)}
           },{en,ar});
           console.log(JSON.stringify(result));
-          if(!result.en?.text?.trim()||!result.ar?.text?.trim())throw new Error('local Whisper returned empty transcript');
-          if(!/[\u0600-\u06ff]/.test(result.ar.text))throw new Error('Arabic audio was not transcribed as Arabic: '+result.ar.text);
+          const et=String(result.en?.text||''),at=String(result.ar?.text||'');
+          if(!/hello|hotel|speak/i.test(et))throw new Error('English base transcription failed: '+et);
+          if(!/[\u0600-\u06ff]/.test(at))throw new Error('Arabic base auto-detection failed: '+at);
           await browser.close();
           JS
           node r90-test.mjs
