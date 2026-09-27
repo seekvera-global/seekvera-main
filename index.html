@@ -57,7 +57,7 @@
       }
     </script>
   </head>
-  <body data-release="20260927-r82-reply-before-navigation">
+  <body data-release="20260927-r85-visible-i18n-chat-guard">
     <noscript
       ><div class="sv-noscript">
         SEEKVERA needs JavaScript for AI search, voice, visual search and live
@@ -589,7 +589,7 @@
     <script src="r20-final-guard.js?v=20260925-r20" defer></script>
     <script src="locale-r15.js?v=20260927-r79-full-voice-turn" defer></script>
     <script
-      src="superapp.js?v=20260927-r83-unified-multilingual-voice-ai"
+      src="superapp.js?v=20260927-r85-visible-i18n-chat-guard"
       defer
     ></script>
     <script
@@ -598,6 +598,7 @@
     ></script>
     <script src="global-ui.js?v=20260925-r19" defer></script>
     <script src="i18n-ui.js?v=20260927-r79-full-voice-turn" defer></script>
+    <script src="r85-visible-i18n.js?v=20260927-r85-visible-i18n-chat-guard" defer></script>
     <script src="locale-r14-categories.js?v=20260924-r14" defer></script>
     <script src="r20-extra-categories.js?v=20260925-r20c" defer></script>
     <script src="locale-r14.js?v=20260925-r44-stable-locale" defer></script>
@@ -606,7 +607,7 @@
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () =>
           navigator.serviceWorker
-            .register("sw.js?v=20260927-r83-unified-multilingual-voice-ai")
+            .register("sw.js?v=20260927-r85-visible-i18n-chat-guard")
             .catch(() => {}),
         );
       }
