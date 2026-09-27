@@ -60,7 +60,7 @@ jobs:
           grep -F 'rt?.t?.(src,l)' superapp.js
           grep -F 'global-ui.js?v=20260926-r76-complete-global-final' index.html
           grep -F 'r22-category-lock.js?v=20260926-r76-complete-global-final' index.html
-          grep -F 'locale-r15.js?v=20260926-r76-complete-global-final' index.html
+          grep -F 'locale-r15.js?v=20260927-r78-voice-locale-final' index.html
           grep -F '2026-09-26 · R76' index.html
           ! grep -F 'r74-ai-failover.js' index.html
           ! grep -F 'r66-final-controller.js' index.html
