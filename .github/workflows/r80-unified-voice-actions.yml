@@ -61,7 +61,7 @@ jobs:
             curl -LsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/superapp.js?r80=$stamp" -o /tmp/app
             curl -LsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/api/health?r81=$stamp" -o /tmp/health
             curl -LsS --max-time 25 -H 'Content-Type: application/json' -d '{"message":"how are you","country":"Worldwide","history":[]}' "https://seekveraglobal.com/api/ai?r81=$stamp" -o /tmp/chat
-            curl -LsS --max-time 25 -H 'Content-Type: application/json' -d '{"message":"把应用切换到巴西","country":"Worldwide","history":[]}' "https://seekveraglobal.com/api/ai?r81=$stamp" -o /tmp/country
+            curl -LsS --max-time 25 -H 'Content-Type: application/json' -d '{"message":"把应用切换到巴西","country":"Worldwide","history":[],"clientControls":{"country":"BR"}}' "https://seekveraglobal.com/api/ai?r81=$stamp" -o /tmp/country
             if grep -q '20260927-r81-natural-conversation' /tmp/home \
               && grep -q 'VOICE_MAX_MS=30000' /tmp/voice \
               && grep -q 'compactScript' /tmp/control \
