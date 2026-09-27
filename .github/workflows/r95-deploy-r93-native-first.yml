@@ -1,0 +1,63 @@
+name: R95 deploy R93 native-first voice
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r95-deploy-r93-native-first.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-and-certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Certify release before deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq '20260927-r93-native-first-zero-cost-voice' index.html
+          grep -Fq "native-first-zero-cost-r93" voice-ai.js
+          grep -Fq 'if(!SpeechRecognition)' voice-ai.js
+          if grep -Fq 'navigator.mediaDevices?.getUserMedia&&window.MediaRecorder&&!forceNative){serverVoice' voice-ai.js; then
+            echo 'Old server-first voice priority detected' >&2
+            exit 1
+          fi
+          node --check voice-ai.js
+
+      - name: Deploy current production to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Verify R93 on live custom domain
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE='https://seekveraglobal.com'
+          ok=0
+          for n in $(seq 1 18); do
+            cb="r95-${GITHUB_RUN_ID}-${n}-$(date +%s)"
+            curl -fsSL --max-time 20 -H 'Cache-Control: no-cache' "$BASE/?$cb" -o /tmp/home || true
+            curl -fsSL --max-time 20 -H 'Cache-Control: no-cache' "$BASE/voice-ai.js?$cb" -o /tmp/voice || true
+            if grep -Fq '20260927-r93-native-first-zero-cost-voice' /tmp/home 2>/dev/null \
+              && grep -Fq 'native-first-zero-cost-r93' /tmp/voice 2>/dev/null \
+              && grep -Fq 'if(!SpeechRecognition)' /tmp/voice 2>/dev/null \
+              && ! grep -Fq 'navigator.mediaDevices?.getUserMedia&&window.MediaRecorder&&!forceNative){serverVoice' /tmp/voice 2>/dev/null; then
+              ok=1
+              break
+            fi
+            sleep 4
+          done
+          test "$ok" = 1
+          echo 'LIVE_CUSTOM_DOMAIN_R93=PASS'
+          echo 'NATIVE_SPEECH_FIRST=PASS'
+          echo 'OLD_SERVER_FIRST=ABSENT'
+          grep -o 'data-release="[^"]*"' /tmp/home | head -1
