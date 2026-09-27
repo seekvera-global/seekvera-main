@@ -34,7 +34,7 @@ jobs:
           git clone --depth 1 https://github.com/jhlee111/transformers.js /tmp/tjs
           cd /tmp/tjs
           git fetch --depth 1 origin 937ea0ad3422835f2f3f3f3bd09e7d2593117910
-          git checkout 937ea0ad3422835f2f3f3f3bd09e7d2593117910
+          git checkout 937ea0ad3422835f2f3f3bd09e7d2593117910
           corepack enable
           corepack prepare pnpm@10.28.1 --activate
           pnpm install --frozen-lockfile
@@ -50,6 +50,7 @@ jobs:
           node --check patched-transformers-r91.js
           grep -F 'patched-transformers-r91.js?v=20260927-r91-true-language-autodetect' voice-ai.js
           grep -F "'onnx-community/whisper-tiny'" voice-ai.js
+          grep -F 'onnxruntime-web@1.31.0-dev.20260914-8d85527a0' voice-ai.js
 
       - name: Generate English and Arabic voice fixtures
         run: |
@@ -80,6 +81,7 @@ jobs:
             mod.env.remoteHost='https://huggingface.co/';
             mod.env.remotePathTemplate='{model}/resolve/{revision}/';
             mod.env.useBrowserCache=true;
+            mod.env.backends.onnx.wasm.wasmPaths='https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/dist/';
             const pipe=await mod.pipeline('automatic-speech-recognition','onnx-community/whisper-tiny',{dtype:'q8',device:'wasm'});
             const blob=b64=>{const x=atob(b64),u=new Uint8Array(x.length);for(let i=0;i<x.length;i++)u[i]=x.charCodeAt(i);return new Blob([u],{type:'audio/wav'})};
             async function tr(b64){const u=URL.createObjectURL(blob(b64));try{return await pipe(u,{task:'transcribe'})}finally{URL.revokeObjectURL(u)}}
@@ -110,26 +112,42 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
 
-      - name: Certify R91 live assets and AI reply languages
+      - name: Certify R91 live voice understanding speaker and reply languages
         shell: bash
         run: |
           set -e
           BASE='https://seekveraglobal.com'
-          for i in $(seq 1 8); do
+          AR_AUDIO=$(base64 -w0 /tmp/ar.wav)
+          EN_AUDIO=$(base64 -w0 /tmp/en.wav)
+          for i in $(seq 1 10); do
             stamp="$(date +%s)-$i"
             curl -LsS --max-time 20 -H 'cache-control: no-cache' "$BASE/?r91=$stamp" -o /tmp/home
             curl -LsS --max-time 20 -H 'cache-control: no-cache' "$BASE/voice-ai.js?r91=$stamp" -o /tmp/voice
             curl -LsS --max-time 20 -H 'cache-control: no-cache' "$BASE/patched-transformers-r91.js?r91=$stamp" -o /tmp/lib
             curl -LsS --max-time 25 -H 'content-type: application/json' -d '{"message":"كيفك اليوم؟","country":"Lebanon","language":"English","history":[]}' "$BASE/api/ai?r91=$stamp" -o /tmp/ar
             curl -LsS --max-time 25 -H 'content-type: application/json' -d '{"message":"How are you today?","country":"Lebanon","language":"Arabic","history":[]}' "$BASE/api/ai?r91=$stamp" -o /tmp/en
+            curl -LsS --max-time 25 -H 'content-type: application/json' --data-binary "{\"audio\":\"data:audio/wav;base64,$AR_AUDIO\",\"language\":\"auto\"}" "$BASE/api/transcribe?r91=$stamp" -o /tmp/asr-ar || true
+            curl -LsS --max-time 25 -H 'content-type: application/json' --data-binary "{\"audio\":\"data:audio/wav;base64,$EN_AUDIO\",\"language\":\"auto\"}" "$BASE/api/transcribe?r91=$stamp" -o /tmp/asr-en || true
+            curl -LsS --max-time 25 -H 'content-type: application/json' -d '{"text":"مرحبا، كيف حالك اليوم؟","language":"ar"}' "$BASE/api/tts?r91=$stamp" -o /tmp/tts.bin || true
             if grep -q 'voice-ai.js?v=20260927-r91-true-language-autodetect' /tmp/home \
               && grep -q 'patched-transformers-r91.js?v=20260927-r91-true-language-autodetect' /tmp/voice \
               && test $(wc -c < /tmp/lib) -gt 500000 \
               && jq -e '.language=="ar" and (.response|length>3)' /tmp/ar >/dev/null \
-              && jq -e '.language=="en" and (.response|length>3)' /tmp/en >/dev/null; then
-              echo R91_LIVE_PASS
+              && jq -e '.language=="en" and (.response|length>3)' /tmp/en >/dev/null \
+              && jq -e '(.text|length)>2' /tmp/asr-ar >/dev/null 2>&1 \
+              && jq -e '(.text|length)>2' /tmp/asr-en >/dev/null 2>&1 \
+              && grep -q '[ء-ي]' /tmp/asr-ar \
+              && grep -Eqi 'hello|hotel|beirut|seekvera' /tmp/asr-en \
+              && test $(wc -c < /tmp/tts.bin) -gt 500; then
+              echo R91_LIVE_VOICE_PASS
               exit 0
             fi
-            sleep 3
+            echo "R91 live attempt $i not ready yet"
+            sleep 4
           done
+          echo 'R91 live voice certification failed'
+          echo 'Arabic ASR:'; cat /tmp/asr-ar || true
+          echo 'English ASR:'; cat /tmp/asr-en || true
+          echo 'Arabic AI:'; cat /tmp/ar || true
+          echo 'English AI:'; cat /tmp/en || true
           exit 1
