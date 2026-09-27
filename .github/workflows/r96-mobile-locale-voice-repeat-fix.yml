@@ -29,7 +29,7 @@ jobs:
 
           VER='20260927-r96-mobile-locale-voice-repeat-fix'
 
-          # 1) Prevent i18n runtime from re-writing dynamically managed locale captions.
+          # 1) Do not let the generic i18n engine overwrite dynamically managed locale captions.
           p=Path('i18n-ui.js'); s=p.read_text(encoding='utf-8')
           old="function entriesText(){const out=[];const w=document.createTreeWalker(document,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode())){const s=SRC.get(n);if(s)out.push([n,s])}return out}"
           new="function entriesText(){const out=[];const w=document.createTreeWalker(document,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode())){const s=SRC.get(n);if(s&&!skipped(n))out.push([n,s])}return out}"
@@ -37,26 +37,25 @@ jobs:
           elif new not in s: raise SystemExit('i18n entriesText anchor missing')
           p.write_text(s,encoding='utf-8')
 
-          # 2) Locale-control captions must be owned only by global-ui and follow the CURRENT select value.
+          # 2) Locale captions and currency text always follow the CURRENT language selector.
           p=Path('global-ui.js'); g=p.read_text(encoding='utf-8')
           old="const cap=document.createElement('small');cap.className='sv-control-caption';"
           new="const cap=document.createElement('small');cap.className='sv-control-caption';cap.dataset.noTranslate='1';cap.dataset.noI18n='1';"
           if old in g: g=g.replace(old,new,1)
           elif new not in g: raise SystemExit('global caption anchor missing')
 
-          old="if(cur){cur.setAttribute('aria-label',currencyLabel);cur.title=currencyLabel}}"
-          new="if(cur){const selected=cur.value;let dn;try{dn=new Intl.DisplayNames([langCode()],{type:'currency'})}catch(_){};[...cur.options].forEach(o=>{const code=String(o.value||o.textContent||'').trim().toUpperCase();if(/^[A-Z]{3}$/.test(code)){let name='';try{name=dn?.of(code)||''}catch(_){};o.textContent=name&&name!==code?code+' — '+name:code}});cur.value=selected;cur.setAttribute('aria-label',currencyLabel);cur.title=currencyLabel}}"
+          old="try{o.textContent=dn?.of(code)||o.textContent}catch(_){}"
+          new="try{const name=dn?.of(code)||'';o.textContent=name&&name!==code?code+' — '+name:code}catch(_){o.textContent=code}"
           if old in g: g=g.replace(old,new,1)
-          elif new not in g: raise SystemExit('currency locale anchor missing')
+          elif new not in g: raise SystemExit('currency display anchor missing')
 
-          old="function bindLocaleControls(){localizeControls();$('#lang')?.addEventListener('change',()=>{setTimeout(localizeControls,0);setTimeout(localizeControls,80)});$('#country')?.addEventListener('change',()=>setTimeout(localizeControls,0))}"
-          new="function bindLocaleControls(){localizeControls();const sync=()=>{setTimeout(localizeControls,0);setTimeout(localizeControls,80);setTimeout(localizeControls,350)};$('#lang')?.addEventListener('change',sync);$('#country')?.addEventListener('change',sync);$('#currency')?.addEventListener('change',sync);window.addEventListener('seekvera:locale-change',sync);window.addEventListener('seekvera:languagechange',sync);window.addEventListener('seekvera:countrychange',sync);window.addEventListener('pageshow',sync)}"
+          old="function bindLocaleControls(){localizeControls();$('#lang')?.addEventListener('change',()=>{setTimeout(localizeControls,0);setTimeout(localizeControls,120)});$('#country')?.addEventListener('change',e=>{const code=String(e.target.value||'').toUpperCase();if(!localeSyncing){if(code==='WW'){localStorage.setItem('seekvera_country','WW');localStorage.setItem('seekvera_country_explicit','1')}else applyCountryProfile(code,{markExplicit:true})}setTimeout(localizeControls,0)})}"
+          new="function bindLocaleControls(){localizeControls();const sync=()=>{setTimeout(localizeControls,0);setTimeout(localizeControls,120);setTimeout(localizeControls,420)};$('#lang')?.addEventListener('change',sync);$('#currency')?.addEventListener('change',sync);$('#country')?.addEventListener('change',e=>{const code=String(e.target.value||'').toUpperCase();if(!localeSyncing){if(code==='WW'){localStorage.setItem('seekvera_country','WW');localStorage.setItem('seekvera_country_explicit','1')}else applyCountryProfile(code,{markExplicit:true})}sync()});window.addEventListener('seekvera:locale-change',sync);window.addEventListener('seekvera:languagechange',sync);window.addEventListener('seekvera:countrychange',sync);window.addEventListener('pageshow',sync)}"
           if old in g: g=g.replace(old,new,1)
           elif new not in g: raise SystemExit('bind locale controls anchor missing')
           p.write_text(g,encoding='utf-8')
 
-          # 3) Samsung/Android native recognition: avoid continuous-mode cumulative repeats,
-          # and rebuild the transcript from the browser's current result set instead of appending deltas.
+          # 3) Samsung/Android native recognition: use one utterance and rebuild from the browser result set.
           p=Path('voice-ai.js'); v=p.read_text(encoding='utf-8')
           old="const r=new SpeechRecognition();recognition=r;r.lang=voiceInputLocale();r.interimResults=true;r.continuous=!/iPhone|iPad|iPod/i.test(navigator.userAgent);r.maxAlternatives=1;"
           new="const r=new SpeechRecognition();recognition=r;r.lang=voiceInputLocale();r.interimResults=true;r.continuous=!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);r.maxAlternatives=1;"
@@ -67,16 +66,17 @@ jobs:
           new="r.onresult=e=>{let rebuilt='',interim='';heardAny=true;for(let x=0;x<e.results.length;x++){const t=String(e.results[x][0]?.transcript||'').replace(/\\s+/g,' ').trim();if(!t)continue;if(e.results[x].isFinal)rebuilt=mergeTranscript(rebuilt,t);else interim=mergeTranscript(interim,t)}final=rebuilt;if(i){i.value=mergeTranscript(final,interim);i.placeholder='Message SEEKVERA AI…'}scheduleSilence()};"
           if old in v: v=v.replace(old,new,1)
           elif new not in v: raise SystemExit('voice onresult anchor missing')
-          v=v.replace("native-first-zero-cost-r93","native-first-mobile-dedupe-r96",1)
+          if 'native-first-mobile-dedupe-r96' not in v:
+              v=v.replace('native-first-zero-cost-r93','native-first-mobile-dedupe-r96',1)
           p.write_text(v,encoding='utf-8')
 
-          # 4) Force cache refresh for every changed runtime on the homepage.
+          # 4) Force a fresh runtime on mobile/browser caches.
           p=Path('index.html'); h=p.read_text(encoding='utf-8')
           h=re.sub(r'data-release="[^"]+"',f'data-release="{VER}"',h,count=1)
-          h=re.sub(r'voice-ai\\.js\\?v=[^"\\s]+',f'voice-ai.js?v={VER}',h,count=1)
-          h=re.sub(r'global-ui\\.js\\?v=[^"\\s]+',f'global-ui.js?v={VER}',h,count=1)
-          h=re.sub(r'i18n-ui\\.js\\?v=[^"\\s]+',f'i18n-ui.js?v={VER}',h,count=1)
-          h=re.sub(r'sw\\.js\\?v=[^"\\s]+',f'sw.js?v={VER}',h,count=1)
+          h=re.sub(r'voice-ai\.js\?v=[^"\s]+',f'voice-ai.js?v={VER}',h,count=1)
+          h=re.sub(r'global-ui\.js\?v=[^"\s]+',f'global-ui.js?v={VER}',h,count=1)
+          h=re.sub(r'i18n-ui\.js\?v=[^"\s]+',f'i18n-ui.js?v={VER}',h,count=1)
+          h=re.sub(r'sw\.js\?v=[^"\s]+',f'sw.js?v={VER}',h,count=1)
           p.write_text(h,encoding='utf-8')
 
           p=Path('sw.js'); sw=p.read_text(encoding='utf-8')
@@ -133,7 +133,7 @@ jobs:
               && grep -Fq 'native-first-mobile-dedupe-r96' /tmp/voice \
               && grep -Fq "r.continuous=!/Android|iPhone|iPad|iPod/" /tmp/voice \
               && grep -Fq "cap.dataset.noTranslate='1'" /tmp/global \
-              && grep -Fq "type:'currency'" /tmp/global \
+              && grep -Fq "seekvera:locale-change" /tmp/global \
               && grep -Fq 'if(s&&!skipped(n))' /tmp/i18n; then
               ok=1; break
             fi
