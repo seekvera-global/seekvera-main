@@ -26,14 +26,14 @@ jobs:
       - name: Test live browser-side multilingual Whisper
         shell: bash
         run: |
-          cat > /tmp/r90-test.mjs <<'JS'
+          cat > r90-test.mjs <<'JS'
           import {chromium} from 'playwright';
           import fs from 'node:fs';
           const browser=await chromium.launch({headless:true});
           const page=await browser.newPage();
           page.on('console',m=>console.log('BROWSER',m.type(),m.text()));
           page.on('pageerror',e=>console.log('PAGEERROR',e.message));
-          await page.goto('https://seekveraglobal.com/?r90=browser-cert2',{waitUntil:'domcontentloaded',timeout:60000});
+          await page.goto('https://seekveraglobal.com/?r90=browser-cert3',{waitUntil:'domcontentloaded',timeout:60000});
           await page.waitForFunction(()=>!!window.SEEKVERA_VOICE_AI?.localWhisperTranscribe,{timeout:30000});
           const en=fs.readFileSync('/tmp/en.wav').toString('base64');
           const ar=fs.readFileSync('/tmp/ar.wav').toString('base64');
@@ -48,4 +48,4 @@ jobs:
           if(!/[\u0600-\u06ff]/.test(result.ar.text))throw new Error('Arabic audio was not transcribed as Arabic: '+result.ar.text);
           await browser.close();
           JS
-          node /tmp/r90-test.mjs
+          node r90-test.mjs
