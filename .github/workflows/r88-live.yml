@@ -59,3 +59,5 @@ jobs:
           ! grep -q 'js.puter.com' /tmp/voice
           test $(wc -c < /tmp/tts) -gt 500
           echo R90_LIVE_ASSETS_PASS
+
+# trigger-r90-corrected
