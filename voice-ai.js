@@ -45,25 +45,6 @@ async function localWhisperTranscribe(blob){
     return{text,language:codeOf(localStorage.getItem('seekvera_chat_voice_lang')||'')||'auto',engine:'local-whisper-auto'}
   }finally{try{URL.revokeObjectURL(url)}catch(_){}}
 }
-let puterLoaderR88=null;
-function ensurePuterR88(){
-  if(window.puter?.ai?.speech2txt)return Promise.resolve(true);
-  if(puterLoaderR88)return puterLoaderR88;
-  puterLoaderR88=new Promise(resolve=>{
-    let done=false;const finish=v=>{if(done)return;done=true;resolve(!!v)};
-    const existing=document.querySelector('script[data-seekvera-puter]');
-    if(existing){existing.addEventListener('load',()=>finish(window.puter?.ai?.speech2txt),{once:true});existing.addEventListener('error',()=>finish(false),{once:true});setTimeout(()=>finish(window.puter?.ai?.speech2txt),4500);return}
-    const sc=document.createElement('script');sc.src='https://js.puter.com/v2/';sc.async=true;sc.dataset.seekveraPuter='1';sc.onload=()=>finish(window.puter?.ai?.speech2txt);sc.onerror=()=>finish(false);document.head.appendChild(sc);setTimeout(()=>finish(window.puter?.ai?.speech2txt),4500)
-  });
-  return puterLoaderR88
-}
-async function puterAutoTranscribe(blob){
-  if(!await ensurePuterR88())throw Error('browser multilingual ASR unavailable');
-  const task=window.puter.ai.speech2txt(blob,{provider:'xai'}),timeout=new Promise((_,reject)=>setTimeout(()=>reject(Error('browser ASR timeout')),11000));
-  const r=await Promise.race([task,timeout]),text=String(typeof r==='string'?r:(r?.text||r?.transcript||'')).trim();
-  if(!text)throw Error('browser multilingual ASR returned no text');
-  const language=String(r?.language||'auto');rememberChatVoiceLanguage(language,text);return{text,language,engine:'puter-xai-auto'}
-}
 async function seekveraAutoTranscribe(blob){
   const audio=await blobDataURL(blob),ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),14000);
   try{
@@ -74,8 +55,11 @@ async function seekveraAutoTranscribe(blob){
   }finally{clearTimeout(to)}
 }
 async function automaticMultilingualTranscribe(blob){
-  try{return await Promise.any([seekveraAutoTranscribe(blob),puterAutoTranscribe(blob)])}
-  catch(_){throw Error('automatic multilingual transcription unavailable')}
+  try{return await seekveraAutoTranscribe(blob)}
+  catch(serverError){
+    const timeout=new Promise((_,reject)=>setTimeout(()=>reject(Error('local multilingual ASR timeout')),12000));
+    try{return await Promise.race([localWhisperTranscribe(blob),timeout])}catch(_){throw serverError}
+  }
 }
 function localeForText(t,requested){
   t=typeof t==='string'?t:'';
@@ -195,7 +179,7 @@ async function serverVoice(targetId,button,fallbackNative=false){
       try{mediaStream?.getTracks?.().forEach(x=>x.stop())}catch(_){}mediaStream=null;mediaRecorder=null;recording=false;recordChunks=[];setMic(false);
       if(!chunks.length){voiceConversation=false;if(i)i.placeholder='No speech recorded — tap the microphone and try again.';return}
       try{
-        if(i)i.placeholder='Understanding your language…';
+        if(i)i.placeholder='Understanding speech automatically…';
         const blob=new Blob(chunks,{type}),d=await automaticMultilingualTranscribe(blob);
         rememberChatVoiceLanguage(d.language,d.text);
         if(i){const spoken=String(d.text).trim();i.value=spoken;i.placeholder='Message SEEKVERA AI…';if(spoken){voiceReplyDeadline=Date.now()+90000;setTimeout(()=>{if(window.SEEKVERA_R31?.submitAI)window.SEEKVERA_R31.submitAI(spoken,{fromVoice:true});else i.form?.requestSubmit?.()},35)}}
