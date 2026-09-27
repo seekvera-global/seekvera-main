@@ -1,0 +1,143 @@
+name: R96 mobile locale and voice repeat fix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r96-mobile-locale-voice-repeat-fix.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-deploy-certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch mixed locale controls and Android voice repetition
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          VER='20260927-r96-mobile-locale-voice-repeat-fix'
+
+          # 1) Prevent i18n runtime from re-writing dynamically managed locale captions.
+          p=Path('i18n-ui.js'); s=p.read_text(encoding='utf-8')
+          old="function entriesText(){const out=[];const w=document.createTreeWalker(document,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode())){const s=SRC.get(n);if(s)out.push([n,s])}return out}"
+          new="function entriesText(){const out=[];const w=document.createTreeWalker(document,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode())){const s=SRC.get(n);if(s&&!skipped(n))out.push([n,s])}return out}"
+          if old in s: s=s.replace(old,new,1)
+          elif new not in s: raise SystemExit('i18n entriesText anchor missing')
+          p.write_text(s,encoding='utf-8')
+
+          # 2) Locale-control captions must be owned only by global-ui and follow the CURRENT select value.
+          p=Path('global-ui.js'); g=p.read_text(encoding='utf-8')
+          old="const cap=document.createElement('small');cap.className='sv-control-caption';"
+          new="const cap=document.createElement('small');cap.className='sv-control-caption';cap.dataset.noTranslate='1';cap.dataset.noI18n='1';"
+          if old in g: g=g.replace(old,new,1)
+          elif new not in g: raise SystemExit('global caption anchor missing')
+
+          old="if(cur){cur.setAttribute('aria-label',currencyLabel);cur.title=currencyLabel}}"
+          new="if(cur){const selected=cur.value;let dn;try{dn=new Intl.DisplayNames([langCode()],{type:'currency'})}catch(_){};[...cur.options].forEach(o=>{const code=String(o.value||o.textContent||'').trim().toUpperCase();if(/^[A-Z]{3}$/.test(code)){let name='';try{name=dn?.of(code)||''}catch(_){};o.textContent=name&&name!==code?code+' — '+name:code}});cur.value=selected;cur.setAttribute('aria-label',currencyLabel);cur.title=currencyLabel}}"
+          if old in g: g=g.replace(old,new,1)
+          elif new not in g: raise SystemExit('currency locale anchor missing')
+
+          old="function bindLocaleControls(){localizeControls();$('#lang')?.addEventListener('change',()=>{setTimeout(localizeControls,0);setTimeout(localizeControls,80)});$('#country')?.addEventListener('change',()=>setTimeout(localizeControls,0))}"
+          new="function bindLocaleControls(){localizeControls();const sync=()=>{setTimeout(localizeControls,0);setTimeout(localizeControls,80);setTimeout(localizeControls,350)};$('#lang')?.addEventListener('change',sync);$('#country')?.addEventListener('change',sync);$('#currency')?.addEventListener('change',sync);window.addEventListener('seekvera:locale-change',sync);window.addEventListener('seekvera:languagechange',sync);window.addEventListener('seekvera:countrychange',sync);window.addEventListener('pageshow',sync)}"
+          if old in g: g=g.replace(old,new,1)
+          elif new not in g: raise SystemExit('bind locale controls anchor missing')
+          p.write_text(g,encoding='utf-8')
+
+          # 3) Samsung/Android native recognition: avoid continuous-mode cumulative repeats,
+          # and rebuild the transcript from the browser's current result set instead of appending deltas.
+          p=Path('voice-ai.js'); v=p.read_text(encoding='utf-8')
+          old="const r=new SpeechRecognition();recognition=r;r.lang=voiceInputLocale();r.interimResults=true;r.continuous=!/iPhone|iPad|iPod/i.test(navigator.userAgent);r.maxAlternatives=1;"
+          new="const r=new SpeechRecognition();recognition=r;r.lang=voiceInputLocale();r.interimResults=true;r.continuous=!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);r.maxAlternatives=1;"
+          if old in v: v=v.replace(old,new,1)
+          elif new not in v: raise SystemExit('voice continuous anchor missing')
+
+          old="r.onresult=e=>{let interim='';heardAny=true;for(let x=e.resultIndex;x<e.results.length;x++){const t=String(e.results[x][0]?.transcript||'').trim();if(e.results[x].isFinal)final=mergeTranscript(final,t);else interim=mergeTranscript(interim,t)}if(i){i.value=mergeTranscript(final,interim);i.placeholder='Message SEEKVERA AI…'}scheduleSilence()};"
+          new="r.onresult=e=>{let rebuilt='',interim='';heardAny=true;for(let x=0;x<e.results.length;x++){const t=String(e.results[x][0]?.transcript||'').replace(/\\s+/g,' ').trim();if(!t)continue;if(e.results[x].isFinal)rebuilt=mergeTranscript(rebuilt,t);else interim=mergeTranscript(interim,t)}final=rebuilt;if(i){i.value=mergeTranscript(final,interim);i.placeholder='Message SEEKVERA AI…'}scheduleSilence()};"
+          if old in v: v=v.replace(old,new,1)
+          elif new not in v: raise SystemExit('voice onresult anchor missing')
+          v=v.replace("native-first-zero-cost-r93","native-first-mobile-dedupe-r96",1)
+          p.write_text(v,encoding='utf-8')
+
+          # 4) Force cache refresh for every changed runtime on the homepage.
+          p=Path('index.html'); h=p.read_text(encoding='utf-8')
+          h=re.sub(r'data-release="[^"]+"',f'data-release="{VER}"',h,count=1)
+          h=re.sub(r'voice-ai\\.js\\?v=[^"\\s]+',f'voice-ai.js?v={VER}',h,count=1)
+          h=re.sub(r'global-ui\\.js\\?v=[^"\\s]+',f'global-ui.js?v={VER}',h,count=1)
+          h=re.sub(r'i18n-ui\\.js\\?v=[^"\\s]+',f'i18n-ui.js?v={VER}',h,count=1)
+          h=re.sub(r'sw\\.js\\?v=[^"\\s]+',f'sw.js?v={VER}',h,count=1)
+          p.write_text(h,encoding='utf-8')
+
+          p=Path('sw.js'); sw=p.read_text(encoding='utf-8')
+          sw=re.sub(r"const RELEASE='[^']+';",f"const RELEASE='{VER}';",sw,count=1)
+          p.write_text(sw,encoding='utf-8')
+          PY
+
+      - name: Static certification
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check voice-ai.js
+          node --check global-ui.js
+          node --check i18n-ui.js
+          grep -Fq "native-first-mobile-dedupe-r96" voice-ai.js
+          grep -Fq "r.continuous=!/Android|iPhone|iPad|iPod/" voice-ai.js
+          grep -Fq "for(let x=0;x<e.results.length;x++)" voice-ai.js
+          grep -Fq "cap.dataset.noTranslate='1'" global-ui.js
+          grep -Fq "type:'currency'" global-ui.js
+          grep -Fq "seekvera:locale-change" global-ui.js
+          grep -Fq "if(s&&!skipped(n))" i18n-ui.js
+          grep -Fq "20260927-r96-mobile-locale-voice-repeat-fix" index.html
+
+      - name: Commit R96 fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add voice-ai.js global-ui.js i18n-ui.js index.html sw.js
+          git commit -m 'R96 fix mixed locale labels and Android voice repeats'
+          git push origin HEAD:main
+
+      - name: Deploy R96 to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Verify live R96 assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE='https://seekveraglobal.com'
+          ok=0
+          for n in $(seq 1 18); do
+            cb="r96-${GITHUB_RUN_ID}-${n}-$(date +%s)"
+            curl -fsSL --max-time 20 -H 'Cache-Control: no-cache' "$BASE/?$cb" -o /tmp/home || true
+            curl -fsSL --max-time 20 -H 'Cache-Control: no-cache' "$BASE/voice-ai.js?$cb" -o /tmp/voice || true
+            curl -fsSL --max-time 20 -H 'Cache-Control: no-cache' "$BASE/global-ui.js?$cb" -o /tmp/global || true
+            curl -fsSL --max-time 20 -H 'Cache-Control: no-cache' "$BASE/i18n-ui.js?$cb" -o /tmp/i18n || true
+            if grep -Fq '20260927-r96-mobile-locale-voice-repeat-fix' /tmp/home \
+              && grep -Fq 'native-first-mobile-dedupe-r96' /tmp/voice \
+              && grep -Fq "r.continuous=!/Android|iPhone|iPad|iPod/" /tmp/voice \
+              && grep -Fq "cap.dataset.noTranslate='1'" /tmp/global \
+              && grep -Fq "type:'currency'" /tmp/global \
+              && grep -Fq 'if(s&&!skipped(n))' /tmp/i18n; then
+              ok=1; break
+            fi
+            sleep 4
+          done
+          test "$ok" = 1
+          echo 'LIVE_R96_ASSETS=PASS'
