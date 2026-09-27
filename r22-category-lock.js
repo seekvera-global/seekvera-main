@@ -6,7 +6,7 @@ const EN_TITLES=['Marketplace','Travel','Flights','Hotels','Tourism','Property',
 const EN_DESC=['Buy, sell and compare worldwide','Trips, transport and stays','Search flight routes','Search stays worldwide','Places and experiences','Homes, land and rentals','Vehicles, parts and auto','Local and global careers','Products and deals','Food, cafes and dining','Everyday skilled help','Machines and equipment','Boats and marine listings','Factories and suppliers','Freight, cargo and delivery','POS, accounting and SaaS','Apps and digital tools','Domains, hosting and websites','Power and energy solutions','Schools, courses and skills','Clinics, labs and pharmacies','Licensed provider discovery','Movies, music and family','Trusted media and official sources','Play inside SEEKVERA','Internet, SIM and eSIM','Public Wi‑Fi discovery','Sourcing and business missions','Nearby daily needs','Share and install SEEKVERA','Business plans and promotion'];
 let timer=0,running=false,pending=false;
 function language(){let v=document.querySelector('.sv-controls select#lang,select#lang.sv-select,#lang')?.value||localStorage.getItem('seekvera_lang')||document.documentElement.lang||navigator.language||'en';if(v==='auto')v=navigator.language||'en';return String(v).toLowerCase().split(/[-_]/)[0]||'en'}
-function titles(l){const d=window.SEEKVERA_R14_CATEGORIES?.data?.[l];return Array.isArray(d)&&d.length>=31?d:EN_TITLES}
+function titles(l){const d=window.SEEKVERA_R14_CATEGORIES?.data?.[l];return Array.isArray(d)&&d.length>=31?d:EN_TITLES.map(x=>window.SEEKVERA_I18N?.t?.(x)||x)}
 function stableBody(body,title,desc,l){
   body.setAttribute('data-no-translate','1');body.setAttribute('data-no-i18n','1');body.setAttribute('translate','no');
   const children=[...body.children],bs=children.filter(x=>x.tagName==='B'),ss=children.filter(x=>x.tagName==='SMALL');
@@ -15,9 +15,10 @@ function stableBody(body,title,desc,l){
     if(exact)return;
     const b=bs[0]||document.createElement('b'),s=ss[0]||document.createElement('small');b.textContent=title;s.textContent=desc;b.setAttribute('data-no-translate','1');s.setAttribute('data-no-translate','1');body.replaceChildren(b,s);return;
   }
-  const exact=children.length===1&&bs.length===1&&bs[0].textContent.trim()===title;
+  const td=window.SEEKVERA_I18N?.t?.(desc)||desc;
+  const exact=children.length===2&&bs.length===1&&ss.length===1&&bs[0].textContent.trim()===title&&ss[0].textContent.trim()===td;
   if(exact)return;
-  const b=bs[0]||document.createElement('b');b.textContent=title;b.setAttribute('data-no-translate','1');b.setAttribute('data-no-i18n','1');body.replaceChildren(b);
+  const b=bs[0]||document.createElement('b'),sm=ss[0]||document.createElement('small');b.textContent=title;sm.textContent=td;b.setAttribute('data-no-translate','1');b.setAttribute('data-no-i18n','1');sm.setAttribute('data-no-translate','1');sm.setAttribute('data-no-i18n','1');body.replaceChildren(b,sm);
 }
 function lock(){
   if(running){pending=true;return}running=true;pending=false;

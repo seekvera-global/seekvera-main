@@ -1,5 +1,6 @@
 (()=>{
   'use strict';
+  if(window.SEEKVERA_I18N_R32){window.__SEEKVERA_R85_VISIBLE_I18N='disabled-under-r32';return;}
   const EN={
     lead:'Hotels, homes, cars, jobs, products, suppliers, media and services — from one global marketplace.',
     note:'Choose a country once and SEEKVERA switches the app language, currency, AI context and country-aware sections automatically. You can still change language manually if you want.'

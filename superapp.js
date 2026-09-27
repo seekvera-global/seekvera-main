@@ -1,6 +1,6 @@
 (() => {
   "use strict";
-  const RELEASE = "20260927-r85-visible-i18n-chat-guard";
+  const RELEASE = "20260927-r96-authoritative-language-ai-voice";
   const WORKER = "";
   const SB = "https://nrdpyydfrpmqedtzmbyw.supabase.co";
   const SB_KEY = "sb_publishable_tqqPQxqdNowIsSlJz4bW5w_kHOC905o";

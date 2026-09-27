@@ -22,15 +22,15 @@ document.getElementById('guideForm').addEventListener('submit',e=>{e.preventDefa
 document.getElementById('shareBtn').onclick=async()=>{const text=title.textContent+'\n\n'+out.textContent;try{if(navigator.share)await navigator.share({title:title.textContent,text,url:location.href});else{await navigator.clipboard.writeText(text+'\n'+location.href);alert('Trip copied for sharing.')}}catch{}};document.getElementById('copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(out.textContent);document.getElementById('copyBtn').textContent='Copied ✓';setTimeout(()=>document.getElementById('copyBtn').textContent='Copy guide',1400)}catch{}};
 const q=new URLSearchParams(location.search).get('destination');if(q){dest.value=q;buildGuide()}else syncLinks();
 </script><script src="r20-final-guard.js?v=20260925-r20" defer></script>
-<script src="locale-r15.js?v=20260925-r44-stable-locale" defer></script>
-<script src="voice-ai.js?v=20260926-r76-complete-global-final" defer></script>
+<script src="locale-r15.js?v=20260927-r96-authoritative-language-ai-voice" defer></script>
+<script src="voice-ai.js?v=20260927-r96-authoritative-language-ai-voice" defer></script>
 <script src="global-ui.js?v=20260924-r17" defer></script>
-<script src="i18n-ui.js?v=20260926-r76-complete-global-final" defer></script>
-<script src="locale-r14-categories.js?v=20260924-r14" defer></script>
+<script src="i18n-ui.js?v=20260927-r96-authoritative-language-ai-voice" defer></script>
+<script src="locale-r14-categories.js?v=20260927-r96-authoritative-language-ai-voice" defer></script>
 <script src="r20-extra-categories.js?v=20260925-r20c" defer></script>
 <script src="locale-r14.js?v=20260925-r44-stable-locale" defer></script>
 
 <script src="navigation.js?v=20260926-r76-complete-global-final" defer></script>
-<script src="r22-category-lock.js?v=20260925-r22" defer></script>
+<script src="r22-category-lock.js?v=20260927-r96-authoritative-language-ai-voice" defer></script>
 <script src="r24-ai-controller.js?v=20260926-r76-complete-global-final" data-no-i18n="1"></script>
-<script src="/r60-runtime-guard.js?v=20260926-r76-complete-global-final" defer data-no-i18n="1"></script><script src="/r31-ui-polish.js?v=20260926-r76-complete-global-final" defer data-no-i18n="1"></script></body></html>
+<script src="/r60-runtime-guard.js?v=20260926-r76-complete-global-final" defer data-no-i18n="1"></script><script src="/r31-ui-polish.js?v=20260927-r96-authoritative-language-ai-voice" defer data-no-i18n="1"></script></body></html>
