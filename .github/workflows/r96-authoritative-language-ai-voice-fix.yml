@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/r96-authoritative-language-ai-voice-fix.yml'
+      - 'tools/r96_repair.py'
+      - 'tools/r96_locale_cert.mjs'
   workflow_dispatch:
 
 permissions:
@@ -19,130 +21,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Apply authoritative runtime repair
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          import re, json
-          VER='20260927-r96-authoritative-language-ai-voice'
-
-          # 1. Stop the late partial home translator from rewriting text after R32 captured English sources.
-          p=Path('r85-visible-i18n.js'); s=p.read_text(encoding='utf-8')
-          marker="  'use strict';\n"
-          guard="  'use strict';\n  if(window.SEEKVERA_I18N_R32){window.__SEEKVERA_R85_VISIBLE_I18N='disabled-under-r32';return;}\n"
-          if 'disabled-under-r32' not in s:
-              if marker not in s: raise SystemExit('r85 guard anchor missing')
-              s=s.replace(marker,guard,1)
-          p.write_text(s,encoding='utf-8')
-
-          # 2. Category language data stays available for intent matching, but R32/R22 own visible DOM.
-          p=Path('locale-r14-categories.js'); s=p.read_text(encoding='utf-8')
-          if "function apply(){if(window.SEEKVERA_I18N_R32)return;" not in s:
-              if 'function apply(){' not in s: raise SystemExit('category apply anchor missing')
-              s=s.replace('function apply(){','function apply(){if(window.SEEKVERA_I18N_R32)return;',1)
-          p.write_text(s,encoding='utf-8')
-
-          # 3. Make the category lock fully localized rather than hiding descriptions or falling back to English.
-          p=Path('r22-category-lock.js'); s=p.read_text(encoding='utf-8')
-          old="function titles(l){const d=window.SEEKVERA_R14_CATEGORIES?.data?.[l];return Array.isArray(d)&&d.length>=31?d:EN_TITLES}"
-          new="function titles(l){const d=window.SEEKVERA_R14_CATEGORIES?.data?.[l];return Array.isArray(d)&&d.length>=31?d:EN_TITLES.map(x=>window.SEEKVERA_I18N?.t?.(x)||x)}"
-          if old in s:s=s.replace(old,new,1)
-          elif new not in s:raise SystemExit('r22 titles anchor missing')
-          old="  const exact=children.length===1&&bs.length===1&&bs[0].textContent.trim()===title;\n  if(exact)return;\n  const b=bs[0]||document.createElement('b');b.textContent=title;b.setAttribute('data-no-translate','1');b.setAttribute('data-no-i18n','1');body.replaceChildren(b);"
-          new="  const td=window.SEEKVERA_I18N?.t?.(desc)||desc;\n  const exact=children.length===2&&bs.length===1&&ss.length===1&&bs[0].textContent.trim()===title&&ss[0].textContent.trim()===td;\n  if(exact)return;\n  const b=bs[0]||document.createElement('b'),s=ss[0]||document.createElement('small');b.textContent=title;s.textContent=td;b.setAttribute('data-no-translate','1');b.setAttribute('data-no-i18n','1');s.setAttribute('data-no-translate','1');s.setAttribute('data-no-i18n','1');body.replaceChildren(b,s);"
-          if old in s:s=s.replace(old,new,1)
-          elif new not in s:raise SystemExit('r22 body localization anchor missing')
-          p.write_text(s,encoding='utf-8')
-
-          # 4. Canonical source strings are immutable. Late scripts may trigger a re-apply but can never become a new translation source.
-          p=Path('i18n-ui.js'); s=p.read_text(encoding='utf-8')
-          old="if(m.type==='characterData'){const n=m.target;if(!skipped(n)){const now=String(n.nodeValue||'').trim(),rendered=RENDERED_TEXT.get(n);if(rendered!==undefined&&now===rendered)continue;RENDERED_TEXT.delete(n);const src=canonicalText(n);if(worth(src)){SRC.set(n,src);dirty=true}}}"
-          new="if(m.type==='characterData'){const n=m.target;if(!skipped(n)){const now=String(n.nodeValue||'').trim(),rendered=RENDERED_TEXT.get(n);if(rendered!==undefined&&now===rendered)continue;if(SRC.has(n)){dirty=true;continue}RENDERED_TEXT.delete(n);const src=canonicalText(n);if(worth(src)){SRC.set(n,src);dirty=true}}}"
-          if old in s:s=s.replace(old,new,1)
-          elif new not in s:raise SystemExit('i18n immutable text anchor missing')
-          old="else if(m.type==='attributes'){const el=m.target,a=m.attributeName;if(el&&a&&ATTRS.includes(a)&&!el.closest?.(SKIP)){const now=String(el.getAttribute(a)||'').trim(),rendered=RENDERED_ATTR.get(el)?.[a];if(rendered!==undefined&&now===rendered)continue;const rm=RENDERED_ATTR.get(el);if(rm)delete rm[a];if(worth(now)){let mm=ATTRSRC.get(el);if(!mm){mm={};ATTRSRC.set(el,mm)}mm[a]=now;dirty=true}}}"
-          new="else if(m.type==='attributes'){const el=m.target,a=m.attributeName;if(el&&a&&ATTRS.includes(a)&&!el.closest?.(SKIP)){const now=String(el.getAttribute(a)||'').trim(),rendered=RENDERED_ATTR.get(el)?.[a];if(rendered!==undefined&&now===rendered)continue;const known=ATTRSRC.get(el);if(known&&known[a]){dirty=true;continue}const rm=RENDERED_ATTR.get(el);if(rm)delete rm[a];if(worth(now)){let mm=ATTRSRC.get(el);if(!mm){mm={};ATTRSRC.set(el,mm)}mm[a]=now;dirty=true}}}"
-          if old in s:s=s.replace(old,new,1)
-          elif new not in s:raise SystemExit('i18n immutable attr anchor missing')
-          s=s.replace("const VERSION='20260927-r78-voice-locale-final';",f"const VERSION='{VER}';",1)
-          p.write_text(s,encoding='utf-8')
-
-          # 5. True multilingual microphone: recorded audio -> local Whisper auto language first.
-          p=Path('voice-ai.js'); s=p.read_text(encoding='utf-8')
-          s=s.replace("window.__seekveraVoiceMode='native-first-zero-cost-r93';", "window.__seekveraVoiceMode='local-whisper-auto-first-r96';",1)
-          s=s.replace('const VOICE_SILENCE_MS=3600,VOICE_MAX_MS=45000,VOICE_RMS_THRESHOLD=.014;','const VOICE_SILENCE_MS=1800,VOICE_MAX_MS=45000,VOICE_RMS_THRESHOLD=.012;',1)
-          anchor="  if(!SpeechRecognition){\n    if(navigator.mediaDevices?.getUserMedia&&window.MediaRecorder){serverVoice(targetId,activeButton,false);return}\n"
-          inject="  if(navigator.mediaDevices?.getUserMedia&&window.MediaRecorder&&!forceNative){serverVoice(targetId,activeButton,true);return}\n  if(!SpeechRecognition){\n    if(navigator.mediaDevices?.getUserMedia&&window.MediaRecorder){serverVoice(targetId,activeButton,false);return}\n"
-          if inject not in s:
-              if anchor not in s: raise SystemExit('voice start priority anchor missing')
-              s=s.replace(anchor,inject,1)
-          # Give local Whisper a little more first-use time; it is the zero-cost multilingual detector.
-          s=s.replace("setTimeout(()=>reject(Error('local multilingual ASR timeout')),45000)","setTimeout(()=>reject(Error('local multilingual ASR timeout')),60000)",1)
-          p.write_text(s,encoding='utf-8')
-
-          # 6. If Cloudflare AI quota is exhausted, skip the second paid-neuron attempt and reach the free conversational fallback immediately.
-          p=Path('worker-r76.js'); s=p.read_text(encoding='utf-8')
-          old=" }catch{}}\n // Keep a real conversational AI fallback instead of dropping immediately to fixed keyword templates."
-          new=" }catch(e){const em=String(e?.message||e||'');if(/daily neuron allocation|quota|limit exceeded|allocation exceeded|usage limit/i.test(em))break}}\n // Keep a real conversational AI fallback instead of dropping immediately to fixed keyword templates."
-          if old in s:s=s.replace(old,new,1)
-          elif new not in s:raise SystemExit('worker quota fast-fallback anchor missing')
-          s=re.sub(r"const RELEASE='[^']+';",f"const RELEASE='{VER}';",s,count=1)
-          p.write_text(s,encoding='utf-8')
-
-          # 7. Client must allow the free fallback enough time, but not hang forever.
-          p=Path('r31-ui-polish.js'); s=p.read_text(encoding='utf-8')
-          s=s.replace('t = setTimeout(() => c.abort(), 11000);','t = setTimeout(() => c.abort(), 18000);',1)
-          s=s.replace('const VERSION = "20260927-r83-unified-multilingual-voice-ai";',f'const VERSION = "{VER}";',1)
-          p.write_text(s,encoding='utf-8')
-
-          p=Path('superapp.js'); s=p.read_text(encoding='utf-8')
-          s=s.replace('const RELEASE = "20260927-r85-visible-i18n-chat-guard";',f'const RELEASE = "{VER}";',1)
-          s=s.replace('timer=setTimeout(()=>controller.abort(),8000)','timer=setTimeout(()=>controller.abort(),18000)',1)
-          s=s.replace('timer=setTimeout(()=>controller.abort(),22000)','timer=setTimeout(()=>controller.abort(),18000)',1)
-          p.write_text(s,encoding='utf-8')
-
-          # 8. Use the carefully curated contextual category names to improve the machine-generated packs.
-          # Extract category tables using Node in the next step; here create the override utility.
-          Path('/tmp/override_packs.py').write_text(r'''import json,sys
-from pathlib import Path
-cats=json.load(open('/tmp/cats.json',encoding='utf-8'))
-keys=['Marketplace','Travel','Flights','Hotels','Tourism','Property','Cars & Auto','Jobs','Shopping','Restaurants & Food','Local Services','Equipment & Machinery','Boats & Marine','Import & Export','Shipping & Logistics','Business Software','Software','Websites & Hosting','Solar & Energy','Education','Health','Money & Insurance','Entertainment','News & Media','Games','Connectivity','Free Wi‑Fi','AI Deal Agent','Everyday','Scan / QR','Promote / Business']
-for lang,arr in cats.items():
-    p=Path('i18n-r32')/(lang+'.json')
-    if not p.exists() or not isinstance(arr,list) or len(arr)<len(keys): continue
-    d=json.loads(p.read_text(encoding='utf-8')); tr=d.get('translations',{})
-    for k,v in zip(keys,arr):
-        if str(v).strip(): tr[k]=str(v).strip()
-    d['translations']=tr
-    p.write_text(json.dumps(d,ensure_ascii=False,separators=(',',':')),encoding='utf-8')
-''',encoding='utf-8')
-
-          # 9. Cache-bust every page that loads the repaired runtimes.
-          for p in Path('.').glob('*.html'):
-              h=p.read_text(encoding='utf-8')
-              for name in ['locale-r15.js','i18n-ui.js','locale-r14-categories.js','r22-category-lock.js','r85-visible-i18n.js','superapp.js','voice-ai.js','r31-ui-polish.js']:
-                  h=re.sub(re.escape(name)+r'\?v=[^"\s]+',name+'?v='+VER,h)
-              if p.name=='index.html':
-                  h=re.sub(r'data-release="[^"]+"',f'data-release="{VER}"',h,count=1)
-                  h=re.sub(r'sw\.js\?v=[^"\s]+','sw.js?v='+VER,h,count=1)
-                  h=h.replace('2026-09-26 · R74','2026-09-27 · R96')
-              p.write_text(h,encoding='utf-8')
-          p=Path('sw.js'); sw=p.read_text(encoding='utf-8'); sw=re.sub(r"const RELEASE='[^']+';",f"const RELEASE='{VER}';",sw,count=1);p.write_text(sw,encoding='utf-8')
-          PY
-
-          node - <<'JS'
-          const fs=require('fs'),vm=require('vm');
-          const code=fs.readFileSync('locale-r14-categories.js','utf8');
-          const sandbox={window:{SEEKVERA_I18N_R32:{}},document:{readyState:'loading',addEventListener(){},querySelectorAll(){return[]},getElementById(){return null}},localStorage:{getItem(){return null}},navigator:{language:'en'}};
-          sandbox.window.window=sandbox.window;
-          try{vm.runInNewContext(code,sandbox,{timeout:3000})}catch(e){console.error(e);process.exit(1)}
-          const data=sandbox.window.SEEKVERA_R14_CATEGORIES?.data;
-          if(!data||!data.ar||!data.fr)throw new Error('category data export unavailable');
-          fs.writeFileSync('/tmp/cats.json',JSON.stringify(data));
-          JS
-          python3 /tmp/override_packs.py
+      - name: Apply R96 repair
+        run: python3 tools/r96_repair.py
 
       - name: Static integrity checks
         shell: bash
@@ -155,72 +35,41 @@ for lang,arr in cats.items():
           node --check locale-r14-categories.js
           node --check r22-category-lock.js
           node --check worker-r76.js
-          grep -F "local-whisper-auto-first-r96" voice-ai.js
-          grep -F "serverVoice(targetId,activeButton,true)" voice-ai.js
-          grep -F "if(SRC.has(n)){dirty=true;continue}" i18n-ui.js
-          grep -F "disabled-under-r32" r85-visible-i18n.js
-          grep -F "daily neuron allocation" worker-r76.js
-          grep -F "20260927-r96-authoritative-language-ai-voice" index.html
-          python3 - <<'PY'
-          import json,glob,os
-          critical=['Marketplace','Property','Cars & Auto','Jobs','Shopping','Restaurants & Food','Local Services','Money & Insurance','AI Deal Agent','Promote / Business','Find it faster. Compare it better.','Popular categories','Request anything','Live marketplace']
-          files=glob.glob('i18n-r32/*.json')
-          assert len(files)>=80, len(files)
-          bad=[]
-          for f in files:
-              d=json.load(open(f,encoding='utf-8')); lang=d.get('language'); t=d.get('translations',{})
-              for k in critical:
-                  if k in t and not str(t[k]).strip(): bad.append((lang,k,'empty'))
-          assert not bad,bad[:20]
-          ar=json.load(open('i18n-r32/ar.json',encoding='utf-8'))['translations']
-          assert ar['Property'] in ('العقارات','عقار','الممتلكات'), ar['Property']
-          assert 'السيارات' in ar['Cars & Auto'], ar['Cars & Auto']
-          print('PACKS',len(files),'AR_PROPERTY',ar['Property'],'AR_CARS',ar['Cars & Auto'])
-          PY
+          grep -Fq 'local-whisper-auto-first-r96' voice-ai.js
+          grep -Fq 'serverVoice(targetId,activeButton,true)' voice-ai.js
+          grep -Fq 'if(SRC.has(n)){dirty=true;continue}' i18n-ui.js
+          grep -Fq 'disabled-under-r32' r85-visible-i18n.js
+          grep -Fq '20260927-r96-authoritative-language-ai-voice' index.html
 
-      - name: Browser locale certification before deploy
+      - name: Install browser test tools
+        shell: bash
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+
+      - name: Certify six country-language switches locally
         shell: bash
         run: |
           set -euo pipefail
-          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
-          npx playwright install chromium >/dev/null
           python3 -m http.server 8765 >/tmp/r96-http.log 2>&1 &
           HPID=$!
           trap 'kill $HPID || true' EXIT
           sleep 2
-          cat > /tmp/r96-locale.mjs <<'JS'
-          import {chromium} from 'playwright';
-          import assert from 'node:assert/strict';
-          const b=await chromium.launch({headless:true});
-          const p=await b.newPage({locale:'en-US'});
-          await p.goto('http://127.0.0.1:8765/?r96=locale',{waitUntil:'domcontentloaded',timeout:45000});
-          await p.waitForFunction(()=>window.SEEKVERA_I18N_R32&&window.SEEKVERA_LOCALE_R15,{timeout:20000});
-          const cases=[['LB','ar'],['FR','fr'],['DE','de'],['TR','tr'],['CN','zh'],['IN','hi']];
-          const forbidden=['Popular categories','Request anything','Live marketplace','Find it faster. Compare it better.'];
-          for(const [cc,ll] of cases){
-            await p.selectOption('#country',cc);
-            await p.waitForFunction(l=>document.documentElement.lang===l&&document.documentElement.dataset.seekveraI18nReady===l,ll,{timeout:20000});
-            await p.waitForTimeout(450);
-            const out=await p.evaluate(()=>({lang:document.documentElement.lang,country:document.querySelector('#country')?.value,title:document.querySelector('.r5-hero h1')?.textContent.trim(),popular:document.querySelector('#categories h2')?.textContent.trim(),request:document.querySelector('#request h2')?.textContent.trim(),live:[...document.querySelectorAll('.r5-section h2')].map(x=>x.textContent.trim()).find(x=>/market|march|سوق|markt|merc|市场|बाज़ार/i.test(x))||'',cats:[...document.querySelectorAll('#categories .r5-tile-body b')].slice(0,8).map(x=>x.textContent.trim())}));
-            assert.equal(out.country,cc);assert.equal(out.lang,ll);
-            const all=[out.title,out.popular,out.request,out.live,...out.cats].join(' | ');
-            for(const x of forbidden)assert.ok(!all.includes(x),`${cc}/${ll} leaked English: ${x} :: ${all}`);
-            assert.ok(out.cats.every(Boolean));
-            console.log('LOCALE_PASS',cc,ll,out.popular,out.cats.slice(0,3).join('/'));
-          }
-          await b.close();
-          JS
-          node /tmp/r96-locale.mjs
+          node tools/r96_locale_cert.mjs
 
-      - name: Commit repaired release
+      - name: Commit repaired runtime
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'seekvera-global'
           git config user.email 'seekvera.global@gmail.com'
-          git add r85-visible-i18n.js locale-r14-categories.js r22-category-lock.js i18n-ui.js voice-ai.js worker-r76.js r31-ui-polish.js superapp.js i18n-r32 index.html sw.js '*.html'
-          git commit -m 'R96 authoritative locale AI and multilingual voice repair'
-          git push origin HEAD:main
+          git add r85-visible-i18n.js locale-r14-categories.js r22-category-lock.js i18n-ui.js voice-ai.js worker-r76.js r31-ui-polish.js superapp.js sw.js '*.html'
+          if git diff --cached --quiet; then
+            echo 'R96 runtime already committed'
+          else
+            git commit -m 'R96 authoritative locale AI and multilingual voice repair'
+            git push origin HEAD:main
+          fi
 
       - name: Deploy R96 to Cloudflare
         uses: cloudflare/wrangler-action@v4
@@ -229,35 +78,37 @@ for lang,arr in cats.items():
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
 
-      - name: Live AI and locale certification
+      - name: Verify live release marker
         shell: bash
         run: |
           set -euo pipefail
-          BASE='https://seekveraglobal.com'
           ok=0
           for n in $(seq 1 15); do
-            cb="r96-${GITHUB_RUN_ID}-${n}-$(date +%s)"
-            curl -fsSL --max-time 20 -H 'Cache-Control: no-cache' "$BASE/?$cb" -o /tmp/home || true
-            curl -fsSL --max-time 20 -H 'Cache-Control: no-cache' "$BASE/voice-ai.js?$cb" -o /tmp/voice || true
-            if grep -Fq '20260927-r96-authoritative-language-ai-voice' /tmp/home && grep -Fq 'local-whisper-auto-first-r96' /tmp/voice; then ok=1;break;fi
+            stamp="r96-${GITHUB_RUN_ID}-${n}-$(date +%s)"
+            curl -fsSL --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/?$stamp" -o /tmp/home || true
+            curl -fsSL --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/voice-ai.js?$stamp" -o /tmp/voice || true
+            if grep -Fq '20260927-r96-authoritative-language-ai-voice' /tmp/home 2>/dev/null && grep -Fq 'local-whisper-auto-first-r96' /tmp/voice 2>/dev/null; then
+              ok=1
+              break
+            fi
             sleep 4
           done
           test "$ok" = 1
-          echo LIVE_RELEASE_PASS
-          curl -fsS --max-time 28 -H 'content-type: application/json' -d '{"message":"مرحبا كيفك اليوم؟","country":"Lebanon","countryCode":"LB","language":"auto","uiLanguage":"ar","history":[]}' "$BASE/api/ai?r96=ar" -o /tmp/ai-ar.json
-          curl -fsS --max-time 28 -H 'content-type: application/json' -d '{"message":"Hello, how are you today?","country":"United States","countryCode":"US","language":"auto","uiLanguage":"en","history":[]}' "$BASE/api/ai?r96=en" -o /tmp/ai-en.json
-          jq -e '.response|length>3' /tmp/ai-ar.json >/dev/null
-          jq -e '.response|length>3' /tmp/ai-en.json >/dev/null
-          jq -e '.language=="ar"' /tmp/ai-ar.json >/dev/null
-          echo AI_AR_PASS $(jq -r '.model // .fastPath // "ok"' /tmp/ai-ar.json)
-          echo AI_EN_PASS $(jq -r '.model // .fastPath // "ok"' /tmp/ai-en.json)
+          echo LIVE_R96_RELEASE_PASS
 
-          cat > /tmp/r96-live.mjs <<'JS'
-          import {chromium} from 'playwright';import assert from 'node:assert/strict';
-          const b=await chromium.launch({headless:true});const p=await b.newPage({locale:'en-US'});
-          await p.goto('https://seekveraglobal.com/?r96=live-'+Date.now(),{waitUntil:'domcontentloaded',timeout:45000});
-          await p.waitForFunction(()=>window.SEEKVERA_I18N_R32&&window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_VOICE_AI,{timeout:20000});
-          for(const [cc,ll] of [['LB','ar'],['FR','fr'],['TR','tr'],['CN','zh']]){await p.selectOption('#country',cc);await p.waitForFunction(l=>document.documentElement.lang===l&&document.documentElement.dataset.seekveraI18nReady===l,ll,{timeout:20000});await p.waitForTimeout(500);const t=await p.evaluate(()=>({h:document.querySelector('.r5-hero h1')?.textContent.trim(),p:document.querySelector('#categories h2')?.textContent.trim(),cats:[...document.querySelectorAll('#categories .r5-tile-body b')].slice(0,6).map(x=>x.textContent.trim())}));const joined=[t.h,t.p,...t.cats].join(' | ');for(const en of ['Find it faster. Compare it better.','Popular categories','Marketplace','Property','Cars & Auto','Jobs'])assert.ok(!joined.includes(en),`${cc}/${ll}: ${joined}`);console.log('LIVE_LOCALE_PASS',cc,ll,t.p)}
-          await b.close();
-          JS
-          node /tmp/r96-live.mjs
+      - name: Certify live country-language switches
+        env:
+          SEEKVERA_CERT_BASE: https://seekveraglobal.com/
+        run: node tools/r96_locale_cert.mjs
+
+      - name: Certify live AI in Arabic and English
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS --max-time 30 -H 'content-type: application/json' -d '{"message":"مرحبا كيفك اليوم؟","country":"Lebanon","countryCode":"LB","language":"auto","uiLanguage":"ar","history":[]}' 'https://seekveraglobal.com/api/ai?r96=ar' -o /tmp/ai-ar.json
+          curl -fsS --max-time 30 -H 'content-type: application/json' -d '{"message":"Hello, how are you today?","country":"United States","countryCode":"US","language":"auto","uiLanguage":"en","history":[]}' 'https://seekveraglobal.com/api/ai?r96=en' -o /tmp/ai-en.json
+          jq -e '.response|type=="string" and length>3' /tmp/ai-ar.json >/dev/null
+          jq -e '.response|type=="string" and length>3' /tmp/ai-en.json >/dev/null
+          jq -e '.language=="ar"' /tmp/ai-ar.json >/dev/null
+          echo LIVE_AI_AR_PASS
+          echo LIVE_AI_EN_PASS
