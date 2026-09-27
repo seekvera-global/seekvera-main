@@ -8,9 +8,10 @@ w=p.read_text(encoding='utf-8')
 w=re.sub(r"const RELEASE='[^']+';",f"const RELEASE='{VER}';",w,count=1)
 old="const base={audio:m[2],task:'transcribe',vad_filter:true,condition_on_previous_text:false,beam_size:5,no_speech_threshold:.72};"
 new="const bin=atob(m[2]),audio=Array.from(bin,c=>c.charCodeAt(0));\n const base={audio,task:'transcribe',vad_filter:true,condition_on_previous_text:false,beam_size:5,no_speech_threshold:.72};"
-if old not in w:
-    raise SystemExit('ASR base64 anchor missing')
-w=w.replace(old,new,1)
+if old in w:
+    w=w.replace(old,new,1)
+elif "const bin=atob(m[2]),audio=Array.from(bin,c=>c.charCodeAt(0));" not in w:
+    raise SystemExit('ASR byte-array anchor missing')
 needle="r88:true,r88Runtime:'fast-auto-asr-server-first-tts-natural-fallback',"
 if needle in w and "r89:true" not in w:
     w=w.replace(needle,"r89:true,r89Runtime:'workers-ai-whisper-byte-array-no-consent',"+needle,1)
@@ -23,7 +24,6 @@ start=s.find('let puterLoaderR88=null;')
 end=s.find('async function seekveraAutoTranscribe(blob){',start)
 if start>=0 and end>start:
     s=s[:start]+s[end:]
-# replace automatic transcriber block
 pat=r"async function automaticMultilingualTranscribe\(blob\)\{.*?\n\}"
 m=re.search(pat,s,re.S)
 if not m:
@@ -36,9 +36,7 @@ block="""async function automaticMultilingualTranscribe(blob){
   }
 }"""
 s=s[:m.start()]+block+s[m.end():]
-# do not preload or invoke Puter anywhere
 s=s.replace("https://js.puter.com/v2/","")
-# slightly clearer microphone status
 s=s.replace("if(i)i.placeholder='Understanding your language…';","if(i)i.placeholder='Understanding speech automatically…';")
 p.write_text(s,encoding='utf-8')
 
