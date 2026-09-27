@@ -1,0 +1,70 @@
+name: R108 cache-safe global UI deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r108-cache-safe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r108-cache-safe
+  cancel-in-progress: true
+
+jobs:
+  patch-deploy-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply cache-safe R108
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          for p in Path('.').glob('*.html'):
+              s=p.read_text(encoding='utf-8')
+              n=re.sub(r'navigation\.js\?v=[^"\']+', 'navigation.js?v=20260927-r108-no-mixed-language', s)
+              n=re.sub(r'voice-ai\.js\?v=[^"\']+', 'voice-ai.js?v=20260927-r108-no-mixed-language', n)
+              if n!=s:p.write_text(n,encoding='utf-8')
+          p=Path('sw.js');s=p.read_text(encoding='utf-8')
+          s=re.sub(r"const RELEASE='[^']+'", "const RELEASE='20260927-r108-no-mixed-language'", s, count=1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          node --check navigation.js
+          node --check voice-ai.js
+          node --check sw.js
+      - name: Persist R108
+        run: |
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add '*.html' sw.js
+          git commit -m 'R108 force fresh global UI voice and locale assets'
+          git push origin HEAD:main
+      - name: Deploy R108
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Live R108 verification
+        run: |
+          set -e
+          BASE='https://seekveraglobal.com'
+          for i in $(seq 1 12); do
+            S="$(date +%s)-$i"
+            curl -fsSL --max-time 25 "$BASE/?r108=$S" -o /tmp/home
+            curl -fsSL --max-time 25 "$BASE/navigation.js?r108=$S" -o /tmp/nav
+            curl -fsSL --max-time 25 "$BASE/sw.js?r108=$S" -o /tmp/sw
+            if grep -q 'navigation.js?v=20260927-r108-no-mixed-language' /tmp/home               && grep -q '2026-09-27 · R106' /tmp/nav               && grep -q '20260927-r108-no-mixed-language' /tmp/sw; then
+              echo R108_LIVE_PASS
+              exit 0
+            fi
+            sleep 5
+          done
+          exit 1
