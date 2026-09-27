@@ -1,0 +1,140 @@
+name: R93 free local multilingual Whisper voice
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r93-free-local-whisper.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-certify-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install browser certification tools
+        run: |
+          set -e
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak-ng >/dev/null
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+
+      - name: Build patched Transformers.js auto language bundle
+        shell: bash
+        run: |
+          set -e
+          rm -rf /tmp/tjs
+          git clone --depth 1 --branch feat/whisper-language-detection https://github.com/jhlee111/transformers.js /tmp/tjs
+          cd /tmp/tjs
+          grep -q 'detect_language' packages/transformers/src/models/whisper/modeling_whisper.js
+          corepack enable
+          corepack prepare pnpm@10.28.1 --activate
+          pnpm install --frozen-lockfile
+          pnpm --filter @huggingface/transformers build
+          test -s packages/transformers/dist/transformers.web.js
+          cp packages/transformers/dist/transformers.web.js "$GITHUB_WORKSPACE/patched-transformers-r93.js"
+
+      - name: Wire free local multilingual voice
+        run: |
+          set -e
+          python tools/r93_local_whisper_fallback.py
+          node --check voice-ai.js
+          node --check patched-transformers-r93.js
+          grep -F "patched-transformers-r93.js?v=20260927-r93-free-local-whisper" voice-ai.js
+          grep -F "onnxruntime-web@1.31.0-dev.20260914-8d85527a0" voice-ai.js
+          grep -F "voice-ai.js?v=20260927-r93-free-local-whisper" index.html
+
+      - name: Generate Arabic and English voice fixtures
+        run: |
+          espeak-ng -v en-us -s 125 -w /tmp/en.wav 'hello seekvera how are you today I need a hotel in Beirut'
+          espeak-ng -v ar -s 120 -w /tmp/ar.wav 'مرحبا كيف حالك اليوم انا اتكلم معك بالعربي واريد فندق في بيروت'
+
+      - name: Certify local language auto detection in Chromium
+        shell: bash
+        run: |
+          set -e
+          python3 -m http.server 8765 >/tmp/r93-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          cat > /tmp/r93-cert.mjs <<'JS'
+          import {chromium} from 'playwright';
+          import fs from 'node:fs';
+          const browser=await chromium.launch({headless:true});
+          const page=await browser.newPage();
+          page.on('console',m=>console.log('BROWSER',m.type(),m.text()));
+          page.on('pageerror',e=>console.log('PAGEERROR',e.message));
+          await page.goto('http://127.0.0.1:8765/?r93=local',{waitUntil:'domcontentloaded',timeout:60000});
+          const en=fs.readFileSync('/tmp/en.wav').toString('base64');
+          const ar=fs.readFileSync('/tmp/ar.wav').toString('base64');
+          const out=await page.evaluate(async({en,ar})=>{
+            const mod=await import('/patched-transformers-r93.js?v=cert');
+            mod.env.allowRemoteModels=true;
+            mod.env.remoteHost='https://huggingface.co/';
+            mod.env.remotePathTemplate='{model}/resolve/{revision}/';
+            mod.env.useBrowserCache=true;
+            mod.env.backends.onnx.wasm.wasmPaths='https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/dist/';
+            const pipe=await mod.pipeline('automatic-speech-recognition','onnx-community/whisper-tiny',{dtype:'q8',device:'wasm'});
+            const blob=b64=>{const x=atob(b64),u=new Uint8Array(x.length);for(let i=0;i<x.length;i++)u[i]=x.charCodeAt(i);return new Blob([u],{type:'audio/wav'})};
+            async function transcribe(b64){const u=URL.createObjectURL(blob(b64));try{return await pipe(u,{task:'transcribe'})}finally{URL.revokeObjectURL(u)}}
+            return {en:await transcribe(en),ar:await transcribe(ar)};
+          },{en,ar});
+          console.log('R93_RESULT',JSON.stringify(out));
+          const et=String(out.en?.text||''),at=String(out.ar?.text||'');
+          if(!et.trim())throw new Error('English local transcript empty');
+          if(!at.trim())throw new Error('Arabic local transcript empty');
+          if(!/[\u0600-\u06ff]/.test(at))throw new Error('Arabic auto detection failed: '+at);
+          await browser.close();
+          JS
+          node /tmp/r93-cert.mjs
+
+      - name: Commit certified local voice bundle
+        shell: bash
+        run: |
+          set -e
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add patched-transformers-r93.js voice-ai.js index.html sw.js
+          git commit -m 'R93 free local multilingual Whisper fallback'
+          git push origin HEAD:main
+
+      - name: Deploy R93 production
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Verify R93 live assets and non-ASR voice chain
+        shell: bash
+        run: |
+          set -e
+          BASE='https://seekveraglobal.com'
+          ok=0
+          for i in $(seq 1 8); do
+            stamp="$(date +%s)-$i"
+            curl -LsS --max-time 20 -H 'cache-control: no-cache' "$BASE/?r93=$stamp" -o /tmp/home
+            curl -LsS --max-time 20 -H 'cache-control: no-cache' "$BASE/voice-ai.js?r93=$stamp" -o /tmp/voice
+            curl -LsS --max-time 20 -H 'cache-control: no-cache' "$BASE/patched-transformers-r93.js?r93=$stamp" -o /tmp/lib
+            curl -fsS --max-time 25 -H 'content-type: application/json' -d '{"text":"مرحبا، كيف حالك اليوم؟","language":"ar"}' "$BASE/api/tts?r93=$stamp" -o /tmp/tts.bin
+            curl -fsS --max-time 25 -H 'content-type: application/json' -d '{"message":"كيفك اليوم؟","country":"Lebanon","language":"English","history":[]}' "$BASE/api/ai?r93=$stamp" -o /tmp/ai-ar.json
+            if grep -q 'voice-ai.js?v=20260927-r93-free-local-whisper' /tmp/home \
+              && grep -q 'patched-transformers-r93.js?v=20260927-r93-free-local-whisper' /tmp/voice \
+              && test $(wc -c < /tmp/lib) -gt 500000 \
+              && test $(wc -c < /tmp/tts.bin) -gt 500 \
+              && jq -e '.language=="ar" and (.response|length)>3' /tmp/ai-ar.json >/dev/null; then
+              ok=1
+              break
+            fi
+            sleep 4
+          done
+          test "$ok" = 1
+          echo R93_LIVE_FREE_LOCAL_VOICE_PASS
