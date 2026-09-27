@@ -8,7 +8,7 @@ const FEMALE_HINTS=/aria|jenny|zira|samantha|victoria|karen|moira|tessa|ava|alli
 const MALE_HINTS=/david|mark|george|daniel|fred|ralph|bruce|hammad|hamed|majed|maged|male|man/i;
 const QUALITY_HINTS=/neural|natural|enhanced|premium|online|google|microsoft|siri/i;
 const TTS_RETRY_DELAYS=[240,650,1200];
-const VOICE_SILENCE_MS=2600,VOICE_MAX_MS=30000,VOICE_RMS_THRESHOLD=.016;
+const VOICE_SILENCE_MS=3200,VOICE_MAX_MS=30000,VOICE_RMS_THRESHOLD=.016;
 let recognition=null,lastAnswer='',lastLocale='',muted=localStorage.getItem('seekvera_voice_muted')==='1',activeButton=null,voiceConversation=false,voiceReplyDeadline=0,speakToken=0,recording=false,mediaRecorder=null,mediaStream=null,recordChunks=[],recordTimer=null,speechSilenceTimer=null,speechHardTimer=null,audioCtx=null,audioAnalyser=null,audioSource=null,audioRaf=0,heardVoice=false,lastVoiceAt=0,recordStartedAt=0;
 function codeOf(v){let s=String(v||'').toLowerCase().trim();if(NAME_CODE[s])return NAME_CODE[s];s=s.split(/[-_ ]/)[0];if(NAME_CODE[s])return NAME_CODE[s];return /^[a-z]{2,3}$/.test(s)?s:''}
 function locale(){const e=document.getElementById('lang');let code=(e?.value||localStorage.getItem('seekvera_lang')||navigator.language||'en').toLowerCase();const label=e?.options?.[e.selectedIndex]?.textContent||'';if(code==='auto'||/auto|تلقائي|autom/i.test(label))return navigator.language||'en-US';code=codeOf(code)||code.split(/[-_]/)[0];if(code==='ar'){const c=String(document.getElementById('country')?.value||localStorage.getItem('seekvera_country')||'').toUpperCase();const ar={LB:'ar-LB',EG:'ar-EG',AE:'ar-AE',SA:'ar-SA',JO:'ar-JO',IQ:'ar-IQ',KW:'ar-KW',QA:'ar-QA',BH:'ar-BH',OM:'ar-OM',MA:'ar-MA',DZ:'ar-DZ',TN:'ar-TN'};if(ar[c])return ar[c]}return LANGS[code]||code||navigator.language||'en-US'}
@@ -46,7 +46,7 @@ async function localWhisperTranscribe(blob){
   }finally{try{URL.revokeObjectURL(url)}catch(_){}}
 }
 async function seekveraAutoTranscribe(blob){
-  const audio=await blobDataURL(blob),ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),3500);
+  const audio=await blobDataURL(blob),ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),14000);
   try{
     const res=await fetch(apiBase()+'/api/transcribe',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({audio,language:'auto'}),signal:ctl.signal,cache:'no-store'});
     const d=await res.json().catch(()=>({}));if(!res.ok||!d.text)throw Error(d.reason||d.error||'server transcription failed');
@@ -165,7 +165,7 @@ function start(targetId,button,forceNative=false){
   activeButton=button||document.getElementById('aiChatMic')||document.querySelector('.sv-global-compose .mic');
   const i=document.getElementById(targetId||'aiChatInput');
   seedVoiceLanguageFromConversation();let explicitVoice=false,rememberedVoice=false;try{explicitVoice=localStorage.getItem('seekvera_language_explicit')==='1';rememberedVoice=!!localStorage.getItem('seekvera_chat_voice_lang')}catch{}
-  if(!SpeechRecognition&&navigator.mediaDevices?.getUserMedia&&window.MediaRecorder){serverVoice(targetId,activeButton);return}
+  if(navigator.mediaDevices?.getUserMedia&&window.MediaRecorder&&!forceNative){serverVoice(targetId,activeButton,true);return}
   if(!SpeechRecognition){serverVoice(targetId,activeButton);return}
   const r=new SpeechRecognition();recognition=r;r.lang=voiceInputLocale();r.interimResults=true;r.continuous=!/iPhone|iPad|iPod/i.test(navigator.userAgent);r.maxAlternatives=1;
   let final='',hadError=false,heardAny=false;

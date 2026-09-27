@@ -2,7 +2,7 @@
   "use strict";
   if (window.__SEEKVERA_R31) return;
   window.__SEEKVERA_R31 = true;
-  const VERSION = "20260926-r76-complete-global-final";
+  const VERSION = "20260927-r83-unified-multilingual-voice-ai";
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
   const ROUTES = {
@@ -296,7 +296,7 @@
     const tests = [
       [
         "jobs",
-        /job|jobs|career|vacancy|work|employment|hiring|travail|emploi|emplois|trabajo|empleo|trabalho|emprego|lavoro|arbeit|stellen|stelle|iş|is ilanı|iş ilanı|работ|ваканси|工作|职位|仕事|求人|직업|채용|وظيفة|وظائف|وظايف|عمل|شغل|فرصة عمل|دوام/u,
+        /job|jobs|career|vacancy|employment|hiring|looking for work|need work|find work|travail|emploi|emplois|trabajo|empleo|trabalho|emprego|lavoro|arbeit|stellen|stelle|is ilanı|iş ilanı|работ|ваканси|工作|职位|仕事|求人|직업|채용|وظيفة|وظائف|وظايف|فرصة عمل|أبحث عن عمل|ابحث عن عمل|عم دور على شغل|بدي شغل|دوام/u,
       ],
       [
         "solar",

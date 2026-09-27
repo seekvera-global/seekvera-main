@@ -1,6 +1,6 @@
 (() => {
   "use strict";
-  const RELEASE = "20260927-r81-natural-conversation";
+  const RELEASE = "20260927-r83-unified-multilingual-voice-ai";
   const WORKER = "";
   const SB = "https://nrdpyydfrpmqedtzmbyw.supabase.co";
   const SB_KEY = "sb_publishable_tqqPQxqdNowIsSlJz4bW5w_kHOC905o";
@@ -154,14 +154,11 @@
       "jobs",
       "career",
       "vacancy",
-      "work",
       "employment",
       "hiring",
       "وظيفة",
       "وظائف",
       "وظايف",
-      "عمل",
-      "شغل",
       "فرصة عمل",
       "دوام",
       "工作",
@@ -681,8 +678,7 @@
       const previous =
         [...history].reverse().find((x) => x.role === "assistant")?.content ||
         "";
-      const finalCat =
-        d.category && d.category !== "general" ? d.category : localCat;
+      const finalCat = d.category ? d.category : localCat;
       if (sameReply(reply, previous) && finalCat === "jobs")
         reply = localJobGuide();
       if (pending) {
