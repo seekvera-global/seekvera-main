@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
 
       - name: Apply R88 patch
-        run: python tools/r88_voice_speaker_final.py
+        run: python tools/r88b_finish.py
 
       - name: Verify source
         run: |
@@ -86,4 +86,4 @@ jobs:
           echo '--- TTS BODY IF TEXT ---'; head -c 500 /tmp/tts.bin || true; echo
           exit 1
 
-# trigger: 2026-09-27-r88-final
+# trigger: 2026-09-27-r88b-final
