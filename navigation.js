@@ -97,7 +97,7 @@ async function translateStaticAI(){
 function runLocaleEngines(){
   try{window.SEEKVERA_I18N?.apply?.()}catch{}
   try{window.SEEKVERA_LOCALE_GUARD_R9?.apply?.()}catch{}
-  ensureLanguageCoverage();localizeCountryOptions();localizeDocumentDirection();
+  ensureLanguageCoverage();localizeCountryOptions();localizeDocumentDirection();dedupeCurrencyOptions();hardenReleaseMarker();
   translateStaticAI();
   hardenAIUI();
 }
@@ -154,11 +154,18 @@ html.sv-r15-applying #aiChat,html.sv-r15-applying #aiChat *{transition:none!impo
 `;
   document.head.appendChild(st);
 }
+function dedupeCurrencyOptions(){
+  const el=localeControl('currency');if(!el)return;
+  const seen=new Set();for(const o of [...el.options]){const v=String(o.value||'').toUpperCase();if(!v)continue;if(seen.has(v))o.remove();else seen.add(v)}
+}
+function hardenReleaseMarker(){
+  for(const e of document.querySelectorAll('footer small,.sv-footer small')){const t=(e.textContent||'').trim();if(/2026-09-2[4-7]\s*·/.test(t)){e.textContent='2026-09-27 · R106';e.setAttribute('data-no-i18n','1');e.setAttribute('data-no-translate','1')}}
+}
 function fixAIControlButtons(){
   const defs=[['aiChatAttach','📎'],['aiChatCamera','📷'],['aiChatMic','🎤']];
-  for(const [id,emoji] of defs){const b=document.getElementById(id);if(!b)continue;b.setAttribute('data-no-i18n','1');b.setAttribute('data-no-translate','1');if((b.textContent||'').trim()!==emoji)b.textContent=emoji;}
-  const sp=document.getElementById('aiChatSpeaker');if(sp){sp.setAttribute('data-no-i18n','1');sp.setAttribute('data-no-translate','1');if(!/[🔊🔈🔇]/u.test(sp.textContent||''))sp.textContent='🔊';}
-  const send=document.querySelector('#aiChatForm .send,#aiChat .sv-chat-form .send');if(send){send.setAttribute('data-no-i18n','1');send.setAttribute('data-no-translate','1');if((send.textContent||'').trim()!=='➤')send.textContent='➤';}
+  for(const [id,emoji] of defs){const b=document.getElementById(id);if(!b)continue;b.setAttribute('data-no-i18n','1');b.setAttribute('data-no-translate','1');b.setAttribute('aria-label',emoji);if((b.textContent||'').trim()!==emoji)b.textContent=emoji;}
+  const sp=document.getElementById('aiChatSpeaker');if(sp){sp.setAttribute('data-no-i18n','1');sp.setAttribute('data-no-translate','1');sp.setAttribute('aria-label',/[🔇]/u.test(sp.textContent||'')?'🔇':'🔊');if(!/[🔊🔈🔇]/u.test(sp.textContent||''))sp.textContent='🔊';}
+  const send=document.querySelector('#aiChatForm .send,#aiChat .sv-chat-form .send');if(send){send.setAttribute('data-no-i18n','1');send.setAttribute('data-no-translate','1');send.setAttribute('aria-label','➤');if((send.textContent||'').trim()!=='➤')send.textContent='➤';}
   const brand=document.querySelector('#aiChat .sv-chat-head b');if(brand){brand.setAttribute('data-no-i18n','1');brand.setAttribute('data-no-translate','1');if(!/SEEKVERA\s+AI/i.test(brand.textContent||''))brand.textContent='✨ SEEKVERA AI';}
   const input=document.getElementById('aiChatInput');if(input){input.setAttribute('dir','auto');input.style.minWidth='0';}
 }
