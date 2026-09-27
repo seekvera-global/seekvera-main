@@ -15,11 +15,14 @@ permissions:
 jobs:
   repair-deploy-certify:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Restore tracked dependencies before repair
+        run: git checkout ac56367326a5245cbae6a21b61ab5360d565cc62 -- node_modules || true
 
       - name: Apply R96 repair
         run: python3 tools/r96_repair.py
@@ -57,17 +60,21 @@ jobs:
           sleep 2
           node tools/r96_locale_cert.mjs
 
-      - name: Commit repaired runtime
+      - name: Remove browser-test dependency changes
+        run: git checkout ac56367326a5245cbae6a21b61ab5360d565cc62 -- node_modules || true
+
+      - name: Commit repaired runtime and dependency cleanup
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'seekvera-global'
           git config user.email 'seekvera.global@gmail.com'
-          git add r85-visible-i18n.js locale-r14-categories.js r22-category-lock.js i18n-ui.js voice-ai.js worker-r76.js r31-ui-polish.js superapp.js sw.js '*.html'
+          git add node_modules r85-visible-i18n.js locale-r14-categories.js r22-category-lock.js i18n-ui.js voice-ai.js worker-r76.js r31-ui-polish.js superapp.js sw.js
+          for f in $(git ls-files '*.html' | awk 'index($0,"/")==0'); do git add -- "$f"; done
           if git diff --cached --quiet; then
             echo 'R96 runtime already committed'
           else
-            git commit -m 'R96 authoritative locale AI and multilingual voice repair'
+            git commit -m 'R96 finalize locale AI voice repair and clean test artifacts'
             git push origin HEAD:main
           fi
 
@@ -95,6 +102,12 @@ jobs:
           done
           test "$ok" = 1
           echo LIVE_R96_RELEASE_PASS
+
+      - name: Reinstall browser tools for live certification
+        shell: bash
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
 
       - name: Certify live country-language switches
         env:
