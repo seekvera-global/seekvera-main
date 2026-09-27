@@ -1,0 +1,43 @@
+name: R94 certify R93 live production
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r94-live-r93-certification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  certify-live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Verify production index and voice asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          ok=0
+          for n in $(seq 1 36); do
+            cb="r94-${GITHUB_RUN_ID}-${n}"
+            if curl -fsSL --max-time 15 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/?${cb}" -o /tmp/index.html && \
+               curl -fsSL --max-time 15 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/voice-ai.js?${cb}" -o /tmp/voice-ai.js && \
+               grep -Fq '20260927-r93-native-first-zero-cost-voice' /tmp/index.html && \
+               grep -Fq "native-first-zero-cost-r93" /tmp/voice-ai.js && \
+               grep -Fq 'if(!SpeechRecognition)' /tmp/voice-ai.js && \
+               ! grep -Fq 'navigator.mediaDevices?.getUserMedia&&window.MediaRecorder&&!forceNative){serverVoice' /tmp/voice-ai.js; then
+              ok=1
+              break
+            fi
+            sleep 5
+          done
+          if [ "$ok" -ne 1 ]; then
+            echo 'R93 is not yet visible on live production' >&2
+            exit 1
+          fi
+          echo 'LIVE_R93_INDEX=PASS'
+          echo 'LIVE_R93_NATIVE_FIRST=PASS'
+          echo 'LIVE_R93_OLD_SERVER_FIRST=ABSENT'
+          grep -o 'data-release="[^"]*"' /tmp/index.html | head -1
