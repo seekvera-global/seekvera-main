@@ -1,0 +1,58 @@
+name: R85b live
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r85b-live.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply patch
+        run: python tools/r85_patch.py
+      - name: Verify source
+        run: |
+          node --check superapp.js
+          node --check r85-visible-i18n.js
+          grep -F 'function metaConversationClient' superapp.js
+          grep -F 'finalCat = metaChat ? "general"' superapp.js
+          grep -F 'r85-visible-i18n.js?v=20260927-r85-visible-i18n-chat-guard' index.html
+      - name: Commit source
+        run: |
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add superapp.js index.html sw.js r85-visible-i18n.js
+          git commit -m 'R85 apply visible i18n and client chat guard' || true
+          git push origin HEAD:main
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Verify live
+        run: |
+          set -e
+          for i in $(seq 1 10); do
+            stamp=$(date +%s)-$i
+            curl -LsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/?r85=$stamp" -o /tmp/home
+            curl -LsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/superapp.js?r85=$stamp" -o /tmp/app
+            curl -LsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/r85-visible-i18n.js?r85=$stamp" -o /tmp/i18n
+            curl -LsS --max-time 25 -H 'content-type: application/json' -d '{"message":"صرت بتحكي عربي هون","country":"Lebanon","history":[]}' "https://seekveraglobal.com/api/ai?r85=$stamp" -o /tmp/meta
+            if grep -q 'r85-visible-i18n.js?v=20260927-r85-visible-i18n-chat-guard' /tmp/home && grep -q 'function metaConversationClient' /tmp/app && grep -q 'فنادق، منازل، سيارات' /tmp/i18n && jq -e '.category=="general" and .language=="ar"' /tmp/meta >/dev/null; then
+              echo R85_LIVE_PASS
+              exit 0
+            fi
+            sleep 3
+          done
+          exit 1
