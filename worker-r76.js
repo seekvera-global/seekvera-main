@@ -1,6 +1,6 @@
 import baseWorker from './worker-r31.js';
 
-const RELEASE='20260927-r83-unified-multilingual-voice-ai';
+const RELEASE='20260927-r84-natural-chat-guard';
 const PRIMARY='@cf/zai-org/glm-4.7-flash';
 const FALLBACK='@cf/qwen/qwen3-30b-a3b-fp8';
 const ALLOWED=new Set(['https://seekveraglobal.com','https://www.seekveraglobal.com','https://seekvera-global.github.io','https://seekvera-main.seekvera-global.workers.dev']);
@@ -87,6 +87,30 @@ function actionState(message,modelCC='',modelLL='',clientControls={}){
  return{cc,ll,isAction:!!(cc||ll)};
 }
 function conversationOnly(message){const s=String(message||'').trim().toLowerCase().replace(/^[\s¿¡]+|[\s.!?؟،。！？]+$/gu,'');if(!s)return true;return /^(?:hi|hello|hey|good\s+(?:morning|afternoon|evening)|how\s+are\s+you(?:\s+today)?|what\s+are\s+you\s+doing|what(?:'s|\s+is)\s+your\s+name|who\s+are\s+you|thank\s*you|thanks|مرحبا|مرحباً|أهلا|اهلا|السلام عليكم|كيفك(?:\s+اليوم)?|كيف حالك(?:\s+اليوم)?|شو عم تعمل|شو الاخبار|مين انت|شكرا|شكراً|bonjour|salut|comment (?:ça|ca) va|merci|hola|buenos días|buenas tardes|cómo estás|como estas|gracias|hallo|guten morgen|wie geht(?:'s| es dir)?|danke|ciao|buongiorno|come stai|grazie|olá|ola|bom dia|como vai|obrigad[oa]|merhaba|nasılsın|nasilsin|teşekkürler|tesekkurler|привет|здравствуй(?:те)?|как дела|спасибо|你好|您好|你好吗|谢谢|こんにちは|おはよう|元気ですか|ありがとう|안녕|안녕하세요|어떻게 지내|감사합니다|नमस्ते|आप कैसे हैं|धन्यवाद|สวัสดี|เป็นอย่างไรบ้าง|ขอบคุณ|halo|apa kabar|terima kasih|jambo|habari|asante)$/iu.test(s)}
+function metaConversation(message){
+ const s=String(message||'').toLowerCase();
+ return /(?:\b(?:i am|i'm|im|you are|you're|are you|can you|do you)\b.{0,45}\b(?:speaking|speak|understand|hear|listening|language|voice|arabic|english|french|turkish|spanish|german)\b)|(?:(?:أنا|انا|إنت|انت|عم|صرت|صار|هلأ|هلق|هون|هنا).{0,45}(?:بحكي|بتحكي|احكي|تفهم|بتفهم|سامع|تسمع|صوت|لغة|عربي|العربي|إنجليزي|انجليزي|فرنسي|تركي))|(?:parle|parles|comprends|écoute|langue).{0,30}(?:français|arabe|anglais|langue)?|(?:sprich|versteh|sprache).{0,30}|(?:habla|hablas|entiend|idioma).{0,30}|(?:konuş|anlıyor|anliyor|dil).{0,30}|(?:говор|понима|язык).{0,30}|(?:说|听懂|语言)|(?:話|言語)|(?:말|이해|언어)/iu.test(s)
+}
+function metaReply(message,language){
+ const l=languageCode(language)||messageLanguage(message,'');
+ const r={
+  ar:'إيه، فهمتك. فيك تحكي معي بالعربي أو بأي لغة بشكل طبيعي، وما رح حوّلك على أي قسم إلا لما تطلب شي محدد.',
+  en:'Yes, I understand you. Speak naturally in any language; I’ll stay in the conversation until you ask for something specific.',
+  fr:'Oui, je vous comprends. Parlez naturellement dans n’importe quelle langue ; je resterai dans la conversation jusqu’à ce que vous demandiez quelque chose de précis.',
+  es:'Sí, te entiendo. Habla con naturalidad en cualquier idioma; seguiré conversando hasta que pidas algo concreto.',
+  de:'Ja, ich verstehe dich. Sprich ganz natürlich in jeder Sprache; ich bleibe im Gespräch, bis du etwas Bestimmtes möchtest.',
+  tr:'Evet, seni anlıyorum. İstediğin dilde doğal konuş; belirli bir şey isteyene kadar sohbet içinde kalacağım.',
+  ru:'Да, я вас понимаю. Говорите естественно на любом языке; я останусь в разговоре, пока вы не попросите что-то конкретное.',
+  zh:'可以，我听得懂。你可以自然地用任何语言和我说话；只有当你提出明确需求时，我才会带你去相应栏目。',
+  ja:'はい、理解できます。どの言語でも自然に話してください。具体的な依頼があるまでは会話を続けます。',
+  ko:'네, 이해해요. 어떤 언어로든 자연스럽게 말씀하세요. 구체적인 요청을 하기 전까지는 대화를 계속할게요.',
+  hi:'हाँ, मैं समझता हूँ। आप किसी भी भाषा में स्वाभाविक रूप से बोलें; जब तक आप कोई खास चीज़ नहीं माँगते, मैं बातचीत में ही रहूँगा।',
+  pt:'Sim, eu entendo. Fale naturalmente em qualquer idioma; continuarei na conversa até você pedir algo específico.',
+  it:'Sì, ti capisco. Parla naturalmente in qualsiasi lingua; resterò nella conversazione finché non chiederai qualcosa di specifico.'
+ };
+ return r[l]||r.en
+}
+function routeLikeReply(text){return /(?:take|send|move|route|redirect).{0,35}(?:section|department)|(?:section|department).{0,35}(?:now|direct)|(?:قسم|القسم).{0,35}(?:مباشر|الأنسب|المناسب|وديك|أوصلك|انقلك|أنقلك)/iu.test(String(text||''))}
 function employmentIntent(message){const s=String(message||'').toLowerCase();return /\b(?:job|jobs|career|vacancy|employment|hiring|job opening|looking for work|need work|find work)\b|وظيف|وظائف|وظايف|فرصة عمل|أبحث عن عمل|ابحث عن عمل|عم دور على شغل|بدي شغل|بدور على شغل|دوام|emploi|emplois|travail|trabajo|empleo|trabalho|emprego|lavoro|arbeit|stellen|stelle|iş ilanı|is ilanı|ваканси|работу ищ|工作|职位|求人|채용/iu.test(s)}
 function conversationalFallback(message,language){const l=languageCode(language)||normalizedLanguage('',message);const how=/how\s+are\s+you|كيفك|كيف حالك|comment (?:ça|ca) va|cómo estás|como estas|wie geht|come stai|como vai|nasılsın|nasilsin|как дела|你好吗|元気ですか|어떻게 지내|आप कैसे हैं|เป็นอย่างไรบ้าง|apa kabar|habari/iu.test(message);const replies={
  ar:how?'منيح، شكراً إلك. أنا جاهز أحكي معك وأساعدك. شو حابب تعمل؟':'أهلاً وسهلاً! أنا SEEKVERA AI. احكي معي بشكل طبيعي، شو فيني ساعدك؟',
@@ -107,7 +131,7 @@ function conversationalFallback(message,language){const l=languageCode(language)
 async function degradedFallback(request,env,ctx,body,message){
  const fallback=await baseWorker.fetch(request,env,ctx);let d=null;try{d=await fallback.clone().json()}catch{}
  if(!d||typeof d!=='object'){const h=new Headers(fallback.headers);h.set('x-seekvera-release',RELEASE);return new Response(fallback.body,{status:fallback.status,statusText:fallback.statusText,headers:h})}
- const act=actionState(message,d?.countryAction?.code,d?.languageAction?.code,body?.clientControls),language=act.isAction?messageLanguage(message,d.language):normalizedLanguage(d.language,message),chat=conversationOnly(message),cat=chat?'general':(category(d.category)==='jobs'&&!employmentIntent(message)?'general':category(d.category)),response=act.isAction?actionReply(language,act.cc,act.ll):chat?conversationalFallback(message,language):clean(d.response,5000);
+ const act=actionState(message,d?.countryAction?.code,d?.languageAction?.code,body?.clientControls),language=act.isAction?messageLanguage(message,d.language):normalizedLanguage(d.language,message),meta=metaConversation(message),chat=conversationOnly(message)||meta,cat=chat?'general':(category(d.category)==='jobs'&&!employmentIntent(message)?'general':category(d.category)),response=act.isAction?actionReply(language,act.cc,act.ll):meta?metaReply(message,language):chat?conversationalFallback(message,language):clean(d.response,5000);
  return json(request,{...d,ok:d.ok!==false,response,language,category:cat,route:ROUTES[cat]||ROUTES.general,countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:act.isAction?'seekvera-r81-local-action-fallback':chat?'seekvera-r81-local-conversation-fallback':d.model,fastPath:act.isAction?'r81-deterministic-action-fallback':chat?'r81-natural-conversation-fallback':(d.fastPath||'r81-base-fallback'),liveData:!!d.liveData},fallback.status||200)
 }
 
@@ -120,6 +144,7 @@ Return ONLY one JSON object with exactly these keys: reply, languageCode, catego
 - reply: talk naturally like a capable conversational assistant, not a fixed template. Use the recent conversation to understand follow-ups. Answer what you can first. If the request is too vague to choose useful results, ask ONE short, relevant clarification (for example location, type, budget or date). Never ask again for information already present in the conversation.\
 - languageCode: best ISO language code for the latest user message.\
 - category: exactly one of ${[...CATS].join(', ')}. Choose general for greetings, small talk, casual conversation, meta questions, incomplete or vague requests, and clarification turns. Choose a section only when the latest user message clearly asks to find, search, book, buy, sell, apply for, compare, or use something in that section. Never classify casual uses of work/عمل/شغل as Jobs unless the person is actually seeking employment.\
+- Language/voice meta-conversation rule: if the user says they are speaking a language, asks whether you understand/hear them, comments on which language you are speaking, or simply tests conversation (for example: ‘صرت بتحكي عربي هون’, ‘I am speaking Arabic now’, ‘Can you understand French?’), category MUST be general. Reply naturally to what they said. Never say you will send them to a section unless they actually ask for a marketplace task.\
 - countryAction: the ISO-3166 alpha-2 code for ANY country in the world, or WW, ONLY when the user explicitly commands the SEEKVERA APP/MARKET/COUNTRY SELECTOR to change/switch/move/set. Understand country names in the user's own language and dialect. Leave empty when the user merely searches for something in a country.\
 - languageAction: supported language code ONLY when the user explicitly commands the app/interface language to change. Leave empty otherwise.\
 \
@@ -131,8 +156,9 @@ Latest user message: ${message}`;
  const messages=[{role:'system',content:system},{role:'user',content:message}];
  for(const model of [PRIMARY,FALLBACK]){try{
    const r=await env.AI.run(model,{messages,temperature:.1,max_tokens:520}),text=modelText(r),obj=parseJSON(text);if(!obj||!clean(obj.reply,5000))continue;
-   const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=act.isAction?messageLanguage(message,obj.languageCode):(languageCode(obj.languageCode)||normalizedLanguage('',message)),cat=conversationOnly(message)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
-   return{ok:true,response:act.isAction?actionReply(language,act.cc,act.ll):clean(obj.reply,5000),language,category:cat,route:ROUTES[cat]||ROUTES.general,countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model,fastPath:act.isAction?'r76-verified-action-first':'r76-single-structured-ai',liveData:false}
+   const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=act.isAction?messageLanguage(message,obj.languageCode):(languageCode(obj.languageCode)||normalizedLanguage('',message)),meta=metaConversation(message),cat=(conversationOnly(message)||meta)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
+   let reply=act.isAction?actionReply(language,act.cc,act.ll):clean(obj.reply,5000);if(meta&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
+   return{ok:true,response:reply,language,category:cat,route:ROUTES[cat]||ROUTES.general,countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model,fastPath:act.isAction?'r76-verified-action-first':meta?'r84-meta-conversation-guard':'r76-single-structured-ai',liveData:false}
  }catch{}}
  return null;
 }
