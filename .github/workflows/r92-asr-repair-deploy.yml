@@ -1,0 +1,93 @@
+name: R92 deploy multilingual ASR repair
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r92-asr-repair-deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair-deploy-certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch production ASR payloads
+        run: |
+          set -e
+          python tools/r92_asr_payload_fix.py
+          node --check worker-r76.js
+          grep -F "20260927-r92-live-asr-repair" worker-r76.js
+          grep -F "audio:m[2]},'base64'" worker-r76.js
+          grep -F "audio:audioBytes},'bytes'" worker-r76.js
+
+      - name: Save repaired worker source
+        run: |
+          set -e
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add worker-r76.js
+          git commit -m 'R92 repair live multilingual speech transcription'
+          git push origin HEAD:main
+
+      - name: Deploy repaired Worker
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Install multilingual voice fixture tool
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak-ng >/dev/null
+          espeak-ng -v en-us -s 125 -w /tmp/en.wav 'hello seekvera how are you today I need a hotel in Beirut'
+          espeak-ng -v ar -s 120 -w /tmp/ar.wav 'مرحبا كيف حالك اليوم انا اتكلم معك بالعربي واريد فندق في بيروت'
+
+      - name: Certify live Arabic and English voice path
+        shell: bash
+        run: |
+          set -e
+          BASE='https://seekveraglobal.com'
+          AR=$(base64 -w0 /tmp/ar.wav)
+          EN=$(base64 -w0 /tmp/en.wav)
+          passed=0
+          for i in $(seq 1 8); do
+            stamp="$(date +%s)-$i"
+            ar_code=$(curl -sS --max-time 30 -o /tmp/asr-ar.json -w '%{http_code}' -H 'content-type: application/json' --data-binary "{\"audio\":\"data:audio/wav;base64,$AR\",\"language\":\"auto\"}" "$BASE/api/transcribe?r92=$stamp") || ar_code=000
+            en_code=$(curl -sS --max-time 30 -o /tmp/asr-en.json -w '%{http_code}' -H 'content-type: application/json' --data-binary "{\"audio\":\"data:audio/wav;base64,$EN\",\"language\":\"auto\"}" "$BASE/api/transcribe?r92=$stamp") || en_code=000
+            echo "AR[$ar_code] $(cat /tmp/asr-ar.json 2>/dev/null || true)"
+            echo "EN[$en_code] $(cat /tmp/asr-en.json 2>/dev/null || true)"
+            if [ "$ar_code" = 200 ] && [ "$en_code" = 200 ] \
+              && jq -e '.ok==true and (.text|length)>2' /tmp/asr-ar.json >/dev/null \
+              && jq -e '.ok==true and (.text|length)>2' /tmp/asr-en.json >/dev/null \
+              && grep -q '[ء-ي]' /tmp/asr-ar.json \
+              && grep -Eqi 'hello|hotel|beirut|seekvera' /tmp/asr-en.json; then
+              passed=1
+              break
+            fi
+            sleep 4
+          done
+          test "$passed" = 1
+
+      - name: Certify live spoken reply and same-language AI
+        shell: bash
+        run: |
+          set -e
+          BASE='https://seekveraglobal.com'
+          curl -fsS --max-time 25 -H 'content-type: application/json' -d '{"text":"مرحبا، كيف حالك اليوم؟","language":"ar"}' "$BASE/api/tts?r92=tts" -o /tmp/tts.bin
+          test $(wc -c < /tmp/tts.bin) -gt 500
+          curl -fsS --max-time 25 -H 'content-type: application/json' -d '{"message":"كيفك اليوم؟ أريد فندق في بيروت","country":"Lebanon","language":"English","history":[]}' "$BASE/api/ai?r92=ai-ar" -o /tmp/ai-ar.json
+          curl -fsS --max-time 25 -H 'content-type: application/json' -d '{"message":"How are you today? I need a hotel in Beirut","country":"Lebanon","language":"Arabic","history":[]}' "$BASE/api/ai?r92=ai-en" -o /tmp/ai-en.json
+          cat /tmp/ai-ar.json
+          cat /tmp/ai-en.json
+          jq -e '.language=="ar" and (.response|length)>3' /tmp/ai-ar.json >/dev/null
+          jq -e '.language=="en" and (.response|length)>3' /tmp/ai-en.json >/dev/null
+          echo R92_LIVE_VOICE_PASS
