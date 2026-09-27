@@ -1,6 +1,6 @@
 import baseWorker from './worker-r31.js';
 
-const RELEASE='20260927-r87-language-independent-ai-brain';
+const RELEASE='20260927-r88-live-voice-speaker-final';
 const PRIMARY='@cf/zai-org/glm-4.7-flash';
 const FALLBACK='@cf/qwen/qwen3-30b-a3b-fp8';
 const ASR_PRIMARY='@cf/openai/whisper-large-v3-turbo',ASR_FALLBACK='@cf/openai/whisper';
@@ -138,8 +138,8 @@ async function transcribeAudio(request,env){
  const approx=Math.floor(m[2].length*3/4);if(approx<80||approx>6*1024*1024)return json(request,{ok:false,error:'Audio size is invalid'},400);
  const base={audio:m[2],task:'transcribe',vad_filter:true,condition_on_previous_text:false,beam_size:5,no_speech_threshold:.72};
  const errors=[];
- for(const model of [ASR_PRIMARY,ASR_PRIMARY,ASR_FALLBACK]){try{
-   const r=await env.AI.run(model,base),text=clean(r?.text||r?.result?.text||r?.result||'',5000);
+ for(const model of [ASR_PRIMARY,ASR_FALLBACK]){try{
+   const r=await Promise.race([env.AI.run(model,base),new Promise((_,reject)=>setTimeout(()=>reject(Error('asr timeout')),8000))]),text=clean(r?.text||r?.result?.text||r?.result||'',5000);
    if(text){const language=messageLanguage(text,'');return json(request,{ok:true,text,language,detectedLanguage:language,model,autoLanguage:true},200)}
    errors.push(model+':empty');
  }catch(e){errors.push(model+':'+clean(e?.message||e,180))}}
@@ -184,11 +184,12 @@ Latest user message: ${message}`;
    const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),9000);
    try{
      const br=await fetch('https://text.pollinations.ai/'+encodeURIComponent(backupPrompt)+'?model=openai&private=true',{headers:{'accept':'text/plain','user-agent':'SEEKVERA/1.0'},signal:ctl.signal});
-     if(br.ok){const obj=parseJSON(await br.text());if(obj&&clean(obj.reply,5000)){
+     if(br.ok){const raw=await br.text(),obj=parseJSON(raw);if(obj&&clean(obj.reply,5000)){
        const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode),meta=metaConversation(message),cat=(conversationOnly(message)||meta)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
        let reply=act.isAction?actionReply(language,act.cc,act.ll):clean(obj.reply,5000);if(meta&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
        return{ok:true,response:reply,language,category:cat,route:ROUTES[cat]||ROUTES.general,countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:'pollinations-private-conversation-fallback',fastPath:'r87-real-ai-fallback',liveData:false}
      }}
+     const plain=clean(raw,5000);if(plain){const language=messageLanguage(message,''),meta=metaConversation(message),cat=(conversationOnly(message)||meta)?'general':(category(message)==='jobs'&&!employmentIntent(message)?'general':category(message));return{ok:true,response:plain,language,category:cat,route:ROUTES[cat]||ROUTES.general,countryAction:null,languageAction:null,model:'pollinations-private-conversation-plain',fastPath:'r88-natural-plain-fallback',liveData:false}}
    }finally{clearTimeout(to)}
  }catch{}
  return null;
@@ -198,7 +199,7 @@ export default{async fetch(request,env,ctx){
  const u=new URL(request.url);
  if(request.method==='OPTIONS')return new Response(null,{status:204,headers:headers(request)});
  if(u.pathname==='/api/health'){
-   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,r86:true,r86Runtime:'conversation-first-multilingual-ai',r87:true,r87Runtime:'latest-message-language-plus-real-ai-fallback',r86Routing:'goal-aware-not-keyword-first',r86Voice:'whisper-auto-language-independent-of-ui',r86Asr:ASR_PRIMARY,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
+   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,r86:true,r86Runtime:'conversation-first-multilingual-ai',r88:true,r88Runtime:'fast-auto-asr-server-first-tts-natural-fallback',r87:true,r87Runtime:'latest-message-language-plus-real-ai-fallback',r86Routing:'goal-aware-not-keyword-first',r86Voice:'whisper-auto-language-independent-of-ui',r86Asr:ASR_PRIMARY,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
  }
  if(u.pathname==='/api/transcribe'&&request.method==='POST')return transcribeAudio(request,env);
  if(u.pathname==='/api/ai'&&request.method==='POST'){
