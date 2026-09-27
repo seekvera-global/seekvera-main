@@ -1,0 +1,70 @@
+name: R80 unified multilingual voice actions
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r80-unified-voice-actions.yml'
+      - 'worker-r76.js'
+      - 'wrangler.jsonc'
+      - 'index.html'
+      - 'r24-ai-controller.js'
+      - 'voice-ai.js'
+      - 'superapp.js'
+      - 'sw.js'
+  workflow_dispatch:
+
+concurrency:
+  group: seekvera-r80-production
+  cancel-in-progress: true
+
+jobs:
+  deploy-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify R80 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check worker-r76.js
+          node --check r24-ai-controller.js
+          node --check voice-ai.js
+          node --check superapp.js
+          grep -F '20260927-r80-unified-voice-actions' index.html
+          grep -F 'VOICE_MAX_MS=30000' voice-ai.js
+          grep -F 'mergeTranscript' voice-ai.js
+          grep -F 'compactScript' r24-ai-controller.js
+          grep -F 'navigateAfterReply' superapp.js
+          grep -F 'ANY country in the world' worker-r76.js
+
+      - name: Deploy R80 to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Verify live R80
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 12); do
+            stamp="$(date +%s)-$i"
+            curl -LsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/?r80=$stamp" -o /tmp/home
+            curl -LsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/voice-ai.js?r80=$stamp" -o /tmp/voice
+            curl -LsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/r24-ai-controller.js?r80=$stamp" -o /tmp/control
+            curl -LsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/superapp.js?r80=$stamp" -o /tmp/app
+            if grep -q '20260927-r80-unified-voice-actions' /tmp/home \
+              && grep -q 'VOICE_MAX_MS=30000' /tmp/voice \
+              && grep -q 'compactScript' /tmp/control \
+              && grep -q 'navigateAfterReply' /tmp/app; then
+              echo R80_LIVE_PASS
+              exit 0
+            fi
+            sleep 3
+          done
+          echo R80_LIVE_FAIL
+          exit 1
