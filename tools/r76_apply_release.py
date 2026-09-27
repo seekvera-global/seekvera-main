@@ -2,7 +2,7 @@ from pathlib import Path
 import re, json
 
 VER='20260926-r76-complete-global-final'
-HOTFIX='20260927-r78-voice-locale-final'
+HOTFIX='20260927-r79-full-voice-turn'
 
 # 1) One Worker entry point: the R76 structured multilingual assistant.
 p=Path('wrangler.jsonc');s=p.read_text(encoding='utf-8')
@@ -70,6 +70,8 @@ for p in Path('.').glob('*.html'):
 # 6) Basic invariants before deploy.
 assert 'worker-r76.js' in Path('wrangler.jsonc').read_text(encoding='utf-8')
 assert 'let anyStarted=false,failedOver=false' in Path('voice-ai.js').read_text(encoding='utf-8')
+assert 'VOICE_SILENCE_MS=2600' in Path('voice-ai.js').read_text(encoding='utf-8')
+assert 'bindWrittenReplyVoice' in Path('voice-ai.js').read_text(encoding='utf-8')
 assert VER in Path('i18n-ui.js').read_text(encoding='utf-8')
 idx=Path('index.html').read_text(encoding='utf-8')
 assert 'r66-final-controller.js' not in idx and 'r74-ai-failover.js' not in idx
