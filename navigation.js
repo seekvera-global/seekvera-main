@@ -94,11 +94,20 @@ async function translateStaticAI(){
     if(r.ok&&t&&mine===translateSeq){try{localStorage.setItem(key,t)}catch{}box.textContent=t;box.dataset.svLang=l;}
   }catch{}
 }
+async function translateResidualUI(){
+  const l=langCode();if(l==='en')return;
+  const selectors=['.r5-hero p','.sv-global-tip'];
+  const els=[...document.querySelectorAll(selectors.join(','))].filter(e=>!e.closest('#aiMessages')&&(e.textContent||'').trim());
+  const sources=[],targets=[];
+  for(const e of els){const t=(e.dataset.svResidualSource||e.textContent||'').trim();if(!t)continue;e.dataset.svResidualSource=t;if(e.dataset.svResidualLang===l)continue;sources.push(t);targets.push(e)}
+  if(!sources.length)return;
+  try{const language=displayLanguage(l,'en'),r=await fetch('/api/ui-translate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language,strings:sources})}),d=await r.json();if(!r.ok||!Array.isArray(d.translations))return;targets.forEach((e,i)=>{const t=String(d.translations[i]||'').trim();if(t&&t!==sources[i]){e.textContent=t;e.dataset.svResidualLang=l}})}catch{}
+}
 function runLocaleEngines(){
   try{window.SEEKVERA_I18N?.apply?.()}catch{}
   try{window.SEEKVERA_LOCALE_GUARD_R9?.apply?.()}catch{}
   ensureLanguageCoverage();localizeCountryOptions();localizeDocumentDirection();dedupeCurrencyOptions();hardenReleaseMarker();
-  translateStaticAI();
+  translateStaticAI();translateResidualUI();
   hardenAIUI();
 }
 function scheduleLocalePass(){clearTimeout(localeTimer);localeTimer=setTimeout(runLocaleEngines,50)}
