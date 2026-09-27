@@ -1,0 +1,66 @@
+name: R86b live
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r86b-live.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply patch
+        run: python tools/r86_true_multilingual_voice.py
+      - name: Verify source
+        run: |
+          set -e
+          node --check worker-r76.js
+          node --check voice-ai.js
+          node --check sw.js
+          grep -F '20260927-r86-true-multilingual-conversation-voice' worker-r76.js
+          grep -F "ASR_PRIMARY='@cf/openai/whisper-large-v3-turbo'" worker-r76.js
+          grep -F "u.pathname==='/api/transcribe'" worker-r76.js
+          grep -F 'serverVoice(targetId,activeButton,false)' voice-ai.js
+          grep -F 'voice-ai.js?v=20260927-r86-true-multilingual-conversation-voice' index.html
+      - name: Commit source
+        run: |
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add worker-r76.js voice-ai.js index.html sw.js
+          git commit -m 'R86 make voice multilingual and conversation first'
+          git push origin HEAD:main
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Verify live
+        run: |
+          set -e
+          for i in $(seq 1 10); do
+            t="$(date +%s)-$i"
+            curl -LsS --max-time 20 -H 'cache-control: no-cache' "https://seekveraglobal.com/?r86=$t" -o /tmp/home
+            curl -LsS --max-time 20 -H 'cache-control: no-cache' "https://seekveraglobal.com/voice-ai.js?r86=$t" -o /tmp/voice
+            curl -LsS --max-time 20 "https://seekveraglobal.com/api/health?r86=$t" -o /tmp/health
+            curl -LsS --max-time 25 -H 'content-type: application/json' -d '{"message":"صرت بتحكي عربي هون؟","country":"Lebanon","language":"English","history":[]}' "https://seekveraglobal.com/api/ai?r86=$t" -o /tmp/ar
+            curl -LsS --max-time 25 -H 'content-type: application/json' -d '{"message":"Can you understand me if I change languages while we talk?","country":"Lebanon","language":"Arabic","history":[]}' "https://seekveraglobal.com/api/ai?r86=$t" -o /tmp/en
+            curl -LsS --max-time 25 -H 'content-type: application/json' -d '{"message":"بدي فندق ببيروت الليلة بس ميزانيتي 100 دولار","country":"Lebanon","language":"English","history":[]}' "https://seekveraglobal.com/api/ai?r86=$t" -o /tmp/hotel
+            curl -LsS --max-time 20 -H 'content-type: application/json' -d '{"audio":"bad","language":"auto"}' "https://seekveraglobal.com/api/transcribe?r86=$t" -o /tmp/asr
+            if grep -q 'voice-ai.js?v=20260927-r86-true-multilingual-conversation-voice' /tmp/home && grep -q 'attempt<2' /tmp/voice && jq -e '.r86==true and .r86Voice=="whisper-auto-language-independent-of-ui"' /tmp/health >/dev/null && jq -e '.category=="general" and .language=="ar"' /tmp/ar >/dev/null && jq -e '.category=="general" and .language=="en"' /tmp/en >/dev/null && jq -e '.category=="travel" and .language=="ar"' /tmp/hotel >/dev/null && jq -e '.error=="Valid recorded audio is required"' /tmp/asr >/dev/null; then
+              echo R86_LIVE_PASS
+              exit 0
+            fi
+            sleep 3
+          done
+          cat /tmp/health /tmp/ar /tmp/en /tmp/hotel /tmp/asr || true
+          exit 1
