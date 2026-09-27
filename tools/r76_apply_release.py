@@ -2,7 +2,7 @@ from pathlib import Path
 import re, json
 
 VER='20260926-r76-complete-global-final'
-HOTFIX='20260927-r77-native-voice-first'
+HOTFIX='20260927-r78-voice-locale-final'
 
 # 1) One Worker entry point: the R76 structured multilingual assistant.
 p=Path('wrangler.jsonc');s=p.read_text(encoding='utf-8')
@@ -35,7 +35,7 @@ s=s.replace("res.status===503||data?.model==='seekvera-local-router'||!String(da
 p.write_text(s,encoding='utf-8')
 
 # 5) Stamp related assets and remove overlapping late AI controllers (R66 + R74) from pages.
-for name in ('superapp.js','r60-runtime-guard.js','navigation.js'):
+for name in ('superapp.js','navigation.js'):
     p=Path(name)
     if not p.exists(): continue
     x=p.read_text(encoding='utf-8')
@@ -59,7 +59,7 @@ for p in Path('.').glob('*.html'):
     x=re.sub(r'<script[^>]+src=["\']r66-final-controller\.js[^>]*></script>','',x,flags=re.I)
     x=re.sub(r'<script[^>]+src=["\']r74-ai-failover\.js[^>]*></script>','',x,flags=re.I)
     for a in assets:
-        asset_ver=HOTFIX if a in ('voice-ai.js','r24-ai-controller.js') else VER
+        asset_ver=HOTFIX if a in ('voice-ai.js','r24-ai-controller.js','locale-r15.js','i18n-ui.js','r60-runtime-guard.js') else VER
         x=re.sub(re.escape(a)+r'(?:\?v=[^"\'<> ]*)?',a+'?v='+asset_ver,x)
     x=re.sub(r'sw\.js\?v=[^"\'<> )]+','sw.js?v='+HOTFIX,x)
     if 'data-release=' in x:x=re.sub(r'data-release="[^"]+"','data-release="'+VER+'"',x,count=1)
@@ -69,12 +69,12 @@ for p in Path('.').glob('*.html'):
 
 # 6) Basic invariants before deploy.
 assert 'worker-r76.js' in Path('wrangler.jsonc').read_text(encoding='utf-8')
-assert 'if(nativeSpeak(chunks,token))return' in Path('voice-ai.js').read_text(encoding='utf-8')
+assert 'let anyStarted=false,failedOver=false' in Path('voice-ai.js').read_text(encoding='utf-8')
 assert VER in Path('i18n-ui.js').read_text(encoding='utf-8')
 idx=Path('index.html').read_text(encoding='utf-8')
 assert 'r66-final-controller.js' not in idx and 'r74-ai-failover.js' not in idx
 for a in assets:
     if a in idx:
-        expected=HOTFIX if a in ('voice-ai.js','r24-ai-controller.js') else VER
+        expected=HOTFIX if a in ('voice-ai.js','r24-ai-controller.js','locale-r15.js','i18n-ui.js','r60-runtime-guard.js') else VER
         assert a+'?v='+expected in idx, a
 print('R76 release patch applied',VER)
