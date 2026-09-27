@@ -1,0 +1,103 @@
+name: R103 hybrid voice and real AI certification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r103-hybrid-voice-and-ai-cert.yml'
+      - 'tools/r103_hybrid_voice_fix.py'
+      - 'tools/r97_voice_cert.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy-certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply R103 hybrid repair
+        run: python3 tools/r103_hybrid_voice_fix.py
+
+      - name: Static integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check voice-ai.js
+          grep -Fq 'hybrid-native-whisper-r103' voice-ai.js
+          grep -Fq 'startNativeShadow()' voice-ai.js
+          grep -Fq 'chooseHybridTranscript' voice-ai.js
+          grep -Fq '20260927-r103-hybrid-native-whisper' index.html
+
+      - name: Commit R103 runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add voice-ai.js sw.js
+          for f in $(git ls-files '*.html' | awk 'index($0,"/")==0'); do git add -- "$f"; done
+          if ! git diff --cached --quiet; then
+            git commit -m 'R103 hybrid native and multilingual Whisper voice'
+            git push origin HEAD:main
+          fi
+
+      - name: Deploy R103 Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Verify live release
+        shell: bash
+        run: |
+          set -euo pipefail
+          ok=0
+          for n in $(seq 1 15); do
+            stamp="r103-${GITHUB_RUN_ID}-${n}-$(date +%s)"
+            curl -fsSL --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/?$stamp" -o /tmp/home || true
+            curl -fsSL --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/voice-ai.js?$stamp" -o /tmp/voice || true
+            if grep -Fq '20260927-r103-hybrid-native-whisper' /tmp/home 2>/dev/null && grep -Fq 'hybrid-native-whisper-r103' /tmp/voice 2>/dev/null; then ok=1;break;fi
+            sleep 4
+          done
+          test "$ok" = 1
+          echo LIVE_R103_PASS
+
+      - name: Certify non-greeting AI requests
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS --max-time 35 -H 'content-type: application/json' -d '{"message":"أريد فندقاً في بيروت ليلتين بميزانية 100 دولار. ساعدني في المقارنة والخطوات.","country":"Lebanon","countryCode":"LB","language":"auto","uiLanguage":"ar","history":[]}' 'https://seekveraglobal.com/api/ai?r103=real-ar' -o /tmp/ai-ar.json
+          curl -fsS --max-time 35 -H 'content-type: application/json' -d '{"message":"I need a hotel in Paris tonight under 150 dollars with a pool. Help me compare and decide.","country":"France","countryCode":"FR","language":"auto","uiLanguage":"en","history":[]}' 'https://seekveraglobal.com/api/ai?r103=real-en' -o /tmp/ai-en.json
+          jq -e '.response|type=="string" and length>40' /tmp/ai-ar.json >/dev/null
+          jq -e '.response|type=="string" and length>40' /tmp/ai-en.json >/dev/null
+          grep -Eq 'فندق|بيروت|100|ليلت' /tmp/ai-ar.json
+          grep -Eqi 'hotel|Paris|150|pool' /tmp/ai-en.json
+          echo REAL_AI_AR_PASS
+          jq -r '.response' /tmp/ai-ar.json | head -c 500; echo
+          echo REAL_AI_EN_PASS
+          jq -r '.response' /tmp/ai-en.json | head -c 500; echo
+
+      - name: Install real voice test tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak-ng >/dev/null
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+
+      - name: Generate real Arabic and English audio fixtures
+        shell: bash
+        run: |
+          espeak-ng -v en-us -s 125 -w /tmp/r97-en.wav 'hello seekvera how are you today I need a hotel in Beirut'
+          espeak-ng -v ar -s 120 -w /tmp/r97-ar.wav 'مرحبا كيف حالك اليوم انا اتكلم معك بالعربي واريد فندق في بيروت'
+
+      - name: Certify live multilingual transcription hybrid selection and spoken replies
+        run: node tools/r97_voice_cert.mjs
