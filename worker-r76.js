@@ -1,6 +1,6 @@
 import baseWorker from './worker-r31.js';
 
-const RELEASE='20260927-r106-final-conversation-locale';
+const RELEASE='20260927-r107-final-action-routing';
 const PRIMARY='@cf/zai-org/glm-4.7-flash';
 const FALLBACK='@cf/qwen/qwen3-30b-a3b-fp8';
 const ASR_PRIMARY='@cf/openai/whisper-large-v3-turbo',ASR_FALLBACK='@cf/openai/whisper';
@@ -182,7 +182,7 @@ async function transcribeAudio(request,env){
 async function degradedFallback(request,env,ctx,body,message){
  const fallback=await baseWorker.fetch(request,env,ctx);let d=null;try{d=await fallback.clone().json()}catch{}
  if(!d||typeof d!=='object'){const h=new Headers(fallback.headers);h.set('x-seekvera-release',RELEASE);return new Response(fallback.body,{status:fallback.status,statusText:fallback.statusText,headers:h})}
- const act=actionState(message,d?.countryAction?.code,d?.languageAction?.code,body?.clientControls),language=messageLanguage(message,d.language),meta=metaConversation(message),chat=conversationOnly(message)||meta,cat=chat?'general':(category(d.category)==='jobs'&&!employmentIntent(message)?'general':category(d.category)),response=act.isAction?actionReply(language,act.cc,act.ll):meta?metaReply(message,language):chat?conversationalFallback(message,language):usefulFallback(message,language,cat);
+ const act=actionState(message,d?.countryAction?.code,d?.languageAction?.code,body?.clientControls),language=messageLanguage(message,d.language),meta=metaConversation(message),chat=conversationOnly(message)||meta,cat=(act.isAction||chat)?'general':(category(d.category)==='jobs'&&!employmentIntent(message)?'general':category(d.category)),response=act.isAction?actionReply(language,act.cc,act.ll):meta?metaReply(message,language):chat?conversationalFallback(message,language):usefulFallback(message,language,cat);
  return json(request,{...d,ok:d.ok!==false,response,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:act.isAction?'seekvera-r105-local-action-fallback':chat?'seekvera-r105-local-conversation-fallback':'seekvera-r105-language-safe-fallback',fastPath:act.isAction?'r105-deterministic-action-fallback':chat?'r105-natural-conversation-fallback':'r105-language-safe-fallback',liveData:!!d.liveData},fallback.status||200)
 }
 
@@ -207,7 +207,7 @@ Latest user message: ${message}`;
  const messages=[{role:'system',content:system},{role:'user',content:message}];
  for(const model of [PRIMARY,FALLBACK]){try{
    const r=await env.AI.run(model,{messages,temperature:.2,max_tokens:760}),text=modelText(r),obj=parseJSON(text);if(!obj||!clean(obj.reply,5000))continue;
-   const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode),meta=metaConversation(message),cat=(conversationOnly(message)||meta)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
+   const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode),meta=metaConversation(message),cat=(act.isAction||conversationOnly(message)||meta)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
    let reply=act.isAction?actionReply(language,act.cc,act.ll):clean(obj.reply,5000);if(meta&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
    return{ok:true,response:reply,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model,fastPath:act.isAction?'r105-verified-action-first':meta?'r105-meta-conversation-guard':'r105-single-structured-ai',liveData:false}
  }catch(e){const em=String(e?.message||e||'');if(/daily neuron allocation|quota|limit exceeded|allocation exceeded|usage limit/i.test(em))break}}
@@ -218,7 +218,7 @@ Latest user message: ${message}`;
    try{
      const br=await fetch('https://text.pollinations.ai/'+encodeURIComponent(backupPrompt)+'?model=openai&private=true',{headers:{'accept':'text/plain','user-agent':'SEEKVERA/1.0'},signal:ctl.signal});
      if(br.ok){const raw=await br.text(),obj=parseJSON(raw);if(obj&&clean(obj.reply,5000)){
-       const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode),meta=metaConversation(message),cat=(conversationOnly(message)||meta)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
+       const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode),meta=metaConversation(message),cat=(act.isAction||conversationOnly(message)||meta)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
        let reply=act.isAction?actionReply(language,act.cc,act.ll):clean(obj.reply,5000);if(meta&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
        return{ok:true,response:reply,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:'pollinations-private-conversation-fallback',fastPath:'r105-real-ai-fallback',liveData:false}
      }}
