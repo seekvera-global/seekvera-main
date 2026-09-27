@@ -1,0 +1,55 @@
+name: R112 Android speaker live fix
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r112-android-speaker.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  deploy-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - name: Force fresh voice controller
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          for p in Path('.').glob('*.html'):
+              s=p.read_text(encoding='utf-8')
+              n=re.sub(r'voice-ai\.js\?v=[^"\']+','voice-ai.js?v=20260927-r112-android-server-audio',s)
+              if n!=s:p.write_text(n,encoding='utf-8')
+          p=Path('sw.js');s=p.read_text(encoding='utf-8')
+          s=re.sub(r"const RELEASE='[^']+'","const RELEASE='20260927-r112-android-server-audio'",s,count=1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          node --check voice-ai.js
+          node --check sw.js
+          grep -F "const token=++speakToken,android=/Android/i.test(navigator.userAgent)" voice-ai.js
+      - name: Persist cache bust
+        run: |
+          git config user.name seekvera-global
+          git config user.email seekvera.global@gmail.com
+          git add '*.html' sw.js
+          git commit -m 'R112 force fresh Android server-audio speaker controller'
+          git push origin HEAD:main
+      - uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Verify live voice assets
+        run: |
+          set -e
+          B=https://seekveraglobal.com
+          for i in $(seq 1 12); do
+            curl -fsSL "$B/?r112=$i" -o /tmp/home
+            curl -fsSL "$B/voice-ai.js?r112=$i" -o /tmp/voice
+            curl -fsSL -H 'content-type: application/json' --data '{"text":"مرحبا، الصوت يعمل الآن","language":"ar"}' "$B/api/tts?r112=$i" -o /tmp/audio.mp3 || true
+            if grep -q 'voice-ai.js?v=20260927-r112-android-server-audio' /tmp/home               && grep -q 'android=/Android/i.test(navigator.userAgent)' /tmp/voice               && test $(wc -c </tmp/audio.mp3) -gt 1000; then echo R112_LIVE_SPEAKER_PASS; exit 0; fi
+            sleep 5
+          done
+          exit 1
