@@ -6,8 +6,15 @@ p=Path('voice-ai.js')
 s=p.read_text(encoding='utf-8')
 s=s.replace("/patched-transformers.js?v=20260927-r90-local-multilingual-voice","/patched-transformers-r91.js?v="+VER)
 s=s.replace("'Xenova/whisper-tiny'","'onnx-community/whisper-tiny'")
-# v4 bundle carries its own matching ORT dependency; use its configured CDN defaults.
-s=s.replace("    mod.env.backends.onnx.wasm.wasmPaths='https://cdn.jsdelivr.net/npm/onnxruntime-web@1.25.0-dev.20260212-1a71a5f46e/dist/';\n","")
+# Keep the browser WASM runtime on the exact ONNX Runtime Web version bundled by Transformers.js v4.
+old="    mod.env.backends.onnx.wasm.wasmPaths='https://cdn.jsdelivr.net/npm/onnxruntime-web@1.25.0-dev.20260212-1a71a5f46e/dist/';\n"
+new="    mod.env.backends.onnx.wasm.wasmPaths='https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/dist/';\n"
+if old in s:
+    s=s.replace(old,new,1)
+elif "mod.env.backends.onnx.wasm.wasmPaths" not in s:
+    anchor="    mod.env.useBrowserCache=true;\n"
+    if anchor not in s: raise SystemExit('R91 browser cache anchor missing')
+    s=s.replace(anchor,anchor+new,1)
 p.write_text(s,encoding='utf-8')
 
 p=Path('index.html');h=p.read_text(encoding='utf-8')
