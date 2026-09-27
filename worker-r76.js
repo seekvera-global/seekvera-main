@@ -1,6 +1,6 @@
 import baseWorker from './worker-r31.js';
 
-const RELEASE='20260927-r86-true-multilingual-conversation-voice';
+const RELEASE='20260927-r87-language-independent-ai-brain';
 const PRIMARY='@cf/zai-org/glm-4.7-flash';
 const FALLBACK='@cf/qwen/qwen3-30b-a3b-fp8';
 const ASR_PRIMARY='@cf/openai/whisper-large-v3-turbo',ASR_FALLBACK='@cf/openai/whisper';
@@ -149,7 +149,7 @@ async function transcribeAudio(request,env){
 async function degradedFallback(request,env,ctx,body,message){
  const fallback=await baseWorker.fetch(request,env,ctx);let d=null;try{d=await fallback.clone().json()}catch{}
  if(!d||typeof d!=='object'){const h=new Headers(fallback.headers);h.set('x-seekvera-release',RELEASE);return new Response(fallback.body,{status:fallback.status,statusText:fallback.statusText,headers:h})}
- const act=actionState(message,d?.countryAction?.code,d?.languageAction?.code,body?.clientControls),language=act.isAction?messageLanguage(message,d.language):normalizedLanguage(d.language,message),meta=metaConversation(message),chat=conversationOnly(message)||meta,cat=chat?'general':(category(d.category)==='jobs'&&!employmentIntent(message)?'general':category(d.category)),response=act.isAction?actionReply(language,act.cc,act.ll):meta?metaReply(message,language):chat?conversationalFallback(message,language):clean(d.response,5000);
+ const act=actionState(message,d?.countryAction?.code,d?.languageAction?.code,body?.clientControls),language=messageLanguage(message,d.language),meta=metaConversation(message),chat=conversationOnly(message)||meta,cat=chat?'general':(category(d.category)==='jobs'&&!employmentIntent(message)?'general':category(d.category)),response=act.isAction?actionReply(language,act.cc,act.ll):meta?metaReply(message,language):chat?conversationalFallback(message,language):clean(d.response,5000);
  return json(request,{...d,ok:d.ok!==false,response,language,category:cat,route:ROUTES[cat]||ROUTES.general,countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:act.isAction?'seekvera-r81-local-action-fallback':chat?'seekvera-r81-local-conversation-fallback':d.model,fastPath:act.isAction?'r81-deterministic-action-fallback':chat?'r81-natural-conversation-fallback':(d.fastPath||'r81-base-fallback'),liveData:!!d.liveData},fallback.status||200)
 }
 
@@ -174,10 +174,23 @@ Latest user message: ${message}`;
  const messages=[{role:'system',content:system},{role:'user',content:message}];
  for(const model of [PRIMARY,FALLBACK]){try{
    const r=await env.AI.run(model,{messages,temperature:.2,max_tokens:760}),text=modelText(r),obj=parseJSON(text);if(!obj||!clean(obj.reply,5000))continue;
-   const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=act.isAction?messageLanguage(message,obj.languageCode):(languageCode(obj.languageCode)||normalizedLanguage('',message)),meta=metaConversation(message),cat=(conversationOnly(message)||meta)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
+   const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode),meta=metaConversation(message),cat=(conversationOnly(message)||meta)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
    let reply=act.isAction?actionReply(language,act.cc,act.ll):clean(obj.reply,5000);if(meta&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
    return{ok:true,response:reply,language,category:cat,route:ROUTES[cat]||ROUTES.general,countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model,fastPath:act.isAction?'r76-verified-action-first':meta?'r84-meta-conversation-guard':'r76-single-structured-ai',liveData:false}
  }catch{}}
+ // Keep a real conversational AI fallback instead of dropping immediately to fixed keyword templates.
+ try{
+   const backupPrompt=messages.map(x=>String(x?.role||'user').toUpperCase()+': '+String(x?.content||'')).join('\n').slice(-14000);
+   const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),9000);
+   try{
+     const br=await fetch('https://text.pollinations.ai/'+encodeURIComponent(backupPrompt)+'?model=openai&private=true',{headers:{'accept':'text/plain','user-agent':'SEEKVERA/1.0'},signal:ctl.signal});
+     if(br.ok){const obj=parseJSON(await br.text());if(obj&&clean(obj.reply,5000)){
+       const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode),meta=metaConversation(message),cat=(conversationOnly(message)||meta)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
+       let reply=act.isAction?actionReply(language,act.cc,act.ll):clean(obj.reply,5000);if(meta&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
+       return{ok:true,response:reply,language,category:cat,route:ROUTES[cat]||ROUTES.general,countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:'pollinations-private-conversation-fallback',fastPath:'r87-real-ai-fallback',liveData:false}
+     }}
+   }finally{clearTimeout(to)}
+ }catch{}
  return null;
 }
 
@@ -185,7 +198,7 @@ export default{async fetch(request,env,ctx){
  const u=new URL(request.url);
  if(request.method==='OPTIONS')return new Response(null,{status:204,headers:headers(request)});
  if(u.pathname==='/api/health'){
-   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,r86:true,r86Runtime:'conversation-first-multilingual-ai',r86Routing:'goal-aware-not-keyword-first',r86Voice:'whisper-auto-language-independent-of-ui',r86Asr:ASR_PRIMARY,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
+   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,r86:true,r86Runtime:'conversation-first-multilingual-ai',r87:true,r87Runtime:'latest-message-language-plus-real-ai-fallback',r86Routing:'goal-aware-not-keyword-first',r86Voice:'whisper-auto-language-independent-of-ui',r86Asr:ASR_PRIMARY,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
  }
  if(u.pathname==='/api/transcribe'&&request.method==='POST')return transcribeAudio(request,env);
  if(u.pathname==='/api/ai'&&request.method==='POST'){
