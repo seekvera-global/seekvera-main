@@ -1,8 +1,9 @@
 import baseWorker from './worker-r31.js';
 
-const RELEASE='20260927-r84-natural-chat-guard';
+const RELEASE='20260927-r86-true-multilingual-conversation-voice';
 const PRIMARY='@cf/zai-org/glm-4.7-flash';
 const FALLBACK='@cf/qwen/qwen3-30b-a3b-fp8';
+const ASR_PRIMARY='@cf/openai/whisper-large-v3-turbo',ASR_FALLBACK='@cf/openai/whisper';
 const ALLOWED=new Set(['https://seekveraglobal.com','https://www.seekveraglobal.com','https://seekvera-global.github.io','https://seekvera-main.seekvera-global.workers.dev']);
 const ROUTES={marketplace:'marketplace.html',general:'marketplace.html',travel:'travel.html',tourism:'tourism.html',property:'property.html',cars:'cars-auto.html',jobs:'jobs.html',shopping:'shopping.html',restaurants:'restaurants-food.html',services:'local-services.html',equipment:'marketplace.html?q=equipment',boats:'marketplace.html?q=boats',business:'import-export.html',shipping:'shipping-logistics.html',businessSoftware:'business-software.html',software:'software.html',hosting:'web-hosting.html',solar:'solar.html',education:'education.html',health:'health.html',money:'money-insurance.html',entertainment:'entertainment.html',media:'media.html',games:'games.html',connectivity:'connectivity.html',wifi:'wifi.html',dealAgent:'deal-agent.html',everyday:'everyday.html',scan:'scan.html',promote:'seller-plans.html'};
 const CATS=new Set(Object.keys(ROUTES));
@@ -16,7 +17,7 @@ function parseJSON(text){const raw=String(text||'').trim().replace(/^```(?:json)
 function countryCode(v){v=String(v||'').trim().toUpperCase();return v==='WW'||/^[A-Z]{2}$/.test(v)?v:''}
 function languageCode(v){v=String(v||'').trim().toLowerCase().split(/[-_ ]/)[0];return LANGS.has(v)?v:''}
 function category(v){v=String(v||'').trim();return CATS.has(v)?v:'general'}
-function historyText(h){if(!Array.isArray(h))return'';return h.slice(-10).map(x=>`${x?.role==='assistant'?'assistant':'user'}: ${clean(x?.content,1000)}`).filter(Boolean).join('\n').slice(-6500)}
+function historyText(h){if(!Array.isArray(h))return'';return h.slice(-18).map(x=>`${x?.role==='assistant'?'assistant':'user'}: ${clean(x?.content,1000)}`).filter(Boolean).join('\n').slice(-10000)}
 
 const LANGUAGE_NAMES={english:'en',arabic:'ar',french:'fr',chinese:'zh',spanish:'es',hindi:'hi',portuguese:'pt',german:'de',japanese:'ja',korean:'ko',indonesian:'id',turkish:'tr',russian:'ru',urdu:'ur',bengali:'bn',vietnamese:'vi',italian:'it',swahili:'sw',thai:'th',persian:'fa',polish:'pl',dutch:'nl',malay:'ms',filipino:'fil',hausa:'ha',yoruba:'yo',igbo:'ig',amharic:'am',hebrew:'he',greek:'el',ukrainian:'uk',romanian:'ro',czech:'cs',slovak:'sk',hungarian:'hu',swedish:'sv',norwegian:'no',danish:'da',finnish:'fi',bulgarian:'bg',croatian:'hr',serbian:'sr',slovenian:'sl',lithuanian:'lt',latvian:'lv',estonian:'et',catalan:'ca',basque:'eu',galician:'gl',icelandic:'is',albanian:'sq',macedonian:'mk',georgian:'ka',armenian:'hy',azerbaijani:'az',kazakh:'kk',uzbek:'uz',kyrgyz:'ky',tajik:'tg',turkmen:'tk',nepali:'ne',sinhala:'si',tamil:'ta',telugu:'te',malayalam:'ml',marathi:'mr',gujarati:'gu',punjabi:'pa',khmer:'km',lao:'lo',burmese:'my',mongolian:'mn',zulu:'zu',afrikaans:'af',belarusian:'be',bosnian:'bs',dzongkha:'dz',tigrinya:'ti',faroese:'fo',greenlandic:'kl',kalaallisut:'kl',kinyarwanda:'rw',samoan:'sm',tongan:'to',somali:'so',pashto:'ps',divehi:'dv',maltese:'mt',malagasy:'mg',irish:'ga',welsh:'cy',maori:'mi',frisian:'fy',luxembourgish:'lb',romansh:'rm',kurdish:'ku',xhosa:'xh',sotho:'st',tswana:'tn'};
 function normalizedLanguage(v,message=''){
@@ -128,6 +129,23 @@ function conversationalFallback(message,language){const l=languageCode(language)
  id:how?'Saya baik, terima kasih. Saya siap membantu. Apa yang ingin Anda lakukan?':'Halo! Saya SEEKVERA AI. Ada yang bisa saya bantu?',
  sw:how?'Niko vizuri, asante. Niko tayari kusaidia. Ungependa kufanya nini?':'Jambo! Mimi ni SEEKVERA AI. Ninaweza kukusaidiaje?'
  };return replies[l]||replies.en}
+async function transcribeAudio(request,env){
+ if(!env.AI)return json(request,{ok:false,error:'Speech AI unavailable'},503);
+ if(Number(request.headers.get('content-length')||0)>9*1024*1024)return json(request,{ok:false,error:'Audio request too large'},413);
+ let b={};try{b=await request.json()}catch{return json(request,{ok:false,error:'Invalid audio request'},400)}
+ const raw=String(b.audio||''),m=raw.match(/^data:(audio\/(?:webm|mp4|mpeg|wav|ogg|x-m4a|aac|3gpp))(?:;codecs=[^;,]+)?;base64,([A-Za-z0-9+/=]+)$/i);
+ if(!m)return json(request,{ok:false,error:'Valid recorded audio is required'},400);
+ const approx=Math.floor(m[2].length*3/4);if(approx<80||approx>6*1024*1024)return json(request,{ok:false,error:'Audio size is invalid'},400);
+ const base={audio:m[2],task:'transcribe',vad_filter:true,condition_on_previous_text:false,beam_size:5,no_speech_threshold:.72};
+ const errors=[];
+ for(const model of [ASR_PRIMARY,ASR_PRIMARY,ASR_FALLBACK]){try{
+   const r=await env.AI.run(model,base),text=clean(r?.text||r?.result?.text||r?.result||'',5000);
+   if(text){const language=messageLanguage(text,'');return json(request,{ok:true,text,language,detectedLanguage:language,model,autoLanguage:true},200)}
+   errors.push(model+':empty');
+ }catch(e){errors.push(model+':'+clean(e?.message||e,180))}}
+ return json(request,{ok:false,error:'Voice transcription is temporarily unavailable',retryable:true,detail:errors.slice(-2).join(' | ')},503)
+}
+
 async function degradedFallback(request,env,ctx,body,message){
  const fallback=await baseWorker.fetch(request,env,ctx);let d=null;try{d=await fallback.clone().json()}catch{}
  if(!d||typeof d!=='object'){const h=new Headers(fallback.headers);h.set('x-seekvera-release',RELEASE);return new Response(fallback.body,{status:fallback.status,statusText:fallback.statusText,headers:h})}
@@ -141,9 +159,9 @@ async function runStructured(env,body){
  const system=`You are SEEKVERA AI, the action assistant inside a worldwide marketplace and discovery app. You must understand the LATEST USER MESSAGE directly, including dialects, slang, Lebanese Arabic, mixed Arabic/English, transliteration, and any major world language. Never choose the reply language from the selected country, interface, or browser. Reply in the SAME language and script as the latest user message unless the user explicitly requests another reply language.\
 \
 Return ONLY one JSON object with exactly these keys: reply, languageCode, category, countryAction, languageAction.\
-- reply: talk naturally like a capable conversational assistant, not a fixed template. Use the recent conversation to understand follow-ups. Answer what you can first. If the request is too vague to choose useful results, ask ONE short, relevant clarification (for example location, type, budget or date). Never ask again for information already present in the conversation.\
+- reply: behave like a real conversational AI assistant. Hold a normal back-and-forth conversation, answer questions directly, understand corrections and follow-ups, and use the recent conversation as memory. Do NOT rush the user into a marketplace section. If the user has not yet clearly said what they want, keep talking naturally. When the user does want something, ask only the minimum useful follow-up questions needed (such as country/city, dates, budget, type, quantity or preferences), one concise question at a time. Never ask again for information already present in the conversation. Once the goal is clear, help with it and choose the correct category.\
 - languageCode: best ISO language code for the latest user message.\
-- category: exactly one of ${[...CATS].join(', ')}. Choose general for greetings, small talk, casual conversation, meta questions, incomplete or vague requests, and clarification turns. Choose a section only when the latest user message clearly asks to find, search, book, buy, sell, apply for, compare, or use something in that section. Never classify casual uses of work/عمل/شغل as Jobs unless the person is actually seeking employment.\
+- category: exactly one of ${[...CATS].join(', ')}. Conversation-first rule: use general for greetings, small talk, questions, explanations, language/voice talk, corrections, incomplete requests, and every clarification turn. Choose a marketplace category only when the user's current goal is genuinely actionable and belongs there (find/search/book/buy/sell/apply/compare/use). Never route merely because a keyword appears. Never classify casual uses of work/عمل/شغل as Jobs unless the person is actually seeking employment.\
 - Language/voice meta-conversation rule: if the user says they are speaking a language, asks whether you understand/hear them, comments on which language you are speaking, or simply tests conversation (for example: ‘صرت بتحكي عربي هون’, ‘I am speaking Arabic now’, ‘Can you understand French?’), category MUST be general. Reply naturally to what they said. Never say you will send them to a section unless they actually ask for a marketplace task.\
 - countryAction: the ISO-3166 alpha-2 code for ANY country in the world, or WW, ONLY when the user explicitly commands the SEEKVERA APP/MARKET/COUNTRY SELECTOR to change/switch/move/set. Understand country names in the user's own language and dialect. Leave empty when the user merely searches for something in a country.\
 - languageAction: supported language code ONLY when the user explicitly commands the app/interface language to change. Leave empty otherwise.\
@@ -155,7 +173,7 @@ ${history||'(none)'}\
 Latest user message: ${message}`;
  const messages=[{role:'system',content:system},{role:'user',content:message}];
  for(const model of [PRIMARY,FALLBACK]){try{
-   const r=await env.AI.run(model,{messages,temperature:.1,max_tokens:520}),text=modelText(r),obj=parseJSON(text);if(!obj||!clean(obj.reply,5000))continue;
+   const r=await env.AI.run(model,{messages,temperature:.2,max_tokens:760}),text=modelText(r),obj=parseJSON(text);if(!obj||!clean(obj.reply,5000))continue;
    const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=act.isAction?messageLanguage(message,obj.languageCode):(languageCode(obj.languageCode)||normalizedLanguage('',message)),meta=metaConversation(message),cat=(conversationOnly(message)||meta)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
    let reply=act.isAction?actionReply(language,act.cc,act.ll):clean(obj.reply,5000);if(meta&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
    return{ok:true,response:reply,language,category:cat,route:ROUTES[cat]||ROUTES.general,countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model,fastPath:act.isAction?'r76-verified-action-first':meta?'r84-meta-conversation-guard':'r76-single-structured-ai',liveData:false}
@@ -167,8 +185,9 @@ export default{async fetch(request,env,ctx){
  const u=new URL(request.url);
  if(request.method==='OPTIONS')return new Response(null,{status:204,headers:headers(request)});
  if(u.pathname==='/api/health'){
-   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
+   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,r86:true,r86Runtime:'conversation-first-multilingual-ai',r86Routing:'goal-aware-not-keyword-first',r86Voice:'whisper-auto-language-independent-of-ui',r86Asr:ASR_PRIMARY,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
  }
+ if(u.pathname==='/api/transcribe'&&request.method==='POST')return transcribeAudio(request,env);
  if(u.pathname==='/api/ai'&&request.method==='POST'){
    let body={};try{body=await request.clone().json()}catch{return json(request,{ok:false,error:'Invalid JSON'},400)}
    const message=clean(body?.message??body?.prompt,2400);if(!message)return json(request,{ok:false,error:'Message is required'},400);
