@@ -113,10 +113,14 @@ function applyState(state,{explicit=true,reason='manual'}={}){
   try{window.SEEKVERA_LOCALE_R14?.apply?.()}catch{}
   try{window.SEEKVERA_R14_CATEGORIES?.apply?.()}catch{}
   try{window.SEEKVERA_I18N?.apply?.()}catch{}
+  try{window.dispatchEvent(new CustomEvent('seekvera:locale-change',{detail:{...state,reason}}))}catch{}
   clearTimeout(settleTimer);
   settleTimer=setTimeout(()=>{
     try{window.SEEKVERA_LOCALE_R14?.apply?.()}catch{}
     try{window.SEEKVERA_R14_CATEGORIES?.apply?.()}catch{}
+    try{window.SEEKVERA_I18N?.schedule?.(0)}catch{}
+    setTimeout(()=>{try{window.SEEKVERA_I18N?.schedule?.(0)}catch{}},300);
+    setTimeout(()=>{try{window.SEEKVERA_I18N?.schedule?.(0)}catch{}},1200);
     localizeCountryOptions(state);
     localizeLanguageOptions(state);
     requestAnimationFrame(()=>requestAnimationFrame(()=>document.documentElement.classList.remove('sv-r15-applying')));
