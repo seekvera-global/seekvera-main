@@ -1,0 +1,77 @@
+name: R89 multilingual voice core
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r89-live.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply R89
+        run: python tools/r89_voice_core_fix.py
+      - name: Verify source
+        run: |
+          set -e
+          node --check voice-ai.js
+          node --check worker-r76.js
+          node --check sw.js
+          grep -F '20260927-r89-native-multilingual-voice' worker-r76.js
+          grep -F "const bin=atob(m[2]),audio=Array.from(bin,c=>c.charCodeAt(0));" worker-r76.js
+          grep -F 'return await seekveraAutoTranscribe(blob)' voice-ai.js
+          ! grep -q 'js.puter.com' voice-ai.js
+          grep -F 'voice-ai.js?v=20260927-r89-native-multilingual-voice' index.html
+      - name: Commit R89
+        run: |
+          set -e
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add worker-r76.js voice-ai.js index.html sw.js
+          git commit -m 'R89 fix multilingual microphone core and remove Puter prompt'
+          git push origin HEAD:main
+      - name: Deploy R89
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Live roundtrip voice test
+        shell: bash
+        run: |
+          set -e
+          BASE='https://seekveraglobal.com'
+          for i in $(seq 1 8); do
+            stamp="$(date +%s)-$i"
+            curl -LsS --max-time 20 "$BASE/api/health?r89=$stamp" -o /tmp/health
+            curl -LsS --max-time 20 "$BASE/voice-ai.js?r89=$stamp" -o /tmp/voice
+            curl -LsS --max-time 20 "$BASE/?r89=$stamp" -o /tmp/home
+            curl -LsS --max-time 25 -H 'content-type: application/json' -d '{"text":"مرحبا كيفك اليوم","language":"ar"}' "$BASE/api/tts?r89=$stamp" -o /tmp/ar.mp3
+            python - <<'PY'
+import base64,json,pathlib
+b=base64.b64encode(pathlib.Path('/tmp/ar.mp3').read_bytes()).decode()
+pathlib.Path('/tmp/asr.json').write_text(json.dumps({'audio':'data:audio/mpeg;base64,'+b,'language':'auto'}))
+PY
+            curl -LsS --max-time 25 -H 'content-type: application/json' --data-binary @/tmp/asr.json "$BASE/api/transcribe?r89=$stamp" -o /tmp/asr
+            if jq -e '.r89==true' /tmp/health >/dev/null \
+              && grep -q '20260927-r89-native-multilingual-voice' /tmp/home \
+              && ! grep -q 'js.puter.com' /tmp/voice \
+              && jq -e '.ok==true and (.text|length>2) and .language=="ar"' /tmp/asr >/dev/null; then
+              echo 'R89_LIVE_PASS'
+              cat /tmp/asr
+              exit 0
+            fi
+            sleep 3
+          done
+          echo 'HEALTH'; cat /tmp/health || true
+          echo 'ASR'; cat /tmp/asr || true
+          exit 1
