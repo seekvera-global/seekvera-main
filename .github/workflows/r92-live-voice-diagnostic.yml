@@ -24,20 +24,26 @@ jobs:
           sudo apt-get install -y -qq espeak-ng >/dev/null
           espeak-ng -v en-us -s 125 -w /tmp/en.wav 'hello seekvera how are you today I need a hotel in Beirut'
           espeak-ng -v ar -s 120 -w /tmp/ar.wav 'مرحبا كيف حالك اليوم انا اتكلم معك بالعربي واريد فندق في بيروت'
+          python3 - <<'PY'
+          import base64,json
+          for lang in ('ar','en'):
+              audio=base64.b64encode(open('/tmp/'+lang+'.wav','rb').read()).decode()
+              json.dump({'audio':'data:audio/wav;base64,'+audio,'language':'auto'},open('/tmp/'+lang+'-body.json','w'))
+          PY
       - name: Capture live ASR responses
         shell: bash
         run: |
           set +e
-          AR=$(base64 -w0 /tmp/ar.wav)
-          EN=$(base64 -w0 /tmp/en.wav)
-          ar_code=$(curl -sS --max-time 30 -o /tmp/ar.json -w '%{http_code}' -H 'content-type: application/json' --data-binary "{\"audio\":\"data:audio/wav;base64,$AR\",\"language\":\"auto\"}" 'https://seekveraglobal.com/api/transcribe?r92=debug-ar')
-          en_code=$(curl -sS --max-time 30 -o /tmp/en.json -w '%{http_code}' -H 'content-type: application/json' --data-binary "{\"audio\":\"data:audio/wav;base64,$EN\",\"language\":\"auto\"}" 'https://seekveraglobal.com/api/transcribe?r92=debug-en')
+          ar_code=$(curl -sS --max-time 35 -o /tmp/ar.json -w '%{http_code}' -H 'content-type: application/json' --data-binary @/tmp/ar-body.json 'https://seekveraglobal.com/api/transcribe?r92=debug-ar')
+          ar_rc=$?
+          en_code=$(curl -sS --max-time 35 -o /tmp/en.json -w '%{http_code}' -H 'content-type: application/json' --data-binary @/tmp/en-body.json 'https://seekveraglobal.com/api/transcribe?r92=debug-en')
+          en_rc=$?
           {
             echo "R92 live ASR diagnostic"
-            echo "Arabic HTTP: $ar_code"
+            echo "Arabic curl rc: $ar_rc HTTP: $ar_code"
             cat /tmp/ar.json 2>/dev/null || true
             echo
-            echo "English HTTP: $en_code"
+            echo "English curl rc: $en_rc HTTP: $en_code"
             cat /tmp/en.json 2>/dev/null || true
             echo
           } > r92-asr-debug.txt
@@ -48,5 +54,5 @@ jobs:
           git config user.name 'seekvera-global'
           git config user.email 'seekvera.global@gmail.com'
           git add r92-asr-debug.txt
-          git commit -m 'R92 capture live ASR diagnostic response' || exit 0
+          git commit -m 'R92 capture corrected live ASR diagnostic response' || exit 0
           git push origin HEAD:main
