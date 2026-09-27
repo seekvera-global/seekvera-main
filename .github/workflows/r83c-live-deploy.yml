@@ -1,0 +1,74 @@
+name: R83c deploy unified multilingual voice AI live
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r83c-live-deploy.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: seekvera-r83c-production
+  cancel-in-progress: true
+
+jobs:
+  deploy-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify R83 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check worker-r76.js
+          node --check voice-ai.js
+          node --check superapp.js
+          node --check r31-ui-polish.js
+          grep -F 'serverVoice(targetId,activeButton,true)' voice-ai.js
+          grep -F 'setTimeout(()=>ctl.abort(),14000)' voice-ai.js
+          grep -F 'const finalCat = d.category ? d.category : localCat;' superapp.js
+          grep -F 'function employmentIntent(message)' worker-r76.js
+          grep -F '20260927-r83-unified-multilingual-voice-ai' index.html
+
+      - name: Deploy R83 to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Verify live R83 behavior
+        shell: bash
+        run: |
+          set -euo pipefail
+          SITE='https://seekveraglobal.com'
+          ok=0
+          for i in $(seq 1 15); do
+            stamp="$(date +%s)-$i"
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$SITE/?r83=$stamp" -o /tmp/home || true
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$SITE/voice-ai.js?r83=$stamp" -o /tmp/voice || true
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$SITE/superapp.js?r83=$stamp" -o /tmp/app || true
+            curl -LfsS --max-time 25 -H 'Content-Type: application/json' -d '{"message":"what are you doing today?","country":"Worldwide","history":[]}' "$SITE/api/ai?r83=$stamp" -o /tmp/chat_en || true
+            curl -LfsS --max-time 25 -H 'Content-Type: application/json' -d '{"message":"شو عم تعمل اليوم؟","country":"Worldwide","history":[]}' "$SITE/api/ai?r83=$stamp" -o /tmp/chat_ar || true
+            curl -LfsS --max-time 25 -H 'Content-Type: application/json' -d '{"message":"I need a job in Germany","country":"Worldwide","history":[]}' "$SITE/api/ai?r83=$stamp" -o /tmp/job_en || true
+            curl -LfsS --max-time 25 -H 'Content-Type: application/json' -d '{"message":"عم دور على شغل بألمانيا","country":"Worldwide","history":[]}' "$SITE/api/ai?r83=$stamp" -o /tmp/job_ar || true
+            curl -LfsS --max-time 25 -H 'Content-Type: application/json' -d '{"message":"بدي فندق بدبي","country":"Worldwide","history":[]}' "$SITE/api/ai?r83=$stamp" -o /tmp/hotel_ar || true
+            if grep -q '20260927-r83-unified-multilingual-voice-ai' /tmp/home \
+              && grep -q 'serverVoice(targetId,activeButton,true)' /tmp/voice \
+              && grep -q 'setTimeout(()=>ctl.abort(),14000)' /tmp/voice \
+              && grep -q 'const finalCat = d.category ? d.category : localCat;' /tmp/app \
+              && jq -e '.category == "general" and (.response|length)>2' /tmp/chat_en >/dev/null \
+              && jq -e '.category == "general" and (.language == "ar") and (.response|length)>2' /tmp/chat_ar >/dev/null \
+              && jq -e '.category == "jobs"' /tmp/job_en >/dev/null \
+              && jq -e '.category == "jobs" and .language == "ar"' /tmp/job_ar >/dev/null \
+              && jq -e '.category == "travel" and .language == "ar"' /tmp/hotel_ar >/dev/null; then
+              ok=1
+              echo R83_LIVE_PASS
+              break
+            fi
+            echo "Waiting for R83 live propagation attempt $i"
+            sleep 4
+          done
+          test "$ok" = 1
