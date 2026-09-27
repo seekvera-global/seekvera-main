@@ -1,0 +1,29 @@
+name: R103 real AI request diagnostic
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r103-ai-real-request-diagnostic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Capture Arabic and English real request responses
+        shell: bash
+        run: |
+          set +e
+          for host in 'https://seekveraglobal.com' 'https://seekvera-main.seekvera-global.workers.dev'; do
+            echo "HOST=$host"
+            echo '--- ARABIC ---'
+            curl -sS --max-time 35 -w '\nHTTP=%{http_code}\n' -H 'content-type: application/json' -d '{"message":"أريد فندقاً في بيروت ليلتين بميزانية 100 دولار. ساعدني في المقارنة والخطوات.","country":"Lebanon","countryCode":"LB","language":"auto","uiLanguage":"ar","history":[]}' "$host/api/ai?r103=diag-ar"
+            echo '--- ENGLISH ---'
+            curl -sS --max-time 35 -w '\nHTTP=%{http_code}\n' -H 'content-type: application/json' -d '{"message":"I need a hotel in Paris tonight under 150 dollars with a pool. Help me compare and decide.","country":"France","countryCode":"FR","language":"auto","uiLanguage":"en","history":[]}' "$host/api/ai?r103=diag-en"
+          done
+          exit 0
