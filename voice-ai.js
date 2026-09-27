@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-if(window.__seekveraVoiceAI)return;window.__seekveraVoiceAI=true;window.__seekveraVoiceMode='local-whisper-auto-first-r96';
+if(window.__seekveraVoiceAI)return;window.__seekveraVoiceAI=true;window.__seekveraVoiceMode='local-whisper-quality-r98';
 const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
 const LANGS={en:'en-US',ar:'ar-SA',fr:'fr-FR',zh:'zh-CN',es:'es-ES',hi:'hi-IN',pt:'pt-BR',de:'de-DE',ja:'ja-JP',ko:'ko-KR',id:'id-ID',tr:'tr-TR',ru:'ru-RU',ur:'ur-PK',bn:'bn-BD',vi:'vi-VN',it:'it-IT',sw:'sw-KE',th:'th-TH',fa:'fa-IR',pl:'pl-PL',nl:'nl-NL',ms:'ms-MY',fil:'fil-PH',ha:'ha-NG',yo:'yo-NG',ig:'ig-NG',am:'am-ET',he:'he-IL',el:'el-GR',uk:'uk-UA',ro:'ro-RO',cs:'cs-CZ',sk:'sk-SK',hu:'hu-HU',sv:'sv-SE',no:'nb-NO',da:'da-DK',fi:'fi-FI',bg:'bg-BG',hr:'hr-HR',sr:'sr-RS',sl:'sl-SI',lt:'lt-LT',lv:'lv-LV',et:'et-EE',ca:'ca-ES',eu:'eu-ES',gl:'gl-ES',is:'is-IS',sq:'sq-AL',mk:'mk-MK',ka:'ka-GE',hy:'hy-AM',az:'az-AZ',kk:'kk-KZ',uz:'uz-UZ',ky:'ky-KG',tg:'tg-TJ',tk:'tk-TM',ne:'ne-NP',si:'si-LK',ta:'ta-IN',te:'te-IN',ml:'ml-IN',mr:'mr-IN',gu:'gu-IN',pa:'pa-IN',km:'km-KH',lo:'lo-LA',my:'my-MM',mn:'mn-MN',zu:'zu-ZA',af:'af-ZA',be:'be-BY',bs:'bs-BA',dz:'dz-BT',ti:'ti-ET',fo:'fo-FO',kl:'kl-GL',rw:'rw-RW',sm:'sm-WS',to:'to-TO',so:'so-SO',ps:'ps-AF',dv:'dv-MV',mt:'mt-MT',mg:'mg-MG',ga:'ga-IE',cy:'cy-GB',mi:'mi-NZ',fy:'fy-NL',lb:'lb-LU',rm:'rm-CH',ku:'ku-TR',xh:'xh-ZA',st:'st-ZA',tn:'tn-BW'};
 const NAME_CODE={english:'en',arabic:'ar',french:'fr',chinese:'zh',mandarin:'zh',spanish:'es',hindi:'hi',portuguese:'pt',german:'de',japanese:'ja',korean:'ko',indonesian:'id',turkish:'tr',russian:'ru',urdu:'ur',bengali:'bn',vietnamese:'vi',italian:'it',swahili:'sw',thai:'th',persian:'fa',farsi:'fa',polish:'pl',dutch:'nl',malay:'ms',filipino:'fil',tagalog:'fil',hausa:'ha',yoruba:'yo',igbo:'ig',amharic:'am',hebrew:'he',greek:'el',ukrainian:'uk',romanian:'ro',czech:'cs',slovak:'sk',hungarian:'hu',swedish:'sv',norwegian:'no',danish:'da',finnish:'fi',bulgarian:'bg',croatian:'hr',serbian:'sr',slovenian:'sl',lithuanian:'lt',latvian:'lv',estonian:'et',catalan:'ca',basque:'eu',galician:'gl',icelandic:'is',albanian:'sq',macedonian:'mk',georgian:'ka',armenian:'hy',azerbaijani:'az',kazakh:'kk',uzbek:'uz',kyrgyz:'ky',tajik:'tg',turkmen:'tk',nepali:'ne',sinhala:'si',tamil:'ta',telugu:'te',malayalam:'ml',marathi:'mr',gujarati:'gu',punjabi:'pa',khmer:'km',lao:'lo',burmese:'my',mongolian:'mn',zulu:'zu',afrikaans:'af',belarusian:'be',bosnian:'bs',dzongkha:'dz',tigrinya:'ti',faroese:'fo',greenlandic:'kl',kalaallisut:'kl',kinyarwanda:'rw',samoan:'sm',tongan:'to',somali:'so',pashto:'ps',dhivehi:'dv',maldivian:'dv',maltese:'mt',malagasy:'mg',irish:'ga',welsh:'cy',maori:'mi',frisian:'fy',luxembourgish:'lb',romansh:'rm',kurdish:'ku',xhosa:'xh',sesotho:'st','southern sotho':'st',tswana:'tn',setswana:'tn'};
@@ -38,13 +38,65 @@ async function localWhisperEngine(){
   })().catch(e=>{localWhisperPromise=null;throw e});
   return localWhisperPromise
 }
+function whisperLanguageName(code){
+  code=codeOf(code);if(!code)return'';
+  for(const [name,c] of Object.entries(NAME_CODE))if(c===code&&!name.includes(' '))return name;
+  return code
+}
+function transcriptScript(text){
+  const t=String(text||'');
+  if(/[\u0600-\u06ff]/.test(t))return'arabic';
+  if(/[\u0e00-\u0e7f]/.test(t))return'thai';
+  if(/[\u0900-\u097f]/.test(t))return'devanagari';
+  if(/[\u0980-\u09ff]/.test(t))return'bengali';
+  if(/[\u4e00-\u9fff]/.test(t))return'han';
+  if(/[\u3040-\u30ff]/.test(t))return'japanese';
+  if(/[\uac00-\ud7af]/.test(t))return'korean';
+  if(/[\u0400-\u04ff]/.test(t))return'cyrillic';
+  if(/[\u0590-\u05ff]/.test(t))return'hebrew';
+  if(/[\u0370-\u03ff]/.test(t))return'greek';
+  if(/[A-Za-zÀ-ÖØ-öø-ÿ]/.test(t))return'latin';
+  return''
+}
+function transcriptPoor(text){
+  const t=String(text||'').replace(/[^\p{L}\p{N}'’-]+/gu,' ').trim();if(!t)return true;
+  const w=t.split(/\s+/).filter(Boolean);if(w.length<2)return t.length<4;
+  const low=w.map(x=>x.toLocaleLowerCase()),u=new Set(low);
+  let maxRun=1,run=1;for(let i=1;i<low.length;i++){if(low[i]===low[i-1]){run++;maxRun=Math.max(maxRun,run)}else run=1}
+  if(w.length>=6&&u.size/w.length<.34)return true;
+  if(maxRun>=4)return true;
+  return false
+}
+function hintedVoiceCodes(){
+  const out=[];const add=x=>{const c=codeOf(x);if(c&&LANGS[c]&&!out.includes(c))out.push(c)};
+  try{add(localStorage.getItem('seekvera_chat_voice_lang'));add(selectedLang());add(document.documentElement.lang);add(navigator.language)}catch(_){}
+  return out.slice(0,3)
+}
+function transcriptScore(text,hint=''){
+  const t=String(text||'').trim();if(!t)return-999;
+  let score=Math.min(60,t.length/3);if(transcriptPoor(t))score-=120;
+  const sc=transcriptScript(t),hc=codeOf(hint),expected={ar:'arabic',fa:'arabic',ur:'arabic',ps:'arabic',th:'thai',hi:'devanagari',mr:'devanagari',ne:'devanagari',bn:'bengali',zh:'han',ja:'japanese',ko:'korean',ru:'cyrillic',uk:'cyrillic',bg:'cyrillic',sr:'cyrillic',he:'hebrew',el:'greek'}[hc]||'';
+  if(expected&&sc===expected)score+=80;
+  return score
+}
 async function localWhisperTranscribe(blob){
   const engine=await localWhisperEngine(),url=URL.createObjectURL(blob);
   try{
-    const r=await engine(url,{task:'transcribe'}),text=String(r?.text||'').trim();
+    let r=await engine(url,{task:'transcribe'}),text=String(r?.text||'').trim(),chosenHint='',bestScore=transcriptScore(text);
     if(!text)throw Error('local multilingual transcription returned no text');
-    rememberChatVoiceLanguage('',text);
-    return{text,language:codeOf(localStorage.getItem('seekvera_chat_voice_lang')||'')||'auto',engine:'local-whisper-auto'}
+    if(transcriptPoor(text)){
+      for(const hint of hintedVoiceCodes()){
+        const language=whisperLanguageName(hint);if(!language)continue;
+        try{
+          const rr=await engine(url,{task:'transcribe',language}),tt=String(rr?.text||'').trim(),sc=transcriptScore(tt,hint);
+          if(tt&&sc>bestScore){text=tt;r=rr;chosenHint=hint;bestScore=sc}
+          if(tt&&!transcriptPoor(tt)&&sc>=80)break
+        }catch(_){}
+      }
+    }
+    if(!text||transcriptPoor(text))throw Error('local multilingual transcription quality was too low');
+    rememberChatVoiceLanguage(chosenHint,text);
+    return{text,language:codeOf(localStorage.getItem('seekvera_chat_voice_lang')||'')||chosenHint||'auto',engine:chosenHint?'local-whisper-recovered':'local-whisper-auto'}
   }finally{try{URL.revokeObjectURL(url)}catch(_){}}
 }
 async function seekveraAutoTranscribe(blob){
