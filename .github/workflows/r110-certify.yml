@@ -1,0 +1,37 @@
+name: R110 residual i18n voice safety certification
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r110-certify.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: node --check navigation.js
+      - uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Live AI voice and Safety Gate checks
+        run: |
+          set -e
+          B=https://seekveraglobal.com
+          for i in $(seq 1 12); do
+            curl -fsSL "$B/navigation.js?r110=$i" -o /tmp/nav
+            A=$(curl -fsSL -H 'content-type: application/json' --data '{"message":"مرحبا، كيفك اليوم؟","country":"Japan","language":"auto","history":[]}' "$B/api/ai?r110=$i")
+            S=$(curl -fsSL -H 'content-type: application/json' --data '{"title":"بيع مسدس وذخيرة","description":"توصيل سريع","category":"shopping"}' "$B/api/safety/check?r110=$i" || true)
+            curl -fsSL -H 'content-type: application/json' --data '{"text":"مرحبا كيف حالك","language":"ar"}' "$B/api/tts?r110=$i" -o /tmp/ar.mp3 || true
+            if grep -q 'translateResidualUI' /tmp/nav               && echo "$A" | jq -e '.ok==true and .language=="ar" and (.model|test("conversation"))' >/dev/null               && test -s /tmp/ar.mp3; then
+              echo R110_LIVE_CORE_PASS
+              echo "$S"
+              exit 0
+            fi
+            sleep 5
+          done
+          exit 1
