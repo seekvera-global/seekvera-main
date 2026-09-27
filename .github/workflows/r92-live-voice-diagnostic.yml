@@ -56,3 +56,5 @@ jobs:
           git add r92-asr-debug.txt
           git commit -m 'R92 capture corrected live ASR diagnostic response' || exit 0
           git push origin HEAD:main
+
+# corrected diagnostic body is streamed from files to avoid shell argument-size limits
