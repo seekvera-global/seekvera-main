@@ -1,0 +1,80 @@
+name: R93 native-first zero-cost voice
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r93-native-first-zero-cost-voice.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch voice priority and cache release
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          VER='20260927-r93-native-first-zero-cost-voice'
+
+          p=Path('voice-ai.js')
+          s=p.read_text(encoding='utf-8')
+          marker="if(window.__seekveraVoiceAI)return;window.__seekveraVoiceAI=true;"
+          marked=marker+"window.__seekveraVoiceMode='native-first-zero-cost-r93';"
+          if 'native-first-zero-cost-r93' not in s:
+              if marker not in s:
+                  raise SystemExit('voice boot marker missing')
+              s=s.replace(marker,marked,1)
+
+          old="if(navigator.mediaDevices?.getUserMedia&&window.MediaRecorder&&!forceNative){serverVoice(targetId,activeButton,false);return}\n  if(!SpeechRecognition){serverVoice(targetId,activeButton);return}"
+          new="if(!SpeechRecognition){\n    if(navigator.mediaDevices?.getUserMedia&&window.MediaRecorder){serverVoice(targetId,activeButton,false);return}\n    voiceConversation=false;if(i)i.placeholder='Voice recognition is not supported in this browser.';return\n  }"
+          if old in s:
+              s=s.replace(old,new,1)
+          elif new not in s:
+              raise SystemExit('voice priority anchor missing')
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('index.html')
+          h=p.read_text(encoding='utf-8')
+          h=re.sub(r'data-release="[^"]+"',f'data-release="{VER}"',h,count=1)
+          h=re.sub(r'voice-ai\.js\?v=[^"\s]+',f'voice-ai.js?v={VER}',h,count=1)
+          h=re.sub(r'sw\.js\?v=[^"\s]+',f'sw.js?v={VER}',h,count=1)
+          p.write_text(h,encoding='utf-8')
+
+          p=Path('sw.js')
+          sw=p.read_text(encoding='utf-8')
+          sw=re.sub(r"const RELEASE='[^']+';",f"const RELEASE='{VER}';",sw,count=1)
+          p.write_text(sw,encoding='utf-8')
+          PY
+
+      - name: Static certify native first and fallbacks
+        run: |
+          set -euo pipefail
+          grep -F "native-first-zero-cost-r93" voice-ai.js
+          if grep -Fq "navigator.mediaDevices?.getUserMedia&&window.MediaRecorder&&!forceNative){serverVoice" voice-ai.js; then
+            echo 'old server-first priority still present' >&2
+            exit 1
+          fi
+          grep -F "if(!SpeechRecognition)" voice-ai.js
+          grep -F "localWhisperTranscribe" voice-ai.js
+          grep -F "seekveraAutoTranscribe" voice-ai.js
+          grep -F "20260927-r93-native-first-zero-cost-voice" index.html
+          grep -F "20260927-r93-native-first-zero-cost-voice" sw.js
+
+      - name: Commit certified R93 voice release
+        run: |
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add voice-ai.js index.html sw.js
+          git commit -m 'R93 native-first zero-cost multilingual voice' || exit 0
+          git push origin HEAD:main
