@@ -156,10 +156,10 @@ html.sv-r15-applying #aiChat,html.sv-r15-applying #aiChat *{transition:none!impo
 }
 function dedupeCurrencyOptions(){
   const el=localeControl('currency');if(!el)return;
-  const seen=new Set();for(const o of [...el.options]){const raw=String(o.value||o.textContent||'').trim().toUpperCase();const v=(raw.match(/^[A-Z]{3}/)||[])[0]||raw;if(!v)continue;if(seen.has(v))o.remove();else seen.add(v)}
+  const primary=new Set(['USD','NGN','EUR','GBP','AED','SAR','LBP','CNY','TRY','EGP','KES','GHS','ZAR','CAD','AUD','INR','JPY','KRW']);const seen=new Set();for(const [i,o] of [...el.options].entries()){const raw=String(o.value||o.textContent||'').trim().toUpperCase();const v=(raw.match(/^[A-Z]{3}/)||[])[0]||raw;if(!v)continue;if((i>=18&&primary.has(v))||seen.has(v))o.remove();else seen.add(v)}
 }
 function hardenReleaseMarker(){
-  for(const e of document.querySelectorAll('footer small,.sv-footer small')){const t=(e.textContent||'').trim();if(/2026-09-2[4-7]\s*·/.test(t)){e.textContent='2026-09-27 · R106';e.setAttribute('data-no-i18n','1');e.setAttribute('data-no-translate','1')}}
+  for(const e of document.querySelectorAll('small')){const t=(e.textContent||'').trim();if(/2026-09-2[4-7]\s*·/.test(t)){e.textContent='2026-09-27 · R106';e.setAttribute('data-no-i18n','1');e.setAttribute('data-no-translate','1')}}
 }
 function fixAIControlButtons(){
   const defs=[['aiChatAttach','📎'],['aiChatCamera','📷'],['aiChatMic','🎤']];
