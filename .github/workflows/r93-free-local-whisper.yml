@@ -65,7 +65,7 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
-          cat > /tmp/r93-cert.mjs <<'JS'
+          cat > r93-cert.mjs <<'JS'
           import {chromium} from 'playwright';
           import fs from 'node:fs';
           const browser=await chromium.launch({headless:true});
@@ -94,7 +94,7 @@ jobs:
           if(!/[\u0600-\u06ff]/.test(at))throw new Error('Arabic auto detection failed: '+at);
           await browser.close();
           JS
-          node /tmp/r93-cert.mjs
+          node r93-cert.mjs
 
       - name: Commit certified local voice bundle
         shell: bash
