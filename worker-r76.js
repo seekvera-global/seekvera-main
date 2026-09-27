@@ -1,6 +1,6 @@
 import baseWorker from './worker-r31.js';
 
-const RELEASE='20260927-r80-unified-global-conversation';
+const RELEASE='20260927-r81-natural-conversation';
 const PRIMARY='@cf/zai-org/glm-4.7-flash';
 const FALLBACK='@cf/qwen/qwen3-30b-a3b-fp8';
 const ALLOWED=new Set(['https://seekveraglobal.com','https://www.seekveraglobal.com','https://seekvera-global.github.io','https://seekvera-main.seekvera-global.workers.dev']);
@@ -75,11 +75,28 @@ function actionState(message,modelCC='',modelLL=''){
  const ll=localLL||((isControl&&wantsLanguage)?languageCode(modelLL):'');
  return{cc,ll,isAction:!!(cc||ll)};
 }
+function conversationOnly(message){const s=String(message||'').trim().toLowerCase().replace(/^[\s¿¡]+|[\s.!?؟،。！？]+$/gu,'');if(!s)return true;return /^(?:hi|hello|hey|good\s+(?:morning|afternoon|evening)|how\s+are\s+you(?:\s+today)?|what\s+are\s+you\s+doing|what(?:'s|\s+is)\s+your\s+name|who\s+are\s+you|thank\s*you|thanks|مرحبا|مرحباً|أهلا|اهلا|السلام عليكم|كيفك(?:\s+اليوم)?|كيف حالك(?:\s+اليوم)?|شو عم تعمل|شو الاخبار|مين انت|شكرا|شكراً|bonjour|salut|comment (?:ça|ca) va|merci|hola|buenos días|buenas tardes|cómo estás|como estas|gracias|hallo|guten morgen|wie geht(?:'s| es dir)?|danke|ciao|buongiorno|come stai|grazie|olá|ola|bom dia|como vai|obrigad[oa]|merhaba|nasılsın|nasilsin|teşekkürler|tesekkurler|привет|здравствуй(?:те)?|как дела|спасибо|你好|您好|你好吗|谢谢|こんにちは|おはよう|元気ですか|ありがとう|안녕|안녕하세요|어떻게 지내|감사합니다|नमस्ते|आप कैसे हैं|धन्यवाद|สวัสดี|เป็นอย่างไรบ้าง|ขอบคุณ|halo|apa kabar|terima kasih|jambo|habari|asante)$/iu.test(s)}
+function conversationalFallback(message,language){const l=languageCode(language)||normalizedLanguage('',message);const how=/how\s+are\s+you|كيفك|كيف حالك|comment (?:ça|ca) va|cómo estás|como estas|wie geht|come stai|como vai|nasılsın|nasilsin|как дела|你好吗|元気ですか|어떻게 지내|आप कैसे हैं|เป็นอย่างไรบ้าง|apa kabar|habari/iu.test(message);const replies={
+ ar:how?'منيح، شكراً إلك. أنا جاهز أحكي معك وأساعدك. شو حابب تعمل؟':'أهلاً وسهلاً! أنا SEEKVERA AI. احكي معي بشكل طبيعي، شو فيني ساعدك؟',
+ en:how?'I’m doing well, thank you. I’m here and ready to help—what would you like to do?':'Hello! I’m SEEKVERA AI. Talk to me naturally—how can I help?',
+ fr:how?'Je vais bien, merci. Je suis prêt à vous aider. Que souhaitez-vous faire ?':'Bonjour ! Je suis SEEKVERA AI. Comment puis-je vous aider ?',
+ es:how?'Estoy bien, gracias. Estoy aquí para ayudarte. ¿Qué te gustaría hacer?':'¡Hola! Soy SEEKVERA AI. ¿Cómo puedo ayudarte?',
+ de:how?'Mir geht es gut, danke. Ich bin bereit zu helfen. Was möchten Sie tun?':'Hallo! Ich bin SEEKVERA AI. Wie kann ich helfen?',
+ tr:how?'İyiyim, teşekkür ederim. Yardım etmeye hazırım. Ne yapmak istersiniz?':'Merhaba! Ben SEEKVERA AI. Size nasıl yardımcı olabilirim?',
+ zh:how?'我很好，谢谢。我随时可以帮助你。你想做什么？':'你好！我是 SEEKVERA AI。请自然地告诉我你需要什么帮助。',
+ ja:how?'元気です、ありがとう。お手伝いできます。何をしたいですか？':'こんにちは！SEEKVERA AIです。どのようにお手伝いできますか？',
+ ko:how?'잘 지내요, 감사합니다. 무엇을 도와드릴까요?':'안녕하세요! SEEKVERA AI입니다. 무엇을 도와드릴까요?',
+ hi:how?'मैं ठीक हूँ, धन्यवाद। मैं आपकी मदद के लिए तैयार हूँ। आप क्या करना चाहते हैं?':'नमस्ते! मैं SEEKVERA AI हूँ। मैं आपकी कैसे मदद कर सकता हूँ?',
+ ru:how?'У меня всё хорошо, спасибо. Я готов помочь. Что вы хотите сделать?':'Здравствуйте! Я SEEKVERA AI. Чем я могу помочь?',
+ th:how?'ฉันสบายดี ขอบคุณ พร้อมช่วยคุณ คุณต้องการทำอะไร?':'สวัสดี! ฉันคือ SEEKVERA AI ให้ฉันช่วยอะไรได้บ้าง?',
+ id:how?'Saya baik, terima kasih. Saya siap membantu. Apa yang ingin Anda lakukan?':'Halo! Saya SEEKVERA AI. Ada yang bisa saya bantu?',
+ sw:how?'Niko vizuri, asante. Niko tayari kusaidia. Ungependa kufanya nini?':'Jambo! Mimi ni SEEKVERA AI. Ninaweza kukusaidiaje?'
+ };return replies[l]||replies.en}
 async function degradedFallback(request,env,ctx,body,message){
  const fallback=await baseWorker.fetch(request,env,ctx);let d=null;try{d=await fallback.clone().json()}catch{}
  if(!d||typeof d!=='object'){const h=new Headers(fallback.headers);h.set('x-seekvera-release',RELEASE);return new Response(fallback.body,{status:fallback.status,statusText:fallback.statusText,headers:h})}
- const act=actionState(message,d?.countryAction?.code,d?.languageAction?.code),language=act.isAction?messageLanguage(message,d.language):normalizedLanguage(d.language,message),cat=category(d.category);
- return json(request,{...d,ok:d.ok!==false,response:act.isAction?actionReply(language,act.cc,act.ll):clean(d.response,5000),language,category:cat,route:ROUTES[cat]||ROUTES.general,countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:act.isAction?'seekvera-r76-local-action-fallback':d.model,fastPath:act.isAction?'r76-deterministic-action-fallback':(d.fastPath||'r76-base-fallback'),liveData:!!d.liveData},fallback.status||200)
+ const act=actionState(message,d?.countryAction?.code,d?.languageAction?.code),language=act.isAction?messageLanguage(message,d.language):normalizedLanguage(d.language,message),chat=conversationOnly(message),cat=chat?'general':category(d.category),response=act.isAction?actionReply(language,act.cc,act.ll):chat?conversationalFallback(message,language):clean(d.response,5000);
+ return json(request,{...d,ok:d.ok!==false,response,language,category:cat,route:ROUTES[cat]||ROUTES.general,countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:act.isAction?'seekvera-r81-local-action-fallback':chat?'seekvera-r81-local-conversation-fallback':d.model,fastPath:act.isAction?'r81-deterministic-action-fallback':chat?'r81-natural-conversation-fallback':(d.fastPath||'r81-base-fallback'),liveData:!!d.liveData},fallback.status||200)
 }
 
 async function runStructured(env,body){
@@ -102,7 +119,7 @@ Latest user message: ${message}`;
  const messages=[{role:'system',content:system},{role:'user',content:message}];
  for(const model of [PRIMARY,FALLBACK]){try{
    const r=await env.AI.run(model,{messages,temperature:.1,max_tokens:520}),text=modelText(r),obj=parseJSON(text);if(!obj||!clean(obj.reply,5000))continue;
-   const act=actionState(message,obj.countryAction,obj.languageAction),language=act.isAction?messageLanguage(message,obj.languageCode):(languageCode(obj.languageCode)||normalizedLanguage('',message)),cat=category(obj.category);
+   const act=actionState(message,obj.countryAction,obj.languageAction),language=act.isAction?messageLanguage(message,obj.languageCode):(languageCode(obj.languageCode)||normalizedLanguage('',message)),cat=conversationOnly(message)?'general':category(obj.category);
    return{ok:true,response:act.isAction?actionReply(language,act.cc,act.ll):clean(obj.reply,5000),language,category:cat,route:ROUTES[cat]||ROUTES.general,countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model,fastPath:act.isAction?'r76-verified-action-first':'r76-single-structured-ai',liveData:false}
  }catch{}}
  return null;
@@ -112,7 +129,7 @@ export default{async fetch(request,env,ctx){
  const u=new URL(request.url);
  if(request.method==='OPTIONS')return new Response(null,{status:204,headers:headers(request)});
  if(u.pathname==='/api/health'){
-   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,r76:true,r76Runtime:'single-structured-multilingual-ai',r76Voice:'server-auto-asr-first',r76Locale:'complete-static-pack-audit',r76Fallback:'deterministic-actions-over-base-fallback'});
+   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
  }
  if(u.pathname==='/api/ai'&&request.method==='POST'){
    let body={};try{body=await request.clone().json()}catch{return json(request,{ok:false,error:'Invalid JSON'},400)}
