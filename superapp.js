@@ -1,61 +1,1105 @@
-(()=>{
-'use strict';
-const RELEASE='20260927-r81-natural-conversation';
-const WORKER='';
-const SB='https://nrdpyydfrpmqedtzmbyw.supabase.co';
-const SB_KEY='sb_publishable_tqqPQxqdNowIsSlJz4bW5w_kHOC905o';
-const LANGS=[['auto','Auto · Same as my language'],['en','English'],['ar','العربية'],['fr','Français'],['zh','中文'],['es','Español'],['hi','हिन्दी'],['pt','Português'],['de','Deutsch'],['ja','日本語'],['ko','한국어'],['id','Bahasa Indonesia'],['tr','Türkçe'],['ru','Русский'],['ur','اردو'],['bn','বাংলা'],['vi','Tiếng Việt'],['it','Italiano'],['sw','Kiswahili'],['th','ไทย'],['fa','فارسی'],['pl','Polski'],['nl','Nederlands'],['ms','Bahasa Melayu'],['fil','Filipino'],['ha','Hausa'],['yo','Yorùbá'],['ig','Igbo'],['am','አማርኛ']];
-const LANGUAGE_NAME=Object.fromEntries(LANGS.filter(x=>x[0]!=='auto').map(([c,n])=>[c,n.replace(/[^\p{L}\p{M} .-]/gu,'').trim()]));
-const ISO='AF AL DZ AS AD AO AI AQ AG AR AM AW AU AT AZ BS BH BD BB BY BE BZ BJ BM BT BO BQ BA BW BV BR IO BN BG BF BI CV KH CM CA KY CF TD CL CN CX CC CO KM CD CG CK CR CI HR CU CW CY CZ DK DJ DM DO EC EG SV GQ ER EE SZ ET FK FO FJ FI FR GF PF TF GA GM GE DE GH GI GR GL GD GP GU GT GG GN GW GY HT HM VA HN HK HU IS IN ID IR IQ IE IM IL IT JM JP JE JO KZ KE KI KP KR KW KG LA LV LB LS LR LY LI LT LU MO MG MW MY MV ML MT MH MQ MR MU YT MX FM MD MC MN ME MS MA MZ MM NA NR NP NL NC NZ NI NE NG NU NF MK MP NO OM PK PW PS PA PG PY PE PH PN PL PT PR QA RE RO RU RW BL SH KN LC MF PM VC WS SM ST SA SN RS SC SL SG SX SK SI SB SO ZA GS SS ES LK SD SR SJ SE CH SY TW TJ TZ TH TL TG TK TO TT TN TR TM TC TV UG UA AE GB UM US UY UZ VU VE VN VG VI WF EH YE ZM ZW'.split(' ');
-const CURRENCY_BY_COUNTRY={NG:'NGN',LB:'LBP',US:'USD',GB:'GBP',AE:'AED',SA:'SAR',CN:'CNY',TR:'TRY',EG:'EGP',KE:'KES',GH:'GHS',ZA:'ZAR',CA:'CAD',AU:'AUD',IN:'INR',JP:'JPY',KR:'KRW',DE:'EUR',FR:'EUR',ES:'EUR',IT:'EUR',NL:'EUR'};
-const ROUTES={marketplace:'marketplace.html',travel:'travel.html',hotel:'travel.html',hotels:'travel.html',tourism:'tourism.html',wifi:'connectivity.html',internet:'connectivity.html',esim:'connectivity.html',connectivity:'connectivity.html',property:'property.html',cars:'cars-auto.html',jobs:'jobs.html',shopping:'shopping.html',import:'import-export.html',business:'business-software.html',restaurant:'restaurants-food.html',services:'local-services.html',solar:'solar.html',education:'education.html',health:'health.html',shipping:'shipping-logistics.html',software:'business-software.html',hosting:'web-hosting.html',media:'media.html',news:'media.html',music:'media.html',movies:'media.html',entertainment:'media.html',deal:'deal-agent.html'};
-const KEYWORDS={travel:['travel','flight','hotel','resort','airport','trip','tourism','visa','طيران','فندق','سفر','رحلة','酒店','航班','旅行','voyage','hôtel','viaje','vuelo'],property:['property','house','apartment','land','rent','real estate','عقار','بيت','ارض','إيجار','房产','土地','maison','terrain'],cars:['car','vehicle','auto','spare part','car part','سيارة','مركبة','قطع غيار','汽车'],jobs:['job','jobs','career','vacancy','work','employment','hiring','وظيفة','وظائف','وظايف','عمل','شغل','فرصة عمل','دوام','工作'],shopping:['buy','shopping','product','price','deal','shop','شراء','تسوق','购物'],import:['supplier','manufacturer','factory','wholesale','import','export','مورد','مصنع','استيراد','تصدير','供应商'],restaurant:['restaurant','food','cafe','coffee','مطعم','قهوة','餐厅'],services:['service','plumber','electrician','repair','cleaner','خدمة','تصليح'],solar:['solar','inverter','battery','panel','سولار','بطارية'],education:['school','course','university','training','education','جامعة','دورة'],health:['hospital','clinic','pharmacy','doctor','health','مستشفى','صيدلية','طبيب'],shipping:['shipping','logistics','freight','cargo','شحن','لوجستيك'],software:['software','crm','erp','pos','accounting','برنامج','نظام'],hosting:['hosting','domain','website','server','استضافة','دومين'],connectivity:['wifi','wi-fi','esim','sim card','internet','mobile data','واي فاي','انترنت','شريحة'],business:['business','company','partner','deal','rfq','quotation','شركة','صفقة','عرض سعر'],media:['news','cnn','al jazeera','al arabiya','bbc','reuters','movie','movies','music','radio','tv','أخبار','الجزيرة','العربية','أفلام','موسيقى']};
-const I18N={en:{placeholder:'What are you looking for anywhere in the world?',thinking:'SEEKVERA AI is thinking…',safe:'Safety check first',requestSaved:'Request saved',requestFail:'Could not save request. Please try again.'},ar:{placeholder:'ماذا تبحث عنه في أي مكان في العالم؟',thinking:'SEEKVERA AI يفكر…',safe:'فحص الأمان أولاً',requestSaved:'تم حفظ الطلب',requestFail:'تعذر حفظ الطلب. حاول مرة أخرى.'},fr:{placeholder:'Que recherchez-vous, partout dans le monde ?',thinking:'SEEKVERA AI réfléchit…',safe:'Vérification de sécurité d’abord',requestSaved:'Demande enregistrée',requestFail:'Impossible d’enregistrer la demande.'},zh:{placeholder:'您想在世界任何地方寻找什么？',thinking:'SEEKVERA AI 正在思考…',safe:'先进行安全检查',requestSaved:'请求已保存',requestFail:'无法保存请求，请重试。'},es:{placeholder:'¿Qué buscas en cualquier parte del mundo?',thinking:'SEEKVERA AI está pensando…',safe:'Primero, control de seguridad',requestSaved:'Solicitud guardada',requestFail:'No se pudo guardar la solicitud.'},hi:{placeholder:'दुनिया में कहीं भी आप क्या ढूँढ रहे हैं?',thinking:'SEEKVERA AI सोच रहा है…',safe:'पहले सुरक्षा जाँच',requestSaved:'अनुरोध सहेजा गया',requestFail:'अनुरोध सहेजा नहीं जा सका।'}};
-const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-function api(path){return `${WORKER}${path}`}
-function clean(v,max=1200){return String(v??'').replace(/[\u0000-\u001F\u007F]/g,' ').trim().slice(0,max)}
-function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function lang(){return $('#lang')?.value||localStorage.getItem('seekvera_lang')||'en'}
-function languageName(){let c=lang();if(c==='auto')c=(navigator.language||'en').split(/[-_]/)[0];if(LANGUAGE_NAME[c])return LANGUAGE_NAME[c];try{return new Intl.DisplayNames(['en'],{type:'language'}).of(c)||c}catch{return c}}
-function tr(k){return I18N[lang()]?.[k]||I18N.en[k]||k}
-function populateLanguage(){const el=$('#lang');if(!el)return;const saved=localStorage.getItem('seekvera_lang');let list=[...LANGS];if(saved&&saved!=='auto'&&!list.some(x=>x[0]===saved)){let name=saved.toUpperCase();try{name=new Intl.DisplayNames([saved],{type:'language'}).of(saved)||name}catch{}list.push([saved,name])}el.innerHTML=list.map(([v,n])=>`<option value="${v}">${n}</option>`).join('');if(saved&&list.some(x=>x[0]===saved))el.value=saved;else el.value='auto';el.addEventListener('change',()=>{localStorage.setItem('seekvera_lang',el.value);document.documentElement.lang=el.value==='auto'?((navigator.language||'en').split('-')[0]):el.value;document.documentElement.dir=/^(ar|fa|ur|he|ps|dv)$/.test(el.value)?'rtl':'ltr';if($('#globalSearch'))$('#globalSearch').placeholder=tr('placeholder')})}
-function populateCountries(){const el=$('#country');if(!el)return;const migration='seekvera_worldwide_default_20260926_r63';if(!localStorage.getItem(migration)){if(localStorage.getItem('seekvera_country_explicit')!=='1'){localStorage.setItem('seekvera_country','WW');localStorage.setItem('seekvera_scope','worldwide')}localStorage.setItem(migration,'1')}let dn;try{dn=new Intl.DisplayNames([navigator.language||'en'],{type:'region'})}catch{}const options=['<option value="WW">Worldwide · All countries</option>'];for(const c of ISO){const name=dn?.of(c)||c;options.push(`<option value="${c}">${esc(name)}</option>`)}el.innerHTML=options.join('');const saved=localStorage.getItem('seekvera_country')||'WW';el.value=[...el.options].some(o=>o.value===saved)?saved:'WW';el.addEventListener('change',()=>{localStorage.setItem('seekvera_country',el.value);localStorage.setItem('seekvera_country_explicit','1');syncCurrency()});syncCurrency()}
-function syncCurrency(){const c=$('#country')?.value||'WW',cur=$('#currency');if(!cur)return;const wanted=CURRENCY_BY_COUNTRY[c]||localStorage.getItem('seekvera_currency')||'USD';if([...cur.options].some(o=>o.value===wanted))cur.value=wanted;localStorage.setItem('seekvera_currency',cur.value)}
-function bindCurrency(){const el=$('#currency');if(el)el.addEventListener('change',()=>localStorage.setItem('seekvera_currency',el.value))}
-function categoryFor(q){const t=q.toLowerCase();let best='general',score=0;for(const [cat,words] of Object.entries(KEYWORDS)){const s=words.reduce((n,w)=>n+(t.includes(w)?1:0),0);if(s>score){best=cat;score=s}}return best}
-function routeFor(cat){return ROUTES[cat]||'marketplace.html'}
-function scope(){return $('.sv-scope button.active')?.dataset.scope||'worldwide'}
-function selectedCountryName(){const e=$('#country');return e?.options?.[e.selectedIndex]?.textContent||'Worldwide'}
-function actionLinks(cat,q){if(!cat||cat==='general')return'';const route=routeFor(cat),encoded=encodeURIComponent(q),cc=$('#country')?.value||localStorage.getItem('seekvera_country')||'WW',cn=selectedCountryName(),cp='&country='+encodeURIComponent(cc);const links=[`<a href="${route}?q=${encoded}${cp}">Open ${esc(cat)} now</a>`];if(cat==='jobs'){const loc=encodeURIComponent(cn);links.push(`<a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/jobs/search/?keywords=${encoded}&location=${loc}">LinkedIn jobs in ${esc(cn)}</a>`);links.push(`<a target="_blank" rel="noopener noreferrer" href="https://www.google.com/search?q=${encoded}+jobs+in+${loc}">More job results</a>`)}if(cat==='connectivity')links.push('<a href="wifi.html">Free Wi-Fi finder</a>');if(cat==='business'||cat==='import')links.push('<a href="deal-agent.html">AI Deal Agent</a>');links.push(`<a href="marketplace.html?q=${encoded}${cp}">Search marketplace</a>`);return links.join('')}
-function chatAdd(role,text,extra=''){const msgs=$('#aiMessages');if(!msgs)return null;const m=document.createElement('div');m.className=`ai-msg ${role}${extra?' '+extra:''}`;m.textContent=String(text||'');msgs.appendChild(m);msgs.scrollTop=msgs.scrollHeight;return m}
-function chatHistory(){const msgs=$('#aiMessages');if(!msgs)return[];return[...msgs.querySelectorAll('.ai-msg')].filter(x=>!x.classList.contains('thinking')).slice(-12).map(x=>({role:x.classList.contains('user')?'user':'assistant',content:clean(x.textContent,1800)})).filter(x=>x.content)}
-function directRouteLabel(cat){const ar=(document.documentElement.lang||lang()).toLowerCase().startsWith('ar');const m={jobs:ar?'افتح الوظائف الآن ←':'Open jobs now →',travel:ar?'افتح السفر والفنادق الآن ←':'Open travel & hotels now →',property:ar?'افتح العقارات الآن ←':'Open property now →',cars:ar?'افتح السيارات الآن ←':'Open cars now →',shopping:ar?'افتح التسوق الآن ←':'Open shopping now →',business:ar?'افتح الأعمال والموردين الآن ←':'Open business & suppliers now →',connectivity:ar?'افتح الإنترنت والاتصال الآن ←':'Open connectivity now →',health:ar?'افتح الصحة الآن ←':'Open health now →',restaurant:ar?'افتح المطاعم الآن ←':'Open restaurants now →'};return m[cat]||(ar?'افتح القسم المناسب الآن ←':'Open the right section now →')}
-function clearDirectRoutes(){const msgs=$('#aiMessages');msgs?.querySelectorAll('.sv-ai-direct-route').forEach(x=>x.remove())}
-function addDirectRoute(cat,q,after){const msgs=$('#aiMessages');if(!msgs)return null;clearDirectRoutes();if(!cat||cat==='general')return null;const a=document.createElement('a');a.className='sv-ai-direct-route';a.href=routeFor(cat)+'?q='+encodeURIComponent(q)+'&country='+encodeURIComponent($('#country')?.value||localStorage.getItem('seekvera_country')||'WW');a.textContent=directRouteLabel(cat);a.style.cssText='display:block;margin:7px 12px 10px;padding:11px 13px;border-radius:12px;background:#0f9f6e;color:#fff;font-weight:900;text-decoration:none;text-align:center';if(after?.parentNode)after.insertAdjacentElement('afterend',a);else msgs.appendChild(a);msgs.scrollTop=msgs.scrollHeight;return a}
-function applyAiActions(d){const ctl=window.SEEKVERA_R24_CONTROLLER,cc=String(d?.countryAction?.code||'').toUpperCase(),ll=String(d?.languageAction?.code||'').toLowerCase();if(!cc&&!ll)return false;try{return !!ctl?.applyControls?.({country:cc,language:ll})}catch{return false}}
-let routeTimer=0;
-function navigateAfterReply(route,q,category){if(!route||category==='general')return;const url=route+(route.includes('?')?'&':'?')+'q='+encodeURIComponent(q)+'&country='+encodeURIComponent($('#country')?.value||localStorage.getItem('seekvera_country')||'WW');clearTimeout(routeTimer);let done=false;const go=()=>{if(done)return;done=true;clearTimeout(routeTimer);window.removeEventListener('seekvera:tts-end',go);location.assign(url)};const voice=window.SEEKVERA_VOICE_AI?.isVoiceReplyPending?.();if(voice){window.addEventListener('seekvera:tts-end',go,{once:true});routeTimer=setTimeout(go,9000)}else routeTimer=setTimeout(go,1400)}
-function sameReply(a,b){const n=x=>String(x||'').toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim();const x=n(a),y=n(b);return !!x&&!!y&&(x===y||(x.length>45&&y.includes(x.slice(0,45)))||(y.length>45&&x.includes(y.slice(0,45))))}
-function localJobGuide(){const ar=(document.documentElement.lang||lang()).toLowerCase().startsWith('ar');return ar?'أكيد. وصّلتك لقسم الوظائف مباشرة. قل لي البلد أو المدينة ونوع الشغل الذي تريده، وأنا أضيّق لك النتائج بدل ما أعيد نفس الكلام.':'Absolutely. I’ve put the Jobs section right below this reply. Tell me the country/city and the kind of job you want, and I’ll narrow it down instead of repeating the same answer.'}
-async function askAI(q){q=clean(q,1800);if(!q)return;const history=chatHistory(),ans=$('#aiAnswer'),actions=$('#aiActions');chatAdd('user',q);const pending=chatAdd('bot',tr('thinking'),'thinking');const localCat=categoryFor(q),country=selectedCountryName();clearDirectRoutes();if(actions){actions.innerHTML='';actions.hidden=true}const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),18000);try{const r=await fetch(api('/api/ai'),{method:'POST',headers:{'content-type':'application/json'},signal:controller.signal,body:JSON.stringify({message:q,country,language:languageName(),scope:scope(),fast:true,history})});const d=await r.json().catch(()=>({}));if(!r.ok||!d.response)throw new Error(d.error||'AI unavailable');const changed=applyAiActions(d);let reply=String(d.response||'').trim();const previous=[...history].reverse().find(x=>x.role==='assistant')?.content||'';const finalCat=d.category&&d.category!=='general'?d.category:localCat;if(sameReply(reply,previous)&&finalCat==='jobs')reply=localJobGuide();if(pending){pending.textContent=reply;pending.classList.remove('thinking')}if(ans)ans.textContent=reply;const route=d.route||routeFor(finalCat),links=actionLinks(finalCat,q);if(actions){actions.innerHTML=links;actions.hidden=!links}addDirectRoute(finalCat,q,pending);window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text:reply,language:d.language||lang(),route,category:finalCat,control:changed}}));if(!changed)navigateAfterReply(route,q,finalCat)}catch(e){const ar=(document.documentElement.lang||lang()).toLowerCase().startsWith('ar');let msg;if(localCat==='jobs')msg=localJobGuide();else if(localCat==='general')msg=ar?'أنا معك. احكي لي براحتك شو بدك، وإذا كان طلبك بحاجة لقسم معيّن بودّيك عليه بعد ما أفهمه.':'I’m with you. Tell me naturally what you need; if it belongs in a section, I’ll take you there after I understand it.';else msg=ar?'فهمت نوع طلبك، لكن الاتصال تأخر. قل لي تفصيلاً واحداً إضافياً وسأكمل معك.':'I understand the kind of request, but the connection is slow. Tell me one more detail and I’ll continue.';if(pending){pending.textContent=msg;pending.classList.remove('thinking')}if(ans)ans.textContent=msg;const links=actionLinks(localCat,q);if(actions){actions.innerHTML=links;actions.hidden=!links}addDirectRoute(localCat,q,pending);window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text:msg,language:lang(),route:routeFor(localCat),category:localCat}}))}finally{clearTimeout(timer)}}
-function bindSearch(){const form=$('#universalSearch'),input=$('#globalSearch');if(!form||!input)return;input.placeholder=tr('placeholder');form.addEventListener('submit',e=>{e.preventDefault();askAI(input.value)});$$('.sv-scope button').forEach(b=>b.addEventListener('click',()=>{$$('.sv-scope button').forEach(x=>x.classList.remove('active'));b.classList.add('active');localStorage.setItem('seekvera_scope',b.dataset.scope)}));const saved=localStorage.getItem('seekvera_scope');if(saved){const b=$(`.sv-scope button[data-scope="${saved}"]`);if(b){$$('.sv-scope button').forEach(x=>x.classList.remove('active'));b.classList.add('active')}}}
-function bindVoiceButton(){const b=$('#heroVoice');if(!b)return;b.addEventListener('click',()=>{const fab=$('#svVoiceFab');if(fab)fab.click();else window.dispatchEvent(new CustomEvent('seekvera:voice'))})}
-async function handleChatAttachment(file){if(!file)return;const state=$('#aiAttachmentState');if(state){state.hidden=false;state.textContent='Checking '+file.name+'…'}try{if(file.type==='text/plain'||/\.txt$/i.test(file.name)){if(file.size>256*1024)throw Error('Text file is too large. Use a TXT file up to 256 KB.');const text=clean(await file.text(),3500);if(!text)throw Error('The text file is empty.');if(state){state.textContent='📎 '+file.name;setTimeout(()=>state.hidden=true,3500)}await askAI('Attached text file '+file.name+':\n'+text);return}if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>5*1024*1024)throw Error('Use JPG, PNG, WebP up to 5 MB, or TXT up to 256 KB.');const data=await fileToDataURL(file);chatAdd('user','📷 '+file.name);const pending=chatAdd('bot','Checking the image with Safety Gate and AI Vision…','thinking');const r=await fetch(api('/api/visual-search'),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({image:data,country:selectedCountryName(),language:languageName()})});const d=await r.json().catch(()=>({}));let msg='';if(!r.ok||d.allowed===false||d.blocked)msg=d.reason?'Image not accepted: '+d.reason:'This image cannot be processed.';else if(d.reviewRequired)msg='This image needs review before visual search can continue.';else msg=[d.summary,d.guidance,d.suggestedQuery&&('Suggested search: '+d.suggestedQuery)].filter(Boolean).join('\n')||'Image checked. Visual search is ready.';if(pending){pending.textContent=msg;pending.classList.remove('thinking')}if(state){state.textContent='📷 '+file.name;setTimeout(()=>state.hidden=true,3500)}}catch(e){chatAdd('bot',e?.message||'Attachment could not be processed.');if(state){state.textContent=e?.message||'Attachment could not be processed.'}}}
-function bindAIChat(){const f=$('#aiChatForm'),i=$('#aiChatInput');if(f&&i)f.addEventListener('submit',e=>{e.preventDefault();const q=i.value.trim();if(!q)return;i.value='';askAI(q)});const file=$('#aiChatFile'),cam=$('#aiChatCameraFile');$('#aiChatAttach')?.addEventListener('click',()=>file?.click());$('#aiChatCamera')?.addEventListener('click',()=>cam?.click());file?.addEventListener('change',()=>{const x=file.files?.[0];if(x)handleChatAttachment(x);file.value=''});cam?.addEventListener('change',()=>{const x=cam.files?.[0];if(x)handleChatAttachment(x);cam.value=''})}
-function fileToDataURL(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
-function bindVisual(){const modal=$('#visualModal'),file=$('#visualFile'),preview=$('#visualPreview'),result=$('#visualResult'),status=$('#visualStatus');const open=()=>modal?.classList.add('open'),close=()=>modal?.classList.remove('open');$('#heroCamera')?.addEventListener('click',open);$('#visualOpen')?.addEventListener('click',()=>{$('#aiChat')?.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>$('#aiChatCamera')?.click(),250)});$('#visualClose')?.addEventListener('click',close);modal?.addEventListener('click',e=>{if(e.target===modal)close()});file?.addEventListener('change',async()=>{const f=file.files?.[0];if(!f)return;if(!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>5*1024*1024){status.textContent='Use JPG, PNG or WebP up to 5 MB.';return}const data=await fileToDataURL(f);preview.src=data;preview.classList.remove('sv-hidden');result.innerHTML='';status.textContent=`${tr('safe')}…`;try{const r=await fetch(api('/api/visual-search'),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({image:data,country:selectedCountryName(),language:languageName()})});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Visual search unavailable');if(d.blocked||d.allowed===false){status.textContent=d.reason?`Not accepted: ${d.reason}`:'Image cannot be processed.';return}if(d.reviewRequired){status.textContent='Image needs review before search can continue.';return}status.textContent='Safe image · visual search ready';const q=d.suggestedQuery||d.summary||'similar item';result.innerHTML=`<div class="sv-ai-panel open"><h3>${esc(d.summary||'Visual search result')}</h3><div class="sv-ai-answer">${esc(d.guidance||'Choose a matching section or search for similar offers.')}</div><div class="sv-ai-actions"><a href="${esc(d.route||'marketplace.html')}?q=${encodeURIComponent(q)}">Open matching section</a><a href="marketplace.html?q=${encodeURIComponent(q)}">Search marketplace</a></div></div>`}catch(e){status.textContent='Visual search is temporarily unavailable. Your image was not published or stored by this page.'}})}
-async function localizedDynamic(src){
- for(let i=0;i<24&&!window.SEEKVERA_I18N_R32;i++)await new Promise(r=>setTimeout(r,10));
- const rt=window.SEEKVERA_I18N_R32,l=rt?.lang?.()||lang();
- if(l!=='en'&&rt?.loadPack)await rt.loadPack(l);
- return window.SEEKVERA_I18N?.t?.(src)||src
-}
-function refreshDynamicI18n(){window.SEEKVERA_I18N_R32?.schedule?.(0)}
-async function loadLiveListings(){const box=$('#liveListings');if(!box)return;try{const url=`${SB}/rest/v1/marketplace_listings?select=ad_ref,title,category,country,city,price,currency,price_type&status=eq.approved&expires_at=gt.${encodeURIComponent(new Date().toISOString())}&order=featured_rank.desc,created_at.desc&limit=8`;const r=await fetch(url,{headers:{apikey:SB_KEY,Authorization:`Bearer ${SB_KEY}`}});if(!r.ok)throw new Error();const rows=await r.json();if(!rows.length){const text=await localizedDynamic('No approved live marketplace listings are available right now. SEEKVERA does not generate fake listings.');box.innerHTML=`<div class="sv-empty">${esc(text)}</div>`;refreshDynamicI18n();return}const noPrice=await localizedDynamic('Price not supplied');box.innerHTML=rows.map(x=>`<a class="sv-listing" href="marketplace.html?q=${encodeURIComponent(x.title)}"><div class="sv-listing-media">🛒</div><div class="sv-listing-body"><h3 data-user-content="1">${esc(x.title)}</h3><div class="sv-listing-meta" data-user-content="1">${esc([x.category,x.city,x.country].filter(Boolean).join(' · '))}</div>${x.price!=null?`<div class="sv-price">${esc(x.currency||'')} ${Number(x.price).toLocaleString()}</div>`:`<div class="sv-listing-meta">${esc(noPrice)}</div>`}</div></a>`).join('');refreshDynamicI18n()}catch{const text=await localizedDynamic('Live listings could not be loaded right now. Try the Marketplace section directly.');box.innerHTML=`<div class="sv-empty">${esc(text)}</div>`;refreshDynamicI18n()}}
-function bindRequest(){const f=$('#requestForm'),st=$('#requestStatus');if(!f)return;f.addEventListener('submit',async e=>{e.preventDefault();const payload={country:clean($('#requestCountry')?.value||selectedCountryName(),120),city:clean($('#requestCity')?.value,120),type:clean($('#requestType')?.value,100),budget:clean($('#requestBudget')?.value,120),requestedDate:$('#requestDate')?.value||'',contact:clean($('#requestContact')?.value,240),description:clean($('#requestDescription')?.value,4000)};if(payload.description.length<3){st.textContent='Please describe what you need.';return}st.textContent='Safety checking and saving…';try{const r=await fetch(api('/api/request'),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Request failed');st.textContent=`${tr('requestSaved')}: ${d.id}`;f.reset()}catch(err){st.textContent=err.message||tr('requestFail')}})}
-function bindNearMe(){$('#nearMe')?.addEventListener('click',()=>{if(!navigator.geolocation){alert('Location is not supported on this device.');return}navigator.geolocation.getCurrentPosition(p=>{const {latitude,longitude}=p.coords;location.href=`local-services.html?lat=${encodeURIComponent(latitude)}&lon=${encodeURIComponent(longitude)}`},()=>alert('Location permission was not granted. You can still choose a country or search Worldwide.'),{enableHighAccuracy:false,timeout:12000,maximumAge:300000})})}
-let installPrompt=null;function bindInstall(){window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;$('#installBtn')?.classList.remove('sv-hidden')});$('#installBtn')?.addEventListener('click',async()=>{if(!installPrompt){alert('Use your browser menu and choose “Add to Home screen” / “Install app”.');return}installPrompt.prompt();await installPrompt.userChoice;installPrompt=null})}
-function registerSW(){if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register(`sw.js?v=${RELEASE}`).catch(()=>{}))}
-function init(){document.documentElement.dataset.release=RELEASE;populateLanguage();populateCountries();bindCurrency();document.documentElement.lang=lang();document.documentElement.dir=/^(ar|fa|ur|he|ps|dv)$/.test(lang())?'rtl':'ltr';bindSearch();bindVoiceButton();bindAIChat();bindVisual();bindRequest();bindNearMe();bindInstall();loadLiveListings();registerSW()}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+(() => {
+  "use strict";
+  const RELEASE = "20260927-r81-natural-conversation";
+  const WORKER = "";
+  const SB = "https://nrdpyydfrpmqedtzmbyw.supabase.co";
+  const SB_KEY = "sb_publishable_tqqPQxqdNowIsSlJz4bW5w_kHOC905o";
+  const LANGS = [
+    ["auto", "Auto · Same as my language"],
+    ["en", "English"],
+    ["ar", "العربية"],
+    ["fr", "Français"],
+    ["zh", "中文"],
+    ["es", "Español"],
+    ["hi", "हिन्दी"],
+    ["pt", "Português"],
+    ["de", "Deutsch"],
+    ["ja", "日本語"],
+    ["ko", "한국어"],
+    ["id", "Bahasa Indonesia"],
+    ["tr", "Türkçe"],
+    ["ru", "Русский"],
+    ["ur", "اردو"],
+    ["bn", "বাংলা"],
+    ["vi", "Tiếng Việt"],
+    ["it", "Italiano"],
+    ["sw", "Kiswahili"],
+    ["th", "ไทย"],
+    ["fa", "فارسی"],
+    ["pl", "Polski"],
+    ["nl", "Nederlands"],
+    ["ms", "Bahasa Melayu"],
+    ["fil", "Filipino"],
+    ["ha", "Hausa"],
+    ["yo", "Yorùbá"],
+    ["ig", "Igbo"],
+    ["am", "አማርኛ"],
+  ];
+  const LANGUAGE_NAME = Object.fromEntries(
+    LANGS.filter((x) => x[0] !== "auto").map(([c, n]) => [
+      c,
+      n.replace(/[^\p{L}\p{M} .-]/gu, "").trim(),
+    ]),
+  );
+  const ISO =
+    "AF AL DZ AS AD AO AI AQ AG AR AM AW AU AT AZ BS BH BD BB BY BE BZ BJ BM BT BO BQ BA BW BV BR IO BN BG BF BI CV KH CM CA KY CF TD CL CN CX CC CO KM CD CG CK CR CI HR CU CW CY CZ DK DJ DM DO EC EG SV GQ ER EE SZ ET FK FO FJ FI FR GF PF TF GA GM GE DE GH GI GR GL GD GP GU GT GG GN GW GY HT HM VA HN HK HU IS IN ID IR IQ IE IM IL IT JM JP JE JO KZ KE KI KP KR KW KG LA LV LB LS LR LY LI LT LU MO MG MW MY MV ML MT MH MQ MR MU YT MX FM MD MC MN ME MS MA MZ MM NA NR NP NL NC NZ NI NE NG NU NF MK MP NO OM PK PW PS PA PG PY PE PH PN PL PT PR QA RE RO RU RW BL SH KN LC MF PM VC WS SM ST SA SN RS SC SL SG SX SK SI SB SO ZA GS SS ES LK SD SR SJ SE CH SY TW TJ TZ TH TL TG TK TO TT TN TR TM TC TV UG UA AE GB UM US UY UZ VU VE VN VG VI WF EH YE ZM ZW".split(
+      " ",
+    );
+  const CURRENCY_BY_COUNTRY = {
+    NG: "NGN",
+    LB: "LBP",
+    US: "USD",
+    GB: "GBP",
+    AE: "AED",
+    SA: "SAR",
+    CN: "CNY",
+    TR: "TRY",
+    EG: "EGP",
+    KE: "KES",
+    GH: "GHS",
+    ZA: "ZAR",
+    CA: "CAD",
+    AU: "AUD",
+    IN: "INR",
+    JP: "JPY",
+    KR: "KRW",
+    DE: "EUR",
+    FR: "EUR",
+    ES: "EUR",
+    IT: "EUR",
+    NL: "EUR",
+  };
+  const ROUTES = {
+    marketplace: "marketplace.html",
+    travel: "travel.html",
+    hotel: "travel.html",
+    hotels: "travel.html",
+    tourism: "tourism.html",
+    wifi: "connectivity.html",
+    internet: "connectivity.html",
+    esim: "connectivity.html",
+    connectivity: "connectivity.html",
+    property: "property.html",
+    cars: "cars-auto.html",
+    jobs: "jobs.html",
+    shopping: "shopping.html",
+    import: "import-export.html",
+    business: "business-software.html",
+    restaurant: "restaurants-food.html",
+    services: "local-services.html",
+    solar: "solar.html",
+    education: "education.html",
+    health: "health.html",
+    shipping: "shipping-logistics.html",
+    software: "business-software.html",
+    hosting: "web-hosting.html",
+    media: "media.html",
+    news: "media.html",
+    music: "media.html",
+    movies: "media.html",
+    entertainment: "media.html",
+    deal: "deal-agent.html",
+  };
+  const KEYWORDS = {
+    travel: [
+      "travel",
+      "flight",
+      "hotel",
+      "resort",
+      "airport",
+      "trip",
+      "tourism",
+      "visa",
+      "طيران",
+      "فندق",
+      "سفر",
+      "رحلة",
+      "酒店",
+      "航班",
+      "旅行",
+      "voyage",
+      "hôtel",
+      "viaje",
+      "vuelo",
+    ],
+    property: [
+      "property",
+      "house",
+      "apartment",
+      "land",
+      "rent",
+      "real estate",
+      "عقار",
+      "بيت",
+      "ارض",
+      "إيجار",
+      "房产",
+      "土地",
+      "maison",
+      "terrain",
+    ],
+    cars: [
+      "car",
+      "vehicle",
+      "auto",
+      "spare part",
+      "car part",
+      "سيارة",
+      "مركبة",
+      "قطع غيار",
+      "汽车",
+    ],
+    jobs: [
+      "job",
+      "jobs",
+      "career",
+      "vacancy",
+      "work",
+      "employment",
+      "hiring",
+      "وظيفة",
+      "وظائف",
+      "وظايف",
+      "عمل",
+      "شغل",
+      "فرصة عمل",
+      "دوام",
+      "工作",
+    ],
+    shopping: [
+      "buy",
+      "shopping",
+      "product",
+      "price",
+      "deal",
+      "shop",
+      "شراء",
+      "تسوق",
+      "购物",
+    ],
+    import: [
+      "supplier",
+      "manufacturer",
+      "factory",
+      "wholesale",
+      "import",
+      "export",
+      "مورد",
+      "مصنع",
+      "استيراد",
+      "تصدير",
+      "供应商",
+    ],
+    restaurant: [
+      "restaurant",
+      "food",
+      "cafe",
+      "coffee",
+      "مطعم",
+      "قهوة",
+      "餐厅",
+    ],
+    services: [
+      "service",
+      "plumber",
+      "electrician",
+      "repair",
+      "cleaner",
+      "خدمة",
+      "تصليح",
+    ],
+    solar: ["solar", "inverter", "battery", "panel", "سولار", "بطارية"],
+    education: [
+      "school",
+      "course",
+      "university",
+      "training",
+      "education",
+      "جامعة",
+      "دورة",
+    ],
+    health: [
+      "hospital",
+      "clinic",
+      "pharmacy",
+      "doctor",
+      "health",
+      "مستشفى",
+      "صيدلية",
+      "طبيب",
+    ],
+    shipping: ["shipping", "logistics", "freight", "cargo", "شحن", "لوجستيك"],
+    software: ["software", "crm", "erp", "pos", "accounting", "برنامج", "نظام"],
+    hosting: ["hosting", "domain", "website", "server", "استضافة", "دومين"],
+    connectivity: [
+      "wifi",
+      "wi-fi",
+      "esim",
+      "sim card",
+      "internet",
+      "mobile data",
+      "واي فاي",
+      "انترنت",
+      "شريحة",
+    ],
+    business: [
+      "business",
+      "company",
+      "partner",
+      "deal",
+      "rfq",
+      "quotation",
+      "شركة",
+      "صفقة",
+      "عرض سعر",
+    ],
+    media: [
+      "news",
+      "cnn",
+      "al jazeera",
+      "al arabiya",
+      "bbc",
+      "reuters",
+      "movie",
+      "movies",
+      "music",
+      "radio",
+      "tv",
+      "أخبار",
+      "الجزيرة",
+      "العربية",
+      "أفلام",
+      "موسيقى",
+    ],
+  };
+  const I18N = {
+    en: {
+      placeholder: "What are you looking for anywhere in the world?",
+      thinking: "SEEKVERA AI is thinking…",
+      safe: "Safety check first",
+      requestSaved: "Request saved",
+      requestFail: "Could not save request. Please try again.",
+    },
+    ar: {
+      placeholder: "ماذا تبحث عنه في أي مكان في العالم؟",
+      thinking: "SEEKVERA AI يفكر…",
+      safe: "فحص الأمان أولاً",
+      requestSaved: "تم حفظ الطلب",
+      requestFail: "تعذر حفظ الطلب. حاول مرة أخرى.",
+    },
+    fr: {
+      placeholder: "Que recherchez-vous, partout dans le monde ?",
+      thinking: "SEEKVERA AI réfléchit…",
+      safe: "Vérification de sécurité d’abord",
+      requestSaved: "Demande enregistrée",
+      requestFail: "Impossible d’enregistrer la demande.",
+    },
+    zh: {
+      placeholder: "您想在世界任何地方寻找什么？",
+      thinking: "SEEKVERA AI 正在思考…",
+      safe: "先进行安全检查",
+      requestSaved: "请求已保存",
+      requestFail: "无法保存请求，请重试。",
+    },
+    es: {
+      placeholder: "¿Qué buscas en cualquier parte del mundo?",
+      thinking: "SEEKVERA AI está pensando…",
+      safe: "Primero, control de seguridad",
+      requestSaved: "Solicitud guardada",
+      requestFail: "No se pudo guardar la solicitud.",
+    },
+    hi: {
+      placeholder: "दुनिया में कहीं भी आप क्या ढूँढ रहे हैं?",
+      thinking: "SEEKVERA AI सोच रहा है…",
+      safe: "पहले सुरक्षा जाँच",
+      requestSaved: "अनुरोध सहेजा गया",
+      requestFail: "अनुरोध सहेजा नहीं जा सका।",
+    },
+  };
+  const $ = (s) => document.querySelector(s),
+    $$ = (s) => [...document.querySelectorAll(s)];
+  function api(path) {
+    return `${WORKER}${path}`;
+  }
+  function clean(v, max = 1200) {
+    return String(v ?? "")
+      .replace(/[\u0000-\u001F\u007F]/g, " ")
+      .trim()
+      .slice(0, max);
+  }
+  function esc(v) {
+    return String(v ?? "").replace(
+      /[&<>"']/g,
+      (m) =>
+        ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        })[m],
+    );
+  }
+  function lang() {
+    return $("#lang")?.value || localStorage.getItem("seekvera_lang") || "en";
+  }
+  function languageName() {
+    let c = lang();
+    if (c === "auto") c = (navigator.language || "en").split(/[-_]/)[0];
+    if (LANGUAGE_NAME[c]) return LANGUAGE_NAME[c];
+    try {
+      return new Intl.DisplayNames(["en"], { type: "language" }).of(c) || c;
+    } catch {
+      return c;
+    }
+  }
+  function tr(k) {
+    return I18N[lang()]?.[k] || I18N.en[k] || k;
+  }
+  function populateLanguage() {
+    const el = $("#lang");
+    if (!el) return;
+    const saved = localStorage.getItem("seekvera_lang");
+    let list = [...LANGS];
+    if (saved && saved !== "auto" && !list.some((x) => x[0] === saved)) {
+      let name = saved.toUpperCase();
+      try {
+        name =
+          new Intl.DisplayNames([saved], { type: "language" }).of(saved) ||
+          name;
+      } catch {}
+      list.push([saved, name]);
+    }
+    el.innerHTML = list
+      .map(([v, n]) => `<option value="${v}">${n}</option>`)
+      .join("");
+    if (saved && list.some((x) => x[0] === saved)) el.value = saved;
+    else el.value = "auto";
+    el.addEventListener("change", () => {
+      localStorage.setItem("seekvera_lang", el.value);
+      document.documentElement.lang =
+        el.value === "auto"
+          ? (navigator.language || "en").split("-")[0]
+          : el.value;
+      document.documentElement.dir = /^(ar|fa|ur|he|ps|dv)$/.test(el.value)
+        ? "rtl"
+        : "ltr";
+      if ($("#globalSearch"))
+        $("#globalSearch").placeholder = tr("placeholder");
+    });
+  }
+  function populateCountries() {
+    const el = $("#country");
+    if (!el) return;
+    const migration = "seekvera_worldwide_default_20260926_r63";
+    if (!localStorage.getItem(migration)) {
+      if (localStorage.getItem("seekvera_country_explicit") !== "1") {
+        localStorage.setItem("seekvera_country", "WW");
+        localStorage.setItem("seekvera_scope", "worldwide");
+      }
+      localStorage.setItem(migration, "1");
+    }
+    let dn;
+    try {
+      dn = new Intl.DisplayNames([navigator.language || "en"], {
+        type: "region",
+      });
+    } catch {}
+    const options = ['<option value="WW">Worldwide · All countries</option>'];
+    for (const c of ISO) {
+      const name = dn?.of(c) || c;
+      options.push(`<option value="${c}">${esc(name)}</option>`);
+    }
+    el.innerHTML = options.join("");
+    const saved = localStorage.getItem("seekvera_country") || "WW";
+    el.value = [...el.options].some((o) => o.value === saved) ? saved : "WW";
+    el.addEventListener("change", () => {
+      localStorage.setItem("seekvera_country", el.value);
+      localStorage.setItem("seekvera_country_explicit", "1");
+      syncCurrency();
+    });
+    syncCurrency();
+  }
+  function syncCurrency() {
+    const c = $("#country")?.value || "WW",
+      cur = $("#currency");
+    if (!cur) return;
+    const wanted =
+      CURRENCY_BY_COUNTRY[c] ||
+      localStorage.getItem("seekvera_currency") ||
+      "USD";
+    if ([...cur.options].some((o) => o.value === wanted)) cur.value = wanted;
+    localStorage.setItem("seekvera_currency", cur.value);
+  }
+  function bindCurrency() {
+    const el = $("#currency");
+    if (el)
+      el.addEventListener("change", () =>
+        localStorage.setItem("seekvera_currency", el.value),
+      );
+  }
+  function categoryFor(q) {
+    const t = q.toLowerCase();
+    let best = "general",
+      score = 0;
+    for (const [cat, words] of Object.entries(KEYWORDS)) {
+      const s = words.reduce((n, w) => n + (t.includes(w) ? 1 : 0), 0);
+      if (s > score) {
+        best = cat;
+        score = s;
+      }
+    }
+    return best;
+  }
+  function routeFor(cat) {
+    return ROUTES[cat] || "marketplace.html";
+  }
+  function scope() {
+    return $(".sv-scope button.active")?.dataset.scope || "worldwide";
+  }
+  function selectedCountryName() {
+    const e = $("#country");
+    return e?.options?.[e.selectedIndex]?.textContent || "Worldwide";
+  }
+  function actionLinks(cat, q) {
+    if (!cat || cat === "general") return "";
+    const route = routeFor(cat),
+      encoded = encodeURIComponent(q),
+      cc =
+        $("#country")?.value ||
+        localStorage.getItem("seekvera_country") ||
+        "WW",
+      cn = selectedCountryName(),
+      cp = "&country=" + encodeURIComponent(cc);
+    const links = [
+      `<a href="${route}?q=${encoded}${cp}">Open ${esc(cat)} now</a>`,
+    ];
+    if (cat === "jobs") {
+      const loc = encodeURIComponent(cn);
+      links.push(
+        `<a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/jobs/search/?keywords=${encoded}&location=${loc}">LinkedIn jobs in ${esc(cn)}</a>`,
+      );
+      links.push(
+        `<a target="_blank" rel="noopener noreferrer" href="https://www.google.com/search?q=${encoded}+jobs+in+${loc}">More job results</a>`,
+      );
+    }
+    if (cat === "connectivity")
+      links.push('<a href="wifi.html">Free Wi-Fi finder</a>');
+    if (cat === "business" || cat === "import")
+      links.push('<a href="deal-agent.html">AI Deal Agent</a>');
+    links.push(
+      `<a href="marketplace.html?q=${encoded}${cp}">Search marketplace</a>`,
+    );
+    return links.join("");
+  }
+  function chatAdd(role, text, extra = "") {
+    const msgs = $("#aiMessages");
+    if (!msgs) return null;
+    const m = document.createElement("div");
+    m.className = `ai-msg ${role}${extra ? " " + extra : ""}`;
+    m.textContent = String(text || "");
+    msgs.appendChild(m);
+    msgs.scrollTop = msgs.scrollHeight;
+    return m;
+  }
+  function chatHistory() {
+    const msgs = $("#aiMessages");
+    if (!msgs) return [];
+    return [...msgs.querySelectorAll(".ai-msg")]
+      .filter((x) => !x.classList.contains("thinking"))
+      .slice(-12)
+      .map((x) => ({
+        role: x.classList.contains("user") ? "user" : "assistant",
+        content: clean(x.textContent, 1800),
+      }))
+      .filter((x) => x.content);
+  }
+  function directRouteLabel(cat) {
+    const ar = (document.documentElement.lang || lang())
+      .toLowerCase()
+      .startsWith("ar");
+    const m = {
+      jobs: ar ? "افتح الوظائف الآن ←" : "Open jobs now →",
+      travel: ar ? "افتح السفر والفنادق الآن ←" : "Open travel & hotels now →",
+      property: ar ? "افتح العقارات الآن ←" : "Open property now →",
+      cars: ar ? "افتح السيارات الآن ←" : "Open cars now →",
+      shopping: ar ? "افتح التسوق الآن ←" : "Open shopping now →",
+      business: ar
+        ? "افتح الأعمال والموردين الآن ←"
+        : "Open business & suppliers now →",
+      connectivity: ar
+        ? "افتح الإنترنت والاتصال الآن ←"
+        : "Open connectivity now →",
+      health: ar ? "افتح الصحة الآن ←" : "Open health now →",
+      restaurant: ar ? "افتح المطاعم الآن ←" : "Open restaurants now →",
+    };
+    return (
+      m[cat] ||
+      (ar ? "افتح القسم المناسب الآن ←" : "Open the right section now →")
+    );
+  }
+  function clearDirectRoutes() {
+    const msgs = $("#aiMessages");
+    msgs?.querySelectorAll(".sv-ai-direct-route").forEach((x) => x.remove());
+  }
+  function addDirectRoute(cat, q, after) {
+    const msgs = $("#aiMessages");
+    if (!msgs) return null;
+    clearDirectRoutes();
+    if (!cat || cat === "general") return null;
+    const a = document.createElement("a");
+    a.className = "sv-ai-direct-route";
+    a.href =
+      routeFor(cat) +
+      "?q=" +
+      encodeURIComponent(q) +
+      "&country=" +
+      encodeURIComponent(
+        $("#country")?.value ||
+          localStorage.getItem("seekvera_country") ||
+          "WW",
+      );
+    a.textContent = directRouteLabel(cat);
+    a.style.cssText =
+      "display:block;margin:7px 12px 10px;padding:11px 13px;border-radius:12px;background:#0f9f6e;color:#fff;font-weight:900;text-decoration:none;text-align:center";
+    if (after?.parentNode) after.insertAdjacentElement("afterend", a);
+    else msgs.appendChild(a);
+    msgs.scrollTop = msgs.scrollHeight;
+    return a;
+  }
+  function applyAiActions(d) {
+    const ctl = window.SEEKVERA_R24_CONTROLLER,
+      cc = String(d?.countryAction?.code || "").toUpperCase(),
+      ll = String(d?.languageAction?.code || "").toLowerCase();
+    if (!cc && !ll) return false;
+    try {
+      return !!ctl?.applyControls?.({ country: cc, language: ll });
+    } catch {
+      return false;
+    }
+  }
+  let routeTimer = 0;
+  function explicitNavigationRequest(q = "") {
+    const t = String(q || "").trim();
+    if (
+      /(?:do not|don't|dont|stay|remain|without)\s+(?:leave|leaving|navigate|redirect|open)|(?:لا|ما)\s+(?:تترك|تطلع|تحول|تحوّل|تنقل)|خليك\s+(?:هون|هنا)/iu.test(
+        t,
+      )
+    )
+      return false;
+    return /\b(?:open|take me|go to|navigate|redirect|show me|bring me)\b|(?:افتح|وديني|ودّيني|خذني|خدني|حولني|حوّلني|نقلني|روح\s+على)/iu.test(
+      t,
+    );
+  }
+  function navigateAfterReply(route, q, category) {
+    if (!route || category === "general") return;
+    const url =
+      route +
+      (route.includes("?") ? "&" : "?") +
+      "q=" +
+      encodeURIComponent(q) +
+      "&country=" +
+      encodeURIComponent(
+        $("#country")?.value ||
+          localStorage.getItem("seekvera_country") ||
+          "WW",
+      );
+    clearTimeout(routeTimer);
+    let done = false;
+    const go = () => {
+      if (done) return;
+      done = true;
+      clearTimeout(routeTimer);
+      window.removeEventListener("seekvera:tts-end", go);
+      location.assign(url);
+    };
+    const voice = window.SEEKVERA_VOICE_AI?.isVoiceReplyPending?.();
+    if (voice) {
+      window.addEventListener("seekvera:tts-end", go, { once: true });
+      routeTimer = setTimeout(go, 9000);
+    } else routeTimer = setTimeout(go, 1400);
+  }
+  function sameReply(a, b) {
+    const n = (x) =>
+      String(x || "")
+        .toLowerCase()
+        .replace(/[^\p{L}\p{N}]+/gu, " ")
+        .trim();
+    const x = n(a),
+      y = n(b);
+    return (
+      !!x &&
+      !!y &&
+      (x === y ||
+        (x.length > 45 && y.includes(x.slice(0, 45))) ||
+        (y.length > 45 && x.includes(y.slice(0, 45))))
+    );
+  }
+  function localJobGuide() {
+    const ar = (document.documentElement.lang || lang())
+      .toLowerCase()
+      .startsWith("ar");
+    return ar
+      ? "أكيد. وصّلتك لقسم الوظائف مباشرة. قل لي البلد أو المدينة ونوع الشغل الذي تريده، وأنا أضيّق لك النتائج بدل ما أعيد نفس الكلام."
+      : "Absolutely. I’ve put the Jobs section right below this reply. Tell me the country/city and the kind of job you want, and I’ll narrow it down instead of repeating the same answer.";
+  }
+  async function askAI(q) {
+    q = clean(q, 1800);
+    if (!q) return;
+    const history = chatHistory(),
+      ans = $("#aiAnswer"),
+      actions = $("#aiActions");
+    chatAdd("user", q);
+    const pending = chatAdd("bot", tr("thinking"), "thinking");
+    const localCat = categoryFor(q),
+      country = selectedCountryName();
+    clearDirectRoutes();
+    if (actions) {
+      actions.innerHTML = "";
+      actions.hidden = true;
+    }
+    const controller = new AbortController(),
+      timer = setTimeout(() => controller.abort(), 18000);
+    try {
+      const r = await fetch(api("/api/ai"), {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        signal: controller.signal,
+        body: JSON.stringify({
+          message: q,
+          country,
+          language: languageName(),
+          scope: scope(),
+          fast: true,
+          history,
+        }),
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.response) throw new Error(d.error || "AI unavailable");
+      const changed = applyAiActions(d);
+      let reply = String(d.response || "").trim();
+      const previous =
+        [...history].reverse().find((x) => x.role === "assistant")?.content ||
+        "";
+      const finalCat =
+        d.category && d.category !== "general" ? d.category : localCat;
+      if (sameReply(reply, previous) && finalCat === "jobs")
+        reply = localJobGuide();
+      if (pending) {
+        pending.textContent = reply;
+        pending.classList.remove("thinking");
+      }
+      if (ans) ans.textContent = reply;
+      const route = d.route || routeFor(finalCat),
+        links = actionLinks(finalCat, q);
+      if (actions) {
+        actions.innerHTML = links;
+        actions.hidden = !links;
+      }
+      addDirectRoute(finalCat, q, pending);
+      window.dispatchEvent(
+        new CustomEvent("seekvera:ai-response", {
+          detail: {
+            text: reply,
+            language: d.language || lang(),
+            route,
+            category: finalCat,
+            control: changed,
+          },
+        }),
+      );
+      if (!changed && explicitNavigationRequest(q))
+        navigateAfterReply(route, q, finalCat);
+    } catch (e) {
+      const ar = (document.documentElement.lang || lang())
+        .toLowerCase()
+        .startsWith("ar");
+      let msg;
+      if (localCat === "jobs") msg = localJobGuide();
+      else if (localCat === "general")
+        msg = ar
+          ? "أنا معك. احكي لي براحتك شو بدك، وإذا كان طلبك بحاجة لقسم معيّن بودّيك عليه بعد ما أفهمه."
+          : "I’m with you. Tell me naturally what you need; if it belongs in a section, I’ll take you there after I understand it.";
+      else
+        msg = ar
+          ? "فهمت نوع طلبك، لكن الاتصال تأخر. قل لي تفصيلاً واحداً إضافياً وسأكمل معك."
+          : "I understand the kind of request, but the connection is slow. Tell me one more detail and I’ll continue.";
+      if (pending) {
+        pending.textContent = msg;
+        pending.classList.remove("thinking");
+      }
+      if (ans) ans.textContent = msg;
+      const links = actionLinks(localCat, q);
+      if (actions) {
+        actions.innerHTML = links;
+        actions.hidden = !links;
+      }
+      addDirectRoute(localCat, q, pending);
+      window.dispatchEvent(
+        new CustomEvent("seekvera:ai-response", {
+          detail: {
+            text: msg,
+            language: lang(),
+            route: routeFor(localCat),
+            category: localCat,
+          },
+        }),
+      );
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  function bindSearch() {
+    const form = $("#universalSearch"),
+      input = $("#globalSearch");
+    if (!form || !input) return;
+    input.placeholder = tr("placeholder");
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      askAI(input.value);
+    });
+    $$(".sv-scope button").forEach((b) =>
+      b.addEventListener("click", () => {
+        $$(".sv-scope button").forEach((x) => x.classList.remove("active"));
+        b.classList.add("active");
+        localStorage.setItem("seekvera_scope", b.dataset.scope);
+      }),
+    );
+    const saved = localStorage.getItem("seekvera_scope");
+    if (saved) {
+      const b = $(`.sv-scope button[data-scope="${saved}"]`);
+      if (b) {
+        $$(".sv-scope button").forEach((x) => x.classList.remove("active"));
+        b.classList.add("active");
+      }
+    }
+  }
+  function bindVoiceButton() {
+    const b = $("#heroVoice");
+    if (!b) return;
+    b.addEventListener("click", () => {
+      const fab = $("#svVoiceFab");
+      if (fab) fab.click();
+      else window.dispatchEvent(new CustomEvent("seekvera:voice"));
+    });
+  }
+  async function handleChatAttachment(file) {
+    if (!file) return;
+    const state = $("#aiAttachmentState");
+    if (state) {
+      state.hidden = false;
+      state.textContent = "Checking " + file.name + "…";
+    }
+    try {
+      if (file.type === "text/plain" || /\.txt$/i.test(file.name)) {
+        if (file.size > 256 * 1024)
+          throw Error("Text file is too large. Use a TXT file up to 256 KB.");
+        const text = clean(await file.text(), 3500);
+        if (!text) throw Error("The text file is empty.");
+        if (state) {
+          state.textContent = "📎 " + file.name;
+          setTimeout(() => (state.hidden = true), 3500);
+        }
+        await askAI("Attached text file " + file.name + ":\n" + text);
+        return;
+      }
+      if (
+        !["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
+        file.size > 5 * 1024 * 1024
+      )
+        throw Error("Use JPG, PNG, WebP up to 5 MB, or TXT up to 256 KB.");
+      const data = await fileToDataURL(file);
+      chatAdd("user", "📷 " + file.name);
+      const pending = chatAdd(
+        "bot",
+        "Checking the image with Safety Gate and AI Vision…",
+        "thinking",
+      );
+      const r = await fetch(api("/api/visual-search"), {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          image: data,
+          country: selectedCountryName(),
+          language: languageName(),
+        }),
+      });
+      const d = await r.json().catch(() => ({}));
+      let msg = "";
+      if (!r.ok || d.allowed === false || d.blocked)
+        msg = d.reason
+          ? "Image not accepted: " + d.reason
+          : "This image cannot be processed.";
+      else if (d.reviewRequired)
+        msg = "This image needs review before visual search can continue.";
+      else
+        msg =
+          [
+            d.summary,
+            d.guidance,
+            d.suggestedQuery && "Suggested search: " + d.suggestedQuery,
+          ]
+            .filter(Boolean)
+            .join("\n") || "Image checked. Visual search is ready.";
+      if (pending) {
+        pending.textContent = msg;
+        pending.classList.remove("thinking");
+      }
+      if (state) {
+        state.textContent = "📷 " + file.name;
+        setTimeout(() => (state.hidden = true), 3500);
+      }
+    } catch (e) {
+      chatAdd("bot", e?.message || "Attachment could not be processed.");
+      if (state) {
+        state.textContent = e?.message || "Attachment could not be processed.";
+      }
+    }
+  }
+  function bindAIChat() {
+    const f = $("#aiChatForm"),
+      i = $("#aiChatInput");
+    if (f && i)
+      f.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const q = i.value.trim();
+        if (!q) return;
+        i.value = "";
+        askAI(q);
+      });
+    const file = $("#aiChatFile"),
+      cam = $("#aiChatCameraFile");
+    $("#aiChatAttach")?.addEventListener("click", () => file?.click());
+    $("#aiChatCamera")?.addEventListener("click", () => cam?.click());
+    file?.addEventListener("change", () => {
+      const x = file.files?.[0];
+      if (x) handleChatAttachment(x);
+      file.value = "";
+    });
+    cam?.addEventListener("change", () => {
+      const x = cam.files?.[0];
+      if (x) handleChatAttachment(x);
+      cam.value = "";
+    });
+  }
+  function fileToDataURL(file) {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res(r.result);
+      r.onerror = rej;
+      r.readAsDataURL(file);
+    });
+  }
+  function bindVisual() {
+    const modal = $("#visualModal"),
+      file = $("#visualFile"),
+      preview = $("#visualPreview"),
+      result = $("#visualResult"),
+      status = $("#visualStatus");
+    const open = () => modal?.classList.add("open"),
+      close = () => modal?.classList.remove("open");
+    $("#heroCamera")?.addEventListener("click", open);
+    $("#visualOpen")?.addEventListener("click", () => {
+      $("#aiChat")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(() => $("#aiChatCamera")?.click(), 250);
+    });
+    $("#visualClose")?.addEventListener("click", close);
+    modal?.addEventListener("click", (e) => {
+      if (e.target === modal) close();
+    });
+    file?.addEventListener("change", async () => {
+      const f = file.files?.[0];
+      if (!f) return;
+      if (
+        !["image/jpeg", "image/png", "image/webp"].includes(f.type) ||
+        f.size > 5 * 1024 * 1024
+      ) {
+        status.textContent = "Use JPG, PNG or WebP up to 5 MB.";
+        return;
+      }
+      const data = await fileToDataURL(f);
+      preview.src = data;
+      preview.classList.remove("sv-hidden");
+      result.innerHTML = "";
+      status.textContent = `${tr("safe")}…`;
+      try {
+        const r = await fetch(api("/api/visual-search"), {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            image: data,
+            country: selectedCountryName(),
+            language: languageName(),
+          }),
+        });
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || "Visual search unavailable");
+        if (d.blocked || d.allowed === false) {
+          status.textContent = d.reason
+            ? `Not accepted: ${d.reason}`
+            : "Image cannot be processed.";
+          return;
+        }
+        if (d.reviewRequired) {
+          status.textContent = "Image needs review before search can continue.";
+          return;
+        }
+        status.textContent = "Safe image · visual search ready";
+        const q = d.suggestedQuery || d.summary || "similar item";
+        result.innerHTML = `<div class="sv-ai-panel open"><h3>${esc(d.summary || "Visual search result")}</h3><div class="sv-ai-answer">${esc(d.guidance || "Choose a matching section or search for similar offers.")}</div><div class="sv-ai-actions"><a href="${esc(d.route || "marketplace.html")}?q=${encodeURIComponent(q)}">Open matching section</a><a href="marketplace.html?q=${encodeURIComponent(q)}">Search marketplace</a></div></div>`;
+      } catch (e) {
+        status.textContent =
+          "Visual search is temporarily unavailable. Your image was not published or stored by this page.";
+      }
+    });
+  }
+  async function localizedDynamic(src) {
+    for (let i = 0; i < 24 && !window.SEEKVERA_I18N_R32; i++)
+      await new Promise((r) => setTimeout(r, 10));
+    const rt = window.SEEKVERA_I18N_R32,
+      l = rt?.lang?.() || lang();
+    if (l !== "en" && rt?.loadPack) await rt.loadPack(l);
+    return window.SEEKVERA_I18N?.t?.(src) || src;
+  }
+  function refreshDynamicI18n() {
+    window.SEEKVERA_I18N_R32?.schedule?.(0);
+  }
+  async function loadLiveListings() {
+    const box = $("#liveListings");
+    if (!box) return;
+    try {
+      const url = `${SB}/rest/v1/marketplace_listings?select=ad_ref,title,category,country,city,price,currency,price_type&status=eq.approved&expires_at=gt.${encodeURIComponent(new Date().toISOString())}&order=featured_rank.desc,created_at.desc&limit=8`;
+      const r = await fetch(url, {
+        headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` },
+      });
+      if (!r.ok) throw new Error();
+      const rows = await r.json();
+      if (!rows.length) {
+        const text = await localizedDynamic(
+          "No approved live marketplace listings are available right now. SEEKVERA does not generate fake listings.",
+        );
+        box.innerHTML = `<div class="sv-empty">${esc(text)}</div>`;
+        refreshDynamicI18n();
+        return;
+      }
+      const noPrice = await localizedDynamic("Price not supplied");
+      box.innerHTML = rows
+        .map(
+          (x) =>
+            `<a class="sv-listing" href="marketplace.html?q=${encodeURIComponent(x.title)}"><div class="sv-listing-media">🛒</div><div class="sv-listing-body"><h3 data-user-content="1">${esc(x.title)}</h3><div class="sv-listing-meta" data-user-content="1">${esc([x.category, x.city, x.country].filter(Boolean).join(" · "))}</div>${x.price != null ? `<div class="sv-price">${esc(x.currency || "")} ${Number(x.price).toLocaleString()}</div>` : `<div class="sv-listing-meta">${esc(noPrice)}</div>`}</div></a>`,
+        )
+        .join("");
+      refreshDynamicI18n();
+    } catch {
+      const text = await localizedDynamic(
+        "Live listings could not be loaded right now. Try the Marketplace section directly.",
+      );
+      box.innerHTML = `<div class="sv-empty">${esc(text)}</div>`;
+      refreshDynamicI18n();
+    }
+  }
+  function bindRequest() {
+    const f = $("#requestForm"),
+      st = $("#requestStatus");
+    if (!f) return;
+    f.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const payload = {
+        country: clean(
+          $("#requestCountry")?.value || selectedCountryName(),
+          120,
+        ),
+        city: clean($("#requestCity")?.value, 120),
+        type: clean($("#requestType")?.value, 100),
+        budget: clean($("#requestBudget")?.value, 120),
+        requestedDate: $("#requestDate")?.value || "",
+        contact: clean($("#requestContact")?.value, 240),
+        description: clean($("#requestDescription")?.value, 4000),
+      };
+      if (payload.description.length < 3) {
+        st.textContent = "Please describe what you need.";
+        return;
+      }
+      st.textContent = "Safety checking and saving…";
+      try {
+        const r = await fetch(api("/api/request"), {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || "Request failed");
+        st.textContent = `${tr("requestSaved")}: ${d.id}`;
+        f.reset();
+      } catch (err) {
+        st.textContent = err.message || tr("requestFail");
+      }
+    });
+  }
+  function bindNearMe() {
+    $("#nearMe")?.addEventListener("click", () => {
+      if (!navigator.geolocation) {
+        alert("Location is not supported on this device.");
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        (p) => {
+          const { latitude, longitude } = p.coords;
+          location.href = `local-services.html?lat=${encodeURIComponent(latitude)}&lon=${encodeURIComponent(longitude)}`;
+        },
+        () =>
+          alert(
+            "Location permission was not granted. You can still choose a country or search Worldwide.",
+          ),
+        { enableHighAccuracy: false, timeout: 12000, maximumAge: 300000 },
+      );
+    });
+  }
+  let installPrompt = null;
+  function bindInstall() {
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      installPrompt = e;
+      $("#installBtn")?.classList.remove("sv-hidden");
+    });
+    $("#installBtn")?.addEventListener("click", async () => {
+      if (!installPrompt) {
+        alert(
+          "Use your browser menu and choose “Add to Home screen” / “Install app”.",
+        );
+        return;
+      }
+      installPrompt.prompt();
+      await installPrompt.userChoice;
+      installPrompt = null;
+    });
+  }
+  function registerSW() {
+    if ("serviceWorker" in navigator)
+      window.addEventListener("load", () =>
+        navigator.serviceWorker.register(`sw.js?v=${RELEASE}`).catch(() => {}),
+      );
+  }
+  function init() {
+    document.documentElement.dataset.release = RELEASE;
+    populateLanguage();
+    populateCountries();
+    bindCurrency();
+    document.documentElement.lang = lang();
+    document.documentElement.dir = /^(ar|fa|ur|he|ps|dv)$/.test(lang())
+      ? "rtl"
+      : "ltr";
+    bindSearch();
+    bindVoiceButton();
+    bindAIChat();
+    bindVisual();
+    bindRequest();
+    bindNearMe();
+    bindInstall();
+    loadLiveListings();
+    registerSW();
+  }
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  else init();
 })();

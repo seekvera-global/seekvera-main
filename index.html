@@ -1,127 +1,634 @@
 <!-- 20260926-r74-global-ai-failover final deployment marker -->
 <!doctype html>
 <html lang="en" dir="ltr" translate="no" class="notranslate">
-<head>
-<meta name="google" content="notranslate">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="google-site-verification" content="uJ5FDBhKm512-nzgVJ0xjBlXkrfpito_J2VIwAGCutk">
-<title>SEEKVERA — Find, Compare, Choose Worldwide</title>
-<meta name="description" content="SEEKVERA is a worldwide AI marketplace and super-app for hotels, travel, property, cars, jobs, shopping, suppliers, media, games and everyday services.">
-<meta name="robots" content="index,follow,max-image-preview:large">
-<meta name="theme-color" content="#ffffff"><meta name="application-name" content="SEEKVERA">
-<meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="SEEKVERA"><meta name="mobile-web-app-capable" content="yes"><meta name="referrer" content="strict-origin-when-cross-origin">
-<link rel="canonical" href="https://seekveraglobal.com/">
-<meta property="og:title" content="SEEKVERA — Find, Compare, Choose Worldwide"><meta property="og:description" content="Worldwide AI marketplace, travel, jobs, shopping, suppliers, games, media and services."><meta property="og:type" content="website"><meta property="og:url" content="https://seekveraglobal.com/"><meta name="twitter:card" content="summary_large_image">
-<link rel="manifest" href="manifest.webmanifest?v=20260924-az-r8"><link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="premium.css?v=20260924-az-r8">
-<link rel="stylesheet" href="global-ui.css?v=20260924-az-r8">
-<link rel="stylesheet" href="i18n-premium.css?v=20260924-az-r8">
-<link rel="stylesheet" href="home-marketplace-r5.css?v=20260924-az-r8">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"SEEKVERA","url":"https://seekveraglobal.com/","potentialAction":{"@type":"SearchAction","target":"https://seekveraglobal.com/?q={search_term_string}","query-input":"required name=search_term_string"}}</script>
-</head>
-<body data-release="20260927-r81-natural-conversation">
-<noscript><div class="sv-noscript">SEEKVERA needs JavaScript for AI search, voice, visual search and live marketplace features.</div></noscript>
-<header class="r5-top">
-  <div class="r5-top-inner">
-    <a class="r5-brand" href="index.html" aria-label="SEEKVERA home"><span class="r5-mark">S</span><span>SEEKVERA<small>GLOBAL AI MARKETPLACE</small></span></a>
-    <div class="r5-controls sv-controls">
-      <select class="sv-select" id="country" aria-label="Country / Region"></select>
-      <select class="sv-select" id="lang" aria-label="Language"></select>
-      <select class="sv-select" id="currency" aria-label="Currency"><option>USD</option><option>NGN</option><option>EUR</option><option>GBP</option><option>AED</option><option>SAR</option><option>LBP</option><option>CNY</option><option>TRY</option><option>EGP</option><option>KES</option><option>GHS</option><option>ZAR</option><option>CAD</option><option>AUD</option><option>INR</option><option>JPY</option><option>KRW</option></select>
-      <button class="sv-pill-btn sv-hidden" id="installBtn" type="button">⬇ Install</button>
-      <a class="sv-pill-btn r5-post" href="post-ad.html">＋ Post Ad</a>
-    </div>
-  </div>
-</header>
-<main class="r5-shell">
-  <section class="r5-market" aria-label="SEEKVERA global marketplace">
-    <div class="r5-center">
-      <section class="r5-hero">
-        <div class="r5-kicker"><span>🌍 Worldwide</span><span>•</span><span>AI assisted</span><span>•</span><span>Voice + Chat</span></div>
-        <h1>Find it faster. Compare it better.</h1>
-        <p>Hotels, homes, cars, jobs, products, suppliers, media and services — from one global marketplace.</p>
-        <div class="r5-scope sv-scope" aria-label="Search scope"><button data-scope="near" type="button">📍 Near Me</button><button data-scope="country" type="button">My Country</button><button class="active" data-scope="worldwide" type="button">🌐 Worldwide</button></div>
-
-        <div class="r5-chat sv-chat-card sv-unified-chat" id="aiChat" aria-label="SEEKVERA AI Chat">
-          <div class="sv-chat-head"><div><b data-no-i18n="1" data-no-translate="1">✨ SEEKVERA AI</b><small>Chat · Voice · Camera · Attach</small></div><span>● Online</span><button id="aiChatSpeaker" data-no-i18n="1" data-no-translate="1" class="sv-speaker" type="button" aria-label="Voice reply on or off">🔊</button></div>
-          <div class="sv-chat-messages" id="aiMessages" aria-live="polite"><div class="ai-msg bot">I’m the SEEKVERA AI assistant. Tell me what you need and I’ll help you find the right section, compare options or search worldwide.</div></div>
-          <form class="sv-chat-form sv-unified-compose" id="aiChatForm">
-            <button class="attach" id="aiChatAttach" data-no-i18n="1" data-no-translate="1" type="button" aria-label="Attach image or text file">📎</button>
-            <input id="aiChatInput" type="text" autocomplete="off" maxlength="1800" placeholder="Message SEEKVERA AI…" aria-label="Message SEEKVERA AI" enterkeymode="send">
-            <button class="camera" id="aiChatCamera" data-no-i18n="1" data-no-translate="1" type="button" aria-label="Take a photo">📷</button>
-            <button class="mic" id="aiChatMic" data-no-i18n="1" data-no-translate="1" type="button" aria-label="Speak to SEEKVERA AI">🎤</button>
-            <button class="send" data-no-i18n="1" data-no-translate="1" type="submit" aria-label="Send">➤</button>
-            <input id="aiChatFile" type="file" accept="image/jpeg,image/png,image/webp,text/plain,.txt" hidden>
-            <input id="aiChatCameraFile" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden>
-          </form>
-          <div class="sv-attachment-state" id="aiAttachmentState" hidden></div><div class="sv-ai-actions" id="aiActions"></div>
+  <head>
+    <meta name="google" content="notranslate" />
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta
+      name="google-site-verification"
+      content="uJ5FDBhKm512-nzgVJ0xjBlXkrfpito_J2VIwAGCutk"
+    />
+    <title>SEEKVERA — Find, Compare, Choose Worldwide</title>
+    <meta
+      name="description"
+      content="SEEKVERA is a worldwide AI marketplace and super-app for hotels, travel, property, cars, jobs, shopping, suppliers, media, games and everyday services."
+    />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="application-name" content="SEEKVERA" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="SEEKVERA" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <link rel="canonical" href="https://seekveraglobal.com/" />
+    <meta
+      property="og:title"
+      content="SEEKVERA — Find, Compare, Choose Worldwide"
+    />
+    <meta
+      property="og:description"
+      content="Worldwide AI marketplace, travel, jobs, shopping, suppliers, games, media and services."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://seekveraglobal.com/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="manifest.webmanifest?v=20260924-az-r8" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="premium.css?v=20260924-az-r8" />
+    <link rel="stylesheet" href="global-ui.css?v=20260924-az-r8" />
+    <link rel="stylesheet" href="i18n-premium.css?v=20260924-az-r8" />
+    <link rel="stylesheet" href="home-marketplace-r5.css?v=20260924-az-r8" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "SEEKVERA",
+        "url": "https://seekveraglobal.com/",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://seekveraglobal.com/?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+  </head>
+  <body data-release="20260927-r82-reply-before-navigation">
+    <noscript
+      ><div class="sv-noscript">
+        SEEKVERA needs JavaScript for AI search, voice, visual search and live
+        marketplace features.
+      </div></noscript
+    >
+    <header class="r5-top">
+      <div class="r5-top-inner">
+        <a class="r5-brand" href="index.html" aria-label="SEEKVERA home"
+          ><span class="r5-mark">S</span
+          ><span>SEEKVERA<small>GLOBAL AI MARKETPLACE</small></span></a
+        >
+        <div class="r5-controls sv-controls">
+          <select
+            class="sv-select"
+            id="country"
+            aria-label="Country / Region"
+          ></select>
+          <select class="sv-select" id="lang" aria-label="Language"></select>
+          <select class="sv-select" id="currency" aria-label="Currency">
+            <option>USD</option>
+            <option>NGN</option>
+            <option>EUR</option>
+            <option>GBP</option>
+            <option>AED</option>
+            <option>SAR</option>
+            <option>LBP</option>
+            <option>CNY</option>
+            <option>TRY</option>
+            <option>EGP</option>
+            <option>KES</option>
+            <option>GHS</option>
+            <option>ZAR</option>
+            <option>CAD</option>
+            <option>AUD</option>
+            <option>INR</option>
+            <option>JPY</option>
+            <option>KRW</option>
+          </select>
+          <button class="sv-pill-btn sv-hidden" id="installBtn" type="button">
+            ⬇ Install
+          </button>
+          <a class="sv-pill-btn r5-post" href="post-ad.html">＋ Post Ad</a>
         </div>
-        <div class="r5-ai-note">Choose a country once and SEEKVERA switches the app language, currency, AI context and country-aware sections automatically. You can still change language manually if you want.</div>
-        <div class="sv-ai-panel" id="aiResult" hidden><div class="sv-ai-answer" id="aiAnswer"></div></div>
+      </div>
+    </header>
+    <main class="r5-shell">
+      <section class="r5-market" aria-label="SEEKVERA global marketplace">
+        <div class="r5-center">
+          <section class="r5-hero">
+            <div class="r5-kicker">
+              <span>🌍 Worldwide</span><span>•</span><span>AI assisted</span
+              ><span>•</span><span>Voice + Chat</span>
+            </div>
+            <h1>Find it faster. Compare it better.</h1>
+            <p>
+              Hotels, homes, cars, jobs, products, suppliers, media and services
+              — from one global marketplace.
+            </p>
+            <div class="r5-scope sv-scope" aria-label="Search scope">
+              <button data-scope="near" type="button">📍 Near Me</button
+              ><button data-scope="country" type="button">My Country</button
+              ><button class="active" data-scope="worldwide" type="button">
+                🌐 Worldwide
+              </button>
+            </div>
+
+            <div
+              class="r5-chat sv-chat-card sv-unified-chat"
+              id="aiChat"
+              aria-label="SEEKVERA AI Chat"
+            >
+              <div class="sv-chat-head">
+                <div>
+                  <b data-no-i18n="1" data-no-translate="1">✨ SEEKVERA AI</b
+                  ><small>Chat · Voice · Camera · Attach</small>
+                </div>
+                <span>● Online</span
+                ><button
+                  id="aiChatSpeaker"
+                  data-no-i18n="1"
+                  data-no-translate="1"
+                  class="sv-speaker"
+                  type="button"
+                  aria-label="Voice reply on or off"
+                >
+                  🔊
+                </button>
+              </div>
+              <div class="sv-chat-messages" id="aiMessages" aria-live="polite">
+                <div class="ai-msg bot">
+                  I’m the SEEKVERA AI assistant. Tell me what you need and I’ll
+                  help you find the right section, compare options or search
+                  worldwide.
+                </div>
+              </div>
+              <form class="sv-chat-form sv-unified-compose" id="aiChatForm">
+                <button
+                  class="attach"
+                  id="aiChatAttach"
+                  data-no-i18n="1"
+                  data-no-translate="1"
+                  type="button"
+                  aria-label="Attach image or text file"
+                >
+                  📎
+                </button>
+                <input
+                  id="aiChatInput"
+                  type="text"
+                  autocomplete="off"
+                  maxlength="1800"
+                  placeholder="Message SEEKVERA AI…"
+                  aria-label="Message SEEKVERA AI"
+                  enterkeymode="send"
+                />
+                <button
+                  class="camera"
+                  id="aiChatCamera"
+                  data-no-i18n="1"
+                  data-no-translate="1"
+                  type="button"
+                  aria-label="Take a photo"
+                >
+                  📷
+                </button>
+                <button
+                  class="mic"
+                  id="aiChatMic"
+                  data-no-i18n="1"
+                  data-no-translate="1"
+                  type="button"
+                  aria-label="Speak to SEEKVERA AI"
+                >
+                  🎤
+                </button>
+                <button
+                  class="send"
+                  data-no-i18n="1"
+                  data-no-translate="1"
+                  type="submit"
+                  aria-label="Send"
+                >
+                  ➤
+                </button>
+                <input
+                  id="aiChatFile"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,text/plain,.txt"
+                  hidden
+                />
+                <input
+                  id="aiChatCameraFile"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  capture="environment"
+                  hidden
+                />
+              </form>
+              <div
+                class="sv-attachment-state"
+                id="aiAttachmentState"
+                hidden
+              ></div>
+              <div class="sv-ai-actions" id="aiActions"></div>
+            </div>
+            <div class="r5-ai-note">
+              Choose a country once and SEEKVERA switches the app language,
+              currency, AI context and country-aware sections automatically. You
+              can still change language manually if you want.
+            </div>
+            <div class="sv-ai-panel" id="aiResult" hidden>
+              <div class="sv-ai-answer" id="aiAnswer"></div>
+            </div>
+          </section>
+
+          <section class="r5-section" id="categories">
+            <div class="r5-section-head">
+              <div>
+                <h2>Popular categories</h2>
+                <p>Clear visual routes, like a marketplace — no empty cards.</p>
+              </div>
+              <a href="hub.html">ALL CATEGORIES →</a>
+            </div>
+            <div class="r5-grid" data-r8-grid="complete">
+              <a class="r5-tile" href="marketplace.html"
+                ><div class="r5-thumb">🛒</div>
+                <div class="r5-tile-body">
+                  <b>Marketplace</b
+                  ><small>Buy, sell and compare worldwide</small>
+                </div></a
+              ><a class="r5-tile" href="travel.html"
+                ><div class="r5-thumb">✈️</div>
+                <div class="r5-tile-body">
+                  <b>Travel</b><small>Trips, transport and stays</small>
+                </div></a
+              ><a class="r5-tile" href="travel.html?q=flights"
+                ><div class="r5-thumb">🛫</div>
+                <div class="r5-tile-body">
+                  <b>Flights</b><small>Search flight routes</small>
+                </div></a
+              ><a class="r5-tile" href="travel.html?q=hotels"
+                ><div class="r5-thumb">🏨</div>
+                <div class="r5-tile-body">
+                  <b>Hotels</b><small>Search stays worldwide</small>
+                </div></a
+              ><a class="r5-tile" href="tourism.html"
+                ><div class="r5-thumb">🗺️</div>
+                <div class="r5-tile-body">
+                  <b>Tourism</b><small>Places and experiences</small>
+                </div></a
+              ><a class="r5-tile" href="property.html"
+                ><div class="r5-thumb">🏠</div>
+                <div class="r5-tile-body">
+                  <b>Property</b><small>Homes, land and rentals</small>
+                </div></a
+              ><a class="r5-tile" href="cars-auto.html"
+                ><div class="r5-thumb">🚘</div>
+                <div class="r5-tile-body">
+                  <b>Cars & Auto</b><small>Vehicles, parts and auto</small>
+                </div></a
+              ><a class="r5-tile" href="jobs.html"
+                ><div class="r5-thumb">💼</div>
+                <div class="r5-tile-body">
+                  <b>Jobs</b><small>Local and global careers</small>
+                </div></a
+              ><a class="r5-tile" href="shopping.html"
+                ><div class="r5-thumb">🛍️</div>
+                <div class="r5-tile-body">
+                  <b>Shopping</b><small>Products and deals</small>
+                </div></a
+              ><a class="r5-tile" href="restaurants-food.html"
+                ><div class="r5-thumb">🍽️</div>
+                <div class="r5-tile-body">
+                  <b>Restaurants & Food</b><small>Food, cafes and dining</small>
+                </div></a
+              ><a class="r5-tile" href="local-services.html"
+                ><div class="r5-thumb">🧰</div>
+                <div class="r5-tile-body">
+                  <b>Local Services</b><small>Everyday skilled help</small>
+                </div></a
+              ><a class="r5-tile" href="marketplace.html?q=equipment"
+                ><div class="r5-thumb">🏗️</div>
+                <div class="r5-tile-body">
+                  <b>Equipment & Machinery</b
+                  ><small>Machines and equipment</small>
+                </div></a
+              ><a class="r5-tile" href="marketplace.html?q=boats"
+                ><div class="r5-thumb">⛵</div>
+                <div class="r5-tile-body">
+                  <b>Boats & Marine</b><small>Boats and marine listings</small>
+                </div></a
+              ><a class="r5-tile" href="import-export.html"
+                ><div class="r5-thumb">🚢</div>
+                <div class="r5-tile-body">
+                  <b>Import & Export</b><small>Factories and suppliers</small>
+                </div></a
+              ><a class="r5-tile" href="shipping-logistics.html"
+                ><div class="r5-thumb">📦</div>
+                <div class="r5-tile-body">
+                  <b>Shipping & Logistics</b
+                  ><small>Freight, cargo and delivery</small>
+                </div></a
+              ><a class="r5-tile" href="business-software.html"
+                ><div class="r5-thumb">💻</div>
+                <div class="r5-tile-body">
+                  <b>Business Software</b
+                  ><small>POS, accounting and SaaS</small>
+                </div></a
+              ><a class="r5-tile" href="software.html"
+                ><div class="r5-thumb">🧩</div>
+                <div class="r5-tile-body">
+                  <b>Software</b><small>Apps and digital tools</small>
+                </div></a
+              ><a class="r5-tile" href="web-hosting.html"
+                ><div class="r5-thumb">🌐</div>
+                <div class="r5-tile-body">
+                  <b>Websites & Hosting</b
+                  ><small>Domains, hosting and websites</small>
+                </div></a
+              ><a class="r5-tile" href="solar.html"
+                ><div class="r5-thumb">☀️</div>
+                <div class="r5-tile-body">
+                  <b>Solar & Energy</b><small>Power and energy solutions</small>
+                </div></a
+              ><a class="r5-tile" href="education.html"
+                ><div class="r5-thumb">🎓</div>
+                <div class="r5-tile-body">
+                  <b>Education</b><small>Schools, courses and skills</small>
+                </div></a
+              ><a class="r5-tile" href="health.html"
+                ><div class="r5-thumb">🏥</div>
+                <div class="r5-tile-body">
+                  <b>Health</b><small>Clinics, labs and pharmacies</small>
+                </div></a
+              ><a class="r5-tile" href="money-insurance.html"
+                ><div class="r5-thumb">💳</div>
+                <div class="r5-tile-body">
+                  <b>Money & Insurance</b
+                  ><small>Licensed provider discovery</small>
+                </div></a
+              ><a class="r5-tile" href="entertainment.html"
+                ><div class="r5-thumb">🎬</div>
+                <div class="r5-tile-body">
+                  <b>Entertainment</b><small>Movies, music and family</small>
+                </div></a
+              ><a class="r5-tile" href="media.html"
+                ><div class="r5-thumb">📰</div>
+                <div class="r5-tile-body">
+                  <b>News & Media</b
+                  ><small>Trusted media and official sources</small>
+                </div></a
+              ><a class="r5-tile" href="games.html"
+                ><div class="r5-thumb">🎮</div>
+                <div class="r5-tile-body">
+                  <b>Games</b><small>Play inside SEEKVERA</small>
+                </div></a
+              ><a class="r5-tile" href="connectivity.html"
+                ><div class="r5-thumb">📶</div>
+                <div class="r5-tile-body">
+                  <b>Connectivity</b><small>Internet, SIM and eSIM</small>
+                </div></a
+              ><a class="r5-tile" href="wifi.html"
+                ><div class="r5-thumb">📡</div>
+                <div class="r5-tile-body">
+                  <b>Free Wi‑Fi</b><small>Public Wi‑Fi discovery</small>
+                </div></a
+              ><a class="r5-tile" href="deal-agent.html"
+                ><div class="r5-thumb">🤝</div>
+                <div class="r5-tile-body">
+                  <b>AI Deal Agent</b
+                  ><small>Sourcing and business missions</small>
+                </div></a
+              ><a class="r5-tile" href="everyday.html"
+                ><div class="r5-thumb">📍</div>
+                <div class="r5-tile-body">
+                  <b>Everyday</b><small>Nearby daily needs</small>
+                </div></a
+              ><a class="r5-tile" href="scan.html"
+                ><div class="r5-thumb">📲</div>
+                <div class="r5-tile-body">
+                  <b>Scan / QR</b><small>Share and install SEEKVERA</small>
+                </div></a
+              ><a class="r5-tile" href="seller-plans.html"
+                ><div class="r5-thumb">🚀</div>
+                <div class="r5-tile-body">
+                  <b>Promote / Business</b
+                  ><small>Business plans and promotion</small>
+                </div></a
+              >
+            </div>
+          </section>
+
+          <section class="r5-section">
+            <div class="r5-section-head">
+              <div>
+                <h2>Live marketplace</h2>
+                <p>Approved real listings only.</p>
+              </div>
+              <a href="marketplace.html">OPEN MARKETPLACE →</a>
+            </div>
+            <div class="r5-live" id="liveListings">
+              <div class="sv-empty">Loading approved listings…</div>
+            </div>
+          </section>
+
+          <section class="r5-section" id="request">
+            <div class="r5-section-head">
+              <div>
+                <h2>Request anything</h2>
+                <p>Tell SEEKVERA what you need anywhere in the world.</p>
+              </div>
+            </div>
+            <form class="r5-request" id="requestForm">
+              <input
+                id="requestCountry"
+                maxlength="120"
+                placeholder="Country / anywhere"
+              />
+              <input
+                id="requestCity"
+                maxlength="120"
+                placeholder="City / area"
+              />
+              <select id="requestType">
+                <option>Travel</option>
+                <option>Property</option>
+                <option>Shopping</option>
+                <option>Jobs</option>
+                <option>Business</option>
+                <option>Import / Export</option>
+                <option>Cars</option>
+                <option>Services</option>
+                <option>Other</option>
+              </select>
+              <input
+                id="requestBudget"
+                maxlength="120"
+                placeholder="Budget (optional)"
+              />
+              <input id="requestDate" type="date" />
+              <input
+                id="requestContact"
+                maxlength="240"
+                placeholder="Contact (optional)"
+              />
+              <textarea
+                id="requestDescription"
+                maxlength="4000"
+                placeholder="Describe exactly what you need, where, and any important conditions."
+                required
+              ></textarea>
+              <div class="full">
+                <button type="submit">Submit request</button
+                ><span class="sv-status" id="requestStatus"
+                  >Do not include passwords, OTPs, PINs or card security
+                  codes.</span
+                >
+              </div>
+            </form>
+          </section>
+        </div>
+
+        <aside class="r5-right">
+          <h3>Quick access</h3>
+          <div class="r5-right-box">
+            <b>🎮 Free Games</b>
+            <p>Open the SEEKVERA games hub.</p>
+            <a href="games.html">Play games →</a>
+          </div>
+          <div class="r5-right-box">
+            <b>📰 News & Media</b>
+            <p>
+              Al Jazeera, Al Arabiya, CNN, BBC, Reuters and more official
+              sources.
+            </p>
+            <a href="media.html">Open News & Media →</a>
+          </div>
+          <div class="r5-right-box">
+            <b>📶 Connectivity</b>
+            <p>Wi‑Fi, eSIM and internet guidance.</p>
+            <a href="connectivity.html">Get connected →</a>
+          </div>
+          <div class="r5-right-box">
+            <b>🤝 AI Deal Agent</b>
+            <p>Suppliers, sourcing and business missions.</p>
+            <a href="deal-agent.html">Open Deal Agent →</a>
+          </div>
+          <div class="r5-right-box">
+            <b>📷 Visual Search</b>
+            <p>Show SEEKVERA a product or object.</p>
+            <button id="visualOpen" type="button">Search by image →</button>
+          </div>
+          <div class="r5-right-box">
+            <b>📍 Near Me</b>
+            <p>Use location only when you choose.</p>
+            <button id="nearMe" type="button">Use my location →</button>
+          </div>
+          <div class="r5-right-box">
+            <b>🛡️ Safety Gate</b>
+            <p>
+              <span>Prohibited on SEEKVERA</span> ·
+              <span>Safety review required</span>
+            </p>
+            <a href="terms.html">Platform rules →</a>
+          </div>
+        </aside>
       </section>
 
-      <section class="r5-section" id="categories">
-        <div class="r5-section-head"><div><h2>Popular categories</h2><p>Clear visual routes, like a marketplace — no empty cards.</p></div><a href="hub.html">ALL CATEGORIES →</a></div>
-        <div class="r5-grid" data-r8-grid="complete"><a class="r5-tile" href="marketplace.html"><div class="r5-thumb">🛒</div><div class="r5-tile-body"><b>Marketplace</b><small>Buy, sell and compare worldwide</small></div></a><a class="r5-tile" href="travel.html"><div class="r5-thumb">✈️</div><div class="r5-tile-body"><b>Travel</b><small>Trips, transport and stays</small></div></a><a class="r5-tile" href="travel.html?q=flights"><div class="r5-thumb">🛫</div><div class="r5-tile-body"><b>Flights</b><small>Search flight routes</small></div></a><a class="r5-tile" href="travel.html?q=hotels"><div class="r5-thumb">🏨</div><div class="r5-tile-body"><b>Hotels</b><small>Search stays worldwide</small></div></a><a class="r5-tile" href="tourism.html"><div class="r5-thumb">🗺️</div><div class="r5-tile-body"><b>Tourism</b><small>Places and experiences</small></div></a><a class="r5-tile" href="property.html"><div class="r5-thumb">🏠</div><div class="r5-tile-body"><b>Property</b><small>Homes, land and rentals</small></div></a><a class="r5-tile" href="cars-auto.html"><div class="r5-thumb">🚘</div><div class="r5-tile-body"><b>Cars & Auto</b><small>Vehicles, parts and auto</small></div></a><a class="r5-tile" href="jobs.html"><div class="r5-thumb">💼</div><div class="r5-tile-body"><b>Jobs</b><small>Local and global careers</small></div></a><a class="r5-tile" href="shopping.html"><div class="r5-thumb">🛍️</div><div class="r5-tile-body"><b>Shopping</b><small>Products and deals</small></div></a><a class="r5-tile" href="restaurants-food.html"><div class="r5-thumb">🍽️</div><div class="r5-tile-body"><b>Restaurants & Food</b><small>Food, cafes and dining</small></div></a><a class="r5-tile" href="local-services.html"><div class="r5-thumb">🧰</div><div class="r5-tile-body"><b>Local Services</b><small>Everyday skilled help</small></div></a><a class="r5-tile" href="marketplace.html?q=equipment"><div class="r5-thumb">🏗️</div><div class="r5-tile-body"><b>Equipment & Machinery</b><small>Machines and equipment</small></div></a><a class="r5-tile" href="marketplace.html?q=boats"><div class="r5-thumb">⛵</div><div class="r5-tile-body"><b>Boats & Marine</b><small>Boats and marine listings</small></div></a><a class="r5-tile" href="import-export.html"><div class="r5-thumb">🚢</div><div class="r5-tile-body"><b>Import & Export</b><small>Factories and suppliers</small></div></a><a class="r5-tile" href="shipping-logistics.html"><div class="r5-thumb">📦</div><div class="r5-tile-body"><b>Shipping & Logistics</b><small>Freight, cargo and delivery</small></div></a><a class="r5-tile" href="business-software.html"><div class="r5-thumb">💻</div><div class="r5-tile-body"><b>Business Software</b><small>POS, accounting and SaaS</small></div></a><a class="r5-tile" href="software.html"><div class="r5-thumb">🧩</div><div class="r5-tile-body"><b>Software</b><small>Apps and digital tools</small></div></a><a class="r5-tile" href="web-hosting.html"><div class="r5-thumb">🌐</div><div class="r5-tile-body"><b>Websites & Hosting</b><small>Domains, hosting and websites</small></div></a><a class="r5-tile" href="solar.html"><div class="r5-thumb">☀️</div><div class="r5-tile-body"><b>Solar & Energy</b><small>Power and energy solutions</small></div></a><a class="r5-tile" href="education.html"><div class="r5-thumb">🎓</div><div class="r5-tile-body"><b>Education</b><small>Schools, courses and skills</small></div></a><a class="r5-tile" href="health.html"><div class="r5-thumb">🏥</div><div class="r5-tile-body"><b>Health</b><small>Clinics, labs and pharmacies</small></div></a><a class="r5-tile" href="money-insurance.html"><div class="r5-thumb">💳</div><div class="r5-tile-body"><b>Money & Insurance</b><small>Licensed provider discovery</small></div></a><a class="r5-tile" href="entertainment.html"><div class="r5-thumb">🎬</div><div class="r5-tile-body"><b>Entertainment</b><small>Movies, music and family</small></div></a><a class="r5-tile" href="media.html"><div class="r5-thumb">📰</div><div class="r5-tile-body"><b>News & Media</b><small>Trusted media and official sources</small></div></a><a class="r5-tile" href="games.html"><div class="r5-thumb">🎮</div><div class="r5-tile-body"><b>Games</b><small>Play inside SEEKVERA</small></div></a><a class="r5-tile" href="connectivity.html"><div class="r5-thumb">📶</div><div class="r5-tile-body"><b>Connectivity</b><small>Internet, SIM and eSIM</small></div></a><a class="r5-tile" href="wifi.html"><div class="r5-thumb">📡</div><div class="r5-tile-body"><b>Free Wi‑Fi</b><small>Public Wi‑Fi discovery</small></div></a><a class="r5-tile" href="deal-agent.html"><div class="r5-thumb">🤝</div><div class="r5-tile-body"><b>AI Deal Agent</b><small>Sourcing and business missions</small></div></a><a class="r5-tile" href="everyday.html"><div class="r5-thumb">📍</div><div class="r5-tile-body"><b>Everyday</b><small>Nearby daily needs</small></div></a><a class="r5-tile" href="scan.html"><div class="r5-thumb">📲</div><div class="r5-tile-body"><b>Scan / QR</b><small>Share and install SEEKVERA</small></div></a><a class="r5-tile" href="seller-plans.html"><div class="r5-thumb">🚀</div><div class="r5-tile-body"><b>Promote / Business</b><small>Business plans and promotion</small></div></a></div>
-      </section>
+      <footer class="r5-foot">
+        <div>
+          <b>SEEKVERA</b> · Everything you need. One search.<br /><small
+            >2026-09-26 · R74</small
+          >
+        </div>
+        <nav>
+          <a href="about.html">About</a><a href="privacy.html">Privacy</a
+          ><a href="terms.html">Terms</a><a href="contact.html">Contact</a
+          ><a href="affiliate-disclosure.html">Disclosure</a>
+        </nav>
+      </footer>
+    </main>
 
-      <section class="r5-section">
-        <div class="r5-section-head"><div><h2>Live marketplace</h2><p>Approved real listings only.</p></div><a href="marketplace.html">OPEN MARKETPLACE →</a></div>
-        <div class="r5-live" id="liveListings"><div class="sv-empty">Loading approved listings…</div></div>
-      </section>
-
-      <section class="r5-section" id="request">
-        <div class="r5-section-head"><div><h2>Request anything</h2><p>Tell SEEKVERA what you need anywhere in the world.</p></div></div>
-        <form class="r5-request" id="requestForm">
-          <input id="requestCountry" maxlength="120" placeholder="Country / anywhere">
-          <input id="requestCity" maxlength="120" placeholder="City / area">
-          <select id="requestType"><option>Travel</option><option>Property</option><option>Shopping</option><option>Jobs</option><option>Business</option><option>Import / Export</option><option>Cars</option><option>Services</option><option>Other</option></select>
-          <input id="requestBudget" maxlength="120" placeholder="Budget (optional)">
-          <input id="requestDate" type="date">
-          <input id="requestContact" maxlength="240" placeholder="Contact (optional)">
-          <textarea id="requestDescription" maxlength="4000" placeholder="Describe exactly what you need, where, and any important conditions." required></textarea>
-          <div class="full"><button type="submit">Submit request</button><span class="sv-status" id="requestStatus">Do not include passwords, OTPs, PINs or card security codes.</span></div>
-        </form>
-      </section>
+    <div
+      class="sv-modal"
+      id="visualModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="visualTitle"
+    >
+      <div class="sv-modal-card">
+        <div class="sv-modal-head">
+          <div>
+            <span class="sv-badge">AI VISION</span>
+            <h2 id="visualTitle">Visual Search</h2>
+          </div>
+          <button
+            class="sv-close"
+            id="visualClose"
+            type="button"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
+        <p>Take or upload a product or object photo. Safety Gate runs first.</p>
+        <div class="sv-drop">
+          <input
+            id="visualFile"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            capture="environment"
+          /><br /><img
+            class="sv-preview sv-hidden"
+            id="visualPreview"
+            alt="Selected image preview"
+          />
+        </div>
+        <div class="sv-warning">
+          Do not upload IDs, bank documents, passwords, private records or
+          images you do not have permission to use.
+        </div>
+        <div class="sv-status" id="visualStatus">
+          Choose a JPG, PNG or WebP image up to 5 MB.
+        </div>
+        <div id="visualResult"></div>
+      </div>
     </div>
+    <script src="r20-final-guard.js?v=20260925-r20" defer></script>
+    <script src="locale-r15.js?v=20260927-r79-full-voice-turn" defer></script>
+    <script
+      src="superapp.js?v=20260927-r82-reply-before-navigation"
+      defer
+    ></script>
+    <script
+      src="voice-ai.js?v=20260927-r81-natural-conversation"
+      defer
+    ></script>
+    <script src="global-ui.js?v=20260925-r19" defer></script>
+    <script src="i18n-ui.js?v=20260927-r79-full-voice-turn" defer></script>
+    <script src="locale-r14-categories.js?v=20260924-r14" defer></script>
+    <script src="r20-extra-categories.js?v=20260925-r20c" defer></script>
+    <script src="locale-r14.js?v=20260925-r44-stable-locale" defer></script>
 
-    <aside class="r5-right">
-      <h3>Quick access</h3>
-      <div class="r5-right-box"><b>🎮 Free Games</b><p>Open the SEEKVERA games hub.</p><a href="games.html">Play games →</a></div>
-      <div class="r5-right-box"><b>📰 News & Media</b><p>Al Jazeera, Al Arabiya, CNN, BBC, Reuters and more official sources.</p><a href="media.html">Open News & Media →</a></div>
-      <div class="r5-right-box"><b>📶 Connectivity</b><p>Wi‑Fi, eSIM and internet guidance.</p><a href="connectivity.html">Get connected →</a></div>
-      <div class="r5-right-box"><b>🤝 AI Deal Agent</b><p>Suppliers, sourcing and business missions.</p><a href="deal-agent.html">Open Deal Agent →</a></div>
-      <div class="r5-right-box"><b>📷 Visual Search</b><p>Show SEEKVERA a product or object.</p><button id="visualOpen" type="button">Search by image →</button></div>
-      <div class="r5-right-box"><b>📍 Near Me</b><p>Use location only when you choose.</p><button id="nearMe" type="button">Use my location →</button></div>
-      <div class="r5-right-box"><b>🛡️ Safety Gate</b><p><span>Prohibited on SEEKVERA</span> · <span>Safety review required</span></p><a href="terms.html">Platform rules →</a></div>
-    </aside>
-  </section>
-
-  <footer class="r5-foot"><div><b>SEEKVERA</b> · Everything you need. One search.<br><small>2026-09-26 · R74</small></div><nav><a href="about.html">About</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="contact.html">Contact</a><a href="affiliate-disclosure.html">Disclosure</a></nav></footer>
-</main>
-
-<div class="sv-modal" id="visualModal" role="dialog" aria-modal="true" aria-labelledby="visualTitle">
-  <div class="sv-modal-card"><div class="sv-modal-head"><div><span class="sv-badge">AI VISION</span><h2 id="visualTitle">Visual Search</h2></div><button class="sv-close" id="visualClose" type="button" aria-label="Close">×</button></div>
-    <p>Take or upload a product or object photo. Safety Gate runs first.</p>
-    <div class="sv-drop"><input id="visualFile" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"><br><img class="sv-preview sv-hidden" id="visualPreview" alt="Selected image preview"></div>
-    <div class="sv-warning">Do not upload IDs, bank documents, passwords, private records or images you do not have permission to use.</div>
-    <div class="sv-status" id="visualStatus">Choose a JPG, PNG or WebP image up to 5 MB.</div><div id="visualResult"></div>
-  </div>
-</div>
-<script src="r20-final-guard.js?v=20260925-r20" defer></script>
-<script src="locale-r15.js?v=20260927-r79-full-voice-turn" defer></script>
-<script src="superapp.js?v=20260927-r81-natural-conversation" defer></script>
-<script src="voice-ai.js?v=20260927-r81-natural-conversation" defer></script>
-<script src="global-ui.js?v=20260925-r19" defer></script>
-<script src="i18n-ui.js?v=20260927-r79-full-voice-turn" defer></script>
-<script src="locale-r14-categories.js?v=20260924-r14" defer></script>
-<script src="r20-extra-categories.js?v=20260925-r20c" defer></script>
-<script src="locale-r14.js?v=20260925-r44-stable-locale" defer></script>
-
-<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=20260927-r81-natural-conversation').catch(()=>{}))}</script>
-<script src="navigation.js?v=20260926-r76-complete-global-final" defer></script>
-<script src="r22-category-lock.js?v=20260925-r22" defer></script>
-<script src="r24-ai-controller.js?v=20260927-r81-natural-conversation" data-no-i18n="1"></script>
-<script src="/r60-runtime-guard.js?v=20260927-r79-full-voice-turn" defer data-no-i18n="1"></script><script src="/r31-ui-polish.js?v=20260926-r76-complete-global-final" defer data-no-i18n="1"></script></body>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () =>
+          navigator.serviceWorker
+            .register("sw.js?v=20260927-r81-natural-conversation")
+            .catch(() => {}),
+        );
+      }
+    </script>
+    <script
+      src="navigation.js?v=20260926-r76-complete-global-final"
+      defer
+    ></script>
+    <script src="r22-category-lock.js?v=20260925-r22" defer></script>
+    <script
+      src="r24-ai-controller.js?v=20260927-r81-natural-conversation"
+      data-no-i18n="1"
+    ></script>
+    <script
+      src="/r60-runtime-guard.js?v=20260927-r79-full-voice-turn"
+      defer
+      data-no-i18n="1"
+    ></script>
+    <script
+      src="/r31-ui-polish.js?v=20260927-r82-reply-before-navigation"
+      defer
+      data-no-i18n="1"
+    ></script>
+  </body>
 </html>

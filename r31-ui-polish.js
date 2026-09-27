@@ -1,119 +1,1228 @@
-(()=>{'use strict';
-if(window.__SEEKVERA_R31)return;window.__SEEKVERA_R31=true;
-const VERSION='20260926-r76-complete-global-final';
-const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-const ROUTES={general:'marketplace.html',travel:'travel.html',tourism:'tourism.html',property:'property.html',cars:'cars-auto.html',jobs:'jobs.html',shopping:'shopping.html',restaurants:'restaurants-food.html',services:'local-services.html',equipment:'marketplace.html?q=equipment',boats:'marketplace.html?q=boats',business:'import-export.html',shipping:'shipping-logistics.html',businessSoftware:'business-software.html',software:'software.html',hosting:'web-hosting.html',solar:'solar.html',education:'education.html',health:'health.html',money:'money-insurance.html',entertainment:'entertainment.html',media:'media.html',games:'games.html',connectivity:'connectivity.html',wifi:'wifi.html',dealAgent:'deal-agent.html',everyday:'everyday.html',scan:'scan.html',promote:'seller-plans.html'};
-const ICONS=[[/marketplace/,'🛒'],[/travel\.html(?!\?q=)/,'✈️'],[/flights/,'🛫'],[/hotels/,'🏨'],[/tourism/,'🗺️'],[/property/,'🏠'],[/cars-auto/,'🚘'],[/jobs/,'💼'],[/shopping/,'🛍️'],[/restaurants-food/,'🍽️'],[/local-services/,'🧰'],[/equipment/,'🏗️'],[/boats/,'⛵'],[/import-export/,'🚢'],[/shipping-logistics/,'📦'],[/business-software/,'💻'],[/software/,'🧩'],[/web-hosting/,'🌐'],[/solar/,'☀️'],[/education/,'🎓'],[/health/,'🏥'],[/money-insurance/,'💳'],[/entertainment/,'🎬'],[/media/,'📰'],[/games/,'🎮'],[/connectivity/,'📶'],[/wifi/,'📡'],[/deal-agent/,'🤝'],[/everyday/,'📍'],[/scan/,'📲'],[/seller-plans/,'🚀']];
-const LOCALES={ar:'ar-SA',en:'en-US',fr:'fr-FR',zh:'zh-CN',es:'es-ES',hi:'hi-IN',pt:'pt-PT',de:'de-DE',ja:'ja-JP',ko:'ko-KR',id:'id-ID',tr:'tr-TR',ru:'ru-RU',ur:'ur-PK',bn:'bn-BD',vi:'vi-VN',it:'it-IT',sw:'sw-KE',th:'th-TH',fa:'fa-IR',pl:'pl-PL',nl:'nl-NL',ms:'ms-MY',fil:'fil-PH',ha:'ha-NG',yo:'yo-NG',ig:'ig-NG',am:'am-ET',he:'he-IL'};
-const RTL=new Set(['ar','fa','ur','he','ps','dv','ku']);
-const FALLBACK_CURRENCY_AR={USD:'دولار أمريكي',EUR:'يورو',GBP:'جنيه إسترليني',LBP:'ليرة لبنانية',SYP:'ليرة سورية',SAR:'ريال سعودي',AED:'درهم إماراتي',NGN:'نايرا نيجيرية',EGP:'جنيه مصري',TRY:'ليرة تركية',CNY:'يوان صيني',JPY:'ين ياباني',KRW:'وون كوري جنوبي',INR:'روبية هندية',CAD:'دولار كندي',AUD:'دولار أسترالي',CHF:'فرنك سويسري',JOD:'دينار أردني',IQD:'دينار عراقي',KWD:'دينار كويتي',QAR:'ريال قطري',BHD:'دينار بحريني',OMR:'ريال عماني',MAD:'درهم مغربي',DZD:'دينار جزائري',TND:'دينار تونسي',LYD:'دينار ليبي'};
-let switching=0,recognition=null,voiceTurn=false,voiceSeq=0,submitting=false,observerTimer=0;
-function lang(){return String(document.querySelector('#lang')?.value||document.documentElement.lang||localStorage.getItem('seekvera_lang')||'en').toLowerCase().split(/[-_]/)[0]||'en'}
-function locale(){const l=lang();return LOCALES[l]||l||navigator.language||'en-US'}
-function country(){return String(document.querySelector('#country')?.value||localStorage.getItem('seekvera_country')||'WW').toUpperCase()}
-function countryName(){const e=document.querySelector('#country');return e?.options?.[e.selectedIndex]?.textContent||'Worldwide'}
-function uiText(src,fallback=src){try{const t=window.SEEKVERA_I18N?.t?.(src);if(t&&t!==src)return t}catch{}return fallback}
-const DEPT_KEYS=['general','travel','travel','travel','tourism','property','cars','jobs','shopping','restaurants','services','equipment','boats','business','shipping','businessSoftware','software','hosting','solar','education','health','money','entertainment','media','games','connectivity','wifi','dealAgent','everyday','scan','promote'];
-const INTENT_STOP=new Set(['and','the','with','for','from','this','that','your','you','all','new','best','open','search','find','near','world','global','about','into','plus','free','local','business','service','services','marketplace','market','online','worldwide','من','الى','إلى','على','في','عن','مع','كل','هذا','هذه','الآن','الان','عبر','حول']);
-function normIntentText(v){return String(v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[ًٌٍَُِّْـ]/g,'').replace(/[^\p{L}\p{N}]+/gu,' ').trim()}
-function translatedIntent(q){const nq=normIntentText(q);if(!nq)return'general';const data=window.SEEKVERA_R14_CATEGORIES?.data||{};let best='general',bestScore=0;for(const arr of Object.values(data)){if(!Array.isArray(arr))continue;for(let i=0;i<Math.min(arr.length,DEPT_KEYS.length);i++){const key=DEPT_KEYS[i];if(!key||key==='general')continue;const title=normIntentText(arr[i]);if(!title)continue;const exactScore=title.length+100;if(nq.includes(title)&&exactScore>bestScore){best=key;bestScore=exactScore;continue}const toks=title.split(/\s+/).map(x=>x.replace(/^و/u,'')).filter(x=>x.length>=4&&!INTENT_STOP.has(x));for(const tok of toks){if(nq.includes(tok)&&tok.length>bestScore){best=key;bestScore=tok.length}}}}return best}
-function intent(q){const t=String(q||'').toLowerCase();const tests=[
-['jobs',/job|jobs|career|vacancy|work|employment|hiring|travail|emploi|emplois|trabajo|empleo|trabalho|emprego|lavoro|arbeit|stellen|stelle|iş|is ilanı|iş ilanı|работ|ваканси|工作|职位|仕事|求人|직업|채용|وظيفة|وظائف|وظايف|عمل|شغل|فرصة عمل|دوام/u],
-['solar',/solar|inverter|photovoltaic|pv panel|solar panel|renewable energy|طاقة شمسية|الطاقة الشمسية|شمسي|شمسية|انفرتر|إنفرتر|الواح شمسية|ألواح شمسية/u],
-['education',/education|school|university|course|training|college|تعليم|مدرسة|جامعة|دورة|تدريب/u],
-['money',/insurance|bank|loan|finance|money|تأمين|بنك|قرض|تمويل/u],
-['shipping',/shipping|logistics|freight|cargo|delivery|شحن|لوجست|نقل بضائع|توصيل/u],
-['services',/local service|repair|plumber|electrician|cleaning|خدمات محلية|صيانة|سباك|كهربائي|تنظيف/u],
-['equipment',/equipment|machinery|machine|generator|معدات|ماكينات|آلات|مولد/u],
-['boats',/boat|marine|yacht|ship for sale|قارب|قوارب|يخت|بحري/u],
-['software',/software|app development|application development|برمجيات|تطبيقات|برنامج/u],
-['hosting',/hosting|domain|website|web site|استضافة|دومين|موقع إلكتروني|موقع الكتروني/u],
-['games',/game|games|gaming|لعبة|العاب|ألعاب/u],
-['tourism',/tourism|tourist|attraction|sightseeing|سياحة|سياحي|معالم/u],
-['dealAgent',/deal agent|source offers|request offers|procurement agent|وكيل الصفقات|جيب عروض|اجلب عروض/u],
-['travel',/travel|flight|hotel|tourism|airport|visa|سفر|طيران|فندق|سياح/u],
-['property',/property|house|apartment|land|rent|real estate|عقار|بيت|ارض|أرض|ايجار|إيجار/u],
-['cars',/car|vehicle|auto|spare part|سيارة|مركبة|قطع غيار/u],
-['business',/supplier|manufacturer|factory|wholesale|import|export|rfq|quotation|مورد|مصنع|استيراد|تصدير|عرض سعر/u],
-['health',/hospital|clinic|doctor|pharmacy|health|مستشفى|عيادة|طبيب|صيدلية|صحة/u],
-['restaurants',/restaurant|food|cafe|coffee|مطعم|اكل|أكل|قهوة/u],
-['connectivity',/wifi|wi-?fi|internet|esim|sim card|mobile data|واي فاي|انترنت|إنترنت|شريحة/u],
-['shopping',/buy|shopping|product|shop|price|cheapest|شراء|تسوق|منتج|سعر|ارخص|أرخص/u],
-['entertainment',/entertainment|cinema|concert|ترفيه|سينما|حفلة/u],
-['media',/news|movie|music|radio|tv|أخبار|فيلم|موسيقى/u]
-];for(const[c,re]of tests)if(re.test(t))return c;return translatedIntent(q)}
-function arabicText(q=''){return /[\u0600-\u06ff]/u.test(String(q||''))||lang()==='ar'}
-function conversationLang(q=''){return'auto'}
-function similarReply(a,b){const n=x=>String(x||'').toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim();const x=n(a),y=n(b);return !!x&&!!y&&(x===y||(x.length>48&&y.includes(x.slice(0,48)))||(y.length>48&&x.includes(y.slice(0,48))))}
-function lastIntent(){try{return sessionStorage.getItem('seekvera_ai_intent')||''}catch{return''}}
-function setIntent(cat){if(!cat||cat==='general')return;try{sessionStorage.setItem('seekvera_ai_intent',cat)}catch{}}
-function explicitTravelAction(q){return /book|booking|reserve|reservation|room|stay|night|flight|ticket|trip|travel|حجز|غرفة|ليلة|طيران|تذكرة|رحلة|سفر|réserv|vol|voyage|hotel booking|reservar|vuelo|viaje|reservar|voo|viagem|buchen|flug|reise|rezerv|uçuş|seyahat|брон|рейс|путешеств|预订|航班|旅行|予約|フライト|旅行|예약|항공|여행/iu.test(String(q||''))}
-function contextualIntent(q,h=[]){const now=intent(q),prev=lastIntent();if(!prev||prev==='general')return now;const compact=String(q||'').trim().length<=120||String(q||'').trim().split(/\s+/).length<=12;if(now==='general'&&compact)return prev;if(prev==='jobs'&&now==='travel'&&compact&&!explicitTravelAction(q))return'jobs';return now}
-function isKnowledgeQuestion(q){const t=String(q||'').trim();if(/[?؟]$/.test(t))return true;return /^(what|why|how|who|when|where|explain|tell me about|define|compare|ما هو|ما هي|ماذا|لماذا|ليش|كيف|مين|من هو|وين|أين|اشرح|شو يعني|qu['’]?est|pourquoi|comment|qui|où|que es|por qué|como|cómo|quién|dónde|o que|por que|como|was ist|warum|wie|wer|wo|что|почему|как|кто|где|什么是|为什么|怎么|如何|誰|何|なぜ|どう|무엇|왜|어떻게)/iu.test(t)}
-function shouldAutoRoute(q,cat){if(!cat||cat==='general')return false;if(isKnowledgeQuestion(q))return false;return String(q||'').trim().length<=180}
-function routeUrl(cat,q){const route=ROUTES[cat]||ROUTES.general,sep=route.includes('?')?'&':'?';return route+sep+'q='+encodeURIComponent(q)+'&country='+encodeURIComponent(country())}
-function forceControl(c){let changed=false;if(c?.country){const code=String(c.country).toUpperCase(),e=document.querySelector('#country');try{localStorage.setItem('seekvera_country',code);localStorage.setItem('seekvera_country_explicit','1')}catch{}if(e&&[...e.options].some(o=>o.value===code)){e.value=code;e.dispatchEvent(new Event('change',{bubbles:true}));changed=true}}if(c?.language){const code=String(c.language).toLowerCase(),e=document.querySelector('#lang');try{localStorage.setItem('seekvera_lang',code);localStorage.setItem('seekvera_language_explicit','1')}catch{}if(e){if(![...e.options].some(o=>o.value===code))e.add(new Option(code.toUpperCase(),code));e.value=code;e.dispatchEvent(new Event('change',{bubbles:true}));changed=true}document.documentElement.lang=code;document.documentElement.dir=RTL.has(code)?'rtl':'ltr'}try{window.SEEKVERA_R24_CONTROLLER?.applyControls?.(c)}catch{}return changed}
-function controlResult(q){try{const c=window.SEEKVERA_R24_CONTROLLER?.detectControls?.(q)||{};if(c.country||c.language){try{sessionStorage.removeItem('seekvera_ai_intent')}catch{}return c}}catch{}return null}
-function controlReply(c,q){if(c?.country&&c?.language)return'✓ '+String(c.country).toUpperCase()+' · '+String(c.language).toUpperCase();if(c?.country)return c.country==='WW'?'✓ 🌐':'✓ '+String(c.country).toUpperCase();if(c?.language)return'✓ '+String(c.language).toUpperCase();return'✓'}
-function pendingVoiceOnNextPage(text,language){try{sessionStorage.setItem('seekvera_route_voice',JSON.stringify({text:String(text||''),language:String(language||'auto'),at:Date.now()}))}catch{}}
-function autoRoute(cat,q,reply,language,voiceOrigin){if(!shouldAutoRoute(q,cat))return false;setIntent(cat);const go=()=>{try{window.SEEKVERA_CHAT?.save?.()}catch{}location.assign(routeUrl(cat,q))};if(!voiceOrigin){setTimeout(go,650);return true}pendingVoiceOnNextPage(reply,language);let moved=false,started=false;const move=()=>{if(moved)return;moved=true;go()};window.addEventListener('seekvera:tts-start',()=>{started=true},{once:true});window.addEventListener('seekvera:tts-end',()=>{try{sessionStorage.removeItem('seekvera_route_voice')}catch{}move()},{once:true});setTimeout(()=>{if(!started)move()},1800);setTimeout(move,9000);return true}
-function replayPendingRouteVoice(){let raw='';try{raw=sessionStorage.getItem('seekvera_route_voice')||'';sessionStorage.removeItem('seekvera_route_voice')}catch{}if(!raw)return;try{const x=JSON.parse(raw);if(!x?.text||Date.now()-(x.at||0)>30000)return;setTimeout(()=>{try{window.SEEKVERA_VOICE_AI?.markVoiceReply?.()}catch{}window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text:x.text,language:x.language||'auto'}}))},320)}catch{}}
-function currencyLabel(code,l=lang()){
- code=String(code||'').toUpperCase();if(!code)return'';
- if(l==='ar'&&FALLBACK_CURRENCY_AR[code])return FALLBACK_CURRENCY_AR[code];
- try{const x=new Intl.DisplayNames([l],{type:'currency'}).of(code);if(x&&x!==code)return x}catch{}
- try{const x=new Intl.DisplayNames([navigator.language||'en'],{type:'currency'}).of(code);if(x&&x!==code)return x}catch{}
- return code;
-}
-function localizeCurrencies(){
- const el=document.querySelector('#currency');if(!el)return;
- const profiles=window.SEEKVERA_LOCALE_R15?.profiles||{};const codes=new Set([...el.options].map(o=>String(o.value||o.textContent||'').trim().toUpperCase()).filter(x=>/^[A-Z]{3}$/.test(x)));
- Object.values(profiles).forEach(p=>{if(p?.currency)codes.add(String(p.currency).toUpperCase())});
- for(const code of [...codes].sort()){
-  let o=[...el.options].find(x=>String(x.value||'').toUpperCase()===code);if(!o){o=document.createElement('option');o.value=code;el.appendChild(o)}const label=currencyLabel(code);if(o.textContent!==label)o.textContent=label;
- }
- const p=profiles[country()];if(p?.currency&&[...el.options].some(o=>o.value===p.currency)&&el.value!==p.currency)el.value=p.currency;
- const aria=uiText('Currency',lang()==='ar'?'العملة':'Currency');if(el.getAttribute('aria-label')!==aria)el.setAttribute('aria-label',aria);
-}
-function repairCategoryIcons(){
- document.querySelectorAll('.r5-tile').forEach(a=>{const box=a.querySelector('.r5-thumb');if(!box)return;const key=(a.getAttribute('href')||'')+' '+(a.querySelector('b')?.textContent||'');let icon='';for(const [re,v]of ICONS){if(re.test(key)){icon=v;break}}if(icon&&box.textContent.trim()!==icon)box.textContent=icon;if(box.getAttribute('aria-hidden')!=='true')box.setAttribute('aria-hidden','true')});
-}
-function markDirection(){const l=lang();if(document.documentElement.lang!==l)document.documentElement.lang=l;const d=RTL.has(l)?'rtl':'ltr';if(document.documentElement.dir!==d)document.documentElement.dir=d}
-async function atomicLocale(){
- const my=++switching;document.documentElement.classList.add('sv-r31-switching');markDirection();localizeCurrencies();repairCategoryIcons();
- try{window.SEEKVERA_I18N?.apply?.()}catch{}try{window.SEEKVERA_R14_CATEGORIES?.apply?.()}catch{}try{window.SEEKVERA_LOCALE_GUARD_R9?.schedule?.(0)}catch{}try{await Promise.resolve(window.SEEKVERA_LOCALE_GUARD_R9?.apply?.())}catch{}
- localizeCurrencies();repairCategoryIcons();if(my===switching)document.documentElement.classList.remove('sv-r31-switching');
- setTimeout(()=>{if(my===switching){try{window.SEEKVERA_LOCALE_GUARD_R9?.schedule?.(0)}catch{}localizeCurrencies();repairCategoryIcons();document.documentElement.classList.remove('sv-r31-switching')}},650);
-}
-function installAtomicCSS(){if(document.getElementById('sv-r31-css'))return;const s=document.createElement('style');s.id='sv-r31-css';s.textContent='.sv-r31-switching .r5-center,.sv-r31-switching .r5-left,.sv-r31-switching .r5-right{opacity:.12;transition:opacity .12s ease}.r5-center,.r5-left,.r5-right{transition:opacity .12s ease}.r5-thumb{overflow:hidden}.r5-thumb img{display:none!important}';document.head.appendChild(s)}
-function resetMic(btn){if(!btn)return;btn.classList.remove('listening');btn.textContent='🎤';btn.setAttribute('aria-label',uiText('Speak to SEEKVERA AI',lang()==='ar'?'تحدث مع ذكاء SEEKVERA':'Speak to SEEKVERA AI'))}
-function cancelRecognition(discard=true){const r=recognition;recognition=null;if(r){try{discard?r.abort():r.stop()}catch{}}resetMic(document.querySelector('#aiChatMic'));if(discard)voiceTurn=false}
-function speak(text){if(!voiceTurn||!window.speechSynthesis||!window.SpeechSynthesisUtterance)return;voiceTurn=false;try{speechSynthesis.cancel()}catch{}const clean=String(text||'').replace(/https?:\/\/\S+/g,' ').replace(/[*_#>`~|]/g,' ').replace(/\s+/g,' ').trim();if(!clean)return;const parts=clean.match(/[^.!?。！？؛]{1,130}(?:[.!?。！？؛]+|$)/g)||[clean.slice(0,130)];const token=++voiceSeq;const play=i=>{if(token!==voiceSeq||i>=parts.length)return;const u=new SpeechSynthesisUtterance(parts[i].trim());u.lang=locale();u.rate=1.04;u.pitch=1.02;u.onend=()=>setTimeout(()=>play(i+1),70);u.onerror=()=>setTimeout(()=>play(i+1),30);speechSynthesis.speak(u)};play(0)}
-function appendMsg(role,text,extra=''){const box=document.querySelector('#aiMessages');if(!box)return null;const d=document.createElement('div');d.className='ai-msg '+role+(extra?' '+extra:'');d.dataset.userContent='1';d.textContent=text;box.appendChild(d);box.scrollTop=box.scrollHeight;return d}
-function history(){return[...document.querySelectorAll('#aiMessages .ai-msg')].filter(x=>!x.classList.contains('thinking')).slice(-8).map(x=>({role:x.classList.contains('user')?'user':'assistant',content:String(x.textContent||'').trim().slice(0,1200)})).filter(x=>x.content)}
-function thinkingText(){const l=lang();if(l==='ar')return'لحظة…';if(l==='fr')return'Un instant…';if(l==='zh')return'请稍候…';if(l==='hi')return'एक क्षण…';return uiText('Thinking…','…')}
-function failText(){const l=lang();if(l==='ar')return'تعذّر الاتصال للحظة. حاول مرة أخرى.';if(l==='fr')return'Connexion momentanément indisponible. Réessayez.';if(l==='zh')return'暂时无法连接，请重试。';if(l==='hi')return'अभी कनेक्ट नहीं हो सका। फिर कोशिश करें。';return'↻ '+uiText('Try again','Try again')}
-async function fetchAI(payload){const urls=[location.origin+'/api/ai','https://seekvera-main.seekvera-global.workers.dev/api/ai'];let err='AI unavailable';for(const url of [...new Set(urls)]){const c=new AbortController(),t=setTimeout(()=>c.abort(),11000);try{const r=await fetch(url,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),signal:c.signal});const d=await r.json().catch(()=>({}));clearTimeout(t);if(r.ok&&d?.response)return d;err=d?.error||('HTTP '+r.status)}catch(e){clearTimeout(t);err=e?.message||err}}throw Error(err)}
-function categoryTitle(cat){const data=window.SEEKVERA_R14_CATEGORIES?.data?.[lang()],i=DEPT_KEYS.indexOf(cat);return Array.isArray(data)&&i>=0?String(data[i]||'').trim():''}
-function showRoute(d,q){const box=document.querySelector('#aiActions');if(!box)return;box.innerHTML='';const cat=d?.category||intent(q),route=d?.route||ROUTES[cat]||ROUTES.general;if(!route)return;if(cat!=='general'&&shouldAutoRoute(q,cat))return;const ar=arabicText(q),l=lang(),labels={jobs:ar?'افتح الوظائف الآن ←':'Open Jobs now →',travel:ar?'افتح السفر والفنادق الآن ←':'Open Travel & Hotels now →',property:ar?'افتح العقارات الآن ←':'Open Property now →',cars:ar?'افتح السيارات الآن ←':'Open Cars now →',business:ar?'افتح الشركات والموردين الآن ←':'Open Business & Suppliers now →',health:ar?'افتح الصحة الآن ←':'Open Health now →',restaurants:ar?'افتح المطاعم الآن ←':'Open Restaurants now →',connectivity:ar?'افتح الإنترنت والاتصال الآن ←':'Open Connectivity now →',shopping:ar?'افتح التسوق الآن ←':'Open Shopping now →'};const a=document.createElement('a');a.href=route+'?q='+encodeURIComponent(q)+'&country='+encodeURIComponent(country());const title=categoryTitle(cat);a.textContent=l!=='en'&&l!=='ar'?(title?title+' →':'→'):(labels[cat]||(ar?'افتح القسم المناسب الآن ←':'Open the right section now →'));a.dataset.svDirectRoute=cat;box.appendChild(a)}
-async function submitAI(q,{fromVoice=false}={}){
- q=String(q||'').trim().slice(0,1800);if(!q||submitting)return;submitting=true;const voiceOrigin=!!fromVoice||!!window.SEEKVERA_VOICE_AI?.isVoiceReplyPending?.();if(voiceOrigin)try{window.SEEKVERA_VOICE_AI?.markVoiceReply?.()}catch{}const input=document.querySelector('#aiChatInput');if(input)input.value='';appendMsg('user',q);try{window.SEEKVERA_CHAT?.save?.()}catch{}const spokenLanguage=conversationLang(q),ctl=controlResult(q);if(ctl){const reply=controlReply(ctl,q);appendMsg('bot',reply);try{window.SEEKVERA_CHAT?.save?.()}catch{}window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text:reply,language:spokenLanguage}}));setTimeout(()=>{forceControl(ctl);try{window.SEEKVERA_CHAT?.save?.()}catch{}},420);submitting=false;return}const pending=appendMsg('bot',thinkingText(),'thinking');const h=history(),guessed=contextualIntent(q,h);setIntent(guessed);showRoute({category:guessed,route:ROUTES[guessed]||ROUTES.general},q);
- try{const d=await fetchAI({message:q,country:countryName(),countryCode:country(),language:'auto',uiLanguage:lang(),browserLanguage:String(navigator.language||''),scope:country()==='WW'?'worldwide':'country',fast:true,history:h,conversationIntent:guessed});try{const srv={country:d?.countryAction?.code||'',language:d?.languageAction?.code||''};if(srv.country||srv.language)setTimeout(()=>window.SEEKVERA_R24_CONTROLLER?.applyControls?.(srv),420)}catch{}let finalCat=(guessed&&guessed!=='general')?guessed:(d?.category||guessed);if(guessed==='jobs'&&finalCat==='travel'&&!explicitTravelAction(q))finalCat='jobs';setIntent(finalCat);let reply=String(d.response||'').trim();const previous=[...h].reverse().find(x=>x.role==='assistant')?.content||'';if(similarReply(reply,previous)){const title=categoryTitle(finalCat);reply=title?(arabicText(q)?('تمام — '+title+'. عم أكمل طلبك مباشرة هناك.'):(lang()==='en'?(title+'. I’m continuing your request there now.'):(title+' ✓'))):(arabicText(q)?'تمام، عم أكمل طلبك مباشرة من دون إعادة نفس الكلام.':(lang()==='en'?'Got it. I’m continuing your request directly without repeating myself.':'✓'))}if(pending){pending.textContent=reply;pending.classList.remove('thinking')}const ans=document.querySelector('#aiAnswer');if(ans)ans.textContent=reply;showRoute({category:finalCat,route:ROUTES[finalCat]||d?.route},q);try{window.SEEKVERA_CHAT?.save?.()}catch{}window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text:reply,language:d.language||'auto',category:finalCat,route:ROUTES[finalCat]||d?.route}}));if(autoRoute(finalCat,q,reply,d.language||'auto',voiceOrigin))return
- }catch(e){const reply=failText();if(pending){pending.textContent=reply;pending.classList.remove('thinking')}try{window.SEEKVERA_CHAT?.save?.()}catch{}window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text:reply,language:'auto'}}));if(guessed!=='general'&&shouldAutoRoute(q,guessed)){setIntent(guessed);setTimeout(()=>{try{window.SEEKVERA_CHAT?.save?.()}catch{}location.assign(routeUrl(guessed,q))},650)}}finally{submitting=false}
-}
-function startFastVoice(btn){
- const input=document.querySelector('#aiChatInput');if(!SpeechRecognition){return false}if(recognition){cancelRecognition(false);return true}try{speechSynthesis?.cancel?.()}catch{}const r=new SpeechRecognition();recognition=r;r.lang=locale();r.interimResults=true;r.continuous=false;r.maxAlternatives=1;let final='',heard=false,ended=false,stopTimer=0,hard=0;const finish=()=>{if(ended)return;ended=true;clearTimeout(stopTimer);clearTimeout(hard);resetMic(btn);if(recognition===r)recognition=null;const q=(final||input?.value||'').trim();if(q)submitAI(q,{fromVoice:true});else voiceTurn=false};const silence=()=>{clearTimeout(stopTimer);stopTimer=setTimeout(()=>{try{r.stop()}catch{}},900)};
- r.onstart=()=>{voiceTurn=true;btn.classList.add('listening');btn.textContent='■';btn.setAttribute('aria-label',uiText('Stop listening',lang()==='ar'?'إيقاف الاستماع':'Stop listening'));if(input)input.placeholder=uiText('Listening…',lang()==='ar'?'أسمعك…':'Listening…');hard=setTimeout(()=>{try{r.stop()}catch{}},12000)};
- r.onresult=e=>{heard=true;let interim='';for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal)final+=(final?' ':'')+t;else interim+=t}if(input)input.value=(final+(interim?((final?' ':'')+interim):'')).trim();silence()};
- r.onerror=e=>{if(['aborted'].includes(e?.error)){finish();return}if(!heard&&e?.error==='no-speech'){voiceTurn=false;finish();return}finish()};r.onend=finish;try{r.start();return true}catch{recognition=null;resetMic(btn);return false}
-}
-function bindChat(){
- document.addEventListener('click',e=>{const mic=e.target.closest?.('#aiChatMic');if(!mic)return;if(window.SEEKVERA_VOICE_AI?.start){e.preventDefault();e.stopImmediatePropagation();const input=mic.closest('form')?.querySelector('#aiChatInput,input[type="text"],input:not([type])');window.SEEKVERA_VOICE_AI.start(input?.id||'aiChatInput',mic)}},true);
- const input=document.querySelector('#aiChatInput');input?.addEventListener('input',()=>{if(recognition)cancelRecognition(true)});
- const form=document.querySelector('#aiChatForm');form?.addEventListener('submit',e=>{const q=input?.value?.trim();if(!q)return;const activeAttachment=document.querySelector('#aiAttachmentState:not([hidden])');if(activeAttachment&&activeAttachment.textContent?.trim())return;e.preventDefault();e.stopImmediatePropagation();if(recognition)cancelRecognition(true);submitAI(q,{fromVoice:false})},true);
-}
-function bindLocale(){document.addEventListener('change',e=>{if(e.target?.id==='country'||e.target?.id==='lang'||e.target?.id==='currency'){atomicLocale()}},true);new MutationObserver(ms=>{if(!ms.some(m=>m.type==='childList'))return;clearTimeout(observerTimer);observerTimer=setTimeout(()=>{repairCategoryIcons();localizeCurrencies()},90)}).observe(document.documentElement,{subtree:true,childList:true})}
-function boot(){installAtomicCSS();repairCategoryIcons();localizeCurrencies();bindLocale();bindChat();atomicLocale();replayPendingRouteVoice();document.documentElement.dataset.r31=VERSION}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-window.SEEKVERA_R31={version:VERSION,refresh:atomicLocale,currencyLabel,repairCategoryIcons,cancelVoice:cancelRecognition,submitAI,startFastVoice,intent,translatedIntent,routeUrl,hasFastVoice:!!SpeechRecognition};
+(() => {
+  "use strict";
+  if (window.__SEEKVERA_R31) return;
+  window.__SEEKVERA_R31 = true;
+  const VERSION = "20260926-r76-complete-global-final";
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+  const ROUTES = {
+    general: "marketplace.html",
+    travel: "travel.html",
+    tourism: "tourism.html",
+    property: "property.html",
+    cars: "cars-auto.html",
+    jobs: "jobs.html",
+    shopping: "shopping.html",
+    restaurants: "restaurants-food.html",
+    services: "local-services.html",
+    equipment: "marketplace.html?q=equipment",
+    boats: "marketplace.html?q=boats",
+    business: "import-export.html",
+    shipping: "shipping-logistics.html",
+    businessSoftware: "business-software.html",
+    software: "software.html",
+    hosting: "web-hosting.html",
+    solar: "solar.html",
+    education: "education.html",
+    health: "health.html",
+    money: "money-insurance.html",
+    entertainment: "entertainment.html",
+    media: "media.html",
+    games: "games.html",
+    connectivity: "connectivity.html",
+    wifi: "wifi.html",
+    dealAgent: "deal-agent.html",
+    everyday: "everyday.html",
+    scan: "scan.html",
+    promote: "seller-plans.html",
+  };
+  const ICONS = [
+    [/marketplace/, "🛒"],
+    [/travel\.html(?!\?q=)/, "✈️"],
+    [/flights/, "🛫"],
+    [/hotels/, "🏨"],
+    [/tourism/, "🗺️"],
+    [/property/, "🏠"],
+    [/cars-auto/, "🚘"],
+    [/jobs/, "💼"],
+    [/shopping/, "🛍️"],
+    [/restaurants-food/, "🍽️"],
+    [/local-services/, "🧰"],
+    [/equipment/, "🏗️"],
+    [/boats/, "⛵"],
+    [/import-export/, "🚢"],
+    [/shipping-logistics/, "📦"],
+    [/business-software/, "💻"],
+    [/software/, "🧩"],
+    [/web-hosting/, "🌐"],
+    [/solar/, "☀️"],
+    [/education/, "🎓"],
+    [/health/, "🏥"],
+    [/money-insurance/, "💳"],
+    [/entertainment/, "🎬"],
+    [/media/, "📰"],
+    [/games/, "🎮"],
+    [/connectivity/, "📶"],
+    [/wifi/, "📡"],
+    [/deal-agent/, "🤝"],
+    [/everyday/, "📍"],
+    [/scan/, "📲"],
+    [/seller-plans/, "🚀"],
+  ];
+  const LOCALES = {
+    ar: "ar-SA",
+    en: "en-US",
+    fr: "fr-FR",
+    zh: "zh-CN",
+    es: "es-ES",
+    hi: "hi-IN",
+    pt: "pt-PT",
+    de: "de-DE",
+    ja: "ja-JP",
+    ko: "ko-KR",
+    id: "id-ID",
+    tr: "tr-TR",
+    ru: "ru-RU",
+    ur: "ur-PK",
+    bn: "bn-BD",
+    vi: "vi-VN",
+    it: "it-IT",
+    sw: "sw-KE",
+    th: "th-TH",
+    fa: "fa-IR",
+    pl: "pl-PL",
+    nl: "nl-NL",
+    ms: "ms-MY",
+    fil: "fil-PH",
+    ha: "ha-NG",
+    yo: "yo-NG",
+    ig: "ig-NG",
+    am: "am-ET",
+    he: "he-IL",
+  };
+  const RTL = new Set(["ar", "fa", "ur", "he", "ps", "dv", "ku"]);
+  const FALLBACK_CURRENCY_AR = {
+    USD: "دولار أمريكي",
+    EUR: "يورو",
+    GBP: "جنيه إسترليني",
+    LBP: "ليرة لبنانية",
+    SYP: "ليرة سورية",
+    SAR: "ريال سعودي",
+    AED: "درهم إماراتي",
+    NGN: "نايرا نيجيرية",
+    EGP: "جنيه مصري",
+    TRY: "ليرة تركية",
+    CNY: "يوان صيني",
+    JPY: "ين ياباني",
+    KRW: "وون كوري جنوبي",
+    INR: "روبية هندية",
+    CAD: "دولار كندي",
+    AUD: "دولار أسترالي",
+    CHF: "فرنك سويسري",
+    JOD: "دينار أردني",
+    IQD: "دينار عراقي",
+    KWD: "دينار كويتي",
+    QAR: "ريال قطري",
+    BHD: "دينار بحريني",
+    OMR: "ريال عماني",
+    MAD: "درهم مغربي",
+    DZD: "دينار جزائري",
+    TND: "دينار تونسي",
+    LYD: "دينار ليبي",
+  };
+  let switching = 0,
+    recognition = null,
+    voiceTurn = false,
+    voiceSeq = 0,
+    submitting = false,
+    observerTimer = 0;
+  function lang() {
+    return (
+      String(
+        document.querySelector("#lang")?.value ||
+          document.documentElement.lang ||
+          localStorage.getItem("seekvera_lang") ||
+          "en",
+      )
+        .toLowerCase()
+        .split(/[-_]/)[0] || "en"
+    );
+  }
+  function locale() {
+    const l = lang();
+    return LOCALES[l] || l || navigator.language || "en-US";
+  }
+  function country() {
+    return String(
+      document.querySelector("#country")?.value ||
+        localStorage.getItem("seekvera_country") ||
+        "WW",
+    ).toUpperCase();
+  }
+  function countryName() {
+    const e = document.querySelector("#country");
+    return e?.options?.[e.selectedIndex]?.textContent || "Worldwide";
+  }
+  function uiText(src, fallback = src) {
+    try {
+      const t = window.SEEKVERA_I18N?.t?.(src);
+      if (t && t !== src) return t;
+    } catch {}
+    return fallback;
+  }
+  const DEPT_KEYS = [
+    "general",
+    "travel",
+    "travel",
+    "travel",
+    "tourism",
+    "property",
+    "cars",
+    "jobs",
+    "shopping",
+    "restaurants",
+    "services",
+    "equipment",
+    "boats",
+    "business",
+    "shipping",
+    "businessSoftware",
+    "software",
+    "hosting",
+    "solar",
+    "education",
+    "health",
+    "money",
+    "entertainment",
+    "media",
+    "games",
+    "connectivity",
+    "wifi",
+    "dealAgent",
+    "everyday",
+    "scan",
+    "promote",
+  ];
+  const INTENT_STOP = new Set([
+    "and",
+    "the",
+    "with",
+    "for",
+    "from",
+    "this",
+    "that",
+    "your",
+    "you",
+    "all",
+    "new",
+    "best",
+    "open",
+    "search",
+    "find",
+    "near",
+    "world",
+    "global",
+    "about",
+    "into",
+    "plus",
+    "free",
+    "local",
+    "business",
+    "service",
+    "services",
+    "marketplace",
+    "market",
+    "online",
+    "worldwide",
+    "من",
+    "الى",
+    "إلى",
+    "على",
+    "في",
+    "عن",
+    "مع",
+    "كل",
+    "هذا",
+    "هذه",
+    "الآن",
+    "الان",
+    "عبر",
+    "حول",
+  ]);
+  function normIntentText(v) {
+    return String(v || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[ًٌٍَُِّْـ]/g, "")
+      .replace(/[^\p{L}\p{N}]+/gu, " ")
+      .trim();
+  }
+  function translatedIntent(q) {
+    const nq = normIntentText(q);
+    if (!nq) return "general";
+    const data = window.SEEKVERA_R14_CATEGORIES?.data || {};
+    let best = "general",
+      bestScore = 0;
+    for (const arr of Object.values(data)) {
+      if (!Array.isArray(arr)) continue;
+      for (let i = 0; i < Math.min(arr.length, DEPT_KEYS.length); i++) {
+        const key = DEPT_KEYS[i];
+        if (!key || key === "general") continue;
+        const title = normIntentText(arr[i]);
+        if (!title) continue;
+        const exactScore = title.length + 100;
+        if (nq.includes(title) && exactScore > bestScore) {
+          best = key;
+          bestScore = exactScore;
+          continue;
+        }
+        const toks = title
+          .split(/\s+/)
+          .map((x) => x.replace(/^و/u, ""))
+          .filter((x) => x.length >= 4 && !INTENT_STOP.has(x));
+        for (const tok of toks) {
+          if (nq.includes(tok) && tok.length > bestScore) {
+            best = key;
+            bestScore = tok.length;
+          }
+        }
+      }
+    }
+    return best;
+  }
+  function intent(q) {
+    const t = String(q || "").toLowerCase();
+    const tests = [
+      [
+        "jobs",
+        /job|jobs|career|vacancy|work|employment|hiring|travail|emploi|emplois|trabajo|empleo|trabalho|emprego|lavoro|arbeit|stellen|stelle|iş|is ilanı|iş ilanı|работ|ваканси|工作|职位|仕事|求人|직업|채용|وظيفة|وظائف|وظايف|عمل|شغل|فرصة عمل|دوام/u,
+      ],
+      [
+        "solar",
+        /solar|inverter|photovoltaic|pv panel|solar panel|renewable energy|طاقة شمسية|الطاقة الشمسية|شمسي|شمسية|انفرتر|إنفرتر|الواح شمسية|ألواح شمسية/u,
+      ],
+      [
+        "education",
+        /education|school|university|course|training|college|تعليم|مدرسة|جامعة|دورة|تدريب/u,
+      ],
+      ["money", /insurance|bank|loan|finance|money|تأمين|بنك|قرض|تمويل/u],
+      [
+        "shipping",
+        /shipping|logistics|freight|cargo|delivery|شحن|لوجست|نقل بضائع|توصيل/u,
+      ],
+      [
+        "services",
+        /local service|repair|plumber|electrician|cleaning|خدمات محلية|صيانة|سباك|كهربائي|تنظيف/u,
+      ],
+      [
+        "equipment",
+        /equipment|machinery|machine|generator|معدات|ماكينات|آلات|مولد/u,
+      ],
+      ["boats", /boat|marine|yacht|ship for sale|قارب|قوارب|يخت|بحري/u],
+      [
+        "software",
+        /software|app development|application development|برمجيات|تطبيقات|برنامج/u,
+      ],
+      [
+        "hosting",
+        /hosting|domain|website|web site|استضافة|دومين|موقع إلكتروني|موقع الكتروني/u,
+      ],
+      ["games", /game|games|gaming|لعبة|العاب|ألعاب/u],
+      ["tourism", /tourism|tourist|attraction|sightseeing|سياحة|سياحي|معالم/u],
+      [
+        "dealAgent",
+        /deal agent|source offers|request offers|procurement agent|وكيل الصفقات|جيب عروض|اجلب عروض/u,
+      ],
+      [
+        "travel",
+        /travel|flight|hotel|tourism|airport|visa|سفر|طيران|فندق|سياح/u,
+      ],
+      [
+        "property",
+        /property|house|apartment|land|rent|real estate|عقار|بيت|ارض|أرض|ايجار|إيجار/u,
+      ],
+      ["cars", /car|vehicle|auto|spare part|سيارة|مركبة|قطع غيار/u],
+      [
+        "business",
+        /supplier|manufacturer|factory|wholesale|import|export|rfq|quotation|مورد|مصنع|استيراد|تصدير|عرض سعر/u,
+      ],
+      [
+        "health",
+        /hospital|clinic|doctor|pharmacy|health|مستشفى|عيادة|طبيب|صيدلية|صحة/u,
+      ],
+      ["restaurants", /restaurant|food|cafe|coffee|مطعم|اكل|أكل|قهوة/u],
+      [
+        "connectivity",
+        /wifi|wi-?fi|internet|esim|sim card|mobile data|واي فاي|انترنت|إنترنت|شريحة/u,
+      ],
+      [
+        "shopping",
+        /buy|shopping|product|shop|price|cheapest|شراء|تسوق|منتج|سعر|ارخص|أرخص/u,
+      ],
+      ["entertainment", /entertainment|cinema|concert|ترفيه|سينما|حفلة/u],
+      ["media", /news|movie|music|radio|tv|أخبار|فيلم|موسيقى/u],
+    ];
+    for (const [c, re] of tests) if (re.test(t)) return c;
+    return translatedIntent(q);
+  }
+  function arabicText(q = "") {
+    return /[\u0600-\u06ff]/u.test(String(q || "")) || lang() === "ar";
+  }
+  function conversationLang(q = "") {
+    return "auto";
+  }
+  function similarReply(a, b) {
+    const n = (x) =>
+      String(x || "")
+        .toLowerCase()
+        .replace(/[^\p{L}\p{N}]+/gu, " ")
+        .trim();
+    const x = n(a),
+      y = n(b);
+    return (
+      !!x &&
+      !!y &&
+      (x === y ||
+        (x.length > 48 && y.includes(x.slice(0, 48))) ||
+        (y.length > 48 && x.includes(y.slice(0, 48))))
+    );
+  }
+  function lastIntent() {
+    try {
+      return sessionStorage.getItem("seekvera_ai_intent") || "";
+    } catch {
+      return "";
+    }
+  }
+  function setIntent(cat) {
+    if (!cat || cat === "general") return;
+    try {
+      sessionStorage.setItem("seekvera_ai_intent", cat);
+    } catch {}
+  }
+  function explicitTravelAction(q) {
+    return /book|booking|reserve|reservation|room|stay|night|flight|ticket|trip|travel|حجز|غرفة|ليلة|طيران|تذكرة|رحلة|سفر|réserv|vol|voyage|hotel booking|reservar|vuelo|viaje|reservar|voo|viagem|buchen|flug|reise|rezerv|uçuş|seyahat|брон|рейс|путешеств|预订|航班|旅行|予約|フライト|旅行|예약|항공|여행/iu.test(
+      String(q || ""),
+    );
+  }
+  function contextualIntent(q, h = []) {
+    const now = intent(q),
+      prev = lastIntent();
+    if (!prev || prev === "general") return now;
+    const compact =
+      String(q || "").trim().length <= 120 ||
+      String(q || "")
+        .trim()
+        .split(/\s+/).length <= 12;
+    if (now === "general" && compact) return prev;
+    if (
+      prev === "jobs" &&
+      now === "travel" &&
+      compact &&
+      !explicitTravelAction(q)
+    )
+      return "jobs";
+    return now;
+  }
+  function isKnowledgeQuestion(q) {
+    const t = String(q || "").trim();
+    if (/[?؟]$/.test(t)) return true;
+    return /^(what|why|how|who|when|where|explain|tell me about|define|compare|ما هو|ما هي|ماذا|لماذا|ليش|كيف|مين|من هو|وين|أين|اشرح|شو يعني|qu['’]?est|pourquoi|comment|qui|où|que es|por qué|como|cómo|quién|dónde|o que|por que|como|was ist|warum|wie|wer|wo|что|почему|как|кто|где|什么是|为什么|怎么|如何|誰|何|なぜ|どう|무엇|왜|어떻게)/iu.test(
+      t,
+    );
+  }
+  function shouldAutoRoute(q, cat) {
+    if (!cat || cat === "general") return false;
+    if (isKnowledgeQuestion(q)) return false;
+    return String(q || "").trim().length <= 180;
+  }
+  function routeUrl(cat, q) {
+    const route = ROUTES[cat] || ROUTES.general,
+      sep = route.includes("?") ? "&" : "?";
+    return (
+      route +
+      sep +
+      "q=" +
+      encodeURIComponent(q) +
+      "&country=" +
+      encodeURIComponent(country())
+    );
+  }
+  function forceControl(c) {
+    let changed = false;
+    if (c?.country) {
+      const code = String(c.country).toUpperCase(),
+        e = document.querySelector("#country");
+      try {
+        localStorage.setItem("seekvera_country", code);
+        localStorage.setItem("seekvera_country_explicit", "1");
+      } catch {}
+      if (e && [...e.options].some((o) => o.value === code)) {
+        e.value = code;
+        e.dispatchEvent(new Event("change", { bubbles: true }));
+        changed = true;
+      }
+    }
+    if (c?.language) {
+      const code = String(c.language).toLowerCase(),
+        e = document.querySelector("#lang");
+      try {
+        localStorage.setItem("seekvera_lang", code);
+        localStorage.setItem("seekvera_language_explicit", "1");
+      } catch {}
+      if (e) {
+        if (![...e.options].some((o) => o.value === code))
+          e.add(new Option(code.toUpperCase(), code));
+        e.value = code;
+        e.dispatchEvent(new Event("change", { bubbles: true }));
+        changed = true;
+      }
+      document.documentElement.lang = code;
+      document.documentElement.dir = RTL.has(code) ? "rtl" : "ltr";
+    }
+    try {
+      window.SEEKVERA_R24_CONTROLLER?.applyControls?.(c);
+    } catch {}
+    return changed;
+  }
+  function controlResult(q) {
+    try {
+      const c = window.SEEKVERA_R24_CONTROLLER?.detectControls?.(q) || {};
+      if (c.country || c.language) {
+        try {
+          sessionStorage.removeItem("seekvera_ai_intent");
+        } catch {}
+        return c;
+      }
+    } catch {}
+    return null;
+  }
+  function controlReply(c, q) {
+    if (c?.country && c?.language)
+      return (
+        "✓ " +
+        String(c.country).toUpperCase() +
+        " · " +
+        String(c.language).toUpperCase()
+      );
+    if (c?.country)
+      return c.country === "WW"
+        ? "✓ 🌐"
+        : "✓ " + String(c.country).toUpperCase();
+    if (c?.language) return "✓ " + String(c.language).toUpperCase();
+    return "✓";
+  }
+  function pendingVoiceOnNextPage(text, language) {
+    try {
+      sessionStorage.setItem(
+        "seekvera_route_voice",
+        JSON.stringify({
+          text: String(text || ""),
+          language: String(language || "auto"),
+          at: Date.now(),
+        }),
+      );
+    } catch {}
+  }
+  function autoRoute(cat, q, reply, language, voiceOrigin) {
+    if (!shouldAutoRoute(q, cat)) return false;
+    setIntent(cat);
+    const go = () => {
+      try {
+        window.SEEKVERA_CHAT?.save?.();
+      } catch {}
+      location.assign(routeUrl(cat, q));
+    };
+    if (!voiceOrigin) {
+      setTimeout(go, 650);
+      return true;
+    }
+    pendingVoiceOnNextPage(reply, language);
+    let moved = false,
+      started = false;
+    const move = () => {
+      if (moved) return;
+      moved = true;
+      go();
+    };
+    window.addEventListener(
+      "seekvera:tts-start",
+      () => {
+        started = true;
+      },
+      { once: true },
+    );
+    window.addEventListener(
+      "seekvera:tts-end",
+      () => {
+        try {
+          sessionStorage.removeItem("seekvera_route_voice");
+        } catch {}
+        move();
+      },
+      { once: true },
+    );
+    setTimeout(() => {
+      if (!started) move();
+    }, 1800);
+    setTimeout(move, 9000);
+    return true;
+  }
+  function replayPendingRouteVoice() {
+    let raw = "";
+    try {
+      raw = sessionStorage.getItem("seekvera_route_voice") || "";
+      sessionStorage.removeItem("seekvera_route_voice");
+    } catch {}
+    if (!raw) return;
+    try {
+      const x = JSON.parse(raw);
+      if (!x?.text || Date.now() - (x.at || 0) > 30000) return;
+      setTimeout(() => {
+        try {
+          window.SEEKVERA_VOICE_AI?.markVoiceReply?.();
+        } catch {}
+        window.dispatchEvent(
+          new CustomEvent("seekvera:ai-response", {
+            detail: { text: x.text, language: x.language || "auto" },
+          }),
+        );
+      }, 320);
+    } catch {}
+  }
+  function currencyLabel(code, l = lang()) {
+    code = String(code || "").toUpperCase();
+    if (!code) return "";
+    if (l === "ar" && FALLBACK_CURRENCY_AR[code])
+      return FALLBACK_CURRENCY_AR[code];
+    try {
+      const x = new Intl.DisplayNames([l], { type: "currency" }).of(code);
+      if (x && x !== code) return x;
+    } catch {}
+    try {
+      const x = new Intl.DisplayNames([navigator.language || "en"], {
+        type: "currency",
+      }).of(code);
+      if (x && x !== code) return x;
+    } catch {}
+    return code;
+  }
+  function localizeCurrencies() {
+    const el = document.querySelector("#currency");
+    if (!el) return;
+    const profiles = window.SEEKVERA_LOCALE_R15?.profiles || {};
+    const codes = new Set(
+      [...el.options]
+        .map((o) =>
+          String(o.value || o.textContent || "")
+            .trim()
+            .toUpperCase(),
+        )
+        .filter((x) => /^[A-Z]{3}$/.test(x)),
+    );
+    Object.values(profiles).forEach((p) => {
+      if (p?.currency) codes.add(String(p.currency).toUpperCase());
+    });
+    for (const code of [...codes].sort()) {
+      let o = [...el.options].find(
+        (x) => String(x.value || "").toUpperCase() === code,
+      );
+      if (!o) {
+        o = document.createElement("option");
+        o.value = code;
+        el.appendChild(o);
+      }
+      const label = currencyLabel(code);
+      if (o.textContent !== label) o.textContent = label;
+    }
+    const p = profiles[country()];
+    if (
+      p?.currency &&
+      [...el.options].some((o) => o.value === p.currency) &&
+      el.value !== p.currency
+    )
+      el.value = p.currency;
+    const aria = uiText("Currency", lang() === "ar" ? "العملة" : "Currency");
+    if (el.getAttribute("aria-label") !== aria)
+      el.setAttribute("aria-label", aria);
+  }
+  function repairCategoryIcons() {
+    document.querySelectorAll(".r5-tile").forEach((a) => {
+      const box = a.querySelector(".r5-thumb");
+      if (!box) return;
+      const key =
+        (a.getAttribute("href") || "") +
+        " " +
+        (a.querySelector("b")?.textContent || "");
+      let icon = "";
+      for (const [re, v] of ICONS) {
+        if (re.test(key)) {
+          icon = v;
+          break;
+        }
+      }
+      if (icon && box.textContent.trim() !== icon) box.textContent = icon;
+      if (box.getAttribute("aria-hidden") !== "true")
+        box.setAttribute("aria-hidden", "true");
+    });
+  }
+  function markDirection() {
+    const l = lang();
+    if (document.documentElement.lang !== l) document.documentElement.lang = l;
+    const d = RTL.has(l) ? "rtl" : "ltr";
+    if (document.documentElement.dir !== d) document.documentElement.dir = d;
+  }
+  async function atomicLocale() {
+    const my = ++switching;
+    document.documentElement.classList.add("sv-r31-switching");
+    markDirection();
+    localizeCurrencies();
+    repairCategoryIcons();
+    try {
+      window.SEEKVERA_I18N?.apply?.();
+    } catch {}
+    try {
+      window.SEEKVERA_R14_CATEGORIES?.apply?.();
+    } catch {}
+    try {
+      window.SEEKVERA_LOCALE_GUARD_R9?.schedule?.(0);
+    } catch {}
+    try {
+      await Promise.resolve(window.SEEKVERA_LOCALE_GUARD_R9?.apply?.());
+    } catch {}
+    localizeCurrencies();
+    repairCategoryIcons();
+    if (my === switching)
+      document.documentElement.classList.remove("sv-r31-switching");
+    setTimeout(() => {
+      if (my === switching) {
+        try {
+          window.SEEKVERA_LOCALE_GUARD_R9?.schedule?.(0);
+        } catch {}
+        localizeCurrencies();
+        repairCategoryIcons();
+        document.documentElement.classList.remove("sv-r31-switching");
+      }
+    }, 650);
+  }
+  function installAtomicCSS() {
+    if (document.getElementById("sv-r31-css")) return;
+    const s = document.createElement("style");
+    s.id = "sv-r31-css";
+    s.textContent =
+      ".sv-r31-switching .r5-center,.sv-r31-switching .r5-left,.sv-r31-switching .r5-right{opacity:.12;transition:opacity .12s ease}.r5-center,.r5-left,.r5-right{transition:opacity .12s ease}.r5-thumb{overflow:hidden}.r5-thumb img{display:none!important}";
+    document.head.appendChild(s);
+  }
+  function resetMic(btn) {
+    if (!btn) return;
+    btn.classList.remove("listening");
+    btn.textContent = "🎤";
+    btn.setAttribute(
+      "aria-label",
+      uiText(
+        "Speak to SEEKVERA AI",
+        lang() === "ar" ? "تحدث مع ذكاء SEEKVERA" : "Speak to SEEKVERA AI",
+      ),
+    );
+  }
+  function cancelRecognition(discard = true) {
+    const r = recognition;
+    recognition = null;
+    if (r) {
+      try {
+        discard ? r.abort() : r.stop();
+      } catch {}
+    }
+    resetMic(document.querySelector("#aiChatMic"));
+    if (discard) voiceTurn = false;
+  }
+  function speak(text) {
+    if (
+      !voiceTurn ||
+      !window.speechSynthesis ||
+      !window.SpeechSynthesisUtterance
+    )
+      return;
+    voiceTurn = false;
+    try {
+      speechSynthesis.cancel();
+    } catch {}
+    const clean = String(text || "")
+      .replace(/https?:\/\/\S+/g, " ")
+      .replace(/[*_#>`~|]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (!clean) return;
+    const parts = clean.match(/[^.!?。！？؛]{1,130}(?:[.!?。！？؛]+|$)/g) || [
+      clean.slice(0, 130),
+    ];
+    const token = ++voiceSeq;
+    const play = (i) => {
+      if (token !== voiceSeq || i >= parts.length) return;
+      const u = new SpeechSynthesisUtterance(parts[i].trim());
+      u.lang = locale();
+      u.rate = 1.04;
+      u.pitch = 1.02;
+      u.onend = () => setTimeout(() => play(i + 1), 70);
+      u.onerror = () => setTimeout(() => play(i + 1), 30);
+      speechSynthesis.speak(u);
+    };
+    play(0);
+  }
+  function appendMsg(role, text, extra = "") {
+    const box = document.querySelector("#aiMessages");
+    if (!box) return null;
+    const d = document.createElement("div");
+    d.className = "ai-msg " + role + (extra ? " " + extra : "");
+    d.dataset.userContent = "1";
+    d.textContent = text;
+    box.appendChild(d);
+    box.scrollTop = box.scrollHeight;
+    return d;
+  }
+  function history() {
+    return [...document.querySelectorAll("#aiMessages .ai-msg")]
+      .filter((x) => !x.classList.contains("thinking"))
+      .slice(-8)
+      .map((x) => ({
+        role: x.classList.contains("user") ? "user" : "assistant",
+        content: String(x.textContent || "")
+          .trim()
+          .slice(0, 1200),
+      }))
+      .filter((x) => x.content);
+  }
+  function thinkingText() {
+    const l = lang();
+    if (l === "ar") return "لحظة…";
+    if (l === "fr") return "Un instant…";
+    if (l === "zh") return "请稍候…";
+    if (l === "hi") return "एक क्षण…";
+    return uiText("Thinking…", "…");
+  }
+  function failText() {
+    const l = lang();
+    if (l === "ar") return "تعذّر الاتصال للحظة. حاول مرة أخرى.";
+    if (l === "fr") return "Connexion momentanément indisponible. Réessayez.";
+    if (l === "zh") return "暂时无法连接，请重试。";
+    if (l === "hi") return "अभी कनेक्ट नहीं हो सका। फिर कोशिश करें。";
+    return "↻ " + uiText("Try again", "Try again");
+  }
+  async function fetchAI(payload) {
+    const urls = [
+      location.origin + "/api/ai",
+      "https://seekvera-main.seekvera-global.workers.dev/api/ai",
+    ];
+    let err = "AI unavailable";
+    for (const url of [...new Set(urls)]) {
+      const c = new AbortController(),
+        t = setTimeout(() => c.abort(), 11000);
+      try {
+        const r = await fetch(url, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(payload),
+          signal: c.signal,
+        });
+        const d = await r.json().catch(() => ({}));
+        clearTimeout(t);
+        if (r.ok && d?.response) return d;
+        err = d?.error || "HTTP " + r.status;
+      } catch (e) {
+        clearTimeout(t);
+        err = e?.message || err;
+      }
+    }
+    throw Error(err);
+  }
+  function categoryTitle(cat) {
+    const data = window.SEEKVERA_R14_CATEGORIES?.data?.[lang()],
+      i = DEPT_KEYS.indexOf(cat);
+    return Array.isArray(data) && i >= 0 ? String(data[i] || "").trim() : "";
+  }
+  function showRoute(d, q) {
+    const box = document.querySelector("#aiActions");
+    if (!box) return;
+    box.innerHTML = "";
+    const cat = d?.category || intent(q),
+      route = d?.route || ROUTES[cat] || ROUTES.general;
+    if (!route) return;
+    if (cat !== "general" && shouldAutoRoute(q, cat)) return;
+    const ar = arabicText(q),
+      l = lang(),
+      labels = {
+        jobs: ar ? "افتح الوظائف الآن ←" : "Open Jobs now →",
+        travel: ar
+          ? "افتح السفر والفنادق الآن ←"
+          : "Open Travel & Hotels now →",
+        property: ar ? "افتح العقارات الآن ←" : "Open Property now →",
+        cars: ar ? "افتح السيارات الآن ←" : "Open Cars now →",
+        business: ar
+          ? "افتح الشركات والموردين الآن ←"
+          : "Open Business & Suppliers now →",
+        health: ar ? "افتح الصحة الآن ←" : "Open Health now →",
+        restaurants: ar ? "افتح المطاعم الآن ←" : "Open Restaurants now →",
+        connectivity: ar
+          ? "افتح الإنترنت والاتصال الآن ←"
+          : "Open Connectivity now →",
+        shopping: ar ? "افتح التسوق الآن ←" : "Open Shopping now →",
+      };
+    const a = document.createElement("a");
+    a.href =
+      route +
+      "?q=" +
+      encodeURIComponent(q) +
+      "&country=" +
+      encodeURIComponent(country());
+    const title = categoryTitle(cat);
+    a.textContent =
+      l !== "en" && l !== "ar"
+        ? title
+          ? title + " →"
+          : "→"
+        : labels[cat] ||
+          (ar ? "افتح القسم المناسب الآن ←" : "Open the right section now →");
+    a.dataset.svDirectRoute = cat;
+    box.appendChild(a);
+  }
+  async function submitAI(q, { fromVoice = false } = {}) {
+    q = String(q || "")
+      .trim()
+      .slice(0, 1800);
+    if (!q || submitting) return;
+    submitting = true;
+    const voiceOrigin =
+      !!fromVoice || !!window.SEEKVERA_VOICE_AI?.isVoiceReplyPending?.();
+    if (voiceOrigin)
+      try {
+        window.SEEKVERA_VOICE_AI?.markVoiceReply?.();
+      } catch {}
+    const input = document.querySelector("#aiChatInput");
+    if (input) input.value = "";
+    appendMsg("user", q);
+    try {
+      window.SEEKVERA_CHAT?.save?.();
+    } catch {}
+    const spokenLanguage = conversationLang(q),
+      ctl = controlResult(q);
+    if (ctl) {
+      const reply = controlReply(ctl, q);
+      appendMsg("bot", reply);
+      try {
+        window.SEEKVERA_CHAT?.save?.();
+      } catch {}
+      window.dispatchEvent(
+        new CustomEvent("seekvera:ai-response", {
+          detail: { text: reply, language: spokenLanguage },
+        }),
+      );
+      setTimeout(() => {
+        forceControl(ctl);
+        try {
+          window.SEEKVERA_CHAT?.save?.();
+        } catch {}
+      }, 420);
+      submitting = false;
+      return;
+    }
+    const pending = appendMsg("bot", thinkingText(), "thinking");
+    const h = history(),
+      guessed = contextualIntent(q, h);
+    setIntent(guessed);
+    showRoute(
+      { category: guessed, route: ROUTES[guessed] || ROUTES.general },
+      q,
+    );
+    try {
+      const d = await fetchAI({
+        message: q,
+        country: countryName(),
+        countryCode: country(),
+        language: "auto",
+        uiLanguage: lang(),
+        browserLanguage: String(navigator.language || ""),
+        scope: country() === "WW" ? "worldwide" : "country",
+        fast: true,
+        history: h,
+        conversationIntent: guessed,
+      });
+      try {
+        const srv = {
+          country: d?.countryAction?.code || "",
+          language: d?.languageAction?.code || "",
+        };
+        if (srv.country || srv.language)
+          setTimeout(
+            () => window.SEEKVERA_R24_CONTROLLER?.applyControls?.(srv),
+            420,
+          );
+      } catch {}
+      let finalCat =
+        guessed && guessed !== "general" ? guessed : d?.category || guessed;
+      if (
+        guessed === "jobs" &&
+        finalCat === "travel" &&
+        !explicitTravelAction(q)
+      )
+        finalCat = "jobs";
+      setIntent(finalCat);
+      let reply = String(d.response || "").trim();
+      const previous =
+        [...h].reverse().find((x) => x.role === "assistant")?.content || "";
+      if (similarReply(reply, previous)) {
+        const title = categoryTitle(finalCat);
+        reply = title
+          ? arabicText(q)
+            ? "تمام — " + title + ". عم أكمل طلبك مباشرة هناك."
+            : lang() === "en"
+              ? title + ". I’m continuing your request there now."
+              : title + " ✓"
+          : arabicText(q)
+            ? "تمام، عم أكمل طلبك مباشرة من دون إعادة نفس الكلام."
+            : lang() === "en"
+              ? "Got it. I’m continuing your request directly without repeating myself."
+              : "✓";
+      }
+      if (pending) {
+        pending.textContent = reply;
+        pending.classList.remove("thinking");
+      }
+      const ans = document.querySelector("#aiAnswer");
+      if (ans) ans.textContent = reply;
+      showRoute({ category: finalCat, route: ROUTES[finalCat] || d?.route }, q);
+      try {
+        window.SEEKVERA_CHAT?.save?.();
+      } catch {}
+      window.dispatchEvent(
+        new CustomEvent("seekvera:ai-response", {
+          detail: {
+            text: reply,
+            language: d.language || "auto",
+            category: finalCat,
+            route: ROUTES[finalCat] || d?.route,
+          },
+        }),
+      );
+      if (autoRoute(finalCat, q, reply, d.language || "auto", voiceOrigin))
+        return;
+    } catch (e) {
+      const reply = failText();
+      if (pending) {
+        pending.textContent = reply;
+        pending.classList.remove("thinking");
+      }
+      try {
+        window.SEEKVERA_CHAT?.save?.();
+      } catch {}
+      window.dispatchEvent(
+        new CustomEvent("seekvera:ai-response", {
+          detail: { text: reply, language: "auto" },
+        }),
+      );
+      if (guessed !== "general" && shouldAutoRoute(q, guessed)) {
+        setIntent(guessed);
+        setTimeout(() => {
+          try {
+            window.SEEKVERA_CHAT?.save?.();
+          } catch {}
+          location.assign(routeUrl(guessed, q));
+        }, 650);
+      }
+    } finally {
+      submitting = false;
+    }
+  }
+  function startFastVoice(btn) {
+    const input = document.querySelector("#aiChatInput");
+    if (!SpeechRecognition) {
+      return false;
+    }
+    if (recognition) {
+      cancelRecognition(false);
+      return true;
+    }
+    try {
+      speechSynthesis?.cancel?.();
+    } catch {}
+    const r = new SpeechRecognition();
+    recognition = r;
+    r.lang = locale();
+    r.interimResults = true;
+    r.continuous = false;
+    r.maxAlternatives = 1;
+    let final = "",
+      heard = false,
+      ended = false,
+      stopTimer = 0,
+      hard = 0;
+    const finish = () => {
+      if (ended) return;
+      ended = true;
+      clearTimeout(stopTimer);
+      clearTimeout(hard);
+      resetMic(btn);
+      if (recognition === r) recognition = null;
+      const q = (final || input?.value || "").trim();
+      if (q) submitAI(q, { fromVoice: true });
+      else voiceTurn = false;
+    };
+    const silence = () => {
+      clearTimeout(stopTimer);
+      stopTimer = setTimeout(() => {
+        try {
+          r.stop();
+        } catch {}
+      }, 900);
+    };
+    r.onstart = () => {
+      voiceTurn = true;
+      btn.classList.add("listening");
+      btn.textContent = "■";
+      btn.setAttribute(
+        "aria-label",
+        uiText(
+          "Stop listening",
+          lang() === "ar" ? "إيقاف الاستماع" : "Stop listening",
+        ),
+      );
+      if (input)
+        input.placeholder = uiText(
+          "Listening…",
+          lang() === "ar" ? "أسمعك…" : "Listening…",
+        );
+      hard = setTimeout(() => {
+        try {
+          r.stop();
+        } catch {}
+      }, 12000);
+    };
+    r.onresult = (e) => {
+      heard = true;
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const t = e.results[i][0].transcript;
+        if (e.results[i].isFinal) final += (final ? " " : "") + t;
+        else interim += t;
+      }
+      if (input)
+        input.value = (
+          final + (interim ? (final ? " " : "") + interim : "")
+        ).trim();
+      silence();
+    };
+    r.onerror = (e) => {
+      if (["aborted"].includes(e?.error)) {
+        finish();
+        return;
+      }
+      if (!heard && e?.error === "no-speech") {
+        voiceTurn = false;
+        finish();
+        return;
+      }
+      finish();
+    };
+    r.onend = finish;
+    try {
+      r.start();
+      return true;
+    } catch {
+      recognition = null;
+      resetMic(btn);
+      return false;
+    }
+  }
+  function bindChat() {
+    document.addEventListener(
+      "click",
+      (e) => {
+        const mic = e.target.closest?.("#aiChatMic");
+        if (!mic) return;
+        if (window.SEEKVERA_VOICE_AI?.start) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          const input = mic
+            .closest("form")
+            ?.querySelector(
+              '#aiChatInput,input[type="text"],input:not([type])',
+            );
+          window.SEEKVERA_VOICE_AI.start(input?.id || "aiChatInput", mic);
+        }
+      },
+      true,
+    );
+    const input = document.querySelector("#aiChatInput");
+    input?.addEventListener("input", () => {
+      if (recognition) cancelRecognition(true);
+    });
+    /* superapp.js owns the inline home form. A second capture listener here
+       used to redirect before the visible reply and speech could finish. */
+    const form = document.querySelector("#aiChatForm");
+    if (!document.querySelector("#aiChat")) form?.addEventListener(
+      "submit",
+      (e) => {
+        const q = input?.value?.trim();
+        if (!q) return;
+        const activeAttachment = document.querySelector(
+          "#aiAttachmentState:not([hidden])",
+        );
+        if (activeAttachment && activeAttachment.textContent?.trim()) return;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        if (recognition) cancelRecognition(true);
+        submitAI(q, { fromVoice: false });
+      },
+      true,
+    );
+  }
+  function bindLocale() {
+    document.addEventListener(
+      "change",
+      (e) => {
+        if (
+          e.target?.id === "country" ||
+          e.target?.id === "lang" ||
+          e.target?.id === "currency"
+        ) {
+          atomicLocale();
+        }
+      },
+      true,
+    );
+    new MutationObserver((ms) => {
+      if (!ms.some((m) => m.type === "childList")) return;
+      clearTimeout(observerTimer);
+      observerTimer = setTimeout(() => {
+        repairCategoryIcons();
+        localizeCurrencies();
+      }, 90);
+    }).observe(document.documentElement, { subtree: true, childList: true });
+  }
+  function boot() {
+    installAtomicCSS();
+    repairCategoryIcons();
+    localizeCurrencies();
+    bindLocale();
+    bindChat();
+    atomicLocale();
+    replayPendingRouteVoice();
+    document.documentElement.dataset.r31 = VERSION;
+  }
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", boot, { once: true });
+  else boot();
+  window.SEEKVERA_R31 = {
+    version: VERSION,
+    refresh: atomicLocale,
+    currencyLabel,
+    repairCategoryIcons,
+    cancelVoice: cancelRecognition,
+    submitAI,
+    startFastVoice,
+    intent,
+    translatedIntent,
+    routeUrl,
+    hasFastVoice: !!SpeechRecognition,
+  };
 })();
