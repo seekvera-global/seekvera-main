@@ -234,7 +234,8 @@ function speak(text,l,force=false){
   lastAnswer=typeof text==='string'?text:'';lastLocale=localeForText(lastAnswer,l);const chunks=splitSpeech(lastAnswer);
   if(force){muted=false;localStorage.setItem('seekvera_voice_muted','0');localStorage.setItem('seekvera_voice_mode','1');updateSpeakerButtons()}
   if(muted||!chunks.length){if(force)voiceConversation=false;return}
-  const token=++speakToken;
+  const token=++speakToken,android=/Android/i.test(navigator.userAgent);
+  if(android){serverSpeakSequence(chunks,lastLocale,token).then(ok=>{if(!ok&&token===speakToken&&!muted)nativeSpeak(chunks,token)});return}
   if(nativeSpeak(chunks,token))return;
   serverSpeakSequence(chunks,lastLocale,token)
 }
@@ -309,7 +310,7 @@ function start(targetId,button,forceNative=false){
   r.onend=()=>{clearSpeechTimers();setMic(false);if(recognition===r)recognition=null;const q=i?.value?.trim();if(q){voiceReplyDeadline=Date.now()+90000;if(i)i.placeholder='Message SEEKVERA AI…';setTimeout(()=>i.form?.requestSubmit?.(),25)}else{voiceConversation=false;if(i&&hadError)i.placeholder='Voice recognition failed — tap the microphone and try again.'}};
   try{r.start()}catch(_){recognition=null;voiceConversation=false;clearSpeechTimers();setMic(false);serverVoice(targetId,activeButton)}
 }
-function speakerAction(btn){voiceConversation=false;muted=false;localStorage.setItem('seekvera_voice_muted','0');updateSpeakerButtons();unlockTTS();speak(lastAnswer||'SEEKVERA',lastLocale||locale(),true);if(btn){btn.textContent='🔊';btn.setAttribute('aria-label','Play latest AI reply')}}
+function speakerAction(btn){voiceConversation=false;muted=false;localStorage.setItem('seekvera_voice_muted','0');updateSpeakerButtons();unlockTTS();speak(lastAnswer||'SEEKVERA',lastLocale||locale(),true);if(btn){btn.textContent='🔊';btn.setAttribute('aria-label','🔊')}}
 window.addEventListener('seekvera:voice',e=>start(e.detail?.targetId,e.detail?.button));
 window.addEventListener('seekvera:ai-response',e=>{const d=e.detail||{},voiceMode=localStorage.getItem('seekvera_voice_mode')==='1',auto=voiceConversation||Date.now()<voiceReplyDeadline||voiceMode;if(auto)voiceReplyDeadline=0;if(d.text){rememberChatVoiceLanguage(d.language,d.text);speak(d.text,d.language,auto)}});
 window.SEEKVERA_VOICE_AI={speak,start,markVoiceReply:()=>{voiceConversation=true;voiceReplyDeadline=Date.now()+90000;muted=false;localStorage.setItem('seekvera_voice_muted','0');localStorage.setItem('seekvera_voice_mode','1');updateSpeakerButtons();unlockTTS()},isVoiceReplyPending:()=>voiceConversation||Date.now()<voiceReplyDeadline||localStorage.getItem('seekvera_voice_mode')==='1',localWhisperTranscribe,automaticMultilingualTranscribe,chooseHybridTranscript,inputLocale:voiceInputLocale,seedLanguage:seedVoiceLanguageFromConversation,supportedLanguages:Object.keys(LANGS),resolveLocale:(text,requested)=>localeForText(text,requested),prepareVoice:unlockTTS,serverSpeak:(text,requested)=>{const token=++speakToken;return serverSpeak(text,localeForText(text,requested),token)}};
