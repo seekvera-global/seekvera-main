@@ -1,6 +1,6 @@
 import baseWorker from './worker-r31.js';
 
-const RELEASE='20260926-r76-unified-global-ai';
+const RELEASE='20260927-r80-unified-global-conversation';
 const PRIMARY='@cf/zai-org/glm-4.7-flash';
 const FALLBACK='@cf/qwen/qwen3-30b-a3b-fp8';
 const ALLOWED=new Set(['https://seekveraglobal.com','https://www.seekveraglobal.com','https://seekvera-global.github.io','https://seekvera-main.seekvera-global.workers.dev']);
@@ -88,13 +88,13 @@ async function runStructured(env,body){
  const system=`You are SEEKVERA AI, the action assistant inside a worldwide marketplace and discovery app. You must understand the LATEST USER MESSAGE directly, including dialects, slang, Lebanese Arabic, mixed Arabic/English, transliteration, and any major world language. Never choose the reply language from the selected country, interface, or browser. Reply in the SAME language and script as the latest user message unless the user explicitly requests another reply language.\
 \
 Return ONLY one JSON object with exactly these keys: reply, languageCode, category, countryAction, languageAction.\
-- reply: a natural, concise, useful answer that appears BEFORE any app action. Do not merely say you will help; actually answer what you can.\
+- reply: talk naturally like a capable conversational assistant, not a fixed template. Use the recent conversation to understand follow-ups. Answer what you can first. If the request is too vague to choose useful results, ask ONE short, relevant clarification (for example location, type, budget or date). Never ask again for information already present in the conversation.\
 - languageCode: best ISO language code for the latest user message.\
 - category: exactly one of ${[...CATS].join(', ')}. Choose general when no app section is relevant.\
-- countryAction: ISO-3166 alpha-2 code, or WW, ONLY when the user explicitly commands the SEEKVERA APP/MARKET/COUNTRY SELECTOR to change/switch/move/set. Leave empty when the user merely searches for something in a country.\
+- countryAction: the ISO-3166 alpha-2 code for ANY country in the world, or WW, ONLY when the user explicitly commands the SEEKVERA APP/MARKET/COUNTRY SELECTOR to change/switch/move/set. Understand country names in the user's own language and dialect. Leave empty when the user merely searches for something in a country.\
 - languageAction: supported language code ONLY when the user explicitly commands the app/interface language to change. Leave empty otherwise.\
 \
-Action examples: “حطني تركيا” => countryAction TR. “change the app to France” => FR. “حوّلني ورلد وايد” => WW. “حطلي تركي” when clearly asking app language => languageAction tr. “بدي فندق بفرنسا” is a search, NOT a country action. “I need a job in Germany” is jobs, NOT a country action.\
+Action examples: “حطني تركيا” => countryAction TR. “change the app to France” => FR. “把应用切换到巴西” => BR. “حوّلني ورلد وايد” => WW. “حطلي تركي” when clearly asking app language => languageAction tr. “بدي فندق بفرنسا” is a search, NOT a country action. “I need a job in Germany” is jobs, NOT a country action.\
 Selected market: ${selected}.\
 Conversation history:\
 ${history||'(none)'}\
