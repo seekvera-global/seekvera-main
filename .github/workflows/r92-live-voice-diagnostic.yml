@@ -1,0 +1,60 @@
+name: R92 live multilingual voice diagnostic
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r92-live-voice-diagnostic.yml'
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install fixture tool
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak-ng >/dev/null
+      - name: Generate voice fixtures
+        run: |
+          espeak-ng -v en-us -s 125 -w /tmp/en.wav 'hello seekvera how are you today I need a hotel in Beirut'
+          espeak-ng -v ar -s 120 -w /tmp/ar.wav 'مرحبا كيف حالك اليوم انا اتكلم معك بالعربي واريد فندق في بيروت'
+      - name: Arabic ASR live
+        run: |
+          set -e
+          B64=$(base64 -w0 /tmp/ar.wav)
+          curl -fsS --max-time 25 -H 'content-type: application/json' --data-binary "{\"audio\":\"data:audio/wav;base64,$B64\",\"language\":\"auto\"}" 'https://seekveraglobal.com/api/transcribe?r92=ar' -o /tmp/ar.json
+          cat /tmp/ar.json
+          jq -e '(.text|type)=="string" and (.text|length)>2' /tmp/ar.json >/dev/null
+          grep -q '[ء-ي]' /tmp/ar.json
+      - name: English ASR live
+        if: always()
+        run: |
+          set -e
+          B64=$(base64 -w0 /tmp/en.wav)
+          curl -fsS --max-time 25 -H 'content-type: application/json' --data-binary "{\"audio\":\"data:audio/wav;base64,$B64\",\"language\":\"auto\"}" 'https://seekveraglobal.com/api/transcribe?r92=en' -o /tmp/en.json
+          cat /tmp/en.json
+          jq -e '(.text|type)=="string" and (.text|length)>2' /tmp/en.json >/dev/null
+          grep -Eqi 'hello|hotel|beirut|seekvera' /tmp/en.json
+      - name: Arabic TTS live
+        if: always()
+        run: |
+          set -e
+          curl -fsS --max-time 25 -H 'content-type: application/json' -d '{"text":"مرحبا، كيف حالك اليوم؟","language":"ar"}' 'https://seekveraglobal.com/api/tts?r92=tts' -o /tmp/tts.bin
+          test $(wc -c < /tmp/tts.bin) -gt 500
+      - name: Arabic AI reply language live
+        if: always()
+        run: |
+          set -e
+          curl -fsS --max-time 25 -H 'content-type: application/json' -d '{"message":"كيفك اليوم؟ أريد فندق في بيروت","country":"Lebanon","language":"English","history":[]}' 'https://seekveraglobal.com/api/ai?r92=ai-ar' -o /tmp/ai-ar.json
+          cat /tmp/ai-ar.json
+          jq -e '.language=="ar" and (.response|type)=="string" and (.response|length)>3' /tmp/ai-ar.json >/dev/null
+      - name: English AI reply language live
+        if: always()
+        run: |
+          set -e
+          curl -fsS --max-time 25 -H 'content-type: application/json' -d '{"message":"How are you today? I need a hotel in Beirut","country":"Lebanon","language":"Arabic","history":[]}' 'https://seekveraglobal.com/api/ai?r92=ai-en' -o /tmp/ai-en.json
+          cat /tmp/ai-en.json
+          jq -e '.language=="en" and (.response|type)=="string" and (.response|length)>3' /tmp/ai-en.json >/dev/null
