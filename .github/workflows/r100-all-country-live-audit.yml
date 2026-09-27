@@ -1,0 +1,26 @@
+name: R100 all-country live locale audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r100-all-country-live-audit.yml'
+      - 'tools/r100_all_country_audit.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install browser tools
+        shell: bash
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+      - name: Audit every country profile live
+        run: node tools/r100_all_country_audit.mjs
