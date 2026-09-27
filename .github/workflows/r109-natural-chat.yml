@@ -1,0 +1,42 @@
+name: R109 natural conversation live
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r109-natural-chat.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          node --check worker-r76.js
+          grep -F "20260927-r109-natural-chat" worker-r76.js
+      - uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Test natural Arabic and country action
+        run: |
+          set -e
+          BASE='https://seekveraglobal.com'
+          for i in $(seq 1 12); do
+            A=$(curl -fsSL --max-time 25 -H 'content-type: application/json' --data '{"message":"مرحبا، كيفك اليوم؟","country":"Japan","countryCode":"JP","language":"auto","uiLanguage":"ja","history":[]}' "$BASE/api/ai?r109=$i")
+            C=$(curl -fsSL --max-time 25 -H 'content-type: application/json' --data '{"message":"غير الدولة إلى اليابان","country":"Lebanon","countryCode":"LB","language":"auto","uiLanguage":"ar","history":[],"clientControls":{"countries":["JP","LB"]}}' "$BASE/api/ai?r109=$i")
+            if echo "$A" | jq -e '.ok==true and .language=="ar" and (.response|test("منيح|بخير|أهلاً|اهلاً")) and (.model|test("conversation"))' >/dev/null               && echo "$C" | jq -e '.ok==true and .countryAction.code=="JP" and .language=="ar"' >/dev/null; then
+              echo R109_LIVE_PASS
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "$A"
+          echo "$C"
+          exit 1
