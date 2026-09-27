@@ -1,0 +1,202 @@
+name: R85 visible i18n and client chat guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r85-visible-i18n-chat-guard.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-deploy-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch R85 client behavior and visible translations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python <<'PY'
+          from pathlib import Path
+          VER='20260927-r85-visible-i18n-chat-guard'
+
+          # Strong client-side guard: language/voice talk must stay conversation even if a model misclassifies it.
+          p=Path('superapp.js')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('const RELEASE = "20260927-r83-unified-multilingual-voice-ai";',f'const RELEASE = "{VER}";',1)
+          anchor='  let routeTimer = 0;\n'
+          helper=r'''  function metaConversationClient(q = "") {
+    const t = String(q || "").toLowerCase();
+    return /(?:\b(?:i am|i'm|im|you are|you're|are you|can you|do you)\b.{0,50}\b(?:speaking|speak|understand|hear|listening|language|voice|arabic|english|french|turkish|spanish|german)\b)|(?:(?:أنا|انا|إنت|انت|عم|صرت|صار|هلأ|هلق|هون|هنا).{0,50}(?:بحكي|بتحكي|احكي|تفهم|بتفهم|سامع|تسمع|صوت|لغة|عربي|العربي|إنجليزي|انجليزي|فرنسي|تركي))|(?:parle|parles|comprends|écoute|langue).{0,35}|(?:sprich|versteh|sprache).{0,35}|(?:habla|hablas|entiend|idioma).{0,35}|(?:konuş|anlıyor|anliyor|dil).{0,35}|(?:говор|понима|язык).{0,35}|(?:说|听懂|语言)|(?:話|言語)|(?:말|이해|언어)/iu.test(t);
+  }
+  function routeLikeReplyClient(text = "") {
+    return /(?:take|send|move|route|redirect).{0,40}(?:section|department)|(?:section|department).{0,40}(?:now|direct)|(?:قسم|القسم).{0,40}(?:مباشر|الأنسب|المناسب|وديك|أوصلك|انقلك|أنقلك)/iu.test(String(text || ""));
+  }
+  function safeMetaReply(q = "") {
+    const t=String(q||"");
+    if(/[\u0600-\u06ff]/u.test(t)) return "إيه، فهمتك. كفّي احكي معي طبيعي بالعربي أو بأي لغة، وما رح حوّلك على أي قسم إلا لما تطلب شي محدد.";
+    if(/[\u4e00-\u9fff]/u.test(t)) return "可以，我听得懂。你可以自然地继续说；只有当你提出明确需求时，我才会带你去相应栏目。";
+    if(/[\u3040-\u30ff]/u.test(t)) return "はい、理解できます。自然に話し続けてください。具体的な依頼があるまでは会話を続けます。";
+    if(/[\uac00-\ud7af]/u.test(t)) return "네, 이해해요. 자연스럽게 계속 말씀하세요. 구체적인 요청이 있을 때만 해당 섹션으로 안내할게요.";
+    if(/[\u0900-\u097f]/u.test(t)) return "हाँ, मैं समझता हूँ। स्वाभाविक रूप से बोलते रहें; किसी खास अनुरोध पर ही मैं संबंधित सेक्शन में ले जाऊँगा।";
+    if(/[\u0400-\u052f]/u.test(t)) return "Да, я вас понимаю. Продолжайте говорить естественно; к разделу я перейду только по конкретному запросу.";
+    if(/\b(?:bonjour|français|francais|parle|comprends|langue)\b/i.test(t)) return "Oui, je vous comprends. Continuez naturellement ; je ne vous enverrai vers une section que lorsque vous demanderez quelque chose de précis.";
+    if(/\b(?:hola|español|espanol|habla|entiendo|idioma)\b/i.test(t)) return "Sí, te entiendo. Sigue hablando con naturalidad; solo te llevaré a una sección cuando pidas algo concreto.";
+    if(/\b(?:merhaba|türkçe|turkce|konuş|anlıyor|anliyor)\b/i.test(t)) return "Evet, seni anlıyorum. Doğal konuşmaya devam et; yalnızca belirli bir şey istediğinde ilgili bölüme götüreceğim.";
+    if(/\b(?:hallo|deutsch|sprich|versteh|sprache)\b/i.test(t)) return "Ja, ich verstehe dich. Sprich einfach natürlich weiter; erst bei einer konkreten Anfrage gehe ich mit dir in den passenden Bereich.";
+    return "Yes, I understand you. Keep talking naturally in any language; I’ll only take you to a section when you ask for something specific.";
+  }
+'''
+          if 'function metaConversationClient' not in s:
+              if anchor not in s: raise SystemExit('superapp routeTimer anchor missing')
+              s=s.replace(anchor,anchor+helper,1)
+          old='      const finalCat = d.category ? d.category : localCat;'
+          new='''      const metaChat = metaConversationClient(q),\n        finalCat = metaChat ? "general" : (d.category ? d.category : localCat);\n      if (metaChat && routeLikeReplyClient(reply)) reply = safeMetaReply(q);'''
+          if old not in s: raise SystemExit('superapp finalCat anchor missing')
+          s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+
+          # Cache-bust the updated client and add a dedicated visible-text language synchronizer.
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('data-release="20260927-r82-reply-before-navigation"',f'data-release="{VER}"',1)
+          s=s.replace('superapp.js?v=20260927-r83-unified-multilingual-voice-ai',f'superapp.js?v={VER}',1)
+          s=s.replace('sw.js?v=20260927-r83-unified-multilingual-voice-ai',f'sw.js?v={VER}',1)
+          inject=f'    <script src="r85-visible-i18n.js?v={VER}" defer></script>\n'
+          mark='    <script src="locale-r14-categories.js?v=20260924-r14" defer></script>\n'
+          if 'r85-visible-i18n.js' not in s:
+              if mark not in s: raise SystemExit('index i18n insertion anchor missing')
+              s=s.replace(mark,inject+mark,1)
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('sw.js')
+          s=p.read_text(encoding='utf-8')
+          import re
+          s=re.sub(r"const RELEASE='[^']+';",f"const RELEASE='{VER}';",s,count=1)
+          p.write_text(s,encoding='utf-8')
+          PY
+
+          cat > r85-visible-i18n.js <<'JS'
+          (()=>{
+            'use strict';
+            const EN={
+              lead:'Hotels, homes, cars, jobs, products, suppliers, media and services — from one global marketplace.',
+              note:'Choose a country once and SEEKVERA switches the app language, currency, AI context and country-aware sections automatically. You can still change language manually if you want.'
+            };
+            const T={
+              ar:{lead:'فنادق، منازل، سيارات، وظائف، منتجات، موردون، إعلام وخدمات — من سوق عالمي واحد.',note:'اختر الدولة مرة واحدة، وSEEKVERA يغيّر لغة التطبيق والعملة وسياق الذكاء الاصطناعي والأقسام المناسبة للدولة تلقائياً. ويمكنك تغيير اللغة يدوياً متى شئت.'},
+              fr:{lead:'Hôtels, logements, voitures, emplois, produits, fournisseurs, médias et services — depuis une seule place de marché mondiale.',note:'Choisissez un pays une seule fois et SEEKVERA adapte automatiquement la langue, la devise, le contexte IA et les sections au pays. Vous pouvez toujours changer la langue manuellement.'},
+              es:{lead:'Hoteles, viviendas, coches, empleos, productos, proveedores, medios y servicios — desde un único mercado global.',note:'Elige un país una vez y SEEKVERA cambia automáticamente el idioma, la moneda, el contexto de IA y las secciones según el país. También puedes cambiar el idioma manualmente.'},
+              de:{lead:'Hotels, Wohnungen, Autos, Jobs, Produkte, Anbieter, Medien und Dienstleistungen — auf einem globalen Marktplatz.',note:'Wähle einmal ein Land aus und SEEKVERA passt Sprache, Währung, KI-Kontext und länderspezifische Bereiche automatisch an. Die Sprache kannst du jederzeit manuell ändern.'},
+              tr:{lead:'Oteller, evler, arabalar, işler, ürünler, tedarikçiler, medya ve hizmetler — tek bir küresel pazarda.',note:'Ülkeyi bir kez seçin; SEEKVERA uygulama dilini, para birimini, AI bağlamını ve ülkeye göre bölümleri otomatik olarak ayarlar. Dili isterseniz elle değiştirebilirsiniz.'},
+              pt:{lead:'Hotéis, casas, carros, empregos, produtos, fornecedores, mídia e serviços — em um único mercado global.',note:'Escolha um país uma vez e a SEEKVERA ajusta automaticamente idioma, moeda, contexto de IA e seções por país. Você ainda pode mudar o idioma manualmente.'},
+              it:{lead:'Hotel, case, auto, lavori, prodotti, fornitori, media e servizi — da un unico marketplace globale.',note:'Scegli un paese una volta e SEEKVERA adatta automaticamente lingua, valuta, contesto AI e sezioni al paese. Puoi sempre cambiare lingua manualmente.'},
+              ru:{lead:'Отели, жильё, автомобили, вакансии, товары, поставщики, медиа и услуги — на одной глобальной площадке.',note:'Выберите страну один раз, и SEEKVERA автоматически настроит язык, валюту, контекст ИИ и разделы для этой страны. Язык можно изменить вручную в любое время.'},
+              zh:{lead:'酒店、住房、汽车、工作、商品、供应商、媒体和服务——一个全球市场即可查找。',note:'只需选择一次国家，SEEKVERA 就会自动切换应用语言、货币、AI 上下文和国家相关栏目。你也可以随时手动更改语言。'},
+              ja:{lead:'ホテル、住宅、車、仕事、商品、サプライヤー、メディア、サービスを1つのグローバル市場で。',note:'国を一度選ぶと、SEEKVERA が言語、通貨、AI コンテキスト、国別セクションを自動で切り替えます。言語はいつでも手動で変更できます。'},
+              ko:{lead:'호텔, 주택, 자동차, 일자리, 상품, 공급업체, 미디어와 서비스를 하나의 글로벌 마켓에서.',note:'국가를 한 번 선택하면 SEEKVERA가 앱 언어, 통화, AI 맥락과 국가별 섹션을 자동으로 바꿉니다. 언어는 언제든 수동으로 변경할 수 있습니다.'},
+              hi:{lead:'होटल, घर, कार, नौकरियाँ, उत्पाद, सप्लायर, मीडिया और सेवाएँ — एक ही वैश्विक मार्केटप्लेस में।',note:'देश एक बार चुनें और SEEKVERA ऐप की भाषा, मुद्रा, AI संदर्भ और देश के अनुसार सेक्शन अपने-आप बदल देगा। भाषा आप कभी भी मैन्युअली बदल सकते हैं।'},
+              ur:{lead:'ہوٹل، گھر، گاڑیاں، نوکریاں، مصنوعات، سپلائرز، میڈیا اور خدمات — ایک عالمی مارکیٹ میں۔',note:'ملک ایک بار منتخب کریں اور SEEKVERA ایپ کی زبان، کرنسی، AI سیاق اور ملک کے مطابق حصے خودکار طور پر بدل دے گا۔ زبان آپ دستی طور پر بھی بدل سکتے ہیں۔'},
+              fa:{lead:'هتل‌ها، خانه‌ها، خودروها، شغل‌ها، محصولات، تأمین‌کنندگان، رسانه و خدمات — در یک بازار جهانی.',note:'کشور را یک‌بار انتخاب کنید تا SEEKVERA زبان برنامه، ارز، زمینه هوش مصنوعی و بخش‌های مرتبط با کشور را خودکار تغییر دهد. زبان را هر زمان می‌توانید دستی عوض کنید.'},
+              id:{lead:'Hotel, rumah, mobil, pekerjaan, produk, pemasok, media, dan layanan — dalam satu marketplace global.',note:'Pilih negara sekali dan SEEKVERA otomatis menyesuaikan bahasa aplikasi, mata uang, konteks AI, dan bagian sesuai negara. Bahasa tetap bisa diubah manual.'},
+              vi:{lead:'Khách sạn, nhà ở, ô tô, việc làm, sản phẩm, nhà cung cấp, truyền thông và dịch vụ — trong một chợ toàn cầu.',note:'Chọn quốc gia một lần và SEEKVERA tự động đổi ngôn ngữ, tiền tệ, ngữ cảnh AI và các mục theo quốc gia. Bạn vẫn có thể đổi ngôn ngữ thủ công.'},
+              bn:{lead:'হোটেল, বাড়ি, গাড়ি, চাকরি, পণ্য, সরবরাহকারী, মিডিয়া ও সেবা — এক বৈশ্বিক মার্কেটপ্লেসে।',note:'একবার দেশ বেছে নিলে SEEKVERA স্বয়ংক্রিয়ভাবে অ্যাপের ভাষা, মুদ্রা, AI প্রসঙ্গ ও দেশভিত্তিক বিভাগ বদলে দেয়। চাইলে ভাষা নিজে বদলাতে পারেন।'},
+              sw:{lead:'Hoteli, nyumba, magari, kazi, bidhaa, wasambazaji, media na huduma — katika soko moja la kimataifa.',note:'Chagua nchi mara moja na SEEKVERA hubadilisha kiotomatiki lugha, sarafu, muktadha wa AI na sehemu kulingana na nchi. Unaweza kubadilisha lugha mwenyewe wakati wowote.'},
+              nl:{lead:'Hotels, woningen, auto’s, banen, producten, leveranciers, media en diensten — op één wereldwijde marktplaats.',note:'Kies één keer een land en SEEKVERA past automatisch taal, valuta, AI-context en landgerichte secties aan. Je kunt de taal altijd handmatig wijzigen.'},
+              pl:{lead:'Hotele, domy, samochody, praca, produkty, dostawcy, media i usługi — na jednym globalnym rynku.',note:'Wybierz kraj raz, a SEEKVERA automatycznie dostosuje język, walutę, kontekst AI i sekcje do kraju. Język możesz zawsze zmienić ręcznie.'},
+              th:{lead:'โรงแรม บ้าน รถ งาน สินค้า ซัพพลายเออร์ สื่อ และบริการ — ในตลาดระดับโลกแห่งเดียว',note:'เลือกประเทศเพียงครั้งเดียว SEEKVERA จะเปลี่ยนภาษา สกุลเงิน บริบท AI และหมวดหมู่ตามประเทศโดยอัตโนมัติ และคุณยังเปลี่ยนภาษาเองได้เสมอ'},
+              ms:{lead:'Hotel, rumah, kereta, pekerjaan, produk, pembekal, media dan perkhidmatan — dalam satu pasaran global.',note:'Pilih negara sekali dan SEEKVERA akan menukar bahasa, mata wang, konteks AI dan bahagian mengikut negara secara automatik. Bahasa masih boleh ditukar secara manual.'},
+              fil:{lead:'Mga hotel, bahay, kotse, trabaho, produkto, supplier, media at serbisyo — sa iisang pandaigdigang marketplace.',note:'Pumili ng bansa nang isang beses at awtomatikong inaayos ng SEEKVERA ang wika, pera, AI context at mga seksyon ayon sa bansa. Maaari mo pa ring baguhin ang wika nang mano-mano.'},
+              ha:{lead:'Otal-otal, gidaje, motoci, ayyuka, kayayyaki, masu kaya, kafafen watsa da ayyuka — a kasuwa ɗaya ta duniya.',note:'Zaɓi ƙasa sau ɗaya, SEEKVERA zai canza yaren manhaja, kuɗi, mahallin AI da sassan ƙasa ta atomatik. Za ka iya canza harshe da hannu.'},
+              yo:{lead:'Họ́tẹ́lì, ilé, ọkọ̀, iṣẹ́, ọjà, àwọn olupèsè, mídíà àti iṣẹ́ — nínú ọjà àgbáyé kan.',note:'Yan orílẹ̀-èdè lẹ́ẹ̀kan, SEEKVERA yóò yí èdè, owó, àyíká AI àti àwọn ẹ̀ka orílẹ̀-èdè padà laifọwọyi. O tún lè yí èdè padà lọ́wọ́.'},
+              ig:{lead:'Ụlọ nkwari akụ, ụlọ, ụgbọala, ọrụ, ngwaahịa, ndị na-ebubata, mgbasa ozi na ọrụ — n’otu ahịa ụwa.',note:'Họrọ mba otu ugboro, SEEKVERA ga-agbanwe asụsụ, ego, ọnọdụ AI na ngalaba dabere na mba na-akpaghị aka. Ị ka nwere ike ịgbanwe asụsụ n’onwe gị.'},
+              am:{lead:'ሆቴሎች፣ ቤቶች፣ መኪናዎች፣ ስራዎች፣ ምርቶች፣ አቅራቢዎች፣ ሚዲያ እና አገልግሎቶች — በአንድ ዓለም አቀፍ ገበያ።',note:'አገርን አንድ ጊዜ ይምረጡ፤ SEEKVERA ቋንቋ፣ ገንዘብ፣ AI አውድ እና የአገር ክፍሎችን በራስ-ሰር ያስተካክላል። ቋንቋን በእጅ መቀየርም ይችላሉ።'},
+              he:{lead:'מלונות, בתים, מכוניות, משרות, מוצרים, ספקים, מדיה ושירותים — בשוק עולמי אחד.',note:'בחרו מדינה פעם אחת ו-SEEKVERA תתאים אוטומטית את שפת האפליקציה, המטבע, הקשר ה-AI והקטגוריות למדינה. תמיד ניתן לשנות שפה ידנית.'}
+            };
+            const RTL=new Set(['ar','ur','fa','he']);
+            function code(){
+              const raw=String(document.querySelector('#lang')?.value||document.documentElement.lang||localStorage.getItem('seekvera_lang')||navigator.language||'en').toLowerCase();
+              return raw.split(/[-_]/)[0]||'en';
+            }
+            function translateFallback(src){
+              try{const v=window.SEEKVERA_I18N?.t?.(src);if(v&&v!==src)return v}catch{}
+              return '';
+            }
+            function apply(){
+              const l=code(), d=T[l]||{};
+              const lead=document.querySelector('.r5-hero > p');
+              const note=document.querySelector('.r5-ai-note');
+              if(lead){lead.textContent=d.lead||(l==='en'?EN.lead:translateFallback(EN.lead));lead.setAttribute('lang',l);lead.setAttribute('dir',RTL.has(l)?'rtl':'auto')}
+              if(note){note.textContent=d.note||(l==='en'?EN.note:translateFallback(EN.note));note.setAttribute('lang',l);note.setAttribute('dir',RTL.has(l)?'rtl':'auto')}
+            }
+            function schedule(){apply();[50,180,500,1200].forEach(ms=>setTimeout(apply,ms))}
+            if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
+            document.addEventListener('change',e=>{if(e.target?.id==='lang'||e.target?.id==='country')schedule()});
+            window.addEventListener('pageshow',schedule);
+            window.addEventListener('seekvera:languagechange',schedule);
+            window.addEventListener('seekvera:countrychange',schedule);
+            new MutationObserver(()=>schedule()).observe(document.documentElement,{attributes:true,attributeFilter:['lang','dir']});
+          })();
+          JS
+
+      - name: Verify R85 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check superapp.js
+          node --check r85-visible-i18n.js
+          node --check sw.js
+          grep -F 'function metaConversationClient' superapp.js
+          grep -F 'finalCat = metaChat ? "general"' superapp.js
+          grep -F 'فنادق، منازل، سيارات' r85-visible-i18n.js
+          grep -F 'اختر الدولة مرة واحدة' r85-visible-i18n.js
+          grep -F 'r85-visible-i18n.js?v=20260927-r85-visible-i18n-chat-guard' index.html
+          grep -F 'superapp.js?v=20260927-r85-visible-i18n-chat-guard' index.html
+
+      - name: Commit R85 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add superapp.js index.html sw.js r85-visible-i18n.js
+          git commit -m 'R85 stop meta-chat misrouting and remove mixed English hero text'
+          git push origin HEAD:main
+
+      - name: Deploy R85 to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Verify R85 live
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 12); do
+            stamp="$(date +%s)-$i"
+            curl -LsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/?r85=$stamp" -o /tmp/home
+            curl -LsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/superapp.js?r85=$stamp" -o /tmp/app
+            curl -LsS --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/r85-visible-i18n.js?r85=$stamp" -o /tmp/i18n
+            curl -LsS --max-time 25 -H 'content-type: application/json' -d '{"message":"صرت بتحكي عربي هون","country":"Lebanon","history":[]}' "https://seekveraglobal.com/api/ai?r85=$stamp" -o /tmp/meta
+            if grep -q 'r85-visible-i18n.js?v=20260927-r85-visible-i18n-chat-guard' /tmp/home \
+              && grep -q 'function metaConversationClient' /tmp/app \
+              && grep -q 'فنادق، منازل، سيارات' /tmp/i18n \
+              && jq -e '.category=="general" and .language=="ar" and ((.response|test("سأوصلك مباشرة إلى القسم|سأوصلك إلى القسم الأنسب"))|not)' /tmp/meta >/dev/null; then
+              echo R85_LIVE_PASS
+              cat /tmp/meta
+              exit 0
+            fi
+            sleep 3
+          done
+          echo R85_LIVE_FAIL
+          cat /tmp/meta || true
+          exit 1
