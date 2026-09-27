@@ -56,11 +56,8 @@ jobs:
             curl -LsS --max-time 20 "$BASE/voice-ai.js?r89=$stamp" -o /tmp/voice
             curl -LsS --max-time 20 "$BASE/?r89=$stamp" -o /tmp/home
             curl -LsS --max-time 25 -H 'content-type: application/json' -d '{"text":"مرحبا كيفك اليوم","language":"ar"}' "$BASE/api/tts?r89=$stamp" -o /tmp/ar.mp3
-            python - <<'PY'
-import base64,json,pathlib
-b=base64.b64encode(pathlib.Path('/tmp/ar.mp3').read_bytes()).decode()
-pathlib.Path('/tmp/asr.json').write_text(json.dumps({'audio':'data:audio/mpeg;base64,'+b,'language':'auto'}))
-PY
+            B64=$(base64 -w0 /tmp/ar.mp3)
+            printf '{"audio":"data:audio/mpeg;base64,%s","language":"auto"}' "$B64" > /tmp/asr.json
             curl -LsS --max-time 25 -H 'content-type: application/json' --data-binary @/tmp/asr.json "$BASE/api/transcribe?r89=$stamp" -o /tmp/asr
             if jq -e '.r89==true' /tmp/health >/dev/null \
               && grep -q '20260927-r89-native-multilingual-voice' /tmp/home \
@@ -76,4 +73,4 @@ PY
           echo 'ASR'; cat /tmp/asr || true
           exit 1
 
-# trigger r89-proven
+# trigger r89-yaml-fixed
