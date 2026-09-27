@@ -35,21 +35,30 @@ await p.addInitScript(()=>{
 
 p.on('console',m=>console.log('BROWSER',m.type(),m.text()));
 p.on('pageerror',e=>console.log('PAGEERROR',e.message));
-await p.goto('https://seekveraglobal.com/?r97=voice-'+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+await p.goto('https://seekveraglobal.com/?r99=voice-'+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
 await p.waitForFunction(()=>window.SEEKVERA_VOICE_AI&&window.SEEKVERA_I18N_R32&&window.SEEKVERA_LOCALE_R15,{timeout:30000});
 
-// Real multilingual local Whisper transcription from actual WAV audio fixtures.
-const trans=await p.evaluate(async({en,ar})=>{
-  const mk=b64=>{const raw=atob(b64),u=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)u[i]=raw.charCodeAt(i);return new Blob([u],{type:'audio/wav'})};
-  const t=window.SEEKVERA_VOICE_AI.localWhisperTranscribe;
-  const english=await t(mk(en));
-  const arabic=await t(mk(ar));
-  return {english,arabic};
-},{en,ar});
-console.log('R97_TRANSCRIPTS',JSON.stringify(trans));
-assert.ok(String(trans.english?.text||'').trim().length>2,'English transcript empty');
-assert.ok(String(trans.arabic?.text||'').trim().length>2,'Arabic transcript empty');
-assert.ok(/[\u0600-\u06ff]/.test(String(trans.arabic.text)),'Arabic was not recognized as Arabic: '+trans.arabic.text);
+const mkEval=async(b64)=>await p.evaluate(async b64=>{
+  const raw=atob(b64),u=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)u[i]=raw.charCodeAt(i);
+  return await window.SEEKVERA_VOICE_AI.localWhisperTranscribe(new Blob([u],{type:'audio/wav'}));
+},b64);
+
+// Arabic fixture under the current Lebanon/Arabic context. A stale previous language must never override this context.
+await p.selectOption('#country','LB');
+await p.waitForFunction(()=>document.documentElement.lang==='ar'&&document.documentElement.dataset.seekveraI18nReady==='ar',{timeout:25000});
+await p.evaluate(()=>localStorage.removeItem('seekvera_chat_voice_lang'));
+const arabicTranscript=await mkEval(ar);
+console.log('R99_AR_TRANSCRIPT',JSON.stringify(arabicTranscript));
+assert.ok(String(arabicTranscript?.text||'').trim().length>2,'Arabic transcript empty');
+assert.ok(/[\u0600-\u06ff]/.test(String(arabicTranscript.text)),'Arabic was not recognized as Arabic: '+arabicTranscript.text);
+
+// English fixture after a real country switch. This also proves old Arabic memory cannot pin the next turn to Arabic.
+await p.selectOption('#country','US');
+await p.waitForFunction(()=>document.documentElement.lang==='en'&&document.documentElement.dataset.seekveraI18nReady==='en',{timeout:25000});
+const englishTranscript=await mkEval(en);
+console.log('R99_EN_TRANSCRIPT',JSON.stringify(englishTranscript));
+assert.ok(String(englishTranscript?.text||'').trim().length>2,'English transcript empty');
+assert.ok(/[A-Za-z]/.test(String(englishTranscript.text)),'English was not recognized as Latin text: '+englishTranscript.text);
 
 // Actual home chat in Arabic, with the real AI reply flowing into the spoken-reply path.
 await p.selectOption('#country','LB');
@@ -64,7 +73,7 @@ const arabicUi=await p.evaluate(()=>({reply:[...document.querySelectorAll('#aiMe
 assert.ok(arabicUi.reply.length>3,'Arabic UI AI reply empty');
 assert.ok(/[\u0600-\u06ff]/.test(arabicUi.reply),'Arabic user got non-Arabic reply: '+arabicUi.reply);
 assert.ok(arabicUi.spoken.some(x=>/^ar/i.test(x.lang)),'Arabic spoken reply did not select Arabic voice: '+JSON.stringify(arabicUi.spoken));
-console.log('R97_ARABIC_CHAT_TTS_PASS',arabicUi.reply.slice(0,120));
+console.log('R99_ARABIC_CHAT_TTS_PASS',arabicUi.reply.slice(0,120));
 
 // Same live UI path in English after country switch.
 await p.selectOption('#country','US');
@@ -78,7 +87,7 @@ await p.waitForFunction(()=>window.__r97Spoken.some(x=>String(x.text||'').trim()
 const englishUi=await p.evaluate(()=>({reply:[...document.querySelectorAll('#aiMessages .ai-msg.bot:not(.thinking)')].at(-1)?.textContent?.trim()||'',spoken:window.__r97Spoken.slice()}));
 assert.ok(englishUi.reply.length>3,'English UI AI reply empty');
 assert.ok(englishUi.spoken.some(x=>/^en/i.test(x.lang)),'English spoken reply did not select English voice: '+JSON.stringify(englishUi.spoken));
-console.log('R97_ENGLISH_CHAT_TTS_PASS',englishUi.reply.slice(0,120));
+console.log('R99_ENGLISH_CHAT_TTS_PASS',englishUi.reply.slice(0,120));
 
 await b.close();
-console.log('R97_REAL_MULTILINGUAL_VOICE_PASS');
+console.log('R99_REAL_MULTILINGUAL_VOICE_PASS');
