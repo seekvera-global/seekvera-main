@@ -28,10 +28,12 @@ let localWhisperPromise=null;
 async function localWhisperEngine(){
   if(localWhisperPromise)return localWhisperPromise;
   localWhisperPromise=(async()=>{
-    const mod=await import('/patched-transformers.js?v=20260926-r73-true-multilingual-voice');
-    mod.env.remoteHost=location.origin+'/api/asr-model/';
+    const mod=await import('/patched-transformers.js?v=20260927-r90-local-multilingual-voice');
+    mod.env.allowRemoteModels=true;
+    mod.env.remoteHost='https://huggingface.co/';
     mod.env.remotePathTemplate='{model}/resolve/{revision}/';
-    mod.env.backends.onnx.wasm.wasmPaths=location.origin+'/api/ort/';
+    mod.env.useBrowserCache=true;
+    mod.env.backends.onnx.wasm.wasmPaths='https://cdn.jsdelivr.net/npm/onnxruntime-web@1.25.0-dev.20260212-1a71a5f46e/dist/';
     return await mod.pipeline('automatic-speech-recognition','Xenova/whisper-tiny',{dtype:'q8',device:'wasm'});
   })().catch(e=>{localWhisperPromise=null;throw e});
   return localWhisperPromise
@@ -55,11 +57,12 @@ async function seekveraAutoTranscribe(blob){
   }finally{clearTimeout(to)}
 }
 async function automaticMultilingualTranscribe(blob){
-  try{return await seekveraAutoTranscribe(blob)}
-  catch(serverError){
-    const timeout=new Promise((_,reject)=>setTimeout(()=>reject(Error('local multilingual ASR timeout')),12000));
-    try{return await Promise.race([localWhisperTranscribe(blob),timeout])}catch(_){throw serverError}
-  }
+  let localError=null;
+  try{
+    const timeout=new Promise((_,reject)=>setTimeout(()=>reject(Error('local multilingual ASR timeout')),45000));
+    return await Promise.race([localWhisperTranscribe(blob),timeout])
+  }catch(e){localError=e}
+  try{return await seekveraAutoTranscribe(blob)}catch(serverError){throw localError||serverError}
 }
 function localeForText(t,requested){
   t=typeof t==='string'?t:'';
@@ -148,9 +151,9 @@ function speak(text,l,force=false){
   lastAnswer=typeof text==='string'?text:'';lastLocale=localeForText(lastAnswer,l);const chunks=splitSpeech(lastAnswer);
   if(force){muted=false;localStorage.setItem('seekvera_voice_muted','0');localStorage.setItem('seekvera_voice_mode','1');updateSpeakerButtons()}
   if(muted||!chunks.length){if(force)voiceConversation=false;return}
-  const token=++speakToken,voiceMode=localStorage.getItem('seekvera_voice_mode')==='1',mobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent),serverFirst=force||voiceConversation||voiceMode||mobile;
-  if(serverFirst){serverSpeakSequence(chunks,lastLocale,token).then(ok=>{if(!ok&&token===speakToken&&!muted)nativeSpeak(chunks,token)}).catch(()=>{if(token===speakToken&&!muted)nativeSpeak(chunks,token)});return}
-  if(nativeSpeak(chunks,token))return;serverSpeakSequence(chunks,lastLocale,token)
+  const token=++speakToken;
+  if(nativeSpeak(chunks,token))return;
+  serverSpeakSequence(chunks,lastLocale,token)
 }
 function setMic(on){if(!activeButton)return;activeButton.classList.toggle('listening',on);activeButton.textContent=on?'■':'🎤';activeButton.setAttribute('aria-label',on?'Stop listening':'Speak to SEEKVERA AI')}
 function apiBase(){return /(^|\.)seekveraglobal\.com$/i.test(location.hostname)||location.hostname.endsWith('.workers.dev')?'':'https://seekvera-main.seekvera-global.workers.dev'}
@@ -162,6 +165,7 @@ function releaseStream(){if(recordTimer){clearTimeout(recordTimer);recordTimer=n
 function startAudioMonitor(stream,onSilence){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;audioCtx=new AC();audioSource=audioCtx.createMediaStreamSource(stream);audioAnalyser=audioCtx.createAnalyser();audioAnalyser.fftSize=1024;audioAnalyser.smoothingTimeConstant=.25;audioSource.connect(audioAnalyser);const data=new Float32Array(audioAnalyser.fftSize);recordStartedAt=performance.now();const tick=()=>{if(!audioAnalyser||!recording)return;audioAnalyser.getFloatTimeDomainData(data);let sum=0;for(let i=0;i<data.length;i++)sum+=data[i]*data[i];const rms=Math.sqrt(sum/data.length),now=performance.now();if(rms>VOICE_RMS_THRESHOLD){heardVoice=true;lastVoiceAt=now}if(heardVoice&&lastVoiceAt&&now-lastVoiceAt>=VOICE_SILENCE_MS&&now-recordStartedAt>700){onSilence();return}audioRaf=requestAnimationFrame(tick)};audioRaf=requestAnimationFrame(tick)}catch(_){stopAudioMonitor()}}
 async function serverVoice(targetId,button,fallbackNative=false){
   activeButton=button||document.getElementById('aiChatMic')||document.querySelector('.sv-global-compose .mic');
+  localWhisperEngine().catch(()=>{});
   const i=document.getElementById(targetId||'aiChatInput');
   if(recording){try{mediaRecorder?.stop()}catch(_){releaseStream()}return}
   if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){voiceConversation=false;if(i)i.placeholder='Voice input is unavailable on this browser — please type your message.';return}
@@ -179,7 +183,7 @@ async function serverVoice(targetId,button,fallbackNative=false){
       try{mediaStream?.getTracks?.().forEach(x=>x.stop())}catch(_){}mediaStream=null;mediaRecorder=null;recording=false;recordChunks=[];setMic(false);
       if(!chunks.length){voiceConversation=false;if(i)i.placeholder='No speech recorded — tap the microphone and try again.';return}
       try{
-        if(i)i.placeholder='Understanding speech automatically…';
+        if(i)i.placeholder='Transcribing your speech…';
         const blob=new Blob(chunks,{type}),d=await automaticMultilingualTranscribe(blob);
         rememberChatVoiceLanguage(d.language,d.text);
         if(i){const spoken=String(d.text).trim();i.value=spoken;i.placeholder='Message SEEKVERA AI…';if(spoken){voiceReplyDeadline=Date.now()+90000;setTimeout(()=>{if(window.SEEKVERA_R31?.submitAI)window.SEEKVERA_R31.submitAI(spoken,{fromVoice:true});else i.form?.requestSubmit?.()},35)}}
