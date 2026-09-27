@@ -1,0 +1,53 @@
+name: R90 local ASR browser certification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r90-local-asr-cert.yml'
+  workflow_dispatch:
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install browser and speech fixture tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak-ng >/dev/null
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+      - name: Generate multilingual audio fixtures
+        run: |
+          espeak-ng -v en-us -s 130 -w /tmp/en.wav 'hello seekvera how are you today'
+          espeak-ng -v ar -s 125 -w /tmp/ar.wav 'مرحبا كيف حالك اليوم'
+          base64 -w0 /tmp/en.wav > /tmp/en.b64
+          base64 -w0 /tmp/ar.wav > /tmp/ar.b64
+      - name: Test live browser-side multilingual Whisper
+        shell: bash
+        run: |
+          EN=$(cat /tmp/en.b64)
+          AR=$(cat /tmp/ar.b64)
+          cat > /tmp/r90-test.mjs <<'JS'
+          import {chromium} from 'playwright';
+          const browser=await chromium.launch({headless:true});
+          const page=await browser.newPage();
+          page.on('console',m=>console.log('BROWSER',m.type(),m.text()));
+          page.on('pageerror',e=>console.log('PAGEERROR',e.message));
+          await page.goto('https://seekveraglobal.com/?r90=browser-cert',{waitUntil:'domcontentloaded',timeout:60000});
+          await page.waitForFunction(()=>!!window.SEEKVERA_VOICE_AI?.localWhisperTranscribe,{timeout:30000});
+          const en=process.env.EN_B64, ar=process.env.AR_B64;
+          const result=await page.evaluate(async({en,ar})=>{
+            const mk=b64=>{const bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new Blob([u],{type:'audio/wav'})};
+            const a=await window.SEEKVERA_VOICE_AI.localWhisperTranscribe(mk(en));
+            const b=await window.SEEKVERA_VOICE_AI.localWhisperTranscribe(mk(ar));
+            return {en:a,ar:b};
+          },{en,ar});
+          console.log(JSON.stringify(result));
+          if(!result.en?.text?.trim()||!result.ar?.text?.trim())throw new Error('local Whisper returned empty transcript');
+          if(!/[\u0600-\u06ff]/.test(result.ar.text))throw new Error('Arabic audio was not transcribed as Arabic: '+result.ar.text);
+          await browser.close();
+          JS
+          EN_B64="$EN" AR_B64="$AR" node /tmp/r90-test.mjs
