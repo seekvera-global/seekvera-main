@@ -68,11 +68,56 @@ function stopServerAudio(){try{serverAudioSource?.stop?.()}catch(_){}serverAudio
 function stopSpeech(){speakToken++;stopServerAudio();try{window.speechSynthesis?.cancel?.()}catch(_){}}
 function cleanSpeech(t){return(typeof t==='string'?t:'').replace(/```[\s\S]*?```/g,' ').replace(/https?:\/\/\S+/g,' ').replace(/[*_#>`~|]/g,' ').replace(/\s+/g,' ').trim()}
 function splitSpeech(t){const s=cleanSpeech(t);if(!s)return[];const parts=s.match(/[^.!?。！？؛،,:;]{1,170}(?:[.!?。！？؛،,:;]+|$)/g)||[];const out=[];for(const p0 of parts){let p=p0.trim();while(p.length>190){let cut=p.lastIndexOf(' ',180);if(cut<80)cut=180;out.push(p.slice(0,cut).trim());p=p.slice(cut).trim()}if(p)out.push(p)}return out.length?out:[s.slice(0,190)]}
-function unlockTTS(){prepareServerAudio();if(!hasTTS())return;try{speechSynthesis.cancel();speechSynthesis.getVoices?.();speechSynthesis.resume();const u=new SpeechSynthesisUtterance(' ');u.volume=.01;u.rate=2;speechSynthesis.speak(u);setTimeout(()=>{try{speechSynthesis.cancel();speechSynthesis.getVoices?.();speechSynthesis.resume()}catch(_){}},90)}catch(_){}}
+function unlockTTS(){prepareServerAudio();if(!hasTTS())return;try{speechSynthesis.cancel();speechSynthesis.getVoices?.();speechSynthesis.resume();const u=new SpeechSynthesisUtterance('.');u.volume=.01;u.rate=2;speechSynthesis.speak(u);setTimeout(()=>{try{speechSynthesis.cancel();speechSynthesis.getVoices?.();speechSynthesis.resume()}catch(_){}},90)}catch(_){}}
 function enableVoiceConversation(){voiceConversation=true;voiceReplyDeadline=Date.now()+90000;muted=false;localStorage.setItem('seekvera_voice_muted','0');localStorage.setItem('seekvera_voice_mode','1');updateSpeakerButtons();unlockTTS()}
 async function serverSpeak(text,loc,token,emitEnd=true){const spoken=cleanSpeech(text).slice(0,190);if(!spoken||token!==speakToken||muted)return false;try{prepareServerAudio();const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),10000),r=await fetch(apiBase()+'/api/tts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text:spoken,language:String(loc||'auto')}),signal:ctl.signal,cache:'no-store'}).finally(()=>clearTimeout(to));if(!r.ok)return false;const buf=await r.arrayBuffer();if(!buf.byteLength||token!==speakToken)return false;if(prepareServerAudio()&&serverAudioCtx){try{const audio=await serverAudioCtx.decodeAudioData(buf.slice(0));if(token!==speakToken)return false;return await new Promise(resolve=>{serverAudioSource=serverAudioCtx.createBufferSource();serverAudioSource.buffer=audio;serverAudioSource.connect(serverAudioCtx.destination);serverAudioSource.onended=()=>{serverAudioSource=null;if(token===speakToken&&emitEnd){voiceConversation=false;window.dispatchEvent(new CustomEvent('seekvera:tts-end',{detail:{language:loc,engine:'server'}}))}resolve(true)};window.dispatchEvent(new CustomEvent('seekvera:tts-start',{detail:{language:loc,engine:'server'}}));serverAudioSource.start(0)})}catch(_){}}
 const blob=new Blob([buf],{type:r.headers.get('content-type')||'audio/mpeg'});serverAudioUrl=URL.createObjectURL(blob);serverAudioEl=new Audio(serverAudioUrl);serverAudioEl.preload='auto';return await new Promise(async resolve=>{let began=false;serverAudioEl.onplaying=()=>{began=true;window.dispatchEvent(new CustomEvent('seekvera:tts-start',{detail:{language:loc,engine:'server-audio'}}))};serverAudioEl.onended=()=>{if(token===speakToken&&emitEnd){voiceConversation=false;window.dispatchEvent(new CustomEvent('seekvera:tts-end',{detail:{language:loc,engine:'server-audio'}}))}stopServerAudio();resolve(true)};serverAudioEl.onerror=()=>{stopServerAudio();resolve(false)};try{await serverAudioEl.play()}catch(_){resolve(false)}})}catch(_){return false}}
-function nativeSpeak(chunks,token){if(!hasTTS())return false;try{speechSynthesis.cancel();speechSynthesis.resume()}catch(_){}const play=(index,attempt=0)=>{if(token!==speakToken||muted)return;if(index>=chunks.length){if(token===speakToken){voiceConversation=false;window.dispatchEvent(new CustomEvent('seekvera:tts-end',{detail:{language:lastLocale,engine:'native'}}))}return}if(recognition){setTimeout(()=>play(index,attempt),150);return}try{const u=new SpeechSynthesisUtterance(chunks[index]);u.lang=lastLocale;const v=pickVoice(lastLocale);if(v)u.voice=v;u.rate=1;u.pitch=1.02;u.volume=1;let started=false,finished=false;u.onstart=()=>{started=true;window.dispatchEvent(new CustomEvent('seekvera:tts-start',{detail:{language:lastLocale,engine:'native'}}))};u.onend=()=>{finished=true;if(token===speakToken)play(index+1,0)};u.onerror=()=>{if(finished||token!==speakToken)return;if(!started&&attempt<TTS_RETRY_DELAYS.length-1)setTimeout(()=>play(index,attempt+1),TTS_RETRY_DELAYS[attempt+1]);else play(index+1,0)};speechSynthesis.resume();speechSynthesis.speak(u);setTimeout(()=>{if(finished||started||token!==speakToken)return;if(!speechSynthesis.speaking&&attempt<TTS_RETRY_DELAYS.length-1){try{speechSynthesis.cancel();speechSynthesis.resume()}catch(_){}play(index,attempt+1)}},TTS_RETRY_DELAYS[attempt]+500)}catch(_){if(attempt<TTS_RETRY_DELAYS.length-1)setTimeout(()=>play(index,attempt+1),TTS_RETRY_DELAYS[attempt+1]);else play(index+1,0)}};play(0,0);return true}
+function nativeSpeak(chunks,token){
+  if(!hasTTS())return false;
+  let anyStarted=false,failedOver=false,watchdog=0;
+  const fallback=()=>{
+    if(failedOver||anyStarted||token!==speakToken||muted)return;
+    failedOver=true;clearTimeout(watchdog);
+    try{speechSynthesis.cancel();speechSynthesis.resume()}catch(_){}
+    serverSpeak(lastAnswer,lastLocale,token,true)
+  };
+  const arm=()=>{clearTimeout(watchdog);watchdog=setTimeout(fallback,4200)};
+  try{speechSynthesis.cancel();speechSynthesis.resume();speechSynthesis.getVoices?.()}catch(_){}
+  const play=(index,attempt=0)=>{
+    if(failedOver||token!==speakToken||muted)return;
+    if(index>=chunks.length){
+      clearTimeout(watchdog);
+      if(token===speakToken){voiceConversation=false;window.dispatchEvent(new CustomEvent('seekvera:tts-end',{detail:{language:lastLocale,engine:'native'}}))}
+      return
+    }
+    if(recognition){setTimeout(()=>play(index,attempt),120);return}
+    try{
+      const u=new SpeechSynthesisUtterance(chunks[index]);
+      const safeLocale=LANGS[codeOf(lastLocale)]||lastLocale||navigator.language||'en-US';
+      const v=pickVoice(safeLocale)||pickVoice(lastLocale);
+      u.lang=v?.lang||safeLocale;if(v)u.voice=v;u.rate=1;u.pitch=1.02;u.volume=1;
+      let started=false,finished=false;
+      u.onstart=()=>{started=true;anyStarted=true;clearTimeout(watchdog);window.dispatchEvent(new CustomEvent('seekvera:tts-start',{detail:{language:u.lang,engine:'native'}}))};
+      u.onend=()=>{finished=true;if(token===speakToken)play(index+1,0)};
+      u.onerror=()=>{
+        if(finished||failedOver||token!==speakToken)return;
+        if(!started&&attempt<TTS_RETRY_DELAYS.length)setTimeout(()=>play(index,attempt+1),TTS_RETRY_DELAYS[Math.min(attempt,TTS_RETRY_DELAYS.length-1)]);
+        else if(index===0&&!anyStarted)fallback();
+        else play(index+1,0)
+      };
+      try{speechSynthesis.resume()}catch(_){}
+      speechSynthesis.speak(u);
+      setTimeout(()=>{
+        if(finished||started||failedOver||token!==speakToken)return;
+        if(!speechSynthesis.speaking&&attempt<TTS_RETRY_DELAYS.length){
+          try{speechSynthesis.cancel();speechSynthesis.resume()}catch(_){}
+          play(index,attempt+1)
+        }else if(!speechSynthesis.speaking&&!anyStarted)fallback()
+      },900+TTS_RETRY_DELAYS[Math.min(attempt,TTS_RETRY_DELAYS.length-1)])
+    }catch(_){if(index===0&&!anyStarted)fallback();else play(index+1,0)}
+  };
+  arm();play(0,0);return true
+}
 function speak(text,l,force=false){lastAnswer=typeof text==='string'?text:'';lastLocale=localeForText(lastAnswer,l);const chunks=splitSpeech(lastAnswer);if(force){muted=false;localStorage.setItem('seekvera_voice_muted','0');localStorage.setItem('seekvera_voice_mode','1');updateSpeakerButtons()}if(muted||!chunks.length){if(force)voiceConversation=false;return}const token=++speakToken;if(nativeSpeak(chunks,token))return;serverSpeak(lastAnswer,lastLocale,token,true)}
 function setMic(on){if(!activeButton)return;activeButton.classList.toggle('listening',on);activeButton.textContent=on?'■':'🎤';activeButton.setAttribute('aria-label',on?'Stop listening':'Speak to SEEKVERA AI')}
 function apiBase(){return /(^|\.)seekveraglobal\.com$/i.test(location.hostname)||location.hostname.endsWith('.workers.dev')?'':'https://seekvera-main.seekvera-global.workers.dev'}
