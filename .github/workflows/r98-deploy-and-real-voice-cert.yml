@@ -1,0 +1,87 @@
+name: R98 deploy and real voice certification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r98-deploy-and-real-voice-cert.yml'
+      - 'tools/r98_voice_quality_fix.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair-deploy-certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply R98 voice quality recovery
+        run: python3 tools/r98_voice_quality_fix.py
+
+      - name: Static voice checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check voice-ai.js
+          grep -Fq 'local-whisper-quality-r98' voice-ai.js
+          grep -Fq 'transcriptPoor' voice-ai.js
+          grep -Fq 'local-whisper-recovered' voice-ai.js
+          grep -Fq '20260927-r98-voice-quality-recovery' index.html
+
+      - name: Commit R98 runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add voice-ai.js sw.js
+          for f in $(git ls-files '*.html' | awk 'index($0,"/")==0'); do git add -- "$f"; done
+          if ! git diff --cached --quiet; then
+            git commit -m 'R98 recover low-quality multilingual Whisper transcripts'
+            git push origin HEAD:main
+          fi
+
+      - name: Deploy R98 to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Verify live R98 marker
+        shell: bash
+        run: |
+          set -euo pipefail
+          ok=0
+          for n in $(seq 1 15); do
+            stamp="r98-${GITHUB_RUN_ID}-${n}-$(date +%s)"
+            curl -fsSL --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/?$stamp" -o /tmp/home || true
+            curl -fsSL --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/voice-ai.js?$stamp" -o /tmp/voice || true
+            if grep -Fq '20260927-r98-voice-quality-recovery' /tmp/home 2>/dev/null && grep -Fq 'local-whisper-quality-r98' /tmp/voice 2>/dev/null; then ok=1;break;fi
+            sleep 4
+          done
+          test "$ok" = 1
+          echo LIVE_R98_PASS
+
+      - name: Install real voice test tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak-ng >/dev/null
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+
+      - name: Generate Arabic and English WAV fixtures
+        shell: bash
+        run: |
+          espeak-ng -v en-us -s 125 -w /tmp/r97-en.wav 'hello seekvera how are you today I need a hotel in Beirut'
+          espeak-ng -v ar -s 120 -w /tmp/r97-ar.wav 'مرحبا كيف حالك اليوم انا اتكلم معك بالعربي واريد فندق في بيروت'
+
+      - name: Certify real live transcription AI and spoken replies
+        run: node tools/r97_voice_cert.mjs
