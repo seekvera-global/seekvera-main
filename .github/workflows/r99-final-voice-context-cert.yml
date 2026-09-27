@@ -1,0 +1,89 @@
+name: R99 current-locale multilingual voice certification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r99-final-voice-context-cert.yml'
+      - 'tools/r99_voice_context_fix.py'
+      - 'tools/r97_voice_cert.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair-deploy-certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply current-locale and long-pause voice repair
+        run: python3 tools/r99_voice_context_fix.py
+
+      - name: Static voice integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check voice-ai.js
+          grep -Fq 'current-locale-quality-r99' voice-ai.js
+          grep -Fq 'VOICE_SILENCE_MS=3200' voice-ai.js
+          grep -Fq "add(selectedLang());add(document.documentElement.lang);add(localStorage.getItem('seekvera_chat_voice_lang'))" voice-ai.js
+          grep -Fq '20260927-r99-current-locale-voice' index.html
+
+      - name: Commit R99 runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add voice-ai.js sw.js
+          for f in $(git ls-files '*.html' | awk 'index($0,"/")==0'); do git add -- "$f"; done
+          if ! git diff --cached --quiet; then
+            git commit -m 'R99 prioritize current locale and allow full voice turns'
+            git push origin HEAD:main
+          fi
+
+      - name: Deploy R99 to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Verify live R99 marker
+        shell: bash
+        run: |
+          set -euo pipefail
+          ok=0
+          for n in $(seq 1 15); do
+            stamp="r99-${GITHUB_RUN_ID}-${n}-$(date +%s)"
+            curl -fsSL --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/?$stamp" -o /tmp/home || true
+            curl -fsSL --max-time 20 -H 'Cache-Control: no-cache' "https://seekveraglobal.com/voice-ai.js?$stamp" -o /tmp/voice || true
+            if grep -Fq '20260927-r99-current-locale-voice' /tmp/home 2>/dev/null && grep -Fq 'current-locale-quality-r99' /tmp/voice 2>/dev/null; then ok=1;break;fi
+            sleep 4
+          done
+          test "$ok" = 1
+          echo LIVE_R99_PASS
+
+      - name: Install real voice test tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak-ng >/dev/null
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+
+      - name: Generate real Arabic and English audio
+        shell: bash
+        run: |
+          set -euo pipefail
+          espeak-ng -v en-us -s 125 -w /tmp/r97-en.wav 'hello seekvera how are you today I need a hotel in Beirut'
+          espeak-ng -v ar -s 120 -w /tmp/r97-ar.wav 'مرحبا كيف حالك اليوم انا اتكلم معك بالعربي واريد فندق في بيروت'
+
+      - name: Certify live multilingual transcription AI and spoken replies
+        run: node tools/r97_voice_cert.mjs
