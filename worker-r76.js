@@ -1,6 +1,6 @@
 import baseWorker from './worker-r31.js';
 
-const RELEASE='20260929-r121b-global-intent-language';
+const RELEASE='20260929-r121c-arabic-script-language-routing';
 const PRIMARY='@cf/zai-org/glm-4.7-flash';
 const FALLBACK='@cf/qwen/qwen3-30b-a3b-fp8';
 const FAST='@cf/meta/llama-3.1-8b-instruct-fast';
@@ -292,6 +292,8 @@ async function transcribeAudio(request,env){
 function directCategoryIntent(message,modelCategory='general'){
  const s=String(message||'').toLowerCase().trim();
  if(employmentIntent(message))return'jobs';
+ if(/(?:کار.{0,24}(?:پیدا|بگرد)|(?:پیدا|بگرد).{0,24}کار|شغل.{0,24}(?:پیدا|بگرد)|(?:پیدا|بگرد).{0,24}شغل)/u.test(s))return'jobs';
+ if(/(?:نوکری|ملازمت).{0,28}(?:تلاش|ڈھونڈ|چاہ)|(?:تلاش|ڈھونڈ).{0,28}(?:نوکری|ملازمت)/u.test(s))return'jobs';
  const action=/(?:\b(?:find|search|show|open|take me|go to|book|reserve|buy|sell|rent|need|want|looking for|look for|apply for|help me find|help me get)\b|دوريني|دورلي|ندور|عم دور|بدور|ابحث|أبحث|فتش|فتشي|بدي|اريد|أريد|احتاج|أحتاج|افتح|افتحي|وديني|ودّيني|خذني|خدني|احجز|احجزي|اشتري|بيع|استأجر|استاجر|ساعدني|ساعديني|cherch(?:e|er|ez)|trouv(?:e|er|ez)(?:-moi)?|montre(?:z|-moi)?|ouvre(?:z)?|réserve|reserver|achet(?:e|er)|vend(?:s|re)|lou(?:e|er)|besoin|veux|búscame|buscame|busca|buscar|encuéntrame|encuentrame|encuentra|muéstrame|muestrame|muestra|abre|llévame|llevame|quiero|necesito|reservar|comprar|vender|alquilar|procure|procurar|encontre|mostre|abra|quero|preciso|alugar|finde|finden|suche|such|zeige|zeig|öffne|offne|brauche|möchte|mochte|buchen|kaufen|verkaufen|mieten|trova|cerca|apri|mostra|voglio|cerco|bisogno|arıyorum|ariyorum|bana|ara|bul|göster|goster|aç|ac|istiyorum|rezerv|satın|kirala|найди|найти|ищу|открой|покажи|нужен|хочу|забронируй|купить|продать|аренд|找|搜索|打开|带我|我想|我需要|预订|购买|出售|租|探して|検索|開いて|連れて|見せて|欲しい|必要|予約|購入|売|借|찾아|검색|열어|데려|보여|원해|필요|예약|구매|판매|임대|खोज|ढूंढ|ढूँढ|खोल|दिखा|चाहिए|चाहता|बुक|खरीद|बेच|किराए|tìm|tim|tìm kiếm|mở|mở|hãy tìm|hay tim|cari|carikan|buka|tunjukkan|tolong|ingin|butuh|tafuta|fungua|onyesha|nataka|nahitaji|খুঁজ|খোঁজ|দেখাও|খুল|পাই|پیدا|باز کن|بگرد|می.?خواهم|میخوام|تلاش|ڈھونڈ|ڈھونڈو|کھولو|دکھاؤ|چاہیے)/iu.test(s)
  if(!action)return category(modelCategory);
  const rules=[
@@ -374,6 +376,10 @@ Latest user message: ${message}`;
 
 function fastCommandLanguage(message,suggested=''){
  const t=String(message||''),s=t.toLowerCase();
+ if(/[پچژگ]/u.test(t)||/(?:برای|پیدا|بگرد|می.?خواهم|میخوام|لطفاً|لطفا|شغل|کار)/u.test(s))return'fa';
+ if(/[ٹڈڑںھۓے]/u.test(t)||/(?:میرے|لیے|نوکری|ملازمت|ڈھونڈ|دکھاؤ|چاہیے|کرو)/u.test(s))return'ur';
+ if(/[ښږڅځټړ]/u.test(t))return'ps';
+ if(/[ڵۆێ]/u.test(t))return'ku';
  if(/[\u0600-\u06ff]/u.test(t))return messageLanguage(t,suggested);
  if(/[\u0900-\u097f]/u.test(t))return'hi';if(/[\u0980-\u09ff]/u.test(t))return'bn';if(/[\u3040-\u30ff]/u.test(t))return'ja';if(/[\u4e00-\u9fff]/u.test(t))return'zh';if(/[\uac00-\ud7af]/u.test(t))return'ko';if(/[\u0400-\u052f]/u.test(t))return'ru';
  if(/[đăơư]/iu.test(t)||/(?:tìm|việc làm|công việc|khách sạn|xe hơi|giúp tôi|hãy)/iu.test(s))return'vi';
@@ -430,7 +436,7 @@ export default{async fetch(request,env,ctx){
  const u=new URL(request.url);
  if(request.method==='OPTIONS')return new Response(null,{status:204,headers:headers(request)});
  if(u.pathname==='/api/health'){
-   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,release:RELEASE,r121b:true,r121bRuntime:'repaired-global-command-inflections-and-language-detection',r121:true,r121Runtime:'global-command-inflections-and-fast-language-detection',r120:true,r120Runtime:'instant-controls-direct-intent-language-independent-voice',r119b:true,r119bRuntime:'language-independent-voice-direct-intent-atomic-controls',r119:true,r119Runtime:'explicit-intent-routing-plus-hinted-arabic-asr-rescue',r118:true,r118Runtime:'script-first-plus-model-hint-language-resolution',r117:true,r117Runtime:'strict-reply-language-contract-and-history-sanitizer',r105:true,r105Runtime:'worldwide-default-language-safe-ai-atomic-localization',r86:true,r86Runtime:'conversation-first-multilingual-ai',r92:true,r92Runtime:'native-asr-payload-per-model-auto-language',r89:true,r89Runtime:'workers-ai-whisper-byte-array-no-consent',r88:true,r88Runtime:'fast-auto-asr-server-first-tts-natural-fallback',r87:true,r87Runtime:'latest-message-language-plus-real-ai-fallback',r86Routing:'goal-aware-not-keyword-first',r86Voice:'whisper-auto-language-independent-of-ui',r86Asr:ASR_PRIMARY,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
+   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,release:RELEASE,r121c:true,r121cRuntime:'persian-urdu-arabic-script-command-routing',r121b:true,r121bRuntime:'repaired-global-command-inflections-and-language-detection',r121:true,r121Runtime:'global-command-inflections-and-fast-language-detection',r120:true,r120Runtime:'instant-controls-direct-intent-language-independent-voice',r119b:true,r119bRuntime:'language-independent-voice-direct-intent-atomic-controls',r119:true,r119Runtime:'explicit-intent-routing-plus-hinted-arabic-asr-rescue',r118:true,r118Runtime:'script-first-plus-model-hint-language-resolution',r117:true,r117Runtime:'strict-reply-language-contract-and-history-sanitizer',r105:true,r105Runtime:'worldwide-default-language-safe-ai-atomic-localization',r86:true,r86Runtime:'conversation-first-multilingual-ai',r92:true,r92Runtime:'native-asr-payload-per-model-auto-language',r89:true,r89Runtime:'workers-ai-whisper-byte-array-no-consent',r88:true,r88Runtime:'fast-auto-asr-server-first-tts-natural-fallback',r87:true,r87Runtime:'latest-message-language-plus-real-ai-fallback',r86Routing:'goal-aware-not-keyword-first',r86Voice:'whisper-auto-language-independent-of-ui',r86Asr:ASR_PRIMARY,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
  }
  if(u.pathname==='/api/transcribe'&&request.method==='POST')return transcribeAudio(request,env);
  if(u.pathname==='/api/ai'&&request.method==='POST'){
