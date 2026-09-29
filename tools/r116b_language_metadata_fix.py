@@ -5,7 +5,8 @@ s=p.read_text(encoding='utf-8')
 repls={
 "if(/[ãõ]/iu.test(t)||/\\b(olá|ola|preciso|procuro|hotel|obrigado|obrigada)\\b/iu.test(s))return'pt';":"if(/[ãõ]/iu.test(t)||/\\b(olá|ola|preciso|procuro|obrigado|obrigada|aeroporto|perto)\\b/iu.test(s))return'pt';",
 "if(/\\b(bonjour|salut|merci|cherche|voudrais|besoin|langue|pays|hôtel|hotel)\\b/iu.test(s))return'fr';":"if(/\\b(bonjour|salut|merci|cherche|voudrais|besoin|langue|pays|aéroport|aeroport|près)\\b/iu.test(s))return'fr';",
-"if(/\\b(selamat|terima kasih|saya|ingin|cari|butuh|hotel)\\b/iu.test(s))return pick(['id','ms'],'id');":"if(/\\b(selamat|terima kasih|saya|ingin|cari|butuh|bandara|dekat)\\b/iu.test(s))return pick(['id','ms'],'id');"
+"if(/\\b(selamat|terima kasih|saya|ingin|cari|butuh|hotel)\\b/iu.test(s))return pick(['id','ms'],'id');":"if(/\\b(selamat|terima kasih|saya|ingin|cari|butuh|bandara|dekat)\\b/iu.test(s))return pick(['id','ms'],'id');",
+"if(/[ăâđêôơư]/iu.test(t))return'vi';":"if(/[đơư]/iu.test(t)||/(xin chào|cảm ơn|sân bay|tôi muốn|tôi cần)/iu.test(s))return'vi';"
 }
 for old,new in repls.items():
     if old in s:
