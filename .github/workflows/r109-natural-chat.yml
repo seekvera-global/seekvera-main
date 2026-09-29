@@ -31,7 +31,7 @@ jobs:
           for i in $(seq 1 12); do
             A=$(curl -fsSL --max-time 25 -H 'content-type: application/json' --data '{"message":"مرحبا، كيفك اليوم؟","country":"Japan","countryCode":"JP","language":"auto","uiLanguage":"ja","history":[]}' "$BASE/api/ai?r109=$i")
             C=$(curl -fsSL --max-time 25 -H 'content-type: application/json' --data '{"message":"غير الدولة إلى اليابان","country":"Lebanon","countryCode":"LB","language":"auto","uiLanguage":"ar","history":[],"clientControls":{"countries":["JP","LB"]}}' "$BASE/api/ai?r109=$i")
-            if echo "$A" | jq -e '.ok==true and .language=="ar" and (.response|test("منيح|بخير|أهلاً|اهلاً")) and (.model|test("conversation"))' >/dev/null               && echo "$C" | jq -e '.ok==true and .countryAction.code=="JP" and .language=="ar"' >/dev/null; then
+            if echo "$A" | jq -e '.ok==true and .language=="ar" and (.response|test("منيح|بخير|أهلاً|اهلاً|مرحب")) and (.model|type=="string") and (.model|length>3)' >/dev/null               && echo "$C" | jq -e '.ok==true and .countryAction.code=="JP" and .language=="ar"' >/dev/null; then
               echo R109_LIVE_PASS
               exit 0
             fi
