@@ -1,0 +1,162 @@
+name: R118 universal language live
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/r118_language_resolution.py'
+      - '.github/workflows/r118-universal-language-live.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r118-universal-language
+  cancel-in-progress: true
+
+jobs:
+  deploy-certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply R118
+        run: |
+          set -euo pipefail
+          python tools/r118_language_resolution.py
+          node --check worker-r76.js
+          grep -F '20260929-r118-universal-language-resolution' worker-r76.js
+          grep -F "s.includes('olá')" worker-r76.js
+          grep -F 'near the airport' worker-r76.js
+
+      - name: Persist R118 source
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add worker-r76.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'R118 resolve language without cross-language replies'
+            git push origin HEAD:main
+          fi
+
+      - name: Deploy R118
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --config wrangler.jsonc
+
+      - name: Wait for production release
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,time,urllib.request
+          for _ in range(30):
+              try:
+                  req=urllib.request.Request('https://seekveraglobal.com/api/health?r118='+str(time.time()),headers={'user-agent':'Mozilla/5.0 (Linux; Android 11; SM-A225F)'})
+                  with urllib.request.urlopen(req,timeout=8) as r:d=json.loads(r.read())
+                  if d.get('release')=='20260929-r118-universal-language-resolution' and d.get('r118'):
+                      print('R118_LIVE',d.get('release'));break
+              except Exception:pass
+              time.sleep(3)
+          else:raise AssertionError('R118 not live')
+          PY
+
+      - name: Exact Arabic screenshot regression x5
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,time,urllib.request,re
+          ua='Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
+          history=[{'role':'user','content':'مرحبا كيفك'},{'role':'assistant','content':'Hvað viltu gera og hvað ert þú að leita að?'},{'role':'user','content':'يمكنك تساعديني ندور على شغل'}]
+          for i in range(5):
+              data=json.dumps({'message':'يمكنك تساعديني ندور على شغل','history':history,'country':'Worldwide','language':'auto','fast':True},ensure_ascii=False).encode()
+              req=urllib.request.Request('https://seekveraglobal.com/api/ai',data=data,headers={'content-type':'application/json','accept':'application/json','user-agent':ua},method='POST')
+              t=time.monotonic()
+              with urllib.request.urlopen(req,timeout=10) as r:d=json.loads(r.read())
+              sec=time.monotonic()-t;text=str(d.get('response',''))
+              assert d.get('ok') and d.get('language')=='ar',d
+              assert re.search(r'[\u0600-\u06ff]',text),d
+              assert not re.search(r'[ðþ]',text,re.I),d
+              assert sec<7.5,(sec,d)
+              print('AR_PASS',i+1,round(sec,2),d.get('model'),text[:100])
+          PY
+
+      - name: Multilingual matrix
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,time,urllib.request,re
+          ua='Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
+          cases=[
+            ('ar','مرحبا، كيف فيك تساعدني اليوم؟',r'[\u0600-\u06ff]'),
+            ('en','Hello, how can you help me today?',r'[A-Za-z]'),
+            ('fr','Bonjour, comment pouvez-vous m’aider aujourd’hui ?',r'[A-Za-zÀ-ÿ]'),
+            ('es','Hola, ¿cómo puedes ayudarme hoy?',r'[A-Za-zÀ-ÿ]'),
+            ('de','Hallo, wie kannst du mir heute helfen?',r'[A-Za-zÄÖÜäöüß]'),
+            ('tr','Merhaba, bugün bana nasıl yardımcı olabilirsin?',r'[A-Za-zÇĞİÖŞÜçğıöşü]'),
+            ('pt','Olá, como você pode me ajudar hoje?',r'[A-Za-zÀ-ÿ]'),
+            ('it','Ciao, come puoi aiutarmi oggi?',r'[A-Za-zÀ-ÿ]'),
+            ('vi','Xin chào, hôm nay bạn có thể giúp tôi thế nào?',r'[A-Za-zÀ-ỹ]'),
+            ('id','Selamat, bagaimana kamu bisa membantu saya hari ini?',r'[A-Za-z]'),
+            ('sw','Habari, unaweza kunisaidiaje leo?',r'[A-Za-z]'),
+            ('ru','Здравствуйте, как вы можете помочь мне сегодня?',r'[\u0400-\u052f]'),
+            ('hi','नमस्ते, आज आप मेरी कैसे मदद कर सकते हैं?',r'[\u0900-\u097f]'),
+            ('zh','你好，今天你能怎么帮助我？',r'[\u4e00-\u9fff]'),
+            ('ja','こんにちは。今日はどう手伝えますか？',r'[\u3040-\u30ff\u4e00-\u9fff]')
+          ]
+          for code,msg,pat in cases:
+              data=json.dumps({'message':msg,'country':'Worldwide','language':'auto','fast':True},ensure_ascii=False).encode()
+              req=urllib.request.Request('https://seekveraglobal.com/api/ai',data=data,headers={'content-type':'application/json','accept':'application/json','user-agent':ua},method='POST')
+              t=time.monotonic()
+              with urllib.request.urlopen(req,timeout=10) as r:d=json.loads(r.read())
+              sec=time.monotonic()-t;text=str(d.get('response',''))
+              assert d.get('ok') and d.get('language')==code,(code,d)
+              assert re.search(pat,text),(code,text,d)
+              assert sec<7.5,(code,sec,d)
+              print('LANG_PASS',code,round(sec,2),d.get('model'),text[:90])
+          PY
+
+      - name: Arabic TTS live
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,urllib.request,time
+          data=json.dumps({'text':'أكيد، فهمتك. فيني ساعدك ندور على شغل مناسب.','language':'ar'},ensure_ascii=False).encode()
+          req=urllib.request.Request('https://seekveraglobal.com/api/tts',data=data,headers={'content-type':'application/json','accept':'audio/mpeg,audio/*;q=0.9,*/*;q=0.8','user-agent':'Mozilla/5.0 (Linux; Android 11; SM-A225F)'},method='POST')
+          t=time.monotonic()
+          with urllib.request.urlopen(req,timeout=10) as r:b=r.read();ct=r.headers.get('content-type','')
+          sec=time.monotonic()-t
+          assert len(b)>500,(len(b),ct)
+          assert sec<7.5,(sec,len(b),ct)
+          print('TTS_PASS',round(sec,2),len(b),ct)
+          PY
+
+      - name: Android browser Arabic chat and voice event
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > r118-live.mjs <<'JS'
+          import{chromium}from'playwright';import assert from'node:assert/strict';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage({viewport:{width:390,height:844},locale:'ar-LB',userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          const errs=[];p.on('pageerror',e=>errs.push(String(e)));
+          await p.goto('https://seekveraglobal.com/?r118='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_R31?.submitAI&&document.querySelector('#aiChatInput'),null,{timeout:20000});
+          await p.evaluate(()=>{localStorage.removeItem('seekvera_ai_chat_v1');window.__tts=[];window.addEventListener('seekvera:tts-request',e=>window.__tts.push(e.detail));localStorage.setItem('seekvera_voice_mode','1');localStorage.setItem('seekvera_voice_muted','0')});
+          const n=await p.locator('#aiMessages .ai-msg.bot:not(.thinking)').count(),t=Date.now();
+          await p.fill('#aiChatInput','يمكنك تساعديني ندور على شغل');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForFunction(x=>document.querySelectorAll('#aiMessages .ai-msg.bot:not(.thinking)').length>x,n,{timeout:9000});
+          const ms=Date.now()-t,text=await p.locator('#aiMessages .ai-msg.bot:not(.thinking)').last().innerText();
+          assert.match(text,/[\u0600-\u06ff]/u);assert(!/[ðþ]/iu.test(text));
+          await p.waitForFunction(()=>window.__tts?.length>0,null,{timeout:5000});const q=await p.evaluate(()=>window.__tts.at(-1));
+          assert.match(String(q?.language||''),/^ar/i);assert(ms<8000,JSON.stringify({ms,text,q,errs}));assert.equal(errs.length,0,errs.join('\n'));
+          console.log('BROWSER_PASS',JSON.stringify({ms,text,q}));await b.close();
+          JS
+          node r118-live.mjs
