@@ -57,7 +57,7 @@
       }
     </script>
   </head>
-  <body data-release="20260927-r104-fast-atomic-i18n">
+  <body data-release="20260929-r116-universal-language-fast">
     <noscript
       ><div class="sv-noscript">
         SEEKVERA needs JavaScript for AI search, voice, visual search and live
@@ -593,7 +593,7 @@
       defer
     ></script>
     <script
-      src="voice-ai.js?v=20260929-r115-fast-voice"
+      src="voice-ai.js?v=20260929-r116-universal-language-fast"
       defer
     ></script>
     <script src="global-ui.js?v=20260927-r106-final-conversation-locale" defer></script>
@@ -607,7 +607,7 @@
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () =>
           navigator.serviceWorker
-            .register("sw.js?v=20260929-r115-fast-voice")
+            .register("sw.js?v=20260929-r116-universal-language-fast")
             .catch(() => {}),
         );
       }
