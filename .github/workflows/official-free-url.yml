@@ -37,8 +37,8 @@ jobs:
           set -euo pipefail
           grep -q 'https://seekveraglobal.com/sitemap.xml' robots.txt
           grep -q 'https://seekveraglobal.com/' sitemap.xml
-          grep -q '<link rel="canonical" href="https://seekveraglobal.com/">' index.html
-          grep -q '<meta property="og:url" content="https://seekveraglobal.com/">' index.html
+          grep -q 'rel="canonical" href="https://seekveraglobal.com/"' index.html
+          grep -q 'property="og:url" content="https://seekveraglobal.com/"' index.html
           if grep -R -n 'https://seekvera-global.github.io/seekvera-main' -- *.html robots.txt sitemap.xml; then
             echo 'Legacy GitHub Pages URL remains'
             exit 1
