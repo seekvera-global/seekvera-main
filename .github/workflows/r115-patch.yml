@@ -1,0 +1,20 @@
+name: R115 voice source patch
+on:
+  push:
+    branches: [main]
+    paths: ['tools/r115_voice_no_hang.py','.github/workflows/r115-patch.yml']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - run: python tools/r115_voice_no_hang.py
+      - run: node --check voice-ai.js
+      - run: |
+          git config user.name seekvera-global
+          git config user.email seekvera.global@gmail.com
+          git add voice-ai.js index.html sw.js
+          if ! git diff --cached --quiet; then git commit -m 'R115 make voice transcription fast'; git push origin HEAD:main; fi
