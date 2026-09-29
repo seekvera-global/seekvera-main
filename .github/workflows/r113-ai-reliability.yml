@@ -1,0 +1,167 @@
+name: R113 AI reliability release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/r113_ai_reliability.py'
+      - 'worker-r76.js'
+      - 'superapp.js'
+      - 'r31-ui-polish.js'
+      - 'voice-ai.js'
+      - 'sw.js'
+      - 'index.html'
+      - '.github/workflows/r113-ai-reliability.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r113-ai-reliability
+  cancel-in-progress: false
+
+jobs:
+  patch-or-certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply bounded AI and voice reliability patch
+        run: python tools/r113_ai_reliability.py
+
+      - name: Static syntax checks
+        run: |
+          set -euo pipefail
+          node --check worker-r76.js
+          node --check superapp.js
+          node --check r31-ui-polish.js
+          node --check voice-ai.js
+          grep -F '20260929-r113-ai-reliability' worker-r76.js
+          grep -F '20260929-r113-ai-reliability' index.html
+          grep -F "seekvera-r113-instant-local-fallback" worker-r76.js
+          ! grep -F "setTimeout(()=>ctl.abort(),10000)" voice-ai.js
+
+      - name: Commit patch if needed
+        id: patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- worker-r76.js superapp.js r31-ui-polish.js voice-ai.js sw.js index.html; then
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+          else
+            git config user.name 'seekvera-global'
+            git config user.email 'seekvera.global@gmail.com'
+            git add worker-r76.js superapp.js r31-ui-polish.js voice-ai.js sw.js index.html
+            git commit -m 'R113 bound AI latency and restore fast Android voice'
+            git push origin HEAD:main
+            echo 'changed=true' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Wait for production deployment
+        if: steps.patch.outputs.changed == 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 24); do
+            BODY=$(curl -fsS --max-time 8 "https://seekveraglobal.com/api/health?cb=$(date +%s)" || true)
+            if echo "$BODY" | grep -q '20260929-r113-ai-reliability'; then
+              echo 'R113 production worker is live.'
+              exit 0
+            fi
+            sleep 10
+          done
+          echo 'Production did not expose the R113 release in time.' >&2
+          exit 1
+
+      - name: Live API latency and response test
+        if: steps.patch.outputs.changed == 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,time,urllib.request
+          base='https://seekveraglobal.com'
+          cases=[
+            ('مرحبا كيفك اليوم؟','ar'),
+            ('I need a hotel in Paris next week','en'),
+          ]
+          for msg,lang in cases:
+              data=json.dumps({'message':msg,'country':'Worldwide','countryCode':'WW','language':'auto','uiLanguage':lang,'scope':'worldwide','fast':True,'history':[]}).encode()
+              req=urllib.request.Request(base+'/api/ai',data=data,headers={'Content-Type':'application/json','User-Agent':'SEEKVERA-R113-CERT'},method='POST')
+              t=time.monotonic()
+              with urllib.request.urlopen(req,timeout=9) as r:
+                  raw=r.read(); status=r.status
+              elapsed=time.monotonic()-t
+              d=json.loads(raw)
+              assert status==200,(status,d)
+              assert d.get('ok') is True,d
+              assert str(d.get('response','')).strip(),d
+              assert elapsed < 8.5,(elapsed,d)
+              print('AI_PASS',lang,round(elapsed,2),d.get('model'),str(d.get('response'))[:90])
+          PY
+
+      - name: Verify fresh production assets
+        if: steps.patch.outputs.changed == 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          HTML=$(curl -fsS --max-time 12 "https://seekveraglobal.com/?r113=$(date +%s)")
+          echo "$HTML" | grep -F 'superapp.js?v=20260929-r113-ai-reliability'
+          echo "$HTML" | grep -F 'voice-ai.js?v=20260929-r113-ai-reliability'
+          echo "$HTML" | grep -F 'r31-ui-polish.js?v=20260929-r113-ai-reliability'
+          JS=$(curl -fsS --max-time 12 "https://seekveraglobal.com/voice-ai.js?v=20260929-r113-ai-reliability")
+          echo "$JS" | grep -F "20260929-r113-ai-reliability"
+
+      - name: Browser proof - typed reply appears and does not hang
+        if: steps.patch.outputs.changed == 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install chromium >/dev/null
+          cat > /tmp/r113-live.mjs <<'JS'
+          import { chromium } from 'playwright';
+          import assert from 'node:assert/strict';
+          const browser=await chromium.launch({headless:true});
+          const context=await browser.newContext({
+            viewport:{width:390,height:844},
+            userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36',
+            locale:'ar-LB',
+            serviceWorkers:'block'
+          });
+          const page=await context.newPage();
+          const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+          await page.goto('https://seekveraglobal.com/?r113live='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+          await page.waitForSelector('#aiChatInput',{timeout:20000});
+          const before=await page.locator('#aiMessages .ai-msg.bot:not(.thinking)').count();
+          const started=Date.now();
+          await page.fill('#aiChatInput','مرحبا كيفك؟');
+          await page.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await page.waitForFunction(n=>document.querySelectorAll('#aiMessages .ai-msg.user').length>=1,{timeout:1200});
+          const userMs=Date.now()-started;
+          await page.waitForFunction(n=>document.querySelectorAll('#aiMessages .ai-msg.bot:not(.thinking)').length>n,before,{timeout:10000});
+          const replyMs=Date.now()-started;
+          const text=await page.locator('#aiMessages .ai-msg.bot:not(.thinking)').last().innerText();
+          assert(text.trim().length>1,text);
+          assert(!/يفكر|thinking|لحظة…$/i.test(text),text);
+          assert(userMs<1200,userMs);
+          assert(replyMs<10000,replyMs);
+          assert.equal(errors.length,0,errors.join('\n'));
+          console.log('R113_BROWSER_CHAT_PASS',JSON.stringify({userMs,replyMs,text:text.slice(0,100)}));
+          const voice=await page.evaluate(()=>({
+            mode:window.__seekveraVoiceMode||'',
+            hasVoice:!!window.SEEKVERA_VOICE_AI,
+            hasSubmit:!!window.SEEKVERA_R31?.submitAI,
+            speaker:!!document.querySelector('#aiChatSpeaker')
+          }));
+          assert(voice.hasVoice&&voice.hasSubmit&&voice.speaker,JSON.stringify(voice));
+          assert(String(voice.mode).includes('r113'),JSON.stringify(voice));
+          console.log('R113_VOICE_RUNTIME_PASS',JSON.stringify(voice));
+          await browser.close();
+          JS
+          node /tmp/r113-live.mjs
