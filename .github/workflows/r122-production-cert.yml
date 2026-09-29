@@ -1,0 +1,95 @@
+name: R122 unified direct routing production
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'tools/r122_frontend_direct_route.py'
+      - 'tools/r122_backend_release.py'
+      - 'tools/r122_browser.mjs'
+      - '.github/workflows/r122-production-cert.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r122-production
+  cancel-in-progress: true
+
+jobs:
+  deploy-certify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply R122
+        run: |
+          set -euo pipefail
+          python tools/r122_frontend_direct_route.py
+          python tools/r122_backend_release.py
+          node --check worker-r76.js
+          node --check worker-r31.js
+          node --check superapp.js
+          node --check r31-ui-polish.js
+          node --check voice-ai.js
+          grep -F '20260929-r122-unified-direct-routing' worker-r76.js
+          grep -F '20260929-r122-unified-direct-routing' superapp.js
+          grep -F 'directServerIntent' superapp.js
+          grep -F '20260929-r122-language-independent-voice' voice-ai.js
+          grep -F 'superapp.js?v=20260929-r122-unified-direct-routing' index.html
+      - name: Persist R122 runtime
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add worker-r76.js worker-r31.js superapp.js r31-ui-polish.js voice-ai.js sw.js *.html
+          if ! git diff --cached --quiet; then
+            git commit -m 'R122 unify direct routing across home chat and voice'
+            git push origin HEAD:main
+          fi
+      - name: Deploy R122
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --config wrangler.jsonc
+      - name: Wait for production and fresh assets
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,time,urllib.request
+          ua='Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
+          for i in range(30):
+              try:
+                  req=urllib.request.Request('https://seekveraglobal.com/api/health?r122='+str(time.time()),headers={'user-agent':ua,'cache-control':'no-cache'})
+                  with urllib.request.urlopen(req,timeout=8) as r:d=json.loads(r.read())
+                  if d.get('release')=='20260929-r122-unified-direct-routing' and d.get('r122'):
+                      h=urllib.request.urlopen(urllib.request.Request('https://seekveraglobal.com/?r122='+str(time.time()),headers={'user-agent':ua,'cache-control':'no-cache'}),timeout=8).read().decode('utf-8','ignore')
+                      if 'superapp.js?v=20260929-r122-unified-direct-routing' in h and 'voice-ai.js?v=20260929-r122-language-independent-voice' in h:
+                          print('R122_LIVE');break
+              except Exception as e: print('WAIT',i,str(e)[:100])
+              time.sleep(3)
+          else: raise AssertionError('R122 live assets not confirmed')
+          PY
+      - name: Re-certify multilingual API and voice transcription
+        run: python tools/r121b_cert.py
+      - name: Android typed voice and country certification
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          node tools/r122_browser.mjs
+      - name: Stability hold
+        run: |
+          set -euo pipefail
+          sleep 55
+          python3 - <<'PY'
+          import json,time,urllib.request
+          ua='Mozilla/5.0 (Linux; Android 11; SM-A225F)'
+          for i in range(3):
+              req=urllib.request.Request('https://seekveraglobal.com/api/health?stable='+str(time.time()),headers={'user-agent':ua,'cache-control':'no-cache'})
+              with urllib.request.urlopen(req,timeout=8) as r:d=json.loads(r.read())
+              assert d.get('release')=='20260929-r122-unified-direct-routing' and d.get('r122'),d
+              print('STABLE_PASS',i+1,d.get('release'));time.sleep(5)
+          PY
