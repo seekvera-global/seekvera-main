@@ -1,6 +1,6 @@
 (() => {
   "use strict";
-  const RELEASE = "20260929-r114-fast-strong-ai";
+  const RELEASE = "20260929-r122-unified-direct-routing";
   const WORKER = "";
   const SB = "https://nrdpyydfrpmqedtzmbyw.supabase.co";
   const SB_KEY = "sb_publishable_tqqPQxqdNowIsSlJz4bW5w_kHOC905o";
@@ -609,7 +609,7 @@
       t,
     );
   }
-  function navigateAfterReply(route, q, category) {
+  function navigateAfterReply(route, q, category, reply = "", language = "auto") {
     if (!route || category === "general") return;
     const url =
       route +
@@ -628,14 +628,24 @@
       if (done) return;
       done = true;
       clearTimeout(routeTimer);
+      window.removeEventListener("seekvera:tts-start", onStart);
       window.removeEventListener("seekvera:tts-end", go);
       location.assign(url);
     };
     const voice = window.SEEKVERA_VOICE_AI?.isVoiceReplyPending?.();
+    const onStart = () => setTimeout(go, 280);
     if (voice) {
+      // Let speech start before routing; the R31 runtime replays it on the destination page.
+      try {
+        sessionStorage.setItem(
+          "seekvera_route_voice",
+          JSON.stringify({ text: String(reply || ""), language: String(language || "auto"), at: Date.now() }),
+        );
+      } catch {}
+      window.addEventListener("seekvera:tts-start", onStart, { once: true });
       window.addEventListener("seekvera:tts-end", go, { once: true });
-      routeTimer = setTimeout(go, 9000);
-    } else routeTimer = setTimeout(go, 1400);
+      routeTimer = setTimeout(go, 1100);
+    } else routeTimer = setTimeout(go, 180);
   }
   function sameReply(a, b) {
     const n = (x) =>
@@ -677,7 +687,7 @@
       actions.hidden = true;
     }
     const controller = new AbortController(),
-      timer = setTimeout(() => controller.abort(), 7500);
+      timer = setTimeout(() => controller.abort(), 5200);
     try {
       const r = await fetch(api("/api/ai"), {
         method: "POST",
@@ -727,8 +737,9 @@
           },
         }),
       );
-      if (!changed && explicitNavigationRequest(q))
-        navigateAfterReply(route, q, finalCat);
+      const directServerIntent = d?.fastPath === "r120-direct-intent";
+      if (!changed && (directServerIntent || explicitNavigationRequest(q)))
+        navigateAfterReply(route, q, finalCat, reply, d.language || lang());
     } catch (e) {
       const ar = (document.documentElement.lang || lang())
         .toLowerCase()

@@ -2,7 +2,7 @@
   "use strict";
   if (window.__SEEKVERA_R31) return;
   window.__SEEKVERA_R31 = true;
-  const VERSION = "20260929-r121-global-intent-language";
+  const VERSION = "20260929-r122-unified-direct-routing";
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
   const ROUTES = {
