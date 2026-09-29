@@ -24,7 +24,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          key_url='https://seekvera-global.github.io/seekvera-main/15ae2ee9fb6577fed951a6a9cee172bc.txt'
+          key_url='https://seekveraglobal.com/15ae2ee9fb6577fed951a6a9cee172bc.txt'
           for i in $(seq 1 48); do
             if curl -fsS --max-time 15 "$key_url" | grep -q '15ae2ee9fb6577fed951a6a9cee172bc'; then
               exit 0
@@ -38,7 +38,7 @@ jobs:
         run: |
           import json, subprocess, urllib.request
           from pathlib import Path
-          base='https://seekvera-global.github.io/seekvera-main'
+          base='https://seekveraglobal.com'
           key='15ae2ee9fb6577fed951a6a9cee172bc'
           if '${{ github.event_name }}' == 'workflow_dispatch':
               import re
@@ -62,7 +62,7 @@ jobs:
               print('No public URL changed; nothing to submit.')
               raise SystemExit(0)
           payload=json.dumps({
-              'host':'seekvera-global.github.io',
+              'host':'seekveraglobal.com',
               'key':key,
               'keyLocation':base+'/'+key+'.txt',
               'urlList':urls
