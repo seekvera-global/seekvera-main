@@ -1,6 +1,6 @@
 import baseWorker from './worker-r31.js';
 
-const RELEASE='20260927-r109-natural-chat';
+const RELEASE='20260929-r113-ai-reliability';
 const PRIMARY='@cf/zai-org/glm-4.7-flash';
 const FALLBACK='@cf/qwen/qwen3-30b-a3b-fp8';
 const ASR_PRIMARY='@cf/openai/whisper-large-v3-turbo',ASR_FALLBACK='@cf/openai/whisper';
@@ -180,10 +180,8 @@ async function transcribeAudio(request,env){
 }
 
 async function degradedFallback(request,env,ctx,body,message){
- const fallback=await baseWorker.fetch(request,env,ctx);let d=null;try{d=await fallback.clone().json()}catch{}
- if(!d||typeof d!=='object'){const h=new Headers(fallback.headers);h.set('x-seekvera-release',RELEASE);return new Response(fallback.body,{status:fallback.status,statusText:fallback.statusText,headers:h})}
- const act=actionState(message,d?.countryAction?.code,d?.languageAction?.code,body?.clientControls),language=messageLanguage(message,d.language),meta=metaConversation(message),chat=conversationOnly(message)||meta,cat=(act.isAction||chat)?'general':(category(d.category)==='jobs'&&!employmentIntent(message)?'general':category(d.category)),response=act.isAction?actionReply(language,act.cc,act.ll):meta?metaReply(message,language):chat?conversationalFallback(message,language):usefulFallback(message,language,cat);
- return json(request,{...d,ok:d.ok!==false,response,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:act.isAction?'seekvera-r105-local-action-fallback':chat?'seekvera-r105-local-conversation-fallback':'seekvera-r105-language-safe-fallback',fastPath:act.isAction?'r105-deterministic-action-fallback':chat?'r105-natural-conversation-fallback':'r105-language-safe-fallback',liveData:!!d.liveData},fallback.status||200)
+ const act=actionState(message,'','',body?.clientControls),language=messageLanguage(message,body?.language),meta=metaConversation(message),chat=conversationOnly(message)||meta,requested=category(body?.conversationIntent||message),cat=(act.isAction||chat)?'general':(requested==='jobs'&&!employmentIntent(message)?'general':requested),response=act.isAction?actionReply(language,act.cc,act.ll):meta?metaReply(message,language):chat?conversationalFallback(message,language):usefulFallback(message,language,cat);
+ return json(request,{ok:true,response,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:'seekvera-r113-instant-local-fallback',fastPath:'r113-bounded-fallback',liveData:false},200)
 }
 
 async function runStructured(env,body){
@@ -205,26 +203,31 @@ Conversation history:\
 ${history||'(none)'}\
 Latest user message: ${message}`;
  const messages=[{role:'system',content:system},{role:'user',content:message}];
- for(const model of [PRIMARY,FALLBACK]){try{
-   const r=await env.AI.run(model,{messages,temperature:.2,max_tokens:760}),text=modelText(r),obj=parseJSON(text);if(!obj||!clean(obj.reply,5000))continue;
+ const modelAttempt=async model=>{
+   const r=await Promise.race([env.AI.run(model,{messages,temperature:.2,max_tokens:760}),new Promise((_,reject)=>setTimeout(()=>reject(Error('model timeout')),4200))]),text=modelText(r),obj=parseJSON(text);if(!obj||!clean(obj.reply,5000))throw Error('invalid structured response');
    const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode),meta=metaConversation(message),cat=(act.isAction||conversationOnly(message)||meta)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
    let reply=act.isAction?actionReply(language,act.cc,act.ll):clean(obj.reply,5000);if(meta&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
-   return{ok:true,response:reply,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model,fastPath:act.isAction?'r105-verified-action-first':meta?'r105-meta-conversation-guard':'r105-single-structured-ai',liveData:false}
- }catch(e){const em=String(e?.message||e||'');if(/daily neuron allocation|quota|limit exceeded|allocation exceeded|usage limit/i.test(em))break}}
- // Keep a real conversational AI fallback instead of dropping immediately to fixed keyword templates.
+   return{ok:true,response:reply,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model,fastPath:act.isAction?'r113-verified-action-first':meta?'r113-meta-conversation-guard':'r113-bounded-structured-ai',liveData:false}
+ };
+ try{const winner=await Promise.race([Promise.any([PRIMARY,FALLBACK].map(modelAttempt)),new Promise(resolve=>setTimeout(()=>resolve(null),4500))]);if(winner)return winner}catch(_){}
+ // Keep a real conversational AI fallback, but never let it stall the UI.
  try{
    const backupPrompt=messages.map(x=>String(x?.role||'user').toUpperCase()+': '+String(x?.content||'')).join('\n').slice(-14000);
-   const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),9000);
+   const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),2200);
    try{
      const br=await fetch('https://text.pollinations.ai/'+encodeURIComponent(backupPrompt)+'?model=openai&private=true',{headers:{'accept':'text/plain','user-agent':'SEEKVERA/1.0'},signal:ctl.signal});
-     if(br.ok){const raw=await br.text(),obj=parseJSON(raw);if(obj&&clean(obj.reply,5000)){
-       const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode),meta=metaConversation(message),cat=(act.isAction||conversationOnly(message)||meta)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
-       let reply=act.isAction?actionReply(language,act.cc,act.ll):clean(obj.reply,5000);if(meta&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
-       return{ok:true,response:reply,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:'pollinations-private-conversation-fallback',fastPath:'r105-real-ai-fallback',liveData:false}
-     }}
-     const plain=clean(raw,5000);if(plain){const language=messageLanguage(message,''),meta=metaConversation(message),cat=(conversationOnly(message)||meta)?'general':(category(message)==='jobs'&&!employmentIntent(message)?'general':category(message));return{ok:true,response:plain,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:null,languageAction:null,model:'pollinations-private-conversation-plain',fastPath:'r105-natural-plain-fallback',liveData:false}}
+     if(br.ok){
+       const raw=await br.text(),obj=parseJSON(raw);
+       if(obj&&clean(obj.reply,5000)){
+         const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode),meta=metaConversation(message),cat=(act.isAction||conversationOnly(message)||meta)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
+         let reply=act.isAction?actionReply(language,act.cc,act.ll):clean(obj.reply,5000);if(meta&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
+         return{ok:true,response:reply,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:'pollinations-private-conversation-fallback',fastPath:'r113-real-ai-fallback',liveData:false}
+       }
+       const plain=clean(raw,5000);if(plain){const language=messageLanguage(message,''),meta=metaConversation(message),cat=(conversationOnly(message)||meta)?'general':(category(message)==='jobs'&&!employmentIntent(message)?'general':category(message));return{ok:true,response:plain,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:null,languageAction:null,model:'pollinations-private-conversation-plain',fastPath:'r113-natural-plain-fallback',liveData:false}}
+     }
    }finally{clearTimeout(to)}
- }catch{}
+ }catch(_){}
+
  return null;
 }
 

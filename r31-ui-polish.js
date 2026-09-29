@@ -2,7 +2,7 @@
   "use strict";
   if (window.__SEEKVERA_R31) return;
   window.__SEEKVERA_R31 = true;
-  const VERSION = "20260927-r96-authoritative-language-ai-voice";
+  const VERSION = "20260929-r113-ai-reliability";
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
   const ROUTES = {
@@ -817,7 +817,7 @@
     let err = "AI unavailable";
     for (const url of [...new Set(urls)]) {
       const c = new AbortController(),
-        t = setTimeout(() => c.abort(), 18000);
+        t = setTimeout(() => c.abort(), 7200);
       try {
         const r = await fetch(url, {
           method: "POST",

@@ -1,6 +1,6 @@
 (() => {
   "use strict";
-  const RELEASE = "20260927-r96-authoritative-language-ai-voice";
+  const RELEASE = "20260929-r113-ai-reliability";
   const WORKER = "";
   const SB = "https://nrdpyydfrpmqedtzmbyw.supabase.co";
   const SB_KEY = "sb_publishable_tqqPQxqdNowIsSlJz4bW5w_kHOC905o";
@@ -677,7 +677,7 @@
       actions.hidden = true;
     }
     const controller = new AbortController(),
-      timer = setTimeout(() => controller.abort(), 18000);
+      timer = setTimeout(() => controller.abort(), 7500);
     try {
       const r = await fetch(api("/api/ai"), {
         method: "POST",
