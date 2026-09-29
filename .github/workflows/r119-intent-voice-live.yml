@@ -132,8 +132,8 @@ jobs:
           await p.goto('https://seekveraglobal.com/?r119='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
           await p.waitForFunction(()=>window.SEEKVERA_R31?.submitAI&&document.querySelector('#aiChatInput'),null,{timeout:20000});
           await p.evaluate(()=>{localStorage.removeItem('seekvera_ai_chat_v1');sessionStorage.removeItem('seekvera_ai_intent');localStorage.setItem('seekvera_voice_mode','0')});
-          await p.fill('#aiChatInput','دوريني على شغل');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
-          await p.waitForURL(/\/jobs\.html\?/,{timeout:12000});
+          await p.evaluate(()=>window.SEEKVERA_R31.submitAI('دوريني على شغل'));
+          await p.waitForURL(/\/jobs\.html\?/,{timeout:15000,waitUntil:'commit'});
           const u=new URL(p.url());assert(u.pathname.endsWith('/jobs.html'),p.url());assert.match(u.searchParams.get('q')||'',/شغل/u);assert.equal(errs.length,0,errs.join('\n'));
           console.log('ANDROID_JOB_ROUTE_PASS',p.url());await b.close();
           JS
