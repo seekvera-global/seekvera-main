@@ -1,0 +1,144 @@
+name: R121 global intent language production
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'tools/r121_global_intent_language.py'
+      - '.github/workflows/r121-production-cert.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r121-production
+  cancel-in-progress: true
+
+jobs:
+  deploy-certify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply R121
+        run: |
+          set -euo pipefail
+          python tools/r121_global_intent_language.py
+          node --check worker-r76.js
+          node --check worker-r31.js
+          node --check r31-ui-polish.js
+          grep -F '20260929-r121-global-intent-language' worker-r76.js
+          grep -F 'function fastCommandLanguage' worker-r76.js
+
+      - name: Persist R121
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add worker-r76.js worker-r31.js r31-ui-polish.js sw.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'R121 understand global command inflections and languages'
+            git push origin HEAD:main
+          fi
+
+      - name: Deploy R121
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --config wrangler.jsonc
+
+      - name: Wait for R121 live
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,time,urllib.request
+          for i in range(30):
+              try:
+                  req=urllib.request.Request('https://seekveraglobal.com/api/health?r121='+str(time.time()),headers={'user-agent':'Mozilla/5.0 (Linux; Android 11; SM-A225F)','cache-control':'no-cache'})
+                  with urllib.request.urlopen(req,timeout=8) as r:d=json.loads(r.read())
+                  if d.get('release')=='20260929-r121-global-intent-language' and d.get('r121'):
+                      print('R121_LIVE',d.get('release'));break
+              except Exception as e: print('WAIT',i,str(e)[:90])
+              time.sleep(3)
+          else: raise AssertionError('R121 not live')
+          PY
+
+      - name: Global direct-action matrix
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,time,urllib.request,re
+          B='https://seekveraglobal.com';UA='Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
+          cases=[
+            ('ar','دوريني على شغل','jobs'),('ar','حوليني على تركيا','control'),
+            ('en','Find me a job','jobs'),('fr','Trouve-moi un hôtel','travel'),('es','Búscame un coche','cars'),
+            ('de','Finde mir eine Wohnung','property'),('tr','Bana bir iş bul','jobs'),('pt','Procure um hotel para mim','travel'),
+            ('it','Trova un lavoro per me','jobs'),('vi','Tìm việc làm cho tôi','jobs'),('id','Carikan pekerjaan untuk saya','jobs'),
+            ('sw','Tafuta kazi kwa ajili yangu','jobs'),('ru','Найди мне работу','jobs'),('zh','帮我找一份工作','jobs'),
+            ('ja','仕事を探して','jobs'),('ko','일자리를 찾아줘','jobs'),('hi','मेरे लिए नौकरी खोजो','jobs'),
+            ('bn','আমার জন্য চাকরি খুঁজে দিন','jobs'),('fa','برای من کار پیدا کن','jobs'),('ur','میرے لیے نوکری تلاش کرو','jobs')]
+          for code,msg,cat in cases:
+              x=json.dumps({'message':msg,'country':'Worldwide','language':'auto','fast':True},ensure_ascii=False).encode();req=urllib.request.Request(B+'/api/ai',data=x,headers={'content-type':'application/json','accept':'application/json','user-agent':UA},method='POST');t=time.monotonic()
+              with urllib.request.urlopen(req,timeout=5) as r:d=json.loads(r.read())
+              sec=time.monotonic()-t
+              assert d.get('ok') and d.get('language')==code,(code,msg,d)
+              if cat=='control':
+                  a=d.get('countryAction') or {};assert a.get('code')=='TR' and a.get('type')=='set-country',(msg,d)
+              else:
+                  assert d.get('category')==cat,(code,msg,cat,d)
+              assert sec<2.0,(code,msg,sec,d)
+              print('GLOBAL_ACTION_PASS',code,cat,round(sec,2),d.get('model'))
+          PY
+
+      - name: Natural chat stays conversational and same language
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,time,urllib.request,re
+          B='https://seekveraglobal.com';UA='Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
+          cases=[('ar','مرحبا كيفك؟',r'[\u0600-\u06ff]'),('en','Hello, how are you?',r'[A-Za-z]'),('fr','Bonjour, comment allez-vous ?',r'[A-Za-zÀ-ÿ]'),('tr','Merhaba, nasılsın?',r'[A-Za-zÇĞİÖŞÜçğıöşü]'),('ru','Привет, как дела?',r'[\u0400-\u052f]'),('hi','नमस्ते, आप कैसे हैं?',r'[\u0900-\u097f]'),('zh','你好，你好吗？',r'[\u4e00-\u9fff]'),('ja','こんにちは。元気ですか？',r'[\u3040-\u30ff\u4e00-\u9fff]')]
+          for code,msg,pat in cases:
+              x=json.dumps({'message':msg,'country':'Worldwide','language':'auto','fast':True},ensure_ascii=False).encode();req=urllib.request.Request(B+'/api/ai',data=x,headers={'content-type':'application/json','accept':'application/json','user-agent':UA},method='POST');t=time.monotonic()
+              with urllib.request.urlopen(req,timeout=7) as r:d=json.loads(r.read())
+              sec=time.monotonic()-t;text=str(d.get('response',''));assert d.get('ok') and d.get('language')==code,(code,d);assert d.get('category')=='general',(code,d);assert re.search(pat,text),(code,text,d);assert sec<5.0,(code,sec,d);print('CHAT_PASS',code,round(sec,2),d.get('model'))
+          PY
+
+      - name: English UI Arabic audio must transcribe Arabic
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,time,urllib.request,base64,re
+          B='https://seekveraglobal.com';UA='Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36';phrase='مرحبا دوريني على شغل في بيروت'
+          x=json.dumps({'text':phrase,'language':'ar'},ensure_ascii=False).encode();req=urllib.request.Request(B+'/api/tts',data=x,headers={'content-type':'application/json','accept':'audio/mpeg,audio/*;q=0.9,*/*;q=0.8','user-agent':UA},method='POST')
+          with urllib.request.urlopen(req,timeout=10) as r:audio=r.read()
+          assert len(audio)>500
+          payload={'audio':'data:audio/mpeg;base64,'+base64.b64encode(audio).decode(),'language':'auto','languageHint':'en','uiLanguage':'en','browserLanguage':'en-US','nativeText':'Halið á að leita að vinnu','nativeConfidence':0.97};x=json.dumps(payload,ensure_ascii=False).encode();req=urllib.request.Request(B+'/api/transcribe?r121=1',data=x,headers={'content-type':'application/json','accept':'application/json','user-agent':UA},method='POST');t=time.monotonic()
+          with urllib.request.urlopen(req,timeout=9) as r:d=json.loads(r.read())
+          sec=time.monotonic()-t;assert d.get('ok') and d.get('language')=='ar',d;assert re.search(r'[\u0600-\u06ff]',str(d.get('text',''))),d;assert sec<6.5,(sec,d);print('AR_AUDIO_PASS',round(sec,2),d)
+          PY
+
+      - name: Android route and atomic country locale
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat >/tmp/r121.mjs <<'JS'
+          import{chromium}from'playwright';import assert from'node:assert/strict';const b=await chromium.launch({headless:true});const p=await b.newPage({viewport:{width:390,height:844},locale:'en-US',userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});const errs=[];p.on('pageerror',e=>errs.push(String(e)));await p.goto('https://seekveraglobal.com/?r121='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});await p.waitForFunction(()=>window.SEEKVERA_VOICE_AI&&window.SEEKVERA_R31?.submitAI&&window.SEEKVERA_R24_CONTROLLER,null,{timeout:25000});const st=await p.evaluate(()=>({mode:window.__seekveraVoiceMode}));assert.equal(st.mode,'20260929-r120-language-independent-voice');const hybrid=await p.evaluate(()=>window.SEEKVERA_VOICE_AI.chooseHybridTranscript('Halið á að leita að vinnu',.97,{text:'دوريني على شغل',language:'ar',engine:'server-whisper-auto'}));assert.match(hybrid.text,/[\u0600-\u06ff]/u);assert.equal(hybrid.language,'ar');const n=await p.locator('#aiMessages .ai-msg.bot:not(.thinking)').count(),t=Date.now();await p.fill('#aiChatInput','دوريني على شغل');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());await p.waitForFunction(x=>document.querySelectorAll('#aiMessages .ai-msg.bot:not(.thinking)').length>x,n,{timeout:4000});const reply=await p.locator('#aiMessages .ai-msg.bot:not(.thinking)').last().innerText();assert.match(reply,/[\u0600-\u06ff]/u);await p.waitForURL(/jobs\.html/,{timeout:4000});const ms=Date.now()-t;assert(ms<4000,{ms,reply,url:p.url()});assert.equal(errs.length,0,errs.join('\n'));console.log('ANDROID_JOB_PASS',JSON.stringify({ms,reply,url:p.url(),hybrid}));await p.goto('https://seekveraglobal.com/?r121c='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});await p.waitForFunction(()=>window.SEEKVERA_R24_CONTROLLER&&window.SEEKVERA_LOCALE_R15&&document.querySelector('#country'),null,{timeout:25000});const c=await p.evaluate(()=>window.SEEKVERA_R24_CONTROLLER.detectControls('حوليني على تركيا'));assert.equal(c.country,'TR');await p.evaluate(c=>window.SEEKVERA_R24_CONTROLLER.applyControls(c),c);await p.waitForFunction(()=>document.querySelector('#country')?.value==='TR',{timeout:5000});await p.waitForTimeout(1200);const cs=await p.evaluate(()=>({country:document.querySelector('#country')?.value,lang:document.querySelector('#lang')?.value,htmlLang:document.documentElement.lang,currency:document.querySelector('#currency')?.value}));assert.equal(cs.country,'TR');assert.equal(cs.currency,'TRY');assert.equal(cs.lang,'tr');assert.equal(cs.htmlLang,'tr');console.log('COUNTRY_PASS',JSON.stringify(cs));await b.close();
+          JS
+          node /tmp/r121.mjs
+
+      - name: Stability hold
+        run: |
+          set -euo pipefail
+          sleep 50
+          python3 - <<'PY'
+          import json,time,urllib.request
+          for i in range(3):
+              req=urllib.request.Request('https://seekveraglobal.com/api/health?stable='+str(time.time()),headers={'user-agent':'Mozilla/5.0','cache-control':'no-cache'})
+              with urllib.request.urlopen(req,timeout=8) as r:d=json.loads(r.read())
+              assert d.get('release')=='20260929-r121-global-intent-language' and d.get('r121'),d
+              print('STABLE_PASS',i+1,d.get('release'));time.sleep(4)
+          PY
