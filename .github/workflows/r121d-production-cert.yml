@@ -1,0 +1,81 @@
+name: R121D Arabic Persian Urdu production
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'tools/r121d_disambiguate_ar_fa_ur.py'
+      - '.github/workflows/r121d-production-cert.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r121d-production
+  cancel-in-progress: true
+
+jobs:
+  deploy-certify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply and validate
+        run: |
+          set -euo pipefail
+          python tools/r121d_disambiguate_ar_fa_ur.py
+          node --check worker-r76.js
+          grep -F '20260929-r121d-ar-fa-ur-disambiguation' worker-r76.js
+      - name: Persist runtime
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add worker-r76.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'R121D disambiguate Arabic Persian and Urdu'
+            git push origin HEAD:main
+          fi
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --config wrangler.jsonc
+      - name: Wait for live
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,time,urllib.request
+          for i in range(30):
+              try:
+                  q='https://seekveraglobal.com/api/health?r121d='+str(time.time())
+                  req=urllib.request.Request(q,headers={'user-agent':'Mozilla/5.0','cache-control':'no-cache'})
+                  with urllib.request.urlopen(req,timeout=8) as r:d=json.loads(r.read())
+                  if d.get('release')=='20260929-r121d-ar-fa-ur-disambiguation' and d.get('r121d'):
+                      print('R121D_LIVE',d.get('release'));break
+              except Exception as e: print('WAIT',i,str(e)[:100])
+              time.sleep(3)
+          else: raise AssertionError('R121D not live')
+          PY
+      - name: Full API certification
+        run: python tools/r121b_cert.py
+      - name: Android browser certification
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          node tools/r121b_browser.mjs
+      - name: Stability hold
+        run: |
+          set -euo pipefail
+          sleep 50
+          python3 - <<'PY'
+          import json,time,urllib.request
+          for i in range(3):
+              req=urllib.request.Request('https://seekveraglobal.com/api/health?stable='+str(time.time()),headers={'user-agent':'Mozilla/5.0','cache-control':'no-cache'})
+              with urllib.request.urlopen(req,timeout=8) as r:d=json.loads(r.read())
+              assert d.get('release')=='20260929-r121d-ar-fa-ur-disambiguation' and d.get('r121d'),d
+              print('STABLE_PASS',i+1,d.get('release'));time.sleep(4)
+          PY
