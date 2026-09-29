@@ -1,0 +1,140 @@
+name: R119 intent routing and Arabic voice live
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'worker-r76.js'
+      - 'r31-ui-polish.js'
+      - 'voice-ai.js'
+      - '.github/workflows/r119-intent-voice-live.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seekvera-r119-intent-voice
+  cancel-in-progress: true
+
+jobs:
+  deploy-certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate R119 source
+        run: |
+          set -euo pipefail
+          node --check worker-r76.js
+          node --check r31-ui-polish.js
+          node --check voice-ai.js
+          grep -F '20260929-r119-intent-routing-and-arabic-asr' worker-r76.js
+          grep -F 'دوريني على شغل' r31-ui-polish.js
+          grep -F '20260929-r119-arabic-asr-and-intent-routing' voice-ai.js
+
+      - name: Deploy R119
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --config wrangler.jsonc
+
+      - name: Wait for production R119
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,time,urllib.request
+          for _ in range(30):
+              try:
+                  req=urllib.request.Request('https://seekveraglobal.com/api/health?r119='+str(time.time()),headers={'user-agent':'Mozilla/5.0 (Linux; Android 11; SM-A225F)'})
+                  with urllib.request.urlopen(req,timeout=8) as r:d=json.loads(r.read())
+                  if d.get('release')=='20260929-r119-intent-routing-and-arabic-asr' and d.get('r119'):
+                      print('R119_LIVE',d.get('release'));break
+              except Exception:pass
+              time.sleep(3)
+          else:raise AssertionError('R119 not live')
+          PY
+
+      - name: Certify multilingual intent and country actions
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,time,urllib.request,re
+          ua='Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
+          def ask(msg,language='auto'):
+              data=json.dumps({'message':msg,'country':'Worldwide','language':language,'fast':True,'clientControls':{}},ensure_ascii=False).encode()
+              req=urllib.request.Request('https://seekveraglobal.com/api/ai?r119='+str(time.time()),data=data,headers={'content-type':'application/json','accept':'application/json','user-agent':ua},method='POST')
+              t=time.monotonic()
+              with urllib.request.urlopen(req,timeout=10) as r:d=json.loads(r.read())
+              d['_seconds']=round(time.monotonic()-t,2)
+              assert d.get('ok') and d['_seconds']<8,(msg,d)
+              return d
+          cases=[
+            ('ar','دوريني على شغل'),
+            ('en','Find me a job'),
+            ('fr','Aide-moi à trouver un emploi'),
+            ('de','Finde mir eine Stelle'),
+            ('hi','मुझे नौकरी ढूँढो'),
+            ('zh','帮我找工作')
+          ]
+          for code,msg in cases:
+              d=ask(msg)
+              assert d.get('language')==code,(code,d)
+              assert d.get('category')=='jobs' and 'jobs.html' in str(d.get('route')),(code,d)
+              print('JOB_ROUTE_PASS',code,d['_seconds'],d.get('route'))
+          for msg,cc,code in [
+            ('حوليني على تركيا','TR','ar'),
+            ('Change the app to Japan','JP','en'),
+            ('Passe l’application en Allemagne','DE','fr'),
+            ('把应用切换到法国','FR','zh')
+          ]:
+              d=ask(msg)
+              assert d.get('language')==code,(msg,d)
+              assert (d.get('countryAction') or {}).get('code')==cc,(msg,d)
+              print('COUNTRY_PASS',code,cc,d['_seconds'])
+          PY
+
+      - name: Certify Arabic ASR without phone transcript
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,time,urllib.request,base64,re
+          ua='Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
+          phrase='دوريني على شغل وحوليني على تركيا'
+          data=json.dumps({'text':phrase,'language':'ar'},ensure_ascii=False).encode()
+          req=urllib.request.Request('https://seekveraglobal.com/api/tts',data=data,headers={'content-type':'application/json','accept':'audio/mpeg,audio/*;q=0.9,*/*;q=0.8','user-agent':ua},method='POST')
+          with urllib.request.urlopen(req,timeout=10) as r:audio=r.read()
+          assert len(audio)>500,len(audio)
+          payload={'audio':'data:audio/mpeg;base64,'+base64.b64encode(audio).decode(),'language':'auto','languageHint':'ar','uiLanguage':'ar','browserLanguage':'en-US','nativeText':'','nativeConfidence':0}
+          data=json.dumps(payload,ensure_ascii=False).encode()
+          req=urllib.request.Request('https://seekveraglobal.com/api/transcribe?r119=hinted',data=data,headers={'content-type':'application/json','accept':'application/json','user-agent':ua},method='POST')
+          t=time.monotonic()
+          with urllib.request.urlopen(req,timeout=10) as r:d=json.loads(r.read())
+          sec=time.monotonic()-t
+          assert d.get('ok') and d.get('language')=='ar',d
+          assert re.search(r'[\u0600-\u06ff]',str(d.get('text',''))),d
+          assert sec<8,(sec,d)
+          print('ARABIC_ASR_PASS',round(sec,2),d)
+          PY
+
+      - name: Android direct routing live
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > r119-live.mjs <<'JS'
+          import{chromium}from'playwright';import assert from'node:assert/strict';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage({viewport:{width:390,height:844},locale:'ar-LB',userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          const errs=[];p.on('pageerror',e=>errs.push(String(e)));
+          await p.goto('https://seekveraglobal.com/?r119='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_R31?.submitAI&&document.querySelector('#aiChatInput'),null,{timeout:20000});
+          await p.evaluate(()=>{localStorage.removeItem('seekvera_ai_chat_v1');sessionStorage.removeItem('seekvera_ai_intent');localStorage.setItem('seekvera_voice_mode','0')});
+          await p.fill('#aiChatInput','دوريني على شغل');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForURL(/\/jobs\.html\?/,{timeout:12000});
+          const u=new URL(p.url());assert(u.pathname.endsWith('/jobs.html'),p.url());assert.match(u.searchParams.get('q')||'',/شغل/u);assert.equal(errs.length,0,errs.join('\n'));
+          console.log('ANDROID_JOB_ROUTE_PASS',p.url());await b.close();
+          JS
+          node r119-live.mjs
