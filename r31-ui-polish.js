@@ -2,7 +2,7 @@
   "use strict";
   if (window.__SEEKVERA_R31) return;
   window.__SEEKVERA_R31 = true;
-  const VERSION = "20260929-r119b-language-independent-action-ai";
+  const VERSION = "20260929-r120-fast-multilingual-actions";
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
   const ROUTES = {
@@ -535,7 +535,7 @@
       location.assign(routeUrl(cat, q));
     };
     if (!voiceOrigin) {
-      setTimeout(go, 650);
+      setTimeout(go, 180);
       return true;
     }
     pendingVoiceOnNextPage(reply, language);
@@ -550,6 +550,7 @@
       "seekvera:tts-start",
       () => {
         started = true;
+        setTimeout(move, 320);
       },
       { once: true },
     );
@@ -565,8 +566,8 @@
     );
     setTimeout(() => {
       if (!started) move();
-    }, 1800);
-    setTimeout(move, 9000);
+    }, 950);
+    setTimeout(move, 3500);
     return true;
   }
   function replayPendingRouteVoice() {

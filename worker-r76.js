@@ -1,6 +1,6 @@
 import baseWorker from './worker-r31.js';
 
-const RELEASE='20260929-r119b-language-independent-action-ai';
+const RELEASE='20260929-r120-fast-multilingual-actions';
 const PRIMARY='@cf/zai-org/glm-4.7-flash';
 const FALLBACK='@cf/qwen/qwen3-30b-a3b-fp8';
 const FAST='@cf/meta/llama-3.1-8b-instruct-fast';
@@ -345,7 +345,7 @@ Latest user message: ${message}`;
  const modelAttempt=async model=>{
    const r=await Promise.race([env.AI.run(model,{messages,temperature:.18,max_tokens:420}),new Promise((_,reject)=>setTimeout(()=>reject(Error('model timeout')),3000))]),text=modelText(r),obj=parseJSON(text);if(!obj||!clean(obj.reply,5000))throw Error('invalid structured response');
    const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode||targetLanguage),declared=languageCode(obj.languageCode),meta=metaConversation(message),modelCat=category(obj.category),cat=(act.isAction||conversationOnly(message)||meta)?'general':directCategoryIntent(message,modelCat);
-   if(declared&&declared!==language&&!translationRequest(message))throw Error('model language mismatch');
+   if(declared&&declared!==language&&!translationRequest(message)&&!replyMatchesLanguage(obj.reply,language,message))throw Error('model language mismatch');
    let reply=act.isAction?actionReply(language,act.cc,act.ll):guardedReply(obj.reply,language,message);if(!reply)throw Error('reply language mismatch');if(meta&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
    return{ok:true,response:reply,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model,fastPath:act.isAction?'r114-verified-action-first':meta?'r114-meta-conversation-guard':'r114-fast-model-race',liveData:false}
  };
@@ -360,7 +360,7 @@ Latest user message: ${message}`;
        const raw=await br.text(),obj=parseJSON(raw);
        if(obj&&clean(obj.reply,5000)){
          const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode||targetLanguage),declared=languageCode(obj.languageCode),meta=metaConversation(message),modelCat=category(obj.category),cat=(act.isAction||conversationOnly(message)||meta)?'general':directCategoryIntent(message,modelCat);
-         let reply=act.isAction?actionReply(language,act.cc,act.ll):guardedReply(obj.reply,language,message);if(declared&&declared!==language&&!translationRequest(message))reply='';if(meta&&reply&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
+         let reply=act.isAction?actionReply(language,act.cc,act.ll):guardedReply(obj.reply,language,message);if(declared&&declared!==language&&!translationRequest(message)&&!replyMatchesLanguage(obj.reply,language,message))reply='';if(meta&&reply&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
          if(reply)return{ok:true,response:reply,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:'pollinations-private-conversation-fallback',fastPath:'r117-language-guard-fallback',liveData:false}
        }
        const plain=guardedReply(raw,targetLanguage,message);if(plain){const language=targetLanguage,meta=metaConversation(message),cat=(conversationOnly(message)||meta)?'general':directCategoryIntent(message,'general');return{ok:true,response:plain,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:null,languageAction:null,model:'pollinations-private-conversation-plain',fastPath:'r117-language-guard-plain',liveData:false}}
@@ -371,17 +371,56 @@ Latest user message: ${message}`;
  return null;
 }
 
+const FAST_DIRECT_LANGS=new Set(['ar','en','fr','es','de','tr','pt','it','vi','id','sw','ru','hi','zh','ja','ko','bn','fa','ur']);
+function fastRouteReply(language){
+ const r={
+  ar:'أكيد. فهمت طلبك وعم بفتح لك القسم المناسب مباشرة.',
+  en:'Got it. I understand your request and I’m opening the right section now.',
+  fr:'Compris. J’ouvre directement la section adaptée à votre demande.',
+  es:'Entendido. Voy a abrir directamente la sección adecuada para tu solicitud.',
+  de:'Verstanden. Ich öffne jetzt direkt den passenden Bereich.',
+  tr:'Anladım. Uygun bölümü şimdi doğrudan açıyorum.',
+  pt:'Entendi. Vou abrir diretamente a seção certa para o seu pedido.',
+  it:'Capito. Apro subito la sezione giusta per la tua richiesta.',
+  vi:'Đã hiểu. Tôi đang mở ngay mục phù hợp với yêu cầu của bạn.',
+  id:'Mengerti. Saya langsung membuka bagian yang tepat untuk permintaan Anda.',
+  sw:'Nimekuelewa. Ninafungua moja kwa moja sehemu inayofaa kwa ombi lako.',
+  ru:'Понял. Я сразу открываю подходящий раздел для вашего запроса.',
+  hi:'समझ गया। मैं आपके अनुरोध के लिए सही सेक्शन सीधे खोल रहा हूँ।',
+  zh:'明白了。我现在直接打开适合你请求的栏目。',
+  ja:'わかりました。ご希望に合うセクションをすぐに開きます。',
+  ko:'알겠습니다. 요청에 맞는 섹션을 바로 열겠습니다.',
+  bn:'বুঝেছি। আপনার অনুরোধের জন্য সঠিক বিভাগটি এখনই খুলছি।',
+  fa:'متوجه شدم. بخش مناسب درخواست شما را مستقیم باز می‌کنم.',
+  ur:'سمجھ گیا۔ میں آپ کی درخواست کے لیے مناسب سیکشن فوراً کھول رہا ہوں۔'
+ };
+ return r[language]||''
+}
+function fastActionResult(message,body){
+ const language=messageLanguage(message,body?.language),act=actionState(message,'','',body?.clientControls);
+ if(act.isAction){
+  return{ok:true,response:actionReply(language,act.cc,act.ll),language,category:'general',route:null,countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:'seekvera-r120-direct-control',fastPath:'r120-direct-control',liveData:false}
+ }
+ const cat=directCategoryIntent(message,'general');
+ if(cat!=='general'&&FAST_DIRECT_LANGS.has(language)){
+  const response=fastRouteReply(language)||usefulFallback(message,language,cat);
+  return{ok:true,response,language,category:cat,route:ROUTES[cat]||ROUTES.marketplace,countryAction:null,languageAction:null,model:'seekvera-r120-direct-intent',fastPath:'r120-direct-intent',liveData:false}
+ }
+ return null
+}
+
 export default{async fetch(request,env,ctx){
  const u=new URL(request.url);
  if(request.method==='OPTIONS')return new Response(null,{status:204,headers:headers(request)});
  if(u.pathname==='/api/health'){
-   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,release:RELEASE,r119b:true,r119bRuntime:'language-independent-voice-direct-intent-atomic-controls',r119:true,r119Runtime:'explicit-intent-routing-plus-hinted-arabic-asr-rescue',r118:true,r118Runtime:'script-first-plus-model-hint-language-resolution',r117:true,r117Runtime:'strict-reply-language-contract-and-history-sanitizer',r105:true,r105Runtime:'worldwide-default-language-safe-ai-atomic-localization',r86:true,r86Runtime:'conversation-first-multilingual-ai',r92:true,r92Runtime:'native-asr-payload-per-model-auto-language',r89:true,r89Runtime:'workers-ai-whisper-byte-array-no-consent',r88:true,r88Runtime:'fast-auto-asr-server-first-tts-natural-fallback',r87:true,r87Runtime:'latest-message-language-plus-real-ai-fallback',r86Routing:'goal-aware-not-keyword-first',r86Voice:'whisper-auto-language-independent-of-ui',r86Asr:ASR_PRIMARY,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
+   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,release:RELEASE,r120:true,r120Runtime:'instant-controls-direct-intent-language-independent-voice',r119b:true,r119bRuntime:'language-independent-voice-direct-intent-atomic-controls',r119:true,r119Runtime:'explicit-intent-routing-plus-hinted-arabic-asr-rescue',r118:true,r118Runtime:'script-first-plus-model-hint-language-resolution',r117:true,r117Runtime:'strict-reply-language-contract-and-history-sanitizer',r105:true,r105Runtime:'worldwide-default-language-safe-ai-atomic-localization',r86:true,r86Runtime:'conversation-first-multilingual-ai',r92:true,r92Runtime:'native-asr-payload-per-model-auto-language',r89:true,r89Runtime:'workers-ai-whisper-byte-array-no-consent',r88:true,r88Runtime:'fast-auto-asr-server-first-tts-natural-fallback',r87:true,r87Runtime:'latest-message-language-plus-real-ai-fallback',r86Routing:'goal-aware-not-keyword-first',r86Voice:'whisper-auto-language-independent-of-ui',r86Asr:ASR_PRIMARY,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
  }
  if(u.pathname==='/api/transcribe'&&request.method==='POST')return transcribeAudio(request,env);
  if(u.pathname==='/api/ai'&&request.method==='POST'){
    let body={};try{body=await request.clone().json()}catch{return json(request,{ok:false,error:'Invalid JSON'},400)}
    const message=clean(body?.message??body?.prompt,2400);if(!message)return json(request,{ok:false,error:'Message is required'},400);
    const reason=blocked(message);if(reason){const language=messageLanguage(message,body?.language);return json(request,{ok:true,blocked:true,reviewRequired:true,response:safetyReply(language),language,reason,category:'general',route:null,countryAction:null,languageAction:null,model:'seekvera-r105-safety'},200)}
+   const quick=fastActionResult(message,body);if(quick)return json(request,quick,200);
    if(env.AI){const d=await runStructured(env,body);if(d)return json(request,d,200)}
    return degradedFallback(request,env,ctx,body,message);
  }
