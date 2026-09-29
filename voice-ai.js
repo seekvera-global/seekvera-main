@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-if(window.__seekveraVoiceAI)return;window.__seekveraVoiceAI=true;window.__seekveraVoiceMode='20260929-r119-arabic-asr-and-intent-routing';
+if(window.__seekveraVoiceAI)return;window.__seekveraVoiceAI=true;window.__seekveraVoiceMode='20260929-r119b-language-independent-voice';
 const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
 const LANGS={en:'en-US',ar:'ar-SA',fr:'fr-FR',zh:'zh-CN',es:'es-ES',hi:'hi-IN',pt:'pt-BR',de:'de-DE',ja:'ja-JP',ko:'ko-KR',id:'id-ID',tr:'tr-TR',ru:'ru-RU',ur:'ur-PK',bn:'bn-BD',vi:'vi-VN',it:'it-IT',sw:'sw-KE',th:'th-TH',fa:'fa-IR',pl:'pl-PL',nl:'nl-NL',ms:'ms-MY',fil:'fil-PH',ha:'ha-NG',yo:'yo-NG',ig:'ig-NG',am:'am-ET',he:'he-IL',el:'el-GR',uk:'uk-UA',ro:'ro-RO',cs:'cs-CZ',sk:'sk-SK',hu:'hu-HU',sv:'sv-SE',no:'nb-NO',da:'da-DK',fi:'fi-FI',bg:'bg-BG',hr:'hr-HR',sr:'sr-RS',sl:'sl-SI',lt:'lt-LT',lv:'lv-LV',et:'et-EE',ca:'ca-ES',eu:'eu-ES',gl:'gl-ES',is:'is-IS',sq:'sq-AL',mk:'mk-MK',ka:'ka-GE',hy:'hy-AM',az:'az-AZ',kk:'kk-KZ',uz:'uz-UZ',ky:'ky-KG',tg:'tg-TJ',tk:'tk-TM',ne:'ne-NP',si:'si-LK',ta:'ta-IN',te:'te-IN',ml:'ml-IN',mr:'mr-IN',gu:'gu-IN',pa:'pa-IN',km:'km-KH',lo:'lo-LA',my:'my-MM',mn:'mn-MN',zu:'zu-ZA',af:'af-ZA',be:'be-BY',bs:'bs-BA',dz:'dz-BT',ti:'ti-ET',fo:'fo-FO',kl:'kl-GL',rw:'rw-RW',sm:'sm-WS',to:'to-TO',so:'so-SO',ps:'ps-AF',dv:'dv-MV',mt:'mt-MT',mg:'mg-MG',ga:'ga-IE',cy:'cy-GB',mi:'mi-NZ',fy:'fy-NL',lb:'lb-LU',rm:'rm-CH',ku:'ku-TR',xh:'xh-ZA',st:'st-ZA',tn:'tn-BW'};
 const NAME_CODE={english:'en',arabic:'ar',french:'fr',chinese:'zh',mandarin:'zh',spanish:'es',hindi:'hi',portuguese:'pt',german:'de',japanese:'ja',korean:'ko',indonesian:'id',turkish:'tr',russian:'ru',urdu:'ur',bengali:'bn',vietnamese:'vi',italian:'it',swahili:'sw',thai:'th',persian:'fa',farsi:'fa',polish:'pl',dutch:'nl',malay:'ms',filipino:'fil',tagalog:'fil',hausa:'ha',yoruba:'yo',igbo:'ig',amharic:'am',hebrew:'he',greek:'el',ukrainian:'uk',romanian:'ro',czech:'cs',slovak:'sk',hungarian:'hu',swedish:'sv',norwegian:'no',danish:'da',finnish:'fi',bulgarian:'bg',croatian:'hr',serbian:'sr',slovenian:'sl',lithuanian:'lt',latvian:'lv',estonian:'et',catalan:'ca',basque:'eu',galician:'gl',icelandic:'is',albanian:'sq',macedonian:'mk',georgian:'ka',armenian:'hy',azerbaijani:'az',kazakh:'kk',uzbek:'uz',kyrgyz:'ky',tajik:'tg',turkmen:'tk',nepali:'ne',sinhala:'si',tamil:'ta',telugu:'te',malayalam:'ml',marathi:'mr',gujarati:'gu',punjabi:'pa',khmer:'km',lao:'lo',burmese:'my',mongolian:'mn',zulu:'zu',afrikaans:'af',belarusian:'be',bosnian:'bs',dzongkha:'dz',tigrinya:'ti',faroese:'fo',greenlandic:'kl',kalaallisut:'kl',kinyarwanda:'rw',samoan:'sm',tongan:'to',somali:'so',pashto:'ps',dhivehi:'dv',maldivian:'dv',maltese:'mt',malagasy:'mg',irish:'ga',welsh:'cy',maori:'mi',frisian:'fy',luxembourgish:'lb',romansh:'rm',kurdish:'ku',xhosa:'xh',sesotho:'st','southern sotho':'st',tswana:'tn',setswana:'tn'};
@@ -8,7 +8,7 @@ const FEMALE_HINTS=/aria|jenny|zira|samantha|victoria|karen|moira|tessa|ava|alli
 const MALE_HINTS=/david|mark|george|daniel|fred|ralph|bruce|hammad|hamed|majed|maged|male|man/i;
 const QUALITY_HINTS=/neural|natural|enhanced|premium|online|google|microsoft|siri/i;
 const TTS_RETRY_DELAYS=[240,650,1200];
-const VOICE_SILENCE_MS=2300,VOICE_MAX_MS=60000,VOICE_RMS_THRESHOLD=.012;
+const VOICE_SILENCE_MS=1800,VOICE_MAX_MS=60000,VOICE_RMS_THRESHOLD=.012;
 let recognition=null,nativeShadow=null,nativeShadowText='',nativeShadowConfidence=0,lastAnswer='',lastLocale='',muted=localStorage.getItem('seekvera_voice_muted')==='1',activeButton=null,voiceConversation=false,voiceReplyDeadline=0,speakToken=0,recording=false,mediaRecorder=null,mediaStream=null,recordChunks=[],recordTimer=null,speechSilenceTimer=null,speechHardTimer=null,audioCtx=null,audioAnalyser=null,audioSource=null,audioRaf=0,heardVoice=false,lastVoiceAt=0,recordStartedAt=0;
 function codeOf(v){let s=String(v||'').toLowerCase().trim();if(NAME_CODE[s])return NAME_CODE[s];s=s.split(/[-_ ]/)[0];if(NAME_CODE[s])return NAME_CODE[s];return /^[a-z]{2,3}$/.test(s)?s:''}
 function locale(){const e=document.getElementById('lang');let code=(e?.value||localStorage.getItem('seekvera_lang')||navigator.language||'en').toLowerCase();const label=e?.options?.[e.selectedIndex]?.textContent||'';if(code==='auto'||/auto|تلقائي|autom/i.test(label))return navigator.language||'en-US';code=codeOf(code)||code.split(/[-_]/)[0];if(code==='ar'){const c=String(document.getElementById('country')?.value||localStorage.getItem('seekvera_country')||'').toUpperCase();const ar={LB:'ar-LB',EG:'ar-EG',AE:'ar-AE',SA:'ar-SA',JO:'ar-JO',IQ:'ar-IQ',KW:'ar-KW',QA:'ar-QA',BH:'ar-BH',OM:'ar-OM',MA:'ar-MA',DZ:'ar-DZ',TN:'ar-TN'};if(ar[c])return ar[c]}return LANGS[code]||code||navigator.language||'en-US'}
@@ -84,6 +84,8 @@ function chooseHybridTranscript(nativeText,nativeConfidence,whisper){
   if(!wt||transcriptPoor(wt))return{text:nt,language:languageFromTranscript(nt,current),engine:'native-quality-rescue'};
   // Strong non-Latin script evidence from the phone beats a contradictory ASR transcript. This fixes Arabic and other script-family mistranslations.
   if(!transcriptPoor(nt)&&ns&&ns!=='latin'&&ws&&ws!==ns)return{text:nt,language:languageFromTranscript(nt,current),engine:'native-script-rescue'};
+  // UI/native recognizers can hallucinate Latin text for non-Latin speech; a clear server non-Latin transcript wins.
+  if(ws&&ws!=='latin'&&ns==='latin'&&!transcriptPoor(wt))return whisper;
   // For Latin-script languages, do not lock the user to the app language. Trust server auto-ASR unless the phone result is clearly stronger.
   const nscore=transcriptScore(nt,current)+(conf>=.60?28:0),wscore=transcriptScore(wt,whisper?.language||current);
   if(!transcriptPoor(nt)&&conf>=.72&&nscore>wscore+18)return{text:nt,language:languageFromTranscript(nt,current),engine:'native-confidence-rescue'};
@@ -136,7 +138,7 @@ async function seekveraAutoTranscribe(blob,nativeText='',nativeConfidence=0){
   const audio=await blobDataURL(blob),ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),6200);
   try{
     const native=String(nativeText||'').replace(/\s+/g,' ').trim();
-    const inferred=languageFromTranscript(native,selectedLang()),hint=codeOf(inferred)||codeOf(selectedLang())||codeOf(localStorage.getItem('seekvera_chat_voice_lang')||'');
+    const ns=transcriptScript(native),inferred=languageFromTranscript(native,''),hint=(ns&&ns!=='latin')?codeOf(inferred):'';
     const payload={audio,language:'auto',languageHint:hint||'',uiLanguage:codeOf(selectedLang())||'',browserLanguage:String(navigator.language||''),nativeText:native,nativeConfidence:Number(nativeConfidence||0)};
     const res=await fetch(apiBase()+'/api/transcribe?auto=1&r116=1',{method:'POST',headers:{'content-type':'application/json','cache-control':'no-store'},body:JSON.stringify(payload),signal:ctl.signal,cache:'no-store'});
     const d=await res.json().catch(()=>({}));if(!res.ok||!d.text)throw Error(d.reason||d.error||'server transcription failed');
@@ -149,7 +151,7 @@ async function automaticMultilingualTranscribe(blob,nativeText='',nativeConfiden
   try{return await seekveraAutoTranscribe(blob,nativeText,nativeConfidence)}catch(e){serverError=e}
   const nt=String(nativeText||'').replace(/\s+/g,' ').trim();
   if(nt&&!transcriptPoor(nt)){
-    const language=languageFromTranscript(nt,selectedLang());
+    const language=languageFromTranscript(nt,'');
     if(language&&language!=='auto')rememberChatVoiceLanguage(language,nt);
     return{text:nt,language:language||'auto',engine:'native-shadow-fast-fallback',confidence:Number(nativeConfidence||0)}
   }

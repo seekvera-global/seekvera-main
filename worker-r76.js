@@ -1,6 +1,6 @@
 import baseWorker from './worker-r31.js';
 
-const RELEASE='20260929-r119-intent-routing-and-arabic-asr';
+const RELEASE='20260929-r119b-language-independent-action-ai';
 const PRIMARY='@cf/zai-org/glm-4.7-flash';
 const FALLBACK='@cf/qwen/qwen3-30b-a3b-fp8';
 const FAST='@cf/meta/llama-3.1-8b-instruct-fast';
@@ -261,7 +261,7 @@ async function transcribeAudio(request,env){
  const uiHint=languageCode(b.uiLanguage||''),sentHint=languageCode(b.languageHint||''),softHint=sentHint||uiHint;
  const family=t=>{t=String(t||'');if(/[\u0600-\u06ff]/u.test(t))return'arabic';if(/[\u0900-\u097f]/u.test(t))return'devanagari';if(/[\u0980-\u09ff]/u.test(t))return'bengali';if(/[\u0a00-\u0a7f]/u.test(t))return'gurmukhi';if(/[\u0a80-\u0aff]/u.test(t))return'gujarati';if(/[\u0b80-\u0bff]/u.test(t))return'tamil';if(/[\u0c00-\u0c7f]/u.test(t))return'telugu';if(/[\u0d00-\u0d7f]/u.test(t))return'malayalam';if(/[\u0d80-\u0dff]/u.test(t))return'sinhala';if(/[\u0e00-\u0e7f]/u.test(t))return'thai';if(/[\u0e80-\u0eff]/u.test(t))return'lao';if(/[\u1000-\u109f]/u.test(t))return'myanmar';if(/[\u1200-\u137f]/u.test(t))return'ethiopic';if(/[\u1780-\u17ff]/u.test(t))return'khmer';if(/[\u10a0-\u10ff]/u.test(t))return'georgian';if(/[\u0530-\u058f]/u.test(t))return'armenian';if(/[\u0370-\u03ff]/u.test(t))return'greek';if(/[\u0590-\u05ff]/u.test(t))return'hebrew';if(/[\u3040-\u30ff]/u.test(t))return'japanese';if(/[\uac00-\ud7af]/u.test(t))return'korean';if(/[\u4e00-\u9fff]/u.test(t))return'han';if(/[\u0400-\u052f]/u.test(t))return'cyrillic';if(/[A-Za-zÀ-ÖØ-öø-ÿ]/u.test(t))return'latin';return''};
  const nativeFamily=family(nativeText),nativeLang=nativeText?messageLanguage(nativeText,softHint):'';
- const strongHint=nativeFamily&&nativeFamily!=='latin'?nativeLang:(nativeText&&nativeConfidence>=.60?softHint:'');
+ const strongHint=nativeFamily&&nativeFamily!=='latin'?nativeLang:'';
  const common={task:'transcribe',vad_filter:true,condition_on_previous_text:false,beam_size:2,no_speech_threshold:.68,compression_ratio_threshold:2.4,log_prob_threshold:-1,hallucination_silence_threshold:1.0};
  const timed=(model,input,ms)=>Promise.race([env.AI.run(model,input),new Promise((_,reject)=>setTimeout(()=>reject(Error('asr timeout')),ms))]);
  const errors=[];
@@ -289,8 +289,37 @@ async function transcribeAudio(request,env){
  return json(request,{ok:false,error:'Voice transcription is temporarily unavailable',retryable:true,detail:errors.join(' | ')},503)
 }
 
+function directCategoryIntent(message,modelCategory='general'){
+ const s=String(message||'').toLowerCase().trim();
+ if(employmentIntent(message))return'jobs';
+ const action=/(?:\b(?:find|search|show|open|take me|go to|book|reserve|buy|sell|rent|need|want|looking for|look for|apply for|help me find|help me get)\b|دوريني|دورلي|ندور|عم دور|بدور|ابحث|أبحث|فتش|فتشي|بدي|اريد|أريد|احتاج|أحتاج|افتح|افتحي|وديني|ودّيني|خذني|خدني|احجز|احجزي|اشتري|بيع|استأجر|استاجر|ساعدني|ساعديني|cherche|chercher|trouve|trouver|ouvre|réserve|reserver|acheter|vendre|louer|besoin|veux|busco|buscar|abre|quiero|necesito|reservar|comprar|vender|alquilar|procuro|procurar|abra|quero|preciso|alugar|suche|finden|öffne|offne|brauche|möchte|mochte|buchen|kaufen|verkaufen|mieten|arıyorum|ara|bul|aç|istiyorum|rezerv|satın|kirala|найди|найти|ищу|открой|нужен|хочу|забронируй|купить|продать|аренд|找|搜索|打开|带我|我想|我需要|预订|购买|出售|租|探して|検索|開いて|連れて|欲しい|必要|予約|購入|売|借|찾아|검색|열어|데려|원해|필요|예약|구매|판매|임대|खोज|ढूंढ|खोल|चाहिए|चाहता|बुक|खरीद|बेच|किराए)/iu.test(s);
+ if(!action)return category(modelCategory);
+ const rules=[
+ ['travel',/(?:hotel|hotels|flight|flights|airport|travel|trip|room|فندق|فنادق|طيران|رحلة|سفر|غرفة|hôtel|vol|voyage|vuelo|viaje|voo|viagem|flug|reise|otel|uçuş|seyahat|отел|рейс|путешеств|酒店|航班|旅行|ホテル|フライト|호텔|항공|여행|होटल|उड़ान|यात्रा)/iu],
+ ['property',/(?:property|real estate|house|home|apartment|land|عقار|بيت|منزل|شقة|ارض|أرض|immobilier|maison|appartement|terrain|inmueble|casa|apartamento|terreno|imóvel|immobil|haus|wohnung|grundstück|emlak|ev|daire|arsa|недвиж|дом|квартир|земл|房产|房子|公寓|土地|不動産|家|アパート|부동산|집|아파트|토지|संपत्ति|घर|अपार्टमेंट|ज़मीन)/iu],
+ ['cars',/(?:car|cars|vehicle|auto|سيارة|سيارات|مركبة|voiture|véhicule|coche|carro|veículo|wagen|fahrzeug|araba|otomobil|машин|авто|汽车|车辆|車|自動車|자동차|차량|कार|गाड़ी)/iu],
+ ['shopping',/(?:shopping|product|products|shop|store|price|تسوق|منتج|منتجات|سعر|boutique|produit|achat|tienda|producto|compras|loja|produto|einkauf|produkt|alışveriş|ürün|магазин|товар|购物|产品|買い物|商品|쇼핑|제품|खरीदारी|उत्पाद)/iu],
+ ['restaurants',/(?:restaurant|food|cafe|coffee|مطعم|مطاعم|اكل|أكل|قهوة|nourriture|café|restaurante|comida|essen|restoran|yemek|кафе|ресторан|еда|餐厅|咖啡|レストラン|食事|카페|레스토랑|음식|रेस्तरां|खाना|कैफे)/iu],
+ ['services',/(?:service|services|repair|plumber|electrician|cleaning|خدمة|خدمات|صيانة|سباك|كهربائي|تنظيف|réparation|plombier|servicio|reparación|serviço|reparo|dienst|reparatur|hizmet|tamir|услуг|ремонт|服务|维修|サービス|修理|서비스|수리|सेवा|मरम्मत)/iu],
+ ['equipment',/(?:equipment|machinery|machine|generator|معدات|ماكينات|آلات|مولد|équipement|equipo|maquinaria|equipamento|maschine|ausrüstung|ekipman|makine|оборудован|设备|机械|機械|設備|장비|기계|उपकरण|मशीन)/iu],
+ ['boats',/(?:boat|boats|yacht|marine|قارب|قوارب|يخت|bateau|barco|iate|boot|yat|лодк|яхт|船|游艇|ボート|ヨット|보트|요트|नाव|यॉट)/iu],
+ ['business',/(?:supplier|manufacturer|factory|wholesale|import|export|مورد|مصنع|استيراد|تصدير|fournisseur|fabricant|usine|proveedor|fábrica|fornecedor|lieferant|fabrik|tedarikçi|fabrika|поставщик|завод|供应商|工厂|サプライヤー|工場|공급업체|공장|आपूर्तिकर्ता|फैक्टरी)/iu],
+ ['shipping',/(?:shipping|logistics|freight|cargo|delivery|شحن|لوجست|توصيل|fret|logistique|envío|logística|frete|versand|logistik|kargo|lojistik|достав|логист|货运|物流|配送|輸送|배송|물류|शिपिंग|लॉजिस्टिक|डिलीवरी)/iu],
+ ['software',/(?:software|application|app development|برمجيات|تطبيق|تطبيقات|logiciel|aplicación|aplicativo|anwendung|yazılım|программ|软件|应用|ソフトウェア|アプリ|소프트웨어|앱|सॉफ्टवेयर|ऐप)/iu],
+ ['hosting',/(?:hosting|domain|website|web hosting|استضافة|دومين|موقع|hébergement|domaine|alojamiento web|dominio|hospedagem|domínio|barındırma|alan adı|хостинг|домен|托管|域名|ホスティング|ドメイン|호스팅|도메인|होस्टिंग|डोमेन)/iu],
+ ['solar',/(?:solar|inverter|photovoltaic|pv panel|طاقة شمسية|شمسي|انفرتر|ألواح|solaire|fotovolta|güneş|солнеч|光伏|太阳能|太陽光|ソーラー|태양광|सौर)/iu],
+ ['education',/(?:education|school|university|course|training|تعليم|مدرسة|جامعة|دورة|تدريب|école|université|cours|escuela|universidad|curso|escola|universidade|schule|universität|kurs|okul|üniversite|курс|школ|университет|学校|大学|课程|コース|학교|대학|과정|स्कूल|विश्वविद्यालय|कोर्स)/iu],
+ ['health',/(?:hospital|clinic|doctor|pharmacy|health|مستشفى|عيادة|طبيب|صيدلية|صحة|hôpital|clinique|médecin|farmacia|médico|clínica|arzt|krankenhaus|hastane|doktor|больниц|врач|医院|医生|薬局|病院|医師|병원|의사|अस्पताल|डॉक्टर|फार्मेसी)/iu],
+ ['money',/(?:insurance|bank|loan|finance|money|تأمين|بنك|قرض|تمويل|assurance|banque|prêt|seguro|banco|préstamo|empréstimo|versicherung|kredit|sigorta|banka|kredi|страх|банк|кредит|保险|银行|贷款|保険|銀行|ローン|보험|은행|대출|बीमा|बैंक|ऋण)/iu],
+ ['games',/(?:game|games|gaming|لعبة|العاب|ألعاب|jeu|juego|jogo|spiel|oyun|игр|游戏|ゲーム|게임|खेल)/iu],
+ ['media',/(?:news|movie|music|radio|tv|أخبار|فيلم|موسيقى|actualités|film|musique|noticias|película|música|notícias|filme|musik|nachrichten|haber|müzik|новост|фильм|музык|新闻|电影|音乐|ニュース|映画|音楽|뉴스|영화|음악|समाचार|फिल्म|संगीत)/iu]
+ ];
+ for(const [cat,re] of rules)if(re.test(s))return cat;
+ return category(modelCategory)
+}
+
 async function degradedFallback(request,env,ctx,body,message){
- const act=actionState(message,'','',body?.clientControls),language=messageLanguage(message,body?.language),meta=metaConversation(message),chat=conversationOnly(message)||meta,requested=category(body?.conversationIntent||message),cat=(act.isAction||chat)?'general':(requested==='jobs'&&!employmentIntent(message)?'general':requested),response=act.isAction?actionReply(language,act.cc,act.ll):meta?metaReply(message,language):chat?conversationalFallback(message,language):usefulFallback(message,language,cat);
+ const act=actionState(message,'','',body?.clientControls),language=messageLanguage(message,body?.language),meta=metaConversation(message),chat=conversationOnly(message)||meta,requested=directCategoryIntent(message,category(body?.conversationIntent||'general')),cat=(act.isAction||chat)?'general':requested,response=act.isAction?actionReply(language,act.cc,act.ll):meta?metaReply(message,language):chat?conversationalFallback(message,language):usefulFallback(message,language,cat);
  return json(request,{ok:true,response,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:'seekvera-r114-instant-local-fallback',fastPath:'r114-bounded-fallback',liveData:false},200)
 }
 
@@ -302,7 +331,7 @@ async function runStructured(env,body){
 Return ONLY one JSON object with exactly these keys: reply, languageCode, category, countryAction, languageAction.\
 - reply: behave like a real conversational AI assistant. Hold a normal back-and-forth conversation, answer questions directly, understand corrections and follow-ups, and use the recent conversation as memory. Do NOT rush the user into a marketplace section. If the user has not yet clearly said what they want, keep talking naturally. When the user does want something, ask only the minimum useful follow-up questions needed (such as country/city, dates, budget, type, quantity or preferences), one concise question at a time. Never ask again for information already present in the conversation. Once the goal is clear, help with it and choose the correct category.\
 - languageCode: best ISO language code for the latest user message.\
-- category: exactly one of ${[...CATS].join(', ')}. Conversation-first rule: use general for greetings, small talk, questions, explanations, language/voice talk, corrections, incomplete requests, and every clarification turn. Choose a marketplace category only when the user's current goal is genuinely actionable and belongs there (find/search/book/buy/sell/apply/compare/use). Never route merely because a keyword appears. Never classify casual uses of work/عمل/شغل as Jobs unless the person is actually seeking employment.\
+- category: exactly one of ${[...CATS].join(', ')}. Conversation-first rule: use general for greetings, small talk, questions, explanations, language/voice talk, corrections, incomplete requests, and every clarification turn. Choose a marketplace category only when the user's current goal is genuinely actionable and belongs there (find/search/book/buy/sell/apply/compare/use). A clear command such as ‘find me a job’, ‘دوريني على شغل’, ‘find me a hotel’, ‘show me cars’, or the equivalent in any language is actionable immediately: choose its category even if city, date or budget is not known yet. Never route merely because a keyword appears. Never classify casual uses of work/عمل/شغل as Jobs unless the person is actually seeking employment.\
 - Language/voice meta-conversation rule: if the user says they are speaking a language, asks whether you understand/hear them, comments on which language you are speaking, or simply tests conversation (for example: ‘صرت بتحكي عربي هون’, ‘I am speaking Arabic now’, ‘Can you understand French?’), category MUST be general. Reply naturally to what they said. Never say you will send them to a section unless they actually ask for a marketplace task.\
 - countryAction: the ISO-3166 alpha-2 code for ANY country in the world, or WW, ONLY when the user explicitly commands the SEEKVERA APP/MARKET/COUNTRY SELECTOR to change/switch/move/set. Understand country names in the user's own language and dialect. Leave empty when the user merely searches for something in a country.\
 - languageAction: supported language code ONLY when the user explicitly commands the app/interface language to change. Leave empty otherwise.\
@@ -314,27 +343,27 @@ ${history||'(none)'}\
 Latest user message: ${message}`;
  const messages=[{role:'system',content:system},{role:'user',content:message}];
  const modelAttempt=async model=>{
-   const r=await Promise.race([env.AI.run(model,{messages,temperature:.18,max_tokens:420}),new Promise((_,reject)=>setTimeout(()=>reject(Error('model timeout')),4200))]),text=modelText(r),obj=parseJSON(text);if(!obj||!clean(obj.reply,5000))throw Error('invalid structured response');
-   const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode||targetLanguage),declared=languageCode(obj.languageCode),meta=metaConversation(message),cat=(act.isAction||conversationOnly(message)||meta)?'general':employmentIntent(message)?'jobs':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
+   const r=await Promise.race([env.AI.run(model,{messages,temperature:.18,max_tokens:420}),new Promise((_,reject)=>setTimeout(()=>reject(Error('model timeout')),3000))]),text=modelText(r),obj=parseJSON(text);if(!obj||!clean(obj.reply,5000))throw Error('invalid structured response');
+   const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode||targetLanguage),declared=languageCode(obj.languageCode),meta=metaConversation(message),modelCat=category(obj.category),cat=(act.isAction||conversationOnly(message)||meta)?'general':directCategoryIntent(message,modelCat);
    if(declared&&declared!==language&&!translationRequest(message))throw Error('model language mismatch');
    let reply=act.isAction?actionReply(language,act.cc,act.ll):guardedReply(obj.reply,language,message);if(!reply)throw Error('reply language mismatch');if(meta&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
    return{ok:true,response:reply,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model,fastPath:act.isAction?'r114-verified-action-first':meta?'r114-meta-conversation-guard':'r114-fast-model-race',liveData:false}
  };
- try{const winner=await Promise.race([Promise.any([FAST,PRIMARY,FALLBACK].map(modelAttempt)),new Promise(resolve=>setTimeout(()=>resolve(null),4500))]);if(winner)return winner}catch(_){}
+ try{const winner=await Promise.race([Promise.any([FAST,PRIMARY,FALLBACK].map(modelAttempt)),new Promise(resolve=>setTimeout(()=>resolve(null),3300))]);if(winner)return winner}catch(_){}
  // Keep a real conversational AI fallback, but never let it stall the UI.
  try{
    const backupPrompt=messages.map(x=>String(x?.role||'user').toUpperCase()+': '+String(x?.content||'')).join('\n').slice(-14000);
-   const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),2200);
+   const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),1400);
    try{
      const br=await fetch('https://text.pollinations.ai/'+encodeURIComponent(backupPrompt)+'?model=openai&private=true',{headers:{'accept':'text/plain','user-agent':'SEEKVERA/1.0'},signal:ctl.signal});
      if(br.ok){
        const raw=await br.text(),obj=parseJSON(raw);
        if(obj&&clean(obj.reply,5000)){
-         const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode||targetLanguage),declared=languageCode(obj.languageCode),meta=metaConversation(message),cat=(act.isAction||conversationOnly(message)||meta)?'general':employmentIntent(message)?'jobs':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
+         const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode||targetLanguage),declared=languageCode(obj.languageCode),meta=metaConversation(message),modelCat=category(obj.category),cat=(act.isAction||conversationOnly(message)||meta)?'general':directCategoryIntent(message,modelCat);
          let reply=act.isAction?actionReply(language,act.cc,act.ll):guardedReply(obj.reply,language,message);if(declared&&declared!==language&&!translationRequest(message))reply='';if(meta&&reply&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
          if(reply)return{ok:true,response:reply,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:'pollinations-private-conversation-fallback',fastPath:'r117-language-guard-fallback',liveData:false}
        }
-       const plain=guardedReply(raw,targetLanguage,message);if(plain){const language=targetLanguage,meta=metaConversation(message),cat=(conversationOnly(message)||meta)?'general':(category(message)==='jobs'&&!employmentIntent(message)?'general':category(message));return{ok:true,response:plain,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:null,languageAction:null,model:'pollinations-private-conversation-plain',fastPath:'r117-language-guard-plain',liveData:false}}
+       const plain=guardedReply(raw,targetLanguage,message);if(plain){const language=targetLanguage,meta=metaConversation(message),cat=(conversationOnly(message)||meta)?'general':directCategoryIntent(message,'general');return{ok:true,response:plain,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:null,languageAction:null,model:'pollinations-private-conversation-plain',fastPath:'r117-language-guard-plain',liveData:false}}
      }
    }finally{clearTimeout(to)}
  }catch(_){}
@@ -346,7 +375,7 @@ export default{async fetch(request,env,ctx){
  const u=new URL(request.url);
  if(request.method==='OPTIONS')return new Response(null,{status:204,headers:headers(request)});
  if(u.pathname==='/api/health'){
-   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,release:RELEASE,r119:true,r119Runtime:'explicit-intent-routing-plus-hinted-arabic-asr-rescue',r118:true,r118Runtime:'script-first-plus-model-hint-language-resolution',r117:true,r117Runtime:'strict-reply-language-contract-and-history-sanitizer',r105:true,r105Runtime:'worldwide-default-language-safe-ai-atomic-localization',r86:true,r86Runtime:'conversation-first-multilingual-ai',r92:true,r92Runtime:'native-asr-payload-per-model-auto-language',r89:true,r89Runtime:'workers-ai-whisper-byte-array-no-consent',r88:true,r88Runtime:'fast-auto-asr-server-first-tts-natural-fallback',r87:true,r87Runtime:'latest-message-language-plus-real-ai-fallback',r86Routing:'goal-aware-not-keyword-first',r86Voice:'whisper-auto-language-independent-of-ui',r86Asr:ASR_PRIMARY,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
+   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,release:RELEASE,r119b:true,r119bRuntime:'language-independent-voice-direct-intent-atomic-controls',r119:true,r119Runtime:'explicit-intent-routing-plus-hinted-arabic-asr-rescue',r118:true,r118Runtime:'script-first-plus-model-hint-language-resolution',r117:true,r117Runtime:'strict-reply-language-contract-and-history-sanitizer',r105:true,r105Runtime:'worldwide-default-language-safe-ai-atomic-localization',r86:true,r86Runtime:'conversation-first-multilingual-ai',r92:true,r92Runtime:'native-asr-payload-per-model-auto-language',r89:true,r89Runtime:'workers-ai-whisper-byte-array-no-consent',r88:true,r88Runtime:'fast-auto-asr-server-first-tts-natural-fallback',r87:true,r87Runtime:'latest-message-language-plus-real-ai-fallback',r86Routing:'goal-aware-not-keyword-first',r86Voice:'whisper-auto-language-independent-of-ui',r86Asr:ASR_PRIMARY,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
  }
  if(u.pathname==='/api/transcribe'&&request.method==='POST')return transcribeAudio(request,env);
  if(u.pathname==='/api/ai'&&request.method==='POST'){

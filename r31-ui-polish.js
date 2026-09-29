@@ -2,7 +2,7 @@
   "use strict";
   if (window.__SEEKVERA_R31) return;
   window.__SEEKVERA_R31 = true;
-  const VERSION = "20260929-r119-direct-intent-routing";
+  const VERSION = "20260929-r119b-language-independent-action-ai";
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
   const ROUTES = {
@@ -810,31 +810,9 @@
     return "↻ " + uiText("Try again", "Try again");
   }
   async function fetchAI(payload) {
-    const urls = [
-      location.origin + "/api/ai",
-      "https://seekvera-main.seekvera-global.workers.dev/api/ai",
-    ];
-    let err = "AI unavailable";
-    for (const url of [...new Set(urls)]) {
-      const c = new AbortController(),
-        t = setTimeout(() => c.abort(), 7200);
-      try {
-        const r = await fetch(url, {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify(payload),
-          signal: c.signal,
-        });
-        const d = await r.json().catch(() => ({}));
-        clearTimeout(t);
-        if (r.ok && d?.response) return d;
-        err = d?.error || "HTTP " + r.status;
-      } catch (e) {
-        clearTimeout(t);
-        err = e?.message || err;
-      }
-    }
-    throw Error(err);
+    const urls=[...new Set([location.origin+"/api/ai","https://seekvera-main.seekvera-global.workers.dev/api/ai"])];
+    const attempt=async url=>{const c=new AbortController(),t=setTimeout(()=>c.abort(),4200);try{const x=await fetch(url,{method:"POST",headers:{"content-type":"application/json","cache-control":"no-store"},body:JSON.stringify(payload),signal:c.signal,cache:"no-store"});const d=await x.json().catch(()=>({}));if(!x.ok||!d?.response)throw Error(d?.error||"HTTP "+x.status);return d}finally{clearTimeout(t)}};
+    try{return await Promise.any(urls.map(attempt))}catch{throw Error("AI unavailable")}
   }
   function categoryTitle(cat) {
     const data = window.SEEKVERA_R14_CATEGORIES?.data?.[lang()],
@@ -959,7 +937,7 @@
           );
       } catch {}
       let finalCat =
-        guessed && guessed !== "general" ? guessed : d?.category || guessed;
+        guessed && guessed !== "general" ? guessed : (d?.category && d.category !== "general" ? d.category : intent(q));
       if (
         guessed === "jobs" &&
         finalCat === "travel" &&
