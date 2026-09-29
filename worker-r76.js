@@ -1,6 +1,6 @@
 import baseWorker from './worker-r31.js';
 
-const RELEASE='20260929-r121c-arabic-script-language-routing';
+const RELEASE='20260929-r121d-ar-fa-ur-disambiguation';
 const PRIMARY='@cf/zai-org/glm-4.7-flash';
 const FALLBACK='@cf/qwen/qwen3-30b-a3b-fp8';
 const FAST='@cf/meta/llama-3.1-8b-instruct-fast';
@@ -376,7 +376,7 @@ Latest user message: ${message}`;
 
 function fastCommandLanguage(message,suggested=''){
  const t=String(message||''),s=t.toLowerCase();
- if(/[پچژگ]/u.test(t)||/(?:برای|پیدا|بگرد|می.?خواهم|میخوام|لطفاً|لطفا|شغل|کار)/u.test(s))return'fa';
+ if(/[پچژگک]/u.test(t)||/(?:برای|پیدا|بگرد|می.?خواهم|میخوام)/u.test(s))return'fa';
  if(/[ٹڈڑںھۓے]/u.test(t)||/(?:میرے|لیے|نوکری|ملازمت|ڈھونڈ|دکھاؤ|چاہیے|کرو)/u.test(s))return'ur';
  if(/[ښږڅځټړ]/u.test(t))return'ps';
  if(/[ڵۆێ]/u.test(t))return'ku';
@@ -436,7 +436,7 @@ export default{async fetch(request,env,ctx){
  const u=new URL(request.url);
  if(request.method==='OPTIONS')return new Response(null,{status:204,headers:headers(request)});
  if(u.pathname==='/api/health'){
-   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,release:RELEASE,r121c:true,r121cRuntime:'persian-urdu-arabic-script-command-routing',r121b:true,r121bRuntime:'repaired-global-command-inflections-and-language-detection',r121:true,r121Runtime:'global-command-inflections-and-fast-language-detection',r120:true,r120Runtime:'instant-controls-direct-intent-language-independent-voice',r119b:true,r119bRuntime:'language-independent-voice-direct-intent-atomic-controls',r119:true,r119Runtime:'explicit-intent-routing-plus-hinted-arabic-asr-rescue',r118:true,r118Runtime:'script-first-plus-model-hint-language-resolution',r117:true,r117Runtime:'strict-reply-language-contract-and-history-sanitizer',r105:true,r105Runtime:'worldwide-default-language-safe-ai-atomic-localization',r86:true,r86Runtime:'conversation-first-multilingual-ai',r92:true,r92Runtime:'native-asr-payload-per-model-auto-language',r89:true,r89Runtime:'workers-ai-whisper-byte-array-no-consent',r88:true,r88Runtime:'fast-auto-asr-server-first-tts-natural-fallback',r87:true,r87Runtime:'latest-message-language-plus-real-ai-fallback',r86Routing:'goal-aware-not-keyword-first',r86Voice:'whisper-auto-language-independent-of-ui',r86Asr:ASR_PRIMARY,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
+   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,release:RELEASE,r121d:true,r121dRuntime:'arabic-persian-urdu-disambiguation',r121c:true,r121cRuntime:'persian-urdu-arabic-script-command-routing',r121b:true,r121bRuntime:'repaired-global-command-inflections-and-language-detection',r121:true,r121Runtime:'global-command-inflections-and-fast-language-detection',r120:true,r120Runtime:'instant-controls-direct-intent-language-independent-voice',r119b:true,r119bRuntime:'language-independent-voice-direct-intent-atomic-controls',r119:true,r119Runtime:'explicit-intent-routing-plus-hinted-arabic-asr-rescue',r118:true,r118Runtime:'script-first-plus-model-hint-language-resolution',r117:true,r117Runtime:'strict-reply-language-contract-and-history-sanitizer',r105:true,r105Runtime:'worldwide-default-language-safe-ai-atomic-localization',r86:true,r86Runtime:'conversation-first-multilingual-ai',r92:true,r92Runtime:'native-asr-payload-per-model-auto-language',r89:true,r89Runtime:'workers-ai-whisper-byte-array-no-consent',r88:true,r88Runtime:'fast-auto-asr-server-first-tts-natural-fallback',r87:true,r87Runtime:'latest-message-language-plus-real-ai-fallback',r86Routing:'goal-aware-not-keyword-first',r86Voice:'whisper-auto-language-independent-of-ui',r86Asr:ASR_PRIMARY,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
  }
  if(u.pathname==='/api/transcribe'&&request.method==='POST')return transcribeAudio(request,env);
  if(u.pathname==='/api/ai'&&request.method==='POST'){
