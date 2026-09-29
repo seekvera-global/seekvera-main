@@ -4,6 +4,7 @@ const ua='Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/14
 const b=await chromium.launch({headless:true});
 const p=await b.newPage({viewport:{width:390,height:844},locale:'en-US',userAgent:ua});
 const errs=[];p.on('pageerror',e=>errs.push(String(e)));
+const isJobs=u=>/^\/jobs(?:\.html)?\/?$/.test(u.pathname);
 
 async function home(tag){
   await p.goto(B+'?'+tag+'='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
@@ -20,7 +21,7 @@ const before=await p.locator('#aiMessages .ai-msg.bot:not(.thinking)').count(),t
 await p.fill('#aiChatInput','دوريني على شغل');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
 await p.waitForFunction(n=>document.querySelectorAll('#aiMessages .ai-msg.bot:not(.thinking)').length>n,before,{timeout:3500});
 const typedReply=await p.locator('#aiMessages .ai-msg.bot:not(.thinking)').last().innerText();assert.match(typedReply,/[\u0600-\u06ff]/u);
-await p.waitForURL(u=>u.pathname.endsWith('/jobs.html'),{timeout:3500,waitUntil:'domcontentloaded'});
+await p.waitForURL(isJobs,{timeout:3500,waitUntil:'domcontentloaded'});
 const typedMs=Date.now()-t0;assert(typedMs<3500,{typedMs,url:p.url(),typedReply});
 console.log('TYPED_DIRECT_ROUTE_PASS',JSON.stringify({typedMs,url:p.url(),typedReply}));
 
@@ -37,7 +38,7 @@ await home('r122voice');
 await p.evaluate(()=>{localStorage.setItem('seekvera_voice_mode','1');localStorage.setItem('seekvera_voice_muted','0');window.SEEKVERA_VOICE_AI?.markVoiceReply?.()});
 const v0=Date.now();
 await p.evaluate(()=>window.SEEKVERA_R31.submitAI('دوريني على شغل',{fromVoice:true}));
-await p.waitForURL(u=>u.pathname.endsWith('/jobs.html'),{timeout:4500,waitUntil:'domcontentloaded'});
+await p.waitForURL(isJobs,{timeout:4500,waitUntil:'domcontentloaded'});
 const voiceMs=Date.now()-v0;assert(voiceMs<4500,{voiceMs,url:p.url()});
 console.log('VOICE_DIRECT_ROUTE_PASS',JSON.stringify({voiceMs,url:p.url()}));
 
