@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-if(window.__seekveraVoiceAI)return;window.__seekveraVoiceAI=true;window.__seekveraVoiceMode='20260929-r114-fast-strong-ai';
+if(window.__seekveraVoiceAI)return;window.__seekveraVoiceAI=true;window.__seekveraVoiceMode='20260929-r115-fast-voice';
 const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
 const LANGS={en:'en-US',ar:'ar-SA',fr:'fr-FR',zh:'zh-CN',es:'es-ES',hi:'hi-IN',pt:'pt-BR',de:'de-DE',ja:'ja-JP',ko:'ko-KR',id:'id-ID',tr:'tr-TR',ru:'ru-RU',ur:'ur-PK',bn:'bn-BD',vi:'vi-VN',it:'it-IT',sw:'sw-KE',th:'th-TH',fa:'fa-IR',pl:'pl-PL',nl:'nl-NL',ms:'ms-MY',fil:'fil-PH',ha:'ha-NG',yo:'yo-NG',ig:'ig-NG',am:'am-ET',he:'he-IL',el:'el-GR',uk:'uk-UA',ro:'ro-RO',cs:'cs-CZ',sk:'sk-SK',hu:'hu-HU',sv:'sv-SE',no:'nb-NO',da:'da-DK',fi:'fi-FI',bg:'bg-BG',hr:'hr-HR',sr:'sr-RS',sl:'sl-SI',lt:'lt-LT',lv:'lv-LV',et:'et-EE',ca:'ca-ES',eu:'eu-ES',gl:'gl-ES',is:'is-IS',sq:'sq-AL',mk:'mk-MK',ka:'ka-GE',hy:'hy-AM',az:'az-AZ',kk:'kk-KZ',uz:'uz-UZ',ky:'ky-KG',tg:'tg-TJ',tk:'tk-TM',ne:'ne-NP',si:'si-LK',ta:'ta-IN',te:'te-IN',ml:'ml-IN',mr:'mr-IN',gu:'gu-IN',pa:'pa-IN',km:'km-KH',lo:'lo-LA',my:'my-MM',mn:'mn-MN',zu:'zu-ZA',af:'af-ZA',be:'be-BY',bs:'bs-BA',dz:'dz-BT',ti:'ti-ET',fo:'fo-FO',kl:'kl-GL',rw:'rw-RW',sm:'sm-WS',to:'to-TO',so:'so-SO',ps:'ps-AF',dv:'dv-MV',mt:'mt-MT',mg:'mg-MG',ga:'ga-IE',cy:'cy-GB',mi:'mi-NZ',fy:'fy-NL',lb:'lb-LU',rm:'rm-CH',ku:'ku-TR',xh:'xh-ZA',st:'st-ZA',tn:'tn-BW'};
 const NAME_CODE={english:'en',arabic:'ar',french:'fr',chinese:'zh',mandarin:'zh',spanish:'es',hindi:'hi',portuguese:'pt',german:'de',japanese:'ja',korean:'ko',indonesian:'id',turkish:'tr',russian:'ru',urdu:'ur',bengali:'bn',vietnamese:'vi',italian:'it',swahili:'sw',thai:'th',persian:'fa',farsi:'fa',polish:'pl',dutch:'nl',malay:'ms',filipino:'fil',tagalog:'fil',hausa:'ha',yoruba:'yo',igbo:'ig',amharic:'am',hebrew:'he',greek:'el',ukrainian:'uk',romanian:'ro',czech:'cs',slovak:'sk',hungarian:'hu',swedish:'sv',norwegian:'no',danish:'da',finnish:'fi',bulgarian:'bg',croatian:'hr',serbian:'sr',slovenian:'sl',lithuanian:'lt',latvian:'lv',estonian:'et',catalan:'ca',basque:'eu',galician:'gl',icelandic:'is',albanian:'sq',macedonian:'mk',georgian:'ka',armenian:'hy',azerbaijani:'az',kazakh:'kk',uzbek:'uz',kyrgyz:'ky',tajik:'tg',turkmen:'tk',nepali:'ne',sinhala:'si',tamil:'ta',telugu:'te',malayalam:'ml',marathi:'mr',gujarati:'gu',punjabi:'pa',khmer:'km',lao:'lo',burmese:'my',mongolian:'mn',zulu:'zu',afrikaans:'af',belarusian:'be',bosnian:'bs',dzongkha:'dz',tigrinya:'ti',faroese:'fo',greenlandic:'kl',kalaallisut:'kl',kinyarwanda:'rw',samoan:'sm',tongan:'to',somali:'so',pashto:'ps',dhivehi:'dv',maldivian:'dv',maltese:'mt',malagasy:'mg',irish:'ga',welsh:'cy',maori:'mi',frisian:'fy',luxembourgish:'lb',romansh:'rm',kurdish:'ku',xhosa:'xh',sesotho:'st','southern sotho':'st',tswana:'tn',setswana:'tn'};
@@ -131,7 +131,7 @@ async function localWhisperTranscribe(blob){
   }finally{try{URL.revokeObjectURL(url)}catch(_){}}
 }
 async function seekveraAutoTranscribe(blob){
-  const audio=await blobDataURL(blob),ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),14000);
+  const audio=await blobDataURL(blob),ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),7000);
   try{
     const res=await fetch(apiBase()+'/api/transcribe?auto=1&r88=1',{method:'POST',headers:{'content-type':'application/json','cache-control':'no-store'},body:JSON.stringify({audio,language:'auto'}),signal:ctl.signal,cache:'no-store'});
     const d=await res.json().catch(()=>({}));if(!res.ok||!d.text)throw Error(d.reason||d.error||'server transcription failed');
@@ -139,13 +139,19 @@ async function seekveraAutoTranscribe(blob){
     return{text:String(d.text).trim(),language:String(d.language||d.detectedLanguage||'auto'),engine:'seekvera-whisper-auto'}
   }finally{clearTimeout(to)}
 }
-async function automaticMultilingualTranscribe(blob){
-  let localError=null;
+async function automaticMultilingualTranscribe(blob,nativeText='',nativeConfidence=0){
+  let serverError=null;
+  try{return await seekveraAutoTranscribe(blob)}catch(e){serverError=e}
+  const nt=String(nativeText||'').replace(/\s+/g,' ').trim();
+  if(nt&&!transcriptPoor(nt)){
+    const language=languageFromTranscript(nt,selectedLang());
+    if(language&&language!=='auto')rememberChatVoiceLanguage(language,nt);
+    return{text:nt,language:language||'auto',engine:'native-shadow-fast-fallback',confidence:Number(nativeConfidence||0)}
+  }
   try{
-    const timeout=new Promise((_,reject)=>setTimeout(()=>reject(Error('local multilingual ASR timeout')),60000));
+    const timeout=new Promise((_,reject)=>setTimeout(()=>reject(Error('local multilingual ASR timeout')),9000));
     return await Promise.race([localWhisperTranscribe(blob),timeout])
-  }catch(e){localError=e}
-  try{return await seekveraAutoTranscribe(blob)}catch(serverError){throw localError||serverError}
+  }catch(localError){throw serverError||localError}
 }
 function localeForText(t,requested){
   t=typeof t==='string'?t:'';
@@ -232,6 +238,7 @@ async function serverSpeakSequence(chunks,loc,token){
 }
 function speak(text,l,force=false){
   lastAnswer=typeof text==='string'?text:'';lastLocale=localeForText(lastAnswer,l);const chunks=splitSpeech(lastAnswer);
+  window.dispatchEvent(new CustomEvent('seekvera:tts-request',{detail:{text:lastAnswer,language:lastLocale,force:Boolean(force)}}));
   if(force){muted=false;localStorage.setItem('seekvera_voice_muted','0');localStorage.setItem('seekvera_voice_mode','1');updateSpeakerButtons()}
   if(muted||!chunks.length){if(force)voiceConversation=false;return}
   const token=++speakToken;
@@ -248,7 +255,6 @@ function releaseStream(){if(recordTimer){clearTimeout(recordTimer);recordTimer=n
 function startAudioMonitor(stream,onSilence){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;audioCtx=new AC();audioSource=audioCtx.createMediaStreamSource(stream);audioAnalyser=audioCtx.createAnalyser();audioAnalyser.fftSize=1024;audioAnalyser.smoothingTimeConstant=.25;audioSource.connect(audioAnalyser);const data=new Float32Array(audioAnalyser.fftSize);recordStartedAt=performance.now();const tick=()=>{if(!audioAnalyser||!recording)return;audioAnalyser.getFloatTimeDomainData(data);let sum=0;for(let i=0;i<data.length;i++)sum+=data[i]*data[i];const rms=Math.sqrt(sum/data.length),now=performance.now();if(rms>VOICE_RMS_THRESHOLD){heardVoice=true;lastVoiceAt=now}if(heardVoice&&lastVoiceAt&&now-lastVoiceAt>=VOICE_SILENCE_MS&&now-recordStartedAt>700){onSilence();return}audioRaf=requestAnimationFrame(tick)};audioRaf=requestAnimationFrame(tick)}catch(_){stopAudioMonitor()}}
 async function serverVoice(targetId,button,fallbackNative=false){
   activeButton=button||document.getElementById('aiChatMic')||document.querySelector('.sv-global-compose .mic');
-  localWhisperEngine().catch(()=>{});
   const i=document.getElementById(targetId||'aiChatInput');
   if(recording){try{mediaRecorder?.stop()}catch(_){releaseStream()}return}
   if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){voiceConversation=false;if(i)i.placeholder='Voice input is unavailable on this browser — please type your message.';return}
@@ -267,7 +273,7 @@ async function serverVoice(targetId,button,fallbackNative=false){
       if(!chunks.length){voiceConversation=false;if(i)i.placeholder='No speech recorded — tap the microphone and try again.';return}
       try{
         if(i)i.placeholder='Understanding your speech…';
-        const blob=new Blob(chunks,{type}),whisper=await automaticMultilingualTranscribe(blob),d=chooseHybridTranscript(shadowText,shadowConfidence,whisper);
+        const blob=new Blob(chunks,{type}),whisper=await automaticMultilingualTranscribe(blob,shadowText,shadowConfidence),d=chooseHybridTranscript(shadowText,shadowConfidence,whisper);
         if(d?.language&&d.language!=='auto')rememberChatVoiceLanguage(d.language,d.text);
         if(i){const spoken=String(d?.text||'').trim();i.value=spoken;i.placeholder='Message SEEKVERA AI…';if(spoken){voiceReplyDeadline=Date.now()+90000;setTimeout(()=>{if(window.SEEKVERA_R31?.submitAI)window.SEEKVERA_R31.submitAI(spoken,{fromVoice:true});else i.form?.requestSubmit?.()},35)}}
       }catch(e){voiceConversation=false;seedVoiceLanguageFromConversation();if(i)i.placeholder='I could not understand that audio yet — tap the microphone and try again.'}
