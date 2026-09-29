@@ -1,0 +1,135 @@
+name: R116B multilingual language certification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/r116b_language_metadata_fix.py'
+      - '.github/workflows/r116b-language-metadata.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seekvera-r116b-language
+  cancel-in-progress: true
+
+jobs:
+  deploy-certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply R116B
+        run: |
+          set -euo pipefail
+          python tools/r116b_language_metadata_fix.py
+          node --check worker-r76.js
+          ! grep -F "procuro|hotel|obrigado" worker-r76.js
+          ! grep -F "pays|hôtel|hotel" worker-r76.js
+          ! grep -F "butuh|hotel" worker-r76.js
+
+      - name: Persist language correction
+        run: |
+          set -euo pipefail
+          git config user.name 'seekvera-global'
+          git config user.email 'seekvera.global@gmail.com'
+          git add worker-r76.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'R116B correct multilingual language identity'
+            git push origin HEAD:main
+          fi
+
+      - name: Deploy corrected worker
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --config wrangler.jsonc
+
+      - name: Certify 12 text languages live
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,time,urllib.request
+          ua='Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
+          cases=[
+            ('ar','مرحبا كيفك؟ أريد فندقاً قريباً من المطار.'),
+            ('en','Hello, how are you? I need a hotel near the airport.'),
+            ('fr','Bonjour, comment allez-vous ? Je cherche un hôtel près de l’aéroport.'),
+            ('es','Hola, ¿cómo estás? Necesito un hotel cerca del aeropuerto.'),
+            ('de','Hallo, wie geht es dir? Ich suche ein Hotel in der Nähe des Flughafens.'),
+            ('tr','Merhaba, nasılsın? Havaalanına yakın bir otel arıyorum.'),
+            ('hi','नमस्ते, आप कैसे हैं? मुझे हवाई अड्डे के पास एक होटल चाहिए।'),
+            ('zh','你好，你好吗？我想找机场附近的酒店。'),
+            ('ja','こんにちは。空港の近くのホテルを探しています。'),
+            ('ru','Здравствуйте. Я ищу отель рядом с аэропортом.'),
+            ('pt','Olá, tudo bem? Procuro um hotel perto do aeroporto.'),
+            ('sw','Habari yako? Nataka hoteli karibu na uwanja wa ndege.')
+          ]
+          for code,msg in cases:
+            body=json.dumps({'message':msg,'country':'Worldwide','language':'auto','fast':True},ensure_ascii=False).encode()
+            req=urllib.request.Request('https://seekveraglobal.com/api/ai',data=body,headers={'content-type':'application/json','User-Agent':ua,'Accept':'application/json'},method='POST')
+            t=time.monotonic()
+            with urllib.request.urlopen(req,timeout=9) as r:d=json.loads(r.read())
+            sec=time.monotonic()-t
+            assert d.get('ok') and str(d.get('response','')).strip(),(code,d)
+            assert sec<7.5,(code,sec,d)
+            got=str(d.get('language','')).split('-')[0].lower()
+            assert got==code,(code,got,d)
+            print('LANG_PASS',code,round(sec,2),str(d.get('model')),str(d.get('response'))[:100])
+          PY
+
+      - name: Certify Arabic voice roundtrip live
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,time,urllib.request,base64,re
+          ua='Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
+          def post(path,obj,timeout=10,accept='application/json'):
+              data=json.dumps(obj,ensure_ascii=False).encode()
+              req=urllib.request.Request('https://seekveraglobal.com'+path,data=data,headers={'content-type':'application/json','User-Agent':ua,'Accept':accept},method='POST')
+              t=time.monotonic()
+              with urllib.request.urlopen(req,timeout=timeout) as r:return r.status,r.headers,r.read(),time.monotonic()-t
+          phrase='مرحبا كيف حالك أريد فندق في بيروت قريب من المطار'
+          st,h,audio,tts=post('/api/tts',{'text':phrase,'language':'ar'},10,'audio/mpeg,audio/*;q=0.9,*/*;q=0.8')
+          assert st==200 and len(audio)>500,(st,len(audio),h.get('content-type'))
+          payload={'audio':'data:audio/mpeg;base64,'+base64.b64encode(audio).decode(),'language':'auto','languageHint':'ar','uiLanguage':'ar','nativeText':phrase,'nativeConfidence':0.95}
+          st,h,b,asr=post('/api/transcribe?r116b=1',payload,10)
+          d=json.loads(b.decode())
+          assert st==200 and d.get('ok') and d.get('text'),d
+          assert d.get('language')=='ar',d
+          assert re.search(r'[\u0600-\u06ff]',str(d.get('text'))),d
+          assert asr<7.5,(asr,d)
+          print('ARABIC_VOICE_PASS',round(tts,2),round(asr,2),d)
+          PY
+
+      - name: Certify Android browser response and Arabic rescue
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null
+          cat > r116b-live.mjs <<'JS'
+          import{chromium}from'playwright';import assert from'node:assert/strict';
+          const b=await chromium.launch({headless:true});
+          const p=await b.newPage({viewport:{width:390,height:844},locale:'ar-LB',userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          const errs=[];p.on('pageerror',e=>errs.push(String(e)));
+          await p.goto('https://seekveraglobal.com/?r116b='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_VOICE_AI&&window.SEEKVERA_R31?.submitAI&&document.querySelector('#aiChatInput'),null,{timeout:20000});
+          const st=await p.evaluate(()=>({mode:window.__seekveraVoiceMode,speaker:!!document.querySelector('#aiChatSpeaker')}));assert.equal(st.mode,'20260929-r116-universal-language-fast');assert(st.speaker);
+          const rescue=await p.evaluate(()=>window.SEEKVERA_VOICE_AI.chooseHybridTranscript('مرحبا كيفك بدي فندق ببيروت',.82,{text:'Bonjour, je cherche un hôtel.',language:'fr'}));
+          assert.match(rescue.text,/مرحبا/);assert.equal(rescue.language,'ar');assert.equal(rescue.engine,'native-script-rescue');
+          await p.evaluate(()=>{window.__tts=[];window.addEventListener('seekvera:tts-request',e=>window.__tts.push(e.detail));localStorage.setItem('seekvera_voice_mode','1');localStorage.setItem('seekvera_voice_muted','0')});
+          const n=await p.locator('#aiMessages .ai-msg.bot:not(.thinking)').count(),t=Date.now();
+          await p.fill('#aiChatInput','مرحبا، احكي معي بالعربي. كيف فيك تساعدني؟');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForFunction(x=>document.querySelectorAll('#aiMessages .ai-msg.bot:not(.thinking)').length>x,n,{timeout:8000});
+          const ms=Date.now()-t,text=await p.locator('#aiMessages .ai-msg.bot:not(.thinking)').last().innerText();
+          await p.waitForFunction(()=>window.__tts?.length>0,null,{timeout:4000});const q=await p.evaluate(()=>window.__tts.at(-1));
+          assert.match(text,/[\u0600-\u06ff]/u);assert.match(String(q?.language||''),/^ar/i);assert(ms<7500,JSON.stringify({ms,text,q,errs}));assert.equal(errs.length,0,errs.join('\n'));
+          console.log('R116B_BROWSER_PASS',JSON.stringify({ms,text,q,rescue,st}));await b.close();
+          JS
+          node r116b-live.mjs
