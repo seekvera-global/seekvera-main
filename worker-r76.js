@@ -61,12 +61,12 @@ function messageLanguage(message,suggested=''){
  if(s.includes('olá')||/[ãõ]/iu.test(t)||/\b(ola|preciso|procuro|obrigado|obrigada|aeroporto|perto)\b/iu.test(s))return'pt';
  if(/[ñ¿¡]/iu.test(t)||/\b(hola|quiero|busco|necesito|gracias|país|pais|idioma)\b/iu.test(s))return'es';
  if(/[äöüß]/iu.test(t)||/\b(hallo|ich|suche|möchte|mochte|sprache|land|danke)\b/iu.test(s))return'de';
- if(/\b(bonjour|salut|merci|cherche|voudrais|besoin|langue|pays|aéroport|aeroport|près)\b/iu.test(s))return'fr';
+ if(/\b(bonjour|salut|merci|cherche|voudrais|besoin|langue|pays|aéroport|aeroport|près|passe|aide|trouve|allemagne)\b|l[’']application/iu.test(s))return'fr';
  if(/\b(ciao|buongiorno|grazie|cerco|voglio|bisogno|lingua|paese|albergo)\b/iu.test(s))return'it';
  if(/\b(hallo|dank|zoek|nodig|taal|land|hotel)\b/iu.test(s)&&q==='nl')return'nl';
  if(/\b(habari|asante|nataka|nahitaji|tafuta|hoteli)\b/iu.test(s))return'sw';
  if(/\b(selamat|terima kasih|saya|ingin|cari|butuh|bandara|dekat)\b/iu.test(s))return pick(['id','ms'],'id');
- if(/\b(hello|hi|hey|how are you|i need|i want|i am looking|i'm looking|can you help|please help|thank you|thanks|what kind|which city|near the airport)\b/iu.test(s))return'en';
+ if(/\b(hello|hi|hey|how are you|i need|i want|i am looking|i'm looking|can you help|please help|thank you|thanks|what kind|which city|near the airport|change the app|switch the app|change country|switch country|take me to)\b/iu.test(s))return'en';
  return q||'en';
 }
 function aliasHit(s,a){a=String(a).toLowerCase();if(/^[a-z]{1,3}$/i.test(a))return new RegExp(`(?:^|[^a-z])${a.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}(?:$|[^a-z])`,'i').test(s);return s.includes(a)}
