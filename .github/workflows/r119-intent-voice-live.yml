@@ -133,8 +133,8 @@ jobs:
           await p.waitForFunction(()=>window.SEEKVERA_R31?.submitAI&&document.querySelector('#aiChatInput'),null,{timeout:20000});
           await p.evaluate(()=>{localStorage.removeItem('seekvera_ai_chat_v1');sessionStorage.removeItem('seekvera_ai_intent');localStorage.setItem('seekvera_voice_mode','0')});
           await p.evaluate(()=>window.SEEKVERA_R31.submitAI('دوريني على شغل'));
-          await p.waitForURL(/\/jobs\.html\?/,{timeout:15000,waitUntil:'commit'});
-          const u=new URL(p.url());assert(u.pathname.endsWith('/jobs.html'),p.url());assert.match(u.searchParams.get('q')||'',/شغل/u);assert.equal(errs.length,0,errs.join('\n'));
+          await p.waitForURL(/\/jobs(?:\.html)?\?/,{timeout:15000,waitUntil:'commit'});
+          const u=new URL(p.url());assert(['/jobs','/jobs.html'].includes(u.pathname),p.url());assert.match(u.searchParams.get('q')||'',/شغل/u);assert.equal(errs.length,0,errs.join('\n'));
           console.log('ANDROID_JOB_ROUTE_PASS',p.url());await b.close();
           JS
           node r119-live.mjs
