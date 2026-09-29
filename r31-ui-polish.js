@@ -2,7 +2,7 @@
   "use strict";
   if (window.__SEEKVERA_R31) return;
   window.__SEEKVERA_R31 = true;
-  const VERSION = "20260929-r122-unified-direct-routing";
+  const VERSION = "20260929-r123-single-voice-turn";
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
   const ROUTES = {
@@ -870,6 +870,11 @@
       .trim()
       .slice(0, 1800);
     if (!q || submitting) return;
+    const turnKey = q.normalize("NFKC").replace(/\s+/g, " ").trim().toLocaleLowerCase();
+    const turnNow = Date.now();
+    const previousTurn = window.__seekveraLastSubmittedTurn || {};
+    if (turnKey && previousTurn.key === turnKey && turnNow - Number(previousTurn.at || 0) < 5000) return;
+    window.__seekveraLastSubmittedTurn = { key: turnKey, at: turnNow };
     submitting = true;
     const voiceOrigin =
       !!fromVoice || !!window.SEEKVERA_VOICE_AI?.isVoiceReplyPending?.();
