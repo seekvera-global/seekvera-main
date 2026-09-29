@@ -133,7 +133,6 @@ jobs:
           req=urllib.request.Request(B+'/api/tts',data=data,headers={'content-type':'application/json','accept':'audio/mpeg,audio/*;q=0.9,*/*;q=0.8','user-agent':UA},method='POST')
           with urllib.request.urlopen(req,timeout=10) as r:audio=r.read()
           assert len(audio)>500,len(audio)
-          # Deliberately send the exact bad situation: English UI + high-confidence Icelandic-looking browser shadow.
           payload={'audio':'data:audio/mpeg;base64,'+base64.b64encode(audio).decode(),'language':'auto','languageHint':'en','uiLanguage':'en','browserLanguage':'en-US','nativeText':'Halið á að leita að vinnu','nativeConfidence':0.97}
           body=json.dumps(payload,ensure_ascii=False).encode()
           req=urllib.request.Request(B+'/api/transcribe?r119=1',data=body,headers={'content-type':'application/json','accept':'application/json','user-agent':UA},method='POST')
@@ -209,3 +208,5 @@ jobs:
               assert d.get('release')=='20260929-r119-voice-intent-atomic',d
               print('STABLE_PASS',i+1,d.get('release'));time.sleep(4)
           PY
+
+# trigger-r119
