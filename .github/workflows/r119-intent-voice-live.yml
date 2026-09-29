@@ -102,7 +102,7 @@ jobs:
           python3 - <<'PY'
           import json,time,urllib.request,base64,re
           ua='Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
-          phrase='دوريني على شغل وحوليني على تركيا'
+          phrase='دوريني على شغل'
           data=json.dumps({'text':phrase,'language':'ar'},ensure_ascii=False).encode()
           req=urllib.request.Request('https://seekveraglobal.com/api/tts',data=data,headers={'content-type':'application/json','accept':'audio/mpeg,audio/*;q=0.9,*/*;q=0.8','user-agent':ua},method='POST')
           with urllib.request.urlopen(req,timeout=10) as r:audio=r.read()
@@ -117,6 +117,12 @@ jobs:
           assert re.search(r'[\u0600-\u06ff]',str(d.get('text',''))),d
           assert sec<8,(sec,d)
           print('ARABIC_ASR_PASS',round(sec,2),d)
+          ai_data=json.dumps({'message':str(d.get('text','')),'country':'Worldwide','language':'auto','fast':True},ensure_ascii=False).encode()
+          ai_req=urllib.request.Request('https://seekveraglobal.com/api/ai?r119=voice-intent',data=ai_data,headers={'content-type':'application/json','accept':'application/json','user-agent':ua},method='POST')
+          with urllib.request.urlopen(ai_req,timeout=10) as r:ai=json.loads(r.read())
+          assert ai.get('language')=='ar',ai
+          assert ai.get('category')=='jobs' and 'jobs.html' in str(ai.get('route')),(d,ai)
+          print('ARABIC_VOICE_INTENT_PASS',ai.get('route'),ai.get('response'))
           PY
 
       - name: Android direct routing live
