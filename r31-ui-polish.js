@@ -2,7 +2,7 @@
   "use strict";
   if (window.__SEEKVERA_R31) return;
   window.__SEEKVERA_R31 = true;
-  const VERSION = "20260929-r113-ai-reliability";
+  const VERSION = "20260929-r114-fast-strong-ai";
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
   const ROUTES = {

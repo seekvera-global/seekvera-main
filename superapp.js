@@ -1,6 +1,6 @@
 (() => {
   "use strict";
-  const RELEASE = "20260929-r113-ai-reliability";
+  const RELEASE = "20260929-r114-fast-strong-ai";
   const WORKER = "";
   const SB = "https://nrdpyydfrpmqedtzmbyw.supabase.co";
   const SB_KEY = "sb_publishable_tqqPQxqdNowIsSlJz4bW5w_kHOC905o";
