@@ -3,6 +3,15 @@ import re
 
 VER='20260929-r113-ai-reliability'
 
+# A certification run executes after the patch commit. Do not try to patch
+# already-patched structural anchors a second time.
+if (VER in Path('worker-r76.js').read_text(encoding='utf-8')
+    and 'seekvera-r113-instant-local-fallback' in Path('worker-r76.js').read_text(encoding='utf-8')
+    and VER in Path('voice-ai.js').read_text(encoding='utf-8')
+    and VER in Path('index.html').read_text(encoding='utf-8')):
+    print('R113 already applied; continuing to certification.')
+    raise SystemExit(0)
+
 def rw(name, fn):
     p=Path(name)
     s=p.read_text(encoding='utf-8')
