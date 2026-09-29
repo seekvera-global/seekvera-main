@@ -98,8 +98,8 @@ p.write_text(w,encoding='utf-8')
 for p in Path('.').glob('*.html'):
     if p.name.lower().startswith('google'): continue
     h=p.read_text(encoding='utf-8')
-    n=re.sub(r'r31-ui-polish\.js(?:\?v=[^"\\'<> ]*)?',f'r31-ui-polish.js?v={VER}',h)
-    n=re.sub(r'voice-ai\.js(?:\?v=[^"\\'<> ]*)?',f'voice-ai.js?v={VOICE_VER}',n)
+    n=re.sub(r"r31-ui-polish\.js(?:\?v[=][^\"'<> ]*)?",f'r31-ui-polish.js?v={VER}',h)
+    n=re.sub(r"voice-ai\.js(?:\?v[=][^\"'<> ]*)?",f'voice-ai.js?v={VOICE_VER}',n)
     if n!=h:p.write_text(n,encoding='utf-8')
 
 p=Path('sw.js')
