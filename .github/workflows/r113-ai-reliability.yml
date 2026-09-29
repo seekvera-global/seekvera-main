@@ -61,6 +61,14 @@ jobs:
             echo 'changed=true' >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Deploy R113 to Cloudflare
+        if: steps.patch.outputs.changed == 'false'
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --config wrangler.jsonc
+
       - name: Wait for production deployment
         if: steps.patch.outputs.changed == 'false'
         shell: bash
@@ -166,4 +174,4 @@ jobs:
           JS
           node /tmp/r113-live.mjs
 
-# certification trigger after the patched production commit
+# R113 deploys with the scoped Cloudflare API token already configured in repository secrets.
