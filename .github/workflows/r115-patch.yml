@@ -18,4 +18,23 @@ jobs:
           git config user.email seekvera.global@gmail.com
           git add voice-ai.js index.html sw.js
           if ! git diff --cached --quiet; then git commit -m 'R115 make voice transcription fast'; git push origin HEAD:main; fi
-# trigger
+      - name: Deploy production
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --config wrangler.jsonc
+      - name: Verify production
+        run: |
+          for i in $(seq 1 20); do
+            H=$(curl -fsS --max-time 8 "https://seekveraglobal.com/?r115=$(date +%s)" || true)
+            if echo "$H" | grep -q 'voice-ai.js?v=20260929-r115-fast-voice'; then
+              V=$(curl -fsS --max-time 8 "https://seekveraglobal.com/voice-ai.js?v=20260929-r115-fast-voice")
+              echo "$V" | grep -F "window.__seekveraVoiceMode='20260929-r115-fast-voice'"
+              echo "$V" | grep -F "to=setTimeout(()=>ctl.abort(),7000)"
+              echo "$V" | grep -F "engine:'native-shadow-fast-fallback'"
+              exit 0
+            fi
+            sleep 5
+          done
+          exit 1
