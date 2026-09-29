@@ -18,7 +18,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: seekvera-r113-ai-reliability
+  group: seekvera-r113-ai-reliability-v2
   cancel-in-progress: false
 
 jobs:
@@ -174,4 +174,4 @@ jobs:
           JS
           node /tmp/r113-live.mjs
 
-# R113 deploys with the scoped Cloudflare API token already configured in repository secrets.
+# Independent concurrency group so production deployment is not blocked by a prior verification wait.
