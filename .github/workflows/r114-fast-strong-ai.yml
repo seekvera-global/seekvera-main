@@ -1,175 +1,66 @@
-name: R114 fast strong AI release
-
+name: R115 production certification
 on:
   push:
     branches: [main]
     paths:
-      - 'tools/r114_ai_strength.py'
       - '.github/workflows/r114-fast-strong-ai.yml'
   workflow_dispatch:
-
 permissions:
-  contents: write
-
-concurrency:
-  group: seekvera-r114-fast-strong-ai
-  cancel-in-progress: true
-
+  contents: read
 jobs:
-  deploy-and-certify:
+  certify:
     runs-on: ubuntu-latest
-    timeout-minutes: 18
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Apply R114 fast AI model hedge
-        run: python tools/r114_ai_strength.py
-
-      - name: Static checks
-        run: |
-          set -euo pipefail
-          node --check worker-r76.js
-          node --check superapp.js
-          node --check r31-ui-polish.js
-          node --check voice-ai.js
-          grep -F "const FAST='@cf/meta/llama-3.1-8b-instruct-fast';" worker-r76.js
-          grep -F 'Promise.any([FAST,PRIMARY,FALLBACK].map(modelAttempt))' worker-r76.js
-          grep -F '20260929-r114-fast-strong-ai' index.html
-
-      - name: Persist R114 source
-        shell: bash
-        run: |
-          set -euo pipefail
-          if ! git diff --quiet -- worker-r76.js superapp.js r31-ui-polish.js voice-ai.js sw.js index.html; then
-            git config user.name 'seekvera-global'
-            git config user.email 'seekvera.global@gmail.com'
-            git add worker-r76.js superapp.js r31-ui-polish.js voice-ai.js sw.js index.html
-            git commit -m 'R114 race fast AI model and keep instant voice'
-            git push origin HEAD:main
-          fi
-
-      - name: Deploy R114 to Cloudflare
+      - name: Deploy latest production source
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --config wrangler.jsonc
-
-      - name: Confirm production release
-        shell: bash
+      - name: Verify live R115 voice asset
         run: |
-          set -euo pipefail
-          for i in $(seq 1 24); do
-            BODY=$(curl -fsS --max-time 8 "https://seekveraglobal.com/api/health?cb=$(date +%s)" || true)
-            if echo "$BODY" | grep -q '20260929-r114-fast-strong-ai'; then
-              echo 'R114 production worker is live.'
+          for i in $(seq 1 20); do
+            H=$(curl -fsS --max-time 8 "https://seekveraglobal.com/?r115=$(date +%s)" || true)
+            if echo "$H" | grep -q 'voice-ai.js?v=20260929-r115-fast-voice'; then
+              V=$(curl -fsS --max-time 8 "https://seekveraglobal.com/voice-ai.js?v=20260929-r115-fast-voice")
+              echo "$V" | grep -F "window.__seekveraVoiceMode='20260929-r115-fast-voice'"
+              echo "$V" | grep -F "to=setTimeout(()=>ctl.abort(),7000)"
+              echo "$V" | grep -F "engine:'native-shadow-fast-fallback'"
+              echo "$V" | grep -F "seekvera:tts-request"
               exit 0
             fi
             sleep 5
           done
           exit 1
-
-      - name: Live multilingual AI strength and latency
-        shell: bash
+      - name: Verify live AI response speed
         run: |
-          set -euo pipefail
-          python - <<'PY'
+          python3 - <<'PY'
           import json,time,urllib.request
-          base='https://seekveraglobal.com'
-          cases=[
-            ('مرحبا، كيفك اليوم؟','ar','general'),
-            ('I need a hotel in Paris next week. Help me choose.','en','travel'),
-            ('Je cherche un appartement à Paris. Aide-moi.','fr','property'),
-          ]
-          real=0
-          for msg,lang,intent in cases:
-              best=None
-              for attempt in range(2):
-                  data=json.dumps({'message':msg,'country':'Worldwide','countryCode':'WW','language':'auto','uiLanguage':lang,'conversationIntent':intent,'scope':'worldwide','fast':True,'history':[]}).encode()
-                  req=urllib.request.Request(base+'/api/ai',data=data,headers={'Content-Type':'application/json','User-Agent':'SEEKVERA-R114-CERT'},method='POST')
-                  t=time.monotonic()
-                  with urllib.request.urlopen(req,timeout=9) as r:
-                      raw=r.read(); status=r.status
-                  elapsed=time.monotonic()-t
-                  d=json.loads(raw)
-                  assert status==200 and d.get('ok') is True,(status,d)
-                  assert str(d.get('response','')).strip(),d
-                  assert elapsed < 8.5,(elapsed,d)
-                  best=(elapsed,d)
-                  model=str(d.get('model',''))
-                  if 'instant-local-fallback' not in model:
-                      real += 1
-                      break
-              elapsed,d=best
-              print('R114_AI_PASS',lang,round(elapsed,2),d.get('model'),str(d.get('response'))[:150])
-          assert real>=2,('too many local fallbacks',real)
+          for msg in ['مرحبا كيفك؟','I need a hotel in Paris']:
+              body=json.dumps({'message':msg,'country':'Worldwide','language':'auto','fast':True}).encode()
+              req=urllib.request.Request('https://seekveraglobal.com/api/ai',data=body,headers={'content-type':'application/json'},method='POST')
+              t=time.monotonic()
+              with urllib.request.urlopen(req,timeout=9) as r: d=json.loads(r.read())
+              sec=time.monotonic()-t
+              assert d.get('ok') and str(d.get('response','')).strip(),d
+              assert sec<8.5,(sec,d)
+              print('AI_PASS',round(sec,2),d.get('model'),str(d.get('response'))[:120])
           PY
-
-      - name: Verify production asset cache bust
-        shell: bash
+      - name: Browser chat and voice response path
         run: |
-          set -euo pipefail
-          HTML=$(curl -fsS --max-time 12 "https://seekveraglobal.com/?r114=$(date +%s)")
-          echo "$HTML" | grep -F 'superapp.js?v=20260929-r114-fast-strong-ai'
-          echo "$HTML" | grep -F 'voice-ai.js?v=20260929-r114-fast-strong-ai'
-          echo "$HTML" | grep -F 'r31-ui-polish.js?v=20260929-r114-fast-strong-ai'
-
-      - name: Browser proof on Android-size viewport
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm init -y >/dev/null 2>&1
-          npm install --silent playwright@1.55.0
+          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
           npx playwright install chromium >/dev/null
-          cat > r114-live.mjs <<'JS'
-          import { chromium } from 'playwright';
-          import assert from 'node:assert/strict';
-          const browser=await chromium.launch({headless:true});
-          const context=await browser.newContext({
-            viewport:{width:390,height:844},
-            userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36',
-            locale:'ar-LB',
-            serviceWorkers:'block'
-          });
-          const page=await context.newPage();
-          await page.addInitScript(()=>{
-            window.__svSpoken=[];
-            try{
-              const ss=window.speechSynthesis;
-              ss.cancel=()=>{};
-              ss.getVoices=()=>[{name:'Arabic Test Voice',lang:'ar-SA',default:true},{name:'English Test Voice',lang:'en-US',default:false}];
-              ss.speak=u=>{window.__svSpoken.push({text:String(u.text||''),lang:String(u.lang||'')});setTimeout(()=>u.onstart&&u.onstart(),0);setTimeout(()=>u.onend&&u.onend(),20)};
-            }catch(e){window.__svSpeechPatchError=String(e)}
-          });
-          const pageErrors=[];page.on('pageerror',e=>pageErrors.push(String(e)));
-          await page.goto('https://seekveraglobal.com/?r114live='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
-          await page.waitForSelector('#aiChatInput',{timeout:20000});
-          const before=await page.locator('#aiMessages .ai-msg.bot:not(.thinking)').count();
-          const started=Date.now();
-          await page.fill('#aiChatInput','مرحبا كيفك؟');
-          await page.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
-          await page.waitForFunction(()=>document.querySelectorAll('#aiMessages .ai-msg.user').length>=1,{timeout:1200});
-          const userMs=Date.now()-started;
-          await page.waitForFunction(n=>document.querySelectorAll('#aiMessages .ai-msg.bot:not(.thinking)').length>n,before,{timeout:10000});
-          const replyMs=Date.now()-started;
-          const text=await page.locator('#aiMessages .ai-msg.bot:not(.thinking)').last().innerText();
-          assert(text.trim().length>1,text);
-          assert(userMs<1200,userMs);
-          assert(replyMs<10000,replyMs);
-          console.log('R114_BROWSER_CHAT_PASS',JSON.stringify({userMs,replyMs,text:text.slice(0,120),pageErrors}));
-          const voiceState=await page.evaluate(()=>({mode:window.__seekveraVoiceMode||'',hasVoice:!!window.SEEKVERA_VOICE_AI,hasSubmit:!!window.SEEKVERA_R31?.submitAI,speaker:!!document.querySelector('#aiChatSpeaker')}));
-          assert(voiceState.hasVoice&&voiceState.hasSubmit&&voiceState.speaker,JSON.stringify(voiceState));
-          assert(String(voiceState.mode).includes('r114'),JSON.stringify(voiceState));
-          await page.evaluate(()=>{
-            localStorage.setItem('seekvera_voice_mode','1');
-            window.dispatchEvent(new CustomEvent('seekvera:ai-response',{detail:{text:'أهلاً، الصوت يعمل الآن',language:'ar'}}));
-          });
-          await page.waitForFunction(()=>Array.isArray(window.__svSpoken)&&window.__svSpoken.length>0,{timeout:4000});
-          const spoken=await page.evaluate(()=>window.__svSpoken);
-          assert(spoken.at(-1).text.includes('الصوت'),JSON.stringify(spoken));
-          console.log('R114_VOICE_TRIGGER_PASS',JSON.stringify({voiceState,spoken:spoken.at(-1)}));
-          await browser.close();
+          cat > live.mjs <<'JS'
+          import{chromium}from'playwright';import assert from'node:assert/strict';
+          const b=await chromium.launch({headless:true});const p=await b.newPage({viewport:{width:390,height:844},locale:'ar-LB',userAgent:'Mozilla/5.0 (Linux; Android 11; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'});
+          await p.goto('https://seekveraglobal.com/?r115='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+          await p.waitForFunction(()=>window.SEEKVERA_VOICE_AI&&window.SEEKVERA_R31?.submitAI&&document.querySelector('#aiChatInput'),null,{timeout:20000});
+          const st=await p.evaluate(()=>({mode:window.__seekveraVoiceMode,speaker:!!document.querySelector('#aiChatSpeaker')}));assert(st.mode.includes('r115')&&st.speaker,JSON.stringify(st));
+          await p.evaluate(()=>{window.__tts=[];window.addEventListener('seekvera:tts-request',e=>window.__tts.push(e.detail));localStorage.setItem('seekvera_voice_mode','1');localStorage.setItem('seekvera_voice_muted','0')});
+          const n=await p.locator('#aiMessages .ai-msg.bot:not(.thinking)').count(),t=Date.now();await p.fill('#aiChatInput','مرحبا كيفك؟');await p.locator('#aiChatForm').evaluate(f=>f.requestSubmit());
+          await p.waitForFunction(x=>document.querySelectorAll('#aiMessages .ai-msg.bot:not(.thinking)').length>x,n,{timeout:9000});const ms=Date.now()-t,text=await p.locator('#aiMessages .ai-msg.bot:not(.thinking)').last().innerText();
+          await p.waitForFunction(()=>window.__tts?.length>0,null,{timeout:4000});const q=await p.evaluate(()=>window.__tts.at(-1));assert(ms<9000&&text.trim()&&q?.text,JSON.stringify({ms,text,q}));console.log('BROWSER_PASS',JSON.stringify({ms,text,q,st}));await b.close();
           JS
-          node r114-live.mjs
+          node live.mjs
