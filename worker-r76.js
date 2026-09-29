@@ -1,6 +1,6 @@
 import baseWorker from './worker-r31.js';
 
-const RELEASE='20260929-r116-universal-language-fast';
+const RELEASE='20260929-r117-strict-reply-language';
 const PRIMARY='@cf/zai-org/glm-4.7-flash';
 const FALLBACK='@cf/qwen/qwen3-30b-a3b-fp8';
 const FAST='@cf/meta/llama-3.1-8b-instruct-fast';
@@ -142,7 +142,7 @@ function metaReply(message,language){
  return r[l]||r.en
 }
 function routeLikeReply(text){return /(?:take|send|move|route|redirect).{0,35}(?:section|department)|(?:section|department).{0,35}(?:now|direct)|(?:قسم|القسم).{0,35}(?:مباشر|الأنسب|المناسب|وديك|أوصلك|انقلك|أنقلك)/iu.test(String(text||''))}
-function employmentIntent(message){const s=String(message||'').toLowerCase();return /\b(?:job|jobs|career|vacancy|employment|hiring|job opening|looking for work|need work|find work)\b|وظيف|وظائف|وظايف|فرصة عمل|أبحث عن عمل|ابحث عن عمل|عم دور على شغل|بدي شغل|بدور على شغل|دوام|emploi|emplois|travail|trabajo|empleo|trabalho|emprego|lavoro|arbeit|stellen|stelle|iş ilanı|is ilanı|ваканси|работу ищ|工作|职位|求人|채용/iu.test(s)}
+function employmentIntent(message){const s=String(message||'').toLowerCase();return /\b(?:job|jobs|career|vacancy|employment|hiring|job opening|looking for work|need work|find work)\b|وظيف|وظائف|وظايف|فرصة عمل|أبحث عن عمل|ابحث عن عمل|عم دور على شغل|عم بدور على شغل|بدي شغل|بدور على شغل|ندور على شغل|دورلي على شغل|ساعدني دور على شغل|ساعديني دور على شغل|ساعديني ندور على شغل|دوام|emploi|emplois|travail|trabajo|empleo|trabalho|emprego|lavoro|arbeit|stellen|stelle|iş ilanı|is ilanı|ваканси|работу ищ|工作|职位|求人|채용/iu.test(s)}
 function conversationalFallback(message,language){const l=languageCode(language)||normalizedLanguage('',message);const how=/how\s+are\s+you|كيفك|كيف حالك|comment (?:ça|ca) va|cómo estás|como estas|wie geht|come stai|como vai|nasılsın|nasilsin|как дела|你好吗|元気ですか|어떻게 지내|आप कैसे हैं|เป็นอย่างไรบ้าง|apa kabar|habari/iu.test(message);const replies={
  ar:how?'منيح، شكراً إلك. أنا جاهز أحكي معك وأساعدك. شو حابب تعمل؟':'أهلاً وسهلاً! أنا SEEKVERA AI. احكي معي بشكل طبيعي، شو فيني ساعدك؟',
  en:how?'I’m doing well, thank you. I’m here and ready to help—what would you like to do?':'Hello! I’m SEEKVERA AI. Talk to me naturally—how can I help?',
@@ -181,6 +181,73 @@ function usefulFallback(message,language,cat){const l=languageCode(language)||me
  bn:'আমি আপনার প্রয়োজন বুঝেছি। শহর, তারিখ বা বাজেটের মতো একটি গুরুত্বপূর্ণ তথ্য দিন; অনুরোধ পরিষ্কার হলে আমি সঠিক বিভাগ দেখাব।',
  vi:'Tôi hiểu nhu cầu của bạn. Hãy cho tôi một chi tiết quan trọng như thành phố, ngày hoặc ngân sách; tôi sẽ tiếp tục và chỉ mở mục phù hợp khi yêu cầu đã rõ.'
  };return r[l]||r.en}
+
+function replyScript(text){
+ const t=String(text||'');
+ if(/[\u0600-\u06ff]/u.test(t))return'arabic';
+ if(/[\u0900-\u097f]/u.test(t))return'devanagari';
+ if(/[\u0980-\u09ff]/u.test(t))return'bengali';
+ if(/[\u0a00-\u0a7f]/u.test(t))return'gurmukhi';
+ if(/[\u0a80-\u0aff]/u.test(t))return'gujarati';
+ if(/[\u0b80-\u0bff]/u.test(t))return'tamil';
+ if(/[\u0c00-\u0c7f]/u.test(t))return'telugu';
+ if(/[\u0d00-\u0d7f]/u.test(t))return'malayalam';
+ if(/[\u0d80-\u0dff]/u.test(t))return'sinhala';
+ if(/[\u0e00-\u0e7f]/u.test(t))return'thai';
+ if(/[\u0e80-\u0eff]/u.test(t))return'lao';
+ if(/[\u1000-\u109f]/u.test(t))return'myanmar';
+ if(/[\u1200-\u137f]/u.test(t))return'ethiopic';
+ if(/[\u1780-\u17ff]/u.test(t))return'khmer';
+ if(/[\u10a0-\u10ff]/u.test(t))return'georgian';
+ if(/[\u0530-\u058f]/u.test(t))return'armenian';
+ if(/[\u0370-\u03ff]/u.test(t))return'greek';
+ if(/[\u0590-\u05ff]/u.test(t))return'hebrew';
+ if(/[\u3040-\u30ff]/u.test(t))return'japanese';
+ if(/[\uac00-\ud7af]/u.test(t))return'korean';
+ if(/[\u4e00-\u9fff]/u.test(t))return'han';
+ if(/[\u0400-\u052f]/u.test(t))return'cyrillic';
+ if(/[A-Za-zÀ-ÖØ-öø-ÿ]/u.test(t))return'latin';
+ return''
+}
+function expectedReplyScripts(language){
+ const l=languageCode(language);
+ if(['ar','fa','ur','ps','ku'].includes(l))return['arabic'];
+ if(['hi','mr','ne'].includes(l))return['devanagari'];
+ if(l==='bn')return['bengali'];if(l==='pa')return['gurmukhi'];if(l==='gu')return['gujarati'];if(l==='ta')return['tamil'];if(l==='te')return['telugu'];if(l==='ml')return['malayalam'];if(l==='si')return['sinhala'];
+ if(l==='th')return['thai'];if(l==='lo')return['lao'];if(l==='my')return['myanmar'];if(['am','ti'].includes(l))return['ethiopic'];if(l==='km')return['khmer'];if(l==='ka')return['georgian'];if(l==='hy')return['armenian'];if(l==='el')return['greek'];if(l==='he')return['hebrew'];
+ if(l==='ja')return['japanese','han'];if(l==='zh')return['han'];if(l==='ko')return['korean'];if(['ru','uk','bg','sr','mk','be'].includes(l))return['cyrillic'];
+ return['latin']
+}
+function confidentLatinLanguage(text){
+ const t=' '+String(text||'').toLowerCase().replace(/[^a-zà-öø-ÿğışçñ¿¡ðþæœ]+/gu,' ')+' ';
+ if(/[ðþ]/u.test(t)||/\b(hvað|þú|það|ertu|erum|leita|þarf|aðstoð|vinna|vinnu)\b/u.test(t))return'is';
+ if(/[ğış]/u.test(t)||/\b(merhaba|nasılsın|istiyorum|arıyorum|havaalanı|yakın|teşekkür)\b/u.test(t))return'tr';
+ if(/[ãõ]/u.test(t)||/\b(olá|obrigad|procuro|preciso|aeroporto|perto)\b/u.test(t))return'pt';
+ if(/[ñ¿¡]/u.test(t)||/\b(hola|quiero|busco|necesito|gracias|aeropuerto|cerca)\b/u.test(t))return'es';
+ if(/[äöüß]/u.test(t)||/\b(ich|suche|möchte|danke|flughafen|nähe)\b/u.test(t))return'de';
+ if(/\b(bonjour|merci|cherche|voudrais|besoin|aéroport|près|comment allez)\b/u.test(t))return'fr';
+ if(/\b(ciao|buongiorno|grazie|cerco|voglio|bisogno|aeroporto|vicino)\b/u.test(t))return'it';
+ if(/[đơư]/u.test(t)||/\b(xin chào|cảm ơn|tôi muốn|tôi cần|sân bay)\b/u.test(t))return'vi';
+ if(/\b(habari|asante|nataka|nahitaji|hoteli|uwanja wa ndege)\b/u.test(t))return'sw';
+ if(/\b(selamat|terima kasih|saya ingin|saya perlu|bandara|dekat)\b/u.test(t))return'id';
+ if(/\b(hello|thank you|i need|i want|i am looking|how are you|please tell me|what kind|can you help)\b/u.test(t))return'en';
+ return''
+}
+function translationRequest(message){return /\btranslate\b|\btranslation\b|ترجم|ترجمة|ترجمي|traduire|traducción|traducir|übersetz|traduz|çevir|перевед|翻译|翻訳|번역/iu.test(String(message||''))}
+function replyMatchesLanguage(reply,language,message=''){
+ const text=clean(reply,5000),l=languageCode(language)||messageLanguage(message,'');if(!text)return false;
+ if(translationRequest(message))return true;
+ const script=replyScript(text),expected=expectedReplyScripts(l);
+ if(script&&script!=='latin')return expected.includes(script);
+ if(!expected.includes('latin'))return false;
+ const guessed=confidentLatinLanguage(text);return !guessed||guessed===l
+}
+function guardedReply(reply,language,message=''){const text=clean(reply,5000);return replyMatchesLanguage(text,language,message)?text:''}
+function languageSafeHistory(h,target){
+ if(!Array.isArray(h))return'';
+ return h.slice(-18).filter(x=>x?.role!=='assistant'||replyMatchesLanguage(x?.content,target,'')).map(x=>`${x?.role==='assistant'?'assistant':'user'}: ${clean(x?.content,1000)}`).filter(Boolean).join('\n').slice(-10000)
+}
+
 function safetyReply(language){const l=languageCode(language)||'en',r={ar:'لا يمكن لـSEEKVERA المساعدة في شراء أو بيع أو توفير أو ترويج مواد أو خدمات محظورة أو غير قانونية.',en:'SEEKVERA cannot help buy, sell, source or promote prohibited or illegal items or services.',fr:'SEEKVERA ne peut pas aider à acheter, vendre, fournir ou promouvoir des articles ou services interdits ou illégaux.',es:'SEEKVERA no puede ayudar a comprar, vender, conseguir o promocionar artículos o servicios prohibidos o ilegales.',de:'SEEKVERA kann nicht beim Kauf, Verkauf, Beschaffen oder Bewerben verbotener oder illegaler Waren oder Dienste helfen.',tr:'SEEKVERA yasaklı veya yasa dışı ürün ya da hizmetleri satın alma, satma, bulma veya tanıtma konusunda yardımcı olamaz.',zh:'SEEKVERA 无法协助购买、销售、获取或推广被禁止或非法的商品或服务。',ja:'SEEKVERAは、禁止または違法な商品・サービスの購入、販売、調達、宣伝を支援できません。',ko:'SEEKVERA는 금지되거나 불법인 상품 및 서비스의 구매, 판매, 조달 또는 홍보를 도울 수 없습니다.',hi:'SEEKVERA प्रतिबंधित या अवैध वस्तुओं अथवा सेवाओं को खरीदने, बेचने, मंगाने या बढ़ावा देने में सहायता नहीं कर सकता।',ru:'SEEKVERA не помогает покупать, продавать, искать или продвигать запрещённые либо незаконные товары и услуги.'};return r[l]||r.en}
 async function transcribeAudio(request,env){
  if(!env.AI)return json(request,{ok:false,error:'Speech AI unavailable'},503);
@@ -219,8 +286,8 @@ async function degradedFallback(request,env,ctx,body,message){
 
 async function runStructured(env,body){
  const message=clean(body?.message??body?.prompt,2400);if(!message)return null;
- const selected=clean(body?.country,120)||'Worldwide',history=historyText(body?.history);
- const system=`You are SEEKVERA AI, the action assistant inside a worldwide marketplace and discovery app. You must understand the LATEST USER MESSAGE directly, including dialects, slang, Lebanese Arabic, mixed Arabic/English, transliteration, and any major world language. Never choose the reply language from the selected country, interface, or browser. Reply in the SAME language and script as the latest user message unless the user explicitly requests another reply language.\
+ const selected=clean(body?.country,120)||'Worldwide',targetLanguage=messageLanguage(message,body?.language),history=languageSafeHistory(body?.history,targetLanguage);
+ const system=`You are SEEKVERA AI, the action assistant inside a worldwide marketplace and discovery app. You must understand the LATEST USER MESSAGE directly, including dialects, slang, Lebanese Arabic, mixed Arabic/English, transliteration, and any major world language. Never choose the reply language from the selected country, interface, or browser. Reply in the SAME language and script as the latest user message unless the user explicitly requests another reply language. The reply text itself MUST visibly use that language/script; never translate Arabic speech into Icelandic, English, or another language, and never claim one languageCode while writing in another language.\
 \
 Return ONLY one JSON object with exactly these keys: reply, languageCode, category, countryAction, languageAction.\
 - reply: behave like a real conversational AI assistant. Hold a normal back-and-forth conversation, answer questions directly, understand corrections and follow-ups, and use the recent conversation as memory. Do NOT rush the user into a marketplace section. If the user has not yet clearly said what they want, keep talking naturally. When the user does want something, ask only the minimum useful follow-up questions needed (such as country/city, dates, budget, type, quantity or preferences), one concise question at a time. Never ask again for information already present in the conversation. Once the goal is clear, help with it and choose the correct category.\
@@ -238,8 +305,9 @@ Latest user message: ${message}`;
  const messages=[{role:'system',content:system},{role:'user',content:message}];
  const modelAttempt=async model=>{
    const r=await Promise.race([env.AI.run(model,{messages,temperature:.18,max_tokens:420}),new Promise((_,reject)=>setTimeout(()=>reject(Error('model timeout')),4200))]),text=modelText(r),obj=parseJSON(text);if(!obj||!clean(obj.reply,5000))throw Error('invalid structured response');
-   const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode),meta=metaConversation(message),cat=(act.isAction||conversationOnly(message)||meta)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
-   let reply=act.isAction?actionReply(language,act.cc,act.ll):clean(obj.reply,5000);if(meta&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
+   const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=targetLanguage,declared=languageCode(obj.languageCode),meta=metaConversation(message),cat=(act.isAction||conversationOnly(message)||meta)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
+   if(declared&&declared!==language&&!translationRequest(message))throw Error('model language mismatch');
+   let reply=act.isAction?actionReply(language,act.cc,act.ll):guardedReply(obj.reply,language,message);if(!reply)throw Error('reply language mismatch');if(meta&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
    return{ok:true,response:reply,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model,fastPath:act.isAction?'r114-verified-action-first':meta?'r114-meta-conversation-guard':'r114-fast-model-race',liveData:false}
  };
  try{const winner=await Promise.race([Promise.any([FAST,PRIMARY,FALLBACK].map(modelAttempt)),new Promise(resolve=>setTimeout(()=>resolve(null),4500))]);if(winner)return winner}catch(_){}
@@ -252,11 +320,11 @@ Latest user message: ${message}`;
      if(br.ok){
        const raw=await br.text(),obj=parseJSON(raw);
        if(obj&&clean(obj.reply,5000)){
-         const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode),meta=metaConversation(message),cat=(act.isAction||conversationOnly(message)||meta)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
-         let reply=act.isAction?actionReply(language,act.cc,act.ll):clean(obj.reply,5000);if(meta&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
-         return{ok:true,response:reply,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:'pollinations-private-conversation-fallback',fastPath:'r114-real-ai-fallback',liveData:false}
+         const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=targetLanguage,declared=languageCode(obj.languageCode),meta=metaConversation(message),cat=(act.isAction||conversationOnly(message)||meta)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
+         let reply=act.isAction?actionReply(language,act.cc,act.ll):guardedReply(obj.reply,language,message);if(declared&&declared!==language&&!translationRequest(message))reply='';if(meta&&reply&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
+         if(reply)return{ok:true,response:reply,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:'pollinations-private-conversation-fallback',fastPath:'r117-language-guard-fallback',liveData:false}
        }
-       const plain=clean(raw,5000);if(plain){const language=messageLanguage(message,''),meta=metaConversation(message),cat=(conversationOnly(message)||meta)?'general':(category(message)==='jobs'&&!employmentIntent(message)?'general':category(message));return{ok:true,response:plain,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:null,languageAction:null,model:'pollinations-private-conversation-plain',fastPath:'r114-natural-plain-fallback',liveData:false}}
+       const plain=guardedReply(raw,targetLanguage,message);if(plain){const language=targetLanguage,meta=metaConversation(message),cat=(conversationOnly(message)||meta)?'general':(category(message)==='jobs'&&!employmentIntent(message)?'general':category(message));return{ok:true,response:plain,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:null,languageAction:null,model:'pollinations-private-conversation-plain',fastPath:'r117-language-guard-plain',liveData:false}}
      }
    }finally{clearTimeout(to)}
  }catch(_){}
@@ -268,7 +336,7 @@ export default{async fetch(request,env,ctx){
  const u=new URL(request.url);
  if(request.method==='OPTIONS')return new Response(null,{status:204,headers:headers(request)});
  if(u.pathname==='/api/health'){
-   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,release:RELEASE,r105:true,r105Runtime:'worldwide-default-language-safe-ai-atomic-localization',r86:true,r86Runtime:'conversation-first-multilingual-ai',r92:true,r92Runtime:'native-asr-payload-per-model-auto-language',r89:true,r89Runtime:'workers-ai-whisper-byte-array-no-consent',r88:true,r88Runtime:'fast-auto-asr-server-first-tts-natural-fallback',r87:true,r87Runtime:'latest-message-language-plus-real-ai-fallback',r86Routing:'goal-aware-not-keyword-first',r86Voice:'whisper-auto-language-independent-of-ui',r86Asr:ASR_PRIMARY,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
+   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,release:RELEASE,r117:true,r117Runtime:'strict-reply-language-contract-and-history-sanitizer',r105:true,r105Runtime:'worldwide-default-language-safe-ai-atomic-localization',r86:true,r86Runtime:'conversation-first-multilingual-ai',r92:true,r92Runtime:'native-asr-payload-per-model-auto-language',r89:true,r89Runtime:'workers-ai-whisper-byte-array-no-consent',r88:true,r88Runtime:'fast-auto-asr-server-first-tts-natural-fallback',r87:true,r87Runtime:'latest-message-language-plus-real-ai-fallback',r86Routing:'goal-aware-not-keyword-first',r86Voice:'whisper-auto-language-independent-of-ui',r86Asr:ASR_PRIMARY,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
  }
  if(u.pathname==='/api/transcribe'&&request.method==='POST')return transcribeAudio(request,env);
  if(u.pathname==='/api/ai'&&request.method==='POST'){
