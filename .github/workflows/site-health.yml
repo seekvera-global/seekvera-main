@@ -42,6 +42,19 @@ jobs:
           S='https://seekveraglobal.com'
           curl -LfsS --max-time 25 "$S/api/health?health-r23=1" -o /tmp/health
           grep -q '"ok":true' /tmp/health
+          seo_ok=0
+          for i in $(seq 1 48); do
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/robots.txt?official-domain=$i" -o /tmp/robots || true
+            curl -LfsS --max-time 25 -H 'Cache-Control: no-cache' "$S/sitemap.xml?official-domain=$i" -o /tmp/sitemap || true
+            if grep -Fq 'Sitemap: https://seekveraglobal.com/sitemap.xml' /tmp/robots 2>/dev/null \
+              && grep -Fq '<loc>https://seekveraglobal.com/</loc>' /tmp/sitemap 2>/dev/null \
+              && ! grep -Fq 'seekvera-global.github.io/seekvera-main' /tmp/robots /tmp/sitemap 2>/dev/null; then
+              seo_ok=1
+              break
+            fi
+            sleep 5
+          done
+          test "$seo_ok" = 1
           for p in marketplace.html travel.html tourism.html property.html cars-auto.html jobs.html shopping.html restaurants-food.html local-services.html import-export.html shipping-logistics.html health.html games.html connectivity.html wifi.html deal-agent.html privacy.html terms.html; do
             code=$(curl -L -sS -o /dev/null -w '%{http_code}' --max-time 25 "$S/$p?health-r23=1"); test "$code" = 200 || { echo "$p -> $code"; exit 1; }
           done
