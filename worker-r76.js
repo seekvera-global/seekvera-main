@@ -1,6 +1,6 @@
 import baseWorker from './worker-r31.js';
 
-const RELEASE='20260929-r117-strict-reply-language';
+const RELEASE='20260929-r118-universal-language-resolution';
 const PRIMARY='@cf/zai-org/glm-4.7-flash';
 const FALLBACK='@cf/qwen/qwen3-30b-a3b-fp8';
 const FAST='@cf/meta/llama-3.1-8b-instruct-fast';
@@ -58,7 +58,7 @@ function messageLanguage(message,suggested=''){
  if(/[ąćęłńśźż]/iu.test(t))return'pl';
  if(/[őű]/iu.test(t))return'hu';
  if(/[ăîșşțţ]/iu.test(t))return'ro';
- if(/[ãõ]/iu.test(t)||/\b(olá|ola|preciso|procuro|obrigado|obrigada|aeroporto|perto)\b/iu.test(s))return'pt';
+ if(s.includes('olá')||/[ãõ]/iu.test(t)||/\b(ola|preciso|procuro|obrigado|obrigada|aeroporto|perto)\b/iu.test(s))return'pt';
  if(/[ñ¿¡]/iu.test(t)||/\b(hola|quiero|busco|necesito|gracias|país|pais|idioma)\b/iu.test(s))return'es';
  if(/[äöüß]/iu.test(t)||/\b(hallo|ich|suche|möchte|mochte|sprache|land|danke)\b/iu.test(s))return'de';
  if(/\b(bonjour|salut|merci|cherche|voudrais|besoin|langue|pays|aéroport|aeroport|près)\b/iu.test(s))return'fr';
@@ -66,6 +66,7 @@ function messageLanguage(message,suggested=''){
  if(/\b(hallo|dank|zoek|nodig|taal|land|hotel)\b/iu.test(s)&&q==='nl')return'nl';
  if(/\b(habari|asante|nataka|nahitaji|tafuta|hoteli)\b/iu.test(s))return'sw';
  if(/\b(selamat|terima kasih|saya|ingin|cari|butuh|bandara|dekat)\b/iu.test(s))return pick(['id','ms'],'id');
+ if(/\b(hello|hi|hey|how are you|i need|i want|i am looking|i'm looking|can you help|please help|thank you|thanks|what kind|which city|near the airport)\b/iu.test(s))return'en';
  return q||'en';
 }
 function aliasHit(s,a){a=String(a).toLowerCase();if(/^[a-z]{1,3}$/i.test(a))return new RegExp(`(?:^|[^a-z])${a.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}(?:$|[^a-z])`,'i').test(s);return s.includes(a)}
@@ -305,7 +306,7 @@ Latest user message: ${message}`;
  const messages=[{role:'system',content:system},{role:'user',content:message}];
  const modelAttempt=async model=>{
    const r=await Promise.race([env.AI.run(model,{messages,temperature:.18,max_tokens:420}),new Promise((_,reject)=>setTimeout(()=>reject(Error('model timeout')),4200))]),text=modelText(r),obj=parseJSON(text);if(!obj||!clean(obj.reply,5000))throw Error('invalid structured response');
-   const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=targetLanguage,declared=languageCode(obj.languageCode),meta=metaConversation(message),cat=(act.isAction||conversationOnly(message)||meta)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
+   const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode||targetLanguage),declared=languageCode(obj.languageCode),meta=metaConversation(message),cat=(act.isAction||conversationOnly(message)||meta)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
    if(declared&&declared!==language&&!translationRequest(message))throw Error('model language mismatch');
    let reply=act.isAction?actionReply(language,act.cc,act.ll):guardedReply(obj.reply,language,message);if(!reply)throw Error('reply language mismatch');if(meta&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
    return{ok:true,response:reply,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model,fastPath:act.isAction?'r114-verified-action-first':meta?'r114-meta-conversation-guard':'r114-fast-model-race',liveData:false}
@@ -320,7 +321,7 @@ Latest user message: ${message}`;
      if(br.ok){
        const raw=await br.text(),obj=parseJSON(raw);
        if(obj&&clean(obj.reply,5000)){
-         const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=targetLanguage,declared=languageCode(obj.languageCode),meta=metaConversation(message),cat=(act.isAction||conversationOnly(message)||meta)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
+         const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode||targetLanguage),declared=languageCode(obj.languageCode),meta=metaConversation(message),cat=(act.isAction||conversationOnly(message)||meta)?'general':(category(obj.category)==='jobs'&&!employmentIntent(message)?'general':category(obj.category));
          let reply=act.isAction?actionReply(language,act.cc,act.ll):guardedReply(obj.reply,language,message);if(declared&&declared!==language&&!translationRequest(message))reply='';if(meta&&reply&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
          if(reply)return{ok:true,response:reply,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:'pollinations-private-conversation-fallback',fastPath:'r117-language-guard-fallback',liveData:false}
        }
@@ -336,7 +337,7 @@ export default{async fetch(request,env,ctx){
  const u=new URL(request.url);
  if(request.method==='OPTIONS')return new Response(null,{status:204,headers:headers(request)});
  if(u.pathname==='/api/health'){
-   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,release:RELEASE,r117:true,r117Runtime:'strict-reply-language-contract-and-history-sanitizer',r105:true,r105Runtime:'worldwide-default-language-safe-ai-atomic-localization',r86:true,r86Runtime:'conversation-first-multilingual-ai',r92:true,r92Runtime:'native-asr-payload-per-model-auto-language',r89:true,r89Runtime:'workers-ai-whisper-byte-array-no-consent',r88:true,r88Runtime:'fast-auto-asr-server-first-tts-natural-fallback',r87:true,r87Runtime:'latest-message-language-plus-real-ai-fallback',r86Routing:'goal-aware-not-keyword-first',r86Voice:'whisper-auto-language-independent-of-ui',r86Asr:ASR_PRIMARY,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
+   const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,release:RELEASE,r118:true,r118Runtime:'script-first-plus-model-hint-language-resolution',r117:true,r117Runtime:'strict-reply-language-contract-and-history-sanitizer',r105:true,r105Runtime:'worldwide-default-language-safe-ai-atomic-localization',r86:true,r86Runtime:'conversation-first-multilingual-ai',r92:true,r92Runtime:'native-asr-payload-per-model-auto-language',r89:true,r89Runtime:'workers-ai-whisper-byte-array-no-consent',r88:true,r88Runtime:'fast-auto-asr-server-first-tts-natural-fallback',r87:true,r87Runtime:'latest-message-language-plus-real-ai-fallback',r86Routing:'goal-aware-not-keyword-first',r86Voice:'whisper-auto-language-independent-of-ui',r86Asr:ASR_PRIMARY,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
  }
  if(u.pathname==='/api/transcribe'&&request.method==='POST')return transcribeAudio(request,env);
  if(u.pathname==='/api/ai'&&request.method==='POST'){
