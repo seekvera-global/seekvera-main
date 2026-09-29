@@ -18,3 +18,4 @@ jobs:
           git config user.email seekvera.global@gmail.com
           git add voice-ai.js index.html sw.js
           if ! git diff --cached --quiet; then git commit -m 'R115 make voice transcription fast'; git push origin HEAD:main; fi
+# trigger
