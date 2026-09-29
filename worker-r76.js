@@ -54,7 +54,7 @@ function messageLanguage(message,suggested=''){
  if(/[\u0400-\u052f]/u.test(t))return pick(['ru','uk','bg','sr','mk','be'],'ru');
  // Strong Latin-script clues. If there is no clue, use the model/ASR hint rather than guessing English.
  if(/[ğışİ]/u.test(t)||/\b(merhaba|nasılsın|nasilsin|istiyorum|arıyorum|ariyorum|otel|ülke|ulke|değiş|degis)\b/iu.test(s))return'tr';
- if(/[ăâđêôơư]/iu.test(t))return'vi';
+ if(/[đơư]/iu.test(t)||/(xin chào|cảm ơn|sân bay|tôi muốn|tôi cần)/iu.test(s))return'vi';
  if(/[ąćęłńśźż]/iu.test(t))return'pl';
  if(/[őű]/iu.test(t))return'hu';
  if(/[ăîșşțţ]/iu.test(t))return'ro';
