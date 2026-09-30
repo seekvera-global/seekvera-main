@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20260927-r104-fast-atomic-i18n';
+const VERSION='20260930-canonical-locale';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv','ku']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -18,12 +18,13 @@ function api(p){const h=location.hostname;return(h==='seekveraglobal.com'||h==='
 function norm(v){v=String(v||'').trim().toLowerCase().replace('_','-');if(!v||v==='auto')v=String(navigator.language||'en').toLowerCase();return v.split('-')[0]||'en'}
 function lang(){return norm(document.querySelector('#lang')?.value||window.SEEKVERA_LOCALE_STATE?.language||document.documentElement.lang||'en')}
 function langName(l){try{return new Intl.DisplayNames(['en'],{type:'language'}).of(l)||l}catch{return l}}
+function canonical(s){return String(s||'').replace(/\s+/g,' ').trim()}
 function worth(s){s=String(s||'').trim();if(!s||s.length<2||s.length>1200)return false;if(/^SEEKVERA$/i.test(s))return false;if(/^(https?:\/\/|www\.)/i.test(s)||/\b\S+@\S+\.\S+\b/.test(s))return false;if(/^[A-Z0-9]{2,5}$/.test(s))return false;if(/^[\d\s.,:+\-/%$€£₦¥₹]+$/.test(s))return false;return /[A-Za-z\u00C0-\u024F\u0400-\u052F\u0600-\u06FF\u0900-\u097F\u3040-\u30FF\u3400-\u9FFF]/.test(s)}
 function skipped(n){const p=n?.parentElement;if(!p||p.closest(SKIP))return true;const s=p.closest?.('select');return !!s&&['country','lang','currency'].includes(s.id)}
 function plainKey(s){return String(s||'').trim().replace(/^[^\p{L}\p{N}]+/u,'').replace(/[^\p{L}\p{N})]+$/u,'').trim()}
 function canonicalText(n){
- const opt=n?.parentElement?.closest?.('option');if(!opt)return String(n?.nodeValue||'').trim();
- const sel=opt.closest('select');if(!sel||['country','lang','currency'].includes(sel.id))return String(n?.nodeValue||'').trim();
+ const opt=n?.parentElement?.closest?.('option');if(!opt)return canonical(n?.nodeValue);
+ const sel=opt.closest('select');if(!sel||['country','lang','currency'].includes(sel.id))return canonical(n?.nodeValue);
  let src=OPTIONSRC.get(opt)||opt.dataset?.svSource||'';
  if(!src){src=String(n?.nodeValue||opt.textContent||'').trim();if(src){OPTIONSRC.set(opt,src);try{opt.dataset.svSource=src}catch{}if(!opt.hasAttribute('value'))opt.setAttribute('value',src)}}
  return src||String(n?.nodeValue||'').trim();
@@ -34,11 +35,11 @@ function capture(root=document){
  for(const el of els){if(el.closest?.(SKIP))continue;let m=ATTRSRC.get(el);if(!m){m={};ATTRSRC.set(el,m)}for(const a of ATTRS){const s=el.getAttribute?.(a)?.trim();if(worth(s)&&!(a in m))m[a]=s}}
 }
 function k(l,s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return'sv_r32_'+l+'_'+(h>>>0).toString(36)}
-function get(l,s){const q=QUICK[l]?.[s];if(q)return q;const m=MEM.get(l+'\u0000'+s);if(m)return m;try{return localStorage.getItem(k(l,s))||''}catch{return''}}
-function put(l,s,v){v=String(v||'').trim();if(!v)return;MEM.set(l+'\u0000'+s,v);try{localStorage.setItem(k(l,s),v)}catch{}}
+function get(l,s){s=canonical(s);const q=QUICK[l]?.[s];if(q)return q;const m=MEM.get(l+'\u0000'+s);if(m)return m;try{return localStorage.getItem(k(l,s))||''}catch{return''}}
+function put(l,s,v){s=canonical(s);v=String(v||'').trim();if(!v)return;MEM.set(l+'\u0000'+s,v);try{localStorage.setItem(k(l,s),v)}catch{}}
 async function loadPack(l){
  l=norm(l);if(l==='en')return true;if(PACKS.has(l))return true;if(PACKING.has(l))return PACKING.get(l);
- const task=(async()=>{try{const r=await fetch('/i18n-r32/'+encodeURIComponent(l)+'.json?v='+VERSION,{cache:'force-cache'});if(!r.ok)throw Error('pack '+r.status);const d=await r.json();const t=d?.translations;if(!t||typeof t!=='object')throw Error('invalid pack');for(const [src,v] of Object.entries(t)){const val=String(v||'').trim();if(!val)continue;MEM.set(l+'\u0000'+src,val);const ps=plainKey(src),pv=plainKey(val);if(ps&&pv&&ps!==src&&!MEM.has(l+'\u0000'+ps))MEM.set(l+'\u0000'+ps,pv)}PACKS.set(l,d);document.documentElement.dataset.seekveraPackReady=l;return true}catch(e){console.warn('SEEKVERA local language pack unavailable',l,e);return false}finally{PACKING.delete(l)}})();
+ const task=(async()=>{try{const r=await fetch('/i18n-r32/'+encodeURIComponent(l)+'.json?v='+VERSION,{cache:'force-cache'});if(!r.ok)throw Error('pack '+r.status);const d=await r.json();const t=d?.translations;if(!t||typeof t!=='object')throw Error('invalid pack');for(const [src,v] of Object.entries(t)){const val=String(v||'').trim();if(!val)continue;MEM.set(l+'\u0000'+canonical(src),val);const ps=plainKey(src),pv=plainKey(val);if(ps&&pv&&ps!==src&&!MEM.has(l+'\u0000'+ps))MEM.set(l+'\u0000'+ps,pv)}PACKS.set(l,d);document.documentElement.dataset.seekveraPackReady=l;window.dispatchEvent(new CustomEvent('seekvera:packready',{detail:{language:l}}));return true}catch(e){console.warn('SEEKVERA local language pack unavailable',l,e);return false}finally{PACKING.delete(l)}})();
  PACKING.set(l,task);return task
 }
 function markAttr(el,a,v){let m=RENDERED_ATTR.get(el);if(!m){m={};RENDERED_ATTR.set(el,m)}m[a]=String(v||'').trim()}

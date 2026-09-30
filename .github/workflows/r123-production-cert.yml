@@ -9,6 +9,7 @@ on:
       - 'tools/test-tts-envelope.cjs'
       - 'tools/test-audio-authority.cjs'
       - 'r32-i18n.js'
+      - 'i18n-ui.js'
       - 'r22-category-lock.js'
       - '.github/workflows/r123-production-cert.yml'
 permissions:
@@ -28,6 +29,7 @@ jobs:
           node tools/test-tts-envelope.cjs
           node --check voice-ai.js
           node tools/test-audio-authority.cjs
+          node --check i18n-ui.js
           node --check r32-i18n.js
           node --check r22-category-lock.js
       - name: Deploy
