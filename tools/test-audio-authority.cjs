@@ -30,3 +30,12 @@ const voiceSource=fs.readFileSync('voice-ai.js','utf8');
 const pcmStart=voiceSource.indexOf('function pcmWav('),pcmEnd=voiceSource.indexOf('async function normalizeRecordedAudio',pcmStart);
 const wavCtx={Blob,ArrayBuffer,DataView,Math};vm.createContext(wavCtx);vm.runInContext(voiceSource.slice(pcmStart,pcmEnd),wavCtx);
 (async()=>{const wav=wavCtx.pcmWav(new Float32Array([-1,0,1]));const bytes=Buffer.from(await wav.arrayBuffer());assert.equal(bytes.toString('ascii',0,4),'RIFF');assert.equal(bytes.readUInt32LE(24),16000);assert.equal(bytes.readInt16LE(44),-32768);assert.equal(bytes.readInt16LE(48),32767);console.log('PASS: mono PCM WAV serialization');})().catch(e=>{console.error(e);process.exitCode=1});
+
+const commandStart=worker.indexOf('function fastCommandLanguage('),commandEnd=worker.indexOf('\nconst FAST_DIRECT_LANGS',commandStart);
+const langStart=worker.indexOf('function messageLanguage('),langEnd=worker.indexOf('function aliasHit',langStart);
+vm.runInContext(worker.slice(langStart,langEnd)+worker.slice(commandStart,commandEnd),ctx);
+assert.equal(ctx.fastCommandLanguage('Bonjour, peux-tu me répondre en français et m’aider à chercher un emploi ?'),'fr');
+assert.equal(ctx.fastCommandLanguage('Find me a hotel in London'),'en');
+assert.equal(ctx.fastCommandLanguage('Ich möchte eine Wohnung mieten'),'de');
+assert.equal(ctx.fastCommandLanguage('Bana bir iş bul'),'tr');
+console.log('PASS: French cedilla and German umlauts do not force Turkish; generic hotel does not force Portuguese');

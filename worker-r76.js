@@ -381,10 +381,10 @@ function fastCommandLanguage(message,suggested=''){
  if(/[\u0600-\u06ff]/u.test(t))return messageLanguage(t,suggested);
  if(/[\u0900-\u097f]/u.test(t))return'hi';if(/[\u0980-\u09ff]/u.test(t))return'bn';if(/[\u3040-\u30ff]/u.test(t))return'ja';if(/[\u4e00-\u9fff]/u.test(t))return'zh';if(/[\uac00-\ud7af]/u.test(t))return'ko';if(/[\u0400-\u052f]/u.test(t))return'ru';
  if(/[đăơư]/iu.test(t)||/(?:tìm|việc làm|công việc|khách sạn|xe hơi|giúp tôi|hãy)/iu.test(s))return'vi';
- if(/[ğışİçöü]/u.test(t)||/\b(?:bana|bul|arıyorum|ariyorum|istiyorum|iş|otel|araba|ev)\b/iu.test(s))return'tr';
+ if(/[ğışİ]/u.test(t)||/\b(?:bana|bul|arıyorum|ariyorum|istiyorum|iş|otel|araba|ev)\b/iu.test(s))return'tr';
  if(/(?:búscame|buscame|busca|encuéntrame|encuentrame|muéstrame|muestrame|quiero|necesito|trabajo|empleo|coche)/iu.test(s))return'es';
  if(/(?:trouve|cherch|montre|ouvre|je veux|besoin|emploi|travail|voiture|hôtel)/iu.test(s))return'fr';
- if(/(?:procure|encontre|mostre|quero|preciso|trabalho|emprego|carro|hotel)/iu.test(s))return'pt';
+ if(/(?:procure|encontre|mostre|quero|preciso|trabalho|emprego|carro)/iu.test(s))return'pt';
  if(/(?:finde|suche|zeige|öffne|offne|ich möchte|ich mochte|brauche|arbeit|stelle|wohnung)/iu.test(s))return'de';
  if(/(?:trova|cerca|apri|mostra|voglio|bisogno|lavoro|macchina|albergo)/iu.test(s))return'it';
  if(/(?:carikan|cari|buka|tunjukkan|tolong|pekerjaan|kerja|mobil|rumah)/iu.test(s))return'id';
