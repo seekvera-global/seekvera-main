@@ -257,6 +257,27 @@ async function transcribeAudio(request,env){
  const raw=String(b.audio||''),m=raw.match(/^data:(audio\/(?:webm|mp4|mpeg|wav|ogg|x-m4a|aac|3gpp))(?:;codecs=[^;,]+)?;base64,([A-Za-z0-9+/=]+)$/i);
  if(!m)return json(request,{ok:false,error:'Valid recorded audio is required'},400);
  const approx=Math.floor(m[2].length*3/4);if(approx<80||approx>6*1024*1024)return json(request,{ok:false,error:'Audio size is invalid'},400);
+ // Reject digital silence before ASR: Whisper can hallucinate words on empty audio.
+ if(/^(?:audio\/wav)$/i.test(m[1])){
+   try{
+     const bin=atob(m[2]),bytes=Uint8Array.from(bin,c=>c.charCodeAt(0)),view=new DataView(bytes.buffer);
+     const tag=o=>String.fromCharCode(...bytes.subarray(o,o+4));
+     if(tag(0)==='RIFF'&&tag(8)==='WAVE'){
+       let pcm=false,dataOffset=0,dataSize=0;
+       for(let o=12;o+8<=bytes.length;){
+         const size=view.getUint32(o+4,true),end=o+8+size;if(end>bytes.length)break;
+         if(tag(o)==='fmt '&&size>=16)pcm=view.getUint16(o+8,true)===1&&view.getUint16(o+22,true)===16;
+         if(tag(o)==='data'){dataOffset=o+8;dataSize=size}
+         o=end+(size%2);
+       }
+       if(pcm&&dataSize>=2){
+         let energy=0,peak=0,count=0;
+         for(let o=dataOffset;o+1<dataOffset+dataSize;o+=2){const x=view.getInt16(o,true)/32768;energy+=x*x;peak=Math.max(peak,Math.abs(x));count++}
+         if(count&&Math.sqrt(energy/count)<.0005&&peak<.003)return json(request,{ok:false,error:'No speech detected',retryable:true,reason:'silent_audio'},422);
+       }
+     }
+   }catch{}
+ }
  const nativeText=clean(b.nativeText,4000),nativeConfidence=Math.max(0,Math.min(1,Number(b.nativeConfidence)||0));
  const uiHint=languageCode(b.uiLanguage||''),sentHint=languageCode(b.languageHint||''),conversationHint=languageCode(b.conversationLanguage||''),softHint=sentHint||conversationHint||uiHint;
  const family=t=>{t=String(t||'');if(/[\u0600-\u06ff]/u.test(t))return'arabic';if(/[\u0900-\u097f]/u.test(t))return'devanagari';if(/[\u0980-\u09ff]/u.test(t))return'bengali';if(/[\u0a00-\u0a7f]/u.test(t))return'gurmukhi';if(/[\u0a80-\u0aff]/u.test(t))return'gujarati';if(/[\u0b80-\u0bff]/u.test(t))return'tamil';if(/[\u0c00-\u0c7f]/u.test(t))return'telugu';if(/[\u0d00-\u0d7f]/u.test(t))return'malayalam';if(/[\u0d80-\u0dff]/u.test(t))return'sinhala';if(/[\u0e00-\u0e7f]/u.test(t))return'thai';if(/[\u0e80-\u0eff]/u.test(t))return'lao';if(/[\u1000-\u109f]/u.test(t))return'myanmar';if(/[\u1200-\u137f]/u.test(t))return'ethiopic';if(/[\u1780-\u17ff]/u.test(t))return'khmer';if(/[\u10a0-\u10ff]/u.test(t))return'georgian';if(/[\u0530-\u058f]/u.test(t))return'armenian';if(/[\u0370-\u03ff]/u.test(t))return'greek';if(/[\u0590-\u05ff]/u.test(t))return'hebrew';if(/[\u3040-\u30ff]/u.test(t))return'japanese';if(/[\uac00-\ud7af]/u.test(t))return'korean';if(/[\u4e00-\u9fff]/u.test(t))return'han';if(/[\u0400-\u052f]/u.test(t))return'cyrillic';if(/[A-Za-zÀ-ÖØ-öø-ÿ]/u.test(t))return'latin';return''};
