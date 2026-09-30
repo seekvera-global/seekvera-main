@@ -11,6 +11,7 @@ on:
       - 'r32-i18n.js'
       - 'i18n-ui.js'
       - 'i18n-r32/ar.json'
+      - 'jobs.html'
       - 'r22-category-lock.js'
       - '.github/workflows/r123-production-cert.yml'
 permissions:
