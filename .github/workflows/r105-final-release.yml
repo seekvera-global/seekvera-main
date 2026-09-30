@@ -42,8 +42,8 @@ jobs:
           node --check i18n-ui.js
           node --check sw.js
           test "$(find i18n-r32 -maxdepth 1 -name '*.json' | wc -l)" -ge 98
-          grep -F "const RELEASE='20260927-r107-final-action-routing'" worker-r76.js
-          grep -F "const VERSION='20260927-r104-fast-atomic-i18n'" i18n-ui.js
+          grep -F "const RELEASE='20260929-r123-single-voice-turn'" worker-r76.js
+          grep -F "const VERSION='20260930-canonical-locale'" i18n-ui.js
           if grep -R -nE --exclude='README.md' --exclude='README-FIRST.txt' --exclude-dir='.git' 'Global API'' Key|GLOBAL_API''_KEY' .; then
             echo 'Forbidden global credential reference found'
             exit 1
@@ -71,10 +71,10 @@ jobs:
             curl -fsSL --max-time 45 -H 'content-type: application/json' -d '{"message":"مرحبا كيفك؟","country":"Worldwide","language":"auto","history":[]}' "$BASE/api/ai?r105=$stamp" -o /tmp/chat-ar.json
             curl -fsSL --max-time 45 -H 'content-type: application/json' -d '{"message":"change country to Iceland","country":"Worldwide","language":"auto","history":[]}' "$BASE/api/ai?r105=$stamp" -o /tmp/country.json
             curl -fsSL --max-time 45 -H 'content-type: application/json' -d '{"message":"I want to buy a gun","country":"Worldwide","language":"auto","history":[]}' "$BASE/api/ai?r105=$stamp" -o /tmp/safety.json
-            if grep -q '20260927-r107-final-action-routing' /tmp/health.json \
+            if grep -q '20260929-r123-single-voice-turn' /tmp/health.json \
               && grep -q 'global-ui.js?v=20260927-r106-final-conversation-locale' /tmp/home.html \
               && grep -q 'Worldwide is the neutral first-run market' /tmp/global-ui.js \
-              && grep -q '20260927-r104-fast-atomic-i18n' /tmp/i18n-ui.js \
+              && grep -q '20260930-canonical-locale' /tmp/i18n-ui.js \
               && jq -e '.category=="general" and .route==null and .language=="en" and (.response|length>5)' /tmp/chat-en.json >/dev/null \
               && jq -e '.category=="general" and .route==null and .language=="ar" and (.response|length>5)' /tmp/chat-ar.json >/dev/null \
               && jq -e '.countryAction.code=="IS"' /tmp/country.json >/dev/null \
