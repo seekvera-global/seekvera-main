@@ -5,6 +5,8 @@ on:
     paths:
       - 'voice-ai.js'
       - 'worker-r76.js'
+      - 'worker-r31.js'
+      - 'tools/test-tts-envelope.cjs'
       - 'tools/test-audio-authority.cjs'
       - 'r32-i18n.js'
       - 'r22-category-lock.js'
@@ -21,7 +23,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Validate audio authority
         run: |
+          node --check worker-r31.js
           node --check worker-r76.js
+          node tools/test-tts-envelope.cjs
           node --check voice-ai.js
           node tools/test-audio-authority.cjs
           node --check r32-i18n.js
@@ -79,7 +83,8 @@ jobs:
               await page.goto('https://seekveraglobal.com/?audio_authority=20260930');
               await page.locator('#country').selectOption('LB');
               await page.waitForFunction(()=>document.documentElement.dataset.seekveraPackReady==='ar');
-              await page.waitForTimeout(1200);
+              await page.waitForFunction(()=>/[\u0600-\u06ff]/.test(document.querySelector('.r5-hero > p')?.textContent||'')&&!document.querySelector('.r5-hero > p')?.textContent.includes('Hotels, homes'),{timeout:15000});
+              await page.waitForFunction(()=>[...document.querySelectorAll('.r5-tile small')].every(el=>/[\u0600-\u06ff]/.test(el.textContent||'')),{timeout:15000});
               const lead=await page.locator('.r5-hero > p').first().innerText();
               assert(!lead.includes('Hotels, homes'),lead);
               const desc=await page.locator('.r5-tile small').allTextContents();
