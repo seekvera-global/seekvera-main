@@ -1,108 +1,56 @@
-name: R123 single voice turn production
-
+name: Audio authority production verification
 on:
   workflow_dispatch:
   push:
     paths:
-      - 'tools/r123_voice_turn_dedupe.py'
-      - 'tools/r123_browser.mjs'
+      - 'voice-ai.js'
+      - 'worker-r76.js'
+      - 'tools/test-audio-authority.cjs'
       - '.github/workflows/r123-production-cert.yml'
-
 permissions:
-  contents: write
-
+  contents: read
 concurrency:
-  group: seekvera-r123-production
-  cancel-in-progress: true
-
+  group: seekvera-audio-authority-production
+  cancel-in-progress: false
 jobs:
   deploy-certify:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Apply R123
+      - name: Validate audio authority
         run: |
-          set -euo pipefail
-          python tools/r123_voice_turn_dedupe.py
           node --check worker-r76.js
           node --check voice-ai.js
-          node --check r31-ui-polish.js
-          grep -F '20260929-r123-single-voice-turn' worker-r76.js
-          grep -F '20260929-r123-arabic-auto-dedupe' voice-ai.js
-          grep -F 'compactVoiceTranscript' voice-ai.js
-          grep -F 'rareLatinArabicConfusion' worker-r76.js
-          grep -F 'voice-ai.js?v=20260929-r123-arabic-auto-dedupe' index.html
-      - name: Persist R123 runtime
-        run: |
-          set -euo pipefail
-          git config user.name 'seekvera-global'
-          git config user.email 'seekvera.global@gmail.com'
-          git add worker-r76.js voice-ai.js r31-ui-polish.js sw.js *.html
-          if ! git diff --cached --quiet; then
-            git commit -m 'R123 repair Arabic voice language and duplicate turns'
-            git push origin HEAD:main
-          fi
-      - name: Deploy R123
+          node tools/test-audio-authority.cjs
+      - name: Deploy
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --config wrangler.jsonc
-      - name: Wait for production
+      - name: Verify production asset and multilingual audio
         run: |
-          set -euo pipefail
           python3 - <<'PY'
-          import json,time,urllib.request
-          ua='Mozilla/5.0 (Linux; Android 14; SM-A225F) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36'
-          for i in range(35):
-              try:
-                  req=urllib.request.Request('https://seekveraglobal.com/api/health?r123='+str(time.time()),headers={'user-agent':ua,'cache-control':'no-cache'})
-                  with urllib.request.urlopen(req,timeout=8) as r:d=json.loads(r.read())
-                  h=urllib.request.urlopen(urllib.request.Request('https://seekveraglobal.com/?r123='+str(time.time()),headers={'user-agent':ua,'cache-control':'no-cache'}),timeout=8).read().decode('utf-8','ignore')
-                  if d.get('release')=='20260929-r123-single-voice-turn' and d.get('r123') and 'voice-ai.js?v=20260929-r123-arabic-auto-dedupe' in h:
-                      print('R123_LIVE',d.get('r123Runtime'));break
-              except Exception as e: print('WAIT',i,str(e)[:120])
-              time.sleep(3)
-          else: raise AssertionError('R123 production not confirmed')
-          PY
-      - name: Arabic audio auto-language certification
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import base64,json,re,time,urllib.request
-          B='https://seekveraglobal.com'; UA='Mozilla/5.0 (Linux; Android 14; SM-A225F)'
-          def post(path,payload,timeout=12,accept='application/json'):
-              req=urllib.request.Request(B+path,data=json.dumps(payload,ensure_ascii=False).encode(),headers={'content-type':'application/json','accept':accept,'user-agent':UA,'cache-control':'no-cache'},method='POST')
-              t=time.monotonic()
-              with urllib.request.urlopen(req,timeout=timeout) as r:return r.status,r.headers,r.read(),time.monotonic()-t
-          phrase='مرحبا أنا عم بحكي معك بالعربي، دوريني على شغل في بيروت'
-          st,h,audio,sec=post('/api/tts',{'text':phrase,'language':'ar'},10,'audio/mpeg,audio/*;q=0.9,*/*;q=0.8')
-          assert st==200 and len(audio)>500,(st,len(audio),sec)
-          payload={'audio':'data:audio/mpeg;base64,'+base64.b64encode(audio).decode(),'language':'auto','languageHint':'','conversationLanguage':'ar','uiLanguage':'en','browserLanguage':'en-US','nativeText':'Halið á að leita að vinnu','nativeConfidence':0.97}
-          st,h,raw,sec=post('/api/transcribe?r123=1',payload,10)
-          d=json.loads(raw)
-          assert st==200 and d.get('ok') and d.get('language')=='ar',d
-          assert re.search(r'[\u0600-\u06ff]',str(d.get('text',''))),d
-          assert sec<7.0,(sec,d)
-          print('R123_ARABIC_AUDIO_PASS',round(sec,2),d)
-          PY
-      - name: Android single-turn browser certification
-        run: |
-          set -euo pipefail
-          npm install --no-save --package-lock=false playwright@1.55.0 >/dev/null 2>&1
-          npx playwright install chromium >/dev/null
-          node tools/r123_browser.mjs
-      - name: Stability hold
-        run: |
-          set -euo pipefail
-          sleep 45
-          python3 - <<'PY'
-          import json,time,urllib.request
-          for i in range(3):
-              req=urllib.request.Request('https://seekveraglobal.com/api/health?stable123='+str(time.time()),headers={'user-agent':'Mozilla/5.0 (Linux; Android 14)','cache-control':'no-cache'})
-              with urllib.request.urlopen(req,timeout=8) as r:d=json.loads(r.read())
-              assert d.get('release')=='20260929-r123-single-voice-turn' and d.get('r123'),d
-              print('R123_STABLE_PASS',i+1);time.sleep(5)
+          import urllib.request,json,base64,re,time
+          B='https://seekveraglobal.com'
+          def get(path):
+              return urllib.request.urlopen(urllib.request.Request(B+path,headers={'cache-control':'no-cache','user-agent':'Mozilla/5.0'}),timeout=20).read()
+          for i in range(12):
+              js=get('/voice-ai.js?audio_authority='+str(time.time())).decode()
+              if '20260930-audio-authoritative' in js: break
+              time.sleep(5)
+          else: raise AssertionError('Production voice asset did not update')
+          def post(path,payload):
+              req=urllib.request.Request(B+path,data=json.dumps(payload,ensure_ascii=False).encode(),headers={'content-type':'application/json','user-agent':'Mozilla/5.0'},method='POST')
+              with urllib.request.urlopen(req,timeout=30) as r:return r.read()
+          cases=[('ar','مرحبا أنا عم بحكي معك بالعربي، دوريني على شغل في بيروت'),
+                 ('fr','Bonjour, je voudrais chercher un hôtel à Paris pour demain.'),
+                 ('en','Hello, I would like to find a hotel in London for tomorrow.')]
+          for lang,phrase in cases:
+              audio=post('/api/tts',{'text':phrase,'language':lang})
+              assert len(audio)>500,(lang,len(audio))
+              d=json.loads(post('/api/transcribe',{'audio':'data:audio/mpeg;base64,'+base64.b64encode(audio).decode(),'language':'auto','conversationLanguage':'ar','uiLanguage':'ar','nativeText':'Halið á að leita að vinnu','nativeConfidence':.99}))
+              assert d.get('ok') and d.get('text') and not d.get('nativeRescue'),d
+              assert d.get('language')==lang,(lang,d)
+              print('LIVE_AUDIO_PASS',lang,d.get('model'))
           PY

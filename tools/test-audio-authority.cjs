@@ -1,0 +1,25 @@
+const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
+const worker=fs.readFileSync('worker-r76.js','utf8');
+const start=worker.indexOf('async function transcribeAudio(');
+const end=worker.indexOf('\nfunction directCategoryIntent',start);
+const calls=[];
+const ctx={clean:(v,n)=>String(v||'').slice(0,n),languageCode:v=>/^[a-z]{2}$/.test(v||'')?v:'',messageLanguage:()=> 'en',json:(_,data,status)=>({data,status}),ASR_PRIMARY:'primary',ASR_FALLBACK:'fallback',atob, setTimeout:()=>0};
+vm.createContext(ctx);vm.runInContext(worker.slice(start,end),ctx);
+const request=body=>({headers:{get:()=>null},json:async()=>body});
+const audio='data:audio/mpeg;base64,'+Buffer.alloc(100).toString('base64');
+(async()=>{
+ const env={AI:{run:async(model,input)=>{calls.push({model,input});return {text:'Bonjour tout le monde',transcription_info:{language:'fr'}}}}};
+ const result=await ctx.transcribeAudio(request({audio,language:'auto',conversationLanguage:'ar',uiLanguage:'ar',nativeText:'مرحبا',nativeConfidence:.99}),env);
+ assert.equal(result.status,200);assert.equal(result.data.text,'Bonjour tout le monde');assert.equal(result.data.language,'fr');assert.equal(calls[0].input.language,undefined);assert.equal(result.data.nativeRescue,false);
+ const failed=await ctx.transcribeAudio(request({audio,language:'auto',nativeText:'Halið á að leita',nativeConfidence:.99}),{AI:{run:async()=>{throw Error('quota')}}});
+ assert.equal(failed.status,503);assert.equal(failed.data.text,undefined);
+ calls.length=0;
+ await ctx.transcribeAudio(request({audio,language:'ar'}),env);
+ assert.equal(calls[0].input.language,'ar');
+ const voice=fs.readFileSync('voice-ai.js','utf8');
+ const a=voice.indexOf('function chooseHybridTranscript('),b=voice.indexOf('\nfunction startNativeShadow',a);
+ vm.runInContext(voice.slice(a,b),ctx);
+ const asr={text:'مرحبا',language:'ar'};
+ assert.equal(ctx.chooseHybridTranscript('Halið á að leita',.99,asr),asr);
+ console.log('PASS: audio wins contradictory phone text; automatic language ignores previous Arabic conversation; nested language is preserved; ASR outage refuses phone hallucinations; explicit language remains supported.');
+})().catch(e=>{console.error(e);process.exitCode=1});

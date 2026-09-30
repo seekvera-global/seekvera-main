@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-if(window.__seekveraVoiceAI)return;window.__seekveraVoiceAI=true;window.__seekveraVoiceMode='20260929-r123-arabic-auto-dedupe';
+if(window.__seekveraVoiceAI)return;window.__seekveraVoiceAI=true;window.__seekveraVoiceMode='20260930-audio-authoritative';
 const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
 const LANGS={en:'en-US',ar:'ar-SA',fr:'fr-FR',zh:'zh-CN',es:'es-ES',hi:'hi-IN',pt:'pt-BR',de:'de-DE',ja:'ja-JP',ko:'ko-KR',id:'id-ID',tr:'tr-TR',ru:'ru-RU',ur:'ur-PK',bn:'bn-BD',vi:'vi-VN',it:'it-IT',sw:'sw-KE',th:'th-TH',fa:'fa-IR',pl:'pl-PL',nl:'nl-NL',ms:'ms-MY',fil:'fil-PH',ha:'ha-NG',yo:'yo-NG',ig:'ig-NG',am:'am-ET',he:'he-IL',el:'el-GR',uk:'uk-UA',ro:'ro-RO',cs:'cs-CZ',sk:'sk-SK',hu:'hu-HU',sv:'sv-SE',no:'nb-NO',da:'da-DK',fi:'fi-FI',bg:'bg-BG',hr:'hr-HR',sr:'sr-RS',sl:'sl-SI',lt:'lt-LT',lv:'lv-LV',et:'et-EE',ca:'ca-ES',eu:'eu-ES',gl:'gl-ES',is:'is-IS',sq:'sq-AL',mk:'mk-MK',ka:'ka-GE',hy:'hy-AM',az:'az-AZ',kk:'kk-KZ',uz:'uz-UZ',ky:'ky-KG',tg:'tg-TJ',tk:'tk-TM',ne:'ne-NP',si:'si-LK',ta:'ta-IN',te:'te-IN',ml:'ml-IN',mr:'mr-IN',gu:'gu-IN',pa:'pa-IN',km:'km-KH',lo:'lo-LA',my:'my-MM',mn:'mn-MN',zu:'zu-ZA',af:'af-ZA',be:'be-BY',bs:'bs-BA',dz:'dz-BT',ti:'ti-ET',fo:'fo-FO',kl:'kl-GL',rw:'rw-RW',sm:'sm-WS',to:'to-TO',so:'so-SO',ps:'ps-AF',dv:'dv-MV',mt:'mt-MT',mg:'mg-MG',ga:'ga-IE',cy:'cy-GB',mi:'mi-NZ',fy:'fy-NL',lb:'lb-LU',rm:'rm-CH',ku:'ku-TR',xh:'xh-ZA',st:'st-ZA',tn:'tn-BW'};
 const NAME_CODE={english:'en',arabic:'ar',french:'fr',chinese:'zh',mandarin:'zh',spanish:'es',hindi:'hi',portuguese:'pt',german:'de',japanese:'ja',korean:'ko',indonesian:'id',turkish:'tr',russian:'ru',urdu:'ur',bengali:'bn',vietnamese:'vi',italian:'it',swahili:'sw',thai:'th',persian:'fa',farsi:'fa',polish:'pl',dutch:'nl',malay:'ms',filipino:'fil',tagalog:'fil',hausa:'ha',yoruba:'yo',igbo:'ig',amharic:'am',hebrew:'he',greek:'el',ukrainian:'uk',romanian:'ro',czech:'cs',slovak:'sk',hungarian:'hu',swedish:'sv',norwegian:'no',danish:'da',finnish:'fi',bulgarian:'bg',croatian:'hr',serbian:'sr',slovenian:'sl',lithuanian:'lt',latvian:'lv',estonian:'et',catalan:'ca',basque:'eu',galician:'gl',icelandic:'is',albanian:'sq',macedonian:'mk',georgian:'ka',armenian:'hy',azerbaijani:'az',kazakh:'kk',uzbek:'uz',kyrgyz:'ky',tajik:'tg',turkmen:'tk',nepali:'ne',sinhala:'si',tamil:'ta',telugu:'te',malayalam:'ml',marathi:'mr',gujarati:'gu',punjabi:'pa',khmer:'km',lao:'lo',burmese:'my',mongolian:'mn',zulu:'zu',afrikaans:'af',belarusian:'be',bosnian:'bs',dzongkha:'dz',tigrinya:'ti',faroese:'fo',greenlandic:'kl',kalaallisut:'kl',kinyarwanda:'rw',samoan:'sm',tongan:'to',somali:'so',pashto:'ps',dhivehi:'dv',maldivian:'dv',maltese:'mt',malagasy:'mg',irish:'ga',welsh:'cy',maori:'mi',frisian:'fy',luxembourgish:'lb',romansh:'rm',kurdish:'ku',xhosa:'xh',sesotho:'st','southern sotho':'st',tswana:'tn',setswana:'tn'};
@@ -96,18 +96,8 @@ function expectedScriptFor(code){
   code=codeOf(code);for(const [sc,g] of Object.entries({arabic:['ar','fa','ur','ps'],devanagari:['hi','mr','ne'],bengali:['bn'],han:['zh'],japanese:['ja'],korean:['ko'],cyrillic:['ru','uk','bg','sr','be','mk'],hebrew:['he'],greek:['el'],thai:['th']}))if(g.includes(code))return sc;return code&&LANGS[code]?'latin':''
 }
 function chooseHybridTranscript(nativeText,nativeConfidence,whisper){
-  const nt=String(nativeText||'').replace(/\s+/g,' ').trim(),wt=String(whisper?.text||'').replace(/\s+/g,' ').trim();
-  const current=codeOf(selectedLang()||document.documentElement.lang||''),expected=expectedScriptFor(current),ws=transcriptScript(wt),ns=transcriptScript(nt),conf=Number(nativeConfidence||0);
-  if(!nt)return whisper;
-  if(!wt||transcriptPoor(wt))return{text:nt,language:languageFromTranscript(nt,current),engine:'native-quality-rescue'};
-  // Strong non-Latin script evidence from the phone beats a contradictory ASR transcript. This fixes Arabic and other script-family mistranslations.
-  if(!transcriptPoor(nt)&&ns&&ns!=='latin'&&ws&&ws!==ns)return{text:nt,language:languageFromTranscript(nt,current),engine:'native-script-rescue'};
-  // UI/native recognizers can hallucinate Latin text for non-Latin speech; a clear server non-Latin transcript wins.
-  if(ws&&ws!=='latin'&&ns==='latin'&&!transcriptPoor(wt))return whisper;
-  // For Latin-script languages, do not lock the user to the app language. Trust server auto-ASR unless the phone result is clearly stronger.
-  const nscore=transcriptScore(nt,current)+(conf>=.60?28:0),wscore=transcriptScore(wt,whisper?.language||current);
-  if(!transcriptPoor(nt)&&conf>=.72&&nscore>wscore+18)return{text:nt,language:languageFromTranscript(nt,current),engine:'native-confidence-rescue'};
-  if(expected&&ns===expected&&!transcriptPoor(nt)&&transcriptPoor(wt))return{text:nt,language:current||languageFromTranscript(nt),engine:'native-current-locale'};
+  // Recorded-audio ASR is authoritative. Phone confidence measures a
+  // recognizer constrained to its locale, not confidence in language detection.
   return whisper
 }
 function startNativeShadow(){
@@ -153,7 +143,7 @@ async function localWhisperTranscribe(blob){
   }finally{try{URL.revokeObjectURL(url)}catch(_){}}
 }
 async function seekveraAutoTranscribe(blob,nativeText='',nativeConfidence=0){
-  const audio=await blobDataURL(blob),ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),6200);
+  const audio=await blobDataURL(blob),ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),10000);
   try{
     const native=String(nativeText||'').replace(/\s+/g,' ').trim();
     const ns=transcriptScript(native),inferred=languageFromTranscript(native,''),hint=(ns&&ns!=='latin')?codeOf(inferred):'';
@@ -167,12 +157,6 @@ async function seekveraAutoTranscribe(blob,nativeText='',nativeConfidence=0){
 async function automaticMultilingualTranscribe(blob,nativeText='',nativeConfidence=0){
   let serverError=null;
   try{return await seekveraAutoTranscribe(blob,nativeText,nativeConfidence)}catch(e){serverError=e}
-  const nt=String(nativeText||'').replace(/\s+/g,' ').trim();
-  if(nt&&!transcriptPoor(nt)){
-    const language=languageFromTranscript(nt,'');
-    if(language&&language!=='auto')rememberChatVoiceLanguage(language,nt);
-    return{text:nt,language:language||'auto',engine:'native-shadow-fast-fallback',confidence:Number(nativeConfidence||0)}
-  }
   try{
     const timeout=new Promise((_,reject)=>setTimeout(()=>reject(Error('local multilingual ASR timeout')),9000));
     return await Promise.race([localWhisperTranscribe(blob),timeout])
