@@ -113,7 +113,7 @@ function actionReply(lang,cc,ll){
 }
 function actionState(message,modelCC='',modelLL='',clientControls={}){
  const s=String(message||'').toLowerCase(),isControl=controlVerb(s),wantsLanguage=languageIntent(s);
- const localCC=explicitCountryAction(message)||countryCode(clientControls?.country),localLL=explicitLanguageAction(message)||languageCode(clientControls?.language);
+ const localCC=explicitCountryAction(message)||(isControl?countryCode(clientControls?.country):''),localLL=explicitLanguageAction(message)||(isControl?languageCode(clientControls?.language):'');
  const cc=localCC||((isControl&&!wantsLanguage)?countryCode(modelCC):'');
  const ll=localLL||((isControl&&wantsLanguage)?languageCode(modelLL):'');
  return{cc,ll,isAction:!!(cc||ll)};

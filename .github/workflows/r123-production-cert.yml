@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'voice-ai.js'
+      - 'r24-ai-controller.js'
       - 'r31-ui-polish.js'
       - 'worker-r76.js'
       - 'worker-r31.js'
@@ -30,6 +31,7 @@ jobs:
           node --check worker-r31.js
           node --check worker-r76.js
           node tools/test-tts-envelope.cjs
+          node --check r24-ai-controller.js
           node --check r31-ui-polish.js
           node --check voice-ai.js
           node tools/test-audio-authority.cjs
@@ -75,6 +77,15 @@ jobs:
               assert d.get('ok') and d.get('text') and not d.get('nativeRescue'),d
               assert d.get('language')==lang,(lang,d)
               print('LIVE_AUDIO_PASS',lang,d.get('model'))
+          chat_cases=[
+              ('fr','Bonjour, peux-tu me répondre en français et m’aider à chercher un emploi ?','jobs'),
+              ('ar','دوريني على شغل ببيروت','jobs'),
+              ('es','Quiero encontrar un hotel en Madrid','travel'),
+              ('ja','東京で仕事を探してください','jobs')]
+          for lang,phrase,category in chat_cases:
+              d=json.loads(post('/api/ai',{'message':phrase,'language':'auto','country':'Worldwide','history':[]}))
+              assert d.get('language')==lang and d.get('category')==category and not d.get('countryAction') and not d.get('languageAction'),(phrase,d)
+              print('LIVE_CHAT_PASS',lang,category)
           PY
       - name: Verify live category translations
         if: ${{ !cancelled() }}
