@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'voice-ai.js'
+      - 'r31-ui-polish.js'
       - 'worker-r76.js'
       - 'worker-r31.js'
       - 'tools/test-tts-envelope.cjs'
@@ -29,6 +30,7 @@ jobs:
           node --check worker-r31.js
           node --check worker-r76.js
           node tools/test-tts-envelope.cjs
+          node --check r31-ui-polish.js
           node --check voice-ai.js
           node tools/test-audio-authority.cjs
           node --check i18n-ui.js

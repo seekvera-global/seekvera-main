@@ -396,8 +396,9 @@
     }
   }
   function setIntent(cat) {
-    if (!cat || cat === "general") return;
+    if (!cat) return;
     try {
+      if (cat === "general") { sessionStorage.removeItem("seekvera_ai_intent"); return; }
       sessionStorage.setItem("seekvera_ai_intent", cat);
     } catch {}
   }
@@ -943,13 +944,8 @@
           );
       } catch {}
       let finalCat =
-        guessed && guessed !== "general" ? guessed : (d?.category && d.category !== "general" ? d.category : intent(q));
-      if (
-        guessed === "jobs" &&
-        finalCat === "travel" &&
-        !explicitTravelAction(q)
-      )
-        finalCat = "jobs";
+        d?.category && Object.hasOwn(ROUTES, d.category) ? d.category : guessed;
+
       setIntent(finalCat);
       let reply = String(d.response || "").trim();
       const previous =

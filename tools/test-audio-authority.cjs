@@ -13,6 +13,8 @@ const audio='data:audio/mpeg;base64,'+Buffer.alloc(100).toString('base64');
  assert.equal(result.status,200);assert.equal(result.data.text,'Bonjour tout le monde');assert.equal(result.data.language,'fr');assert.equal(calls[0].input.language,undefined);assert.equal(result.data.nativeRescue,false);
  const failed=await ctx.transcribeAudio(request({audio,language:'auto',nativeText:'Halið á að leita',nativeConfidence:.99}),{AI:{run:async()=>{throw Error('quota')}}});
  assert.equal(failed.status,503);assert.equal(failed.data.text,undefined);
+ const low=await ctx.transcribeAudio(request({audio,language:'auto'}),{AI:{run:async()=>({text:'hallucinated text',segments:[{avg_logprob:-2,no_speech_prob:.95}]})}});
+ assert.equal(low.status,503);
  calls.length=0;
  await ctx.transcribeAudio(request({audio,language:'ar'}),env);
  assert.equal(calls[0].input.language,'ar');
@@ -23,3 +25,8 @@ const audio='data:audio/mpeg;base64,'+Buffer.alloc(100).toString('base64');
  assert.equal(ctx.chooseHybridTranscript('Halið á að leita',.99,asr),asr);
  console.log('PASS: audio wins contradictory phone text; automatic language ignores previous Arabic conversation; nested language is preserved; ASR outage refuses phone hallucinations; explicit language remains supported.');
 })().catch(e=>{console.error(e);process.exitCode=1});
+
+const voiceSource=fs.readFileSync('voice-ai.js','utf8');
+const pcmStart=voiceSource.indexOf('function pcmWav('),pcmEnd=voiceSource.indexOf('async function normalizeRecordedAudio',pcmStart);
+const wavCtx={Blob,ArrayBuffer,DataView,Math};vm.createContext(wavCtx);vm.runInContext(voiceSource.slice(pcmStart,pcmEnd),wavCtx);
+(async()=>{const wav=wavCtx.pcmWav(new Float32Array([-1,0,1]));const bytes=Buffer.from(await wav.arrayBuffer());assert.equal(bytes.toString('ascii',0,4),'RIFF');assert.equal(bytes.readUInt32LE(24),16000);assert.equal(bytes.readInt16LE(44),-32768);assert.equal(bytes.readInt16LE(48),32767);console.log('PASS: mono PCM WAV serialization');})().catch(e=>{console.error(e);process.exitCode=1});

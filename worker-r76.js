@@ -262,19 +262,27 @@ async function transcribeAudio(request,env){
  const family=t=>{t=String(t||'');if(/[\u0600-\u06ff]/u.test(t))return'arabic';if(/[\u0900-\u097f]/u.test(t))return'devanagari';if(/[\u0980-\u09ff]/u.test(t))return'bengali';if(/[\u0a00-\u0a7f]/u.test(t))return'gurmukhi';if(/[\u0a80-\u0aff]/u.test(t))return'gujarati';if(/[\u0b80-\u0bff]/u.test(t))return'tamil';if(/[\u0c00-\u0c7f]/u.test(t))return'telugu';if(/[\u0d00-\u0d7f]/u.test(t))return'malayalam';if(/[\u0d80-\u0dff]/u.test(t))return'sinhala';if(/[\u0e00-\u0e7f]/u.test(t))return'thai';if(/[\u0e80-\u0eff]/u.test(t))return'lao';if(/[\u1000-\u109f]/u.test(t))return'myanmar';if(/[\u1200-\u137f]/u.test(t))return'ethiopic';if(/[\u1780-\u17ff]/u.test(t))return'khmer';if(/[\u10a0-\u10ff]/u.test(t))return'georgian';if(/[\u0530-\u058f]/u.test(t))return'armenian';if(/[\u0370-\u03ff]/u.test(t))return'greek';if(/[\u0590-\u05ff]/u.test(t))return'hebrew';if(/[\u3040-\u30ff]/u.test(t))return'japanese';if(/[\uac00-\ud7af]/u.test(t))return'korean';if(/[\u4e00-\u9fff]/u.test(t))return'han';if(/[\u0400-\u052f]/u.test(t))return'cyrillic';if(/[A-Za-zÀ-ÖØ-öø-ÿ]/u.test(t))return'latin';return''};
  const nativeFamily=family(nativeText),nativeLang=nativeText?messageLanguage(nativeText,softHint):'';
  const strongHint=languageCode(b.language)==='auto'?'':languageCode(b.language||'');
- const common={task:'transcribe',vad_filter:true,condition_on_previous_text:false,beam_size:2,no_speech_threshold:.68,compression_ratio_threshold:2.4,log_prob_threshold:-1,hallucination_silence_threshold:1.0};
+ const common={task:'transcribe',vad_filter:true,condition_on_previous_text:false,beam_size:5,no_speech_threshold:.68,compression_ratio_threshold:2.4,log_prob_threshold:-1,hallucination_silence_threshold:1.0};
  const timed=(model,input,ms)=>Promise.race([env.AI.run(model,input),new Promise((_,reject)=>setTimeout(()=>reject(Error('asr timeout')),ms))]);
+ const usable=r=>{
+   const info=r?.transcription_info||r?.result||r||{},segments=r?.segments||info.segments;
+   if(Array.isArray(segments)&&segments.length){
+     const bad=segments.every(s=>(Number.isFinite(s.no_speech_prob)&&s.no_speech_prob>.6)||(Number.isFinite(s.avg_logprob)&&s.avg_logprob< -1)||(Number.isFinite(s.compression_ratio)&&s.compression_ratio>2.4));
+     if(bad)return false;
+   }
+   return true;
+ };
  const errors=[];
  let picked=null,pickedModel='',pickedFormat='';
  const primary={...common,audio:m[2],...(strongHint?{language:strongHint}:{} )};
- try{const r=await timed(ASR_PRIMARY,primary,4800),text=clean(r?.text||r?.transcription_info?.text||r?.result?.text||r?.result||'',5000);if(text){picked=r;pickedModel=ASR_PRIMARY;pickedFormat=strongHint?'base64-hinted':'base64-auto'}}catch(e){errors.push(ASR_PRIMARY+':'+clean(e?.message||e,140))}
- // If automatic ASR clearly conflicts with a reliable non-Latin phone transcript, the phone transcript is safer than a translation/mis-detection.
+ try{const r=await timed(ASR_PRIMARY,primary,4800),text=clean(r?.text||r?.transcription_info?.text||r?.result?.text||r?.result||'',5000);if(text&&usable(r)){picked=r;pickedModel=ASR_PRIMARY;pickedFormat=strongHint?'base64-hinted':'base64-auto'}}catch(e){errors.push(ASR_PRIMARY+':'+clean(e?.message||e,140))}
+ // Accept only audio-derived transcription with usable confidence metadata.
  let text=picked?clean(picked?.text||picked?.transcription_info?.text||picked?.result?.text||picked?.result||'',5000):'';
  const pickedLanguage=languageCode(picked?.language||picked?.detected_language||picked?.transcription_info?.language||picked?.result?.language||'');
  // Auto detection must not force Arabic or replace audio with a
  // phone transcript constrained to the UI language.
  // If the first pass failed, use legacy Whisper bytes as a bounded fallback.
- if(!text){try{const bin=atob(m[2]),audio=Array.from(bin,c=>c.charCodeAt(0)),input={...common,audio,...(strongHint?{language:strongHint}:{})};const r=await timed(ASR_FALLBACK,input,3200),t=clean(r?.text||r?.result?.text||r?.result||'',5000);if(t){text=t;picked=r;pickedModel=ASR_FALLBACK;pickedFormat='bytes-fallback'}}catch(e){errors.push(ASR_FALLBACK+':'+clean(e?.message||e,140))}}
+ if(!text){try{const bin=atob(m[2]),audio=Array.from(bin,c=>c.charCodeAt(0)),input={...common,audio,...(strongHint?{language:strongHint}:{})};const r=await timed(ASR_FALLBACK,input,3200),t=clean(r?.text||r?.result?.text||r?.result||'',5000);if(t&&usable(r)){text=t;picked=r;pickedModel=ASR_FALLBACK;pickedFormat='bytes-fallback'}}catch(e){errors.push(ASR_FALLBACK+':'+clean(e?.message||e,140))}}
  if(text){const detected=clean(picked?.language||picked?.detected_language||picked?.transcription_info?.language||picked?.result?.language||'',24),language=languageCode(detected)||messageLanguage(text,strongHint||softHint);return json(request,{ok:true,text,language,detectedLanguage:language,model:pickedModel,audioFormat:pickedFormat,autoLanguage:!strongHint,languageHintUsed:strongHint||null,nativeRescue:pickedModel.startsWith('native-')},200)}
  return json(request,{ok:false,error:'Voice transcription is temporarily unavailable',retryable:true,detail:errors.join(' | ')},503)
 }

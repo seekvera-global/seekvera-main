@@ -142,8 +142,30 @@ async function localWhisperTranscribe(blob){
     return{text,language:outLang||'auto',engine:chosenHint?'local-whisper-recovered':'local-whisper-auto'}
   }finally{try{URL.revokeObjectURL(url)}catch(_){}}
 }
+function pcmWav(samples,sampleRate=16000){
+  const buffer=new ArrayBuffer(44+samples.length*2),view=new DataView(buffer);
+  const put=(offset,value)=>{for(let i=0;i<value.length;i++)view.setUint8(offset+i,value.charCodeAt(i))};
+  put(0,'RIFF');view.setUint32(4,36+samples.length*2,true);put(8,'WAVE');put(12,'fmt ');
+  view.setUint32(16,16,true);view.setUint16(20,1,true);view.setUint16(22,1,true);
+  view.setUint32(24,sampleRate,true);view.setUint32(28,sampleRate*2,true);view.setUint16(32,2,true);view.setUint16(34,16,true);
+  put(36,'data');view.setUint32(40,samples.length*2,true);
+  for(let i=0;i<samples.length;i++){const s=Math.max(-1,Math.min(1,samples[i]));view.setInt16(44+i*2,s<0?s*32768:s*32767,true)}
+  return new Blob([buffer],{type:'audio/wav'})
+}
+async function normalizeRecordedAudio(blob){
+  const AC=window.AudioContext||window.webkitAudioContext,Offline=window.OfflineAudioContext||window.webkitOfflineAudioContext;
+  if(!AC||!Offline)return blob;
+  let ctx;
+  try{
+    ctx=new AC();const decoded=await ctx.decodeAudioData(await blob.arrayBuffer());
+    if(!decoded.length||decoded.duration>61)return blob;
+    const offline=new Offline(1,Math.ceil(decoded.duration*16000),16000),source=offline.createBufferSource();
+    source.buffer=decoded;source.connect(offline.destination);source.start();
+    const rendered=await offline.startRendering();return pcmWav(rendered.getChannelData(0))
+  }catch(_){return blob}finally{try{await ctx?.close()}catch(_){}}
+}
 async function seekveraAutoTranscribe(blob,nativeText='',nativeConfidence=0){
-  const audio=await blobDataURL(blob),ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),10000);
+  const audio=await blobDataURL(await normalizeRecordedAudio(blob)),ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),10000);
   try{
     const native=String(nativeText||'').replace(/\s+/g,' ').trim();
     const ns=transcriptScript(native),inferred=languageFromTranscript(native,''),hint=(ns&&ns!=='latin')?codeOf(inferred):'';
@@ -164,6 +186,7 @@ async function automaticMultilingualTranscribe(blob,nativeText='',nativeConfiden
 }
 function localeForText(t,requested){
   t=typeof t==='string'?t:'';
+  const r=codeOf(requested);if(r&&r!=='auto')return LANGS[r]||r;
   if(/[\u0600-\u06ff]/.test(t))return 'ar-SA';
   if(/[\u4e00-\u9fff]/.test(t))return 'zh-CN';
   if(/[\u3040-\u30ff]/.test(t))return 'ja-JP';
@@ -175,7 +198,6 @@ function localeForText(t,requested){
   if(/[\u0370-\u03ff]/.test(t))return 'el-GR';
   if(/[\u0e00-\u0e7f]/.test(t))return 'th-TH';
   if(/[\u1200-\u137f]/.test(t))return 'am-ET';
-  const r=codeOf(requested);if(r)return LANGS[r]||r;
   return locale()
 }
 function voices(){try{return window.speechSynthesis?.getVoices?.()||[]}catch(_){return []}}
