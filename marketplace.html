@@ -24,7 +24,7 @@ document.getElementById('go').onclick=load;document.getElementById('q').addEvent
 const aiBox=document.getElementById('aiBox');document.getElementById('aiOpen').onclick=()=>aiBox.classList.add('open');document.getElementById('aiClose').onclick=()=>aiBox.classList.remove('open');document.getElementById('aiSend').onclick=async()=>{const m=document.getElementById('aiQ').value.trim();if(!m)return;const out=document.getElementById('aiAns');out.textContent='Thinking...';try{const r=await fetch('https://seekvera-main.seekvera-global.workers.dev/api/ai',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message:m,country:document.getElementById('country').value||'Worldwide',language:navigator.language||'en'})});const d=await r.json();out.textContent=d.response||'Try a more specific search.'}catch{out.textContent='AI is temporarily unavailable. Use the marketplace search above.'}};
 </script><script src="r20-final-guard.js?v=20260925-r20" defer></script>
 <script src="locale-r15.js?v=20260927-r105-top-global-release" defer></script>
-<script src="voice-ai.js?v=20260929-r123-arabic-auto-dedupe" defer></script>
+<script src="voice-ai.js?v=20260930-audio-locale" defer></script>
 <script src="global-ui.js?v=20260927-r106-final-conversation-locale" defer></script>
 <script src="i18n-ui.js?v=20260927-r104-fast-atomic-i18n" defer></script>
 <script src="locale-r14-categories.js?v=20260927-r96-authoritative-language-ai-voice" defer></script>
@@ -32,7 +32,7 @@ const aiBox=document.getElementById('aiBox');document.getElementById('aiOpen').o
 <script src="locale-r14.js?v=20260925-r44-stable-locale" defer></script>
 
 <script src="navigation.js?v=20260927-r108-no-mixed-language" defer></script>
-<script src="r22-category-lock.js?v=20260927-r96-authoritative-language-ai-voice" defer></script>
+<script src="r22-category-lock.js?v=20260930-audio-locale" defer></script>
 <script src="r24-ai-controller.js?v=20260926-r76-complete-global-final" data-no-i18n="1"></script>
 <script data-no-i18n="1" id="sv-category-option-locale">
 (()=>{'use strict';

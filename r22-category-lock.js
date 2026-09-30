@@ -38,6 +38,7 @@ function hookCategoryEngine(){
 function bind(){
   hookCategoryEngine();schedule(0);schedule(180);schedule(650);
   document.addEventListener('change',e=>{if(['lang','country','currency'].includes(e.target?.id))schedule(45)},true);
+  window.addEventListener('seekvera:packready',()=>schedule(0));
   window.addEventListener('pageshow',()=>schedule(30));window.addEventListener('seekvera:languagechange',()=>schedule(30));window.addEventListener('seekvera:countrychange',()=>schedule(30));
   let tries=0;const t=setInterval(()=>{tries++;if(hookCategoryEngine()||tries>20)clearInterval(t)},100);
 }
