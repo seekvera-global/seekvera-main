@@ -65,6 +65,7 @@ jobs:
                  ('en','Hello, I would like to find a hotel in London for tomorrow.')]
           for lang,phrase in cases:
               audio=post('/api/tts',{'text':phrase,'language':lang})
+              print('AUDIO_FORMAT',lang,len(audio),audio[:24].hex())
               assert len(audio)>500,(lang,len(audio))
               d=json.loads(post('/api/transcribe',{'audio':'data:audio/mpeg;base64,'+base64.b64encode(audio).decode(),'language':'auto','conversationLanguage':'ar','uiLanguage':'ar','nativeText':'Halið á að leita að vinnu','nativeConfidence':.99}))
               assert d.get('ok') and d.get('text') and not d.get('nativeRescue'),d
