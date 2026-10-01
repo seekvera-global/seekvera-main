@@ -160,7 +160,7 @@ function conversationalFallback(message,language){const l=languageCode(language)
  id:how?'Saya baik, terima kasih. Saya siap membantu. Apa yang ingin Anda lakukan?':'Halo! Saya SEEKVERA AI. Ada yang bisa saya bantu?',
  sw:how?'Niko vizuri, asante. Niko tayari kusaidia. Ungependa kufanya nini?':'Jambo! Mimi ni SEEKVERA AI. Ninaweza kukusaidiaje?'
  };return replies[l]||replies.en}
-function usefulFallback(message,language,cat){const l=languageCode(language)||messageLanguage(message,''),r={
+function usefulFallback(message,language,cat){const l=languageCode(language)||messageLanguage(message,'');if(cat&&cat!=='general')return fastRouteReply(l)||'✓';const r={
  ar:'فهمت طلبك. أعطيني تفصيلاً واحداً مهماً مثل المدينة أو التاريخ أو الميزانية، وسأكمل معك وأفتح القسم المناسب فقط عندما يصبح طلبك واضحاً.',
  en:'I understand what you need. Tell me one useful detail such as the city, date or budget, and I’ll continue and show the right section only when your request is clear.',
  fr:'Je comprends votre demande. Donnez-moi un détail utile, comme la ville, la date ou le budget, et je continuerai avant d’ouvrir la bonne section.',
