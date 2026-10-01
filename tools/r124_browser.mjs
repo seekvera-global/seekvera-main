@@ -18,7 +18,7 @@ try{
  await page.waitForURL(/\/travel(?:\.html)?(?:\?|$)/,{timeout:20000,waitUntil:'domcontentloaded'});
  const logs=await page.evaluate(()=>JSON.parse(sessionStorage.getItem('r124-audio-events')||'[]'));
  const start=logs.find(e=>e.name==='seekvera:tts-start'&&e.engine==='server'),end=logs.find(e=>e.name==='seekvera:tts-end'&&e.engine==='server');
- assert.ok(start&&end,JSON.stringify(logs));assert.ok(end.at-start.at>=900,JSON.stringify(logs));
+ assert.ok(start&&end,JSON.stringify(logs));assert.equal(logs.filter(e=>e.name==='seekvera:tts-start'&&e.engine==='server').length,1,'short replies must use a single audio request');assert.ok(end.at-start.at>=900,JSON.stringify(logs));
  const chat=await page.evaluate(()=>JSON.parse(localStorage.getItem('seekvera_ai_chat_v1')||'[]'));
  assert.ok(chat.some(x=>x.role==='user'&&x.text==='بدي أسافر'),'chat must survive navigation');
  console.log('PASS: delayed server audio decoded and completed before navigation on Android browser profile',logs,chat);

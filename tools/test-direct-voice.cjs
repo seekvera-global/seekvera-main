@@ -18,3 +18,5 @@ events.dispatchEvent(new Event('seekvera:tts-end'));assert.equal(moves,1);assert
 events.dispatchEvent(new Event('seekvera:tts-end'));assert.equal(moves,1,'navigate once');
 assert.ok(!ui.includes('if (similarReply(reply, previous))'),'never replace a correctly localized server reply with UI language');
 console.log('PASS: 12 language/intent cases; no pre-route questions; voice navigation preserves complete acknowledgement; localized reply retained.');
+
+const voice=fs.readFileSync("voice-ai.js","utf8"),chunkCtx={};vm.createContext(chunkCtx);vm.runInContext(voice.slice(voice.indexOf("function cleanSpeech("),voice.indexOf("function unlockTTS(")),chunkCtx);assert.equal(chunkCtx.splitSpeech("أكيد، عم بفتحلك القسم المناسب.").length,1);console.log("PASS: short acknowledgement uses one audio request");
