@@ -1,6 +1,6 @@
 import baseWorker from './worker-r31.js';
 
-const RELEASE='20260929-r123-single-voice-turn';
+const RELEASE='20261001-r124-voice-complete-direct-routing';
 const PRIMARY='@cf/zai-org/glm-4.7-flash';
 const FALLBACK='@cf/qwen/qwen3-30b-a3b-fp8';
 const FAST='@cf/meta/llama-3.1-8b-instruct-fast';
@@ -315,6 +315,7 @@ function directCategoryIntent(message,modelCategory='general'){
  if(/(?:نوکری|ملازمت).{0,28}(?:تلاش|ڈھونڈ|چاہ)|(?:تلاش|ڈھونڈ).{0,28}(?:نوکری|ملازمت)/u.test(s))return'jobs';
  const action=/(?:\b(?:find|search|show|open|take me|go to|book|reserve|buy|sell|rent|need|want|looking for|look for|apply for|help me find|help me get)\b|دوريني|دورلي|ندور|عم دور|بدور|ابحث|أبحث|فتش|فتشي|بدي|اريد|أريد|احتاج|أحتاج|افتح|افتحي|وديني|ودّيني|خذني|خدني|احجز|احجزي|اشتري|بيع|استأجر|استاجر|ساعدني|ساعديني|cherch(?:e|er|ez)|trouv(?:e|er|ez)(?:-moi)?|montre(?:z|-moi)?|ouvre(?:z)?|réserve|reserver|achet(?:e|er)|vend(?:s|re)|lou(?:e|er)|besoin|veux|búscame|buscame|busca|buscar|encuéntrame|encuentrame|encuentra|muéstrame|muestrame|muestra|abre|llévame|llevame|quiero|necesito|reservar|comprar|vender|alquilar|procure|procurar|encontre|mostre|abra|quero|preciso|alugar|finde|finden|suche|such|zeige|zeig|öffne|offne|brauche|möchte|mochte|buchen|kaufen|verkaufen|mieten|trova|cerca|apri|mostra|voglio|cerco|bisogno|arıyorum|ariyorum|bana|ara|bul|göster|goster|aç|ac|istiyorum|rezerv|satın|kirala|найди|найти|ищу|открой|покажи|нужен|хочу|забронируй|купить|продать|аренд|找|搜索|打开|带我|我想|我需要|预订|购买|出售|租|探して|検索|開いて|連れて|見せて|欲しい|必要|予約|購入|売|借|찾아|검색|열어|데려|보여|원해|필요|예약|구매|판매|임대|खोज|ढूंढ|ढूँढ|खोल|दिखा|चाहिए|चाहता|बुक|खरीद|बेच|किराए|tìm|tim|tìm kiếm|mở|mở|hãy tìm|hay tim|cari|carikan|buka|tunjukkan|tolong|ingin|butuh|tafuta|fungua|onyesha|nataka|nahitaji|খুঁজ|খোঁজ|দেখাও|খুল|পাই|پیدا|باز کن|بگرد|می.?خواهم|میخوام|تلاش|ڈھونڈ|ڈھونڈو|کھولو|دکھاؤ|چاہیے)/iu.test(s)
  if(!action)return category(modelCategory);
+ if(/(?:بدي|أريد|اريد|احتاج|أحتاج).{0,15}(?:أسافر|اسافر|سافر)|\b(?:i want to|i need to|let me) travel\b/iu.test(s))return'travel';
  const rules=[
  ['jobs',/(?:\bjob|jobs|career|vacancy|employment|work\b|وظيف|وظائف|وظايف|شغل|فرصة عمل|emploi|travail|trabajo|empleo|trabalho|emprego|lavoro|arbeit|stelle|stellen|iş|kariyer|работ|ваканси|工作|职位|求人|仕事|채용|일자리|직업|नौकरी|रोजगार|काम|việc làm|công việc|viec lam|pekerjaan|kerja|kazi|ajira|চাকরি|কাজ|کار|شغل|نوکری|کام)/iu],
  ['travel',/(?:hotel|hotels|flight|flights|airport|travel|trip|room|فندق|فنادق|طيران|رحلة|سفر|غرفة|hôtel|vol|voyage|vuelo|viaje|voo|viagem|flug|reise|otel|uçuş|seyahat|отел|рейс|путешеств|酒店|航班|旅行|ホテル|フライト|호텔|항공|여행|होटल|उड़ान|यात्रा)/iu],
@@ -337,6 +338,7 @@ function directCategoryIntent(message,modelCategory='general'){
  ['media',/(?:news|movie|music|radio|tv|أخبار|فيلم|موسيقى|actualités|film|musique|noticias|película|música|notícias|filme|musik|nachrichten|haber|müzik|новост|фильм|музык|新闻|电影|音乐|ニュース|映画|音楽|뉴스|영화|음악|समाचार|फिल्म|संगीत)/iu]
  ];
  for(const [cat,re] of rules)if(re.test(s))return cat;
+ if(/^(?:بدي|أريد|اريد|عايز|عاوز|i want to|i need to)\s+(?:اشتري|أشتري|buy)(?:\s+(?:شي|شيء|حاجة|something))?[.!؟?]*$/iu.test(s))return'shopping';
  return category(modelCategory)
 }
 
@@ -351,7 +353,7 @@ async function runStructured(env,body){
  const system=`You are SEEKVERA AI, the action assistant inside a worldwide marketplace and discovery app. You must understand the LATEST USER MESSAGE directly, including dialects, slang, Lebanese Arabic, mixed Arabic/English, transliteration, and any major world language. Never choose the reply language from the selected country, interface, or browser. Reply in the SAME language and script as the latest user message unless the user explicitly requests another reply language. The reply text itself MUST visibly use that language/script; never translate Arabic speech into Icelandic, English, or another language, and never claim one languageCode while writing in another language.\
 \
 Return ONLY one JSON object with exactly these keys: reply, languageCode, category, countryAction, languageAction.\
-- reply: behave like a real conversational AI assistant. Hold a normal back-and-forth conversation, answer questions directly, understand corrections and follow-ups, and use the recent conversation as memory. Do NOT rush the user into a marketplace section. If the user has not yet clearly said what they want, keep talking naturally. When the user does want something, ask only the minimum useful follow-up questions needed (such as country/city, dates, budget, type, quantity or preferences), one concise question at a time. Never ask again for information already present in the conversation. Once the goal is clear, help with it and choose the correct category.\
+- reply: behave like a real conversational AI assistant. Hold a normal back-and-forth conversation, answer questions directly, understand corrections and follow-ups, and use the recent conversation as memory. For greetings and genuine knowledge questions, answer naturally. For requests to travel, buy, sell, find, book, work, visit or browse, choose the relevant section immediately and give one short acknowledgement in the user’s language. Do not ask for city, dates, budget, quantity or preferences before opening a section; those filters are available there. For a generic purchase request choose shopping; for a generic travel request choose travel. Ask a clarification only when no section can be determined.\
 - languageCode: best ISO language code for the latest user message.\
 - category: exactly one of ${[...CATS].join(', ')}. Conversation-first rule: use general for greetings, small talk, questions, explanations, language/voice talk, corrections, incomplete requests, and every clarification turn. Choose a marketplace category only when the user's current goal is genuinely actionable and belongs there (find/search/book/buy/sell/apply/compare/use). A clear command such as ‘find me a job’, ‘دوريني على شغل’, ‘find me a hotel’, ‘show me cars’, or the equivalent in any language is actionable immediately: choose its category even if city, date or budget is not known yet. Never route merely because a keyword appears. Never classify casual uses of work/عمل/شغل as Jobs unless the person is actually seeking employment.\
 - Language/voice meta-conversation rule: if the user says they are speaking a language, asks whether you understand/hear them, comments on which language you are speaking, or simply tests conversation (for example: ‘صرت بتحكي عربي هون’, ‘I am speaking Arabic now’, ‘Can you understand French?’), category MUST be general. Reply naturally to what they said. Never say you will send them to a section unless they actually ask for a marketplace task.\
@@ -368,7 +370,7 @@ Latest user message: ${message}`;
    const r=await Promise.race([env.AI.run(model,{messages,temperature:.18,max_tokens:420}),new Promise((_,reject)=>setTimeout(()=>reject(Error('model timeout')),3000))]),text=modelText(r),obj=parseJSON(text);if(!obj||!clean(obj.reply,5000))throw Error('invalid structured response');
    const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode||targetLanguage),declared=languageCode(obj.languageCode),meta=metaConversation(message),modelCat=category(obj.category),cat=(act.isAction||conversationOnly(message)||meta)?'general':directCategoryIntent(message,modelCat);
    if(declared&&declared!==language&&!translationRequest(message)&&!replyMatchesLanguage(obj.reply,language,message))throw Error('model language mismatch');
-   let reply=act.isAction?actionReply(language,act.cc,act.ll):guardedReply(obj.reply,language,message);if(!reply)throw Error('reply language mismatch');if(meta&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
+   let reply=act.isAction?actionReply(language,act.cc,act.ll):cat!=='general'&&fastRouteReply(language)?fastRouteReply(language):guardedReply(obj.reply,language,message);if(!reply)throw Error('reply language mismatch');if(meta&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
    return{ok:true,response:reply,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model,fastPath:act.isAction?'r114-verified-action-first':meta?'r114-meta-conversation-guard':'r114-fast-model-race',liveData:false}
  };
  try{const winner=await Promise.race([Promise.any([FAST,PRIMARY,FALLBACK].map(modelAttempt)),new Promise(resolve=>setTimeout(()=>resolve(null),3300))]);if(winner)return winner}catch(_){}
@@ -382,7 +384,7 @@ Latest user message: ${message}`;
        const raw=await br.text(),obj=parseJSON(raw);
        if(obj&&clean(obj.reply,5000)){
          const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode||targetLanguage),declared=languageCode(obj.languageCode),meta=metaConversation(message),modelCat=category(obj.category),cat=(act.isAction||conversationOnly(message)||meta)?'general':directCategoryIntent(message,modelCat);
-         let reply=act.isAction?actionReply(language,act.cc,act.ll):guardedReply(obj.reply,language,message);if(declared&&declared!==language&&!translationRequest(message)&&!replyMatchesLanguage(obj.reply,language,message))reply='';if(meta&&reply&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
+         let reply=act.isAction?actionReply(language,act.cc,act.ll):cat!=='general'&&fastRouteReply(language)?fastRouteReply(language):guardedReply(obj.reply,language,message);if(declared&&declared!==language&&!translationRequest(message)&&!replyMatchesLanguage(obj.reply,language,message))reply='';if(meta&&reply&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
          if(reply)return{ok:true,response:reply,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:'pollinations-private-conversation-fallback',fastPath:'r117-language-guard-fallback',liveData:false}
        }
        const plain=guardedReply(raw,targetLanguage,message);if(plain){const language=targetLanguage,meta=metaConversation(message),cat=(conversationOnly(message)||meta)?'general':directCategoryIntent(message,'general');return{ok:true,response:plain,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:null,languageAction:null,model:'pollinations-private-conversation-plain',fastPath:'r117-language-guard-plain',liveData:false}}
@@ -416,8 +418,8 @@ function fastCommandLanguage(message,suggested=''){
 const FAST_DIRECT_LANGS=new Set(['ar','en','fr','es','de','tr','pt','it','vi','id','sw','ru','hi','zh','ja','ko','bn','fa','ur']);
 function fastRouteReply(language){
  const r={
-  ar:'أكيد. فهمت طلبك وعم بفتح لك القسم المناسب مباشرة.',
-  en:'Got it. I understand your request and I’m opening the right section now.',
+  ar:'أكيد، عم بفتحلك القسم المناسب.',
+  en:'Sure. Opening the right section now.',
   fr:'Compris. J’ouvre directement la section adaptée à votre demande.',
   es:'Entendido. Voy a abrir directamente la sección adecuada para tu solicitud.',
   de:'Verstanden. Ich öffne jetzt direkt den passenden Bereich.',

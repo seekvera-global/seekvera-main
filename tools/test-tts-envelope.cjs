@@ -1,6 +1,6 @@
 const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
 const src=fs.readFileSync('worker-r31.js','utf8');
-const a=src.indexOf('const audioResp=async(r,engine,target)=>'),b=src.indexOf(';if(env.AI)',a);
+const a=src.indexOf('const audioResp=async(r,engine,target)=>'),b=src.indexOf('// Try same-language MP3 first',a);
 const ctx={Response,Headers,Uint8Array,atob,req:{headers:new Headers()},ALLOWED:new Set(),lang:'fr'};
 vm.createContext(ctx);vm.runInContext(src.slice(a,b)+';globalThis.decodeAudio=audioResp;',ctx);
 (async()=>{

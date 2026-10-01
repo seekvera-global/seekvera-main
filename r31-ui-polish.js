@@ -540,35 +540,27 @@
       return true;
     }
     pendingVoiceOnNextPage(reply, language);
-    let moved = false,
-      started = false;
+    let moved = false;
+    const cleanup = () => {
+      window.removeEventListener("seekvera:tts-end", onEnd);
+      window.removeEventListener("seekvera:tts-error", onError);
+      clearTimeout(timer);
+    };
     const move = () => {
       if (moved) return;
       moved = true;
+      cleanup();
       go();
     };
-    window.addEventListener(
-      "seekvera:tts-start",
-      () => {
-        started = true;
-        setTimeout(move, 320);
-      },
-      { once: true },
-    );
-    window.addEventListener(
-      "seekvera:tts-end",
-      () => {
-        try {
-          sessionStorage.removeItem("seekvera_route_voice");
-        } catch {}
-        move();
-      },
-      { once: true },
-    );
-    setTimeout(() => {
-      if (!started) move();
-    }, 950);
-    setTimeout(move, 3500);
+    const onEnd = () => {
+      try { sessionStorage.removeItem("seekvera_route_voice"); } catch {}
+      move();
+    };
+    const onError = () => move();
+    // Navigation destroys the audio context: finish the short acknowledgement first.
+    window.addEventListener("seekvera:tts-end", onEnd);
+    window.addEventListener("seekvera:tts-error", onError);
+    const timer = setTimeout(move, 18000);
     return true;
   }
   function replayPendingRouteVoice() {
@@ -948,22 +940,6 @@
 
       setIntent(finalCat);
       let reply = String(d.response || "").trim();
-      const previous =
-        [...h].reverse().find((x) => x.role === "assistant")?.content || "";
-      if (similarReply(reply, previous)) {
-        const title = categoryTitle(finalCat);
-        reply = title
-          ? arabicText(q)
-            ? "تمام — " + title + ". عم أكمل طلبك مباشرة هناك."
-            : lang() === "en"
-              ? title + ". I’m continuing your request there now."
-              : title + " ✓"
-          : arabicText(q)
-            ? "تمام، عم أكمل طلبك مباشرة من دون إعادة نفس الكلام."
-            : lang() === "en"
-              ? "Got it. I’m continuing your request directly without repeating myself."
-              : "✓";
-      }
       if (pending) {
         pending.textContent = reply;
         pending.classList.remove("thinking");

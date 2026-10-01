@@ -20,9 +20,10 @@ const audio='data:audio/mpeg;base64,'+Buffer.alloc(100).toString('base64');
  assert.equal(calls[0].input.language,'ar');
  const voice=fs.readFileSync('voice-ai.js','utf8');
  const a=voice.indexOf('function chooseHybridTranscript('),b=voice.indexOf('\nfunction startNativeShadow',a);
+ ctx.compactVoiceTranscript=t=>String(t||'').trim();ctx.transcriptPoor=()=>false;ctx.transcriptScript=t=>/[\u0600-\u06ff]/u.test(t)?'arabic':'latin';
  vm.runInContext(voice.slice(a,b),ctx);
  const asr={text:'مرحبا',language:'ar'};
- assert.equal(ctx.chooseHybridTranscript('Halið á að leita',.99,asr),asr);
+ assert.deepEqual(JSON.parse(JSON.stringify(ctx.chooseHybridTranscript('Halið á að leita',.99,asr))),{...asr,needsReview:true});
  console.log('PASS: audio wins contradictory phone text; automatic language ignores previous Arabic conversation; nested language is preserved; ASR outage refuses phone hallucinations; explicit language remains supported.');
 })().catch(e=>{console.error(e);process.exitCode=1});
 
