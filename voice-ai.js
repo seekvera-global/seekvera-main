@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-if(window.__seekveraVoiceAI)return;window.__seekveraVoiceAI=true;window.__seekveraVoiceMode='20261001-r124-voice-complete';
+if(window.__seekveraVoiceAI)return;window.__seekveraVoiceAI=true;window.__seekveraVoiceMode='20261001-r125-dialect-voice-quality';
 const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
 const LANGS={en:'en-US',ar:'ar-SA',fr:'fr-FR',zh:'zh-CN',es:'es-ES',hi:'hi-IN',pt:'pt-BR',de:'de-DE',ja:'ja-JP',ko:'ko-KR',id:'id-ID',tr:'tr-TR',ru:'ru-RU',ur:'ur-PK',bn:'bn-BD',vi:'vi-VN',it:'it-IT',sw:'sw-KE',th:'th-TH',fa:'fa-IR',pl:'pl-PL',nl:'nl-NL',ms:'ms-MY',fil:'fil-PH',ha:'ha-NG',yo:'yo-NG',ig:'ig-NG',am:'am-ET',he:'he-IL',el:'el-GR',uk:'uk-UA',ro:'ro-RO',cs:'cs-CZ',sk:'sk-SK',hu:'hu-HU',sv:'sv-SE',no:'nb-NO',da:'da-DK',fi:'fi-FI',bg:'bg-BG',hr:'hr-HR',sr:'sr-RS',sl:'sl-SI',lt:'lt-LT',lv:'lv-LV',et:'et-EE',ca:'ca-ES',eu:'eu-ES',gl:'gl-ES',is:'is-IS',sq:'sq-AL',mk:'mk-MK',ka:'ka-GE',hy:'hy-AM',az:'az-AZ',kk:'kk-KZ',uz:'uz-UZ',ky:'ky-KG',tg:'tg-TJ',tk:'tk-TM',ne:'ne-NP',si:'si-LK',ta:'ta-IN',te:'te-IN',ml:'ml-IN',mr:'mr-IN',gu:'gu-IN',pa:'pa-IN',km:'km-KH',lo:'lo-LA',my:'my-MM',mn:'mn-MN',zu:'zu-ZA',af:'af-ZA',be:'be-BY',bs:'bs-BA',dz:'dz-BT',ti:'ti-ET',fo:'fo-FO',kl:'kl-GL',rw:'rw-RW',sm:'sm-WS',to:'to-TO',so:'so-SO',ps:'ps-AF',dv:'dv-MV',mt:'mt-MT',mg:'mg-MG',ga:'ga-IE',cy:'cy-GB',mi:'mi-NZ',fy:'fy-NL',lb:'lb-LU',rm:'rm-CH',ku:'ku-TR',xh:'xh-ZA',st:'st-ZA',tn:'tn-BW'};
 const NAME_CODE={english:'en',arabic:'ar',french:'fr',chinese:'zh',mandarin:'zh',spanish:'es',hindi:'hi',portuguese:'pt',german:'de',japanese:'ja',korean:'ko',indonesian:'id',turkish:'tr',russian:'ru',urdu:'ur',bengali:'bn',vietnamese:'vi',italian:'it',swahili:'sw',thai:'th',persian:'fa',farsi:'fa',polish:'pl',dutch:'nl',malay:'ms',filipino:'fil',tagalog:'fil',hausa:'ha',yoruba:'yo',igbo:'ig',amharic:'am',hebrew:'he',greek:'el',ukrainian:'uk',romanian:'ro',czech:'cs',slovak:'sk',hungarian:'hu',swedish:'sv',norwegian:'no',danish:'da',finnish:'fi',bulgarian:'bg',croatian:'hr',serbian:'sr',slovenian:'sl',lithuanian:'lt',latvian:'lv',estonian:'et',catalan:'ca',basque:'eu',galician:'gl',icelandic:'is',albanian:'sq',macedonian:'mk',georgian:'ka',armenian:'hy',azerbaijani:'az',kazakh:'kk',uzbek:'uz',kyrgyz:'ky',tajik:'tg',turkmen:'tk',nepali:'ne',sinhala:'si',tamil:'ta',telugu:'te',malayalam:'ml',marathi:'mr',gujarati:'gu',punjabi:'pa',khmer:'km',lao:'lo',burmese:'my',mongolian:'mn',zulu:'zu',afrikaans:'af',belarusian:'be',bosnian:'bs',dzongkha:'dz',tigrinya:'ti',faroese:'fo',greenlandic:'kl',kalaallisut:'kl',kinyarwanda:'rw',samoan:'sm',tongan:'to',somali:'so',pashto:'ps',dhivehi:'dv',maldivian:'dv',maltese:'mt',malagasy:'mg',irish:'ga',welsh:'cy',maori:'mi',frisian:'fy',luxembourgish:'lb',romansh:'rm',kurdish:'ku',xhosa:'xh',sesotho:'st','southern sotho':'st',tswana:'tn',setswana:'tn'};
@@ -101,7 +101,7 @@ function chooseHybridTranscript(nativeText,nativeConfidence,whisper){
   if(!text||transcriptPoor(text)||/^\s*[\[(].*[\])]\s*$/.test(text))throw Error('No clear speech detected');
   const ns=transcriptScript(native),ws=transcriptScript(text);
   // Disagreement is evidence to ask for review, not permission to replace speech.
-  const needsReview=Boolean(native&&nativeConfidence>=.8&&ns&&ws&&ns!==ws);
+  const needsReview=Boolean(whisper?.needsReview||native&&nativeConfidence>=.8&&ns&&ws&&ns!==ws);
   return{...whisper,text,needsReview}
 }
 function startNativeShadow(){
@@ -176,8 +176,8 @@ async function seekveraAutoTranscribe(blob,nativeText='',nativeConfidence=0){
     const payload={audio,language:'auto',languageHint:hint||'',conversationLanguage:codeOf(localStorage.getItem('seekvera_chat_voice_lang')||''),uiLanguage:codeOf(selectedLang())||'',browserLanguage:String(navigator.language||''),nativeText:native,nativeConfidence:Number(nativeConfidence||0)};
     const res=await fetch(apiBase()+'/api/transcribe?auto=1&r116=1',{method:'POST',headers:{'content-type':'application/json','cache-control':'no-store'},body:JSON.stringify(payload),signal:ctl.signal,cache:'no-store'});
     const d=await res.json().catch(()=>({}));if(!res.ok||!d.text)throw Error(d.reason||d.error||'server transcription failed');
-    rememberChatVoiceLanguage(d.language||d.detectedLanguage,d.text);
-    return{text:String(d.text).trim(),language:String(d.language||d.detectedLanguage||'auto'),engine:String(d.model||'seekvera-whisper-r116'),nativeRescue:Boolean(d.nativeRescue)}
+    if(!d.needsReview)rememberChatVoiceLanguage(d.language||d.detectedLanguage,d.text);
+    return{text:String(d.text).trim(),language:String(d.language||d.detectedLanguage||'auto'),engine:String(d.model||'seekvera-whisper-r116'),nativeRescue:Boolean(d.nativeRescue),needsReview:Boolean(d.needsReview)}
   }finally{clearTimeout(to)}
 }
 async function automaticMultilingualTranscribe(blob,nativeText='',nativeConfidence=0){
@@ -190,7 +190,7 @@ async function automaticMultilingualTranscribe(blob,nativeText='',nativeConfiden
 }
 function localeForText(t,requested){
   t=typeof t==='string'?t:'';
-  const r=codeOf(requested);if(r&&r!=='auto')return LANGS[r]||r;
+  const r=codeOf(requested);if(r&&r!=='auto'){const exact=String(requested||'');if(/^[a-z]{2,3}-[A-Z]{2}$/i.test(exact))return exact;return LANGS[r]||r;}
   if(/[\u0600-\u06ff]/.test(t))return 'ar-SA';
   if(/[\u4e00-\u9fff]/.test(t))return 'zh-CN';
   if(/[\u3040-\u30ff]/.test(t))return 'ja-JP';
@@ -239,7 +239,7 @@ function nativeSpeak(chunks,token){
     if(recognition){setTimeout(()=>play(index,attempt),120);return}
     try{
       const u=new SpeechSynthesisUtterance(chunks[index]);
-      const safeLocale=LANGS[codeOf(lastLocale)]||lastLocale||navigator.language||'en-US';
+      const safeLocale=lastLocale||LANGS[codeOf(lastLocale)]||navigator.language||'en-US';
       const v=pickVoice(safeLocale)||pickVoice(lastLocale);
       u.lang=v?.lang||safeLocale;if(v)u.voice=v;u.rate=1;u.pitch=1.02;u.volume=1;
       let started=false,finished=false;
@@ -319,7 +319,7 @@ async function serverVoice(targetId,button,fallbackNative=false){
       try{
         if(i)i.placeholder='Understanding your speech…';
         const blob=new Blob(chunks,{type}),whisper=await automaticMultilingualTranscribe(blob,shadowText,shadowConfidence),d=chooseHybridTranscript(shadowText,shadowConfidence,whisper);
-        if(d?.needsReview){voiceConversation=false;voiceReplyDeadline=0;if(i){i.value=d.text;i.placeholder='Please check the words, then tap Send.';i.focus?.()}return}
+        if(d?.needsReview){voiceConversation=false;voiceReplyDeadline=0;if(i){i.value=d.text;i.placeholder=selectedLang()==='ar'?'تأكّد من الكلام، وبعدين اضغط إرسال.':'Please check the words, then tap Send.';i.focus?.()}return}
         if(d?.language&&d.language!=='auto')rememberChatVoiceLanguage(d.language,d.text);
         if(i){const spoken=compactVoiceTranscript(d?.text||'');i.value=spoken;i.placeholder='Message SEEKVERA AI…';if(spoken&&acceptVoiceTurn(spoken)){voiceReplyDeadline=Date.now()+90000;setTimeout(()=>{if(window.SEEKVERA_R31?.submitAI)window.SEEKVERA_R31.submitAI(spoken,{fromVoice:true});else i.form?.requestSubmit?.()},35)}else{voiceConversation=false}}
       }catch(e){voiceConversation=false;seedVoiceLanguageFromConversation();if(i)i.placeholder='I could not understand that audio yet — tap the microphone and try again.'}
@@ -363,7 +363,7 @@ function start(targetId,button,forceNative=false){
 }
 function speakerAction(btn){voiceConversation=false;muted=false;localStorage.setItem('seekvera_voice_muted','0');updateSpeakerButtons();unlockTTS();speak(lastAnswer||'SEEKVERA',lastLocale||locale(),true);if(btn){btn.textContent='🔊';btn.setAttribute('aria-label','🔊')}}
 window.addEventListener('seekvera:voice',e=>start(e.detail?.targetId,e.detail?.button));
-window.addEventListener('seekvera:ai-response',e=>{const d=e.detail||{},voiceMode=localStorage.getItem('seekvera_voice_mode')==='1',auto=voiceConversation||Date.now()<voiceReplyDeadline||voiceMode,text=String(d.text||'').trim(),key=normalizedTurnText(text),now=Date.now();if(auto)voiceReplyDeadline=0;if(!text)return;if(key&&key===lastSpokenText&&now-lastSpokenAt<2200)return;lastSpokenText=key;lastSpokenAt=now;rememberChatVoiceLanguage(d.language,text);speak(text,d.language,auto)});
+window.addEventListener('seekvera:ai-response',e=>{const d=e.detail||{},voiceMode=localStorage.getItem('seekvera_voice_mode')==='1',auto=voiceConversation||Date.now()<voiceReplyDeadline||voiceMode,text=String(d.text||'').trim(),key=normalizedTurnText(text),now=Date.now();if(auto)voiceReplyDeadline=0;if(!text)return;if(key&&key===lastSpokenText&&now-lastSpokenAt<2200)return;lastSpokenText=key;lastSpokenAt=now;rememberChatVoiceLanguage(d.language,text);speak(text,d.speechLocale||d.language,auto)});
 window.SEEKVERA_VOICE_AI={speak,start,markVoiceReply:()=>{voiceConversation=true;voiceReplyDeadline=Date.now()+90000;muted=false;localStorage.setItem('seekvera_voice_muted','0');localStorage.setItem('seekvera_voice_mode','1');updateSpeakerButtons();unlockTTS()},isVoiceReplyPending:()=>voiceConversation||Date.now()<voiceReplyDeadline||localStorage.getItem('seekvera_voice_mode')==='1',localWhisperTranscribe,automaticMultilingualTranscribe,chooseHybridTranscript,inputLocale:voiceInputLocale,seedLanguage:seedVoiceLanguageFromConversation,supportedLanguages:Object.keys(LANGS),resolveLocale:(text,requested)=>localeForText(text,requested),prepareVoice:unlockTTS,serverSpeak:(text,requested)=>{const token=++speakToken;return serverSpeak(text,localeForText(text,requested),token)},compactTranscript:compactVoiceTranscript,acceptVoiceTurn};
 document.addEventListener('click',e=>{const mic=e.target.closest('#aiChatMic,.sv-global-compose .mic');if(mic){e.preventDefault();const input=mic.closest('form')?.querySelector('input[type="text"],input:not([type])');start(input?.id,mic)}const sp=e.target.closest('#aiChatSpeaker,.sv-global-speaker');if(sp){e.preventDefault();speakerAction(sp)}});
 if(window.speechSynthesis){try{speechSynthesis.addEventListener?.('voiceschanged',()=>voices())}catch(_){}}

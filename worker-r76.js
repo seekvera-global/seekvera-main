@@ -1,6 +1,6 @@
 import baseWorker from './worker-r31.js';
 
-const RELEASE='20261001-r124-voice-complete-direct-routing';
+const RELEASE='20261001-r125-dialect-voice-quality';
 const PRIMARY='@cf/zai-org/glm-4.7-flash';
 const FALLBACK='@cf/qwen/qwen3-30b-a3b-fp8';
 const FAST='@cf/meta/llama-3.1-8b-instruct-fast';
@@ -118,6 +118,27 @@ function actionState(message,modelCC='',modelLL='',clientControls={}){
  const ll=localLL||((isControl&&wantsLanguage)?languageCode(modelLL):'');
  return{cc,ll,isAction:!!(cc||ll)};
 }
+function arabicDialect(message,history=[]){
+ const detect=t=>{
+  t=String(t||'');
+  if(/(?:^|[^\p{L}])(?:لبناني|لبنانية|لبنانيه|باللبناني|شامي|شامية|شو|كيفك|هلق|هلأ|بدي|بدّي|فيني|معي|عم بحكي|عم تحكي|رح|خلص)(?=$|[^\p{L}])/u.test(t))return'levantine';
+  if(/(?:مصري|مصرية|بالمصري|عايز|عاوز|إزاي|ازاي|دلوقتي|مش عارف|كده|كدا)/u.test(t))return'egyptian';
+  if(/(?:^|[^\p{L}])(?:خليجي|بالخليجي|وش|شلون|أبي|ابي|أبغى|ابغى|الحين|وايد)(?=$|[^\p{L}])/u.test(t))return'gulf';
+  if(/(?:مغربي|دارجة|بالدارجة|بغيت|بزاف|دابا|واش)/u.test(t))return'maghrebi';
+  if(/(?:بالفصحى|فصحى|الفصحى)/u.test(t))return'formal';
+  return''
+ };
+ const current=detect(message);if(current)return current;
+ for(const x of (Array.isArray(history)?history:[]).slice(-8).reverse())if(x?.role==='user'){const d=detect(x.content);if(d)return d}
+ return'formal'
+}
+function dialectRouteReply(message,history=[]){
+ const d=arabicDialect(message,history);
+ return {levantine:'أكيد، عم بفتحلك القسم اللي بدك ياه.',egyptian:'تمام، هفتحلك القسم اللي إنت عايزه دلوقتي.',gulf:'أبشر، بفتح لك القسم اللي تبيه الحين.',maghrebi:'واخا، غادي نحل ليك القسم اللي بغيتي.',formal:'بالتأكيد، أفتح لك القسم المناسب الآن.'}[d]
+}
+function routeReplyFor(language,message,history=[]){return language==='ar'?dialectRouteReply(message,history):fastRouteReply(language)}
+function speechLocaleFor(language,message,history=[]){if(language!=='ar')return language;return {levantine:'ar-LB',egyptian:'ar-EG',gulf:'ar-SA',maghrebi:'ar-MA',formal:'ar'}[arabicDialect(message,history)]}
+
 function conversationOnly(message){const s=String(message||'').trim().toLowerCase().replace(/^[\s¿¡]+|[\s.!?؟،。！？]+$/gu,'');if(!s)return true;if(/(?:مرحبا|مرحباً|أهلا|اهلا|السلام عليكم)[\s،,.!?؟-]*(?:كيفك|كيف حالك)(?:\s+اليوم)?/iu.test(s))return true;if(/^(?:(?:hi|hello|hey)\s*,?\s*)?how\s+are\s+you(?:\s+today)?$|^(?:(?:مرحبا|مرحباً|أهلا|اهلا)\s*,?\s*)?(?:كيفك|كيف حالك)(?:\s+اليوم)?$/iu.test(s))return true;return /^(?:hi|hello|hey|good\s+(?:morning|afternoon|evening)|how\s+are\s+you(?:\s+today)?|what\s+are\s+you\s+doing|what(?:'s|\s+is)\s+your\s+name|who\s+are\s+you|thank\s*you|thanks|مرحبا|مرحباً|أهلا|اهلا|السلام عليكم|كيفك(?:\s+اليوم)?|كيف حالك(?:\s+اليوم)?|شو عم تعمل|شو الاخبار|مين انت|شكرا|شكراً|bonjour|salut|comment (?:ça|ca) va|merci|hola|buenos días|buenas tardes|cómo estás|como estas|gracias|hallo|guten morgen|wie geht(?:'s| es dir)?|danke|ciao|buongiorno|come stai|grazie|olá|ola|bom dia|como vai|obrigad[oa]|merhaba|nasılsın|nasilsin|teşekkürler|tesekkurler|привет|здравствуй(?:те)?|как дела|спасибо|你好|您好|你好吗|谢谢|こんにちは|おはよう|元気ですか|ありがとう|안녕|안녕하세요|어떻게 지내|감사합니다|नमस्ते|आप कैसे हैं|धन्यवाद|สวัสดี|เป็นอย่างไรบ้าง|ขอบคุณ|halo|apa kabar|terima kasih|jambo|habari|asante)$/iu.test(s)}
 function metaConversation(message){
  const s=String(message||'').toLowerCase();
@@ -161,7 +182,7 @@ function conversationalFallback(message,language){const l=languageCode(language)
  sw:how?'Niko vizuri, asante. Niko tayari kusaidia. Ungependa kufanya nini?':'Jambo! Mimi ni SEEKVERA AI. Ninaweza kukusaidiaje?'
  };return replies[l]||replies.en}
 function usefulFallback(message,language,cat){const l=languageCode(language)||messageLanguage(message,'');if(cat&&cat!=='general')return fastRouteReply(l)||'✓';const r={
- ar:'فهمت طلبك. أعطيني تفصيلاً واحداً مهماً مثل المدينة أو التاريخ أو الميزانية، وسأكمل معك وأفتح القسم المناسب فقط عندما يصبح طلبك واضحاً.',
+ ar:'ما فهمت قصدك من هالجملة. شو الشي اللي بدك تلاقيه؟',
  en:'I understand what you need. Tell me one useful detail such as the city, date or budget, and I’ll continue and show the right section only when your request is clear.',
  fr:'Je comprends votre demande. Donnez-moi un détail utile, comme la ville, la date ou le budget, et je continuerai avant d’ouvrir la bonne section.',
  es:'Entiendo lo que necesitas. Dime un dato útil, como la ciudad, la fecha o el presupuesto, y continuaré antes de abrir la sección adecuada.',
@@ -299,12 +320,24 @@ async function transcribeAudio(request,env){
  try{const r=await timed(ASR_PRIMARY,primary,4800),text=clean(r?.text||r?.transcription_info?.text||r?.result?.text||r?.result||'',5000);if(text&&usable(r)){picked=r;pickedModel=ASR_PRIMARY;pickedFormat=strongHint?'base64-hinted':'base64-auto'}}catch(e){errors.push(ASR_PRIMARY+':'+clean(e?.message||e,140))}
  // Accept only audio-derived transcription with usable confidence metadata.
  let text=picked?clean(picked?.text||picked?.transcription_info?.text||picked?.result?.text||picked?.result||'',5000):'';
- const pickedLanguage=languageCode(picked?.language||picked?.detected_language||picked?.transcription_info?.language||picked?.result?.language||'');
+ const quality=r=>{
+   const info=r?.transcription_info||r?.result||r||{},segments=r?.segments||info.segments||[];
+   const logs=segments.map(x=>x.avg_logprob).filter(Number.isFinite),probs=segments.map(x=>x.no_speech_prob).filter(Number.isFinite);
+   const probability=[r?.language_probability,info.language_probability].find(Number.isFinite);
+   return{logprob:logs.length?logs.reduce((a,b)=>a+b,0)/logs.length:null,noSpeech:probs.length?Math.max(...probs):null,languageProbability:probability??null}
+ };
+ const initialQuality=quality(picked),initialLang=languageCode(picked?.language||picked?.detected_language||picked?.transcription_info?.language||picked?.result?.language||'');
+ const uncertain=initialQuality.logprob!==null&&initialQuality.logprob<-.65||initialQuality.noSpeech!==null&&initialQuality.noSpeech>.45||initialQuality.languageProbability!==null&&initialQuality.languageProbability<.7;
+ if(text&&uncertain&&!strongHint&&conversationHint&&conversationHint!==initialLang){
+   try{const retry=await timed(ASR_PRIMARY,{...common,audio:m[2],language:conversationHint},2800),rq=quality(retry),rt=clean(retry?.text||retry?.transcription_info?.text||retry?.result?.text||retry?.result||'',5000);
+     if(rt&&usable(retry)&&rq.logprob!==null&&initialQuality.logprob!==null&&rq.logprob>initialQuality.logprob+.25){picked=retry;text=rt;pickedFormat='base64-confidence-recovery'}
+   }catch(e){errors.push('confidence retry:'+clean(e?.message||e,80))}
+ }
  // Auto detection must not force Arabic or replace audio with a
  // phone transcript constrained to the UI language.
  // If the first pass failed, use legacy Whisper bytes as a bounded fallback.
  if(!text){try{const bin=atob(m[2]),audio=Array.from(bin,c=>c.charCodeAt(0)),input={...common,audio,...(strongHint?{language:strongHint}:{})};const r=await timed(ASR_FALLBACK,input,3200),t=clean(r?.text||r?.result?.text||r?.result||'',5000);if(t&&usable(r)){text=t;picked=r;pickedModel=ASR_FALLBACK;pickedFormat='bytes-fallback'}}catch(e){errors.push(ASR_FALLBACK+':'+clean(e?.message||e,140))}}
- if(text){const detected=clean(picked?.language||picked?.detected_language||picked?.transcription_info?.language||picked?.result?.language||'',24),language=languageCode(detected)||messageLanguage(text,strongHint||softHint);return json(request,{ok:true,text,language,detectedLanguage:language,model:pickedModel,audioFormat:pickedFormat,autoLanguage:!strongHint,languageHintUsed:strongHint||null,nativeRescue:pickedModel.startsWith('native-')},200)}
+ if(text){const q=quality(picked),needsReview=Boolean(q.logprob!==null&&q.logprob<-.65||q.noSpeech!==null&&q.noSpeech>.45||q.languageProbability!==null&&q.languageProbability<.7);const detected=clean(picked?.language||picked?.detected_language||picked?.transcription_info?.language||picked?.result?.language||'',24),language=languageCode(detected)||messageLanguage(text,strongHint||softHint);return json(request,{ok:true,text,language,needsReview,confidence:q,detectedLanguage:language,model:pickedModel,audioFormat:pickedFormat,autoLanguage:!strongHint,languageHintUsed:strongHint||null,nativeRescue:pickedModel.startsWith('native-')},200)}
  return json(request,{ok:false,error:'Voice transcription is temporarily unavailable',retryable:true,detail:errors.join(' | ')},503)
 }
 
@@ -313,7 +346,7 @@ function directCategoryIntent(message,modelCategory='general'){
  if(employmentIntent(message))return'jobs';
  if(/(?:کار.{0,24}(?:پیدا|بگرد)|(?:پیدا|بگرد).{0,24}کار|شغل.{0,24}(?:پیدا|بگرد)|(?:پیدا|بگرد).{0,24}شغل)/u.test(s))return'jobs';
  if(/(?:نوکری|ملازمت).{0,28}(?:تلاش|ڈھونڈ|چاہ)|(?:تلاش|ڈھونڈ).{0,28}(?:نوکری|ملازمت)/u.test(s))return'jobs';
- const action=/(?:\b(?:find|search|show|open|take me|go to|book|reserve|buy|sell|rent|need|want|looking for|look for|apply for|help me find|help me get)\b|دوريني|دورلي|ندور|عم دور|بدور|ابحث|أبحث|فتش|فتشي|بدي|اريد|أريد|احتاج|أحتاج|افتح|افتحي|وديني|ودّيني|خذني|خدني|احجز|احجزي|اشتري|بيع|استأجر|استاجر|ساعدني|ساعديني|cherch(?:e|er|ez)|trouv(?:e|er|ez)(?:-moi)?|montre(?:z|-moi)?|ouvre(?:z)?|réserve|reserver|achet(?:e|er)|vend(?:s|re)|lou(?:e|er)|besoin|veux|búscame|buscame|busca|buscar|encuéntrame|encuentrame|encuentra|muéstrame|muestrame|muestra|abre|llévame|llevame|quiero|necesito|reservar|comprar|vender|alquilar|procure|procurar|encontre|mostre|abra|quero|preciso|alugar|finde|finden|suche|such|zeige|zeig|öffne|offne|brauche|möchte|mochte|buchen|kaufen|verkaufen|mieten|trova|cerca|apri|mostra|voglio|cerco|bisogno|arıyorum|ariyorum|bana|ara|bul|göster|goster|aç|ac|istiyorum|rezerv|satın|kirala|найди|найти|ищу|открой|покажи|нужен|хочу|забронируй|купить|продать|аренд|找|搜索|打开|带我|我想|我需要|预订|购买|出售|租|探して|検索|開いて|連れて|見せて|欲しい|必要|予約|購入|売|借|찾아|검색|열어|데려|보여|원해|필요|예약|구매|판매|임대|खोज|ढूंढ|ढूँढ|खोल|दिखा|चाहिए|चाहता|बुक|खरीद|बेच|किराए|tìm|tim|tìm kiếm|mở|mở|hãy tìm|hay tim|cari|carikan|buka|tunjukkan|tolong|ingin|butuh|tafuta|fungua|onyesha|nataka|nahitaji|খুঁজ|খোঁজ|দেখাও|খুল|পাই|پیدا|باز کن|بگرد|می.?خواهم|میخوام|تلاش|ڈھونڈ|ڈھونڈو|کھولو|دکھاؤ|چاہیے)/iu.test(s)
+ const action=/(?:\b(?:find|search|show|open|take me|go to|book|reserve|buy|sell|rent|need|want|looking for|look for|apply for|help me find|help me get)\b|دوريني|دورلي|ندور|عم دور|بدور|ابحث|أبحث|فتش|فتشي|بدي|بدّي|عايز|عاوز|أبغى|ابغى|أبي|ابي|بغيت|اريد|أريد|احتاج|أحتاج|افتح|افتحي|وديني|ودّيني|خذني|خدني|احجز|احجزي|اشتري|بيع|استأجر|استاجر|ساعدني|ساعديني|cherch(?:e|er|ez)|trouv(?:e|er|ez)(?:-moi)?|montre(?:z|-moi)?|ouvre(?:z)?|réserve|reserver|achet(?:e|er)|vend(?:s|re)|lou(?:e|er)|besoin|veux|búscame|buscame|busca|buscar|encuéntrame|encuentrame|encuentra|muéstrame|muestrame|muestra|abre|llévame|llevame|quiero|necesito|reservar|comprar|vender|alquilar|procure|procurar|encontre|mostre|abra|quero|preciso|alugar|finde|finden|suche|such|zeige|zeig|öffne|offne|brauche|möchte|mochte|buchen|kaufen|verkaufen|mieten|trova|cerca|apri|mostra|voglio|cerco|bisogno|arıyorum|ariyorum|bana|ara|bul|göster|goster|aç|ac|istiyorum|rezerv|satın|kirala|найди|найти|ищу|открой|покажи|нужен|хочу|забронируй|купить|продать|аренд|找|搜索|打开|带我|我想|我需要|预订|购买|出售|租|探して|検索|開いて|連れて|見せて|欲しい|必要|予約|購入|売|借|찾아|검색|열어|데려|보여|원해|필요|예약|구매|판매|임대|खोज|ढूंढ|ढूँढ|खोल|दिखा|चाहिए|चाहता|बुक|खरीद|बेच|किराए|tìm|tim|tìm kiếm|mở|mở|hãy tìm|hay tim|cari|carikan|buka|tunjukkan|tolong|ingin|butuh|tafuta|fungua|onyesha|nataka|nahitaji|খুঁজ|খোঁজ|দেখাও|খুল|পাই|پیدا|باز کن|بگرد|می.?خواهم|میخوام|تلاش|ڈھونڈ|ڈھونڈو|کھولو|دکھاؤ|چاہیے)/iu.test(s)
  if(!action)return category(modelCategory);
  if(/(?:بدي|أريد|اريد|احتاج|أحتاج).{0,15}(?:أسافر|اسافر|سافر)|\b(?:i want to|i need to|let me) travel\b/iu.test(s))return'travel';
  const rules=[
@@ -344,13 +377,13 @@ function directCategoryIntent(message,modelCategory='general'){
 
 async function degradedFallback(request,env,ctx,body,message){
  const act=actionState(message,'','',body?.clientControls),language=messageLanguage(message,body?.language),meta=metaConversation(message),chat=conversationOnly(message)||meta,requested=directCategoryIntent(message,category(body?.conversationIntent||'general')),cat=(act.isAction||chat)?'general':requested,response=act.isAction?actionReply(language,act.cc,act.ll):meta?metaReply(message,language):chat?conversationalFallback(message,language):usefulFallback(message,language,cat);
- return json(request,{ok:true,response,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:'seekvera-r114-instant-local-fallback',fastPath:'r114-bounded-fallback',liveData:false},200)
+ return json(request,{ok:true,response,language,speechLocale:speechLocaleFor(language,message,body?.history),category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:'seekvera-r114-instant-local-fallback',fastPath:'r114-bounded-fallback',liveData:false},200)
 }
 
 async function runStructured(env,body){
  const message=clean(body?.message??body?.prompt,2400);if(!message)return null;
  const selected=clean(body?.country,120)||'Worldwide',targetLanguage=messageLanguage(message,body?.language),history=languageSafeHistory(body?.history,targetLanguage);
- const system=`You are SEEKVERA AI, the action assistant inside a worldwide marketplace and discovery app. You must understand the LATEST USER MESSAGE directly, including dialects, slang, Lebanese Arabic, mixed Arabic/English, transliteration, and any major world language. Never choose the reply language from the selected country, interface, or browser. Reply in the SAME language and script as the latest user message unless the user explicitly requests another reply language. The reply text itself MUST visibly use that language/script; never translate Arabic speech into Icelandic, English, or another language, and never claim one languageCode while writing in another language.\
+ const system=`You are SEEKVERA AI, the action assistant inside a worldwide marketplace and discovery app. You must understand the LATEST USER MESSAGE directly, including dialects, slang, Lebanese Arabic, mixed Arabic/English, transliteration, and any major world language. Never choose the reply language from the selected country, interface, or browser. Reply in the SAME language and script as the latest user message unless the user explicitly requests another reply language. Match the user’s DIALECT and register as well as language. Lebanese or Levantine Arabic must get natural spoken Lebanese Arabic, never Modern Standard Arabic. Egyptian, Gulf and Maghrebi speakers get their own dialect. Apply the same rule to slang, Pidgin and dialects in every language. Use the latest user turn and recent USER turns to preserve their dialect; never infer it from country, browser, or interface. Current Arabic dialect evidence: ${targetLanguage==='ar'?arabicDialect(message,body?.history):'not applicable'}. The reply text itself MUST visibly use that language/script; never translate Arabic speech into Icelandic, English, or another language, and never claim one languageCode while writing in another language.\
 \
 Return ONLY one JSON object with exactly these keys: reply, languageCode, category, countryAction, languageAction.\
 - reply: behave like a real conversational AI assistant. Hold a normal back-and-forth conversation, answer questions directly, understand corrections and follow-ups, and use the recent conversation as memory. For greetings and genuine knowledge questions, answer naturally. For requests to travel, buy, sell, find, book, work, visit or browse, choose the relevant section immediately and give one short acknowledgement in the user’s language. Do not ask for city, dates, budget, quantity or preferences before opening a section; those filters are available there. For a generic purchase request choose shopping; for a generic travel request choose travel. Ask a clarification only when no section can be determined.\
@@ -370,8 +403,8 @@ Latest user message: ${message}`;
    const r=await Promise.race([env.AI.run(model,{messages,temperature:.18,max_tokens:420}),new Promise((_,reject)=>setTimeout(()=>reject(Error('model timeout')),3000))]),text=modelText(r),obj=parseJSON(text);if(!obj||!clean(obj.reply,5000))throw Error('invalid structured response');
    const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode||targetLanguage),declared=languageCode(obj.languageCode),meta=metaConversation(message),modelCat=category(obj.category),cat=(act.isAction||conversationOnly(message)||meta)?'general':directCategoryIntent(message,modelCat);
    if(declared&&declared!==language&&!translationRequest(message)&&!replyMatchesLanguage(obj.reply,language,message))throw Error('model language mismatch');
-   let reply=act.isAction?actionReply(language,act.cc,act.ll):cat!=='general'&&fastRouteReply(language)?fastRouteReply(language):guardedReply(obj.reply,language,message);if(!reply)throw Error('reply language mismatch');if(meta&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
-   return{ok:true,response:reply,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model,fastPath:act.isAction?'r114-verified-action-first':meta?'r114-meta-conversation-guard':'r114-fast-model-race',liveData:false}
+   let reply=act.isAction?actionReply(language,act.cc,act.ll):cat!=='general'&&routeReplyFor(language,message,body?.history)?routeReplyFor(language,message,body?.history):guardedReply(obj.reply,language,message);if(!reply)throw Error('reply language mismatch');if(meta&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
+   return{ok:true,response:reply,language,speechLocale:speechLocaleFor(language,message,body?.history),category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model,fastPath:act.isAction?'r114-verified-action-first':meta?'r114-meta-conversation-guard':'r114-fast-model-race',liveData:false}
  };
  try{const winner=await Promise.race([Promise.any([FAST,PRIMARY,FALLBACK].map(modelAttempt)),new Promise(resolve=>setTimeout(()=>resolve(null),3300))]);if(winner)return winner}catch(_){}
  // Keep a real conversational AI fallback, but never let it stall the UI.
@@ -384,8 +417,8 @@ Latest user message: ${message}`;
        const raw=await br.text(),obj=parseJSON(raw);
        if(obj&&clean(obj.reply,5000)){
          const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode||targetLanguage),declared=languageCode(obj.languageCode),meta=metaConversation(message),modelCat=category(obj.category),cat=(act.isAction||conversationOnly(message)||meta)?'general':directCategoryIntent(message,modelCat);
-         let reply=act.isAction?actionReply(language,act.cc,act.ll):cat!=='general'&&fastRouteReply(language)?fastRouteReply(language):guardedReply(obj.reply,language,message);if(declared&&declared!==language&&!translationRequest(message)&&!replyMatchesLanguage(obj.reply,language,message))reply='';if(meta&&reply&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
-         if(reply)return{ok:true,response:reply,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:'pollinations-private-conversation-fallback',fastPath:'r117-language-guard-fallback',liveData:false}
+         let reply=act.isAction?actionReply(language,act.cc,act.ll):cat!=='general'&&routeReplyFor(language,message,body?.history)?routeReplyFor(language,message,body?.history):guardedReply(obj.reply,language,message);if(declared&&declared!==language&&!translationRequest(message)&&!replyMatchesLanguage(obj.reply,language,message))reply='';if(meta&&reply&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
+         if(reply)return{ok:true,response:reply,language,speechLocale:speechLocaleFor(language,message,body?.history),category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:'pollinations-private-conversation-fallback',fastPath:'r117-language-guard-fallback',liveData:false}
        }
        const plain=guardedReply(raw,targetLanguage,message);if(plain){const language=targetLanguage,meta=metaConversation(message),cat=(conversationOnly(message)||meta)?'general':directCategoryIntent(message,'general');return{ok:true,response:plain,language,category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:null,languageAction:null,model:'pollinations-private-conversation-plain',fastPath:'r117-language-guard-plain',liveData:false}}
      }
@@ -447,8 +480,8 @@ function fastActionResult(message,body){
  }
  const cat=directCategoryIntent(message,'general');
  if(cat!=='general'&&FAST_DIRECT_LANGS.has(language)){
-  const response=fastRouteReply(language)||usefulFallback(message,language,cat);
-  return{ok:true,response,language,category:cat,route:ROUTES[cat]||ROUTES.marketplace,countryAction:null,languageAction:null,model:'seekvera-r120-direct-intent',fastPath:'r120-direct-intent',liveData:false}
+  const response=routeReplyFor(language,message,body?.history)||usefulFallback(message,language,cat);
+  return{ok:true,response,language,speechLocale:speechLocaleFor(language,message,body?.history),category:cat,route:ROUTES[cat]||ROUTES.marketplace,countryAction:null,languageAction:null,model:'seekvera-r120-direct-intent',fastPath:'r120-direct-intent',liveData:false}
  }
  return null
 }

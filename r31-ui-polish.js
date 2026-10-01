@@ -435,7 +435,7 @@
   }
   function shouldAutoRoute(q, cat) {
     if (!cat || cat === "general") return false;
-    if (isKnowledgeQuestion(q) && !/(?:\b(?:find|search|show|book|buy|sell|rent|need|want|looking for)\b|بدي|أريد|اريد|اشتري|أشتري|دور|احجز|خدني|وديني|cherche|veux|besoin|quiero|busca|suche|möchte|我想|探して|찾아)/iu.test(q)) return false;
+    if (isKnowledgeQuestion(q) && !/(?:\b(?:find|search|show|book|buy|sell|rent|need|want|looking for)\b|بدي|بدّي|عايز|عاوز|أبغى|ابغى|أبي|ابي|بغيت|أريد|اريد|اشتري|أشتري|دور|احجز|خدني|وديني|cherche|veux|besoin|quiero|busca|suche|möchte|我想|探して|찾아)/iu.test(q)) return false;
     return true;
   }
   function routeUrl(cat, q) {
@@ -955,6 +955,7 @@
           detail: {
             text: reply,
             language: d.language || "auto",
+            speechLocale: d.speechLocale || d.language || "auto",
             category: finalCat,
             route: ROUTES[finalCat] || d?.route,
           },
