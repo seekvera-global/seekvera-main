@@ -68,5 +68,18 @@
     "الجزيرة",
     "🌍 Botswana"
   ],
-  "decision": "Final certification remains blocked; coverage must be repaired against the current release."
+  "decision": "Final certification remains blocked; coverage must be repaired against the current release.",
+  "reviewedLocalFallbacks": {
+    "languages": [
+      "fr",
+      "ar"
+    ],
+    "keys": [
+      "Audio could not play. Tap the speaker to retry.",
+      "I could not understand that audio yet — tap the microphone and try again.",
+      "Understanding your speech…",
+      "Voice recognition is not supported in this browser."
+    ],
+    "note": "Available through QUICK lookup; keys remain absent from the shared 98-language source inventory. Other languages and dynamic state rendering still require coverage."
+  }
 }

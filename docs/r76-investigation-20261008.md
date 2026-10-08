@@ -51,3 +51,17 @@ The auto-triggered legacy R35 run 37774318592 has a failed Serbian build (job 11
 A separate coverage inventory records five new static keys and 59 observed dynamic keys missing from the recorded static source (`r125-translation-coverage-gaps.json`). This inventory is diagnostic, not a claim that every untranslated phrase has been found. Fresh hashes of the four repaired live assets matched the tested local files after deployment.
 
 The Serbian failure provides a concrete external-service blocker: Google translation returned HTTP 429, then the public fallback returned HTTP 500 followed by HTTP 402 Payment Required. The system must not treat this as a valid translation, silently approve a pack, or incur payment to bypass it.
+
+## Completion follow-up
+
+The existing same-origin translation endpoint was also tested. It returned HTTP 200 for a French batch, but its 1B-model output incorrectly translated “speaker” as “microphone” and changed the grammatical subject of “Understanding your speech…”. Availability therefore does not resolve linguistic quality. Four reviewed French and Arabic voice labels are now provided by the existing local QUICK dictionary before cached or generated translations; the static 1,045-key manifest remains unchanged. This does not complete other languages or dynamic coverage.
+
+Commit `b8c5e27b6e40af6c2567e802d9fd3e6a2f0487d2` deployed successfully through run 37776102408, Cloudflare version `14b8b26b-6d50-4619-bbb9-d7f2bd14accf`. All audio-authority steps passed, including three live speech languages, four chat cases, 31 Arabic descriptions and delayed playback before navigation. The production i18n asset exactly matched the reviewed local bytes.
+
+R105 initially rejected the updated i18n version because its source check pinned the previous version. The check was updated to the new exact version, with the locale regression added; the validation was not removed. The current-live checker now always records `finalApproval: false` and the outstanding coverage, linguistic review and physical-device checks. A passing exact-node leak audit is not final release certification.
+
+The completion audit passed 98 static packs, 248 country states, 31 route links and 392 page/language combinations across four paths: home, games, deal-agent and everyday. Seven blocked dynamic translation requests confirm that this run did not silently depend on online translation for the recorded phrases. This is a four-path scope, not a complete 28-path rerun. The deployment changed during the audit, so it is not an immutable-commit full certification. Its report is `r125-completion-certification-20261008.json`, explicitly `finalApproval: false`. Separate live lookups passed all four reviewed voice labels in both French and Arabic.
+
+R105 also pinned the previous version in its live-asset assertion; that assertion has now been aligned with the exact new version. The intermediate failed runs deployed successfully but rejected that stale assertion; their logs showed healthy AI, country control and safety responses.
+
+Final current-release deployment run 37776583799 completed successfully for commit `d3fcf11b070f6a653e0ccf4fd633ccf7e266eeb6`, Cloudflare version `16015ab5-76b4-4203-a039-09278bcb9325`. Validation, deployment and live health/chat/country-control/safety checks passed. This success resolves the stale version assertions; it does not override the explicit final-approval gaps.
