@@ -45,3 +45,9 @@ PR #7 was merged as `9bc574f1a6a60777201ead9a7d361f6e6109a9ff`. Current R125 dep
 Post-deployment focused checking (without candidate overrides) passed 98 live pack integrity checks, 248 atomic country states and 52 page/language checks covering the reported failures. Evidence is in `r125-postdeploy-certification-20261008.json`; its `finalApproval` is explicitly false because dynamic source coverage, translation quality and physical device audio remain incomplete. These focused results must not be described as a new full 2,744-combination pass.
 
 A legacy R35 workflow also auto-triggered through the shared builder path. Its French build passed (job 113301325780), providing an external translation-build check, but it extracts only 970 strings and is not a certification of the current 1,045-string static source. Future R35 executions are now manual-only as well.
+
+The auto-triggered legacy R35 run 37774318592 has a failed Serbian build (job 113301331429). Its final deployment job depends on successful completion of the entire build matrix and has no override condition, so this attempt cannot reach the old R35 deployment. Remaining matrix jobs may finish, but no R35 release is approved or published by this failed attempt. The future automatic trigger has been removed.
+
+A separate coverage inventory records five new static keys and 59 observed dynamic keys missing from the recorded static source (`r125-translation-coverage-gaps.json`). This inventory is diagnostic, not a claim that every untranslated phrase has been found. Fresh hashes of the four repaired live assets matched the tested local files after deployment.
+
+The Serbian failure provides a concrete external-service blocker: Google translation returned HTTP 429, then the public fallback returned HTTP 500 followed by HTTP 402 Payment Required. The system must not treat this as a valid translation, silently approve a pack, or incur payment to bypass it.
