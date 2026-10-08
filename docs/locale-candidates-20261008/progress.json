@@ -1,6 +1,16 @@
 {
-  "checkpointUtc": "2026-10-08T17:29:15.346525+00:00",
-  "published": false,
+  "sourceHash": "6a1126e6a2ce5629",
+  "completed": [
+    "en"
+  ],
+  "failures": [
+    {
+      "language": "ar",
+      "error": "HTTP Error 503: Service Unavailable {\"ok\":false,\"error\":\"Daily free translation allocation exhausted\",\"retryable\":true,\"reason\":\"daily_free_ai_limit\"}"
+    }
+  ],
   "finalApproval": false,
-  "resumeExitCode": 1
+  "checkpointUtc": "2026-10-08T17:29:55.578761+00:00",
+  "published": false,
+  "resumeExitCode": 0
 }
