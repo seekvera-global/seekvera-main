@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-08",
+  "productionCommit": "9a5abd251fdaee3ce4deae0396a5934af3d98a4e",
+  "productionDeploymentRun": 37815278228,
+  "productionDeploymentConclusion": "success",
+  "finalApproval": false,
+  "changes": [
+    "Production workflow now triggers for imported worker*.js, game and r32 locale runtime changes.",
+    "Production validation includes UI translation parser regression tests."
+  ],
+  "validation": {
+    "localRegressionSuites": [
+      "audio-authority",
+      "direct-voice",
+      "locale-cognates",
+      "ui-translation",
+      "tts-envelope",
+      "dialect-voice",
+      "pack-validation"
+    ],
+    "liveBrowserVoicePlaceholders": [
+      "fr",
+      "ar"
+    ],
+    "candidateBrowserGameDescriptions": {
+      "languages": [
+        "fr",
+        "ar"
+      ],
+      "gamesPerLanguage": 50,
+      "filterLogic": "passed",
+      "savedChatPreservation": "passed",
+      "translationOutageResponsiveness": "passed"
+    },
+    "candidateIntegrity": {
+      "sourceCount": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "completeCandidates": 20,
+      "totalSupportedLanguages": 98,
+      "published": false,
+      "semanticQualityCertified": false
+    }
+  },
+  "blockers": [
+    "Project /api/ui-translate returned HTTP 503 with reason daily_free_ai_limit during this session.",
+    "78 language candidates remain incomplete or unreviewed; Romansh is a known quality blocker.",
+    "Independent linguistic review remains outstanding.",
+    "Physical microphone and audible-speaker checks on Android, iPhone/iPad and desktop are not performed by headless browser tests."
+  ],
+  "resume": {
+    "candidateBranch": "work/r125-locale-candidates-20261008",
+    "candidateDirectory": "docs/locale-candidates-20261008",
+    "tool": "tools/build_current_locale_delta.py",
+    "policy": "Resume existing candidate packs; do not replace production source or manifest with a partial release."
+  }
+}
