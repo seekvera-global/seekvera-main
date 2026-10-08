@@ -57,7 +57,7 @@ function localizeCountryOptions(state){
   for(const o of c.options){
     const cc=String(o.value||'').toUpperCase();
     if(cc==='WW'){const ww=window.SEEKVERA_LOCALE_R14?.t?.('worldwide')||'Worldwide';o.textContent='🌐 '+ww;continue}
-    if(/^[A-Z]{2}$/.test(cc)){try{o.textContent=dn?.of(cc)||o.textContent||cc}catch{}}
+    if(/^[A-Z]{2}$/.test(cc)){try{const en=displayRegion(cc,'en'),tr=window.SEEKVERA_I18N?.t?.(en);o.textContent=tr&&tr!==en?tr:(dn?.of(cc)||o.textContent||cc)}catch{}}
   }
 }
 function localizeLanguageOptions(state){

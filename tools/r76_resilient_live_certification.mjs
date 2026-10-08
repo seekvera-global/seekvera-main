@@ -1,6 +1,14 @@
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 
+// page.evaluate has no Playwright timeout: bound the whole process as well.
+const watchdog=setTimeout(()=>{console.error('R76_CERTIFICATION_DEADLINE_EXCEEDED');process.exit(1)},12*60*1000);
+async function bounded(label,fn,ms=15000){
+ let timer;console.log('R76_CHECK_START',label);
+ try{return await Promise.race([fn(),new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('R76_CHECK_TIMEOUT '+label)),ms)})])}
+ finally{clearTimeout(timer)}
+}
+
 const B='https://seekveraglobal.com';
 const VER='20260926-r76-complete-global-final';
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
@@ -32,12 +40,21 @@ const packs={};
 for(let i=0;i<98;i+=14){await Promise.all(manifest.languages.slice(i,i+14).map(async l=>{const r=await ctx.request.get(B+'/i18n-r32/'+l+'.json?v='+manifest.sourceHash,{timeout:25000});assert.equal(r.status(),200,l);const d=await r.json();assert.equal(d.count,1045,l);assert.equal(d.sourceHash,manifest.sourceHash,l);packs[l]=d.translations}));}
 console.log('R76_98_STATIC_PACKS_PASS',manifest.sourceHash);
 
-const matrix=await page.evaluate(async()=>{const bad=[];for(const [cc,pr] of Object.entries(SEEKVERA_LOCALE_R15.profiles)){SEEKVERA_LOCALE_R15.setCountry(cc);await new Promise(r=>setTimeout(r,2));const g={cc:country?.value,l:lang?.value,c:currency?.value,html:document.documentElement.lang};if(g.cc!==cc||g.l!==pr.language||g.c!==pr.currency||g.html!==pr.language)bad.push({cc,pr,g})}return{n:Object.keys(SEEKVERA_LOCALE_R15.profiles).length,bad}});
+// Install translation interception before any country changes, not after them.
+const uiFallbacks=[];await ctx.route('**/api/ui-translate',async route=>{uiFallbacks.push(route.request().url());await route.fulfill({status:503,contentType:'application/json',body:'{"ok":false}'});});
+await ctx.route('https://text.pollinations.ai/**',async route=>{uiFallbacks.push(route.request().url());await route.abort();});
+const profiles=await bounded('country profiles',()=>page.evaluate(()=>SEEKVERA_LOCALE_R15.profiles));
+const matrix={n:Object.keys(profiles).length,bad:[]};
+for(const [cc,pr] of Object.entries(profiles)){
+ const g=await bounded('country '+cc,()=>page.evaluate(cc=>{
+  SEEKVERA_LOCALE_R15.setCountry(cc);
+  return {cc:document.querySelector('#country')?.value,l:document.querySelector('#lang')?.value,c:document.querySelector('#currency')?.value,html:document.documentElement.lang};
+ },cc));
+ if(g.cc!==cc||g.l!==pr.language||g.c!==pr.currency||g.html!==pr.language)matrix.bad.push({cc,pr,g});
+}
 assert(matrix.n>=248,matrix.n);assert.equal(matrix.bad.length,0,JSON.stringify(matrix.bad.slice(0,8)));
 console.log('R76_COUNTRY_ATOMIC_PASS',matrix.n);
 
-const uiFallbacks=[];await ctx.route('**/api/ui-translate',async route=>{uiFallbacks.push(route.request().url());await route.fulfill({status:503,contentType:'application/json',body:'{"ok":false}'});});
-await ctx.route('https://text.pollinations.ai/**',async route=>{uiFallbacks.push(route.request().url());await route.abort();});
 await page.goto(B+'/?r76alllangs='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});await page.waitForFunction(()=>window.SEEKVERA_LOCALE_R15&&window.SEEKVERA_I18N_R32,{timeout:25000});
 await pause(700);await page.evaluate(()=>SEEKVERA_LOCALE_R15.setLanguage('en'));await pause(250);
 const candidateEnglish=source.strings.filter(s=>s.length>=12&&(s.match(/[A-Za-z][A-Za-z'’+-]{2,}/g)||[]).length>=2&&!s.includes('SEEKVERA')&&!/https?:\/\/|@/.test(s));
@@ -91,3 +108,4 @@ const idx=await (await ctx.request.get(B+'/?r76marker='+Date.now(),{timeout:2500
 assert.equal(errors.length,0,'page errors '+errors.slice(0,10).join(' | '));
 console.log('R76_RESILIENT_LIVE_CERTIFIED',JSON.stringify({apiStatus,countries:matrix.n,languages:manifest.languages.length,categoryRoutes:hrefs.length,sectionPaths:paths.length,replyMs,chatSaved:true,ttsCalls:spoken,browserAi:true}));
 await browser.close();
+clearTimeout(watchdog);

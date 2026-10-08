@@ -26,6 +26,13 @@ FORCE_UI=[
     'Popular categories','Live marketplace','Request anything','Privacy','Terms','Contact','Disclosure','Approved real listings only.','Loading approved listings…'
 ]
 
+# Exact, language-specific cognates; all other forced labels remain strict.
+VALID_UNCHANGED_UI={'fr':{'Contact'},'it':{'Privacy'},'nl':{'Privacy'}}
+
+def forced_ui_unchanged(code:str,source:str,value:str)->bool:
+    return (source in FORCE_UI and source not in VALID_UNCHANGED_UI.get(code,set())
+            and clean_text(source)==clean_text(value))
+
 def clean_text(s:str)->str:return re.sub(r'\s+',' ',str(s or '')).strip()
 def worth(s:str)->bool:
     s=clean_text(s)
@@ -153,7 +160,7 @@ def english_sentence(s:str)->bool:
     return len(words)>=2 and len(s)>=7 and not re.match(r'^(?:https?://|www\.)',s,re.I)
 
 def repair_unchanged(code:str,source:list[str],vals:list[str])->list[str]:
-    idx=[i for i,(s,v) in enumerate(zip(source,vals)) if clean_text(s)==clean_text(v) and (s in FORCE_UI or english_sentence(s))]
+    idx=[i for i,(s,v) in enumerate(zip(source,vals)) if clean_text(s)==clean_text(v) and (forced_ui_unchanged(code,s,v) or english_sentence(s))]
     if not idx:return vals
     print('REPAIR_UNCHANGED',code,len(idx),flush=True)
     def one(i):
@@ -215,7 +222,7 @@ def build(code:str):
     corrupt=[source[i] for i,v in enumerate(vals) if not translation_sane(source[i],v)]
     if corrupt:raise RuntimeError(f'{code}: corrupt oversized translations: {corrupt[:8]}')
     trans={s:v for s,v in zip(source,vals)}
-    failed=[s for s in FORCE_UI if s in trans and clean_text(trans[s])==clean_text(s)] if code!='en' else []
+    failed=[s for s in FORCE_UI if s in trans and forced_ui_unchanged(code,s,trans[s])] if code!='en' else []
     if failed:raise RuntimeError(f'{code}: forced UI remained English: {failed[:8]}')
     payload={'version':VERSION,'sourceHash':h,'language':code,'count':len(source),'provider':provider,'translations':trans}
     p=OUT/f'{code}.json';p.write_text(json.dumps(payload,ensure_ascii=False,separators=(',',':')),encoding='utf-8')

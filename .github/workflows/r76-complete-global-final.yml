@@ -1,12 +1,7 @@
 name: R76 complete global language AI voice final
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/r76-complete-global-final.yml'
-      - 'worker-r76.js'
-      - 'tools/r76_apply_release.py'
+  # Historical R76 deployment is manual-only; production has advanced to R125.
   workflow_dispatch:
 
 permissions:
@@ -27,6 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python -m pip install --quiet beautifulsoup4 Babel
+      - run: python tools/test_r76_pack_validation.py
       - name: Prepare complete current-site translation source
         id: meta
         shell: bash

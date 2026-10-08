@@ -96,6 +96,7 @@ jobs:
           npx playwright install --with-deps chromium >/dev/null
 
       - name: Run resilient live certification
+        timeout-minutes: 15
         shell: bash
         run: |
           set -euo pipefail
