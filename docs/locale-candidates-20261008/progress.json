@@ -1,5 +1,6 @@
 {
-  "checkpointUtc": "2026-10-08T17:28:04.857773+00:00",
+  "checkpointUtc": "2026-10-08T17:29:15.346525+00:00",
   "published": false,
-  "finalApproval": false
+  "finalApproval": false,
+  "resumeExitCode": 1
 }
