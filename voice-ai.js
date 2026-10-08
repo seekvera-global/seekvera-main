@@ -22,6 +22,7 @@ function compactVoiceTranscript(text){
   }
   return value
 }
+function setVoicePlaceholder(el,source){if(!el)return;const i18n=window.SEEKVERA_I18N;if(i18n?.setAttributeSource)i18n.setAttributeSource(el,'placeholder',source);else el.placeholder=i18n?.t?i18n.t(source):source}
 function acceptVoiceTurn(text){
   const key=normalizedTurnText(text),now=Date.now();
   if(!key)return false;
@@ -285,7 +286,7 @@ function speak(text,l,force=false){
     if(!nativeSpeak(chunks,token)){
       voiceConversation=false;
       const input=document.getElementById('aiChatInput');
-      if(input)input.placeholder='Audio could not play. Tap the speaker to retry.';
+      if(input)setVoicePlaceholder(input,'Audio could not play. Tap the speaker to retry.');
       window.dispatchEvent(new CustomEvent('seekvera:tts-error',{detail:{reason:'playback_failed'}}))
     }
   })
@@ -302,7 +303,7 @@ async function serverVoice(targetId,button,fallbackNative=false){
   activeButton=button||document.getElementById('aiChatMic')||document.querySelector('.sv-global-compose .mic');
   const i=document.getElementById(targetId||'aiChatInput');
   if(recording){try{mediaRecorder?.stop()}catch(_){releaseStream()}return}
-  if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){voiceConversation=false;if(i)i.placeholder='Voice input is unavailable on this browser — please type your message.';return}
+  if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){voiceConversation=false;if(i)setVoicePlaceholder(i,'Voice input is unavailable on this browser — please type your message.');return}
   try{
     stopSpeech();enableVoiceConversation();
     mediaStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
@@ -310,24 +311,24 @@ async function serverVoice(targetId,button,fallbackNative=false){
     for(const mt of ['audio/webm;codecs=opus','audio/mp4','audio/webm','audio/ogg;codecs=opus']){try{if(MediaRecorder.isTypeSupported?.(mt)){opts={mimeType:mt};break}}catch(_){} }
     mediaRecorder=new MediaRecorder(mediaStream,opts);recording=true;nativeShadowText='';nativeShadowConfidence=0;
     mediaRecorder.ondataavailable=e=>{if(e.data?.size)recordChunks.push(e.data)};
-    mediaRecorder.onerror=()=>{if(i)i.placeholder='Microphone recording failed — please type your message.';voiceConversation=false;releaseStream()};
+    mediaRecorder.onerror=()=>{if(i)setVoicePlaceholder(i,'Microphone recording failed — please type your message.');voiceConversation=false;releaseStream()};
     mediaRecorder.onstop=async()=>{
       const chunks=[...recordChunks],type=mediaRecorder?.mimeType||chunks[0]?.type||'audio/webm',shadowText=nativeShadowText,shadowConfidence=nativeShadowConfidence;
       stopNativeShadow();if(recordTimer){clearTimeout(recordTimer);recordTimer=null}stopAudioMonitor();
       try{mediaStream?.getTracks?.().forEach(x=>x.stop())}catch(_){}mediaStream=null;mediaRecorder=null;recording=false;recordChunks=[];setMic(false);
-      if(!chunks.length){voiceConversation=false;if(i)i.placeholder='No speech recorded — tap the microphone and try again.';return}
+      if(!chunks.length){voiceConversation=false;if(i)setVoicePlaceholder(i,'No speech recorded — tap the microphone and try again.');return}
       try{
-        if(i)i.placeholder='Understanding your speech…';
+        if(i)setVoicePlaceholder(i,'Understanding your speech…');
         const blob=new Blob(chunks,{type}),whisper=await automaticMultilingualTranscribe(blob,shadowText,shadowConfidence),d=chooseHybridTranscript(shadowText,shadowConfidence,whisper);
-        if(d?.needsReview){voiceConversation=false;voiceReplyDeadline=0;if(i){i.value=d.text;i.placeholder=selectedLang()==='ar'?'تأكّد من الكلام، وبعدين اضغط إرسال.':'Please check the words, then tap Send.';i.focus?.()}return}
+        if(d?.needsReview){voiceConversation=false;voiceReplyDeadline=0;if(i){i.value=d.text;setVoicePlaceholder(i,'Please check the words, then tap Send.');i.focus?.()}return}
         if(d?.language&&d.language!=='auto')rememberChatVoiceLanguage(d.language,d.text);
-        if(i){const spoken=compactVoiceTranscript(d?.text||'');i.value=spoken;i.placeholder='Message SEEKVERA AI…';if(spoken&&acceptVoiceTurn(spoken)){voiceReplyDeadline=Date.now()+90000;setTimeout(()=>{if(window.SEEKVERA_R31?.submitAI)window.SEEKVERA_R31.submitAI(spoken,{fromVoice:true});else i.form?.requestSubmit?.()},35)}else{voiceConversation=false}}
-      }catch(e){voiceConversation=false;seedVoiceLanguageFromConversation();if(i)i.placeholder='I could not understand that audio yet — tap the microphone and try again.'}
+        if(i){const spoken=compactVoiceTranscript(d?.text||'');i.value=spoken;setVoicePlaceholder(i,'Message SEEKVERA AI…');if(spoken&&acceptVoiceTurn(spoken)){voiceReplyDeadline=Date.now()+90000;setTimeout(()=>{if(window.SEEKVERA_R31?.submitAI)window.SEEKVERA_R31.submitAI(spoken,{fromVoice:true});else i.form?.requestSubmit?.()},35)}else{voiceConversation=false}}
+      }catch(e){voiceConversation=false;seedVoiceLanguageFromConversation();if(i)setVoicePlaceholder(i,'I could not understand that audio yet — tap the microphone and try again.')}
     };
-    mediaRecorder.start(250);setMic(true);if(i)i.placeholder='Listening… I will send after you finish speaking';
+    mediaRecorder.start(250);setMic(true);if(i)setVoicePlaceholder(i,'Listening… I will send after you finish speaking');
     startAudioMonitor(mediaStream,()=>{if(recording&&mediaRecorder?.state==='recording')mediaRecorder.stop()});
     recordTimer=setTimeout(()=>{if(recording&&mediaRecorder?.state==='recording')mediaRecorder.stop()},VOICE_MAX_MS);
-  }catch(e){voiceConversation=false;releaseStream();if(i)i.placeholder=e?.name==='NotAllowedError'?'Microphone permission was not allowed — please enable it or type your message.':'Microphone is unavailable — please type your message.'}
+  }catch(e){voiceConversation=false;releaseStream();if(i)setVoicePlaceholder(i,e?.name==='NotAllowedError'?'Microphone permission was not allowed — please enable it or type your message.':'Microphone is unavailable — please type your message.')}
 }
 
 function start(targetId,button,forceNative=false){
@@ -340,7 +341,7 @@ function start(targetId,button,forceNative=false){
   if(navigator.mediaDevices?.getUserMedia&&window.MediaRecorder&&!forceNative){serverVoice(targetId,activeButton,true);return}
   if(!SpeechRecognition){
     if(navigator.mediaDevices?.getUserMedia&&window.MediaRecorder){serverVoice(targetId,activeButton,false);return}
-    voiceConversation=false;if(i)i.placeholder='Voice recognition is not supported in this browser.';return
+    voiceConversation=false;if(i)setVoicePlaceholder(i,'Voice recognition is not supported in this browser.');return
   }
   const r=new SpeechRecognition();recognition=r;r.lang=voiceInputLocale();r.interimResults=true;r.continuous=!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);r.maxAlternatives=1;
   let final='',hadError=false,heardAny=false;
@@ -355,10 +356,10 @@ function start(targetId,button,forceNative=false){
     return (base+' '+bw.slice(overlap).join(' ')).trim()
   };
   const scheduleSilence=()=>{if(speechSilenceTimer)clearTimeout(speechSilenceTimer);speechSilenceTimer=setTimeout(()=>{try{if(recognition===r)r.stop()}catch(_){}},VOICE_SILENCE_MS)};
-  r.onstart=()=>{setMic(true);if(i)i.placeholder='Listening…';speechHardTimer=setTimeout(()=>{try{if(recognition===r)r.stop()}catch(_){}},Math.min(VOICE_MAX_MS,50000))};
-  r.onresult=e=>{let rebuilt='',interim='';heardAny=true;for(let x=0;x<e.results.length;x++){const t=String(e.results[x][0]?.transcript||'').replace(/\s+/g,' ').trim();if(!t)continue;if(e.results[x].isFinal)rebuilt=mergeTranscript(rebuilt,t);else interim=mergeTranscript(interim,t)}final=rebuilt;if(i){i.value=mergeTranscript(final,interim);i.placeholder='Message SEEKVERA AI…'}scheduleSilence()};
-  r.onerror=e=>{if(!['no-speech','aborted'].includes(e?.error))hadError=true;if(e?.error==='no-speech'&&!heardAny){voiceConversation=false;if(i)i.placeholder='I did not hear speech — tap the microphone and speak again.'}};
-  r.onend=()=>{clearSpeechTimers();setMic(false);if(recognition===r)recognition=null;const q=compactVoiceTranscript(i?.value||'');if(i)i.value=q;if(q&&acceptVoiceTurn(q)){voiceReplyDeadline=Date.now()+90000;if(i)i.placeholder='Message SEEKVERA AI…';setTimeout(()=>i.form?.requestSubmit?.(),25)}else{voiceConversation=false;if(i&&hadError)i.placeholder='Voice recognition failed — tap the microphone and try again.'}};
+  r.onstart=()=>{setMic(true);if(i)setVoicePlaceholder(i,'Listening…');speechHardTimer=setTimeout(()=>{try{if(recognition===r)r.stop()}catch(_){}},Math.min(VOICE_MAX_MS,50000))};
+  r.onresult=e=>{let rebuilt='',interim='';heardAny=true;for(let x=0;x<e.results.length;x++){const t=String(e.results[x][0]?.transcript||'').replace(/\s+/g,' ').trim();if(!t)continue;if(e.results[x].isFinal)rebuilt=mergeTranscript(rebuilt,t);else interim=mergeTranscript(interim,t)}final=rebuilt;if(i){i.value=mergeTranscript(final,interim);setVoicePlaceholder(i,'Message SEEKVERA AI…')}scheduleSilence()};
+  r.onerror=e=>{if(!['no-speech','aborted'].includes(e?.error))hadError=true;if(e?.error==='no-speech'&&!heardAny){voiceConversation=false;if(i)setVoicePlaceholder(i,'I did not hear speech — tap the microphone and speak again.')}};
+  r.onend=()=>{clearSpeechTimers();setMic(false);if(recognition===r)recognition=null;const q=compactVoiceTranscript(i?.value||'');if(i)i.value=q;if(q&&acceptVoiceTurn(q)){voiceReplyDeadline=Date.now()+90000;if(i)setVoicePlaceholder(i,'Message SEEKVERA AI…');setTimeout(()=>i.form?.requestSubmit?.(),25)}else{voiceConversation=false;if(i&&hadError)setVoicePlaceholder(i,'Voice recognition failed — tap the microphone and try again.')}};
   try{r.start()}catch(_){recognition=null;voiceConversation=false;clearSpeechTimers();setMic(false);serverVoice(targetId,activeButton)}
 }
 function speakerAction(btn){voiceConversation=false;muted=false;localStorage.setItem('seekvera_voice_muted','0');updateSpeakerButtons();unlockTTS();speak(lastAnswer||'SEEKVERA',lastLocale||locale(),true);if(btn){btn.textContent='🔊';btn.setAttribute('aria-label','🔊')}}

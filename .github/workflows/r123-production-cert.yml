@@ -18,6 +18,7 @@ on:
       - 'global-ui.js'
       - 'locale-r15.js'
       - 'tools/test-locale-cognates.cjs'
+      - 'tools/test-voice-placeholders.mjs'
       - '.github/workflows/r123-production-cert.yml'
 permissions:
   contents: read
@@ -121,3 +122,6 @@ jobs:
 
       - name: Verify complete voice acknowledgement before navigation
         run: node tools/r124_browser.mjs
+
+      - name: Verify dynamic voice placeholder localization
+        run: node tools/test-voice-placeholders.mjs

@@ -1,6 +1,7 @@
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+const output=process.env.CERT_OUTPUT||'docs/current-live-certification.json';
 const B='https://seekveraglobal.com';
 const result={startedAt:new Date().toISOString(),passed:[],failures:[],finalApproval:false,remainingChecks:['Complete current static and dynamic source coverage in all supported languages','Review linguistic accuracy, including partially English translations','Human microphone and audible speaker checks on Android, iPhone/iPad and desktop'],scope:'Recorded source phrases, country state and pack integrity; excludes linguistic accuracy and physical device audio'};
 const watchdog=setTimeout(()=>{console.error('CERTIFICATION_TIMEOUT');process.exit(1)},20*60*1000);
@@ -24,7 +25,7 @@ try {
  for(const [cc,pr] of Object.entries(profiles)){const got=await bounded('country '+cc,()=>page.evaluate(cc=>{SEEKVERA_LOCALE_R15.setCountry(cc);return {country:document.querySelector('#country').value,language:document.querySelector('#lang').value,currency:document.querySelector('#currency').value,html:document.documentElement.lang}},cc));assert.equal(got.country,cc);assert.equal(got.language,pr.language,cc);assert.equal(got.currency,pr.currency,cc);assert.equal(got.html,pr.language,cc)}
  result.countries=Object.keys(profiles).length;result.passed.push('atomic country/language/currency state');console.log('LIVE_COUNTRIES_PASS',result.countries);
  const hrefs=await page.evaluate(()=>[...new Set([...document.querySelectorAll('#categories .r5-tile')].map(a=>a.getAttribute('href')).filter(Boolean))]);assert.equal(hrefs.length,31);
- const allPaths=[...new Set(['/',...hrefs.map(h=>new URL(h,B).pathname)])];const paths=process.env.CERT_PATHS?process.env.CERT_PATHS.split(','):allPaths;result.routes=hrefs.length;result.paths=paths.length;
+ const allPaths=[...new Set(['/',...hrefs.map(h=>new URL(h,B).pathname)])];let paths=process.env.CERT_PATHS?process.env.CERT_PATHS.split(','):allPaths;if(process.env.CERT_SHARD){const [part,total]=process.env.CERT_SHARD.split('/').map(Number);assert(Number.isInteger(part)&&Number.isInteger(total)&&part>=0&&part<total);paths=paths.filter((_,i)=>i%total===part);result.shard={part,total}}result.routes=hrefs.length;result.paths=paths.length;result.checkedPaths=paths;
  const english=source.strings.filter(s=>s.length>=12&&(s.match(/[A-Za-z][A-Za-z'’+-]{2,}/g)||[]).length>=2&&!s.includes('SEEKVERA')&&!/https?:\/\/|@/.test(s));
  let combos=0;
  for(const path of paths){
@@ -40,7 +41,7 @@ try {
  }
  result.combinations=combos;result.dynamicTranslationRequests=dynamic.length;result.dynamicSources=[...new Set(dynamic.flatMap(s=>{try{return JSON.parse(s).strings||[]}catch{return []}}))];
  if(!result.failures.length)result.passed.push('No tested exact whole-node source phrases remained English on the tested section/language combinations');
- result.finishedAt=new Date().toISOString();fs.mkdirSync('docs',{recursive:true});fs.writeFileSync('docs/current-live-certification.json',JSON.stringify(result,null,2));console.log('CERTIFICATION_RESULT',JSON.stringify({release:result.health.release,countries:result.countries,routes:result.routes,paths:result.paths,combinations:combos,failures:result.failures.length,dynamicTranslationRequests:dynamic.length}));
+ result.finishedAt=new Date().toISOString();fs.mkdirSync('docs',{recursive:true});fs.writeFileSync(output,JSON.stringify(result,null,2));console.log('CERTIFICATION_RESULT',JSON.stringify({release:result.health.release,countries:result.countries,routes:result.routes,paths:result.paths,combinations:combos,failures:result.failures.length,dynamicTranslationRequests:dynamic.length}));
  assert.equal(result.failures.length,0,'untranslated visible phrases');
-} catch(e){result.error=String(e);fs.mkdirSync('docs',{recursive:true});fs.writeFileSync('docs/current-live-certification.json',JSON.stringify(result,null,2));throw e}
+} catch(e){result.error=String(e);fs.mkdirSync('docs',{recursive:true});fs.writeFileSync(output,JSON.stringify(result,null,2));throw e}
 finally{clearTimeout(watchdog);await browser.close()}

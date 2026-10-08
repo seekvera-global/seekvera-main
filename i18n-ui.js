@@ -15,12 +15,14 @@ const QUICK={ar:{
 'Audio could not play. Tap the speaker to retry.':'تعذّر تشغيل الصوت. اضغط على مكبّر الصوت للمحاولة مجدداً.',
 'I could not understand that audio yet — tap the microphone and try again.':'لم أتمكّن من فهم التسجيل — اضغط على الميكروفون وحاول مجدداً.',
 'Understanding your speech…':'جارٍ فهم كلامك…',
+'Please check the words, then tap Send.':'تأكّد من الكلام، وبعدين اضغط إرسال.',
 'Voice recognition is not supported in this browser.':'التعرّف على الصوت غير مدعوم في هذا المتصفّح.',
 [INITIAL_AI]:'أنا مساعد SEEKVERA بالذكاء الاصطناعي. أخبرني بما تحتاج إليه وسأساعدك في الوصول إلى القسم المناسب ومقارنة الخيارات أو البحث حول العالم.'
 },fr:{
 'Audio could not play. Tap the speaker to retry.':'Impossible de lire le son. Appuyez sur le haut-parleur pour réessayer.',
 'I could not understand that audio yet — tap the microphone and try again.':'Je n’ai pas compris cet enregistrement — appuyez sur le microphone et réessayez.',
 'Understanding your speech…':'Analyse de vos paroles…',
+'Please check the words, then tap Send.':'Vérifiez le texte, puis appuyez sur Envoyer.',
 'Voice recognition is not supported in this browser.':'La reconnaissance vocale n’est pas prise en charge par ce navigateur.'
 }};
 function api(p){const h=location.hostname;return(h==='seekveraglobal.com'||h==='www.seekveraglobal.com'||h.endsWith('workers.dev'))?p:'https://seekvera-main.seekvera-global.workers.dev'+p}
@@ -66,9 +68,10 @@ async function apply(){const my=++seq,l=lang();if(l!=='en'){await loadPack(l);if
  document.documentElement.dataset.seekveraI18nReady=l;document.documentElement.dataset.seekveraI18nVersion=VERSION;applying=false;
  if(l!=='en'&&need.length&&!BG_TRANSLATING.has(l)){BG_TRANSLATING.add(l);translate(l,need).catch(()=>{}).finally(()=>{BG_TRANSLATING.delete(l);if(lang()===l)schedule(0)})}}
 function entriesText(){const out=[];const w=document.createTreeWalker(document,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode())){const s=SRC.get(n);if(s&&!skipped(n))out.push([n,s])}return out}
+function setAttributeSource(el,a,source){if(!el||!ATTRS.includes(a))return;const src=canonical(source);let m=ATTRSRC.get(el);if(!m){m={};ATTRSRC.set(el,m)}m[a]=src;setAttr(el,a,src,lang());schedule(0)}
 function entriesAttr(){const out=[];for(const el of document.querySelectorAll('[placeholder],[aria-label],[title]')){const m=ATTRSRC.get(el);if(m)out.push([el,m])}return out}
 function schedule(ms=80){clearTimeout(timer);timer=setTimeout(()=>apply().catch(()=>{}),ms)}
 function boot(){capture(document);window.addEventListener('seekvera:locale-change',()=>{schedule(0);setTimeout(()=>schedule(0),250);setTimeout(()=>schedule(0),1000)});document.addEventListener('change',e=>{if(e.target?.id==='country'||e.target?.id==='lang'||e.target?.id==='currency')schedule(20)},true);new MutationObserver(ms=>{if(applying)return;let dirty=false;for(const m of ms){if(m.type==='characterData'){const n=m.target;if(!skipped(n)){const now=String(n.nodeValue||'').trim(),rendered=RENDERED_TEXT.get(n);if(rendered!==undefined&&now===rendered)continue;if(SRC.has(n)){dirty=true;continue}RENDERED_TEXT.delete(n);const src=canonicalText(n);if(worth(src)){SRC.set(n,src);dirty=true}}}else if(m.type==='attributes'){const el=m.target,a=m.attributeName;if(el&&a&&ATTRS.includes(a)&&!el.closest?.(SKIP)){const now=String(el.getAttribute(a)||'').trim(),rendered=RENDERED_ATTR.get(el)?.[a];if(rendered!==undefined&&now===rendered)continue;const known=ATTRSRC.get(el);if(known&&known[a]){dirty=true;continue}const rm=RENDERED_ATTR.get(el);if(rm)delete rm[a];if(worth(now)){let mm=ATTRSRC.get(el);if(!mm){mm={};ATTRSRC.set(el,mm)}mm[a]=now;dirty=true}}}for(const n of m.addedNodes||[]){if(n.nodeType===1){capture(n);dirty=true}else if(n.nodeType===3&&!skipped(n)){const src=canonicalText(n);if(worth(src)){SRC.set(n,src);dirty=true}}}}if(dirty)schedule(PACKS.has(lang())?0:30)}).observe(document.documentElement,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:ATTRS});loadPack(lang()).then(()=>schedule(0));schedule(0);setTimeout(()=>schedule(0),400);setTimeout(()=>schedule(0),1600);setTimeout(()=>schedule(0),4200)}
 capture(document);if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-window.SEEKVERA_I18N={lang,apply,schedule,t:s=>get(lang(),String(s))||String(s),version:VERSION};window.SEEKVERA_LOCALE_GUARD_R9={apply,schedule,version:VERSION};window.SEEKVERA_I18N_R32={version:VERSION,apply,schedule,lang,loadPack,packReady:l=>PACKS.has(norm(l)),packCount:()=>PACKS.size};
+window.SEEKVERA_I18N={lang,apply,schedule,setAttributeSource,t:s=>get(lang(),String(s))||String(s),version:VERSION};window.SEEKVERA_LOCALE_GUARD_R9={apply,schedule,version:VERSION};window.SEEKVERA_I18N_R32={version:VERSION,apply,schedule,lang,loadPack,packReady:l=>PACKS.has(norm(l)),packCount:()=>PACKS.size};
 })();
