@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-08",
+  "finalApproval": false,
+  "published": false,
+  "production": {
+    "commit": "9a5abd251fdaee3ce4deae0396a5934af3d98a4e",
+    "deploymentRun": 37815278228,
+    "conclusion": "success"
+  },
+  "currentSource": {
+    "count": 1118,
+    "hash": "6a1126e6a2ce5629",
+    "supportedLanguages": 98
+  },
+  "candidateBranch": "work/r125-locale-candidates-20261008",
+  "candidateDirectory": "docs/locale-candidates-20261008",
+  "resume": {
+    "builderSyncedFromMainCommit": "1a078055e1d01caa2d2f55031a9560fcfbbb4765",
+    "reviewedCorrections": [
+      "ar",
+      "fr"
+    ],
+    "publicSourceProvenanceVerifiedFiles": 69,
+    "latestResult": {
+      "checkpointUtc": "2026-10-08T17:29:55.578761+00:00",
+      "completedThisPass": [
+        "en"
+      ],
+      "blockedAt": "ar",
+      "reason": "daily_free_ai_limit",
+      "httpStatus": 503
+    },
+    "durableFiles": [
+      "progress.json",
+      "resume-latest.log",
+      "resume-exit.txt"
+    ],
+    "policy": "Candidates only. Never replace production source or manifest with a partial release."
+  },
+  "inheritedCandidateState": {
+    "completeCandidatesBeforeThisPass": 20,
+    "totalSupportedLanguages": 98,
+    "semanticQualityCertified": false,
+    "knownBlocker": "Romansh"
+  },
+  "certification": {
+    "structuralAudit": {
+      "countries": 248,
+      "routes": 31,
+      "paths": 28,
+      "combinations": 2744,
+      "failures": 0
+    },
+    "remaining": [
+      "Complete current 1118-source packs for all 98 languages.",
+      "Independent linguistic accuracy review, including Romansh.",
+      "Physical microphone and audible speaker validation on Android, iPhone/iPad and desktop."
+    ]
+  },
+  "google": {
+    "checked": "2026-10-08",
+    "discoverable": true,
+    "examples": [
+      "/",
+      "/about.html",
+      "/hub",
+      "/everyday",
+      "/education",
+      "/entertainment",
+      "/jobs.html",
+      "/import-export.html"
+    ],
+    "changeNotification": false,
+    "note": "Search results are present. robots.txt and sitemap.xml were not accessible through the search retrieval tool in this run, so no new claim was made about them."
+  }
+}
