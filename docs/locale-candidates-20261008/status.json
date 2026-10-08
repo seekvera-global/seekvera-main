@@ -1,0 +1,149 @@
+{
+  "sourceHash": "6a1126e6a2ce5629",
+  "sourceCount": 1118,
+  "finalApproval": false,
+  "published": false,
+  "model": "Current existing Workers AI bindings only",
+  "blockedReason": "Automatic approval review refused calls to the project translation endpoint despite public-source provenance; network policy also blocked requests.",
+  "completed": 20,
+  "candidates": [
+    {
+      "language": "ha",
+      "status": "partial",
+      "entries": 1118,
+      "compressedBytes": 37576
+    },
+    {
+      "language": "pl",
+      "status": "structurally-ready-native-review-required",
+      "entries": 1118,
+      "compressedBytes": 43074
+    },
+    {
+      "language": "bn",
+      "status": "structurally-ready-native-review-required",
+      "entries": 1118,
+      "compressedBytes": 49369
+    },
+    {
+      "language": "zh",
+      "status": "structurally-ready-native-review-required",
+      "entries": 1118,
+      "compressedBytes": 42487
+    },
+    {
+      "language": "ar",
+      "status": "structurally-ready-native-review-required",
+      "entries": 1118,
+      "compressedBytes": 43196
+    },
+    {
+      "language": "hi",
+      "status": "structurally-ready-native-review-required",
+      "entries": 1118,
+      "compressedBytes": 47502
+    },
+    {
+      "language": "ru",
+      "status": "structurally-ready-native-review-required",
+      "entries": 1118,
+      "compressedBytes": 48418
+    },
+    {
+      "language": "es",
+      "status": "structurally-ready-native-review-required",
+      "entries": 1118,
+      "compressedBytes": 39824
+    },
+    {
+      "language": "sw",
+      "status": "structurally-ready-native-review-required",
+      "entries": 1118,
+      "compressedBytes": 38790
+    },
+    {
+      "language": "ur",
+      "status": "structurally-ready-native-review-required",
+      "entries": 1118,
+      "compressedBytes": 45953
+    },
+    {
+      "language": "en",
+      "status": "structurally-ready-native-review-required",
+      "entries": 1118,
+      "compressedBytes": 23958
+    },
+    {
+      "language": "ja",
+      "status": "structurally-ready-native-review-required",
+      "entries": 1118,
+      "compressedBytes": 44117
+    },
+    {
+      "language": "ko",
+      "status": "structurally-ready-native-review-required",
+      "entries": 1118,
+      "compressedBytes": 41308
+    },
+    {
+      "language": "pt",
+      "status": "structurally-ready-native-review-required",
+      "entries": 1118,
+      "compressedBytes": 44925
+    },
+    {
+      "language": "vi",
+      "status": "structurally-ready-native-review-required",
+      "entries": 1118,
+      "compressedBytes": 47142
+    },
+    {
+      "language": "fa",
+      "status": "structurally-ready-native-review-required",
+      "entries": 1118,
+      "compressedBytes": 45205
+    },
+    {
+      "language": "th",
+      "status": "partial",
+      "entries": 1118,
+      "compressedBytes": 50253
+    },
+    {
+      "language": "id",
+      "status": "structurally-ready-native-review-required",
+      "entries": 1118,
+      "compressedBytes": 40525
+    },
+    {
+      "language": "tr",
+      "status": "structurally-ready-native-review-required",
+      "entries": 1118,
+      "compressedBytes": 43045
+    },
+    {
+      "language": "fr",
+      "status": "structurally-ready-native-review-required",
+      "entries": 1118,
+      "compressedBytes": 41889
+    },
+    {
+      "language": "de",
+      "status": "structurally-ready-native-review-required",
+      "entries": 1118,
+      "compressedBytes": 46147
+    },
+    {
+      "language": "it",
+      "status": "structurally-ready-native-review-required",
+      "entries": 1118,
+      "compressedBytes": 39739
+    }
+  ],
+  "remainingChecks": [
+    "Complete all 98 current-source packs",
+    "Correct and independently review Romansh",
+    "Review linguistic accuracy in supported languages",
+    "Physical-device microphone and audible speaker checks on Android, iPhone/iPad and desktop"
+  ]
+}
