@@ -80,7 +80,7 @@ jobs:
             if grep -q '20261001-r125-dialect-voice-quality' /tmp/health.json \
               && grep -q 'global-ui.js?v=20260927-r106-final-conversation-locale' /tmp/home.html \
               && grep -q 'Worldwide is the neutral first-run market' /tmp/global-ui.js \
-              && grep -q '20260930-canonical-locale' /tmp/i18n-ui.js \
+              && grep -q '20261008-reviewed-voice-labels' /tmp/i18n-ui.js \
               && jq -e '.category=="general" and .route==null and .language=="en" and (.response|length>5)' /tmp/chat-en.json >/dev/null \
               && jq -e '.category=="general" and .route==null and .language=="ar" and (.response|length>5)' /tmp/chat-ar.json >/dev/null \
               && jq -e '.countryAction.code=="IS"' /tmp/country.json >/dev/null \
