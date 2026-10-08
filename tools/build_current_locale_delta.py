@@ -5,6 +5,7 @@ from babel import Locale
 from bs4 import BeautifulSoup
 ROOT=Path(__file__).resolve().parent.parent
 VERSION='20261008-r125-runtime-source-coverage'
+ALLOWED_PUBLIC_STRINGS=set()
 def canonical(s):return ' '.join(str(s).split())
 def atomic_json(path,data):
  tmp=path.with_suffix(path.suffix+'.tmp');tmp.write_text(json.dumps(data,ensure_ascii=False,separators=(',',':')));tmp.replace(path)
@@ -45,6 +46,7 @@ def suspicious_overlap(source,value):
  a,b=words(source),words(value)
  return len(a)>=5 and difflib.SequenceMatcher(None,a,b,autojunk=False).find_longest_match().size>=5
 def translate(language,strings):
+ if not ALLOWED_PUBLIC_STRINGS or any(x not in ALLOWED_PUBLIC_STRINGS for x in strings):raise RuntimeError('Only verified public UI source strings may be sent to the project translation service')
  payload=json.dumps({'language':language,'strings':strings},ensure_ascii=False).encode()
  req=urllib.request.Request('https://seekveraglobal.com/api/ui-translate',data=payload,headers={'content-type':'application/json','user-agent':'Mozilla/5.0'},method='POST')
  with urllib.request.urlopen(req,timeout=45) as r:d=json.loads(r.read())
@@ -69,7 +71,8 @@ def translate_small(language,strings):
   mid=len(strings)//2
   a,ap=translate_small(language,strings[:mid]);b,bp=translate_small(language,strings[mid:]);return a+b,ap if ap==bp else ap+'+'+bp
 def main():
- ap=argparse.ArgumentParser();ap.add_argument('--languages');ap.add_argument('--stage',default=str(ROOT.parent/'locale-stage'));ap.add_argument('--inventory-only',action='store_true');ap.add_argument('--shard');ap.add_argument('--retranslate',default='');args=ap.parse_args()
+ global ALLOWED_PUBLIC_STRINGS
+ ap=argparse.ArgumentParser();ap.add_argument('--languages');ap.add_argument('--stage',default=str(ROOT.parent/'locale-stage'));ap.add_argument('--inventory-only',action='store_true');ap.add_argument('--shard');ap.add_argument('--retranslate',default='');ap.add_argument('--verify-public-only',action='store_true');args=ap.parse_args()
  source=source_inventory();old=json.loads((ROOT/'i18n-r32-source.json').read_text());delta=[s for s in source if s not in old['strings']]
  stage=Path(args.stage);stage.mkdir(parents=True,exist_ok=True)
  source_hash=hashlib.sha256('\n'.join(source).encode()).hexdigest()[:16]
@@ -78,6 +81,13 @@ def main():
  (stage/'new-keys.json').write_text(json.dumps(delta,ensure_ascii=False,indent=2))
  print('CURRENT_SOURCE',len(source),'DELTA',len(delta),source_hash,flush=True)
  if args.inventory_only:return
+ provenance=json.loads((ROOT/'docs/public-ui-translation-provenance.json').read_text())
+ assert provenance.get('publicRepository') is True and not provenance.get('mismatches') and provenance.get('sourceHash')==source_hash,'Public source provenance required'
+ for name,expected in provenance['publicBlobHashes'].items():
+  raw=(ROOT/name).read_bytes();assert hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()==expected,'Public source has changed: '+name
+ ALLOWED_PUBLIC_STRINGS=set(source)
+ print('VERIFIED_PUBLIC_UI_ONLY',len(provenance['publicBlobHashes']),source_hash,flush=True)
+ if args.verify_public_only:return
  manifest=json.loads((ROOT/'i18n-r32/manifest.json').read_text());langs=args.languages.split(',') if args.languages else manifest['languages'];reviewed=reviewed_labels();failures=[];completed=[]
  if args.shard:
   part,total=map(int,args.shard.split('/'));assert 0<=part<total;langs=langs[part::total]

@@ -5,8 +5,8 @@ const browser=await chromium.launch({headless:true,...(process.env.HTTPS_PROXY?{
 try {
  const ctx=await browser.newContext({ignoreHTTPSErrors:true,serviceWorkers:'block'});
  await ctx.route('**/*',r=>['seekveraglobal.com','www.seekveraglobal.com','seekvera-main.seekvera-global.workers.dev'].includes(new URL(r.request().url()).hostname)?r.continue():r.abort());
- await ctx.route('**/api/ui-translate',r=>r.fulfill({status:503,body:'{"ok":false}'}));
- if(process.env.LIVE_OVERRIDES==='1')for(const f of ['global-ui.js','i18n-ui.js','games.js'])await ctx.route('**/'+f+'*',r=>r.fulfill({contentType:'application/javascript',body:fs.readFileSync(f,'utf8')}));
+ let translationRequests=0;await ctx.route('**/api/ui-translate',r=>{translationRequests++;return r.fulfill({status:503,body:'{"ok":false}'})});
+ if(process.env.LIVE_OVERRIDES==='1')for(const f of ['global-ui.js','i18n-ui.js','r32-i18n.js','games.js'])await ctx.route('**/'+f+'*',r=>r.fulfill({contentType:'application/javascript',body:fs.readFileSync(f,'utf8')}));
  if(process.env.LOCALE_STAGE)for(const l of ['fr','ar'])await ctx.route('**/i18n-r32/'+l+'.json*',r=>r.fulfill({contentType:'application/json',body:fs.readFileSync(process.env.LOCALE_STAGE+'/'+l+'.json','utf8')}));
  const page=await ctx.newPage();await page.goto('https://seekveraglobal.com/games.html',{waitUntil:'domcontentloaded',timeout:60000});
  await page.waitForFunction(()=>window.SEEKVERA_I18N&&document.querySelectorAll('#gameGrid .game').length===50);
@@ -31,4 +31,9 @@ try {
  const expected=fs.readFileSync('global-ui.js','utf8').match(/ha:"([^"]+)"/)[1];
  assert.equal(await page.locator('#svGlobalMessages .sv-global-msg.bot').first().textContent(),expected);
  console.log('LOCALIZED_HAUSA_INTRO_AND_SAVED_REPLY_PRESERVATION_PASS');
+ const before=translationRequests;
+ await page.evaluate(async()=>{const label=document.createElement('span');label.id='temporary-outage-test';label.textContent='Temporary translation outage test';document.body.appendChild(label);SEEKVERA_LOCALE_R15.setLanguage('fr');await SEEKVERA_I18N.apply();setTimeout(()=>{window.__translationOutageHeartbeat=true},300)});
+ await page.waitForFunction(()=>window.__translationOutageHeartbeat,null,{timeout:5000});
+ await page.waitForTimeout(1200);assert(translationRequests-before<=3,'translation outage must not spin or repeatedly send requests');
+ console.log('TRANSLATION_OUTAGE_PAGE_RESPONSIVENESS_PASS');
 }finally{await browser.close()}
