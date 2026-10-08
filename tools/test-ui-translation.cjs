@@ -15,3 +15,7 @@ assert.equal(ctx.parseUiTranslations('not JSON',['Hello'],'French'),null);
 assert(!source.includes('const models=[TRANSLATE,'));
 assert(source.includes('daily_free_ai_limit'));
 console.log('PASS: exact cognates accepted; genuine English, wrong script, broken placeholders, malformed, empty and oversized results rejected.');
+
+assert.deepEqual(Array.from(ctx.parseUiTranslations('<think>Input [\"Hello\"] needs translation.</think> [\"Bonjour\"]',['Hello'],'French')),['Bonjour']);
+assert.equal(ctx.parseUiTranslations('<think>Input [\"Hello\"]</think> not a translation',['Hello'],'French'),null);
+console.log('PASS: final JSON translations survive bracketed reasoning; untranslated prompt echoes remain rejected.');
