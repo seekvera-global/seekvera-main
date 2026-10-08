@@ -2,7 +2,7 @@ import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 const B='https://seekveraglobal.com';
-const result={startedAt:new Date().toISOString(),passed:[],failures:[]};
+const result={startedAt:new Date().toISOString(),passed:[],failures:[],finalApproval:false,remainingChecks:['Complete current static and dynamic source coverage in all supported languages','Review linguistic accuracy, including partially English translations','Human microphone and audible speaker checks on Android, iPhone/iPad and desktop'],scope:'Recorded source phrases, country state and pack integrity; excludes linguistic accuracy and physical device audio'};
 const watchdog=setTimeout(()=>{console.error('CERTIFICATION_TIMEOUT');process.exit(1)},20*60*1000);
 async function bounded(label,fn,ms=20000){let timer;try{return await Promise.race([fn(),new Promise((_,reject)=>timer=setTimeout(()=>reject(Error('TIMEOUT '+label)),ms))])}finally{clearTimeout(timer)}}
 const browser=await chromium.launch({headless:true,...(process.env.HTTPS_PROXY?{proxy:{server:process.env.HTTPS_PROXY}}:{})});
@@ -39,7 +39,7 @@ try {
   console.log('LIVE_SECTION_CHECKED',path,'combinations',combos,'failures',result.failures.length);
  }
  result.combinations=combos;result.dynamicTranslationRequests=dynamic.length;result.dynamicSources=[...new Set(dynamic.flatMap(s=>{try{return JSON.parse(s).strings||[]}catch{return []}}))];
- if(!result.failures.length)result.passed.push('all recorded English phrases localized on all section/language combinations');
+ if(!result.failures.length)result.passed.push('No tested exact whole-node source phrases remained English on the tested section/language combinations');
  result.finishedAt=new Date().toISOString();fs.mkdirSync('docs',{recursive:true});fs.writeFileSync('docs/current-live-certification.json',JSON.stringify(result,null,2));console.log('CERTIFICATION_RESULT',JSON.stringify({release:result.health.release,countries:result.countries,routes:result.routes,paths:result.paths,combinations:combos,failures:result.failures.length,dynamicTranslationRequests:dynamic.length}));
  assert.equal(result.failures.length,0,'untranslated visible phrases');
 } catch(e){result.error=String(e);fs.mkdirSync('docs',{recursive:true});fs.writeFileSync('docs/current-live-certification.json',JSON.stringify(result,null,2));throw e}

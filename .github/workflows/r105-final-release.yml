@@ -45,10 +45,11 @@ jobs:
           node tools/test-tts-envelope.cjs
           node tools/test-audio-authority.cjs
           node --check i18n-ui.js
+          node tools/test-locale-cognates.cjs
           node --check sw.js
           test "$(find i18n-r32 -maxdepth 1 -name '*.json' | wc -l)" -ge 98
           grep -F "const RELEASE='20261001-r125-dialect-voice-quality'" worker-r76.js
-          grep -F "const VERSION='20260930-canonical-locale'" i18n-ui.js
+          grep -F "const VERSION='20261008-reviewed-voice-labels'" i18n-ui.js
           if grep -R -nE --exclude='README.md' --exclude='README-FIRST.txt' --exclude-dir='.git' 'Global API'' Key|GLOBAL_API''_KEY' .; then
             echo 'Forbidden global credential reference found'
             exit 1
