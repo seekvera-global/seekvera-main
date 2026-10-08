@@ -1,14 +1,7 @@
 name: Apply full multilingual final R3 UI
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'i18n-ui.js'
-      - 'global-ui.js'
-      - 'i18n-premium.css'
-      - '.github/scripts/apply_i18n_premium.py'
-      - '.github/workflows/apply-i18n-premium.yml'
+  # Legacy source-rewriting release; run manually to avoid production regression.
   workflow_dispatch:
 
 permissions:

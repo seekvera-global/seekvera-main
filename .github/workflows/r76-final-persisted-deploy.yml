@@ -1,12 +1,7 @@
 name: R76 final persisted deploy and certification
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/r76-final-persisted-deploy.yml'
-      - 'i18n-r32/**'
-      - 'i18n-r32-source.json'
+  # Legacy source-rewriting release; run manually to avoid production regression.
   workflow_dispatch:
 
 permissions:
