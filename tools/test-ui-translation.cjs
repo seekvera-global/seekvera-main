@@ -1,0 +1,17 @@
+const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
+const source=fs.readFileSync('worker.js','utf8'),ctx={};vm.createContext(ctx);vm.runInContext(source.slice(source.indexOf('function uiLanguage('),source.indexOf('export default{async fetch')),ctx);
+const parse=(values,strings,language)=>ctx.parseUiTranslations(JSON.stringify(values),strings,language);
+for(const [language,label] of [['French','Contact'],['fr','Contact'],['French (fr)','Contact'],['Italian','Privacy'],['Dutch','Privacy']])assert(parse([label],[label],language));
+assert.equal(parse(['Privacy'],['Privacy'],'French'),null);
+assert.equal(parse(['Open'],['Open'],'German'),null);
+assert(parse(['Open'],['Open'],'English'));
+assert(parse(['مرحبا'],['Hello'],'Arabic'));
+assert.equal(parse(['bonjour'],['Hello'],'Arabic'),null);
+assert.equal(parse(['Hallo {other}'],['Hello {name}'],'German'),null);
+assert(parse(['Hallo {name}'],['Hello {name}'],'German'));
+for(const value of ['',null,123,'x'.repeat(800),'<img src=x onerror=x>'])assert.equal(parse([value],['Hello'],'French'),null);
+assert.equal(parse(['Bonjour','Salut'],['Hello'],'French'),null);
+assert.equal(ctx.parseUiTranslations('not JSON',['Hello'],'French'),null);
+assert(!source.includes('const models=[TRANSLATE,'));
+assert(source.includes('daily_free_ai_limit'));
+console.log('PASS: exact cognates accepted; genuine English, wrong script, broken placeholders, malformed, empty and oversized results rejected.');
