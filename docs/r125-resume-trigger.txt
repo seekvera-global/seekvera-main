@@ -1,3 +1,3 @@
-R125 candidate resume requested at 2026-10-08T17:40:00Z
-Purpose: recheck free UI translation allocation, retain diagnostics, and resume unpublished 98-language candidates only.
-Production publication remains forbidden until all packs and required reviews pass.
+R125 candidate resume requested at 2026-10-08T17:45:00Z
+Purpose: recheck free UI translation allocation after restoring verified public-source provenance; resume unpublished candidates only.
+Production publication remains forbidden until all 98 packs and required reviews pass.
