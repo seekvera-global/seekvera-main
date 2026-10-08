@@ -6,6 +6,8 @@ from bs4 import BeautifulSoup
 ROOT=Path(__file__).resolve().parent.parent
 VERSION='20261008-r125-runtime-source-coverage'
 def canonical(s):return ' '.join(str(s).split())
+def atomic_json(path,data):
+ tmp=path.with_suffix(path.suffix+'.tmp');tmp.write_text(json.dumps(data,ensure_ascii=False,separators=(',',':')));tmp.replace(path)
 def source_inventory():
  old=json.loads((ROOT/'i18n-r32-source.json').read_text())
  spec=importlib.util.spec_from_file_location('base',ROOT/'tools/r35_build_pack.py');b=importlib.util.module_from_spec(spec);spec.loader.exec_module(b)
@@ -52,7 +54,12 @@ def translate(language,strings):
  if bad:raise RuntimeError('Target output still contains a long English source phrase: '+repr(bad[0])[:350])
  return vals,d.get('model','unknown')
 def translate_small(language,strings):
- try:return translate(language,strings)
+ try:
+  for attempt in range(3):
+   try:return translate(language,strings)
+   except (urllib.error.URLError,TimeoutError,ConnectionResetError) as e:
+    if isinstance(e,urllib.error.HTTPError) or attempt==2:raise
+    time.sleep(1+attempt)
  except Exception as e:
   detail=str(e)
   if isinstance(e,urllib.error.HTTPError):detail+=' '+e.read().decode()[:900]
@@ -62,7 +69,7 @@ def translate_small(language,strings):
   mid=len(strings)//2
   a,ap=translate_small(language,strings[:mid]);b,bp=translate_small(language,strings[mid:]);return a+b,ap if ap==bp else ap+'+'+bp
 def main():
- ap=argparse.ArgumentParser();ap.add_argument('--languages');ap.add_argument('--stage',default='/tmp/seekvera-current-locales');ap.add_argument('--inventory-only',action='store_true');ap.add_argument('--shard');args=ap.parse_args()
+ ap=argparse.ArgumentParser();ap.add_argument('--languages');ap.add_argument('--stage',default=str(ROOT.parent/'locale-stage'));ap.add_argument('--inventory-only',action='store_true');ap.add_argument('--shard');ap.add_argument('--retranslate',default='');args=ap.parse_args()
  source=source_inventory();old=json.loads((ROOT/'i18n-r32-source.json').read_text());delta=[s for s in source if s not in old['strings']]
  stage=Path(args.stage);stage.mkdir(parents=True,exist_ok=True)
  source_hash=hashlib.sha256('\n'.join(source).encode()).hexdigest()[:16]
@@ -80,11 +87,11 @@ def main():
   out=stage/(code+'.json')
   if out.exists():
    data=json.loads(out.read_text())
-   if data.get('sourceHash')==source_hash and all(data.get('translations',{}).get(k) for k in source) and data.get('qualityPolicy')=='source-overlap-5-v1' and (code=='en' or not any(suspicious_overlap(k,data['translations'][k]) for k in source)):completed.append(code);print('RESUME',code,flush=True);continue
-  base=json.loads((ROOT/'i18n-r32'/f'{code}.json').read_text());trans=base['translations'];providers=set()
+   if code not in args.retranslate.split(',') and data.get('sourceHash')==source_hash and all(data.get('translations',{}).get(k) for k in source) and data.get('qualityPolicy')=='source-overlap-5-v1' and (code=='en' or not any(suspicious_overlap(k,data['translations'][k]) for k in source)):completed.append(code);print('RESUME',code,flush=True);continue
+  base=json.loads((ROOT/'i18n-r32'/f'{code}.json').read_text());trans=base['translations'];providers=set();retranslated=set()
   if out.exists():
    saved=json.loads(out.read_text())
-   if saved.get('language')==code and saved.get('qualityPolicy')=='source-overlap-5-v1':trans.update(saved.get('translations',{}))
+   if saved.get('language')==code and saved.get('qualityPolicy')=='source-overlap-5-v1':trans.update(saved.get('translations',{}));retranslated.update(saved.get('retranslatedKeys',[]))
   trans.update(reviewed.get(code,{}))
   folded={canonical(k).casefold():v for k,v in trans.items()}
   for key,value in list(trans.items()):
@@ -94,19 +101,19 @@ def main():
     if plain and translated:folded.setdefault(canonical(plain).casefold(),translated)
   for key in source:
    if key not in trans and canonical(key).casefold() in folded:trans[key]=folded[canonical(key).casefold()]
-  missing=[k for k in source if not trans.get(k) or (code!='en' and suspicious_overlap(k,trans[k]))]
+  missing=[k for k in source if not trans.get(k) or (code!='en' and suspicious_overlap(k,trans[k])) or (code in args.retranslate.split(',') and k not in retranslated and len(re.findall(r'[A-Za-z]+',k))>=3 and not re.search(r'[{}<>;]|https?://',k))]
   if code=='en':trans.update({k:k for k in source});missing=[]
   try:
    for start in range(0,len(missing),16):
-    batch=missing[start:start+16];vals,provider=translate_small(Locale.parse(code).get_language_name('en'),batch)
-    trans.update(dict(zip(batch,vals)));providers.add(provider)
+    batch=missing[start:start+16];vals,provider=translate_small('Romansh (Rumantsch Grischun, Switzerland)' if code=='rm' else Locale.parse(code).get_language_name('en'),batch)
+    trans.update(dict(zip(batch,vals)));providers.add(provider);retranslated.update(batch)
     print('DELTA_BATCH',code,start+len(batch),len(missing),provider,flush=True)
     # Persist a resumable successful prefix even if a later provider call fails.
-    out.write_text(json.dumps({'version':VERSION,'sourceHash':source_hash,'language':code,'count':len(source),'qualityPolicy':'source-overlap-5-v1','provider':'existing+'+'+'.join(sorted(providers)),'translations':{k:trans[k] for k in source if trans.get(k)}},ensure_ascii=False,separators=(',',':')))
+    atomic_json(out,{'version':VERSION,'sourceHash':source_hash,'language':code,'count':len(source),'qualityPolicy':'source-overlap-5-v1','retranslatedKeys':sorted(retranslated),'provider':'existing+'+'+'.join(sorted(providers)),'translations':{k:trans[k] for k in source if trans.get(k)}})
     time.sleep(.3)
    assert all(trans.get(k) for k in source),code
    assert code=='en' or not any(suspicious_overlap(k,trans[k]) for k in source),code
-   out.write_text(json.dumps({'version':VERSION,'sourceHash':source_hash,'language':code,'count':len(source),'qualityPolicy':'source-overlap-5-v1','provider':'existing+'+'+'.join(sorted(providers)),'translations':{k:trans[k] for k in source}},ensure_ascii=False,separators=(',',':')))
+   atomic_json(out,{'version':VERSION,'sourceHash':source_hash,'language':code,'count':len(source),'qualityPolicy':'source-overlap-5-v1','retranslatedKeys':sorted(retranslated),'provider':'existing+'+'+'.join(sorted(providers)),'translations':{k:trans[k] for k in source}})
    completed.append(code);print('COMPLETE_PACK',code,len(source),flush=True)
   except Exception as e:
    detail=str(e)

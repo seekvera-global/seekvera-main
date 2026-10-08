@@ -1,0 +1,2587 @@
+{
+  "purpose": "Offline screening only; classifier errors and unsupported languages require native review. No semantic or hardware certification.",
+  "finalApproval": false,
+  "packs": "i18n-r32",
+  "languages": [
+    {
+      "language": "en",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "en",
+          "probability": 0.9122304320335388
+        },
+        {
+          "language": "es",
+          "probability": 0.0038638643454760313
+        },
+        {
+          "language": "th",
+          "probability": 0.0034141531214118004
+        }
+      ],
+      "longEnglishOverlapCount": 0,
+      "longEnglishOverlapExamples": [],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "ar",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "ar",
+          "probability": 0.9893576502799988
+        },
+        {
+          "language": "arz",
+          "probability": 0.006435823161154985
+        },
+        {
+          "language": "fa",
+          "probability": 0.001310334773734212
+        }
+      ],
+      "longEnglishOverlapCount": 3,
+      "longEnglishOverlapExamples": [
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "Useful for families, laptops, groups and non-eSIM devices. Provider availability and pricing must be verified before purchase.",
+        "Mobile data, not Wi‑Fi. Compare verified provider plans by destination, data, validity, tethering and top-up when live provider data is connected."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "fr",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "fr",
+          "probability": 0.9796648621559143
+        },
+        {
+          "language": "en",
+          "probability": 0.004142529331147671
+        },
+        {
+          "language": "nl",
+          "probability": 0.0018783019622787833
+        }
+      ],
+      "longEnglishOverlapCount": 0,
+      "longEnglishOverlapExamples": [],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "zh",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "zh",
+          "probability": 0.9949304461479187
+        },
+        {
+          "language": "wuu",
+          "probability": 0.002235715975984931
+        },
+        {
+          "language": "ja",
+          "probability": 0.0018071396043524146
+        }
+      ],
+      "longEnglishOverlapCount": 11,
+      "longEnglishOverlapExamples": [
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue.",
+        "You left the crash site with a knife, jacket, water and a bag. The jungle is now the game world. From here the full Part 1 can continue with water, shelter, fire, animals and the first night."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "es",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "es",
+          "probability": 0.9302910566329956
+        },
+        {
+          "language": "pt",
+          "probability": 0.020844943821430206
+        },
+        {
+          "language": "gl",
+          "probability": 0.009994245134294033
+        }
+      ],
+      "longEnglishOverlapCount": 64,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "hi",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "hi",
+          "probability": 0.9854547381401062
+        },
+        {
+          "language": "mr",
+          "probability": 0.0026151768397539854
+        },
+        {
+          "language": "bh",
+          "probability": 0.0023317255545407534
+        }
+      ],
+      "longEnglishOverlapCount": 0,
+      "longEnglishOverlapExamples": [],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "pt",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "pt",
+          "probability": 0.9706625938415527
+        },
+        {
+          "language": "en",
+          "probability": 0.009528957307338715
+        },
+        {
+          "language": "gl",
+          "probability": 0.006382348015904427
+        }
+      ],
+      "longEnglishOverlapCount": 64,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "de",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "de",
+          "probability": 0.988983690738678
+        },
+        {
+          "language": "en",
+          "probability": 0.0029270246159285307
+        },
+        {
+          "language": "als",
+          "probability": 0.0010747290216386318
+        }
+      ],
+      "longEnglishOverlapCount": 64,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "ja",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "ja",
+          "probability": 1.0000418424606323
+        },
+        {
+          "language": "zh",
+          "probability": 1.1907561201951467e-05
+        },
+        {
+          "language": "es",
+          "probability": 1.110377888835501e-05
+        }
+      ],
+      "longEnglishOverlapCount": 0,
+      "longEnglishOverlapExamples": [],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "ko",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "ko",
+          "probability": 0.9999960064888
+        },
+        {
+          "language": "en",
+          "probability": 3.002701669174712e-05
+        },
+        {
+          "language": "no",
+          "probability": 2.646755638124887e-05
+        }
+      ],
+      "longEnglishOverlapCount": 64,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "id",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "id",
+          "probability": 0.7569708228111267
+        },
+        {
+          "language": "ms",
+          "probability": 0.1870878040790558
+        },
+        {
+          "language": "en",
+          "probability": 0.011239753104746342
+        }
+      ],
+      "longEnglishOverlapCount": 12,
+      "longEnglishOverlapExamples": [
+        "Internet, Wi‑Fi & eSIM — SEEKVERA",
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "tr",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "tr",
+          "probability": 0.9898344874382019
+        },
+        {
+          "language": "az",
+          "probability": 0.005056174471974373
+        },
+        {
+          "language": "en",
+          "probability": 0.0023243799805641174
+        }
+      ],
+      "longEnglishOverlapCount": 11,
+      "longEnglishOverlapExamples": [
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue.",
+        "You left the crash site with a knife, jacket, water and a bag. The jungle is now the game world. From here the full Part 1 can continue with water, shelter, fire, animals and the first night."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "ru",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "ru",
+          "probability": 0.9793548583984375
+        },
+        {
+          "language": "bg",
+          "probability": 0.004832977429032326
+        },
+        {
+          "language": "uk",
+          "probability": 0.0036766354460269213
+        }
+      ],
+      "longEnglishOverlapCount": 62,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "ur",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "ur",
+          "probability": 0.9144691824913025
+        },
+        {
+          "language": "pnb",
+          "probability": 0.06788992136716843
+        },
+        {
+          "language": "fa",
+          "probability": 0.005662244278937578
+        }
+      ],
+      "longEnglishOverlapCount": 12,
+      "longEnglishOverlapExamples": [
+        "A SEEKVERA ORIGINAL • 3D STORY PROTOTYPE",
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "bn",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "bn",
+          "probability": 0.9931514263153076
+        },
+        {
+          "language": "bpy",
+          "probability": 0.00618484802544117
+        },
+        {
+          "language": "as",
+          "probability": 0.00038285815389826894
+        }
+      ],
+      "longEnglishOverlapCount": 11,
+      "longEnglishOverlapExamples": [
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue.",
+        "You left the crash site with a knife, jacket, water and a bag. The jungle is now the game world. From here the full Part 1 can continue with water, shelter, fire, animals and the first night."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "vi",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "vi",
+          "probability": 0.9968034029006958
+        },
+        {
+          "language": "en",
+          "probability": 0.0007524644606746733
+        },
+        {
+          "language": "sv",
+          "probability": 0.0005813777097500861
+        }
+      ],
+      "longEnglishOverlapCount": 64,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "it",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "it",
+          "probability": 0.9818320274353027
+        },
+        {
+          "language": "en",
+          "probability": 0.0026869471184909344
+        },
+        {
+          "language": "es",
+          "probability": 0.0023163261357694864
+        }
+      ],
+      "longEnglishOverlapCount": 0,
+      "longEnglishOverlapExamples": [],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "sw",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "sw",
+          "probability": 0.23395779728889465
+        },
+        {
+          "language": "en",
+          "probability": 0.13672439754009247
+        },
+        {
+          "language": "qu",
+          "probability": 0.04767901450395584
+        }
+      ],
+      "longEnglishOverlapCount": 75,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "th",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "th",
+          "probability": 0.9994023442268372
+        },
+        {
+          "language": "bn",
+          "probability": 0.0003550235414877534
+        },
+        {
+          "language": "ca",
+          "probability": 0.0001314645487582311
+        }
+      ],
+      "longEnglishOverlapCount": 75,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "fa",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "fa",
+          "probability": 0.9826331734657288
+        },
+        {
+          "language": "ar",
+          "probability": 0.006744800601154566
+        },
+        {
+          "language": "azb",
+          "probability": 0.004125588107854128
+        }
+      ],
+      "longEnglishOverlapCount": 11,
+      "longEnglishOverlapExamples": [
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue.",
+        "You left the crash site with a knife, jacket, water and a bag. The jungle is now the game world. From here the full Part 1 can continue with water, shelter, fire, animals and the first night."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "pl",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "pl",
+          "probability": 0.9958508014678955
+        },
+        {
+          "language": "en",
+          "probability": 0.0012077714782208204
+        },
+        {
+          "language": "uk",
+          "probability": 0.00038748938823118806
+        }
+      ],
+      "longEnglishOverlapCount": 0,
+      "longEnglishOverlapExamples": [],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "nl",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "nl",
+          "probability": 0.9740431904792786
+        },
+        {
+          "language": "af",
+          "probability": 0.00945068709552288
+        },
+        {
+          "language": "en",
+          "probability": 0.0029587792232632637
+        }
+      ],
+      "longEnglishOverlapCount": 0,
+      "longEnglishOverlapExamples": [],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "ms",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "id",
+          "probability": 0.5448848605155945
+        },
+        {
+          "language": "ms",
+          "probability": 0.3649233877658844
+        },
+        {
+          "language": "en",
+          "probability": 0.028446035459637642
+        }
+      ],
+      "longEnglishOverlapCount": 76,
+      "longEnglishOverlapExamples": [
+        "Internet, Wi‑Fi & eSIM — SEEKVERA",
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "fil",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "tl",
+          "probability": 0.9154404401779175
+        },
+        {
+          "language": "en",
+          "probability": 0.015081544406712055
+        },
+        {
+          "language": "sc",
+          "probability": 0.010410593822598457
+        }
+      ],
+      "longEnglishOverlapCount": 22,
+      "longEnglishOverlapExamples": [
+        "Venue / hotel Wi‑Fi QR",
+        "Jungle Survivor — Real 3D Prototype",
+        "SEEKVERA Worldwide R4 deployment marker",
+        "shopping-connectivity intent fix deploy trigger",
+        "SEEKVERA Survival — Plane Crash Playable Preview"
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "ha",
+      "status": "native-review-required",
+      "predictions": [
+        {
+          "language": "en",
+          "probability": 0.08865869045257568
+        },
+        {
+          "language": "tl",
+          "probability": 0.06996626406908035
+        },
+        {
+          "language": "it",
+          "probability": 0.05501673370599747
+        }
+      ],
+      "longEnglishOverlapCount": 64,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "yo",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "tl",
+          "probability": 0.08435557037591934
+        },
+        {
+          "language": "yo",
+          "probability": 0.07960037887096405
+        },
+        {
+          "language": "ur",
+          "probability": 0.07825621962547302
+        }
+      ],
+      "longEnglishOverlapCount": 1,
+      "longEnglishOverlapExamples": [
+        "Movies, TV, cartoons, anime, music, games, books and sports."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "ig",
+      "status": "native-review-required",
+      "predictions": [
+        {
+          "language": "vi",
+          "probability": 0.5552021861076355
+        },
+        {
+          "language": "hr",
+          "probability": 0.08695606142282486
+        },
+        {
+          "language": "en",
+          "probability": 0.07257367670536041
+        }
+      ],
+      "longEnglishOverlapCount": 11,
+      "longEnglishOverlapExamples": [
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue.",
+        "You left the crash site with a knife, jacket, water and a bag. The jungle is now the game world. From here the full Part 1 can continue with water, shelter, fire, animals and the first night."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "am",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "am",
+          "probability": 0.9999682903289795
+        },
+        {
+          "language": "cv",
+          "probability": 6.519677117466927e-05
+        },
+        {
+          "language": "ku",
+          "probability": 5.091217826702632e-05
+        }
+      ],
+      "longEnglishOverlapCount": 0,
+      "longEnglishOverlapExamples": [],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "he",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "he",
+          "probability": 0.9990208148956299
+        },
+        {
+          "language": "yi",
+          "probability": 0.0007224433356896043
+        },
+        {
+          "language": "en",
+          "probability": 0.00010361321619711816
+        }
+      ],
+      "longEnglishOverlapCount": 75,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "el",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "el",
+          "probability": 0.9952216148376465
+        },
+        {
+          "language": "en",
+          "probability": 0.0014031166210770607
+        },
+        {
+          "language": "ja",
+          "probability": 0.001231640693731606
+        }
+      ],
+      "longEnglishOverlapCount": 65,
+      "longEnglishOverlapExamples": [
+        "SEEKVERA ORIGINAL • PLAYABLE PHOTO-REAL CONCEPT",
+        "🛡️ SEEKVERA Safety Gate · AI text + AI Vision + automatic review",
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "uk",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "uk",
+          "probability": 0.9954819679260254
+        },
+        {
+          "language": "be",
+          "probability": 0.002376720542088151
+        },
+        {
+          "language": "bg",
+          "probability": 0.0007048682309687138
+        }
+      ],
+      "longEnglishOverlapCount": 1,
+      "longEnglishOverlapExamples": [
+        "🛡️ SEEKVERA Safety Gate · AI text + AI Vision + automatic review"
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "ro",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "ro",
+          "probability": 0.9967669248580933
+        },
+        {
+          "language": "en",
+          "probability": 0.0011613883543759584
+        },
+        {
+          "language": "es",
+          "probability": 0.0002538982662372291
+        }
+      ],
+      "longEnglishOverlapCount": 0,
+      "longEnglishOverlapExamples": [],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "cs",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "cs",
+          "probability": 0.966876745223999
+        },
+        {
+          "language": "sk",
+          "probability": 0.013383054174482822
+        },
+        {
+          "language": "en",
+          "probability": 0.004390185233205557
+        }
+      ],
+      "longEnglishOverlapCount": 63,
+      "longEnglishOverlapExamples": [
+        "multilingual intent routing deploy trigger",
+        "🛡️ SEEKVERA Safety Gate · AI text + AI Vision + automatic review",
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "sk",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "sk",
+          "probability": 0.8330745697021484
+        },
+        {
+          "language": "cs",
+          "probability": 0.08652462810277939
+        },
+        {
+          "language": "pl",
+          "probability": 0.012398897670209408
+        }
+      ],
+      "longEnglishOverlapCount": 76,
+      "longEnglishOverlapExamples": [
+        "🛡️ SEEKVERA Safety Gate · AI text + AI Vision + automatic review",
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "hu",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "hu",
+          "probability": 0.9923003315925598
+        },
+        {
+          "language": "eo",
+          "probability": 0.0015018678968772292
+        },
+        {
+          "language": "pt",
+          "probability": 0.0012796275550499558
+        }
+      ],
+      "longEnglishOverlapCount": 0,
+      "longEnglishOverlapExamples": [],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "sv",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "sv",
+          "probability": 0.9772082567214966
+        },
+        {
+          "language": "da",
+          "probability": 0.009114124812185764
+        },
+        {
+          "language": "no",
+          "probability": 0.004602266009896994
+        }
+      ],
+      "longEnglishOverlapCount": 13,
+      "longEnglishOverlapExamples": [
+        "Worldwide Tourism & AI Trip Planner — SEEKVERA",
+        "🛡️ SEEKVERA Safety Gate · AI text + AI Vision + automatic review",
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "no",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "no",
+          "probability": 0.7578390836715698
+        },
+        {
+          "language": "da",
+          "probability": 0.10089346021413803
+        },
+        {
+          "language": "nn",
+          "probability": 0.08577832579612732
+        }
+      ],
+      "longEnglishOverlapCount": 66,
+      "longEnglishOverlapExamples": [
+        "Worldwide Tourism & AI Trip Planner — SEEKVERA",
+        "SEEKVERA Survival — Plane Crash Playable Preview",
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "da",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "da",
+          "probability": 0.7948849201202393
+        },
+        {
+          "language": "no",
+          "probability": 0.1349559724330902
+        },
+        {
+          "language": "nn",
+          "probability": 0.02601483277976513
+        }
+      ],
+      "longEnglishOverlapCount": 13,
+      "longEnglishOverlapExamples": [
+        "Worldwide Tourism & AI Trip Planner — SEEKVERA",
+        "SEEKVERA Survival — Plane Crash Playable Preview",
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "fi",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "fi",
+          "probability": 0.971379816532135
+        },
+        {
+          "language": "et",
+          "probability": 0.0038448695559054613
+        },
+        {
+          "language": "en",
+          "probability": 0.003823444014415145
+        }
+      ],
+      "longEnglishOverlapCount": 65,
+      "longEnglishOverlapExamples": [
+        "Worldwide Tourism & AI Trip Planner — SEEKVERA",
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "bg",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "bg",
+          "probability": 0.9229515194892883
+        },
+        {
+          "language": "ru",
+          "probability": 0.045619796961545944
+        },
+        {
+          "language": "mk",
+          "probability": 0.013276917859911919
+        }
+      ],
+      "longEnglishOverlapCount": 0,
+      "longEnglishOverlapExamples": [],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "hr",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "hr",
+          "probability": 0.48503196239471436
+        },
+        {
+          "language": "sh",
+          "probability": 0.23023919761180878
+        },
+        {
+          "language": "sr",
+          "probability": 0.11651450395584106
+        }
+      ],
+      "longEnglishOverlapCount": 1,
+      "longEnglishOverlapExamples": [
+        "shopping-connectivity intent fix deploy trigger"
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "sr",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "sr",
+          "probability": 0.9087069034576416
+        },
+        {
+          "language": "mk",
+          "probability": 0.0636744573712349
+        },
+        {
+          "language": "ru",
+          "probability": 0.0105038583278656
+        }
+      ],
+      "longEnglishOverlapCount": 0,
+      "longEnglishOverlapExamples": [],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "sl",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "sl",
+          "probability": 0.5393640995025635
+        },
+        {
+          "language": "hr",
+          "probability": 0.09921757876873016
+        },
+        {
+          "language": "sh",
+          "probability": 0.08008778095245361
+        }
+      ],
+      "longEnglishOverlapCount": 63,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "lt",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "lt",
+          "probability": 0.9714444279670715
+        },
+        {
+          "language": "hr",
+          "probability": 0.00445593660697341
+        },
+        {
+          "language": "fi",
+          "probability": 0.0028957005124539137
+        }
+      ],
+      "longEnglishOverlapCount": 75,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "lv",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "lv",
+          "probability": 0.885808527469635
+        },
+        {
+          "language": "en",
+          "probability": 0.020289966836571693
+        },
+        {
+          "language": "gv",
+          "probability": 0.011141696013510227
+        }
+      ],
+      "longEnglishOverlapCount": 75,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "et",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "et",
+          "probability": 0.9452665448188782
+        },
+        {
+          "language": "fi",
+          "probability": 0.015344200655817986
+        },
+        {
+          "language": "en",
+          "probability": 0.005276400595903397
+        }
+      ],
+      "longEnglishOverlapCount": 11,
+      "longEnglishOverlapExamples": [
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue.",
+        "You left the crash site with a knife, jacket, water and a bag. The jungle is now the game world. From here the full Part 1 can continue with water, shelter, fire, animals and the first night."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "ca",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "ca",
+          "probability": 0.9539762139320374
+        },
+        {
+          "language": "pt",
+          "probability": 0.007331294473260641
+        },
+        {
+          "language": "es",
+          "probability": 0.006634165067225695
+        }
+      ],
+      "longEnglishOverlapCount": 11,
+      "longEnglishOverlapExamples": [
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue.",
+        "You left the crash site with a knife, jacket, water and a bag. The jungle is now the game world. From here the full Part 1 can continue with water, shelter, fire, animals and the first night."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "is",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "is",
+          "probability": 0.9472530484199524
+        },
+        {
+          "language": "et",
+          "probability": 0.009116541594266891
+        },
+        {
+          "language": "en",
+          "probability": 0.008233600296080112
+        }
+      ],
+      "longEnglishOverlapCount": 12,
+      "longEnglishOverlapExamples": [
+        "A SEEKVERA ORIGINAL • 3D STORY PROTOTYPE",
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "sq",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "sq",
+          "probability": 0.9823113083839417
+        },
+        {
+          "language": "sco",
+          "probability": 0.0044160564430058
+        },
+        {
+          "language": "en",
+          "probability": 0.003532005939632654
+        }
+      ],
+      "longEnglishOverlapCount": 64,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "mk",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "mk",
+          "probability": 0.8910807371139526
+        },
+        {
+          "language": "sr",
+          "probability": 0.06856212019920349
+        },
+        {
+          "language": "bg",
+          "probability": 0.01780981384217739
+        }
+      ],
+      "longEnglishOverlapCount": 75,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "ka",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "ka",
+          "probability": 0.9976922273635864
+        },
+        {
+          "language": "xmf",
+          "probability": 0.001952705904841423
+        },
+        {
+          "language": "be",
+          "probability": 0.00017695246788207442
+        }
+      ],
+      "longEnglishOverlapCount": 10,
+      "longEnglishOverlapExamples": [
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue.",
+        "He came for a quiet trek near the edge of the rainforest. One wrong path, no signal, and daylight is disappearing. Find water, make a fire, recover useful gear, reach shelter and keep moving toward people."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "hy",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "hy",
+          "probability": 0.9999383687973022
+        },
+        {
+          "language": "ru",
+          "probability": 3.806144741247408e-05
+        },
+        {
+          "language": "th",
+          "probability": 3.6421675758901983e-05
+        }
+      ],
+      "longEnglishOverlapCount": 12,
+      "longEnglishOverlapExamples": [
+        "A SEEKVERA ORIGINAL • 3D STORY PROTOTYPE",
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "az",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "az",
+          "probability": 0.9971335530281067
+        },
+        {
+          "language": "hy",
+          "probability": 0.0006867788033559918
+        },
+        {
+          "language": "tr",
+          "probability": 0.0005670795799233019
+        }
+      ],
+      "longEnglishOverlapCount": 11,
+      "longEnglishOverlapExamples": [
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue.",
+        "You left the crash site with a knife, jacket, water and a bag. The jungle is now the game world. From here the full Part 1 can continue with water, shelter, fire, animals and the first night."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "kk",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "kk",
+          "probability": 0.9742981195449829
+        },
+        {
+          "language": "uk",
+          "probability": 0.009984657168388367
+        },
+        {
+          "language": "be",
+          "probability": 0.0034129454288631678
+        }
+      ],
+      "longEnglishOverlapCount": 0,
+      "longEnglishOverlapExamples": [],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "uz",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "uz",
+          "probability": 0.4371359348297119
+        },
+        {
+          "language": "tr",
+          "probability": 0.12016289681196213
+        },
+        {
+          "language": "en",
+          "probability": 0.05271848663687706
+        }
+      ],
+      "longEnglishOverlapCount": 0,
+      "longEnglishOverlapExamples": [],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "ky",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "ky",
+          "probability": 0.8545264601707458
+        },
+        {
+          "language": "ru",
+          "probability": 0.029579132795333862
+        },
+        {
+          "language": "kk",
+          "probability": 0.028592264279723167
+        }
+      ],
+      "longEnglishOverlapCount": 2,
+      "longEnglishOverlapExamples": [
+        "A SEEKVERA ORIGINAL • 3D STORY PROTOTYPE",
+        "Worldwide Tourism & AI Trip Planner — SEEKVERA"
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "tg",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "tg",
+          "probability": 0.8314370512962341
+        },
+        {
+          "language": "ru",
+          "probability": 0.04734042286872864
+        },
+        {
+          "language": "bg",
+          "probability": 0.04031053185462952
+        }
+      ],
+      "longEnglishOverlapCount": 11,
+      "longEnglishOverlapExamples": [
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue.",
+        "You left the crash site with a knife, jacket, water and a bag. The jungle is now the game world. From here the full Part 1 can continue with water, shelter, fire, animals and the first night."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "tk",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "tk",
+          "probability": 0.6175548434257507
+        },
+        {
+          "language": "tr",
+          "probability": 0.10541689395904541
+        },
+        {
+          "language": "uz",
+          "probability": 0.02954130806028843
+        }
+      ],
+      "longEnglishOverlapCount": 1,
+      "longEnglishOverlapExamples": [
+        "Internet, Wi‑Fi & eSIM — SEEKVERA"
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "ne",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "ne",
+          "probability": 0.6964202523231506
+        },
+        {
+          "language": "hi",
+          "probability": 0.22626984119415283
+        },
+        {
+          "language": "mr",
+          "probability": 0.025949029251933098
+        }
+      ],
+      "longEnglishOverlapCount": 62,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "si",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "si",
+          "probability": 0.9988892078399658
+        },
+        {
+          "language": "gu",
+          "probability": 0.0006389317568391562
+        },
+        {
+          "language": "la",
+          "probability": 0.0002945482265204191
+        }
+      ],
+      "longEnglishOverlapCount": 65,
+      "longEnglishOverlapExamples": [
+        "Jungle Survivor — Real 3D Prototype",
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "ta",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "ta",
+          "probability": 0.9994725584983826
+        },
+        {
+          "language": "sr",
+          "probability": 0.00024623150238767266
+        },
+        {
+          "language": "en",
+          "probability": 0.0002139979915227741
+        }
+      ],
+      "longEnglishOverlapCount": 61,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "km",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "km",
+          "probability": 0.9951309561729431
+        },
+        {
+          "language": "ps",
+          "probability": 0.0021638977341353893
+        },
+        {
+          "language": "sa",
+          "probability": 0.000984766287729144
+        }
+      ],
+      "longEnglishOverlapCount": 75,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "lo",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "lo",
+          "probability": 0.9887822270393372
+        },
+        {
+          "language": "vep",
+          "probability": 0.004824570845812559
+        },
+        {
+          "language": "uk",
+          "probability": 0.0014807856641709805
+        }
+      ],
+      "longEnglishOverlapCount": 1,
+      "longEnglishOverlapExamples": [
+        "SEEKVERA Worldwide R4 deployment marker — explicit Worldwide labels in all 28 UI languages, refreshed app cache, AI, voice and Media — 2026-09-23."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "my",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "my",
+          "probability": 0.9996359944343567
+        },
+        {
+          "language": "id",
+          "probability": 0.00018109903612639755
+        },
+        {
+          "language": "fa",
+          "probability": 0.00013366631173994392
+        }
+      ],
+      "longEnglishOverlapCount": 11,
+      "longEnglishOverlapExamples": [
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue.",
+        "You left the crash site with a knife, jacket, water and a bag. The jungle is now the game world. From here the full Part 1 can continue with water, shelter, fire, animals and the first night."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "mn",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "mn",
+          "probability": 0.9066808819770813
+        },
+        {
+          "language": "bxr",
+          "probability": 0.012331546284258366
+        },
+        {
+          "language": "ru",
+          "probability": 0.012276232242584229
+        }
+      ],
+      "longEnglishOverlapCount": 1,
+      "longEnglishOverlapExamples": [
+        "A SEEKVERA ORIGINAL • 3D STORY PROTOTYPE"
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "zu",
+      "status": "native-review-required",
+      "predictions": [
+        {
+          "language": "en",
+          "probability": 0.17651011049747467
+        },
+        {
+          "language": "jv",
+          "probability": 0.03253573551774025
+        },
+        {
+          "language": "tr",
+          "probability": 0.03077893890440464
+        }
+      ],
+      "longEnglishOverlapCount": 63,
+      "longEnglishOverlapExamples": [
+        "Worldwide Tourism & AI Trip Planner — SEEKVERA",
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "af",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "af",
+          "probability": 0.5357272624969482
+        },
+        {
+          "language": "nl",
+          "probability": 0.25843510031700134
+        },
+        {
+          "language": "fr",
+          "probability": 0.03281354159116745
+        }
+      ],
+      "longEnglishOverlapCount": 11,
+      "longEnglishOverlapExamples": [
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue.",
+        "You left the crash site with a knife, jacket, water and a bag. The jungle is now the game world. From here the full Part 1 can continue with water, shelter, fire, animals and the first night."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "be",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "be",
+          "probability": 0.9615062475204468
+        },
+        {
+          "language": "uk",
+          "probability": 0.02470419369637966
+        },
+        {
+          "language": "ru",
+          "probability": 0.005754503421485424
+        }
+      ],
+      "longEnglishOverlapCount": 11,
+      "longEnglishOverlapExamples": [
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue.",
+        "You left the crash site with a knife, jacket, water and a bag. The jungle is now the game world. From here the full Part 1 can continue with water, shelter, fire, animals and the first night."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "bs",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "hr",
+          "probability": 0.4016038179397583
+        },
+        {
+          "language": "sh",
+          "probability": 0.25173500180244446
+        },
+        {
+          "language": "sr",
+          "probability": 0.1435442715883255
+        }
+      ],
+      "longEnglishOverlapCount": 12,
+      "longEnglishOverlapExamples": [
+        "shopping-connectivity intent fix deploy trigger",
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "dz",
+      "status": "native-review-required",
+      "predictions": [
+        {
+          "language": "bo",
+          "probability": 0.9999703168869019
+        },
+        {
+          "language": "pa",
+          "probability": 4.690509013016708e-05
+        },
+        {
+          "language": "ru",
+          "probability": 3.3972635719692335e-05
+        }
+      ],
+      "longEnglishOverlapCount": 0,
+      "longEnglishOverlapExamples": [],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "ti",
+      "status": "native-review-required",
+      "predictions": [
+        {
+          "language": "am",
+          "probability": 0.990688681602478
+        },
+        {
+          "language": "cv",
+          "probability": 0.002323978813365102
+        },
+        {
+          "language": "ku",
+          "probability": 0.002132914960384369
+        }
+      ],
+      "longEnglishOverlapCount": 63,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "fo",
+      "status": "native-review-required",
+      "predictions": [
+        {
+          "language": "is",
+          "probability": 0.5850365161895752
+        },
+        {
+          "language": "no",
+          "probability": 0.1465376317501068
+        },
+        {
+          "language": "da",
+          "probability": 0.08179553598165512
+        }
+      ],
+      "longEnglishOverlapCount": 0,
+      "longEnglishOverlapExamples": [],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "kl",
+      "status": "native-review-required",
+      "predictions": [
+        {
+          "language": "fi",
+          "probability": 0.28840821981430054
+        },
+        {
+          "language": "et",
+          "probability": 0.07806193828582764
+        },
+        {
+          "language": "en",
+          "probability": 0.07601780444383621
+        }
+      ],
+      "longEnglishOverlapCount": 0,
+      "longEnglishOverlapExamples": [],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "rw",
+      "status": "native-review-required",
+      "predictions": [
+        {
+          "language": "en",
+          "probability": 0.17877568304538727
+        },
+        {
+          "language": "id",
+          "probability": 0.04705195873975754
+        },
+        {
+          "language": "pl",
+          "probability": 0.042196303606033325
+        }
+      ],
+      "longEnglishOverlapCount": 48,
+      "longEnglishOverlapExamples": [
+        "Internet, Wi‑Fi & eSIM — SEEKVERA",
+        "Photos do not make an ad public automatically. Listings and uploaded media remain pending until the listing is approved.",
+        "Enter the role once. SEEKVERA uses your selected country automatically and opens live job-search sources for that market.",
+        "Find community-mapped places offering Wi‑Fi or internet access. Always confirm availability and conditions with the venue.",
+        "🛡️ Games are self-contained SEEKVERA mini games. No stranger chat, gambling, paid loot boxes or external ad network is used."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "sm",
+      "status": "native-review-required",
+      "predictions": [
+        {
+          "language": "en",
+          "probability": 0.07809397578239441
+        },
+        {
+          "language": "cy",
+          "probability": 0.07050482928752899
+        },
+        {
+          "language": "it",
+          "probability": 0.05953188240528107
+        }
+      ],
+      "longEnglishOverlapCount": 76,
+      "longEnglishOverlapExamples": [
+        "SEEKVERA ORIGINAL • PLAYABLE PHOTO-REAL CONCEPT",
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "to",
+      "status": "native-review-required",
+      "predictions": [
+        {
+          "language": "cy",
+          "probability": 0.2639346122741699
+        },
+        {
+          "language": "tl",
+          "probability": 0.10207776725292206
+        },
+        {
+          "language": "nah",
+          "probability": 0.059598926454782486
+        }
+      ],
+      "longEnglishOverlapCount": 0,
+      "longEnglishOverlapExamples": [],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "so",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "en",
+          "probability": 0.21396604180335999
+        },
+        {
+          "language": "cy",
+          "probability": 0.035348840057849884
+        },
+        {
+          "language": "so",
+          "probability": 0.034740887582302094
+        }
+      ],
+      "longEnglishOverlapCount": 75,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "dv",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "dv",
+          "probability": 0.9645048975944519
+        },
+        {
+          "language": "mzn",
+          "probability": 0.020772268995642662
+        },
+        {
+          "language": "tg",
+          "probability": 0.0038117626681923866
+        }
+      ],
+      "longEnglishOverlapCount": 74,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "mt",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "mt",
+          "probability": 0.5523821115493774
+        },
+        {
+          "language": "hu",
+          "probability": 0.0509817972779274
+        },
+        {
+          "language": "it",
+          "probability": 0.037267301231622696
+        }
+      ],
+      "longEnglishOverlapCount": 13,
+      "longEnglishOverlapExamples": [
+        "SEEKVERA Worldwide R4 deployment marker",
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "SEEKVERA Worldwide R4 deployment marker — explicit Worldwide labels in all 28 UI languages, refreshed app cache, AI, voice and Media — 2026-09-23."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "mg",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "mg",
+          "probability": 0.8382105231285095
+        },
+        {
+          "language": "cy",
+          "probability": 0.014073561877012253
+        },
+        {
+          "language": "co",
+          "probability": 0.012493218295276165
+        }
+      ],
+      "longEnglishOverlapCount": 2,
+      "longEnglishOverlapExamples": [
+        "Internet, Wi‑Fi & eSIM — SEEKVERA",
+        "Free / Public Wi-Fi Finder — SEEKVERA"
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "eu",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "eu",
+          "probability": 0.8517271876335144
+        },
+        {
+          "language": "nl",
+          "probability": 0.016532052308321
+        },
+        {
+          "language": "it",
+          "probability": 0.012600014917552471
+        }
+      ],
+      "longEnglishOverlapCount": 11,
+      "longEnglishOverlapExamples": [
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue.",
+        "You left the crash site with a knife, jacket, water and a bag. The jungle is now the game world. From here the full Part 1 can continue with water, shelter, fire, animals and the first night."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "gl",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "gl",
+          "probability": 0.8083140850067139
+        },
+        {
+          "language": "es",
+          "probability": 0.08533934503793716
+        },
+        {
+          "language": "pt",
+          "probability": 0.056362334638834
+        }
+      ],
+      "longEnglishOverlapCount": 12,
+      "longEnglishOverlapExamples": [
+        "Worldwide Tourism & AI Trip Planner — SEEKVERA",
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "te",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "te",
+          "probability": 0.999740481376648
+        },
+        {
+          "language": "ba",
+          "probability": 0.0001734739780658856
+        },
+        {
+          "language": "mk",
+          "probability": 6.24762469669804e-05
+        }
+      ],
+      "longEnglishOverlapCount": 75,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "ml",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "ml",
+          "probability": 0.9990271329879761
+        },
+        {
+          "language": "kn",
+          "probability": 0.00043421570444479585
+        },
+        {
+          "language": "en",
+          "probability": 0.0002246052899863571
+        }
+      ],
+      "longEnglishOverlapCount": 11,
+      "longEnglishOverlapExamples": [
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue.",
+        "You left the crash site with a knife, jacket, water and a bag. The jungle is now the game world. From here the full Part 1 can continue with water, shelter, fire, animals and the first night."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "mr",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "mr",
+          "probability": 0.928604006767273
+        },
+        {
+          "language": "hi",
+          "probability": 0.043625082820653915
+        },
+        {
+          "language": "ne",
+          "probability": 0.010733217932283878
+        }
+      ],
+      "longEnglishOverlapCount": 1,
+      "longEnglishOverlapExamples": [
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "gu",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "gu",
+          "probability": 0.9992728233337402
+        },
+        {
+          "language": "si",
+          "probability": 0.0002627369831316173
+        },
+        {
+          "language": "hi",
+          "probability": 0.00011062699923058972
+        }
+      ],
+      "longEnglishOverlapCount": 64,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "pa",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "pa",
+          "probability": 0.9985909461975098
+        },
+        {
+          "language": "new",
+          "probability": 0.0007684291922487319
+        },
+        {
+          "language": "bo",
+          "probability": 0.00041789229726418853
+        }
+      ],
+      "longEnglishOverlapCount": 75,
+      "longEnglishOverlapExamples": [
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "ps",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "ps",
+          "probability": 0.43318653106689453
+        },
+        {
+          "language": "fa",
+          "probability": 0.29179731011390686
+        },
+        {
+          "language": "azb",
+          "probability": 0.12589214742183685
+        }
+      ],
+      "longEnglishOverlapCount": 1,
+      "longEnglishOverlapExamples": [
+        "A SEEKVERA ORIGINAL • 3D STORY PROTOTYPE"
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "ga",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "ga",
+          "probability": 0.7128888964653015
+        },
+        {
+          "language": "ca",
+          "probability": 0.04842808470129967
+        },
+        {
+          "language": "es",
+          "probability": 0.03892885148525238
+        }
+      ],
+      "longEnglishOverlapCount": 12,
+      "longEnglishOverlapExamples": [
+        "🛡️ SEEKVERA Safety Gate · AI text + AI Vision + automatic review",
+        "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "cy",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "cy",
+          "probability": 0.916495144367218
+        },
+        {
+          "language": "lb",
+          "probability": 0.010079612955451012
+        },
+        {
+          "language": "en",
+          "probability": 0.008664059452712536
+        }
+      ],
+      "longEnglishOverlapCount": 0,
+      "longEnglishOverlapExamples": [],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "mi",
+      "status": "native-review-required",
+      "predictions": [
+        {
+          "language": "war",
+          "probability": 0.2609793543815613
+        },
+        {
+          "language": "ilo",
+          "probability": 0.1898445338010788
+        },
+        {
+          "language": "tl",
+          "probability": 0.1623350977897644
+        }
+      ],
+      "longEnglishOverlapCount": 0,
+      "longEnglishOverlapExamples": [],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "fy",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "fy",
+          "probability": 0.7192137241363525
+        },
+        {
+          "language": "nl",
+          "probability": 0.0514196902513504
+        },
+        {
+          "language": "et",
+          "probability": 0.041622940450906754
+        }
+      ],
+      "longEnglishOverlapCount": 2,
+      "longEnglishOverlapExamples": [
+        "Worldwide Tourism & AI Trip Planner — SEEKVERA",
+        "SEEKVERA Survival — Plane Crash Playable Preview"
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "lb",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "lb",
+          "probability": 0.730961263179779
+        },
+        {
+          "language": "de",
+          "probability": 0.06224498152732849
+        },
+        {
+          "language": "da",
+          "probability": 0.03871294856071472
+        }
+      ],
+      "longEnglishOverlapCount": 8,
+      "longEnglishOverlapExamples": [
+        "SEEKVERA Worldwide R4 deployment marker",
+        "A SEEKVERA ORIGINAL • 3D STORY PROTOTYPE",
+        "multilingual intent routing deploy trigger",
+        "SEEKVERA Survival — Plane Crash Playable Preview",
+        "20260926-r74-global-ai-failover final deployment marker"
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "rm",
+      "status": "wrong-language-likely",
+      "predictions": [
+        {
+          "language": "es",
+          "probability": 0.8994901776313782
+        },
+        {
+          "language": "pt",
+          "probability": 0.035173553973436356
+        },
+        {
+          "language": "gl",
+          "probability": 0.015972953289747238
+        }
+      ],
+      "longEnglishOverlapCount": 4,
+      "longEnglishOverlapExamples": [
+        "Jungle Survivor — Real 3D Prototype",
+        "Free / Public Wi-Fi Finder — SEEKVERA",
+        "Find restaurants, cafes, food delivery, catering and dining options by location, cuisine, budget and occasion.",
+        "SEEKVERA Worldwide R4 deployment marker — explicit Worldwide labels in all 28 UI languages, refreshed app cache, AI, voice and Media — 2026-09-23."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "ku",
+      "status": "screened",
+      "predictions": [
+        {
+          "language": "ku",
+          "probability": 0.8876978754997253
+        },
+        {
+          "language": "diq",
+          "probability": 0.02079668827354908
+        },
+        {
+          "language": "en",
+          "probability": 0.01006337534636259
+        }
+      ],
+      "longEnglishOverlapCount": 65,
+      "longEnglishOverlapExamples": [
+        "Internet, Wi‑Fi & eSIM — SEEKVERA",
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "Your guide will appear here. Enter any destination anywhere in the world."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "xh",
+      "status": "native-review-required",
+      "predictions": [
+        {
+          "language": "en",
+          "probability": 0.14411425590515137
+        },
+        {
+          "language": "pl",
+          "probability": 0.061947330832481384
+        },
+        {
+          "language": "es",
+          "probability": 0.03428560495376587
+        }
+      ],
+      "longEnglishOverlapCount": 34,
+      "longEnglishOverlapExamples": [
+        "A SEEKVERA ORIGINAL • 3D STORY PROTOTYPE",
+        "🤝 Owner Control · Zero‑Cost‑First · Safety Gated",
+        "SEEKVERA may later earn commission from approved tracked partner links. A partner's commission should not be the only reason it is recommended.",
+        "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "You survived the crash, recovered basic gear, reached water and built a small fire. The next part goes deeper into the jungle and becomes harder."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "st",
+      "status": "native-review-required",
+      "predictions": [
+        {
+          "language": "en",
+          "probability": 0.12476401031017303
+        },
+        {
+          "language": "it",
+          "probability": 0.070441834628582
+        },
+        {
+          "language": "tl",
+          "probability": 0.04946822673082352
+        }
+      ],
+      "longEnglishOverlapCount": 65,
+      "longEnglishOverlapExamples": [
+        "A SEEKVERA ORIGINAL • 3D STORY PROTOTYPE",
+        "shopping-connectivity intent fix deploy trigger",
+        "🤝 Owner Control · Zero‑Cost‑First · Safety Gated",
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    },
+    {
+      "language": "tn",
+      "status": "native-review-required",
+      "predictions": [
+        {
+          "language": "en",
+          "probability": 0.17435672879219055
+        },
+        {
+          "language": "tl",
+          "probability": 0.08353538066148758
+        },
+        {
+          "language": "it",
+          "probability": 0.06936483085155487
+        }
+      ],
+      "longEnglishOverlapCount": 69,
+      "longEnglishOverlapExamples": [
+        "Open the SEEKVERA games hub.",
+        "All SEEKVERA Services — One App",
+        "Internet, Wi‑Fi & eSIM — SEEKVERA",
+        "Post an Ad — SEEKVERA Marketplace",
+        "Show SEEKVERA a product or object."
+      ],
+      "count": 1045,
+      "sourceHash": "b371f2422f8b5416"
+    }
+  ]
+}

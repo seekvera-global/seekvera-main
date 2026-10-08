@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261008-reviewed-voice-labels';
+const VERSION='20261008-runtime-source-coverage';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -45,7 +45,7 @@ function capture(root=document){
  const els=root===document?[...document.querySelectorAll('[placeholder],[aria-label],[title]')]:[...(root.querySelectorAll?.('[placeholder],[aria-label],[title]')||[])];
  for(const el of els){if(el.closest?.(SKIP))continue;let m=ATTRSRC.get(el);if(!m){m={};ATTRSRC.set(el,m)}for(const a of ATTRS){const s=el.getAttribute?.(a)?.trim();if(worth(s)&&!(a in m))m[a]=s}}
 }
-function k(l,s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return'sv_r32_'+l+'_'+(h>>>0).toString(36)}
+function k(l,s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return'sv_r32_'+VERSION+'_'+l+'_'+(h>>>0).toString(36)}
 function get(l,s){s=canonical(s);const q=QUICK[l]?.[s];if(q)return q;const m=MEM.get(l+'\u0000'+s);if(m){const ps=plainKey(s);if(ps!==s&&plainKey(m)===ps){const translated=MEM.get(l+'\u0000'+ps);if(translated&&translated!==ps)return s.replace(ps,translated)}return m;}try{return localStorage.getItem(k(l,s))||''}catch{return''}}
 function put(l,s,v){s=canonical(s);v=String(v||'').trim();if(!v)return;MEM.set(l+'\u0000'+s,v);try{localStorage.setItem(k(l,s),v)}catch{}}
 async function loadPack(l){
@@ -55,8 +55,8 @@ async function loadPack(l){
 }
 function markAttr(el,a,v){let m=RENDERED_ATTR.get(el);if(!m){m={};RENDERED_ATTR.set(el,m)}m[a]=String(v||'').trim()}
 function valid(v,src){v=String(v||'').trim();return !!v&&!/^undefined|null$/i.test(v)&&!/^\[object Object\]$/i.test(v)}
-let CLOUD_TRANSLATE_BLOCKED=false;async function cloudTranslate(l,batch){if(CLOUD_TRANSLATE_BLOCKED)return null;try{const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),15000);const r=await fetch(api('/api/ui-translate'),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language:langName(l),strings:batch}),signal:ctl.signal,cache:'no-store'});clearTimeout(to);if(r.status===429||r.status===503){CLOUD_TRANSLATE_BLOCKED=true;return null}const d=await r.json().catch(()=>null);if(r.ok&&Array.isArray(d?.translations)&&d.translations.length===batch.length){const vals=d.translations.map((v,i)=>valid(v,batch[i])?String(v).trim():'');if(vals.some(Boolean))return vals}}catch{}return null}
-async function translate(l,arr){await loadPack(l);const unique=[...new Set(arr.filter(s=>worth(s)&&!get(l,s)))];if(!unique.length)return;const groups=[];for(let i=0;i<unique.length;i+=14)groups.push(unique.slice(i,i+14));for(let i=0;i<groups.length;i+=3){await Promise.all(groups.slice(i,i+3).map(async batch=>{const vals=await cloudTranslate(l,batch);if(vals)batch.forEach((s,j)=>{if(valid(vals[j],s))put(l,s,vals[j])})}))}}
+let CLOUD_TRANSLATE_BLOCKED_UNTIL=0;async function cloudTranslate(l,batch){if(Date.now()<CLOUD_TRANSLATE_BLOCKED_UNTIL)return null;try{const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),15000);const r=await fetch(api('/api/ui-translate'),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language:langName(l),strings:batch}),signal:ctl.signal,cache:'no-store'});clearTimeout(to);if(r.status===429||r.status===503){CLOUD_TRANSLATE_BLOCKED_UNTIL=Date.now()+30000;return null}const d=await r.json().catch(()=>null);if(r.ok&&Array.isArray(d?.translations)&&d.translations.length===batch.length){const vals=d.translations.map((v,i)=>valid(v,batch[i])?String(v).trim():'');if(vals.some(Boolean))return vals}}catch{}return null}
+async function translate(l,arr){await loadPack(l);const unique=[...new Set(arr.filter(s=>worth(s)&&!get(l,s)))];if(!unique.length)return false;let changed=false;const groups=[];for(let i=0;i<unique.length;i+=14)groups.push(unique.slice(i,i+14));for(let i=0;i<groups.length;i+=3){await Promise.all(groups.slice(i,i+3).map(async batch=>{const vals=await cloudTranslate(l,batch);if(vals)batch.forEach((s,j)=>{if(valid(vals[j],s)){put(l,s,vals[j]);changed=true}})}))}return changed}
 function setText(n,src,l){const v=l==='en'?src:(get(l,src)||src);const raw=n.nodeValue||'',t=raw.trim(),next=t?raw.replace(t,v):v;RENDERED_TEXT.set(n,String(next).trim());if(next!==raw)n.nodeValue=next;return l==='en'||!!get(l,src)}
 function setAttr(el,a,src,l){const v=l==='en'?src:(get(l,src)||src);markAttr(el,a,v);if(el.getAttribute(a)!==v)el.setAttribute(a,v);return l==='en'||!!get(l,src)}
 let seq=0,timer=0,applying=false;const BG_TRANSLATING=new Set();
@@ -65,7 +65,7 @@ async function apply(){const my=++seq,l=lang();if(l!=='en'){await loadPack(l);if
  for(const [el,m] of entriesAttr()){if(!el.isConnected)continue;for(const [a,src] of Object.entries(m)){if(l!=='en'&&!get(l,src))need.push(src);setAttr(el,a,src,l)}}
  const ai=document.querySelector('#aiMessages .ai-msg.bot:first-child');if(ai&&ai.textContent?.trim()===INITIAL_AI){if(l==='en')ai.textContent=INITIAL_AI;else{const q=get(l,INITIAL_AI);if(q)ai.textContent=q;else need.push(INITIAL_AI)}}
  document.documentElement.dataset.seekveraI18nReady=l;document.documentElement.dataset.seekveraI18nVersion=VERSION;applying=false;
- if(l!=='en'&&need.length&&!BG_TRANSLATING.has(l)){BG_TRANSLATING.add(l);translate(l,need).catch(()=>{}).finally(()=>{BG_TRANSLATING.delete(l);if(lang()===l)schedule(0)})}}
+ if(l!=='en'&&need.length&&!BG_TRANSLATING.has(l)){BG_TRANSLATING.add(l);translate(l,need).then(changed=>{if(changed&&lang()===l)schedule(0)}).catch(()=>{}).finally(()=>{BG_TRANSLATING.delete(l)})}}
 function entriesText(){const out=[];const w=document.createTreeWalker(document,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode())){const s=SRC.get(n);if(s&&!skipped(n))out.push([n,s])}return out}
 function setAttributeSource(el,a,source){if(!el||!ATTRS.includes(a))return;const src=canonical(source);let m=ATTRSRC.get(el);if(!m){m={};ATTRSRC.set(el,m)}m[a]=src;setAttr(el,a,src,lang());schedule(0)}
 function entriesAttr(){const out=[];for(const el of document.querySelectorAll('[placeholder],[aria-label],[title]')){const m=ATTRSRC.get(el);if(m)out.push([el,m])}return out}
