@@ -38,7 +38,12 @@ def source_inventory():
 def reviewed_labels():
  code=(ROOT/'i18n-ui.js').read_text();initial='I’m the SEEKVERA AI assistant. Tell me what you need and I’ll help you find the right section, compare options or search worldwide.'
  script='const vm=require("vm");const c={INITIAL_AI:'+json.dumps(initial)+'};vm.createContext(c);vm.runInContext('+json.dumps(code[code.index('const QUICK='):code.index('function api(')])+'+";globalThis.labels=QUICK",c);process.stdout.write(JSON.stringify(c.labels));'
- return json.loads(subprocess.check_output(['node','-e',script],cwd=ROOT,text=True))
+ labels=json.loads(subprocess.check_output(['node','-e',script],cwd=ROOT,text=True))
+ reviewed_path=ROOT/'tools/reviewed-current-locale.json'
+ if reviewed_path.exists():
+  reviewed=json.loads(reviewed_path.read_text())
+  for language,translations in reviewed['translations'].items():labels.setdefault(language,{}).update(translations)
+ return labels
 def suspicious_overlap(source,value):
  if re.search(r'[{}<>;]|https?://|[\w.]+\.(?:com|org|js|html)',source) or re.match(r'R\d.*(?:trigger|deploy)',source,re.I) or source.startswith('Al Jazeera, Al Arabiya, CNN, BBC, Reuters'):return False
  words=lambda x:re.findall(r"[A-Za-z][A-Za-z'’+-]*",x.lower())
@@ -97,7 +102,7 @@ def main():
   out=stage/(code+'.json')
   if out.exists():
    data=json.loads(out.read_text())
-   if code not in args.retranslate.split(',') and data.get('sourceHash')==source_hash and all(data.get('translations',{}).get(k) for k in source) and data.get('qualityPolicy')=='source-overlap-5-v1' and (code=='en' or not any(suspicious_overlap(k,data['translations'][k]) for k in source)):completed.append(code);print('RESUME',code,flush=True);continue
+   if code not in args.retranslate.split(',') and data.get('sourceHash')==source_hash and all(data.get('translations',{}).get(k) for k in source) and all(data['translations'].get(k)==v for k,v in reviewed.get(code,{}).items() if k in source) and data.get('qualityPolicy')=='source-overlap-5-v1' and (code=='en' or not any(suspicious_overlap(k,data['translations'][k]) for k in source)):completed.append(code);print('RESUME',code,flush=True);continue
   base=json.loads((ROOT/'i18n-r32'/f'{code}.json').read_text());trans=base['translations'];providers=set();retranslated=set()
   if out.exists():
    saved=json.loads(out.read_text())
