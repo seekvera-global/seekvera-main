@@ -1,5 +1,5 @@
 CURRENT_SOURCE 1118 DELTA 73 6a1126e6a2ce5629
 VERIFIED_PUBLIC_UI_ONLY 69 6a1126e6a2ce5629
-COMPLETE_PACK en 1118
+RESUME en
 DELTA_FAILURE ar HTTP Error 503: Service Unavailable {"ok":false,"error":"Daily free translation allocation exhausted","retryable":true,"reason":"daily_free_ai_limit"}
 STAGED_ONLY 1 FAILED 1
