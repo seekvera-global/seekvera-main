@@ -4,9 +4,11 @@ on:
   push:
     branches: [main]
     paths:
-      - 'worker-r76.js'
+      - 'worker*.js'
       - 'global-ui.js'
       - 'i18n-ui.js'
+      - 'r32-i18n.js'
+      - 'games.js'
       - 'locale-r15.js'
       - 'superapp.js'
       - 'voice-ai.js'
@@ -14,6 +16,7 @@ on:
       - '*.html'
       - 'i18n-r32/**'
       - 'wrangler.jsonc'
+      - 'tools/test-*.cjs'
       - '.github/workflows/r105-final-release.yml'
   workflow_dispatch:
 
@@ -36,6 +39,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check worker-r76.js
+          node --check worker.js
           node --check global-ui.js
           node --check superapp.js
           node --check voice-ai.js
@@ -46,6 +50,7 @@ jobs:
           node tools/test-audio-authority.cjs
           node --check i18n-ui.js
           node tools/test-locale-cognates.cjs
+          node tools/test-ui-translation.cjs
           node --check sw.js
           test "$(find i18n-r32 -maxdepth 1 -name '*.json' | wc -l)" -ge 98
           grep -F "const RELEASE='20261001-r125-dialect-voice-quality'" worker-r76.js
