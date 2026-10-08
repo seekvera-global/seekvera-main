@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20260930-canonical-locale';
+const VERSION='20261008-reviewed-voice-labels';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv','ku']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -12,7 +12,16 @@ const QUICK={ar:{
 'Worldwide':'العالم كله','AI assisted':'بمساعدة الذكاء الاصطناعي','Voice + Chat':'صوت + دردشة','Find it faster. Compare it better.':'اعثر عليه أسرع. قارنه بشكل أفضل.','Hotels, homes, cars, jobs, products, suppliers, media and services — from one global marketplace.':'فنادق ومنازل وسيارات ووظائف ومنتجات وموردون وإعلام وخدمات — من سوق عالمي واحد.','Near Me':'بالقرب مني','My Country':'بلدي','Chat · Voice · Camera · Attach':'دردشة · صوت · كاميرا · إرفاق','Online':'متصل','Message SEEKVERA AI…':'راسل ذكاء SEEKVERA…','Choose a country once and SEEKVERA switches the app language, currency, AI context and country-aware sections automatically. You can still change language manually if you want.':'اختر دولة مرة واحدة، وستغيّر SEEKVERA تلقائياً لغة التطبيق والعملة وسياق الذكاء الاصطناعي والأقسام المرتبطة بالدولة. ويمكنك تغيير اللغة يدوياً متى أردت.',
 'Popular categories':'الأقسام الشائعة','Clear visual routes, like a marketplace — no empty cards.':'مسارات واضحة مثل السوق — بدون بطاقات فارغة.','ALL CATEGORIES →':'كل الأقسام ←','Live marketplace':'السوق المباشر','Approved real listings only.':'إعلانات حقيقية معتمدة فقط.','OPEN MARKETPLACE →':'افتح السوق ←','Loading approved listings…':'جارٍ تحميل الإعلانات المعتمدة…','No approved live marketplace listings are available right now. SEEKVERA does not generate fake listings.':'لا توجد حالياً إعلانات سوق مباشرة معتمدة. لا تنشئ SEEKVERA إعلانات وهمية.','No approved live marketplace listings are available right now':'لا توجد حالياً إعلانات سوق مباشرة معتمدة.','SEEKVERA does not generate fake listings':'لا تنشئ SEEKVERA إعلانات وهمية.',
 'Request anything':'اطلب أي شيء','Tell SEEKVERA what you need anywhere in the world.':'أخبر SEEKVERA بما تحتاج إليه في أي مكان في العالم.','Country / anywhere':'الدولة / أي مكان','City / area':'المدينة / المنطقة','Describe what you need':'اشرح ما تحتاج إليه','Send request':'إرسال الطلب','Find, compare, choose — worldwide.':'ابحث وقارن واختر — حول العالم.','Find, compare, choose — worldwide':'ابحث وقارن واختر — حول العالم','About':'حول','Privacy':'الخصوصية','Terms':'الشروط','Contact':'تواصل','Disclosure':'الإفصاح','Business':'الأعمال','Cars':'السيارات',
+'Audio could not play. Tap the speaker to retry.':'تعذّر تشغيل الصوت. اضغط على مكبّر الصوت للمحاولة مجدداً.',
+'I could not understand that audio yet — tap the microphone and try again.':'لم أتمكّن من فهم التسجيل — اضغط على الميكروفون وحاول مجدداً.',
+'Understanding your speech…':'جارٍ فهم كلامك…',
+'Voice recognition is not supported in this browser.':'التعرّف على الصوت غير مدعوم في هذا المتصفّح.',
 [INITIAL_AI]:'أنا مساعد SEEKVERA بالذكاء الاصطناعي. أخبرني بما تحتاج إليه وسأساعدك في الوصول إلى القسم المناسب ومقارنة الخيارات أو البحث حول العالم.'
+},fr:{
+'Audio could not play. Tap the speaker to retry.':'Impossible de lire le son. Appuyez sur le haut-parleur pour réessayer.',
+'I could not understand that audio yet — tap the microphone and try again.':'Je n’ai pas compris cet enregistrement — appuyez sur le microphone et réessayez.',
+'Understanding your speech…':'Analyse de vos paroles…',
+'Voice recognition is not supported in this browser.':'La reconnaissance vocale n’est pas prise en charge par ce navigateur.'
 }};
 function api(p){const h=location.hostname;return(h==='seekveraglobal.com'||h==='www.seekveraglobal.com'||h.endsWith('workers.dev'))?p:'https://seekvera-main.seekvera-global.workers.dev'+p}
 function norm(v){v=String(v||'').trim().toLowerCase().replace('_','-');if(!v||v==='auto')v=String(navigator.language||'en').toLowerCase();return v.split('-')[0]||'en'}
