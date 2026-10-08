@@ -1,12 +1,7 @@
 name: R35 parallel 98-language final
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/r35-parallel-final.yml'
-      - 'tools/r35_build_pack.py'
-      - 'tools/r35_finalize.py'
+  # Legacy R35 source generator; production must use the current release pipeline.
   workflow_dispatch:
 
 permissions:

@@ -37,3 +37,11 @@ Before final approval: build all 98 packs for the candidate's exact source hash;
 ### Final approval remains blocked
 
 The baseline audit recorded dynamic translation requests for game descriptions, navigation labels, the newer assistant introduction and marketplace error messages. Several newer voice placeholders also have no exact key in the recorded source. The direct translation provider returned HTTP 429 during the repair attempt. No English placeholder or machine-produced replacement was invented to mark these complete. Whole-node leak checks also do not prove linguistic accuracy or detect every partially untranslated sentence: German pack examples retain English clauses. A complete source extraction/translation repair and device voice validation remain necessary. The current health endpoint and successful focused checks are insufficient for a final certification.
+
+## Deployment result
+
+PR #7 was merged as `9bc574f1a6a60777201ead9a7d361f6e6109a9ff`. Current R125 deployment/verification runs 37774318439 and 37774318417 completed successfully. The latter deployed Cloudflare version `74bd561b-3458-4383-8289-4894cadb4815` and passed live Arabic/French/English audio, French/Arabic/Spanish/Japanese chat, all 31 Arabic category descriptions, and delayed audio completion before navigation.
+
+Post-deployment focused checking (without candidate overrides) passed 98 live pack integrity checks, 248 atomic country states and 52 page/language checks covering the reported failures. Evidence is in `r125-postdeploy-certification-20261008.json`; its `finalApproval` is explicitly false because dynamic source coverage, translation quality and physical device audio remain incomplete. These focused results must not be described as a new full 2,744-combination pass.
+
+A legacy R35 workflow also auto-triggered through the shared builder path. Its French build passed (job 113301325780), providing an external translation-build check, but it extracts only 970 strings and is not a certification of the current 1,045-string static source. Future R35 executions are now manual-only as well.
