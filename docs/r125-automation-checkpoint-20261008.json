@@ -22,7 +22,7 @@
     ],
     "publicSourceProvenanceVerifiedFiles": 69,
     "latestResult": {
-      "checkpointUtc": "2026-10-08T17:29:55.578761+00:00",
+      "checkpointUtc": "2026-10-08T18:07:47.458460+00:00",
       "completedThisPass": [
         "en"
       ],
@@ -35,7 +35,8 @@
       "resume-latest.log",
       "resume-exit.txt"
     ],
-    "policy": "Candidates only. Never replace production source or manifest with a partial release."
+    "policy": "Candidates only. Never replace production source or manifest with a partial release.",
+    "lastTriggerCommit": "40a141171b3ca853f8552cba86aeb0a486f9dc5a"
   },
   "inheritedCandidateState": {
     "completeCandidatesBeforeThisPass": 20,
