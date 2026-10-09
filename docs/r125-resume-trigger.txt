@@ -1,3 +1,3 @@
-R125 candidate resume requested at 2026-10-09T08:27:00Z
+R125 candidate resume requested at 2026-10-09T10:35:55Z
 Purpose: recheck the free UI translation allocation and resume unpublished candidates from the durable checkpoint.
 Production publication remains forbidden until all 98 packs, linguistic review including Romansh, and required production checks pass.
