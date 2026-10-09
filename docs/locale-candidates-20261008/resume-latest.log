@@ -1,5 +1,223 @@
 CURRENT_SOURCE 1118 DELTA 73 6a1126e6a2ce5629
 VERIFIED_PUBLIC_UI_ONLY 69 6a1126e6a2ce5629
 RESUME en
-DELTA_FAILURE ar HTTP Error 503: Service Unavailable {"ok":false,"error":"Daily free translation allocation exhausted","retryable":true,"reason":"daily_free_ai_limit"}
-STAGED_ONLY 1 FAILED 1
+DELTA_BATCH ar 3 3 @cf/qwen/qwen3-30b-a3b-fp8
+COMPLETE_PACK ar 1118
+COMPLETE_PACK fr 1118
+DELTA_BATCH zh 16 83 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH zh 32 83 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH zh 48 83 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH zh 64 83 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH zh 80 83 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH zh 83 83 @cf/qwen/qwen3-30b-a3b-fp8
+COMPLETE_PACK zh 1118
+DELTA_BATCH es 16 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH es 32 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH es 48 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH es 64 136 @cf/meta/llama-3.1-8b-instruct-fast
+DELTA_BATCH es 80 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH es 96 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH es 112 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH es 128 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH es 136 136 @cf/qwen/qwen3-30b-a3b-fp8
+COMPLETE_PACK es 1118
+DELTA_BATCH hi 16 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH hi 32 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH hi 48 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH hi 64 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH hi 72 72 @cf/qwen/qwen3-30b-a3b-fp8
+COMPLETE_PACK hi 1118
+DELTA_BATCH pt 16 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH pt 32 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH pt 48 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH pt 64 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH pt 80 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH pt 96 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH pt 112 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH pt 128 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH pt 136 136 @cf/qwen/qwen3-30b-a3b-fp8
+COMPLETE_PACK pt 1118
+DELTA_BATCH de 16 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH de 32 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH de 48 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH de 64 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH de 80 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH de 96 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH de 112 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH de 128 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH de 136 136 @cf/qwen/qwen3-30b-a3b-fp8
+COMPLETE_PACK de 1118
+DELTA_BATCH ja 16 72 @cf/qwen/qwen3-30b-a3b-fp8
+SPLIT_RETRY Japanese 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_BATCH ja 32 72 @cf/meta/llama-3.1-8b-instruct-fast+@cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ja 48 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ja 64 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ja 72 72 @cf/qwen/qwen3-30b-a3b-fp8
+COMPLETE_PACK ja 1118
+DELTA_BATCH ko 16 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ko 32 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ko 48 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ko 64 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ko 80 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ko 96 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ko 112 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ko 128 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ko 136 136 @cf/qwen/qwen3-30b-a3b-fp8
+COMPLETE_PACK ko 1118
+DELTA_BATCH id 16 84 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH id 32 84 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH id 48 84 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH id 64 84 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH id 80 84 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH id 84 84 @cf/qwen/qwen3-30b-a3b-fp8
+COMPLETE_PACK id 1118
+DELTA_BATCH tr 16 83 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH tr 32 83 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH tr 48 83 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH tr 64 83 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH tr 80 83 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH tr 83 83 @cf/qwen/qwen3-30b-a3b-fp8
+COMPLETE_PACK tr 1118
+DELTA_BATCH ru 16 134 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ru 32 134 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ru 48 134 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ru 64 134 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ru 80 134 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ru 96 134 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ru 112 134 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ru 128 134 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ru 134 134 @cf/qwen/qwen3-30b-a3b-fp8
+COMPLETE_PACK ru 1118
+DELTA_BATCH ur 16 84 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ur 32 84 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ur 48 84 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ur 64 84 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ur 80 84 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ur 84 84 @cf/qwen/qwen3-30b-a3b-fp8
+COMPLETE_PACK ur 1118
+DELTA_BATCH bn 16 83 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH bn 32 83 @cf/meta/llama-3.1-8b-instruct-fast
+DELTA_BATCH bn 48 83 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH bn 64 83 @cf/qwen/qwen3-30b-a3b-fp8
+SPLIT_RETRY Bangla 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Bangla 8 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_BATCH bn 80 83 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH bn 83 83 @cf/qwen/qwen3-30b-a3b-fp8
+COMPLETE_PACK bn 1118
+DELTA_BATCH vi 16 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH vi 32 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH vi 48 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH vi 64 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH vi 80 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH vi 96 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH vi 112 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH vi 128 136 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH vi 136 136 @cf/qwen/qwen3-30b-a3b-fp8
+COMPLETE_PACK vi 1118
+DELTA_BATCH it 16 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH it 32 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH it 48 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH it 64 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH it 72 72 @cf/qwen/qwen3-30b-a3b-fp8
+COMPLETE_PACK it 1118
+DELTA_BATCH sw 16 147 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH sw 32 147 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH sw 48 147 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH sw 64 147 @cf/qwen/qwen3-30b-a3b-fp8
+SPLIT_RETRY Swahili 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_BATCH sw 80 147 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH sw 96 147 @cf/qwen/qwen3-30b-a3b-fp8
+SPLIT_RETRY Swahili 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_BATCH sw 112 147 @cf/qwen/qwen3-30b-a3b-fp8
+SPLIT_RETRY Swahili 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_BATCH sw 128 147 @cf/qwen/qwen3-30b-a3b-fp8+@cf/meta/llama-3.1-8b-instruct-fast
+SPLIT_RETRY Swahili 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Swahili 8 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Swahili 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_BATCH sw 144 147 @cf/qwen/qwen3-30b-a3b-fp8+@cf/meta/llama-3.1-8b-instruct-fast+@cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH sw 147 147 @cf/meta/llama-3.1-8b-instruct-fast
+COMPLETE_PACK sw 1118
+DELTA_BATCH th 16 147 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH th 32 147 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH th 48 147 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH th 64 147 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH th 80 147 @cf/meta/llama-3.1-8b-instruct-fast
+DELTA_BATCH th 96 147 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH th 112 147 @cf/qwen/qwen3-30b-a3b-fp8
+SPLIT_RETRY Thai 16 Target output still contains a long English source phrase: ('Health search requires extra care. SEEKVERA can help route users to providers, but important medical decisions should b
+DELTA_BATCH th 128 147 @cf/qwen/qwen3-30b-a3b-fp8
+SPLIT_RETRY Thai 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_BATCH th 144 147 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH th 147 147 @cf/qwen/qwen3-30b-a3b-fp8
+COMPLETE_PACK th 1118
+DELTA_BATCH fa 16 83 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH fa 32 83 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH fa 48 83 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH fa 64 83 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH fa 80 83 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH fa 83 83 @cf/qwen/qwen3-30b-a3b-fp8
+COMPLETE_PACK fa 1118
+DELTA_BATCH pl 16 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH pl 32 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH pl 48 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH pl 64 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH pl 72 72 @cf/meta/llama-3.1-8b-instruct-fast
+COMPLETE_PACK pl 1118
+DELTA_BATCH nl 16 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH nl 32 72 @cf/meta/llama-3.1-8b-instruct-fast
+DELTA_BATCH nl 48 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH nl 64 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH nl 72 72 @cf/qwen/qwen3-30b-a3b-fp8
+COMPLETE_PACK nl 1118
+DELTA_BATCH ms 16 148 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ms 32 148 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ms 48 148 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ms 64 148 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ms 80 148 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ms 96 148 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ms 112 148 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ms 128 148 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ms 144 148 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ms 148 148 @cf/qwen/qwen3-30b-a3b-fp8
+COMPLETE_PACK ms 1118
+DELTA_BATCH fil 16 94 @cf/qwen/qwen3-30b-a3b-fp8
+SPLIT_RETRY Filipino 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Filipino 8 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_BATCH fil 32 94 @cf/meta/llama-3.1-8b-instruct-fast+@cf/qwen/qwen3-30b-a3b-fp8+@cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH fil 48 94 @cf/meta/llama-3.1-8b-instruct-fast
+DELTA_BATCH fil 64 94 @cf/qwen/qwen3-30b-a3b-fp8
+SPLIT_RETRY Filipino 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_BATCH fil 80 94 @cf/qwen/qwen3-30b-a3b-fp8
+SPLIT_RETRY Filipino 14 Target output still contains a long English source phrase: ('SEEKVERA Worldwide R4 deployment marker — explicit Worldwide labels in all 28 UI languages, refreshed app cache, AI, vo
+SPLIT_RETRY Filipino 7 Target output still contains a long English source phrase: ('SEEKVERA Worldwide R4 deployment marker — explicit Worldwide labels in all 28 UI languages, refreshed app cache, AI, vo
+SPLIT_RETRY Filipino 4 Target output still contains a long English source phrase: ('SEEKVERA Worldwide R4 deployment marker — explicit Worldwide labels in all 28 UI languages, refreshed app cache, AI, vo
+SPLIT_RETRY Filipino 2 Target output still contains a long English source phrase: ('SEEKVERA Worldwide R4 deployment marker — explicit Worldwide labels in all 28 UI languages, refreshed app cache, AI, vo
+DELTA_BATCH fil 94 94 @cf/qwen/qwen3-30b-a3b-fp8
+COMPLETE_PACK fil 1118
+DELTA_BATCH ha 16 136 @cf/meta/llama-3.1-8b-instruct-fast
+DELTA_BATCH ha 32 136 @cf/qwen/qwen3-30b-a3b-fp8
+SPLIT_RETRY Hausa 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_BATCH ha 48 136 @cf/qwen/qwen3-30b-a3b-fp8
+SPLIT_RETRY Hausa 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Hausa 8 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Hausa 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Hausa 2 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_BATCH ha 64 136 @cf/qwen/qwen3-30b-a3b-fp8+@cf/meta/llama-3.1-8b-instruct-fast
+SPLIT_RETRY Hausa 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Hausa 8 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Hausa 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Hausa 2 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_BATCH ha 80 136 @cf/meta/llama-3.1-8b-instruct-fast+@cf/meta/llama-3.1-8b-instruct-fast+@cf/meta/llama-3.1-8b-instruct-fast+@cf/qwen/qwen3-30b-a3b-fp8
+SPLIT_RETRY Hausa 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Hausa 8 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Hausa 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Hausa 8 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Hausa 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_BATCH ha 96 136 @cf/qwen/qwen3-30b-a3b-fp8+@cf/meta/llama-3.1-8b-instruct-fast+@cf/meta/llama-3.1-8b-instruct-fast+@cf/meta/llama-3.1-8b-instruct-fast+@cf/qwen/qwen3-30b-a3b-fp8+@cf/qwen/qwen3-30b-a3b-fp8
+SPLIT_RETRY Hausa 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Hausa 8 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Hausa 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Hausa 2 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Hausa 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_FAILURE ha HTTP Error 503: Service Unavailable {"ok":false,"error":"Daily free translation allocation exhausted","retryable":true,"reason":"daily_free_ai_limit"}
+STAGED_ONLY 24 FAILED 1

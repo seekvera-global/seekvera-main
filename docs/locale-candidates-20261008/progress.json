@@ -1,16 +1,39 @@
 {
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
-    "en"
+    "en",
+    "ar",
+    "fr",
+    "zh",
+    "es",
+    "hi",
+    "pt",
+    "de",
+    "ja",
+    "ko",
+    "id",
+    "tr",
+    "ru",
+    "ur",
+    "bn",
+    "vi",
+    "it",
+    "sw",
+    "th",
+    "fa",
+    "pl",
+    "nl",
+    "ms",
+    "fil"
   ],
   "failures": [
     {
-      "language": "ar",
+      "language": "ha",
       "error": "HTTP Error 503: Service Unavailable {\"ok\":false,\"error\":\"Daily free translation allocation exhausted\",\"retryable\":true,\"reason\":\"daily_free_ai_limit\"}"
     }
   ],
   "finalApproval": false,
-  "checkpointUtc": "2026-10-09T12:23:08.620274+00:00",
+  "checkpointUtc": "2026-10-09T14:08:13.017688+00:00",
   "published": false,
   "resumeExitCode": 0
 }
