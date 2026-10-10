@@ -1,0 +1,26 @@
+name: R125 staged locale rendering
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/r125-candidate-render-20261010.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 2b145e66ab4b5b470a80d108a1a9ef2f0096126c
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser for isolated CI verification
+        run: npx playwright install --with-deps chromium
+      - name: Verify candidate descriptions, filters and saved chat
+        env:
+          LIVE_OVERRIDES: '1'
+          LOCALE_STAGE: docs/locale-candidates-20261008
+        run: node tools/test-current-locale-render.mjs
