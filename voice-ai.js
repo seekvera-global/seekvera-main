@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-if(window.__seekveraVoiceAI)return;window.__seekveraVoiceAI=true;window.__seekveraVoiceMode='20261009-r126-native-shadow-language-guard';
+if(window.__seekveraVoiceAI)return;window.__seekveraVoiceAI=true;window.__seekveraVoiceMode='20261010-r127-voice-script-coverage';
 const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
 const LANGS={en:'en-US',ar:'ar-SA',fr:'fr-FR',zh:'zh-CN',es:'es-ES',hi:'hi-IN',pt:'pt-BR',de:'de-DE',ja:'ja-JP',ko:'ko-KR',id:'id-ID',tr:'tr-TR',ru:'ru-RU',ur:'ur-PK',bn:'bn-BD',vi:'vi-VN',it:'it-IT',sw:'sw-KE',th:'th-TH',fa:'fa-IR',pl:'pl-PL',nl:'nl-NL',ms:'ms-MY',fil:'fil-PH',ha:'ha-NG',yo:'yo-NG',ig:'ig-NG',am:'am-ET',he:'he-IL',el:'el-GR',uk:'uk-UA',ro:'ro-RO',cs:'cs-CZ',sk:'sk-SK',hu:'hu-HU',sv:'sv-SE',no:'nb-NO',da:'da-DK',fi:'fi-FI',bg:'bg-BG',hr:'hr-HR',sr:'sr-RS',sl:'sl-SI',lt:'lt-LT',lv:'lv-LV',et:'et-EE',ca:'ca-ES',eu:'eu-ES',gl:'gl-ES',is:'is-IS',sq:'sq-AL',mk:'mk-MK',ka:'ka-GE',hy:'hy-AM',az:'az-AZ',kk:'kk-KZ',uz:'uz-UZ',ky:'ky-KG',tg:'tg-TJ',tk:'tk-TM',ne:'ne-NP',si:'si-LK',ta:'ta-IN',te:'te-IN',ml:'ml-IN',mr:'mr-IN',gu:'gu-IN',pa:'pa-IN',km:'km-KH',lo:'lo-LA',my:'my-MM',mn:'mn-MN',zu:'zu-ZA',af:'af-ZA',be:'be-BY',bs:'bs-BA',dz:'dz-BT',ti:'ti-ET',fo:'fo-FO',kl:'kl-GL',rw:'rw-RW',sm:'sm-WS',to:'to-TO',so:'so-SO',ps:'ps-AF',dv:'dv-MV',mt:'mt-MT',mg:'mg-MG',ga:'ga-IE',cy:'cy-GB',mi:'mi-NZ',fy:'fy-NL',lb:'lb-LU',rm:'rm-CH',ku:'ku-TR',xh:'xh-ZA',st:'st-ZA',tn:'tn-BW'};
 const NAME_CODE={english:'en',arabic:'ar',french:'fr',chinese:'zh',mandarin:'zh',spanish:'es',hindi:'hi',portuguese:'pt',german:'de',japanese:'ja',korean:'ko',indonesian:'id',turkish:'tr',russian:'ru',urdu:'ur',bengali:'bn',vietnamese:'vi',italian:'it',swahili:'sw',thai:'th',persian:'fa',farsi:'fa',polish:'pl',dutch:'nl',malay:'ms',filipino:'fil',tagalog:'fil',hausa:'ha',yoruba:'yo',igbo:'ig',amharic:'am',hebrew:'he',greek:'el',ukrainian:'uk',romanian:'ro',czech:'cs',slovak:'sk',hungarian:'hu',swedish:'sv',norwegian:'no',danish:'da',finnish:'fi',bulgarian:'bg',croatian:'hr',serbian:'sr',slovenian:'sl',lithuanian:'lt',latvian:'lv',estonian:'et',catalan:'ca',basque:'eu',galician:'gl',icelandic:'is',albanian:'sq',macedonian:'mk',georgian:'ka',armenian:'hy',azerbaijani:'az',kazakh:'kk',uzbek:'uz',kyrgyz:'ky',tajik:'tg',turkmen:'tk',nepali:'ne',sinhala:'si',tamil:'ta',telugu:'te',malayalam:'ml',marathi:'mr',gujarati:'gu',punjabi:'pa',khmer:'km',lao:'lo',burmese:'my',mongolian:'mn',zulu:'zu',afrikaans:'af',belarusian:'be',bosnian:'bs',dzongkha:'dz',tigrinya:'ti',faroese:'fo',greenlandic:'kl',kalaallisut:'kl',kinyarwanda:'rw',samoan:'sm',tongan:'to',somali:'so',pashto:'ps',dhivehi:'dv',maldivian:'dv',maltese:'mt',malagasy:'mg',irish:'ga',welsh:'cy',maori:'mi',frisian:'fy',luxembourgish:'lb',romansh:'rm',kurdish:'ku',xhosa:'xh',sesotho:'st','southern sotho':'st',tswana:'tn',setswana:'tn'};
@@ -68,7 +68,18 @@ function transcriptScript(text){
   if(/[\u0e00-\u0e7f]/.test(t))return'thai';
   if(/[\u0900-\u097f]/.test(t))return'devanagari';
   if(/[\u0980-\u09ff]/.test(t))return'bengali';
+  if(/[\u0a00-\u0a7f]/.test(t))return'gurmukhi';
+  if(/[\u0a80-\u0aff]/.test(t))return'gujarati';
   if(/[\u0b80-\u0bff]/.test(t))return'tamil';
+  if(/[\u0c00-\u0c7f]/.test(t))return'telugu';
+  if(/[\u0d00-\u0d7f]/.test(t))return'malayalam';
+  if(/[\u0d80-\u0dff]/.test(t))return'sinhala';
+  if(/[\u0e80-\u0eff]/.test(t))return'lao';
+  if(/[\u1000-\u109f]/.test(t))return'myanmar';
+  if(/[\u1200-\u137f]/.test(t))return'ethiopic';
+  if(/[\u1780-\u17ff]/.test(t))return'khmer';
+  if(/[\u10a0-\u10ff]/.test(t))return'georgian';
+  if(/[\u0530-\u058f]/.test(t))return'armenian';
   if(/[\u4e00-\u9fff]/.test(t))return'han';
   if(/[\u3040-\u30ff]/.test(t))return'japanese';
   if(/[\uac00-\ud7af]/.test(t))return'korean';
@@ -90,12 +101,12 @@ function transcriptPoor(text){
 }
 function languageFromTranscript(text,preferred=''){
   const sc=transcriptScript(text),p=codeOf(preferred||selectedLang()||document.documentElement.lang||'');
-  const groups={arabic:['ar','fa','ur','ps'],devanagari:['hi','mr','ne'],bengali:['bn'],han:['zh'],japanese:['ja'],korean:['ko'],cyrillic:['ru','uk','bg','sr','be','mk'],hebrew:['he'],greek:['el'],thai:['th']};
+  const groups={arabic:['ar','fa','ur','ps'],devanagari:['hi','mr','ne'],bengali:['bn'],gurmukhi:['pa'],gujarati:['gu'],tamil:['ta'],telugu:['te'],malayalam:['ml'],sinhala:['si'],thai:['th'],lao:['lo'],myanmar:['my'],ethiopic:['am','ti'],khmer:['km'],georgian:['ka'],armenian:['hy'],han:['zh'],japanese:['ja'],korean:['ko'],cyrillic:['ru','uk','bg','sr','be','mk'],hebrew:['he'],greek:['el']};
   if(sc==='latin')return p&&LANGS[p]&&!Object.values(groups).flat().includes(p)?p:'auto';
   const g=groups[sc]||[];if(p&&g.includes(p))return p;return g[0]||'auto'
 }
 function expectedScriptFor(code){
-  code=codeOf(code);for(const [sc,g] of Object.entries({arabic:['ar','fa','ur','ps'],devanagari:['hi','mr','ne'],bengali:['bn'],han:['zh'],japanese:['ja'],korean:['ko'],cyrillic:['ru','uk','bg','sr','be','mk'],hebrew:['he'],greek:['el'],thai:['th']}))if(g.includes(code))return sc;return code&&LANGS[code]?'latin':''
+  code=codeOf(code);for(const [sc,g] of Object.entries({arabic:['ar','fa','ur','ps'],devanagari:['hi','mr','ne'],bengali:['bn'],gurmukhi:['pa'],gujarati:['gu'],tamil:['ta'],telugu:['te'],malayalam:['ml'],sinhala:['si'],thai:['th'],lao:['lo'],myanmar:['my'],ethiopic:['am','ti'],khmer:['km'],georgian:['ka'],armenian:['hy'],han:['zh'],japanese:['ja'],korean:['ko'],cyrillic:['ru','uk','bg','sr','be','mk'],hebrew:['he'],greek:['el']}))if(g.includes(code))return sc;return code&&LANGS[code]?'latin':''
 }
 function chooseHybridTranscript(nativeText,nativeConfidence,whisper){
   const native=compactVoiceTranscript(nativeText),text=compactVoiceTranscript(whisper?.text);
@@ -122,7 +133,7 @@ function hintedVoiceCodes(){
 function transcriptScore(text,hint=''){
   const t=String(text||'').trim();if(!t)return-999;
   let score=Math.min(60,t.length/3);if(transcriptPoor(t))score-=120;
-  const sc=transcriptScript(t),hc=codeOf(hint),expected={ar:'arabic',fa:'arabic',ur:'arabic',ps:'arabic',th:'thai',hi:'devanagari',mr:'devanagari',ne:'devanagari',bn:'bengali',zh:'han',ja:'japanese',ko:'korean',ru:'cyrillic',uk:'cyrillic',bg:'cyrillic',sr:'cyrillic',he:'hebrew',el:'greek'}[hc]||'';
+  const sc=transcriptScript(t),hc=codeOf(hint),expected={ar:'arabic',fa:'arabic',ur:'arabic',ps:'arabic',hi:'devanagari',mr:'devanagari',ne:'devanagari',bn:'bengali',pa:'gurmukhi',gu:'gujarati',ta:'tamil',te:'telugu',ml:'malayalam',si:'sinhala',th:'thai',lo:'lao',my:'myanmar',am:'ethiopic',ti:'ethiopic',km:'khmer',ka:'georgian',hy:'armenian',zh:'han',ja:'japanese',ko:'korean',ru:'cyrillic',uk:'cyrillic',bg:'cyrillic',sr:'cyrillic',he:'hebrew',el:'greek'}[hc]||'';
   if(expected&&sc===expected)score+=80;
   return score
 }
@@ -198,6 +209,17 @@ function localeForText(t,requested){
   if(/[\uac00-\ud7af]/.test(t))return 'ko-KR';
   if(/[\u0900-\u097f]/.test(t))return 'hi-IN';
   if(/[\u0980-\u09ff]/.test(t))return 'bn-BD';
+  if(/[\u0a00-\u0a7f]/.test(t))return 'pa-IN';
+  if(/[\u0a80-\u0aff]/.test(t))return 'gu-IN';
+  if(/[\u0b80-\u0bff]/.test(t))return 'ta-IN';
+  if(/[\u0c00-\u0c7f]/.test(t))return 'te-IN';
+  if(/[\u0d00-\u0d7f]/.test(t))return 'ml-IN';
+  if(/[\u0d80-\u0dff]/.test(t))return 'si-LK';
+  if(/[\u0e80-\u0eff]/.test(t))return 'lo-LA';
+  if(/[\u1000-\u109f]/.test(t))return 'my-MM';
+  if(/[\u1780-\u17ff]/.test(t))return 'km-KH';
+  if(/[\u10a0-\u10ff]/.test(t))return 'ka-GE';
+  if(/[\u0530-\u058f]/.test(t))return 'hy-AM';
   if(/[\u0400-\u04ff]/.test(t))return 'ru-RU';
   if(/[\u0590-\u05ff]/.test(t))return 'he-IL';
   if(/[\u0370-\u03ff]/.test(t))return 'el-GR';
