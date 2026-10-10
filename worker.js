@@ -79,6 +79,10 @@ function uiTranslationValid(value,source,language){
  const code=uiLanguage(language),same=value.trim()===source.trim();
  const cognates={fr:['Contact','Action','Arcade','Puzzle'],it:['Privacy','Arcade','Puzzle'],nl:['Privacy','Arcade'],de:['Action','Arcade','Puzzle']};
  if(same&&code!=='en'&&!cognates[code]?.includes(source.trim())&&!/^(?:SEEKVERA(?: AI)?|https?:\/\/\S+|[\d\s.,:+\-/%$€£₦¥₹]+)$/.test(source.trim()))return false;
+ // Reject collapsed repetitive output while allowing deliberate repetition in source text.
+ const words=x=>(String(x).toLocaleLowerCase().match(/\p{L}+/gu)||[]);
+ const targetWords=words(value),sourceWords=words(source);
+ if(targetWords.length>=8&&new Set(targetWords).size<=targetWords.length/2&&new Set(sourceWords).size>sourceWords.length/2)return false;
  const placeholders=x=>(x.match(/\$?\{[\w.]+\}|%[sd]/g)||[]).sort().join('\u0000');
  if(placeholders(value)!==placeholders(source))return false;
  const scripts={ar:/[\u0600-\u06ff]/,fa:/[\u0600-\u06ff]/,ur:/[\u0600-\u06ff]/,zh:/[\u3400-\u9fff]/,ja:/[\u3040-\u30ff\u3400-\u9fff]/,ko:/[\uac00-\ud7af]/,hi:/[\u0900-\u097f]/,bn:/[\u0980-\u09ff]/,th:/[\u0e00-\u0e7f]/,ru:/[\u0400-\u052f]/};
@@ -94,8 +98,8 @@ export default{async fetch(request,env){const u=new URL(request.url);if(u.pathna
 if(u.pathname==='/api/ui-translate'){try{
  const b=await request.json(),language=clean(b.language,80),strings=Array.isArray(b.strings)?b.strings.slice(0,20).map(x=>clean(x,700)):[];
  if(!language||!strings.length||strings.some(x=>!x))return j(request,{ok:false,error:'Language and strings are required'},400);
- const raw=(uiLanguage(language)==='rm'?'r125-ui-rm-20261008-v3|':'r125-ui-20261008|')+language+'\u0000'+JSON.stringify(strings),dig=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(raw)),hex=[...new Uint8Array(dig)].map(x=>x.toString(16).padStart(2,'0')).join('');
- const cache=await caches.open('seekvera-ui-translate-r125-20261008'),ck=new Request(new URL('/__sv_ui_translation_r125_20261008/'+hex,request.url).toString(),{method:'GET'}),hit=await cache.match(ck);
+ const raw=(uiLanguage(language)==='rm'?'r125-ui-rm-20261008-v3|':'r125-ui-20261010|')+language+'\u0000'+JSON.stringify(strings),dig=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(raw)),hex=[...new Uint8Array(dig)].map(x=>x.toString(16).padStart(2,'0')).join('');
+ const cache=await caches.open('seekvera-ui-translate-r125-20261010'),ck=new Request(new URL('/__sv_ui_translation_r125_20261010/'+hex,request.url).toString(),{method:'GET'}),hit=await cache.match(ck);
  if(hit){try{const cached=await hit.json();if(cached?.ok&&Array.isArray(cached.translations)&&parseUiTranslations(JSON.stringify(cached.translations),strings,language))return j(request,{...cached,cached:true})}catch{}}
  const sys=(uiLanguage(language)==='rm'?'Use correct standard Rumantsch Grischun (Romansh). The language is distinct from Spanish, Italian and Catalan. Example: I am the assistant = Jau sun l’assistent. ': '')+'You are SEEKVERA UI translator. LANGUAGE LOCK: translate every supplied interface string fully into '+language+'. Return ONLY one valid JSON array of exactly '+strings.length+' strings, same order. No markdown, no keys, no explanation. Preserve SEEKVERA, URLs, currency codes, model names, emojis, punctuation placeholders and numbers. Translate labels, buttons, headings, descriptions and accessibility text naturally. Never return English unless the target language is English.';
  const user=JSON.stringify(strings),backendErrors=[];
