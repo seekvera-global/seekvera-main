@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-10",
+  "finalApproval": false,
+  "published": false,
+  "userAuthorizedUiTranslationToProjectEndpoint": true,
+  "resumedCandidates": 24,
+  "completeCoverageCandidateFiles": 25,
+  "checksPassed": [
+    "ui-translation",
+    "audio-authority",
+    "direct-voice",
+    "dialect-voice",
+    "tts-envelope",
+    "locale-cognates"
+  ],
+  "translationProbe": {
+    "french": {
+      "status": 200,
+      "source": "Voice reply",
+      "translation": "Réponse vocale"
+    },
+    "hausa": {
+      "status": 200,
+      "source": "Switch lanes and avoid neon traffic.",
+      "translation": "Shiga da kuma da kuma da gudun gudun.",
+      "quality": "repetitive output; requires linguistic review; not approved"
+    }
+  },
+  "translationBatchErrors": {
+    "language": "Hausa",
+    "status": 503,
+    "reason": "all_translation_backends_unavailable",
+    "batchSizes": [
+      16,
+      8,
+      4,
+      2
+    ]
+  },
+  "action": "Stopped recursive failing retries; production unchanged; do not publish unreviewed candidate set",
+  "remaining": [
+    "Complete and linguistically review current source across 98 languages",
+    "Investigate translation backend failures and repetitive target output",
+    "Physical microphone and audible speaker checks on Android/iPhone/iPad/desktop"
+  ]
+}
