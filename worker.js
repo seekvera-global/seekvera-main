@@ -82,7 +82,7 @@ function uiTranslationValid(value,source,language){
  // Reject collapsed repetitive output while allowing deliberate repetition in source text.
  const words=x=>(String(x).toLocaleLowerCase().match(/\p{L}+/gu)||[]);
  const targetWords=words(value),sourceWords=words(source);
- if(targetWords.length>=8&&new Set(targetWords).size<=targetWords.length/2&&new Set(sourceWords).size>sourceWords.length/2)return false;
+ if(targetWords.length>=8&&new Set(targetWords).size<=targetWords.length/(targetWords.length>16?4:2)&&new Set(sourceWords).size>sourceWords.length/2)return false;
  const placeholders=x=>(x.match(/\$?\{[\w.]+\}|%[sd]/g)||[]).sort().join('\u0000');
  if(placeholders(value)!==placeholders(source))return false;
  const scripts={ar:/[\u0600-\u06ff]/,fa:/[\u0600-\u06ff]/,ur:/[\u0600-\u06ff]/,zh:/[\u3400-\u9fff]/,ja:/[\u3040-\u30ff\u3400-\u9fff]/,ko:/[\uac00-\ud7af]/,hi:/[\u0900-\u097f]/,bn:/[\u0980-\u09ff]/,th:/[\u0e00-\u0e7f]/,ru:/[\u0400-\u052f]/};
