@@ -1,0 +1,317 @@
+{
+  "date": "2026-10-10",
+  "scope": "HTTP page availability only; does not certify page interactions",
+  "pages": 44,
+  "failures": [],
+  "results": [
+    {
+      "page": "health.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 9201
+    },
+    {
+      "page": "solar.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 9161
+    },
+    {
+      "page": "games.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 9502
+    },
+    {
+      "page": "entertainment.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 8208
+    },
+    {
+      "page": "post-ad.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 20194
+    },
+    {
+      "page": "jungle-survivor-real3d.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 33239
+    },
+    {
+      "page": "business-software.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 9207
+    },
+    {
+      "page": "disclosure.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 8060
+    },
+    {
+      "page": "money-insurance.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 5753
+    },
+    {
+      "page": "404.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 2554
+    },
+    {
+      "page": "deal-agent.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 9727
+    },
+    {
+      "page": "tourism.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 11594
+    },
+    {
+      "page": "scan.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 6639
+    },
+    {
+      "page": "about.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 7934
+    },
+    {
+      "page": "media.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 6442
+    },
+    {
+      "page": "software.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 2475
+    },
+    {
+      "page": "wifi.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 9544
+    },
+    {
+      "page": "app.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 2822
+    },
+    {
+      "page": "index.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 25490
+    },
+    {
+      "page": "shipping-logistics.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 5739
+    },
+    {
+      "page": "deploy-trigger-20260922.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 1932
+    },
+    {
+      "page": "marketplace.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 13339
+    },
+    {
+      "page": "hub.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 18481
+    },
+    {
+      "page": "privacy.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 8654
+    },
+    {
+      "page": "property.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 9203
+    },
+    {
+      "page": "cars-auto.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 5661
+    },
+    {
+      "page": "deploy-trigger-20260923-ai-media.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 2041
+    },
+    {
+      "page": "jobs.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 12103
+    },
+    {
+      "page": "everyday.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 8140
+    },
+    {
+      "page": "travel.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 9703
+    },
+    {
+      "page": "seller-plans.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 9496
+    },
+    {
+      "page": "shopping.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 9258
+    },
+    {
+      "page": "seekvera-part1.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 20737
+    },
+    {
+      "page": "terms.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 8053
+    },
+    {
+      "page": "import-export.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 9295
+    },
+    {
+      "page": "restaurants-food.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 5625
+    },
+    {
+      "page": "web-hosting.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 9156
+    },
+    {
+      "page": "seekvera-plane-crash-real-playable.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 20457
+    },
+    {
+      "page": "listing.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 8581
+    },
+    {
+      "page": "education.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 9238
+    },
+    {
+      "page": "contact.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 3216
+    },
+    {
+      "page": "connectivity.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 8393
+    },
+    {
+      "page": "local-services.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 5605
+    },
+    {
+      "page": "affiliate-disclosure.html",
+      "status": 200,
+      "hasHtml": true,
+      "unifiedUi": true,
+      "bytes": 2472
+    }
+  ],
+  "finalApproval": false
+}
