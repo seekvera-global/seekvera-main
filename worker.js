@@ -108,7 +108,7 @@ if(u.pathname==='/api/ui-translate'){try{
  const parse=v=>parseUiTranslations(v,strings,language);
  let arr=null,model='';
  if(env.AI){
-  const models=uiLanguage(language)==='rm'?[PRIMARY,LIGHT,FASTCHAT]:[LIGHT,FASTCHAT];
+  const models=uiLanguage(language)==='rm'?[PRIMARY,LIGHT,FASTCHAT]:[LIGHT,PRIMARY,FASTCHAT];
   for(const md of models){try{const input={messages:[{role:'system',content:sys},{role:'user',content:md===PRIMARY?user:user+'\n/no_think'}],temperature:0,...(md===PRIMARY?{max_completion_tokens:1400,chat_template_kwargs:{enable_thinking:false}}:{max_tokens:1400})};const r=await env.AI.run(md,input);arr=parse(out(r));if(arr){model=md;break}backendErrors.push('workers-ai:'+md+':unparseable')}catch(e){const detail=clean(e?.message||e,120);backendErrors.push('workers-ai:'+md+':'+detail);if(/3036|daily free allocation/i.test(detail))return j(request,{ok:false,error:'Daily free translation allocation exhausted',retryable:true,reason:'daily_free_ai_limit'},503)}}
  }
  if(!arr)return j(request,{ok:false,error:'UI translation temporarily unavailable',retryable:true,reason:'all_translation_backends_unavailable',backendErrors:backendErrors.slice(-8)},503);
