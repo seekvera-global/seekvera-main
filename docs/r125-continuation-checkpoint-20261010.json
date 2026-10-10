@@ -112,7 +112,8 @@
   "linguisticAccuracyCertified": false,
   "blockedBy": [
     "Project translation API daily_free_ai_limit",
-    "Existing Google translation fallback returned HTTP 429"
+    "Existing Google translation fallback returned HTTP 429",
+    "Voice transcription ASR daily free allocation exhausted"
   ],
   "knownTranslationFailures": [
     "ne",
@@ -167,9 +168,37 @@
   "remainingChecks": [
     "Finish and linguistically review all 98 language packs, especially Romansh",
     "Run full current-source browser/country/currency/department verification after candidate completion",
-    "Physical microphone and speaker tests on Android, iPhone/iPad and desktop",
+    "Restore free ASR availability, then perform physical microphone and audible-speaker tests on Android, iPhone/iPad and desktop",
     "Payment checkout remains inactive pending merchant-account configuration"
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
-  "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification."
+  "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
+  "runtimeAvailability": {
+    "checkedAt": "2026-10-10T20:27:23Z",
+    "aiChat": {
+      "run": 38082322032,
+      "checkedAt": "2026-10-10T20:05:17Z",
+      "english": "passed",
+      "arabic": "passed",
+      "countryChangeToIceland": "passed",
+      "prohibitedWeaponRequest": "blocked",
+      "note": "Live HTTP probes only; not all-language certification."
+    },
+    "voiceTranscription": {
+      "run": 38082321988,
+      "checkedAt": "2026-10-10T20:06:24Z",
+      "status": "blocked",
+      "httpStatus": 503,
+      "reason": "Cloudflare Workers AI daily free allocation exhausted",
+      "physicalDeviceCertified": false
+    },
+    "publicSite": {
+      "run": 38077161427,
+      "checkedAt": "2026-10-10T18:47:04Z",
+      "health": "passed",
+      "robots": "passed",
+      "sitemap": "passed",
+      "pagesChecked": 18
+    }
+  }
 }
