@@ -1,10 +1,7 @@
 name: R88 voice diagnostic
 
+# Legacy release workflow: retained for manual use; R125 production checks remain automatic.
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/r88-voice-diagnostic.yml'
   workflow_dispatch:
 
 jobs:
@@ -30,11 +27,11 @@ jobs:
           ENB64=$(base64 -w0 /tmp/en.audio 2>/dev/null || true)
           if [ -n "$ENB64" ]; then
             python - <<'PY'
-import base64,json,pathlib
-p=pathlib.Path('/tmp/en.audio')
-data=base64.b64encode(p.read_bytes()).decode()
-pathlib.Path('/tmp/en.json').write_text(json.dumps({'audio':'data:audio/mpeg;base64,'+data,'language':'auto'}))
-PY
+          import base64,json,pathlib
+          p=pathlib.Path('/tmp/en.audio')
+          data=base64.b64encode(p.read_bytes()).decode()
+          pathlib.Path('/tmp/en.json').write_text(json.dumps({'audio':'data:audio/mpeg;base64,'+data,'language':'auto'}))
+          PY
             curl -LsS --max-time 35 -H 'content-type: application/json' --data-binary @/tmp/en.json \
               "$BASE/api/transcribe?r88diag=$(date +%s)" -o /tmp/en.asr || true
             cat /tmp/en.asr || true; echo
@@ -48,11 +45,11 @@ PY
           wc -c /tmp/ar.audio || true
           if [ -s /tmp/ar.audio ]; then
             python - <<'PY'
-import base64,json,pathlib
-p=pathlib.Path('/tmp/ar.audio')
-data=base64.b64encode(p.read_bytes()).decode()
-pathlib.Path('/tmp/ar.json').write_text(json.dumps({'audio':'data:audio/mpeg;base64,'+data,'language':'auto'},ensure_ascii=False))
-PY
+          import base64,json,pathlib
+          p=pathlib.Path('/tmp/ar.audio')
+          data=base64.b64encode(p.read_bytes()).decode()
+          pathlib.Path('/tmp/ar.json').write_text(json.dumps({'audio':'data:audio/mpeg;base64,'+data,'language':'auto'},ensure_ascii=False))
+          PY
             curl -LsS --max-time 35 -H 'content-type: application/json' --data-binary @/tmp/ar.json \
               "$BASE/api/transcribe?r88diag=$(date +%s)" -o /tmp/ar.asr || true
             cat /tmp/ar.asr || true; echo
