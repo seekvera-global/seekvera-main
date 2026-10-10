@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-10",
+  "finalApproval": false,
+  "latestRuntimeCommit": "86876790964859cc39f5b98d9b28d2a567928a6e",
+  "productionRun": 38080129940,
+  "deploymentStep": "success",
+  "productionCertificationStep": "success",
+  "fixes": [
+    "Reject highly repetitive target output when source is not repetitive",
+    "Invalidate translation cache",
+    "Scale output token budget by source text length up to 8192",
+    "Attempt existing primary model when light-model UI output fails validation"
+  ],
+  "beforeRepairFailure": {
+    "reason": "all_translation_backends_unavailable",
+    "backendErrors": [
+      "qwen:unparseable",
+      "llama:unparseable"
+    ]
+  },
+  "remaining": [
+    "Verify repaired Hausa long batches",
+    "Resume remaining candidates",
+    "Linguistic review across all 98 supported languages",
+    "Physical microphone and speaker checks across Android/iPhone/iPad/desktop"
+  ],
+  "automation": {
+    "id": "6ab06243d37c8191a10d05f3a1810c22",
+    "enabled": true,
+    "cadence": "hourly",
+    "guaranteedCompletion": false
+  }
+}
