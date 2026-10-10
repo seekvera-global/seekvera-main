@@ -1,0 +1,78 @@
+name: R125 hourly candidate resume
+on:
+  schedule:
+    - cron: '15 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [.github/workflows/r125-hourly-candidate-resume.yml]
+permissions:
+  contents: write
+concurrency:
+  group: r125-locale-candidate-resume
+  cancel-in-progress: false
+jobs:
+  resume:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: work/r125-locale-candidates-20261008
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python -m pip install Babel==2.18.0 beautifulsoup4==4.15.0
+      - name: Resume public UI candidates
+        shell: bash
+        run: |
+          set +e
+          timeout --signal=INT --kill-after=15s 40m python tools/build_current_locale_delta.py --stage docs/locale-candidates-20261008 2>&1 | tee docs/locale-candidates-20261008/resume-latest.log
+          code=${PIPESTATUS[0]}
+          echo "$code" > docs/locale-candidates-20261008/resume-exit-code.txt
+          exit 0
+      - name: Audit all saved candidates
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, datetime
+          from pathlib import Path
+          from tools.build_current_locale_delta import suspicious_overlap, reviewed_labels
+          stage=Path('docs/locale-candidates-20261008')
+          source=json.loads((stage/'source.json').read_text())
+          languages=json.loads(Path('i18n-r32/manifest.json').read_text())['languages']
+          reviewed=reviewed_labels(); completed=[]
+          for code in languages:
+              path=stage/(code+'.json')
+              if not path.exists(): continue
+              data=json.loads(path.read_text()); values=data.get('translations',{})
+              if data.get('sourceHash')!=source['sourceHash'] or data.get('qualityPolicy')!='source-overlap-5-v1': continue
+              if not all(isinstance(values.get(key),str) and values[key].strip() for key in source['strings']): continue
+              if not all(values.get(key)==value for key,value in reviewed.get(code,{}).items() if key in source['strings']): continue
+              if code!='en' and any(suspicious_overlap(key,values[key]) for key in source['strings']): continue
+              completed.append(code)
+          report={'checkedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'sourceHash':source['sourceHash'],'completed':completed,'completedCount':len(completed),'remaining':[code for code in languages if code not in completed],'published':False,'finalApproval':False,'linguisticAccuracyCertified':False}
+          exit_path=stage/'resume-exit-code.txt'
+          report['exitCode']=exit_path.read_text().strip() if exit_path.exists() else 'not-run'
+          (stage/'resume-summary.json').write_text(json.dumps(report,ensure_ascii=False,indent=2))
+          print(json.dumps(report,ensure_ascii=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: r125-resumable-candidates
+          path: docs/locale-candidates-20261008/
+          retention-days: 30
+      - name: Save progress without publishing
+        if: always()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/locale-candidates-20261008/
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Checkpoint resumed locale candidates [skip ci]'
+          git push origin HEAD:work/r125-locale-candidates-20261008
