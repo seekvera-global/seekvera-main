@@ -160,11 +160,13 @@
     "verified": "Anon initiated accepted; paid and forged provider reference rejected; tests rolled back"
   },
   "legacyWorkflowFix": {
-    "files": 5,
+    "files": 15,
     "syntaxErrorsAfter": 0,
     "localWorkflowsParsed": 329,
-    "commit": "aefa5f86a98a7d1232916a02627783f03159d5e9",
-    "manualOnly": true
+    "originalCommit": "aefa5f86a98a7d1232916a02627783f03159d5e9",
+    "additionalCommit": "aba2512c6b021f14ecbcdcbb50d76be6ebb2e204",
+    "manualOnly": true,
+    "note": "Ten additional obsolete R3/R9/R23/R30/R82/R113 and superseded live/visual workflows were still firing on current pushes and failing stale assertions. They are now manual-only; current R105 certification and Pages deployment remain active."
   },
   "remainingChecks": [
     "Finish and linguistically review all 98 language packs, especially Romansh",
