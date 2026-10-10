@@ -130,10 +130,11 @@
     "Reject degenerate repetitive translation output without rejecting normal longer phrasing",
     "Invalidate affected translation cache",
     "Scale output tokens for long UI descriptions",
-    "Use existing primary model after light-model validation failure"
+    "Use existing primary model after light-model validation failure",
+    "Cover 12 previously unmapped non-Latin script families in voice language detection, scoring and TTS locale selection"
   ],
-  "runtimeCommit": "f115759c73cd8f05f9d32f769030b37e2a47161e",
-  "runtimeDeployRun": 38082322032,
+  "runtimeCommit": "ce6e189e21b927b50d07ac96466a3ea4bdc69e47",
+  "runtimeDeployRun": 38093026947,
   "runtimeDeployConclusion": "success",
   "browserCandidateCheck": {
     "run": 38082490180,
@@ -174,10 +175,10 @@
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-10-10T20:27:23Z",
+    "checkedAt": "2026-10-10T22:52:55Z",
     "aiChat": {
-      "run": 38082322032,
-      "checkedAt": "2026-10-10T20:05:17Z",
+      "run": 38093026947,
+      "checkedAt": "2026-10-10T22:52:55Z",
       "english": "passed",
       "arabic": "passed",
       "countryChangeToIceland": "passed",
@@ -200,5 +201,28 @@
       "sitemap": "passed",
       "pagesChecked": 18
     }
+  },
+  "voiceScriptCoverage": {
+    "commit": "ce6e189e21b927b50d07ac96466a3ea4bdc69e47",
+    "deploymentRun": 38093026947,
+    "pagesRun": 38093026689,
+    "scripts": [
+      "Gurmukhi",
+      "Gujarati",
+      "Tamil",
+      "Telugu",
+      "Malayalam",
+      "Sinhala",
+      "Lao",
+      "Myanmar",
+      "Ethiopic",
+      "Khmer",
+      "Georgian",
+      "Armenian"
+    ],
+    "localRegression": "passed",
+    "liveAiEnglishArabicCountrySafety": "passed",
+    "physicalDeviceCertified": false,
+    "scope": "Source mapping, regression tests and production deployment only; ASR transcription and physical microphone/speaker certification remain blocked/pending."
   }
 }
