@@ -24,16 +24,47 @@
     "pl",
     "nl",
     "ms",
-    "fil"
+    "fil",
+    "ha",
+    "yo",
+    "ig",
+    "am",
+    "he",
+    "el",
+    "uk",
+    "ro",
+    "cs",
+    "sk",
+    "hu",
+    "sv",
+    "no",
+    "da",
+    "fi",
+    "bg",
+    "hr",
+    "sr",
+    "sl",
+    "lt",
+    "lv",
+    "et",
+    "ca",
+    "is",
+    "sq",
+    "mk",
+    "ka",
+    "hy",
+    "az",
+    "kk",
+    "uz",
+    "ky",
+    "tg",
+    "tk"
   ],
   "failures": [
     {
-      "language": "ha",
+      "language": "ne",
       "error": "HTTP Error 503: Service Unavailable {\"ok\":false,\"error\":\"Daily free translation allocation exhausted\",\"retryable\":true,\"reason\":\"daily_free_ai_limit\"}"
     }
   ],
-  "finalApproval": false,
-  "checkpointUtc": "2026-10-09T14:08:13.017688+00:00",
-  "published": false,
-  "resumeExitCode": 0
+  "finalApproval": false
 }
