@@ -1,18 +1,6 @@
 name: SEEKVERA final R3 live A-Z audit
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'worker.js'
-      - 'voice-ai.js'
-      - 'global-ui.js'
-      - 'global-ui.css'
-      - 'i18n-ui.js'
-      - 'i18n-premium.css'
-      - 'superapp.js'
-      - '*.html'
-      - '.github/workflows/premium2-live-a-z.yml'
   workflow_dispatch:
 
 permissions:

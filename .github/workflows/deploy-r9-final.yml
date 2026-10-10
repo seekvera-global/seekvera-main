@@ -1,13 +1,6 @@
 name: Deploy SEEKVERA R9 final
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'global-ui.js'
-      - 'voice-ai.js'
-      - 'i18n-ui.js'
-      - '*.html'
   workflow_dispatch:
 
 permissions:

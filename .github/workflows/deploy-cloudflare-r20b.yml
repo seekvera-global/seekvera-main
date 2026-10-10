@@ -1,22 +1,6 @@
 name: Deploy SEEKVERA R23 to Cloudflare
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'r20-final-guard.js'
-      - 'r22-category-lock.js'
-      - 'sw.js'
-      - 'worker.js'
-      - 'locale-r15.js'
-      - 'locale-r14-categories.js'
-      - 'r20-extra-categories.js'
-      - 'navigation.js'
-      - 'global-ui.js'
-      - 'i18n-ui.js'
-      - '*.html'
-      - '.assetsignore'
-      - '.github/workflows/deploy-cloudflare-r20b.yml'
   workflow_dispatch:
 
 permissions:

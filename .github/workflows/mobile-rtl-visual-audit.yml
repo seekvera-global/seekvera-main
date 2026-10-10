@@ -1,13 +1,6 @@
 name: SEEKVERA Android RTL visual audit
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'i18n-ui.js'
-      - 'i18n-premium.css'
-      - '*.html'
-      - '.github/workflows/mobile-rtl-visual-audit.yml'
   workflow_dispatch:
 
 permissions:

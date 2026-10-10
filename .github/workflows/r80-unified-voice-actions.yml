@@ -1,18 +1,6 @@
 name: R82 reply-before-navigation release
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/r80-unified-voice-actions.yml'
-      - 'worker-r76.js'
-      - 'wrangler.jsonc'
-      - 'index.html'
-      - 'r24-ai-controller.js'
-      - 'voice-ai.js'
-      - 'superapp.js'
-      - 'r31-ui-polish.js'
-      - 'sw.js'
   workflow_dispatch:
 
 concurrency:

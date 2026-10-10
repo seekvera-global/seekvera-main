@@ -1,17 +1,6 @@
 name: R113 AI reliability release
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'tools/r113_ai_reliability.py'
-      - 'worker-r76.js'
-      - 'superapp.js'
-      - 'r31-ui-polish.js'
-      - 'voice-ai.js'
-      - 'sw.js'
-      - 'index.html'
-      - '.github/workflows/r113-ai-reliability.yml'
   workflow_dispatch:
 
 permissions:

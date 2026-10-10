@@ -3,15 +3,6 @@ name: SEEKVERA unified chat live audit
 # production audit for unified one-chat mobile experience
 # manual production recheck 2026-09-25 R24
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/unified-chat-live-audit.yml'
-      - 'index.html'
-      - 'superapp.js'
-      - 'voice-ai.js'
-      - 'global-ui.js'
-      - 'global-ui.css'
   workflow_dispatch:
 
 permissions:

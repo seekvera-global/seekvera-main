@@ -1,21 +1,6 @@
 name: SEEKVERA R30 Cloudflare deploy
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'worker.js'
-      - 'worker-r30.js'
-      - 'r30-runtime.js'
-      - 'voice-ai.js'
-      - 'global-ui.js'
-      - 'global-ui.css'
-      - 'i18n-ui.js'
-      - 'i18n-premium.css'
-      - '*.html'
-      - 'wrangler.jsonc'
-      - '.assetsignore'
-      - '.github/workflows/deploy-premium2-final.yml'
   workflow_dispatch:
 
 permissions:

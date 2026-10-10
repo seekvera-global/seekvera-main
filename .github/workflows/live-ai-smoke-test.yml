@@ -1,18 +1,6 @@
 name: SEEKVERA live production smoke test
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'worker-r76.js'
-      - 'wrangler.jsonc'
-      - 'index.html'
-      - 'global-ui.js'
-      - 'i18n-ui.js'
-      - 'superapp.js'
-      - 'voice-ai.js'
-      - 'i18n-r32/**'
-      - '.github/workflows/live-ai-smoke-test.yml'
   workflow_dispatch:
 
 permissions:
