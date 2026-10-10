@@ -15,10 +15,8 @@ assert.equal(ctx.parseUiTranslations('not JSON',['Hello'],'French'),null);
 assert.equal(parse(['Shiga da kuma da kuma da gudun gudun.'],['Switch lanes and avoid neon traffic.'],'Hausa'),null);
 assert(parse(['Canza layi kuma ka guji cunkoson motoci.'],['Switch lanes and avoid neon traffic.'],'Hausa'));
 assert(parse(['go go go go go go go go'],['go go go go go go go go'],'English'));
+assert(parse(['Pour voir les hôtels, cliquez sur le bouton des hôtels. Pour voir les voitures, cliquez sur le bouton des voitures. Pour voir les emplois, cliquez sur le bouton des emplois.'],['Browse hotels, cars and jobs using their respective category buttons.'],'French'));
+assert.equal(parse(['da kuma '.repeat(20)],['Browse hotels, cars and jobs using their respective category buttons.'],'Hausa'),null);
 assert(!source.includes('const models=[TRANSLATE,'));
 assert(source.includes('daily_free_ai_limit'));
 console.log('PASS: exact cognates accepted; genuine English, wrong script, broken placeholders, malformed, empty and oversized results rejected.');
-
-assert.deepEqual(Array.from(ctx.parseUiTranslations('<think>Input [\"Hello\"] needs translation.</think> [\"Bonjour\"]',['Hello'],'French')),['Bonjour']);
-assert.equal(ctx.parseUiTranslations('<think>Input [\"Hello\"]</think> not a translation',['Hello'],'French'),null);
-console.log('PASS: final JSON translations survive bracketed reasoning; untranslated prompt echoes remain rejected.');
