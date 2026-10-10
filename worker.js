@@ -103,6 +103,8 @@ if(u.pathname==='/api/ui-translate'){try{
  if(hit){try{const cached=await hit.json();if(cached?.ok&&Array.isArray(cached.translations)&&parseUiTranslations(JSON.stringify(cached.translations),strings,language))return j(request,{...cached,cached:true})}catch{}}
  const sys=(uiLanguage(language)==='rm'?'Use correct standard Rumantsch Grischun (Romansh). The language is distinct from Spanish, Italian and Catalan. Example: I am the assistant = Jau sun l’assistent. ': '')+'You are SEEKVERA UI translator. LANGUAGE LOCK: translate every supplied interface string fully into '+language+'. Return ONLY one valid JSON array of exactly '+strings.length+' strings, same order. No markdown, no keys, no explanation. Preserve SEEKVERA, URLs, currency codes, model names, emojis, punctuation placeholders and numbers. Translate labels, buttons, headings, descriptions and accessibility text naturally. Never return English unless the target language is English.';
  const user=JSON.stringify(strings),backendErrors=[];
+ // Long descriptions and token-dense target scripts need more room than short labels.
+ const translationTokens=Math.min(8192,Math.max(1400,512+Math.ceil(strings.reduce((n,s)=>n+s.length,0)*1.5)));
  const parse=v=>parseUiTranslations(v,strings,language);
  let arr=null,model='';
  if(env.AI){
