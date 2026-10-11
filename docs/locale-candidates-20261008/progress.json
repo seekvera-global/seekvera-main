@@ -58,12 +58,44 @@
     "uz",
     "ky",
     "tg",
-    "tk"
+    "tk",
+    "ne",
+    "ta",
+    "km",
+    "lo",
+    "my",
+    "mn",
+    "zu",
+    "af",
+    "be",
+    "bs",
+    "dz",
+    "ti",
+    "fo",
+    "kl",
+    "rw",
+    "to",
+    "so",
+    "mt",
+    "mg",
+    "eu",
+    "gl",
+    "te",
+    "ml",
+    "mr"
   ],
   "failures": [
     {
-      "language": "ne",
-      "error": "HTTP Error 503: Service Unavailable {\"ok\":false,\"error\":\"Daily free translation allocation exhausted\",\"retryable\":true,\"reason\":\"daily_free_ai_limit\"}"
+      "language": "si",
+      "error": "Target output still contains a long English source phrase: ('Phone: left stick moves • drag the right side to turn camera • ACTION changes with what is nearby • JUMP. Desktop: WASD / arrows • mouse drag • E • Space • Shift to run.', 'Phone: වම් පැත්තෙ stick එකෙන් චලනය කරන්න • කැමරාව හැරවීමට දකුණු පැත්ත ඇදගෙන යන්න • අවට ඇති දේ අනුව ACTION වෙනස් වේ • JUMP. Desktop: WASD / arrows • mouse drag • E • Space • දි"
+    },
+    {
+      "language": "sm",
+      "error": "unknown locale 'sm'"
+    },
+    {
+      "language": "dv",
+      "error": "HTTP Error 503: Service Unavailable {\"ok\":false,\"error\":\"UI translation temporarily unavailable\",\"retryable\":true,\"reason\":\"all_translation_backends_unavailable\",\"backendErrors\":[\"workers-ai:@cf/qwen/qwen3-30b-a3b-fp8:unparseable\",\"workers-ai:@cf/google/gemma-4-26b-a4b-it:unparseable\",\"workers-ai:@cf/meta/llama-3.1-8b-instruct-fast:unparseable\"]}"
     }
   ],
   "finalApproval": false

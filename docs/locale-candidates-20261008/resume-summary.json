@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-11T19:27:36.635568+00:00",
+  "checkedAt": "2026-10-11T21:07:55.221996+00:00",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -60,36 +60,36 @@
     "ky",
     "tg",
     "tk",
+    "ne",
+    "ta",
     "km",
     "lo",
-    "mn",
-    "af",
-    "be"
-  ],
-  "completedCount": 63,
-  "remaining": [
-    "ne",
-    "si",
-    "ta",
     "my",
+    "mn",
     "zu",
+    "af",
+    "be",
     "bs",
     "dz",
     "ti",
     "fo",
     "kl",
     "rw",
-    "sm",
     "to",
     "so",
-    "dv",
     "mt",
     "mg",
     "eu",
     "gl",
     "te",
     "ml",
-    "mr",
+    "mr"
+  ],
+  "completedCount": 82,
+  "remaining": [
+    "si",
+    "sm",
+    "dv",
     "gu",
     "pa",
     "ps",
@@ -107,5 +107,5 @@
   "published": false,
   "finalApproval": false,
   "linguisticAccuracyCertified": false,
-  "exitCode": "0"
+  "exitCode": "124"
 }
