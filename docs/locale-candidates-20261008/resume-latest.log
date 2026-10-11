@@ -59,14 +59,7 @@ RESUME ky
 RESUME tg
 RESUME tk
 RESUME ne
-SPLIT_RETRY Sinhala 16 Target output still contains a long English source phrase: ('Phone: left stick moves • drag the right side to turn camera • ACTION changes with what is nearby • JUMP. Desktop: WASD
-SPLIT_RETRY Sinhala 8 Target output still contains a long English source phrase: ('50 free touch-friendly mini games for Android, iPhone and desktop. Racing, action, flying, forest adventures, space, pu
-SPLIT_RETRY Sinhala 4 Target output still contains a long English source phrase: ('Phone: left stick moves • drag the right side to turn camera • ACTION changes with what is nearby • JUMP. Desktop: WASD
-DELTA_BATCH si 16 41 @cf/google/gemma-4-26b-a4b-it+@cf/qwen/qwen3-30b-a3b-fp8+@cf/google/gemma-4-26b-a4b-it
-SPLIT_RETRY Sinhala 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH si 32 41 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH si 41 41 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK si 1118
+RESUME si
 RESUME ta
 RESUME km
 RESUME lo
@@ -84,61 +77,5 @@ RESUME rw
 DELTA_FAILURE sm unknown locale 'sm'
 RESUME to
 RESUME so
-SPLIT_RETRY Divehi 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-SPLIT_RETRY Divehi 8 Target output still contains a long English source phrase: ('🛡️ Games are self-contained SEEKVERA mini games. No stranger chat, gambling, paid loot boxes or external ad network is 
-SPLIT_RETRY Divehi 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-SPLIT_RETRY Divehi 8 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-SPLIT_RETRY Divehi 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-SPLIT_RETRY Divehi 2 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_FAILURE dv HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["workers-ai:@cf/qwen/qwen3-30b-a3b-fp8:unparseable","workers-ai:@cf/google/gemma-4-26b-a4b-it:unparseable","workers-ai:@cf/meta/llama-3.1-8b-instruct-fast:unparseable"]}
-RESUME mt
-RESUME mg
-RESUME eu
-RESUME gl
-RESUME te
-RESUME ml
-RESUME mr
-DELTA_BATCH gu 16 40 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH gu 32 40 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH gu 40 40 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK gu 1118
-DELTA_BATCH pa 16 147 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH pa 32 147 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH pa 48 147 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH pa 64 147 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH pa 80 147 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH pa 96 147 @cf/google/gemma-4-26b-a4b-it
-SPLIT_RETRY Punjabi 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH pa 112 147 @cf/google/gemma-4-26b-a4b-it
-SPLIT_RETRY Punjabi 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH pa 128 147 @cf/google/gemma-4-26b-a4b-it
-SPLIT_RETRY Punjabi 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH pa 144 147 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH pa 147 147 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK pa 1118
-DELTA_BATCH ps 16 73 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH ps 32 73 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH ps 48 73 @cf/qwen/qwen3-30b-a3b-fp8
-SPLIT_RETRY Pashto 16 Target output still contains a long English source phrase: ('A SEEKVERA ORIGINAL • 3D STORY PROTOTYPE', 'یو SEEKVERA ORIGINAL • 3D STORY PROTOTYPE')
-SPLIT_RETRY Pashto 8 Target output still contains a long English source phrase: ('A SEEKVERA ORIGINAL • 3D STORY PROTOTYPE', 'یو SEEKVERA ORIGINAL • 3D STORY PROTOTYPE')
-DELTA_BATCH ps 64 73 @cf/qwen/qwen3-30b-a3b-fp8+@cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH ps 73 73 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK ps 1118
-DELTA_BATCH ga 16 84 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH ga 32 84 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH ga 48 84 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH ga 64 84 @cf/qwen/qwen3-30b-a3b-fp8
-SPLIT_RETRY Irish 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH ga 80 84 @cf/qwen/qwen3-30b-a3b-fp8+@cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH ga 84 84 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK ga 1118
-DELTA_BATCH cy 16 72 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH cy 32 72 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH cy 48 72 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH cy 64 72 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH cy 72 72 @cf/qwen/qwen3-30b-a3b-fp8
-COMPLETE_PACK cy 1118
-DELTA_BATCH mi 16 72 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH mi 32 72 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_FAILURE mi HTTP Error 503: Service Unavailable {"ok":false,"error":"Daily free translation allocation exhausted","retryable":true,"reason":"daily_free_ai_limit"}
-STAGED_ONLY 88 FAILED 3
+DELTA_FAILURE dv HTTP Error 503: Service Unavailable {"ok":false,"error":"Daily free translation allocation exhausted","retryable":true,"reason":"daily_free_ai_limit"}
+STAGED_ONLY 76 FAILED 2
