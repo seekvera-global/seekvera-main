@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-10",
+  "date": "2026-10-11",
   "finalApproval": false,
   "sourceHash": "6a1126e6a2ce5629",
   "sourceCount": 1118,
@@ -177,7 +177,7 @@
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-10-10T22:52:55Z",
+    "checkedAt": "2026-10-11T00:52:30Z",
     "aiChat": {
       "run": 38093026947,
       "checkedAt": "2026-10-10T22:52:55Z",
@@ -196,12 +196,13 @@
       "physicalDeviceCertified": false
     },
     "publicSite": {
-      "run": 38077161427,
-      "checkedAt": "2026-10-10T18:47:04Z",
+      "run": 38099895807,
+      "checkedAt": "2026-10-11T00:52:30Z",
       "health": "passed",
       "robots": "passed",
       "sitemap": "passed",
-      "pagesChecked": 18
+      "pagesChecked": 18,
+      "scope": "Live HTTP availability and SEO-file assertions only; not full interaction, all-language, audio, or physical-device certification."
     }
   },
   "voiceScriptCoverage": {
@@ -226,5 +227,19 @@
     "liveAiEnglishArabicCountrySafety": "passed",
     "physicalDeviceCertified": false,
     "scope": "Source mapping, regression tests and production deployment only; ASR transcription and physical microphone/speaker certification remain blocked/pending."
+  },
+  "candidateResume": {
+    "run": 38099122075,
+    "job": 114351178364,
+    "checkedAt": "2026-10-11T00:38:48.849600Z",
+    "candidateCommit": "f2d9ef2ed2a0f11c1eed1b594c82973e50e81156",
+    "completedCount": 63,
+    "remainingCount": 35,
+    "firstFailure": "ne",
+    "failureReason": "daily_free_ai_limit",
+    "quotaStillBlockedAfterUtcDateChange": true,
+    "published": false,
+    "linguisticAccuracyCertified": false,
+    "note": "The workflow completed and only refreshed its checkpoint timestamp; no new candidate passed structural validation. No candidate-branch writes were made outside the workflow."
   }
 }
