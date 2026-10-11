@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-11T21:07:55.221996+00:00",
+  "checkedAt": "2026-10-11T21:47:57.630753+00:00",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -61,6 +61,7 @@
     "tg",
     "tk",
     "ne",
+    "si",
     "ta",
     "km",
     "lo",
@@ -83,18 +84,17 @@
     "gl",
     "te",
     "ml",
-    "mr"
-  ],
-  "completedCount": 82,
-  "remaining": [
-    "si",
-    "sm",
-    "dv",
+    "mr",
     "gu",
     "pa",
     "ps",
     "ga",
-    "cy",
+    "cy"
+  ],
+  "completedCount": 88,
+  "remaining": [
+    "sm",
+    "dv",
     "mi",
     "fy",
     "lb",
@@ -107,5 +107,5 @@
   "published": false,
   "finalApproval": false,
   "linguisticAccuracyCertified": false,
-  "exitCode": "124"
+  "exitCode": "0"
 }

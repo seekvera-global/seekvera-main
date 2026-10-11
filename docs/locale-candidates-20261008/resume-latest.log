@@ -58,213 +58,87 @@ RESUME uz
 RESUME ky
 RESUME tg
 RESUME tk
-DELTA_BATCH ne 16 22 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH ne 22 22 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK ne 1118
+RESUME ne
 SPLIT_RETRY Sinhala 16 Target output still contains a long English source phrase: ('Phone: left stick moves • drag the right side to turn camera • ACTION changes with what is nearby • JUMP. Desktop: WASD
 SPLIT_RETRY Sinhala 8 Target output still contains a long English source phrase: ('50 free touch-friendly mini games for Android, iPhone and desktop. Racing, action, flying, forest adventures, space, pu
 SPLIT_RETRY Sinhala 4 Target output still contains a long English source phrase: ('Phone: left stick moves • drag the right side to turn camera • ACTION changes with what is nearby • JUMP. Desktop: WASD
-SPLIT_RETRY Sinhala 2 Target output still contains a long English source phrase: ('Phone: left stick moves • drag the right side to turn camera • ACTION changes with what is nearby • JUMP. Desktop: WASD
-DELTA_FAILURE si Target output still contains a long English source phrase: ('Phone: left stick moves • drag the right side to turn camera • ACTION changes with what is nearby • JUMP. Desktop: WASD / arrows • mouse drag • E • Space • Shift to run.', 'Phone: වම් පැත්තෙ stick එකෙන් චලනය කරන්න • කැමරාව හැරවීමට දකුණු පැත්ත ඇදගෙන යන්න • අවට ඇති දේ අනුව ACTION වෙනස් වේ • JUMP. Desktop: WASD / arrows • mouse drag • E • Space • දි
-DELTA_BATCH ta 16 53 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH ta 32 53 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH ta 48 53 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH ta 53 53 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK ta 1118
+DELTA_BATCH si 16 41 @cf/google/gemma-4-26b-a4b-it+@cf/qwen/qwen3-30b-a3b-fp8+@cf/google/gemma-4-26b-a4b-it
+SPLIT_RETRY Sinhala 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_BATCH si 32 41 @cf/google/gemma-4-26b-a4b-it
+DELTA_BATCH si 41 41 @cf/google/gemma-4-26b-a4b-it
+COMPLETE_PACK si 1118
+RESUME ta
 RESUME km
 RESUME lo
-DELTA_BATCH my 16 19 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH my 19 19 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK my 1118
+RESUME my
 RESUME mn
-DELTA_BATCH zu 16 135 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH zu 32 135 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH zu 48 135 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH zu 64 135 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH zu 80 135 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH zu 96 135 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH zu 112 135 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH zu 128 135 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH zu 135 135 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK zu 1118
+RESUME zu
 RESUME af
 RESUME be
-DELTA_BATCH bs 16 20 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH bs 20 20 @cf/qwen/qwen3-30b-a3b-fp8
-COMPLETE_PACK bs 1118
-DELTA_BATCH dz 16 72 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH dz 32 72 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH dz 48 72 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH dz 64 72 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH dz 72 72 @cf/qwen/qwen3-30b-a3b-fp8
-COMPLETE_PACK dz 1118
-SPLIT_RETRY Tigrinya 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH ti 16 23 @cf/google/gemma-4-26b-a4b-it+@cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH ti 23 23 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK ti 1118
-DELTA_BATCH fo 16 56 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH fo 32 56 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH fo 48 56 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH fo 56 56 @cf/qwen/qwen3-30b-a3b-fp8
-COMPLETE_PACK fo 1118
-DELTA_BATCH kl 16 72 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH kl 32 72 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH kl 48 72 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH kl 64 72 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH kl 72 72 @cf/qwen/qwen3-30b-a3b-fp8
-COMPLETE_PACK kl 1118
-DELTA_BATCH rw 16 120 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH rw 32 120 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH rw 48 120 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH rw 64 120 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH rw 80 120 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH rw 96 120 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH rw 112 120 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH rw 120 120 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK rw 1118
+RESUME bs
+RESUME dz
+RESUME ti
+RESUME fo
+RESUME kl
+RESUME rw
 DELTA_FAILURE sm unknown locale 'sm'
-SPLIT_RETRY Tongan 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH to 16 72 @cf/qwen/qwen3-30b-a3b-fp8+@cf/meta/llama-3.1-8b-instruct-fast
-DELTA_BATCH to 32 72 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH to 48 72 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH to 64 72 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH to 72 72 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK to 1118
-DELTA_BATCH so 16 147 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH so 32 147 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH so 48 147 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH so 64 147 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH so 80 147 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH so 96 147 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH so 112 147 @cf/google/gemma-4-26b-a4b-it
-SPLIT_RETRY Somali 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH so 128 147 @cf/google/gemma-4-26b-a4b-it
-SPLIT_RETRY Somali 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH so 144 147 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH so 147 147 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK so 1118
-DELTA_BATCH dv 16 146 @cf/qwen/qwen3-30b-a3b-fp8
+RESUME to
+RESUME so
 SPLIT_RETRY Divehi 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH dv 32 146 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH dv 48 146 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH dv 64 146 @cf/google/gemma-4-26b-a4b-it
-SPLIT_RETRY Divehi 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-SPLIT_RETRY Divehi 8 Target output still contains a long English source phrase: ('30 days, up to 8 images, standard placement. Paid boosts are optional.', '30 din, 8 tasmi, standard placement. Paid boo
-SPLIT_RETRY Divehi 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-SPLIT_RETRY Divehi 2 Target output still contains a long English source phrase: ('No fake metrics are shown. Sign in to query your actual Deal Agent records.', 'Fake metrics are not shown. Sign in to q
-SPLIT_RETRY Divehi 2 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH dv 80 146 @cf/qwen/qwen3-30b-a3b-fp8+@cf/google/gemma-4-26b-a4b-it+@cf/google/gemma-4-26b-a4b-it+@cf/qwen/qwen3-30b-a3b-fp8+@cf/qwen/qwen3-30b-a3b-fp8
-SPLIT_RETRY Divehi 16 Target output still contains a long English source phrase: ('🛡️ Games are self-contained SEEKVERA mini games. No stranger chat, gambling, paid loot boxes or external ad network is 
 SPLIT_RETRY Divehi 8 Target output still contains a long English source phrase: ('🛡️ Games are self-contained SEEKVERA mini games. No stranger chat, gambling, paid loot boxes or external ad network is 
+SPLIT_RETRY Divehi 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
 SPLIT_RETRY Divehi 8 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
 SPLIT_RETRY Divehi 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
 SPLIT_RETRY Divehi 2 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
 DELTA_FAILURE dv HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["workers-ai:@cf/qwen/qwen3-30b-a3b-fp8:unparseable","workers-ai:@cf/google/gemma-4-26b-a4b-it:unparseable","workers-ai:@cf/meta/llama-3.1-8b-instruct-fast:unparseable"]}
-DELTA_BATCH mt 16 85 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH mt 32 85 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH mt 48 85 @cf/qwen/qwen3-30b-a3b-fp8
-SPLIT_RETRY Maltese 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH mt 64 85 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH mt 80 85 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH mt 85 85 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK mt 1118
-DELTA_BATCH mg 16 74 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH mg 32 74 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH mg 48 74 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH mg 64 74 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH mg 74 74 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK mg 1118
-DELTA_BATCH eu 16 83 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH eu 32 83 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH eu 48 83 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH eu 64 83 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH eu 80 83 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH eu 83 83 @cf/qwen/qwen3-30b-a3b-fp8
-COMPLETE_PACK eu 1118
-DELTA_BATCH gl 16 84 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH gl 32 84 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH gl 48 84 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH gl 64 84 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH gl 80 84 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH gl 84 84 @cf/qwen/qwen3-30b-a3b-fp8
-COMPLETE_PACK gl 1118
-DELTA_BATCH te 16 147 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH te 32 147 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH te 48 147 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH te 64 147 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH te 80 147 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH te 96 147 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH te 112 147 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH te 128 147 @cf/google/gemma-4-26b-a4b-it
-SPLIT_RETRY Telugu 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH te 144 147 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH te 147 147 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK te 1118
-DELTA_BATCH ml 16 83 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH ml 32 83 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH ml 48 83 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH ml 64 83 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH ml 80 83 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH ml 83 83 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK ml 1118
-DELTA_BATCH mr 16 73 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH mr 32 73 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH mr 48 73 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH mr 64 73 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH mr 73 73 @cf/qwen/qwen3-30b-a3b-fp8
-COMPLETE_PACK mr 1118
-DELTA_BATCH gu 16 136 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH gu 32 136 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH gu 48 136 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH gu 64 136 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH gu 80 136 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH gu 96 136 @cf/google/gemma-4-26b-a4b-it
-Traceback (most recent call last):
-  File "/home/runner/work/seekvera-main/seekvera-main/tools/build_current_locale_delta.py", line 146, in <module>
-    if __name__=='__main__':main()
-                            ^^^^^^
-  File "/home/runner/work/seekvera-main/seekvera-main/tools/build_current_locale_delta.py", line 123, in main
-    batch=missing[start:start+16];vals,provider=translate_small('Romansh (Rumantsch Grischun, Switzerland)' if code=='rm' else Locale.parse(code).get_language_name('en'),batch)
-                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/seekvera-main/seekvera-main/tools/build_current_locale_delta.py", line 66, in translate_small
-    try:return translate(language,strings)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/seekvera-main/seekvera-main/tools/build_current_locale_delta.py", line 57, in translate
-    with urllib.request.urlopen(req,timeout=45) as r:d=json.loads(r.read())
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/urllib/request.py", line 215, in urlopen
-    return opener.open(url, data, timeout)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/urllib/request.py", line 515, in open
-    response = self._open(req, data)
-               ^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/urllib/request.py", line 532, in _open
-    result = self._call_chain(self.handle_open, protocol, protocol +
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/urllib/request.py", line 492, in _call_chain
-    result = func(*args)
-             ^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/urllib/request.py", line 1405, in https_open
-    return self.do_open(http.client.HTTPSConnection, req,
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/urllib/request.py", line 1361, in do_open
-    r = h.getresponse()
-        ^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/http/client.py", line 1478, in getresponse
-    response.begin()
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/http/client.py", line 343, in begin
-    version, status, reason = self._read_status()
-                              ^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/http/client.py", line 304, in _read_status
-    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/socket.py", line 720, in readinto
-    return self._sock.recv_into(b)
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/ssl.py", line 1264, in recv_into
-    return self.read(nbytes, buffer)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/ssl.py", line 1116, in read
-    return self._sslobj.read(len, buffer)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-KeyboardInterrupt
+RESUME mt
+RESUME mg
+RESUME eu
+RESUME gl
+RESUME te
+RESUME ml
+RESUME mr
+DELTA_BATCH gu 16 40 @cf/google/gemma-4-26b-a4b-it
+DELTA_BATCH gu 32 40 @cf/google/gemma-4-26b-a4b-it
+DELTA_BATCH gu 40 40 @cf/google/gemma-4-26b-a4b-it
+COMPLETE_PACK gu 1118
+DELTA_BATCH pa 16 147 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH pa 32 147 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH pa 48 147 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH pa 64 147 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH pa 80 147 @cf/google/gemma-4-26b-a4b-it
+DELTA_BATCH pa 96 147 @cf/google/gemma-4-26b-a4b-it
+SPLIT_RETRY Punjabi 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_BATCH pa 112 147 @cf/google/gemma-4-26b-a4b-it
+SPLIT_RETRY Punjabi 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_BATCH pa 128 147 @cf/google/gemma-4-26b-a4b-it
+SPLIT_RETRY Punjabi 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_BATCH pa 144 147 @cf/google/gemma-4-26b-a4b-it
+DELTA_BATCH pa 147 147 @cf/google/gemma-4-26b-a4b-it
+COMPLETE_PACK pa 1118
+DELTA_BATCH ps 16 73 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ps 32 73 @cf/google/gemma-4-26b-a4b-it
+DELTA_BATCH ps 48 73 @cf/qwen/qwen3-30b-a3b-fp8
+SPLIT_RETRY Pashto 16 Target output still contains a long English source phrase: ('A SEEKVERA ORIGINAL • 3D STORY PROTOTYPE', 'یو SEEKVERA ORIGINAL • 3D STORY PROTOTYPE')
+SPLIT_RETRY Pashto 8 Target output still contains a long English source phrase: ('A SEEKVERA ORIGINAL • 3D STORY PROTOTYPE', 'یو SEEKVERA ORIGINAL • 3D STORY PROTOTYPE')
+DELTA_BATCH ps 64 73 @cf/qwen/qwen3-30b-a3b-fp8+@cf/google/gemma-4-26b-a4b-it
+DELTA_BATCH ps 73 73 @cf/google/gemma-4-26b-a4b-it
+COMPLETE_PACK ps 1118
+DELTA_BATCH ga 16 84 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ga 32 84 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH ga 48 84 @cf/google/gemma-4-26b-a4b-it
+DELTA_BATCH ga 64 84 @cf/qwen/qwen3-30b-a3b-fp8
+SPLIT_RETRY Irish 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_BATCH ga 80 84 @cf/qwen/qwen3-30b-a3b-fp8+@cf/google/gemma-4-26b-a4b-it
+DELTA_BATCH ga 84 84 @cf/google/gemma-4-26b-a4b-it
+COMPLETE_PACK ga 1118
+DELTA_BATCH cy 16 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH cy 32 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH cy 48 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH cy 64 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH cy 72 72 @cf/qwen/qwen3-30b-a3b-fp8
+COMPLETE_PACK cy 1118
+DELTA_BATCH mi 16 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_BATCH mi 32 72 @cf/qwen/qwen3-30b-a3b-fp8
+DELTA_FAILURE mi HTTP Error 503: Service Unavailable {"ok":false,"error":"Daily free translation allocation exhausted","retryable":true,"reason":"daily_free_ai_limit"}
+STAGED_ONLY 88 FAILED 3
