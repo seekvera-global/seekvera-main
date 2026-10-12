@@ -74,8 +74,5 @@ RESUME ti
 RESUME fo
 RESUME kl
 RESUME rw
-DELTA_FAILURE sm unknown locale 'sm'
-RESUME to
-RESUME so
-DELTA_FAILURE dv HTTP Error 503: Service Unavailable {"ok":false,"error":"Daily free translation allocation exhausted","retryable":true,"reason":"daily_free_ai_limit"}
-STAGED_ONLY 76 FAILED 2
+DELTA_FAILURE sm HTTP Error 503: Service Unavailable {"ok":false,"error":"Daily free translation allocation exhausted","retryable":true,"reason":"daily_free_ai_limit"}
+STAGED_ONLY 74 FAILED 1

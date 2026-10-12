@@ -74,17 +74,11 @@
     "ti",
     "fo",
     "kl",
-    "rw",
-    "to",
-    "so"
+    "rw"
   ],
   "failures": [
     {
       "language": "sm",
-      "error": "unknown locale 'sm'"
-    },
-    {
-      "language": "dv",
       "error": "HTTP Error 503: Service Unavailable {\"ok\":false,\"error\":\"Daily free translation allocation exhausted\",\"retryable\":true,\"reason\":\"daily_free_ai_limit\"}"
     }
   ],
