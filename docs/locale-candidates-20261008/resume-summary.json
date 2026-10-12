@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-12T20:31:58.943054+00:00",
+  "checkedAt": "2026-10-12T21:58:25.896311+00:00",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -76,6 +76,7 @@
     "fo",
     "kl",
     "rw",
+    "sm",
     "to",
     "so",
     "mt",
@@ -89,19 +90,18 @@
     "pa",
     "ps",
     "ga",
-    "cy"
-  ],
-  "completedCount": 88,
-  "remaining": [
-    "sm",
-    "dv",
+    "cy",
     "mi",
     "fy",
     "lb",
     "rm",
     "ku",
     "xh",
-    "st",
+    "st"
+  ],
+  "completedCount": 96,
+  "remaining": [
+    "dv",
     "tn"
   ],
   "published": false,
