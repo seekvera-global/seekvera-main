@@ -83,9 +83,8 @@ SPLIT_RETRY Dhivehi 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"U
 SPLIT_RETRY Dhivehi 8 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
 SPLIT_RETRY Dhivehi 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
 SPLIT_RETRY Dhivehi 2 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-SPLIT_RETRY Dhivehi 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
 SPLIT_RETRY Dhivehi 2 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_FAILURE dv Target output still contains a long English source phrase: ('paid calls, paid APIs, paid verification, ads, subscriptions or company payments require an owner notice first. Auto Recharge remains OFF.', 'maamulaa callu, maamulaa API, maamulaa verifikaashun, adha, abaarugaa, company payments require an owner notice first. Auto Recharge remains OFF.')
+DELTA_FAILURE dv HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["workers-ai:@cf/qwen/qwen3-30b-a3b-fp8:unparseable","workers-ai:@cf/google/gemma-4-26b-a4b-it:unparseable","workers-ai:@cf/meta/llama-3.1-8b-instruct-fast:unparseable"]}
 RESUME mt
 RESUME mg
 RESUME eu
@@ -105,10 +104,10 @@ RESUME rm
 RESUME ku
 RESUME xh
 RESUME st
-SPLIT_RETRY Setswana 16 Target output still contains a long English source phrase: ('SEEKVERA Worldwide R4 deployment marker — explicit Worldwide labels in all 28 UI languages, refreshed app cache, AI, vo
-SPLIT_RETRY Setswana 8 Target output still contains a long English source phrase: ('SEEKVERA Worldwide R4 deployment marker — explicit Worldwide labels in all 28 UI languages, refreshed app cache, AI, vo
-SPLIT_RETRY Setswana 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-SPLIT_RETRY Setswana 4 Target output still contains a long English source phrase: ('SEEKVERA Worldwide R4 deployment marker — explicit Worldwide labels in all 28 UI languages, refreshed app cache, AI, vo
-SPLIT_RETRY Setswana 2 Target output still contains a long English source phrase: ('SEEKVERA Worldwide R4 deployment marker — explicit Worldwide labels in all 28 UI languages, refreshed app cache, AI, vo
-DELTA_FAILURE tn Target output still contains a long English source phrase: ('SEEKVERA Worldwide R4 deployment marker — explicit Worldwide labels in all 28 UI languages, refreshed app cache, AI, voice and Media — 2026-09-23.', 'SEEKVERA WorldWide R4 deployment marker — labels of WorldWide kapa kapa 28 UI languages, cache ya app e e tšoaneng, AI, voice le Media — 2026-09-23.')
-STAGED_ONLY 96 FAILED 2
+DELTA_BATCH tn 16 45 @cf/google/gemma-4-26b-a4b-it
+SPLIT_RETRY Setswana 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_BATCH tn 32 45 @cf/google/gemma-4-26b-a4b-it
+SPLIT_RETRY Setswana 13 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_BATCH tn 45 45 @cf/google/gemma-4-26b-a4b-it
+COMPLETE_PACK tn 1118
+STAGED_ONLY 97 FAILED 1

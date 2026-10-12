@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-12T22:36:44.502144+00:00",
+  "checkedAt": "2026-10-12T23:37:14.622369+00:00",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -97,12 +97,12 @@
     "rm",
     "ku",
     "xh",
-    "st"
-  ],
-  "completedCount": 96,
-  "remaining": [
-    "dv",
+    "st",
     "tn"
+  ],
+  "completedCount": 97,
+  "remaining": [
+    "dv"
   ],
   "published": false,
   "finalApproval": false,
