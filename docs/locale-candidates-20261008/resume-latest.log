@@ -74,19 +74,7 @@ RESUME ti
 RESUME fo
 RESUME kl
 RESUME rw
-DELTA_BATCH sm 16 148 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH sm 32 148 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH sm 48 148 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH sm 64 148 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH sm 80 148 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH sm 96 148 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH sm 112 148 @cf/google/gemma-4-26b-a4b-it
-SPLIT_RETRY Samoan 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH sm 128 148 @cf/google/gemma-4-26b-a4b-it
-SPLIT_RETRY Samoan 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH sm 144 148 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH sm 148 148 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK sm 1118
+RESUME sm
 RESUME to
 RESUME so
 SPLIT_RETRY Dhivehi 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
@@ -95,8 +83,9 @@ SPLIT_RETRY Dhivehi 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"U
 SPLIT_RETRY Dhivehi 8 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
 SPLIT_RETRY Dhivehi 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
 SPLIT_RETRY Dhivehi 2 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Dhivehi 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
 SPLIT_RETRY Dhivehi 2 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_FAILURE dv HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["workers-ai:@cf/qwen/qwen3-30b-a3b-fp8:unparseable","workers-ai:@cf/google/gemma-4-26b-a4b-it:unparseable","workers-ai:@cf/meta/llama-3.1-8b-instruct-fast:unparseable"]}
+DELTA_FAILURE dv Target output still contains a long English source phrase: ('paid calls, paid APIs, paid verification, ads, subscriptions or company payments require an owner notice first. Auto Recharge remains OFF.', 'maamulaa callu, maamulaa API, maamulaa verifikaashun, adha, abaarugaa, company payments require an owner notice first. Auto Recharge remains OFF.')
 RESUME mt
 RESUME mg
 RESUME eu
@@ -109,81 +98,17 @@ RESUME pa
 RESUME ps
 RESUME ga
 RESUME cy
-DELTA_BATCH mi 16 40 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH mi 32 40 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH mi 40 40 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK mi 1118
-DELTA_BATCH fy 16 74 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH fy 32 74 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH fy 48 74 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH fy 64 74 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH fy 74 74 @cf/qwen/qwen3-30b-a3b-fp8
-COMPLETE_PACK fy 1118
-DELTA_BATCH lb 16 80 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH lb 32 80 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH lb 48 80 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH lb 64 80 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH lb 80 80 @cf/meta/llama-3.1-8b-instruct-fast
-COMPLETE_PACK lb 1118
-DELTA_BATCH rm 16 76 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH rm 32 76 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH rm 48 76 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH rm 64 76 @cf/meta/llama-3.1-8b-instruct-fast
-DELTA_BATCH rm 76 76 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK rm 1118
-DELTA_BATCH ku 16 137 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH ku 32 137 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH ku 48 137 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH ku 64 137 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH ku 80 137 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH ku 96 137 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH ku 112 137 @cf/google/gemma-4-26b-a4b-it
-SPLIT_RETRY Kurdish 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH ku 128 137 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH ku 137 137 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK ku 1118
-DELTA_BATCH xh 16 106 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH xh 32 106 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH xh 48 106 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH xh 64 106 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH xh 80 106 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH xh 96 106 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH xh 106 106 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK xh 1118
-DELTA_BATCH st 16 137 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH st 32 137 @cf/qwen/qwen3-30b-a3b-fp8
-SPLIT_RETRY Sesotho 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH st 48 137 @cf/google/gemma-4-26b-a4b-it+@cf/qwen/qwen3-30b-a3b-fp8
-SPLIT_RETRY Sesotho 16 Target output still contains a long English source phrase: ('A SEEKVERA ORIGINAL • 3D STORY PROTOTYPE', 'SEEKVERA ORIGINAL • 3D STORY PROTOTYPE')
-SPLIT_RETRY Sesotho 8 Target output still contains a long English source phrase: ('A SEEKVERA ORIGINAL • 3D STORY PROTOTYPE', 'SEEKVERA ORIGINAL • 3D STORY PROTOTYPE')
-SPLIT_RETRY Sesotho 4 Target output still contains a long English source phrase: ('A SEEKVERA ORIGINAL • 3D STORY PROTOTYPE', 'SEEKVERA ORIGINAL • 3D STORY PROTOTYPE')
-SPLIT_RETRY Sesotho 2 Target output still contains a long English source phrase: ('A SEEKVERA ORIGINAL • 3D STORY PROTOTYPE', 'SEEKVERA ORIGINAL • 3D STORY PROTOTYPE')
-DELTA_BATCH st 64 137 @cf/google/gemma-4-26b-a4b-it+@cf/qwen/qwen3-30b-a3b-fp8
-SPLIT_RETRY Sesotho 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-SPLIT_RETRY Sesotho 8 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-SPLIT_RETRY Sesotho 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH st 80 137 @cf/google/gemma-4-26b-a4b-it+@cf/qwen/qwen3-30b-a3b-fp8+@cf/google/gemma-4-26b-a4b-it+@cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH st 96 137 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH st 112 137 @cf/google/gemma-4-26b-a4b-it
-SPLIT_RETRY Sesotho 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH st 128 137 @cf/google/gemma-4-26b-a4b-it
-SPLIT_RETRY Sesotho 9 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH st 137 137 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK st 1118
-DELTA_BATCH tn 16 141 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH tn 32 141 @cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH tn 48 141 @cf/google/gemma-4-26b-a4b-it
-SPLIT_RETRY Setswana 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-SPLIT_RETRY Setswana 8 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-SPLIT_RETRY Setswana 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH tn 64 141 @cf/qwen/qwen3-30b-a3b-fp8+@cf/google/gemma-4-26b-a4b-it+@cf/qwen/qwen3-30b-a3b-fp8+@cf/qwen/qwen3-30b-a3b-fp8
-DELTA_BATCH tn 80 141 @cf/google/gemma-4-26b-a4b-it
-DELTA_BATCH tn 96 141 @cf/google/gemma-4-26b-a4b-it
+RESUME mi
+RESUME fy
+RESUME lb
+RESUME rm
+RESUME ku
+RESUME xh
+RESUME st
 SPLIT_RETRY Setswana 16 Target output still contains a long English source phrase: ('SEEKVERA Worldwide R4 deployment marker — explicit Worldwide labels in all 28 UI languages, refreshed app cache, AI, vo
 SPLIT_RETRY Setswana 8 Target output still contains a long English source phrase: ('SEEKVERA Worldwide R4 deployment marker — explicit Worldwide labels in all 28 UI languages, refreshed app cache, AI, vo
 SPLIT_RETRY Setswana 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-SPLIT_RETRY Setswana 2 Target output still contains a long English source phrase: ('🛡️ Games are self-contained SEEKVERA mini games. No stranger chat, gambling, paid loot boxes or external ad network is 
 SPLIT_RETRY Setswana 4 Target output still contains a long English source phrase: ('SEEKVERA Worldwide R4 deployment marker — explicit Worldwide labels in all 28 UI languages, refreshed app cache, AI, vo
 SPLIT_RETRY Setswana 2 Target output still contains a long English source phrase: ('SEEKVERA Worldwide R4 deployment marker — explicit Worldwide labels in all 28 UI languages, refreshed app cache, AI, vo
-DELTA_FAILURE tn Target output still contains a long English source phrase: ('SEEKVERA Worldwide R4 deployment marker — explicit Worldwide labels in all 28 UI languages, refreshed app cache, AI, voice and Media — 2026-09-23.', 'SEEKVERA Worldwide R4 deployment marker — labels ya Worldwide e le e 28 tlhophiso ya UI, cache ya app e e le, AI, voice le Media — 2026-09-23.')
+DELTA_FAILURE tn Target output still contains a long English source phrase: ('SEEKVERA Worldwide R4 deployment marker — explicit Worldwide labels in all 28 UI languages, refreshed app cache, AI, voice and Media — 2026-09-23.', 'SEEKVERA WorldWide R4 deployment marker — labels of WorldWide kapa kapa 28 UI languages, cache ya app e e tšoaneng, AI, voice le Media — 2026-09-23.')
 STAGED_ONLY 96 FAILED 2
