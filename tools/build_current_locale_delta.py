@@ -7,6 +7,26 @@ ROOT=Path(__file__).resolve().parent.parent
 VERSION='20261008-r125-runtime-source-coverage'
 ALLOWED_PUBLIC_STRINGS=set()
 def canonical(s):return ' '.join(str(s).split())
+
+# Explicit names for target languages not consistently exposed by Babel's
+# locale database. This avoids aborting a resumable build before the service
+# is called; it does not bypass provider quotas or certify translations.
+LANGUAGE_NAME_OVERRIDES={
+ 'sm':'Samoan',
+ 'dv':'Dhivehi',
+ 'mi':'Māori',
+ 'fy':'Western Frisian',
+ 'lb':'Luxembourgish',
+ 'rm':'Romansh (Rumantsch Grischun, Switzerland)',
+ 'ku':'Kurdish',
+ 'xh':'Xhosa',
+ 'st':'Sesotho',
+ 'tn':'Setswana',
+}
+def translation_language_name(code):
+ if code in LANGUAGE_NAME_OVERRIDES:return LANGUAGE_NAME_OVERRIDES[code]
+ try:return Locale.parse(code).get_language_name('en')
+ except Exception as exc:raise RuntimeError('Missing explicit target-language name for '+code) from exc
 def atomic_json(path,data):
  tmp=path.with_suffix(path.suffix+'.tmp');tmp.write_text(json.dumps(data,ensure_ascii=False,separators=(',',':')));tmp.replace(path)
 def source_inventory():
@@ -120,7 +140,7 @@ def main():
   if code=='en':trans.update({k:k for k in source});missing=[]
   try:
    for start in range(0,len(missing),16):
-    batch=missing[start:start+16];vals,provider=translate_small('Romansh (Rumantsch Grischun, Switzerland)' if code=='rm' else Locale.parse(code).get_language_name('en'),batch)
+    batch=missing[start:start+16];vals,provider=translate_small(translation_language_name(code),batch)
     trans.update(dict(zip(batch,vals)));providers.add(provider);retranslated.update(batch)
     print('DELTA_BATCH',code,start+len(batch),len(missing),provider,flush=True)
     # Persist a resumable successful prefix even if a later provider call fails.
