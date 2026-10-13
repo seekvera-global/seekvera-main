@@ -48,6 +48,7 @@ jobs:
           node tools/test-dialect-voice.cjs
           node tools/test-tts-envelope.cjs
           node tools/test-audio-authority.cjs
+          node tools/test-voice-sequence.cjs
           node --check i18n-ui.js
           node tools/test-locale-cognates.cjs
           node tools/test-ui-translation.cjs

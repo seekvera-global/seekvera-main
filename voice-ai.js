@@ -49,10 +49,11 @@ async function localWhisperEngine(){
   localWhisperPromise=(async()=>{
     const mod=await import('/patched-transformers.js?v=20260927-r90-local-multilingual-voice');
     mod.env.allowRemoteModels=true;
-    mod.env.remoteHost='https://huggingface.co/';
+    mod.env.remoteHost=apiBase()+'/api/asr-model/';
     mod.env.remotePathTemplate='{model}/resolve/{revision}/';
     mod.env.useBrowserCache=true;
-    mod.env.backends.onnx.wasm.wasmPaths='https://cdn.jsdelivr.net/npm/onnxruntime-web@1.25.0-dev.20260212-1a71a5f46e/dist/';
+    mod.env.backends.onnx.wasm.wasmPaths=apiBase()+'/api/ort/';
+    mod.env.backends.onnx.wasm.numThreads=1;
     return await mod.pipeline('automatic-speech-recognition','Xenova/whisper-tiny',{dtype:'q8',device:'wasm'});
   })().catch(e=>{localWhisperPromise=null;throw e});
   return localWhisperPromise
@@ -248,7 +249,7 @@ function nativeSpeak(chunks,token){
     if(failedOver||anyStarted||token!==speakToken||muted)return;
     failedOver=true;clearTimeout(watchdog);
     try{speechSynthesis.cancel();speechSynthesis.resume()}catch(_){}
-    serverSpeak(lastAnswer,lastLocale,token,true)
+    serverSpeakSequence(chunks,lastLocale,token)
   };
   const arm=()=>{clearTimeout(watchdog);watchdog=setTimeout(fallback,/Android/i.test(navigator.userAgent)?1900:3200)};
   try{speechSynthesis.cancel();speechSynthesis.resume();speechSynthesis.getVoices?.()}catch(_){}
@@ -289,10 +290,10 @@ function nativeSpeak(chunks,token){
 }
 async function serverSpeakSequence(chunks,loc,token){
   for(let i=0;i<chunks.length;i++){
-    if(token!==speakToken||muted)return false;
-    const ok=await serverSpeak(chunks[i],loc,token,i===chunks.length-1);if(!ok)return false
+    if(token!==speakToken||muted)return {ok:false,nextIndex:i};
+    const ok=await serverSpeak(chunks[i],loc,token,i===chunks.length-1);if(!ok)return {ok:false,nextIndex:i}
   }
-  return true
+  return {ok:true,nextIndex:chunks.length}
 }
 function speak(text,l,force=false){
   lastAnswer=typeof text==='string'?text:'';lastLocale=localeForText(lastAnswer,l);const chunks=splitSpeech(lastAnswer);
@@ -303,9 +304,9 @@ function speak(text,l,force=false){
   stopServerAudio();try{window.speechSynthesis?.cancel?.()}catch(_){}
   // A native onstart event does not prove that an Android WebView is audible.
   // Prefer the real audio response; retain device TTS only as fallback.
-  serverSpeakSequence(chunks,lastLocale,token).then(ok=>{
-    if(ok||token!==speakToken||muted)return;
-    if(!nativeSpeak(chunks,token)){
+  serverSpeakSequence(chunks,lastLocale,token).then(result=>{
+    if(result.ok||token!==speakToken||muted)return;
+    if(!nativeSpeak(chunks.slice(result.nextIndex),token)){
       voiceConversation=false;
       const input=document.getElementById('aiChatInput');
       if(input)setVoicePlaceholder(input,'Audio could not play. Tap the speaker to retry.');

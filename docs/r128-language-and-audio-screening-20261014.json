@@ -1,0 +1,587 @@
+{
+  "checkedAt": "2026-10-13T23:48:22.886455+00:00",
+  "sourceHash": "6a1126e6a2ce5629",
+  "completed": [
+    "en",
+    "ar",
+    "fr",
+    "zh",
+    "es",
+    "hi",
+    "pt",
+    "de",
+    "ja",
+    "ko",
+    "id",
+    "tr",
+    "ru",
+    "ur",
+    "bn",
+    "vi",
+    "it",
+    "sw",
+    "th",
+    "fa",
+    "pl",
+    "nl",
+    "ms",
+    "fil",
+    "ha",
+    "yo",
+    "ig",
+    "am",
+    "he",
+    "el",
+    "uk",
+    "ro",
+    "cs",
+    "sk",
+    "hu",
+    "sv",
+    "no",
+    "da",
+    "fi",
+    "bg",
+    "hr",
+    "sr",
+    "sl",
+    "lt",
+    "lv",
+    "et",
+    "ca",
+    "is",
+    "sq",
+    "mk",
+    "ka",
+    "hy",
+    "az",
+    "kk",
+    "uz",
+    "ky",
+    "tg",
+    "tk",
+    "ne",
+    "si",
+    "ta",
+    "km",
+    "lo",
+    "my",
+    "mn",
+    "zu",
+    "af",
+    "be",
+    "bs",
+    "dz",
+    "ti",
+    "fo",
+    "kl",
+    "rw",
+    "sm",
+    "to",
+    "so",
+    "mt",
+    "mg",
+    "eu",
+    "gl",
+    "te",
+    "ml",
+    "mr",
+    "gu",
+    "pa",
+    "ps",
+    "ga",
+    "cy",
+    "mi",
+    "fy",
+    "lb",
+    "rm",
+    "ku",
+    "xh",
+    "st",
+    "tn"
+  ],
+  "completedCount": 97,
+  "remaining": [
+    "dv"
+  ],
+  "structuralFailures": {
+    "dv": [
+      "english_overlap:66"
+    ]
+  },
+  "scriptWarnings": {
+    "ar": {
+      "count": 1,
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "zh": {
+      "count": 1,
+      "examples": [
+        {
+          "source": "© SEEKVERA ·",
+          "value": "© SEEKVERA·"
+        }
+      ]
+    },
+    "hi": {
+      "count": 2,
+      "examples": [
+        {
+          "source": "SEEKVERA —",
+          "value": "SEEKVERA—"
+        },
+        {
+          "source": "© SEEKVERA ·",
+          "value": "© SEEKVERA·"
+        }
+      ]
+    },
+    "ur": {
+      "count": 3,
+      "examples": [
+        {
+          "source": "REAL 3D BUILD",
+          "value": "Real 3D BUILD"
+        },
+        {
+          "source": "2026-09-26 · R74",
+          "value": "26-09-2026 · R74"
+        },
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "bn": {
+      "count": 2,
+      "examples": [
+        {
+          "source": "Message SEEKVERA AI…",
+          "value": "SEEKVERA AI…"
+        },
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "fa": {
+      "count": 4,
+      "examples": [
+        {
+          "source": "Open QR →",
+          "value": "QR →"
+        },
+        {
+          "source": "2026-09-26 · R74",
+          "value": "26-09-2026 · R74"
+        },
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        },
+        {
+          "source": "📰 SEEKVERA NEWS & MEDIA",
+          "value": "📰 SEEKVERA News & MEDIA"
+        }
+      ]
+    },
+    "am": {
+      "count": 5,
+      "examples": [
+        {
+          "source": "Open QR →",
+          "value": "QR →"
+        },
+        {
+          "source": "Find Wi-Fi →",
+          "value": "Wi-Fi →"
+        },
+        {
+          "source": "✨ Ask SEEKVERA AI",
+          "value": "✨ SEEKVERA AI"
+        },
+        {
+          "source": "Speak to SEEKVERA AI",
+          "value": "SEEKVERA AI"
+        },
+        {
+          "source": "Share and install SEEKVERA",
+          "value": "SEEKVERA"
+        }
+      ]
+    },
+    "he": {
+      "count": 1,
+      "examples": [
+        {
+          "source": "📰 SEEKVERA NEWS & MEDIA",
+          "value": "📰 SEEKVERA NEWS & Media"
+        }
+      ]
+    },
+    "el": {
+      "count": 3,
+      "examples": [
+        {
+          "source": "AI Deal Agent",
+          "value": "Agent Deal AI"
+        },
+        {
+          "source": "2026-09-26 · R74",
+          "value": "26-09-2026 · R74"
+        },
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "uk": {
+      "count": 1,
+      "examples": [
+        {
+          "source": "2026-09-26 · R74",
+          "value": "26.09.2026 · R74"
+        }
+      ]
+    },
+    "mk": {
+      "count": 2,
+      "examples": [
+        {
+          "source": "2026-09-26 · R74",
+          "value": "26.09.2026 · R74"
+        },
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "ka": {
+      "count": 2,
+      "examples": [
+        {
+          "source": "SEEKVERA finder",
+          "value": "SEEKVERA Finder"
+        },
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "hy": {
+      "count": 1,
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "kk": {
+      "count": 3,
+      "examples": [
+        {
+          "source": "Open QR →",
+          "value": "QR →"
+        },
+        {
+          "source": "2026-09-26 · R74",
+          "value": "26.09.2026 · R74"
+        },
+        {
+          "source": "Return to SEEKVERA",
+          "value": "SEEKVERA"
+        }
+      ]
+    },
+    "ky": {
+      "count": 2,
+      "examples": [
+        {
+          "source": "Nearby Now",
+          "value": "Narby Now"
+        },
+        {
+          "source": "2026-09-26 · R74",
+          "value": "26-09-2026 · R74"
+        }
+      ]
+    },
+    "tg": {
+      "count": 3,
+      "examples": [
+        {
+          "source": "2026-09-26 · R74",
+          "value": "26-09-2026 · R74"
+        },
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        },
+        {
+          "source": "📰 SEEKVERA NEWS & MEDIA",
+          "value": "📰 SEEKVERA News & MEDIA"
+        }
+      ]
+    },
+    "ne": {
+      "count": 2,
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        },
+        {
+          "source": "SEEKVERA • JUNGLE SURVIVOR",
+          "value": "SEEKVERA • JUNGLE Survivor"
+        }
+      ]
+    },
+    "si": {
+      "count": 3,
+      "examples": [
+        {
+          "source": "SEEKVERA finder",
+          "value": "SEEKVERA Finder"
+        },
+        {
+          "source": "SEEKVERA • SURVIVAL",
+          "value": "SEEKVERA • Survival"
+        },
+        {
+          "source": "SEEKVERA • JUNGLE SURVIVOR",
+          "value": "SEEKVERA • JUNGLE Survivor"
+        }
+      ]
+    },
+    "ta": {
+      "count": 2,
+      "examples": [
+        {
+          "source": "Open QR →",
+          "value": "QR →"
+        },
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "lo": {
+      "count": 2,
+      "examples": [
+        {
+          "source": "Paystack",
+          "value": "Paysack"
+        },
+        {
+          "source": "R9b embedded translation deployment trigger",
+          "value": "R9b embedded trigger deployment trigger"
+        }
+      ]
+    },
+    "my": {
+      "count": 8,
+      "examples": [
+        {
+          "source": "AI VISION",
+          "value": "AI Vision"
+        },
+        {
+          "source": "Open QR →",
+          "value": "QR →"
+        },
+        {
+          "source": "Message SEEKVERA AI",
+          "value": "SEEKVERA AI"
+        },
+        {
+          "source": "Message SEEKVERA AI…",
+          "value": "SEEKVERA AI…"
+        },
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "mn": {
+      "count": 1,
+      "examples": [
+        {
+          "source": "Message SEEKVERA AI…",
+          "value": "SEEKVERA AI…"
+        }
+      ]
+    },
+    "dz": {
+      "count": 3,
+      "examples": [
+        {
+          "source": "Play inside SEEKVERA",
+          "value": "SEEKVERA"
+        },
+        {
+          "source": "Search with SEEKVERA",
+          "value": "SEEKVERA"
+        },
+        {
+          "source": "Share and install SEEKVERA",
+          "value": "SEEKVERA"
+        }
+      ]
+    },
+    "dv": {
+      "count": 40,
+      "examples": [
+        {
+          "source": "Open matching section",
+          "value": "විරෝධී කොටස පිට කරන්න"
+        },
+        {
+          "source": "Pop colorful balloons.",
+          "value": "පැහැදිලි වර්ණ වාලුවන් පැහැර ගන්න."
+        },
+        {
+          "source": "High-speed night racing.",
+          "value": "රාත්‍රියේ ත්වරිතර ප්‍රවාහනය."
+        },
+        {
+          "source": "Understanding your speech…",
+          "value": "ඔබගේ බෝක් විසින් අවබෝධ කරවන්න."
+        },
+        {
+          "source": "A fast safari obstacle run.",
+          "value": "ත්වර සැෆාරි ප්‍රතිසඵුට රැස් කරන්න."
+        }
+      ]
+    },
+    "te": {
+      "count": 2,
+      "examples": [
+        {
+          "source": "Open QR →",
+          "value": "QR →"
+        },
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "ml": {
+      "count": 1,
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "mr": {
+      "count": 1,
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "gu": {
+      "count": 3,
+      "examples": [
+        {
+          "source": "SEEKVERA GUIDE",
+          "value": "SEEKVERA Guide"
+        },
+        {
+          "source": "2026-09-26 · R74",
+          "value": "26-09-2026 · R74"
+        },
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "pa": {
+      "count": 18,
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        },
+        {
+          "source": "Open matching section",
+          "value": "खोल मेलिंग खंड"
+        },
+        {
+          "source": "CROSS-BORDER LOGISTICS",
+          "value": "CROSSS-BORDER LOGISTICS"
+        },
+        {
+          "source": "Pop colorful balloons.",
+          "value": "रंगीन बैलून फूटो"
+        },
+        {
+          "source": "High-speed night racing.",
+          "value": "उच्च गति रात्रि दौड़"
+        }
+      ]
+    },
+    "ps": {
+      "count": 4,
+      "examples": [
+        {
+          "source": "SEEKVERA —",
+          "value": "SEEKVERA --"
+        },
+        {
+          "source": "Zero‑Cost Mode",
+          "value": "Zero‑Cost mode"
+        },
+        {
+          "source": "2026-09-26 · R74",
+          "value": "26-09-2026 · R74"
+        },
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    }
+  },
+  "exitCode": "0",
+  "published": false,
+  "finalApproval": false,
+  "linguisticAccuracyCertified": false,
+  "scope": "Source coverage, reviewed labels, long English overlap and script screening. Structural completeness does not certify translation quality.",
+  "resumeSucceeded": false,
+  "readyForLinguisticReview": false,
+  "freshLiveChecks": {
+    "arabicChat": "passed with English UI",
+    "arabicTTS": {
+      "httpStatus": 200,
+      "durationSeconds": 2.256
+    },
+    "arabicASR": {
+      "httpStatus": 200,
+      "language": "ar",
+      "input": "synthetic Arabic TTS",
+      "transcript": "مرحبا كيف تاليوم؟",
+      "expected": "مرحبا كيفك اليوم",
+      "exactTranscript": false,
+      "physicalDeviceCertified": false
+    }
+  }
+}
