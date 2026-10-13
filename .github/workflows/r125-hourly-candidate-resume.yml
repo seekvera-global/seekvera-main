@@ -27,6 +27,13 @@ jobs:
         with:
           node-version: '22'
       - run: python -m pip install Babel==2.18.0 beautifulsoup4==4.15.0
+      - name: Use current audited resume tools
+        run: |
+          git fetch origin main
+          git show origin/main:worker.js > /tmp/seekvera-validation-worker.js
+          for file in tools/build_current_locale_delta.py tools/audit_locale_candidates.py tools/audit-candidate-scripts.cjs; do
+            git show "origin/main:$file" > "$file"
+          done
       - name: Resume public UI candidates
         shell: bash
         run: |
@@ -37,30 +44,10 @@ jobs:
           exit 0
       - name: Audit all saved candidates
         if: always()
+        env:
+          WORKER_VALIDATOR_SOURCE: /tmp/seekvera-validation-worker.js
         run: |
-          python - <<'PY'
-          import json, datetime
-          from pathlib import Path
-          from tools.build_current_locale_delta import suspicious_overlap, reviewed_labels
-          stage=Path('docs/locale-candidates-20261008')
-          source=json.loads((stage/'source.json').read_text())
-          languages=json.loads(Path('i18n-r32/manifest.json').read_text())['languages']
-          reviewed=reviewed_labels(); completed=[]
-          for code in languages:
-              path=stage/(code+'.json')
-              if not path.exists(): continue
-              data=json.loads(path.read_text()); values=data.get('translations',{})
-              if data.get('sourceHash')!=source['sourceHash'] or data.get('qualityPolicy')!='source-overlap-5-v1': continue
-              if not all(isinstance(values.get(key),str) and values[key].strip() for key in source['strings']): continue
-              if not all(values.get(key)==value for key,value in reviewed.get(code,{}).items() if key in source['strings']): continue
-              if code!='en' and any(suspicious_overlap(key,values[key]) for key in source['strings']): continue
-              completed.append(code)
-          report={'checkedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'sourceHash':source['sourceHash'],'completed':completed,'completedCount':len(completed),'remaining':[code for code in languages if code not in completed],'published':False,'finalApproval':False,'linguisticAccuracyCertified':False}
-          exit_path=stage/'resume-exit-code.txt'
-          report['exitCode']=exit_path.read_text().strip() if exit_path.exists() else 'not-run'
-          (stage/'resume-summary.json').write_text(json.dumps(report,ensure_ascii=False,indent=2))
-          print(json.dumps(report,ensure_ascii=False))
-          PY
+          PYTHONPATH=. python tools/audit_locale_candidates.py --stage docs/locale-candidates-20261008
       - uses: actions/upload-artifact@v4
         if: always()
         with:
