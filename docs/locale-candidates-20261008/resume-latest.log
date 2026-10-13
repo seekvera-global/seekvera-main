@@ -77,5 +77,31 @@ RESUME rw
 RESUME sm
 RESUME to
 RESUME so
-DELTA_FAILURE dv HTTP Error 503: Service Unavailable {"ok":false,"error":"Daily free translation allocation exhausted","retryable":true,"reason":"daily_free_ai_limit"}
-STAGED_ONLY 77 FAILED 1
+SPLIT_RETRY Dhivehi 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Dhivehi 8 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Dhivehi 8 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Dhivehi 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Dhivehi 2 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Dhivehi 2 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+DELTA_FAILURE dv HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["workers-ai:@cf/qwen/qwen3-30b-a3b-fp8:unparseable","workers-ai:@cf/google/gemma-4-26b-a4b-it:unparseable","workers-ai:@cf/meta/llama-3.1-8b-instruct-fast:unparseable"]}
+RESUME mt
+RESUME mg
+RESUME eu
+RESUME gl
+RESUME te
+RESUME ml
+RESUME mr
+RESUME gu
+RESUME pa
+RESUME ps
+RESUME ga
+RESUME cy
+RESUME mi
+RESUME fy
+RESUME lb
+RESUME rm
+RESUME ku
+RESUME xh
+RESUME st
+RESUME tn
+STAGED_ONLY 97 FAILED 1
