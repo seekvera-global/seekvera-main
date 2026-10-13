@@ -104,10 +104,5 @@ RESUME rm
 RESUME ku
 RESUME xh
 RESUME st
-DELTA_BATCH tn 16 45 @cf/google/gemma-4-26b-a4b-it
-SPLIT_RETRY Setswana 16 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH tn 32 45 @cf/google/gemma-4-26b-a4b-it
-SPLIT_RETRY Setswana 13 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
-DELTA_BATCH tn 45 45 @cf/google/gemma-4-26b-a4b-it
-COMPLETE_PACK tn 1118
+RESUME tn
 STAGED_ONLY 97 FAILED 1
