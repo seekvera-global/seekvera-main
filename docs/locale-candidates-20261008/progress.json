@@ -77,32 +77,12 @@
     "rw",
     "sm",
     "to",
-    "so",
-    "mt",
-    "mg",
-    "eu",
-    "gl",
-    "te",
-    "ml",
-    "mr",
-    "gu",
-    "pa",
-    "ps",
-    "ga",
-    "cy",
-    "mi",
-    "fy",
-    "lb",
-    "rm",
-    "ku",
-    "xh",
-    "st",
-    "tn"
+    "so"
   ],
   "failures": [
     {
       "language": "dv",
-      "error": "HTTP Error 503: Service Unavailable {\"ok\":false,\"error\":\"UI translation temporarily unavailable\",\"retryable\":true,\"reason\":\"all_translation_backends_unavailable\",\"backendErrors\":[\"workers-ai:@cf/qwen/qwen3-30b-a3b-fp8:unparseable\",\"workers-ai:@cf/google/gemma-4-26b-a4b-it:unparseable\",\"workers-ai:@cf/meta/llama-3.1-8b-instruct-fast:unparseable\"]}"
+      "error": "HTTP Error 503: Service Unavailable {\"ok\":false,\"error\":\"Daily free translation allocation exhausted\",\"retryable\":true,\"reason\":\"daily_free_ai_limit\"}"
     }
   ],
   "finalApproval": false
