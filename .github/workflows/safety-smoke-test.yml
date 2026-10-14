@@ -69,4 +69,5 @@ jobs:
           grep -q 'pending safety review' post-ad.html
           grep -q 'SEEKVERA Terms and Prohibited Content Rules' post-ad.html
           grep -q '/api/moderate' worker.js
-          grep -q 'prohibitedReason' worker.js
+          grep -q 'async function safety' worker.js
+          grep -q 'moderation_unavailable_hold' worker.js

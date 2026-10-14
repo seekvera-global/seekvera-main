@@ -1,18 +1,9 @@
 name: SEEKVERA R23 final release audit
 
+# Historical R23 markers no longer describe the current release.
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'r20-final-guard.js'
-      - 'r22-category-lock.js'
-      - 'sw.js'
-      - 'worker.js'
-      - 'locale-r15.js'
-      - 'locale-r14-categories.js'
-      - 'r20-extra-categories.js'
-      - '.github/workflows/r23-final-release-audit.yml'
   workflow_dispatch:
+
 permissions:
   contents: read
 concurrency:

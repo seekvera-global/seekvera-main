@@ -1,11 +1,7 @@
 name: Enable Global Voice AI
 
+# Historical release/bootstrap workflow; current R105 validates and deploys production.
 on:
-  push:
-    branches: [main]
-    paths:
-      - voice-ai.js
-      - .github/workflows/enable-global-voice.yml
   workflow_dispatch:
 
 permissions:

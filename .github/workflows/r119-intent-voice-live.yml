@@ -1,13 +1,7 @@
 name: R119 intent routing and Arabic voice live
 
+# Historical release/bootstrap workflow; current R105 validates and deploys production.
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'worker-r76.js'
-      - 'r31-ui-polish.js'
-      - 'voice-ai.js'
-      - '.github/workflows/r119-intent-voice-live.yml'
   workflow_dispatch:
 
 permissions:
