@@ -1,0 +1,42 @@
+{
+  "checkedAt": "2026-10-14T00:08:54.208906+00:00",
+  "cameraLocations": 15,
+  "countryDirectories": 69,
+  "reviewedLanguages": [
+    "en",
+    "ar",
+    "fr"
+  ],
+  "newUIKeys": 36,
+  "unitAndWorkerIntegration": "passed",
+  "directVoiceRegression": "passed",
+  "dialectVoiceRegression": "passed",
+  "freshUSGSAndGDACSParsing": "passed against all 15 camera areas",
+  "browserVerified": false,
+  "physicalAudioVerified": false,
+  "embeddedVideoAuthorized": false,
+  "playback": "Open provider website",
+  "productionDeployed": false,
+  "finalApproval": false,
+  "domInteractions": {
+    "environment": "jsdom 26.1 simulation; not a browser",
+    "result": "passed",
+    "cases": [
+      "AI-query location",
+      "Arabic RTL country switch",
+      "unavailable city/country",
+      "French language switch",
+      "retry accessibility",
+      "no old-language heading during translation outage"
+    ]
+  },
+  "legacyDeploymentIncident": {
+    "workflow": "r123-production-cert.yml",
+    "branchDeploymentOccurred": true,
+    "remediation": "Fixed: production workflows restrict pushes/jobs to main; verified restoration by World Live page HTTP 404 and API HTTP 405.",
+    "restoredAt": "2026-10-14T00:43:37.236805+00:00",
+    "mainCommit": "b54746c1e52f5f0c3cd4343be61cdba439f50394",
+    "mainReleaseRun": 38490124539,
+    "audioVerificationRun": 38490124550
+  }
+}

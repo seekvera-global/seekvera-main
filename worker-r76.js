@@ -1,4 +1,5 @@
 import baseWorker from './worker-r31.js';
+import {worldLiveApi} from './world-live-api.mjs';
 
 const RELEASE='20261001-r125-dialect-voice-quality';
 const PRIMARY='@cf/zai-org/glm-4.7-flash';
@@ -6,7 +7,7 @@ const FALLBACK='@cf/qwen/qwen3-30b-a3b-fp8';
 const FAST='@cf/meta/llama-3.1-8b-instruct-fast';
 const ASR_PRIMARY='@cf/openai/whisper-large-v3-turbo',ASR_FALLBACK='@cf/openai/whisper';
 const ALLOWED=new Set(['https://seekveraglobal.com','https://www.seekveraglobal.com','https://seekvera-global.github.io','https://seekvera-main.seekvera-global.workers.dev']);
-const ROUTES={marketplace:'marketplace.html',general:'marketplace.html',travel:'travel.html',tourism:'tourism.html',property:'property.html',cars:'cars-auto.html',jobs:'jobs.html',shopping:'shopping.html',restaurants:'restaurants-food.html',services:'local-services.html',equipment:'marketplace.html?q=equipment',boats:'marketplace.html?q=boats',business:'import-export.html',shipping:'shipping-logistics.html',businessSoftware:'business-software.html',software:'software.html',hosting:'web-hosting.html',solar:'solar.html',education:'education.html',health:'health.html',money:'money-insurance.html',entertainment:'entertainment.html',media:'media.html',games:'games.html',connectivity:'connectivity.html',wifi:'wifi.html',dealAgent:'deal-agent.html',everyday:'everyday.html',scan:'scan.html',promote:'seller-plans.html'};
+const ROUTES={marketplace:'marketplace.html',general:'marketplace.html',travel:'travel.html',tourism:'tourism.html',property:'property.html',cars:'cars-auto.html',jobs:'jobs.html',shopping:'shopping.html',restaurants:'restaurants-food.html',services:'local-services.html',equipment:'marketplace.html?q=equipment',boats:'marketplace.html?q=boats',business:'import-export.html',shipping:'shipping-logistics.html',businessSoftware:'business-software.html',software:'software.html',hosting:'web-hosting.html',solar:'solar.html',education:'education.html',health:'health.html',money:'money-insurance.html',entertainment:'entertainment.html',media:'media.html',worldLive:'world-live.html',games:'games.html',connectivity:'connectivity.html',wifi:'wifi.html',dealAgent:'deal-agent.html',everyday:'everyday.html',scan:'scan.html',promote:'seller-plans.html'};
 const CATS=new Set(Object.keys(ROUTES));
 const LANGS=new Set(['en','ar','fr','zh','es','hi','pt','de','ja','ko','id','tr','ru','ur','bn','vi','it','sw','th','fa','pl','nl','ms','fil','ha','yo','ig','am','he','el','uk','ro','cs','sk','hu','sv','no','da','fi','bg','hr','sr','sl','lt','lv','et','ca','eu','gl','is','sq','mk','ka','hy','az','kk','uz','ky','tg','tk','ne','si','ta','te','ml','mr','gu','pa','km','lo','my','mn','zu','af','be','bs','dz','ti','fo','kl','rw','sm','to','so','ps','dv','mt','mg','ga','cy','mi','fy','lb','rm','ku','xh','st','tn']);
 const clean=(v,n=4000)=>String(v??'').replace(/[\u0000-\u001F\u007F]/g,' ').trim().slice(0,n);
@@ -341,8 +342,17 @@ async function transcribeAudio(request,env){
  return json(request,{ok:false,error:'Voice transcription is temporarily unavailable',retryable:true,detail:errors.join(' | ')},503)
 }
 
+function worldLiveAction(message){
+ const s=String(message||'').toLowerCase();
+ if(/\b(?:news|tv|bbc|cnn|aljazeera)\b|أخبار|اخبار|قناة/iu.test(s))return false;
+ const cameras=/webcams?|live cameras?|world live|live view|كاميرات|كاميرا|العالم لايف|كامرات|webcams?|cámaras en vivo|cameras ao vivo|caméras en direct|canlı kamera|ライブカメラ|实时摄像|實時攝像|라이브 카메라|वेबकैम|实时.*直播|直播.*(?:世界|城市)/iu.test(s);
+ const watch=/\b(?:watch|see|show|open|find|view|explore)\b|بدي|بدّي|شوف|شاهد|افتح|ورج|اعرض|montre|regarde|ouvre|voir|muestra|ver|abre|mostre|ver|abra|zeige|ansehen|öffne|göster|izle|aç|見せ|見たい|開いて|看|打开|보여|열어|देख|दिखा/iu.test(s);
+ const placeLive=/(?:watch|see|show|شوف|شاهد|ورج).{0,70}(?:live|لايف|بث مباشر)/iu.test(s);
+ return watch&&(cameras||placeLive)
+}
 function directCategoryIntent(message,modelCategory='general'){
  const s=String(message||'').toLowerCase().trim();
+ if(worldLiveAction(message))return'worldLive';
  if(employmentIntent(message))return'jobs';
  if(/(?:کار.{0,24}(?:پیدا|بگرد)|(?:پیدا|بگرد).{0,24}کار|شغل.{0,24}(?:پیدا|بگرد)|(?:پیدا|بگرد).{0,24}شغل)/u.test(s))return'jobs';
  if(/(?:نوکری|ملازمت).{0,28}(?:تلاش|ڈھونڈ|چاہ)|(?:تلاش|ڈھونڈ).{0,28}(?:نوکری|ملازمت)/u.test(s))return'jobs';
@@ -491,6 +501,10 @@ export default{async fetch(request,env,ctx){
  if(request.method==='OPTIONS')return new Response(null,{status:204,headers:headers(request)});
  if(u.pathname==='/api/health'){
    const r=await baseWorker.fetch(request,env,ctx);let d={};try{d=await r.clone().json()}catch{}return json(request,{...d,release:RELEASE,r123:true,r123Runtime:'single-voice-turn-arabic-auto-rescue',r122:true,r122Runtime:'unified-home-direct-routing-and-language-independent-voice',r121e:true,r121eRuntime:'urdu-first-persian-distinctive-detection',r121d:true,r121dRuntime:'arabic-persian-urdu-disambiguation',r121c:true,r121cRuntime:'persian-urdu-arabic-script-command-routing',r121b:true,r121bRuntime:'repaired-global-command-inflections-and-language-detection',r121:true,r121Runtime:'global-command-inflections-and-fast-language-detection',r120:true,r120Runtime:'instant-controls-direct-intent-language-independent-voice',r119b:true,r119bRuntime:'language-independent-voice-direct-intent-atomic-controls',r119:true,r119Runtime:'explicit-intent-routing-plus-hinted-arabic-asr-rescue',r118:true,r118Runtime:'script-first-plus-model-hint-language-resolution',r117:true,r117Runtime:'strict-reply-language-contract-and-history-sanitizer',r105:true,r105Runtime:'worldwide-default-language-safe-ai-atomic-localization',r86:true,r86Runtime:'conversation-first-multilingual-ai',r92:true,r92Runtime:'native-asr-payload-per-model-auto-language',r89:true,r89Runtime:'workers-ai-whisper-byte-array-no-consent',r88:true,r88Runtime:'fast-auto-asr-server-first-tts-natural-fallback',r87:true,r87Runtime:'latest-message-language-plus-real-ai-fallback',r86Routing:'goal-aware-not-keyword-first',r86Voice:'whisper-auto-language-independent-of-ui',r86Asr:ASR_PRIMARY,r81:true,r81Runtime:'natural-multilingual-conversation',r81Routing:'explicit-intent-only',r81Voice:'server-auto-asr-first',r81Fallback:'natural-conversation-and-deterministic-actions'});
+ }
+ if(u.pathname.startsWith('/api/world-live/')){
+  const origin=request.headers.get('origin')||'';if(origin&&!ALLOWED.has(origin))return json(request,{ok:false,error:'Origin not allowed'},403);
+  const r=await worldLiveApi(request,env);const h=new Headers(r.headers);for(const [key,value] of Object.entries(headers(request)))h.set(key,value);return new Response(r.body,{status:r.status,headers:h})
  }
  if(u.pathname==='/api/transcribe'&&request.method==='POST')return transcribeAudio(request,env);
  if(u.pathname==='/api/ai'&&request.method==='POST'){
