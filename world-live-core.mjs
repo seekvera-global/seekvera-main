@@ -7,13 +7,17 @@ export function filterCameras(cameras,{country='WW',query='',area=''}={}){
  const needle=fold(query),city=fold(area);
  return cameras.filter(validCamera).filter(c=>country==='WW'||c.country===country).filter(c=>{const hay=fold([c.city,c.area,c.aliases].join(' '));return(!city||hay.includes(city))&&(!needle||hay.includes(needle))})
 }
-export function inferCameraLocation(cameras,query,language='en'){
+const regionNameCache=new Map();
+export function locationNameMatches(query,name){const needle=fold(query),label=fold(name);if(!label)return false;if(/[\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af]/u.test(label))return needle.includes(label);if(/[\u0600-\u06ff]/u.test(label))return needle.split(' ').some(word=>word===label||/^[بلفو]/u.test(word)&&word.slice(1)===label);return (' '+needle+' ').includes(' '+label+' ')}
+export function regionNames(country,languages=['en','ar','fr','zh','ja']){const key=country+'|'+languages.join(',');if(regionNameCache.has(key))return regionNameCache.get(key);const names=[];for(const language of languages)try{if(Intl.DisplayNames.supportedLocalesOf([language]).length)names.push(fold(new Intl.DisplayNames([language],{type:'region'}).of(country)))}catch{}regionNameCache.set(key,names);return names}
+export function inferCameraLocation(cameras,query,language='en',languages=[language,'en','ar','fr','zh','ja']){
  const needle=' '+fold(query)+' ';let country='WW',area='';
  for(const camera of cameras){
-  const names=[camera.city,camera.area,...String(camera.aliases||'').split(' ')].map(fold).filter(x=>x.length>=3);
+  const names=[camera.city,camera.area,...String(camera.aliases||'').split(' ')].map(fold).filter(x=>x.length>=2);
   try{names.push(fold(new Intl.DisplayNames([language],{type:'region'}).of(camera.country)))}catch{}
   try{names.push(fold(new Intl.DisplayNames(['en'],{type:'region'}).of(camera.country)))}catch{}
-  if(names.some(n=>needle.includes(' '+n+' '))){country=camera.country;const city=fold(camera.city);if(needle.includes(' '+city+' '))area=camera.city;break}
+  names.push(...regionNames(camera.country,languages));
+  if(names.some(n=>locationNameMatches(query,n))){country=camera.country;const city=fold(camera.city);if(locationNameMatches(query,city))area=camera.city;break}
  }
  return{country,area}
 }

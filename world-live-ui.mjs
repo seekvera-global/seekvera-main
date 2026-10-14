@@ -1,8 +1,8 @@
-import {filterCameras,inferCameraLocation,fold,validCamera,mapUrls,safeSourceUrl,localTime,freshTimestamp} from './world-live-core.mjs';
+import {filterCameras,inferCameraLocation,fold,validCamera,mapUrls,safeSourceUrl,localTime,freshTimestamp,regionNames,locationNameMatches} from './world-live-core.mjs';
 const root=document.getElementById('worldLive');root.setAttribute('data-no-translate','');
 const $=id=>document.getElementById(id),HOST=location.hostname;
 const API=['seekveraglobal.com','www.seekveraglobal.com'].includes(HOST)||HOST.endsWith('workers.dev')?'':'https://seekvera-main.seekvera-global.workers.dev';
-const cache=new Map();let catalogue=[],directories={},source={},reviewed={},labels={},language='',country='WW',selected='',area='',renderSequence=0,selectionSequence=0,controller=null,expiryTimer=0,lastCountry='';
+const cache=new Map();let catalogue=[],directories={},supportedLanguages=['en','ar','fr','zh','ja'],source={},reviewed={},labels={},language='',country='WW',selected='',area='',renderSequence=0,selectionSequence=0,controller=null,expiryTimer=0,lastCountry='';
 const params=new URLSearchParams(location.search);const query=String(params.get('q')||'').slice(0,160);
 function appLanguage(){const selected=String(localStorage.getItem('seekvera_lang')||document.documentElement.lang||navigator.language||'en');return (selected==='auto'?navigator.language||'en':selected).split(/[-_]/)[0]}
 function appCountry(){const value=String(localStorage.getItem('seekvera_country')||'WW').toUpperCase();return value==='WW'||/^[A-Z]{2}$/.test(value)?value:'WW'}
@@ -51,12 +51,12 @@ async function selectCamera(camera){
 }
 function inferInitialCountry(){
  if(/\b(?:worldwide|all countries|the whole world|around the world)\b|كل الدول|كل البلدان|كل العالم|العالم كله|monde entier|todo el mundo|mundo inteiro|weltweit|全世界|所有国家|世界中|전 세계/iu.test(query)){country='WW';area='';return}
- const inferred=inferCameraLocation(catalogue,query,language);if(inferred.country!=='WW'){country=inferred.country;area=inferred.area;return}
- const codes=Object.keys(window.SEEKVERA_LOCALE_R15?.profiles||{});const needle=' '+fold(query)+' ';for(const cc of codes){if(!/^[A-Z]{2}$/.test(cc))continue;const names=[];for(const lang of [language,'en','ar'])try{names.push(fold(new Intl.DisplayNames([lang],{type:'region'}).of(cc)))}catch{}if(names.some(n=>n&&needle.includes(' '+n+' '))){country=cc;return}}
+ const inferred=inferCameraLocation(catalogue,query,language,supportedLanguages);if(inferred.country!=='WW'){country=inferred.country;area=inferred.area;return}
+ const codes=Object.keys(window.SEEKVERA_LOCALE_R15?.profiles||{});const needle=' '+fold(query)+' ';for(const cc of codes){if(!/^[A-Z]{2}$/.test(cc))continue;const names=regionNames(cc,supportedLanguages);if(names.some(n=>locationNameMatches(query,n))){country=cc;return}}
 }
 $('wlCountry').addEventListener('change',()=>{country=$('wlCountry').value;area='';$('wlCity').value='';const before=appCountry();if(window.SEEKVERA_LOCALE_R15?.setCountry){window.SEEKVERA_LOCALE_R15.setCountry(country);if(before===country)render()}else render()});
 let cityTimer=0;$('wlCity').addEventListener('input',()=>{area=$('wlCity').value.trim();clearTimeout(cityTimer);cityTimer=setTimeout(render,180)});$('wlCamera').addEventListener('change',()=>{selected=$('wlCamera').value;render()});$('wlRefresh').addEventListener('click',()=>{const camera=matching().find(c=>c.id===selected);if(camera)selectCamera(camera)});
 window.addEventListener('seekvera:locale-change',()=>{const cc=appCountry();if(cc!==lastCountry){country=cc;area='';$('wlCity').value=''}lastCountry=cc;if(appLanguage()!==language)refreshLocale();else if(Object.keys(labels).length){countryOptions();render()}});
 setInterval(()=>{const camera=catalogue.find(c=>c.id===selected);if(camera&&!$('wlContent').hidden)$('wlTime').textContent=localTime(camera,language)},30000);
 setInterval(()=>{if(document.visibilityState==='visible'&&!$('wlContent').hidden){const camera=matching().find(c=>c.id===selected);if(camera)selectCamera(camera)}},300000);
-try{[source,reviewed]=await Promise.all([json('/data/world-live-ui-source.json'),json('/data/world-live-ui-reviewed.json')]);const [data,dirs]=await Promise.all([json('/data/world-live-cameras.json'),json('/data/world-live-directories.json')]);catalogue=data.cameras.filter(validCamera);directories=dirs.countries;language=appLanguage();country=appCountry();lastCountry=country;inferInitialCountry();$('wlCity').value=area;await refreshLocale()}catch{ $('wlLoading').textContent='⚠'; }
+try{[source,reviewed]=await Promise.all([json('/data/world-live-ui-source.json'),json('/data/world-live-ui-reviewed.json')]);const [data,dirs,manifest]=await Promise.all([json('/data/world-live-cameras.json'),json('/data/world-live-directories.json'),json('/i18n-r32/manifest.json')]);catalogue=data.cameras.filter(validCamera);directories=dirs.countries;supportedLanguages=manifest.languages;language=appLanguage();country=appCountry();lastCountry=country;inferInitialCountry();$('wlCity').value=area;await refreshLocale()}catch{ $('wlLoading').textContent='⚠'; }

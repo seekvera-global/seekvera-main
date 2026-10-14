@@ -8,6 +8,10 @@ assert.equal(cameras.length,15);assert.equal(new Set(cameras.map(c=>c.id)).size,
 for(const value of ['http://www.skylinewebcams.com/','https://www.skylinewebcams.com.evil.example/','https://evil.example/','javascript:alert(1)','https://user:pass@www.earthcam.com/','https://www.earthcam.com:8443/'])assert.equal(safeSourceUrl(value),null);
 assert.equal(filterCameras(cameras,{country:'LB'}).length,1);assert.equal(filterCameras(cameras,{country:'NG'}).length,0);assert.equal(filterCameras(cameras,{area:'بيروت'}).length,1);assert.equal(filterCameras(cameras,{area:'no-such-city'}).length,0);
 assert.equal(inferCameraLocation(cameras,'بدي شوف كاميرات بيروت لايف','بدي شوف لبنان لايف','ar').country,'LB');assert.equal(inferCameraLocation(cameras,'Show live cameras in Tokyo','en').country,'JP');
+assert.equal(inferCameraLocation(cameras,'日本のライブカメラを見たい','en').country,'JP');
+assert.equal(inferCameraLocation(cameras,'打开东京实时摄像','en').country,'JP');
+assert.equal(inferCameraLocation(cameras,'Montre des caméras au Japon','en').country,'JP');
+assert.equal(inferCameraLocation(cameras,'بدي شوف كاميرات بطوكيو','en').country,'JP');
 assert(mapUrls(cameras[0]).embed.startsWith('https://www.openstreetmap.org/export/embed.html?bbox='));assert.equal(mapUrls({...cameras[0],latitude:1000}),null);assert.equal(distanceKm(0,0,0,0),0);assert.equal(localTime(cameras[0],'ar',new Date('2026-10-13T12:00:00Z')).length>0,true);assert.equal(freshTimestamp('2000-01-01'),false);
 const now=Date.now(),camera=cameras[0],feature={id:'test',geometry:{coordinates:[35.5,33.9,10]},properties:{mag:5,time:now-60000,updated:now,url:'https://earthquake.usgs.gov/earthquakes/eventpage/test'}};
 const feed=JSON.stringify({metadata:{generated:now},features:[feature]});assert.equal(usgsEvents(feed,camera,now).length,1);assert.equal(usgsEvents(feed,cameras.find(c=>c.id==='sydney'),now).length,0);

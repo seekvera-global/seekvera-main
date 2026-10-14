@@ -14,6 +14,7 @@ window.SEEKVERA_I18N={t:key=>key==='Try again'?'Réessayer':key};
 const requests=[];
 globalThis.fetch=async(url,options={})=>{
  const u=new URL(url,'https://seekveraglobal.com');requests.push(u.pathname);
+ if(u.pathname==='/i18n-r32/manifest.json')return Response.json(JSON.parse(fs.readFileSync('.'+u.pathname)));
  if(u.pathname.startsWith('/data/')){const path='.'+u.pathname;return fs.existsSync(path)?Response.json(JSON.parse(fs.readFileSync(path))):new Response('missing',{status:404})}
  if(u.pathname.startsWith('/api/world-live/'))return Response.json(u.pathname.endsWith('/status')?{ok:true,camera:u.searchParams.get('camera'),status:'unknown',sourceReachable:true,checkedAt:new Date().toISOString()}:{ok:true,camera:u.searchParams.get('camera'),checkedAt:new Date().toISOString(),expiresAt:new Date(Date.now()+600000).toISOString(),sources:[{name:'USGS',available:true},{name:'GDACS',available:false}],events:[]});
  if(u.pathname==='/api/ui-translate')return Response.json({ok:false},{status:503});
