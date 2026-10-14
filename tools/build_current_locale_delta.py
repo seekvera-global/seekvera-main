@@ -1,5 +1,5 @@
 """Incremental current-source translation. Stage every pack; never publish partial output."""
-import argparse,difflib,hashlib,importlib.util,json,re,subprocess,time,urllib.request,urllib.error
+import argparse,difflib,hashlib,importlib.util,json,os,re,subprocess,time,urllib.request,urllib.error
 from pathlib import Path
 from babel import Locale
 from bs4 import BeautifulSoup
@@ -33,7 +33,11 @@ def source_inventory():
  old=json.loads((ROOT/'i18n-r32-source.json').read_text())
  spec=importlib.util.spec_from_file_location('base',ROOT/'tools/r35_build_pack.py');b=importlib.util.module_from_spec(spec);spec.loader.exec_module(b)
  b.JS_FILES=[p.name for p in ROOT.glob('*.js') if not p.name.startswith(('worker','i18n','locale'))]
- values=set(old['strings'])|set(b.source_strings())
+ saved_cwd=Path.cwd()
+ try:
+  os.chdir(ROOT)
+  values=set(old['strings'])|set(b.source_strings())
+ finally:os.chdir(saved_cwd)
  games=(ROOT/'games.js').read_text()
  for s in re.findall(r"desc:'([^']+)'",games):b.add(values,s)
  for s in re.findall(r"cat:'([^']+)'",games):b.add(values,s+' games')
@@ -52,6 +56,9 @@ def source_inventory():
      if '${' not in text:b.add(values,text)
  for s in ['All games','Touch controls','Voice','Voice reply','Safety Gate','Back','Page navigation','SEEKVERA quick tools']:
   b.add(values,s)
+ world_live_source=ROOT/'data/world-live-ui-source.json'
+ if world_live_source.exists():
+  for text in json.loads(world_live_source.read_text()).values():b.add(values,text)
  old_set=set(old['strings'])
  values={s for s in values if s in old_set or not re.fullmatch(r'\d{4}-\d\d-\d\d\s*·\s*R\d+',s)}
  return sorted(values,key=lambda s:(len(s),s.lower(),s))
@@ -70,6 +77,10 @@ def suspicious_overlap(source,value):
  if source.startswith('Type a country or city:'):source=source.split(':',1)[0]
  a,b=words(source),words(value)
  return len(a)>=5 and difflib.SequenceMatcher(None,a,b,autojunk=False).find_longest_match().size>=5
+def script_mismatches(code,translations):
+ tool=ROOT/'tools/audit-candidate-scripts.cjs'
+ result=json.loads(subprocess.check_output(['node',str(tool)],input=json.dumps({code:translations}),text=True,cwd=ROOT))
+ return set(result.get(code,{}).get('sources',[]))
 def translate(language,strings):
  if not ALLOWED_PUBLIC_STRINGS or any(x not in ALLOWED_PUBLIC_STRINGS for x in strings):raise RuntimeError('Only verified public UI source strings may be sent to the project translation service')
  payload=json.dumps({'language':language,'strings':strings},ensure_ascii=False).encode()
@@ -97,7 +108,7 @@ def translate_small(language,strings):
   a,ap=translate_small(language,strings[:mid]);b,bp=translate_small(language,strings[mid:]);return a+b,ap if ap==bp else ap+'+'+bp
 def main():
  global ALLOWED_PUBLIC_STRINGS
- ap=argparse.ArgumentParser();ap.add_argument('--languages');ap.add_argument('--stage',default=str(ROOT.parent/'locale-stage'));ap.add_argument('--inventory-only',action='store_true');ap.add_argument('--shard');ap.add_argument('--retranslate',default='');ap.add_argument('--verify-public-only',action='store_true');args=ap.parse_args()
+ ap=argparse.ArgumentParser();ap.add_argument('--languages');ap.add_argument('--batch-size',type=int,default=16,choices=range(1,21));ap.add_argument('--stage',default=str(ROOT.parent/'locale-stage'));ap.add_argument('--inventory-only',action='store_true');ap.add_argument('--shard');ap.add_argument('--retranslate',default='');ap.add_argument('--verify-public-only',action='store_true');args=ap.parse_args()
  source=source_inventory();old=json.loads((ROOT/'i18n-r32-source.json').read_text());delta=[s for s in source if s not in old['strings']]
  stage=Path(args.stage);stage.mkdir(parents=True,exist_ok=True)
  source_hash=hashlib.sha256('\n'.join(source).encode()).hexdigest()[:16]
@@ -122,12 +133,14 @@ def main():
   out=stage/(code+'.json')
   if out.exists():
    data=json.loads(out.read_text())
-   if code not in args.retranslate.split(',') and data.get('sourceHash')==source_hash and all(data.get('translations',{}).get(k) for k in source) and all(data['translations'].get(k)==v for k,v in reviewed.get(code,{}).items() if k in source) and data.get('qualityPolicy')=='source-overlap-5-v1' and (code=='en' or not any(suspicious_overlap(k,data['translations'][k]) for k in source)):completed.append(code);print('RESUME',code,flush=True);continue
+   if code not in args.retranslate.split(',') and data.get('sourceHash')==source_hash and all(data.get('translations',{}).get(k) for k in source) and all(data['translations'].get(k)==v for k,v in reviewed.get(code,{}).items() if k in source) and data.get('qualityPolicy')=='source-overlap-5-v1' and (code=='en' or not any(suspicious_overlap(k,data['translations'][k]) for k in source)) and not script_mismatches(code,data['translations']):completed.append(code);print('RESUME',code,flush=True);continue
   base=json.loads((ROOT/'i18n-r32'/f'{code}.json').read_text());trans=base['translations'];providers=set();retranslated=set()
   if out.exists():
    saved=json.loads(out.read_text())
    if saved.get('language')==code and saved.get('qualityPolicy')=='source-overlap-5-v1':trans.update(saved.get('translations',{}));retranslated.update(saved.get('retranslatedKeys',[]))
   trans.update(reviewed.get(code,{}))
+  for key in source:
+   if key=='SV-YYYYMMDD-XXXXXXXX':trans[key]=key
   folded={canonical(k).casefold():v for k,v in trans.items()}
   for key,value in list(trans.items()):
    if key and not key[0].isalnum():
@@ -136,11 +149,12 @@ def main():
     if plain and translated:folded.setdefault(canonical(plain).casefold(),translated)
   for key in source:
    if key not in trans and canonical(key).casefold() in folded:trans[key]=folded[canonical(key).casefold()]
-  missing=[k for k in source if not trans.get(k) or (code!='en' and suspicious_overlap(k,trans[k])) or (code in args.retranslate.split(',') and k not in retranslated and len(re.findall(r'[A-Za-z]+',k))>=3 and not re.search(r'[{}<>;]|https?://',k))]
+  wrong_script=script_mismatches(code,trans)
+  missing=[k for k in source if k in wrong_script or not trans.get(k) or (code!='en' and suspicious_overlap(k,trans[k])) or (code in args.retranslate.split(',') and k not in retranslated and len(re.findall(r'[A-Za-z]+',k))>=3 and not re.search(r'[{}<>;]|https?://',k))]
   if code=='en':trans.update({k:k for k in source});missing=[]
   try:
-   for start in range(0,len(missing),16):
-    batch=missing[start:start+16];vals,provider=translate_small(translation_language_name(code),batch)
+   for start in range(0,len(missing),args.batch_size):
+    batch=missing[start:start+args.batch_size];vals,provider=translate_small(translation_language_name(code),batch)
     trans.update(dict(zip(batch,vals)));providers.add(provider);retranslated.update(batch)
     print('DELTA_BATCH',code,start+len(batch),len(missing),provider,flush=True)
     # Persist a resumable successful prefix even if a later provider call fails.
@@ -148,6 +162,7 @@ def main():
     time.sleep(.3)
    assert all(trans.get(k) for k in source),code
    assert code=='en' or not any(suspicious_overlap(k,trans[k]) for k in source),code
+   assert not script_mismatches(code,trans),'Wrong target script remains in '+code
    atomic_json(out,{'version':VERSION,'sourceHash':source_hash,'language':code,'count':len(source),'qualityPolicy':'source-overlap-5-v1','retranslatedKeys':sorted(retranslated),'provider':'existing+'+'+'.join(sorted(providers)),'translations':{k:trans[k] for k in source}})
    completed.append(code);print('COMPLETE_PACK',code,len(source),flush=True)
   except Exception as e:

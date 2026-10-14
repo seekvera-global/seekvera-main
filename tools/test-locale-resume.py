@@ -13,7 +13,7 @@ class ResumeTests(unittest.TestCase):
    def translate(*args):
     if fail:raise RuntimeError('all_translation_backends_unavailable')
     return ['Une phrase publique de l’interface.'],'test-provider'
-   with patch.object(builder,'ROOT',root),patch.object(builder,'source_inventory',lambda:[source]),patch.object(builder,'reviewed_labels',lambda:{}),patch.object(builder,'translate_small',translate),patch.object(builder.time,'sleep',lambda _:None),patch('sys.argv',['builder','--stage',str(stage)]),contextlib.redirect_stdout(io.StringIO()):code=builder.main()
+   with patch.object(builder,'ROOT',root),patch.object(builder,'source_inventory',lambda:[source]),patch.object(builder,'reviewed_labels',lambda:{}),patch.object(builder,'script_mismatches',lambda code,translations:set()),patch.object(builder,'translate_small',translate),patch.object(builder.time,'sleep',lambda _:None),patch('sys.argv',['builder','--stage',str(stage)]),contextlib.redirect_stdout(io.StringIO()):code=builder.main()
    return code,json.loads((stage/'progress.json').read_text())
  def test_provider_failure_is_nonzero_and_preserved(self):
   code,progress=self.run_build(True);self.assertEqual(code,1);self.assertEqual(progress['failures'][0]['language'],'fr');self.assertFalse(progress['finalApproval'])

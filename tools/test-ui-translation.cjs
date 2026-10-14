@@ -15,6 +15,8 @@ assert.equal(parse(['ޖަވާބު'],['Reply'],'Sinhala'),null);
 for(const language of ['Tamil','Telugu','Malayalam','Punjabi','Gujarati','Lao','Burmese','Khmer','Georgian','Armenian','Greek','Hebrew','Dzongkha'])assert.equal(parse(['Bonjour'],['Hello'],language),null);
 assert.equal(parse(['Hallo {other}'],['Hello {name}'],'German'),null);
 assert(parse(['Hallo {name}'],['Hello {name}'],'German'));
+assert(parse(['SV-YYYYMMDD-XXXXXXXX'],['SV-YYYYMMDD-XXXXXXXX'],'Dhivehi'));
+assert.equal(parse(['SV-YYYYMMDD-XXXXXXXXX'],['SV-YYYYMMDD-XXXXXXXX'],'French'),null);
 for(const value of ['',null,123,'x'.repeat(800),'<img src=x onerror=x>'])assert.equal(parse([value],['Hello'],'French'),null);
 assert.equal(parse(['Bonjour','Salut'],['Hello'],'French'),null);
 assert.equal(ctx.parseUiTranslations('not JSON',['Hello'],'French'),null);
