@@ -242,14 +242,21 @@ function unlockTTS(){prepareServerAudio();if(!hasTTS())return;try{speechSynthesi
 function enableVoiceConversation(){voiceConversation=true;voiceReplyDeadline=Date.now()+90000;muted=false;localStorage.setItem('seekvera_voice_muted','0');localStorage.setItem('seekvera_voice_mode','1');updateSpeakerButtons();unlockTTS()}
 async function serverSpeak(text,loc,token,emitEnd=true){const spoken=cleanSpeech(text).slice(0,190);if(!spoken||token!==speakToken||muted)return false;try{prepareServerAudio();const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),15000),r=await fetch(apiBase()+'/api/tts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text:spoken,language:String(loc||'auto')}),signal:ctl.signal,cache:'no-store'}).finally(()=>clearTimeout(to));if(!r.ok)return false;const buf=await r.arrayBuffer();if(!buf.byteLength||token!==speakToken)return false;if(prepareServerAudio()&&serverAudioCtx){try{await serverAudioCtx.resume();if(serverAudioCtx.state!=='running')throw Error('Audio playback is blocked');const audio=await serverAudioCtx.decodeAudioData(buf.slice(0));if(token!==speakToken)return false;return await new Promise(resolve=>{serverAudioSource=serverAudioCtx.createBufferSource();serverAudioSource.buffer=audio;serverAudioSource.connect(serverAudioCtx.destination);serverAudioSource.onended=()=>{serverAudioSource=null;if(token===speakToken&&emitEnd){voiceConversation=false;window.dispatchEvent(new CustomEvent('seekvera:tts-end',{detail:{language:loc,engine:'server'}}))}resolve(true)};window.dispatchEvent(new CustomEvent('seekvera:tts-start',{detail:{language:loc,engine:'server'}}));serverAudioSource.start(0)})}catch(_){}}
 const blob=new Blob([buf],{type:r.headers.get('content-type')||'audio/mpeg'});serverAudioUrl=URL.createObjectURL(blob);serverAudioEl=new Audio(serverAudioUrl);serverAudioEl.preload='auto';return await new Promise(async resolve=>{let began=false;serverAudioEl.onplaying=()=>{began=true;window.dispatchEvent(new CustomEvent('seekvera:tts-start',{detail:{language:loc,engine:'server-audio'}}))};serverAudioEl.onended=()=>{if(token===speakToken&&emitEnd){voiceConversation=false;window.dispatchEvent(new CustomEvent('seekvera:tts-end',{detail:{language:loc,engine:'server-audio'}}))}stopServerAudio();resolve(true)};serverAudioEl.onerror=()=>{stopServerAudio();resolve(false)};try{await serverAudioEl.play()}catch(_){resolve(false)}})}catch(_){return false}}
+function voicePlaybackFailed(token){
+  if(token!==speakToken||muted)return;
+  voiceConversation=false;voiceReplyDeadline=0;
+  const input=document.getElementById('aiChatInput');
+  if(input)setVoicePlaceholder(input,'Audio could not play. Tap the speaker to retry.');
+  window.dispatchEvent(new CustomEvent('seekvera:tts-error',{detail:{reason:'playback_failed'}}))
+}
 function nativeSpeak(chunks,token){
-  if(!hasTTS())return false;
+  if(!hasTTS()||!pickVoice(lastLocale))return false;
   let anyStarted=false,failedOver=false,watchdog=0;
   const fallback=()=>{
     if(failedOver||anyStarted||token!==speakToken||muted)return;
     failedOver=true;clearTimeout(watchdog);
     try{speechSynthesis.cancel();speechSynthesis.resume()}catch(_){}
-    serverSpeakSequence(chunks,lastLocale,token)
+    serverSpeakSequence(chunks,lastLocale,token).then(result=>{if(!result.ok)voicePlaybackFailed(token)})
   };
   const arm=()=>{clearTimeout(watchdog);watchdog=setTimeout(fallback,/Android/i.test(navigator.userAgent)?1900:3200)};
   try{speechSynthesis.cancel();speechSynthesis.resume();speechSynthesis.getVoices?.()}catch(_){}
@@ -307,10 +314,7 @@ function speak(text,l,force=false){
   serverSpeakSequence(chunks,lastLocale,token).then(result=>{
     if(result.ok||token!==speakToken||muted)return;
     if(!nativeSpeak(chunks.slice(result.nextIndex),token)){
-      voiceConversation=false;
-      const input=document.getElementById('aiChatInput');
-      if(input)setVoicePlaceholder(input,'Audio could not play. Tap the speaker to retry.');
-      window.dispatchEvent(new CustomEvent('seekvera:tts-error',{detail:{reason:'playback_failed'}}))
+      voicePlaybackFailed(token)
     }
   })
 }

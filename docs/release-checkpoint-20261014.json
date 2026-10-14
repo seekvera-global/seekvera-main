@@ -1,0 +1,55 @@
+{
+  "checkedAt": "2026-10-14T00:43:37.236805+00:00",
+  "finalApproval": false,
+  "status": "NO-GO for complete app release",
+  "productionFixes": [
+    "Reject wrong-script translations and preserve reference formats",
+    "Truthful locale-resume exit codes and script screening",
+    "Resume audio after the failed chunk without replaying completed chunks",
+    "Use same-origin ASR model and WASM proxies",
+    "Refuse an unrelated native voice and report playback failure",
+    "Restrict current production workflows to main"
+  ],
+  "liveEvidence": {
+    "arabicAI": "passed with English UI",
+    "syntheticArabicTTS": "HTTP 200, playable MP3, 2.256 seconds",
+    "syntheticArabicASR": "HTTP 200, Arabic detected with Icelandic UI hint; transcription had a word error",
+    "currentReleaseAndAudioPipelines": "passed",
+    "physicalAudioCertified": false
+  },
+  "localeCandidates": {
+    "sourceHash": "6a1126e6a2ce5629",
+    "structuralCompleteCount": 97,
+    "structuralRemaining": [
+      "dv"
+    ],
+    "remainingTranslationFailures": "Dhivehi long strings still rejected by all three translation backends; Google fallback returned HTTP 429",
+    "punjabiScriptRepair": "saved; remaining technical-reference format normalized",
+    "allPacksPublished": false,
+    "linguisticAccuracyCertified": false
+  },
+  "worldLive": {
+    "branch": "feature/world-live",
+    "pullRequest": 8,
+    "cameraLocations": 15,
+    "countryDirectories": 69,
+    "reviewedLanguages": [
+      "en",
+      "ar",
+      "fr"
+    ],
+    "newSourceKeys": 36,
+    "unitWorkerAndDOMInteractionChecks": "passed locally; original staged CI passed; refreshed DOM CI pending",
+    "browserLayoutCertified": false,
+    "physicalAudioCertified": false,
+    "currentlyPublished": false,
+    "legacyBranchDeployment": "Main was restored and branch guard corrected"
+  },
+  "blockers": [
+    "Complete and review all current UI translations, including World Live source strings",
+    "Verify browser layout and physical microphone/speaker behavior on Android, iPhone, iPad and desktop",
+    "Connect and activate an eligible merchant checkout account; current seller page saves requests without taking payment"
+  ],
+  "paymentEvidence": "Current seller-plans.html states Payment is not active; no charge was made.",
+  "automationScope": "Hourly GitHub workflow resumes and audits locale candidates, saves prefixes, and fails incomplete audits. It does not guarantee full app completion or merchant activation."
+}

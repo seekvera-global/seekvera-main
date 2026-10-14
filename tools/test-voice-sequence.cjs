@@ -13,3 +13,10 @@ const calls=[];const context={speakToken:1,muted:false,serverSpeak:async(text,lo
  assert(source.includes('nativeSpeak(chunks.slice(result.nextIndex),token)'));assert(!source.includes('serverSpeak(lastAnswer,lastLocale,token,true)'));
  console.log('PASS: a failed audio chunk resumes at that chunk; already spoken sentences are not replayed; completion occurs once; cancelled turns do not play.');
 })().catch(e=>{console.error(e);process.exitCode=1});
+
+const ctx={speakToken:1,muted:false,voiceConversation:true,voiceReplyDeadline:90000,document:{getElementById:()=>({})},setVoicePlaceholder:(_,value)=>ctx.placeholder=value,CustomEvent,window:{dispatchEvent:event=>ctx.event=event},hasTTS:()=>true,pickVoice:()=>null,lastLocale:'dv-MV'};
+vm.createContext(ctx);vm.runInContext(source.slice(source.indexOf('function voicePlaybackFailed('),source.indexOf('async function serverSpeakSequence(')),ctx);
+assert.equal(ctx.nativeSpeak(['text'],1),false,'never synthesize with an unrelated default-language voice');
+ctx.voicePlaybackFailed(1);assert.equal(ctx.voiceConversation,false);assert.equal(ctx.voiceReplyDeadline,0);assert.equal(ctx.event.type,'seekvera:tts-error');assert.match(ctx.placeholder,/speaker/);
+ctx.event=null;ctx.voicePlaybackFailed(0);assert.equal(ctx.event,null,'cancelled turns must not report an error on the new turn');
+console.log('PASS: unsupported native language refuses a default voice; playback failure clears pending state and emits a retryable error.');
