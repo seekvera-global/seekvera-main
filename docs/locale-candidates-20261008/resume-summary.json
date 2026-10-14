@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-13T23:47:56.761674+00:00",
+  "checkedAt": "2026-10-14T00:52:57.080053+00:00",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -112,6 +112,9 @@
   "scriptWarnings": {
     "ar": {
       "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
       "examples": [
         {
           "source": "SV-YYYYMMDD-XXXXXXXX",
@@ -119,8 +122,23 @@
         }
       ]
     },
+    "fr": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-AAAAMMJJ-XXXXXXXX"
+        }
+      ]
+    },
     "zh": {
       "count": 1,
+      "sources": [
+        "© SEEKVERA ·"
+      ],
       "examples": [
         {
           "source": "© SEEKVERA ·",
@@ -128,8 +146,24 @@
         }
       ]
     },
+    "es": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-AAAAMMDD-XXXXXXX"
+        }
+      ]
+    },
     "hi": {
       "count": 2,
+      "sources": [
+        "SEEKVERA —",
+        "© SEEKVERA ·"
+      ],
       "examples": [
         {
           "source": "SEEKVERA —",
@@ -141,8 +175,61 @@
         }
       ]
     },
+    "pt": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-AAAAMMDD-XXXXXXX"
+        }
+      ]
+    },
+    "de": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-JJJJMMTT-XXXXXXXX"
+        }
+      ]
+    },
+    "tr": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYAMMDD-XXXXXXXX"
+        }
+      ]
+    },
+    "ru": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-ГГГГММДД-XXXXXXXX"
+        }
+      ]
+    },
     "ur": {
       "count": 3,
+      "sources": [
+        "REAL 3D BUILD",
+        "2026-09-26 · R74",
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
       "examples": [
         {
           "source": "REAL 3D BUILD",
@@ -160,6 +247,10 @@
     },
     "bn": {
       "count": 2,
+      "sources": [
+        "Message SEEKVERA AI…",
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
       "examples": [
         {
           "source": "Message SEEKVERA AI…",
@@ -171,8 +262,50 @@
         }
       ]
     },
+    "vi": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXX"
+        }
+      ]
+    },
+    "it": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-AAAAMMGG-XXXXXXX"
+        }
+      ]
+    },
+    "sw": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
     "fa": {
       "count": 4,
+      "sources": [
+        "Open QR →",
+        "2026-09-26 · R74",
+        "SV-YYYYMMDD-XXXXXXXX",
+        "📰 SEEKVERA NEWS & MEDIA"
+      ],
       "examples": [
         {
           "source": "Open QR →",
@@ -192,8 +325,100 @@
         }
       ]
     },
+    "pl": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-RRRRMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "nl": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-JJJJMMDD-XXXXXXX"
+        }
+      ]
+    },
+    "ms": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "fil": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "ha": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "yo": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "ig": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
     "am": {
-      "count": 5,
+      "count": 6,
+      "sources": [
+        "Open QR →",
+        "Find Wi-Fi →",
+        "✨ Ask SEEKVERA AI",
+        "Speak to SEEKVERA AI",
+        "SV-YYYYMMDD-XXXXXXXX",
+        "Share and install SEEKVERA"
+      ],
       "examples": [
         {
           "source": "Open QR →",
@@ -212,13 +437,16 @@
           "value": "SEEKVERA AI"
         },
         {
-          "source": "Share and install SEEKVERA",
-          "value": "SEEKVERA"
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "ኤስቪ-አአአአህህወ-XXXXXXXXX"
         }
       ]
     },
     "he": {
       "count": 1,
+      "sources": [
+        "📰 SEEKVERA NEWS & MEDIA"
+      ],
       "examples": [
         {
           "source": "📰 SEEKVERA NEWS & MEDIA",
@@ -228,6 +456,11 @@
     },
     "el": {
       "count": 3,
+      "sources": [
+        "AI Deal Agent",
+        "2026-09-26 · R74",
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
       "examples": [
         {
           "source": "AI Deal Agent",
@@ -245,6 +478,9 @@
     },
     "uk": {
       "count": 1,
+      "sources": [
+        "2026-09-26 · R74"
+      ],
       "examples": [
         {
           "source": "2026-09-26 · R74",
@@ -252,8 +488,204 @@
         }
       ]
     },
+    "ro": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-AAAAMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "cs": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-RRRRMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "sk": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-RRRRMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "hu": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-ÉÉÉÉHHNN-XXXXXXXX"
+        }
+      ]
+    },
+    "sv": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-ÅÅÅÅMMDD-XXXXXXXX"
+        }
+      ]
+    },
+    "no": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-ÅÅÅÅMMDD-XXXXXXXX"
+        }
+      ]
+    },
+    "da": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-ÅÅÅÅMMDD-XXXXXXXX"
+        }
+      ]
+    },
+    "fi": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-VVVVKKPP-XXXXXXXX"
+        }
+      ]
+    },
+    "bg": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-ГГГГММДД-XXXXXXXX"
+        }
+      ]
+    },
+    "hr": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-GGGGMMDD-XXXXXXXX"
+        }
+      ]
+    },
+    "sr": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "СВ-ГГГГММДД-КСКСКСКСКСКСКСКСКС"
+        }
+      ]
+    },
+    "sl": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-LLLLMMDD-XXXXXXXX"
+        }
+      ]
+    },
+    "lv": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-GGGGMMDD-XXXXXXXX"
+        }
+      ]
+    },
+    "ca": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-AAAAMMDD-XXXXXXXX"
+        }
+      ]
+    },
+    "is": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-ÁÁÁÁMMDD-XXXXXXXX"
+        }
+      ]
+    },
+    "sq": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXXX"
+        }
+      ]
+    },
     "mk": {
       "count": 2,
+      "sources": [
+        "2026-09-26 · R74",
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
       "examples": [
         {
           "source": "2026-09-26 · R74",
@@ -267,6 +699,10 @@
     },
     "ka": {
       "count": 2,
+      "sources": [
+        "SEEKVERA finder",
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
       "examples": [
         {
           "source": "SEEKVERA finder",
@@ -280,6 +716,21 @@
     },
     "hy": {
       "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "az": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
       "examples": [
         {
           "source": "SV-YYYYMMDD-XXXXXXXX",
@@ -289,6 +740,11 @@
     },
     "kk": {
       "count": 3,
+      "sources": [
+        "Open QR →",
+        "2026-09-26 · R74",
+        "Return to SEEKVERA"
+      ],
       "examples": [
         {
           "source": "Open QR →",
@@ -306,6 +762,10 @@
     },
     "ky": {
       "count": 2,
+      "sources": [
+        "Nearby Now",
+        "2026-09-26 · R74"
+      ],
       "examples": [
         {
           "source": "Nearby Now",
@@ -319,6 +779,11 @@
     },
     "tg": {
       "count": 3,
+      "sources": [
+        "2026-09-26 · R74",
+        "SV-YYYYMMDD-XXXXXXXX",
+        "📰 SEEKVERA NEWS & MEDIA"
+      ],
       "examples": [
         {
           "source": "2026-09-26 · R74",
@@ -336,6 +801,10 @@
     },
     "ne": {
       "count": 2,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX",
+        "SEEKVERA • JUNGLE SURVIVOR"
+      ],
       "examples": [
         {
           "source": "SV-YYYYMMDD-XXXXXXXX",
@@ -349,6 +818,11 @@
     },
     "si": {
       "count": 3,
+      "sources": [
+        "SEEKVERA finder",
+        "SEEKVERA • SURVIVAL",
+        "SEEKVERA • JUNGLE SURVIVOR"
+      ],
       "examples": [
         {
           "source": "SEEKVERA finder",
@@ -366,6 +840,10 @@
     },
     "ta": {
       "count": 2,
+      "sources": [
+        "Open QR →",
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
       "examples": [
         {
           "source": "Open QR →",
@@ -379,6 +857,10 @@
     },
     "lo": {
       "count": 2,
+      "sources": [
+        "Paystack",
+        "R9b embedded translation deployment trigger"
+      ],
       "examples": [
         {
           "source": "Paystack",
@@ -392,6 +874,16 @@
     },
     "my": {
       "count": 8,
+      "sources": [
+        "AI VISION",
+        "Open QR →",
+        "Message SEEKVERA AI",
+        "Message SEEKVERA AI…",
+        "SV-YYYYMMDD-XXXXXXXX",
+        "Prohibited on SEEKVERA",
+        "About SEEKVERA — SEEKVERA",
+        "🤝 Owner Control · Zero‑Cost‑First · Safety Gated"
+      ],
       "examples": [
         {
           "source": "AI VISION",
@@ -417,6 +909,9 @@
     },
     "mn": {
       "count": 1,
+      "sources": [
+        "Message SEEKVERA AI…"
+      ],
       "examples": [
         {
           "source": "Message SEEKVERA AI…",
@@ -424,8 +919,50 @@
         }
       ]
     },
+    "zu": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "af": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-JJJJMMDD-XXXXXXXX"
+        }
+      ]
+    },
+    "bs": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-GGGGMMDD-XXXXXXXXX"
+        }
+      ]
+    },
     "dz": {
-      "count": 3,
+      "count": 4,
+      "sources": [
+        "Play inside SEEKVERA",
+        "Search with SEEKVERA",
+        "SV-YYYYMMDD-XXXXXXXX",
+        "Share and install SEEKVERA"
+      ],
       "examples": [
         {
           "source": "Play inside SEEKVERA",
@@ -436,14 +973,125 @@
           "value": "SEEKVERA"
         },
         {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "ཨེསི་ཝི་-ཡ་ཡ་ཡ་ཨེམ་ཨེམ་ཌི་-ཨེགསི་ཨེགསི་ཨེགསི་"
+        },
+        {
           "source": "Share and install SEEKVERA",
           "value": "SEEKVERA"
         }
       ]
     },
-    "dv": {
-      "count": 40,
+    "fo": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
       "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-ÁÁÁÁMMDD-XXXXXXXX"
+        }
+      ]
+    },
+    "kl": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-Ukioq-XXXXXXXX"
+        }
+      ]
+    },
+    "sm": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "to": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-TA'UYMMDD-XXXXXXXX"
+        }
+      ]
+    },
+    "so": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "dv": {
+      "count": 41,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX",
+        "Open matching section",
+        "Pop colorful balloons.",
+        "High-speed night racing.",
+        "Understanding your speech…",
+        "A fast safari obstacle run.",
+        "Fly through open sky gates.",
+        "Fast robot target challenge.",
+        "Survive a dense meteor field.",
+        "Stay sharp on a slippery frozen route.",
+        "Fast flight through narrow cloud lanes.",
+        "Collect glowing fireflies in the forest.",
+        "Collect reactor cells and avoid hazards.",
+        "Easy colorful snake for younger players.",
+        "Grab treasure while avoiding cave rocks.",
+        "Leap rooftop obstacles in a city sprint.",
+        "Read the lane pattern and choose safely.",
+        "Escape temple traps without slowing down.",
+        "Heavy obstacles and a rough canyon track.",
+        "Train reaction speed with bright targets.",
+        "Collect jungle gems before they disappear.",
+        "Gather moon crystals under falling debris.",
+        "Turn, collect energy and avoid your trail.",
+        "Keep the ball bouncing as long as possible.",
+        "Dodge jungle obstacles on a wild rally road.",
+        "Jump fiery rocks and survive the lava trail.",
+        "Tap moving space targets before they vanish.",
+        "Extreme lane switching through laser traffic.",
+        "Jump logs and keep running through the forest.",
+        "Audio could not play. Tap the speaker to retry.",
+        "A jungle version of the classic snake challenge.",
+        "Voice recognition is not supported in this browser.",
+        "Take or upload a product or object photo. Safety Gate runs first.",
+        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
+        "No approved listings match this search yet. You can post the first one.",
+        "I could not understand that audio yet — tap the microphone and try again.",
+        "Your guide will appear here. Enter any destination anywhere in the world.",
+        "No fake metrics are shown. Sign in to query your actual Deal Agent records.",
+        "Enter the ad reference and request a promotion. No charge will be taken now.",
+        "New ads are moderated before they appear publicly. Featured placement is available separately.",
+        "Visual search is temporarily unavailable. Your image was not published or stored by this page."
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "އެސްވީ-ވައިވައިވައިއެމްއެމްޑީޑީ-އެކްސްއެކްސްއެކްސްއެކްސްއެކްސްއެކްސްއެކްސް"
+        },
         {
           "source": "Open matching section",
           "value": "විරෝධී කොටස පිට කරන්න"
@@ -459,15 +1107,63 @@
         {
           "source": "Understanding your speech…",
           "value": "ඔබගේ බෝක් විසින් අවබෝධ කරවන්න."
-        },
+        }
+      ]
+    },
+    "mt": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
         {
-          "source": "A fast safari obstacle run.",
-          "value": "ත්වර සැෆාරි ප්‍රතිසඵුට රැස් කරන්න."
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-SSSSMMJJ-XXXXXXXX"
+        }
+      ]
+    },
+    "mg": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "eu": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-AAAAMMDD-XXXXXXXX"
+        }
+      ]
+    },
+    "gl": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-AAAAMMDD-XXXXXXXX"
         }
       ]
     },
     "te": {
       "count": 2,
+      "sources": [
+        "Open QR →",
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
       "examples": [
         {
           "source": "Open QR →",
@@ -481,6 +1177,9 @@
     },
     "ml": {
       "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
       "examples": [
         {
           "source": "SV-YYYYMMDD-XXXXXXXX",
@@ -490,6 +1189,9 @@
     },
     "mr": {
       "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
       "examples": [
         {
           "source": "SV-YYYYMMDD-XXXXXXXX",
@@ -499,6 +1201,11 @@
     },
     "gu": {
       "count": 3,
+      "sources": [
+        "SEEKVERA GUIDE",
+        "2026-09-26 · R74",
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
       "examples": [
         {
           "source": "SEEKVERA GUIDE",
@@ -516,6 +1223,26 @@
     },
     "pa": {
       "count": 18,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX",
+        "Open matching section",
+        "CROSS-BORDER LOGISTICS",
+        "Pop colorful balloons.",
+        "High-speed night racing.",
+        "Understanding your speech…",
+        "A fast safari obstacle run.",
+        "Fly through open sky gates.",
+        "Fast robot target challenge.",
+        "Survive a dense meteor field.",
+        "Tap matching targets quickly.",
+        "React quickly to ninja targets.",
+        "Run a prehistoric jungle trail.",
+        "A faster space paddle challenge.",
+        "A quick superbike lane challenge.",
+        "Catch candy and avoid gray blocks.",
+        "Race across a fast desert highway.",
+        "A dark high-speed runner challenge."
+      ],
       "examples": [
         {
           "source": "SV-YYYYMMDD-XXXXXXXX",
@@ -541,6 +1268,12 @@
     },
     "ps": {
       "count": 4,
+      "sources": [
+        "SEEKVERA —",
+        "Zero‑Cost Mode",
+        "2026-09-26 · R74",
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
       "examples": [
         {
           "source": "SEEKVERA —",
@@ -557,6 +1290,114 @@
         {
           "source": "SV-YYYYMMDD-XXXXXXXX",
           "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "ga": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXX"
+        }
+      ]
+    },
+    "cy": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXX"
+        }
+      ]
+    },
+    "mi": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "fy": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-JJJJMMDD-XXXXXXXX"
+        }
+      ]
+    },
+    "lb": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-JJJJMMDD-XXXXXXXX"
+        }
+      ]
+    },
+    "rm": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-AAAAAAMMD-XXXXXXXX"
+        }
+      ]
+    },
+    "ku": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "st": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD-XXXXXXXXX"
+        }
+      ]
+    },
+    "tn": {
+      "count": 1,
+      "sources": [
+        "SV-YYYYMMDD-XXXXXXXX"
+      ],
+      "examples": [
+        {
+          "source": "SV-YYYYMMDD-XXXXXXXX",
+          "value": "SV-YYYYMMDD (XXXXXXXXXXXXXXX"
         }
       ]
     }
