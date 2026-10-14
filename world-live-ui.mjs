@@ -50,6 +50,7 @@ async function selectCamera(camera){
  expiryTimer=setTimeout(()=>{if(sequence!==selectionSequence)return;$('wlAlertState').textContent=text('alertsUnavailable');$('wlAlertList').replaceChildren()},Math.max(1,Date.parse(alerts.expiresAt)-Date.now()))
 }
 function inferInitialCountry(){
+ if(/\b(?:worldwide|all countries|the whole world|around the world)\b|كل الدول|كل البلدان|كل العالم|العالم كله|monde entier|todo el mundo|mundo inteiro|weltweit|全世界|所有国家|世界中|전 세계/iu.test(query)){country='WW';area='';return}
  const inferred=inferCameraLocation(catalogue,query,language);if(inferred.country!=='WW'){country=inferred.country;area=inferred.area;return}
  const codes=Object.keys(window.SEEKVERA_LOCALE_R15?.profiles||{});const needle=' '+fold(query)+' ';for(const cc of codes){if(!/^[A-Z]{2}$/.test(cc))continue;const names=[];for(const lang of [language,'en','ar'])try{names.push(fold(new Intl.DisplayNames([lang],{type:'region'}).of(cc)))}catch{}if(names.some(n=>n&&needle.includes(' '+n+' '))){country=cc;return}}
 }
