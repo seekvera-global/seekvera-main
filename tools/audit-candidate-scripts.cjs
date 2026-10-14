@@ -1,6 +1,6 @@
 // Script screening shares the production validator; never linguistic certification.
 const fs=require('fs'),vm=require('vm');
-const source=fs.readFileSync(process.env.WORKER_VALIDATOR_SOURCE||'worker.js','utf8'),ctx={};vm.createContext(ctx);vm.runInContext(source.slice(source.indexOf('function uiLanguage('),source.indexOf('export default{async fetch')),ctx);
+const source=fs.readFileSync(process.env.WORKER_VALIDATOR_SOURCE||'worker.js','utf8'),ctx={};vm.createContext(ctx);vm.runInContext(`${source.slice(source.indexOf('function uiLanguage('),source.indexOf('export default{async fetch'))}\nthis.uiScriptPattern=uiScriptPattern;`,ctx);
 let input='';process.stdin.setEncoding('utf8');process.stdin.on('data',s=>input+=s);process.stdin.on('end',()=>{
  const packs=JSON.parse(input),issues={};
  for(const [code,values] of Object.entries(packs)){
