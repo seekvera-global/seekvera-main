@@ -35,7 +35,7 @@ jobs:
       - run: python -m pip install Babel==2.18.0 beautifulsoup4==4.15.0
       - name: Use current audited resume tools
         run: |
-          git fetch origin main
+          git fetch origin main:refs/remotes/origin/main
           git show origin/main:worker.js > /tmp/seekvera-validation-worker.js
           for file in tools/build_current_locale_delta.py tools/audit_locale_candidates.py tools/audit-candidate-scripts.cjs; do
             git show "origin/main:$file" > "$file"
