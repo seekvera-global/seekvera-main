@@ -3,6 +3,12 @@ on:
   schedule:
     - cron: '15 * * * *'
   workflow_dispatch:
+    inputs:
+      run_translations:
+        description: 'Run translations against production AI quota (manual only)'
+        type: boolean
+        required: false
+        default: false
   push:
     branches: [main]
     paths: [.github/workflows/r125-hourly-candidate-resume.yml]
@@ -35,6 +41,7 @@ jobs:
             git show "origin/main:$file" > "$file"
           done
       - name: Resume public UI candidates
+        if: github.event_name == 'workflow_dispatch' && inputs.run_translations
         shell: bash
         run: |
           set +e
@@ -42,6 +49,18 @@ jobs:
           code=${PIPESTATUS[0]}
           echo "$code" > docs/locale-candidates-20261008/resume-exit-code.txt
           exit 0
+      - name: Preserve live AI capacity during scheduled checks
+        if: github.event_name != 'workflow_dispatch' || !inputs.run_translations
+        run: |
+          python - <<'PY'
+          import json, datetime
+          from pathlib import Path
+          stage=Path('docs/locale-candidates-20261008')
+          stage.mkdir(parents=True, exist_ok=True)
+          (stage/'resume-exit-code.txt').write_text('not-run')
+          status={'checkedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'mode':'audit-only','translationRequestsSent':0,'reason':'Production speech verification returned HTTP 503: daily free AI allocation exhausted. Background translation now requires explicit manual invocation.','finalApproval':False}
+          (stage/'scheduled-mode.json').write_text(json.dumps(status,indent=2))
+          PY
       - name: Audit all saved candidates
         if: always()
         env:

@@ -14,8 +14,15 @@
     "arabicAI": "passed with English UI",
     "syntheticArabicTTS": "HTTP 200, playable MP3, 2.256 seconds",
     "syntheticArabicASR": "HTTP 200, Arabic detected with Icelandic UI hint; transcription had a word error",
-    "currentReleaseAndAudioPipelines": "passed",
-    "physicalAudioCertified": false
+    "currentReleaseAndAudioPipelines": "Main release passed; latest live audio verification failed",
+    "physicalAudioCertified": false,
+    "latestAudioFailure": {
+      "run": 38491883669,
+      "job": 115618751485,
+      "step": "Verify production asset and multilingual audio",
+      "httpStatus": 503,
+      "reason": "Cloudflare Workers AI daily free allocation of 10,000 neurons exhausted"
+    }
   },
   "localeCandidates": {
     "sourceHash": "6a1126e6a2ce5629",
@@ -26,7 +33,15 @@
     "remainingTranslationFailures": "Dhivehi long strings still rejected by all three translation backends; Google fallback returned HTTP 429",
     "punjabiScriptRepair": "saved; remaining technical-reference format normalized",
     "allPacksPublished": false,
-    "linguisticAccuracyCertified": false
+    "linguisticAccuracyCertified": false,
+    "localRepairCheckpoint": {
+      "improvedKeys": {
+        "dv": 52,
+        "pa": 17
+      },
+      "status": "Saved locally; Git checkpoint interrupted by execution environment disconnection",
+      "published": false
+    }
   },
   "worldLive": {
     "branch": "feature/world-live",
@@ -39,17 +54,23 @@
       "fr"
     ],
     "newSourceKeys": 36,
-    "unitWorkerAndDOMInteractionChecks": "passed locally; original staged CI passed; refreshed DOM CI pending",
+    "unitWorkerAndDOMInteractionChecks": "Passed locally and in refreshed staged CI run 38492497489",
     "browserLayoutCertified": false,
     "physicalAudioCertified": false,
     "currentlyPublished": false,
     "legacyBranchDeployment": "Main was restored and branch guard corrected"
   },
   "blockers": [
+    "Restore AI capacity: last live speech check returned HTTP 503 after the daily free allocation was exhausted",
     "Complete and review all current UI translations, including World Live source strings",
     "Verify browser layout and physical microphone/speaker behavior on Android, iPhone, iPad and desktop",
     "Connect and activate an eligible merchant checkout account; current seller page saves requests without taking payment"
   ],
   "paymentEvidence": "Current seller-plans.html states Payment is not active; no charge was made.",
-  "automationScope": "Hourly GitHub workflow resumes and audits locale candidates, saves prefixes, and fails incomplete audits. It does not guarantee full app completion or merchant activation."
+  "automationScope": "Hourly workflow audits saved locale candidates without AI calls. Production translation requests require an explicit manual dispatch. Full app completion and merchant activation are not guaranteed.",
+  "executionEnvironment": {
+    "status": "disconnected",
+    "reason": "environment_offline: Environment is not connected",
+    "remainingLocalFileAccess": false
+  }
 }
