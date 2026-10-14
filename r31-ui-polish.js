@@ -28,6 +28,7 @@
     money: "money-insurance.html",
     entertainment: "entertainment.html",
     media: "media.html",
+    worldLive: "world-live.html",
     games: "games.html",
     connectivity: "connectivity.html",
     wifi: "wifi.html",

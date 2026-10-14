@@ -14,6 +14,10 @@ on:
       - 'voice-ai.js'
       - 'sw.js'
       - '*.html'
+      - 'world-live*.mjs'
+      - 'world-live.css'
+      - 'data/world-live*.json'
+      - 'tools/test-world-live.mjs'
       - 'i18n-r32/**'
       - 'wrangler.jsonc'
       - 'tools/test-*.cjs'
@@ -49,6 +53,7 @@ jobs:
           node tools/test-tts-envelope.cjs
           node tools/test-audio-authority.cjs
           node tools/test-voice-sequence.cjs
+          if test -f tools/test-world-live.mjs; then node tools/test-world-live.mjs; fi
           node --check i18n-ui.js
           node tools/test-locale-cognates.cjs
           node tools/test-ui-translation.cjs

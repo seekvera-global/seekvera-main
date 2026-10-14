@@ -1,0 +1,33 @@
+name: World Live staged feature validation
+on:
+  pull_request:
+    paths:
+      - 'world-live*'
+      - 'data/world-live*'
+      - 'worker-r76.js'
+      - 'r31-ui-polish.js'
+      - 'tools/test-world-live.mjs'
+      - '.github/workflows/world-live-validation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check World Live sources and existing voice routes
+        run: |
+          node --check worker-r76.js
+          node --check world-live-core.mjs
+          node --check world-live-api.mjs
+          node --check world-live-ui.mjs
+          node --check r31-ui-polish.js
+          node tools/test-world-live.mjs
+          node tools/test-direct-voice.cjs
+          node tools/test-dialect-voice.cjs
+          node tools/test-audio-authority.cjs
+          node tools/test-voice-sequence.cjs
