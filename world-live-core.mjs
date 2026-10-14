@@ -11,6 +11,7 @@ const regionNameCache=new Map();
 export function locationNameMatches(query,name){const needle=fold(query),label=fold(name);if(!label)return false;if(/[\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af]/u.test(label))return needle.includes(label);if(/[\u0600-\u06ff]/u.test(label))return needle.split(' ').some(word=>word===label||/^[بلفو]/u.test(word)&&word.slice(1)===label);return (' '+needle+' ').includes(' '+label+' ')}
 export function regionNames(country,languages=['en','ar','fr','zh','ja']){const key=country+'|'+languages.join(',');if(regionNameCache.has(key))return regionNameCache.get(key);const names=[];for(const language of languages)try{if(Intl.DisplayNames.supportedLocalesOf([language]).length)names.push(fold(new Intl.DisplayNames([language],{type:'region'}).of(country)))}catch{}regionNameCache.set(key,names);return names}
 export function inferCameraLocation(cameras,query,language='en',languages=[language,'en','ar','fr','zh','ja']){
+ languages=Array.isArray(languages)?languages:[language,'en','ar','fr','zh','ja'];
  const needle=' '+fold(query)+' ';let country='WW',area='';
  for(const camera of cameras){
   const names=[camera.city,camera.area,...String(camera.aliases||'').split(' ')].map(fold).filter(x=>x.length>=2);

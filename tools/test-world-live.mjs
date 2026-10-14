@@ -7,7 +7,7 @@ const cameras=JSON.parse(fs.readFileSync('data/world-live-cameras.json')).camera
 assert.equal(cameras.length,15);assert.equal(new Set(cameras.map(c=>c.id)).size,cameras.length);assert(cameras.every(validCamera));
 for(const value of ['http://www.skylinewebcams.com/','https://www.skylinewebcams.com.evil.example/','https://evil.example/','javascript:alert(1)','https://user:pass@www.earthcam.com/','https://www.earthcam.com:8443/'])assert.equal(safeSourceUrl(value),null);
 assert.equal(filterCameras(cameras,{country:'LB'}).length,1);assert.equal(filterCameras(cameras,{country:'NG'}).length,0);assert.equal(filterCameras(cameras,{area:'بيروت'}).length,1);assert.equal(filterCameras(cameras,{area:'no-such-city'}).length,0);
-assert.equal(inferCameraLocation(cameras,'بدي شوف كاميرات بيروت لايف','بدي شوف لبنان لايف','ar').country,'LB');assert.equal(inferCameraLocation(cameras,'Show live cameras in Tokyo','en').country,'JP');
+assert.equal(inferCameraLocation(cameras,'بدي شوف كاميرات بيروت لايف','ar').country,'LB');assert.equal(inferCameraLocation(cameras,'Show live cameras in Tokyo','en').country,'JP');
 assert.equal(inferCameraLocation(cameras,'日本のライブカメラを見たい','en').country,'JP');
 assert.equal(inferCameraLocation(cameras,'打开东京实时摄像','en').country,'JP');
 assert.equal(inferCameraLocation(cameras,'Montre des caméras au Japon','en').country,'JP');
