@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-15T20:41:46.954286+00:00",
+  "checkedAt": "2026-10-15T21:42:04.609988+00:00",
   "mode": "audit-only",
   "translationRequestsSent": 0,
   "reason": "Production speech verification returned HTTP 503: daily free AI allocation exhausted. Background translation now requires explicit manual invocation.",
