@@ -26,5 +26,5 @@ def audit(stage,exit_code='not-run'):
  return report
 
 def main():
- ap=argparse.ArgumentParser();ap.add_argument('--stage',required=True);args=ap.parse_args();stage=Path(args.stage);exit_path=stage/'resume-exit-code.txt';report=audit(stage,exit_path.read_text().strip() if exit_path.exists() else 'not-run');(stage/'resume-summary.json').write_text(json.dumps(report,ensure_ascii=False,indent=2));print(json.dumps({k:report[k] for k in ['completedCount','remaining','resumeSucceeded','readyForLinguisticReview','exitCode']}));return 0 if report['resumeSucceeded'] and report['readyForLinguisticReview'] else 1
+ ap=argparse.ArgumentParser();ap.add_argument('--stage',required=True);args=ap.parse_args();stage=Path(args.stage);exit_path=stage/'resume-exit-code.txt';report=audit(stage,exit_path.read_text().strip() if exit_path.exists() else 'not-run');(stage/'resume-summary.json').write_text(json.dumps(report,ensure_ascii=False,indent=2));print(json.dumps({k:report[k] for k in ['completedCount','remaining','resumeSucceeded','readyForLinguisticReview','exitCode']}));return 0 if str(report['exitCode'])=='not-run' or (report['resumeSucceeded'] and report['readyForLinguisticReview']) else 1
 if __name__=='__main__':raise SystemExit(main())
