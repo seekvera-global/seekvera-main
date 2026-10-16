@@ -11,7 +11,10 @@ on:
         default: false
   push:
     branches: [main]
-    paths: [.github/workflows/r125-hourly-candidate-resume.yml]
+    paths:
+      - .github/workflows/r125-hourly-candidate-resume.yml
+      - tools/audit_locale_candidates.py
+      - tools/audit-candidate-scripts.cjs
 permissions:
   contents: write
 concurrency:
