@@ -29,6 +29,11 @@ This is an **acceptance plan, not a release certificate**. None of the 20 langua
 
 All 20 already occur in `i18n-r32/manifest.json`. Their presence in the manifest is **not evidence of verified translation quality or working speech recognition and audio**. Keep the remaining language packs intact; do not call them certified or remove them as part of an untested config edit. This list is a practical proposed priority cohort, not an empirical ranking of language populations.
 
+## Non-negotiable cross-section language consistency
+The user confirmed that **every available app section must work in the exact same first-20 language cohort**; a language is not launch-ready if it works only on Home or in AI Chat. Switching language in one place must update and persist the same language throughout **Home, AI Chat, Marketplace/Search, Post Ad, Promotions/Business, properties, vehicles, jobs, services, hotels/travel, education, health, equipment, boats, and every other visible category/page**. Existing section availability may vary by product scope, but no section may silently fall back to English or another UI language while claiming to support the chosen language.
+
+For each of the 20 languages, verify all headings, navigation menus, button labels, input placeholders, errors, filters, listing/posting steps, country and currency labels, category descriptions, confirmations and owner/business flows. Verify spoken and written intent routes into these sections without changing the selected country or UI language unexpectedly. A switch to Arabic must maintain correct RTL layout throughout applicable screens; other languages must preserve appropriate script and layout. Use the same regression suite for **all sections × all 20 languages × supported devices**, record failures per screen and language, and block 100%-ready claims until each passes.
+
 ## Acceptance gate for EACH language
 - [ ] Write free-form chat; correct language in AI's response (no unexpected English or language switching).
 - [ ] Microphone understands normal spoken requests and accents, transcribes words accurately, preserves language without manually selecting it, and works through multiple consecutive turns.
