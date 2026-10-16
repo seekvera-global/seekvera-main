@@ -34,6 +34,26 @@ The user confirmed that **every available app section must work in the exact sam
 
 For each of the 20 languages, verify all headings, navigation menus, button labels, input placeholders, errors, filters, listing/posting steps, country and currency labels, category descriptions, confirmations and owner/business flows. Verify spoken and written intent routes into these sections without changing the selected country or UI language unexpectedly. A switch to Arabic must maintain correct RTL layout throughout applicable screens; other languages must preserve appropriate script and layout. Use the same regression suite for **all sections × all 20 languages × supported devices**, record failures per screen and language, and block 100%-ready claims until each passes.
 
+## Worldwide locations, security and commercial AI: mandatory release gates
+
+**Worldwide and places**
+- Country/location is an independent user choice. An Arabic-speaking visitor in China, or a French-speaking visitor in Nigeria, must still receive responses in the language they actually spoke/typed; location must never forcibly decide chat language.
+- Worldwide mode must not silently default search results to Nigeria. Selecting a specific country must update the relevant state, city/area, country-scoped search, location-aware listings, GPS/map links, currency and visible location labels consistently. A spoken country change is an explicit command, not a side effect of mentioning a country in an ordinary question.
+- Verify real mapped places and categories where available, distinguish real verified results from suggestions, and never invent hotels, addresses, sellers, prices, availability, distances, maps or listings.
+- Verify country and city/area filters, empty-result explanations, and reset to Worldwide across all launch languages and key departments.
+
+**Safety first**
+- Test allowed and prohibited listing submissions, image/text moderation and pending review: blocked ads never become public; legitimate businesses are not accidentally blocked; no bypass around the server-side safety gate.
+- Test private data exposure, secure transport, role-based account access, database row-level security, input validation, spam/rate limiting, complaints/reporting, admin review and safe handling of customer contacts/photos/location. No passwords, OTPs or payment secrets in browser or public source.
+- Make location access opt-in with clear purpose, restrict precise location exposure, and provide safe manual country/city selection when permission is refused.
+- Do not claim payment safety or active checkout until real merchant configuration, server-side webhook verification, refunds/disputes and receipt flows are verified. Keep sponsored/provider links transparent and only use authentic listing data.
+
+**AI that helps users do real business**
+- User types or speaks in a supported launch language -> AI understands goal -> identifies correct category and geographical scope -> opens the right search/listing/Request Anything route -> allows the user to contact a real seller/provider or submit a real request.
+- Test the entire commercial journey (search, filter, ad/post, inquiry, moderation, listing publication, messages or owner contact, and promotion when active). Preserve consent and send external messages only through an authorized integrated channel.
+- AI assists discovery and conversion but cannot promise autonomous customers, paid transactions or new revenue. Unconnected automated email, outreach or payment integrations must be clearly labelled inactive.
+- Each security, geography and sales-flow gate needs a dated result for the deployed version, especially on Android. The release stays **not certified** until actual evidence exists.
+
 ## Acceptance gate for EACH language
 - [ ] Write free-form chat; correct language in AI's response (no unexpected English or language switching).
 - [ ] Microphone understands normal spoken requests and accents, transcribes words accurately, preserves language without manually selecting it, and works through multiple consecutive turns.
