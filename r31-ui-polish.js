@@ -28,6 +28,7 @@
     money: "money-insurance.html",
     entertainment: "entertainment.html",
     media: "media.html",
+    worldLive: "world-live.html",
     games: "games.html",
     connectivity: "connectivity.html",
     wifi: "wifi.html",
@@ -291,7 +292,16 @@
     }
     return best;
   }
+  function worldLiveIntent(message){
+   const s=String(message||'').toLowerCase();
+   if(/\b(?:news|tv|bbc|cnn|aljazeera)\b|أخبار|اخبار|قناة/iu.test(s))return false;
+   const cameras=/webcams?|live cameras?|world live|live view|كاميرات|كاميرا|العالم لايف|كامرات|webcams?|cámaras en vivo|cameras ao vivo|caméras en direct|canlı kamera|ライブカメラ|实时摄像|實時攝像|라이브 카메라|वेबकैम|实时.*直播|直播.*(?:世界|城市)/iu.test(s);
+   const watch=/\b(?:watch|see|show|open|find|view|explore)\b|بدي|بدّي|شوف|شاهد|افتح|ورج|اعرض|montre|regarde|ouvre|voir|muestra|ver|abre|mostre|ver|abra|zeige|ansehen|öffne|göster|izle|aç|見せ|見たい|開いて|看|打开|보여|열어|देख|दिखा/iu.test(s);
+   const placeLive=/(?:watch|see|show|شوف|شاهد|ورج).{0,70}(?:live|لايف|بث مباشر)/iu.test(s);
+   return watch&&(cameras||placeLive)
+  }
   function intent(q) {
+    if (worldLiveIntent(q)) return "worldLive";
     const t = String(q || "").toLowerCase();
     const tests = [
       [
