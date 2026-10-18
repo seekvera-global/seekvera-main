@@ -1,0 +1,122 @@
+{
+  "checkedAt": "2026-10-13T23:57:58.452378+00:00",
+  "scope": "HTTP source-page reachability, not playback or embed permission",
+  "results": [
+    {
+      "id": "beirut",
+      "url": "https://www.skylinewebcams.com/en/webcam/lebanon/beirut/beirut/beirut.html",
+      "httpStatus": 200,
+      "sourceReachable": true,
+      "streamStatus": "unknown"
+    },
+    {
+      "id": "tokyo",
+      "url": "https://www.skylinewebcams.com/en/webcam/japan/kanto/tokyo/tokyo-skyline.html",
+      "httpStatus": 200,
+      "sourceReachable": true,
+      "streamStatus": "unknown"
+    },
+    {
+      "id": "paris",
+      "url": "https://www.skylinewebcams.com/en/webcam/france/ile-de-france/paris/paris-tour-eiffel.html",
+      "httpStatus": 200,
+      "sourceReachable": true,
+      "streamStatus": "unknown"
+    },
+    {
+      "id": "sydney",
+      "url": "https://www.skylinewebcams.com/en/webcam/australia/new-south-wales/sydney/sydney.html",
+      "httpStatus": 200,
+      "sourceReachable": true,
+      "streamStatus": "unknown"
+    },
+    {
+      "id": "shanghai",
+      "url": "https://www.skylinewebcams.com/en/webcam/china/shanghai/shanghai/skyline-of-shanghai.html",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>",
+      "sourceReachable": null,
+      "streamStatus": "unknown",
+      "environmentNetworkBlocked": true
+    },
+    {
+      "id": "rome",
+      "url": "https://www.skylinewebcams.com/en/webcam/italia/lazio/roma/fontana-di-trevi.html",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>",
+      "sourceReachable": null,
+      "streamStatus": "unknown",
+      "environmentNetworkBlocked": true
+    },
+    {
+      "id": "madrid",
+      "url": "https://www.skylinewebcams.com/en/webcam/espana/comunidad-de-madrid/madrid/madrid-plaza-del-callao.html",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>",
+      "sourceReachable": null,
+      "streamStatus": "unknown",
+      "environmentNetworkBlocked": true
+    },
+    {
+      "id": "cusco",
+      "url": "https://www.skylinewebcams.com/en/webcam/peru/cusco/cusco/plaza-mayor.html",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>",
+      "sourceReachable": null,
+      "streamStatus": "unknown",
+      "environmentNetworkBlocked": true
+    },
+    {
+      "id": "cabo",
+      "url": "https://www.skylinewebcams.com/en/webcam/mexico/baja-california-sur/cabo-san-lucas/cabo-san-lucas.html",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>",
+      "sourceReachable": null,
+      "streamStatus": "unknown",
+      "environmentNetworkBlocked": true
+    },
+    {
+      "id": "blackpool",
+      "url": "https://www.skylinewebcams.com/en/webcam/united-kingdom/england/blackpool/blackpool.html",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>",
+      "sourceReachable": null,
+      "streamStatus": "unknown",
+      "environmentNetworkBlocked": true
+    },
+    {
+      "id": "jokulsarlon",
+      "url": "https://www.skylinewebcams.com/en/webcam/iceland/austurland/hofn/jokulsarlon.html",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>",
+      "sourceReachable": null,
+      "streamStatus": "unknown",
+      "environmentNetworkBlocked": true
+    },
+    {
+      "id": "beau-vallon",
+      "url": "https://www.skylinewebcams.com/en/webcam/seychelles/mahe/beau-vallon/beau-vallon-seychelles.html",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>",
+      "sourceReachable": null,
+      "streamStatus": "unknown",
+      "environmentNetworkBlocked": true
+    },
+    {
+      "id": "watamu",
+      "url": "https://www.skylinewebcams.com/en/webcam/kenya/malindi/watamu/watamu-beach.html",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>",
+      "sourceReachable": null,
+      "streamStatus": "unknown",
+      "environmentNetworkBlocked": true
+    },
+    {
+      "id": "cappadocia",
+      "url": "https://www.skylinewebcams.com/en/webcam/turkey/anatolia-region/nevsehir/cappadocia-uchisar.html",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>",
+      "sourceReachable": null,
+      "streamStatus": "unknown",
+      "environmentNetworkBlocked": true
+    },
+    {
+      "id": "times-square",
+      "url": "https://www.earthcam.com/usa/newyork/timessquare/",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>",
+      "sourceReachable": null,
+      "streamStatus": "unknown",
+      "environmentNetworkBlocked": true
+    }
+  ]
+}
