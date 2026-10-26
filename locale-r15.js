@@ -101,18 +101,16 @@ function localizeCurrencyOptions(state){
 let optionLabelRepairObserver=null;
 function watchOptionLabelRepairs(state){
   if(optionLabelRepairObserver)return;
-  const l=$('#lang'),c=$('#currency'),targets=[l,c].filter(Boolean);if(!targets.length)return;
+  const c=$('#currency');if(!c)return;
   let queued=false;
   optionLabelRepairObserver=new MutationObserver(()=>{
     if(queued)return;queued=true;
     queueMicrotask(()=>{
       queued=false;
-      const current=window.SEEKVERA_LOCALE_STATE||state;
-      localizeLanguageOptions(current);
-      localizeCurrencyOptions(current);
+      localizeCurrencyOptions(window.SEEKVERA_LOCALE_STATE||state);
     });
   });
-  for(const target of targets)optionLabelRepairObserver.observe(target,{childList:true,subtree:true,characterData:true});
+  optionLabelRepairObserver.observe(c,{childList:true,subtree:true,characterData:true});
 }
 function applyScope(state){
   const buttons=[...document.querySelectorAll('[data-scope]')];
