@@ -99,16 +99,21 @@ function localizeCurrencyOptions(state){
   }
 }
 let optionLabelRepairObserver=null;
+function repairLateCurrencyLabels(state){
+  const c=$('#currency');if(!c)return;
+  const displayLanguage=(window.SEEKVERA_LOCALE_STATE||state).language;
+  for(const code of Object.keys(CURRENCY_NAME_FALLBACKS.en)){
+    const o=[...c.options].find(option=>String(option.value||'').toUpperCase()===code);
+    if(o&&String(o.textContent||'').trim().toUpperCase()===code)o.textContent=currencyNameFallback(code,displayLanguage);
+  }
+}
 function watchOptionLabelRepairs(state){
   if(optionLabelRepairObserver)return;
   const c=$('#currency');if(!c)return;
   let queued=false;
   optionLabelRepairObserver=new MutationObserver(()=>{
     if(queued)return;queued=true;
-    queueMicrotask(()=>{
-      queued=false;
-      localizeCurrencyOptions(window.SEEKVERA_LOCALE_STATE||state);
-    });
+    queueMicrotask(()=>{queued=false;repairLateCurrencyLabels(state)});
   });
   optionLabelRepairObserver.observe(c,{childList:true,subtree:true,characterData:true});
 }
