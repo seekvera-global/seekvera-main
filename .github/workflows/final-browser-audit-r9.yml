@@ -75,6 +75,7 @@ jobs:
             for(const cc of Object.keys(profiles)) assert(liveCodes.includes(cc),`country option missing ${cc}`);
             let checked=0;
             for(const [cc,prof] of Object.entries(profiles)){
+              console.log('COUNTRY CHECK:',cc);
               await p1.selectOption('#country',cc);
               const state=await p1.evaluate(()=>({
                 country:document.querySelector('#country')?.value,
