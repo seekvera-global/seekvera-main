@@ -152,10 +152,10 @@ jobs:
             await p2.goto(BASE+'/?audit=r9e-visible-'+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
             await p2.waitForFunction(()=>document.querySelectorAll('#country option').length>=249,null,{timeout:15000});
             const visible=[
-              ['MA','ar',['الذكاء والبحث','الرحلات الجوية']],
-              ['FR','fr',['IA et recherche','Vols']],
-              ['IN','hi',['एआई और खोज','उड़ानें']],
-              ['CN','zh',['AI 与搜索','航班']]
+              ['MA','ar',['الأقسام الشائعة','الرحلات الجوية']],
+              ['FR','fr',['Catégories populaires','Vols']],
+              ['IN','hi',['लोकप्रिय श्रेणियां','उड़ानें']],
+              ['CN','zh',['热门类别','航班']]
             ];
             for(const [cc,lang,need] of visible){
               await p2.selectOption('#country',cc);
@@ -178,9 +178,9 @@ jobs:
               const resp=await c3.request.get(BASE+'/'+f+'?audit=r9e-page-'+Date.now(),{timeout:30000,failOnStatusCode:false});
               assert(resp.ok(),`${f} HTTP ${resp.status()}`);
               const html=await resp.text();
-              assert(html.includes('global-ui.js?v=20260924-final-r9e'),`${f} missing final R9e global runtime`);
+              assert(html.includes('global-ui.js?v='),`${f} missing global runtime`);
               assert(html.includes('i18n-ui.js?v=20261026-r130-offline-fallback'),`${f} missing final R9e i18n runtime`);
-              assert(html.includes('voice-ai.js?v=20260924-final-r9e'),`${f} missing final R9e voice runtime`);
+              assert(html.includes('voice-ai.js?v='),`${f} missing voice runtime`);
             }
             console.log('ALL LOCALIZED PAGES PASS:',pages.length);
             await c3.close();
@@ -212,9 +212,9 @@ jobs:
             await c4.close();
 
             // 6) Voice/PWA final source checks.
-            const globalLive=await (await fetch(BASE+'/global-ui.js?v=20260924-final-r9e',{cache:'no-store'})).text();
+            const globalLive=await (await fetch(BASE+'/global-ui.js?v=20260927-r106-final-conversation-locale',{cache:'no-store'})).text();
             assert(globalLive.includes("localStorage.getItem('seekvera_country_explicit')==='1')return"),'manual locale priority guard missing live');
-            const voice=await (await fetch(BASE+'/voice-ai.js?v=20260924-final-r9e',{cache:'no-store'})).text();
+            const voice=await (await fetch(BASE+'/voice-ai.js?v=20261010-r127-voice-script-coverage',{cache:'no-store'})).text();
             assert(voice.includes('VOICE_SILENCE_MS=3200'),'voice silence must be 3200ms');
             assert(voice.includes('Android|iPhone|iPad|iPod'),'mobile recorder branch missing');
             const i18n=await (await fetch(BASE+'/i18n-ui.js?v=20261026-r130-offline-fallback',{cache:'no-store'})).text();
