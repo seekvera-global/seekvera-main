@@ -98,6 +98,22 @@ function localizeCurrencyOptions(state){
     }catch{o.textContent=currencyNameFallback(code,state.language)}
   }
 }
+let optionLabelRepairObserver=null;
+function watchOptionLabelRepairs(state){
+  if(optionLabelRepairObserver)return;
+  const l=$('#lang'),c=$('#currency'),targets=[l,c].filter(Boolean);if(!targets.length)return;
+  let queued=false;
+  optionLabelRepairObserver=new MutationObserver(()=>{
+    if(queued)return;queued=true;
+    queueMicrotask(()=>{
+      queued=false;
+      const current=window.SEEKVERA_LOCALE_STATE||state;
+      localizeLanguageOptions(current);
+      localizeCurrencyOptions(current);
+    });
+  });
+  for(const target of targets)optionLabelRepairObserver.observe(target,{childList:true,subtree:true,characterData:true});
+}
 function applyScope(state){
   const buttons=[...document.querySelectorAll('[data-scope]')];
   for(const b of buttons)b.classList.toggle('active',b.dataset.scope===(state.country==='WW'?'worldwide':'country'));
@@ -153,6 +169,7 @@ function applyState(state,{explicit=true,reason='manual'}={}){
     localizeCountryOptions(state);
     localizeLanguageOptions(state);
     localizeCurrencyOptions(state);
+    watchOptionLabelRepairs(state);
     requestAnimationFrame(()=>requestAnimationFrame(()=>document.documentElement.classList.remove('sv-r15-applying')));
   },80);
   syncing=false;
