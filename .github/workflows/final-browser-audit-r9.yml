@@ -114,7 +114,7 @@ jobs:
             assert.equal(raceState.currency,'MAD','late auto-detect overrode Morocco currency');
             assert.equal(raceState.explicit,'1','Morocco manual choice not marked explicit');
             assert.equal(raceState.stored,'MA','Morocco manual choice not stored');
-            assert(raceState.body.includes('الذكاء والبحث'),'Morocco Arabic AI & Search missing after delayed auto-detect');
+            assert(raceState.body.includes('الأقسام الشائعة'),'Morocco Arabic Popular categories missing after delayed auto-detect');
             assert(raceState.body.includes('الرحلات الجوية'),'Morocco Arabic Flights missing after delayed auto-detect');
             console.log('MANUAL COUNTRY PRIORITY PASS: MA survives delayed US auto-detect');
             await cRace.close();
@@ -220,7 +220,7 @@ jobs:
             const i18n=await (await fetch(BASE+'/i18n-ui.js?v=20261026-r130-offline-fallback',{cache:'no-store'})).text();
             assert(i18n.includes("const VERSION='20261008-runtime-source-coverage'"),'current i18n version missing live');
             assert(i18n.includes('characterData:true'),'translation persistence observer missing live');
-            assert(i18n.includes("'AI & Search':'الذكاء والبحث'"),'offline Arabic AI & Search fallback missing live');
+            assert(i18n.includes("'Popular categories':'الأقسام الشائعة'"),'offline Arabic Popular categories fallback missing live');
             assert(i18n.includes("'Flights':'الرحلات الجوية'"),'offline Arabic Flights fallback missing live');
             const runtime=await (await fetch(BASE+'/r60-runtime-guard.js?v=20260927-r79-full-voice-turn',{cache:'no-store'})).text();
             assert(runtime.includes("serviceWorker.register('/sw.js?v='+RELEASE"),'current service-worker registration missing live');
