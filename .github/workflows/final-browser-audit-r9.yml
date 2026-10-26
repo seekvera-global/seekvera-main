@@ -44,6 +44,24 @@ jobs:
           }));
           assert.equal(Object.keys(profiles).length,248,'expected 248 country/territory profiles');
 
+          // GitHub Pages can publish after this workflow starts. Wait for the
+          // exact locale runtime referenced by the checked-out index before
+          // exercising the live DOM, so deployment propagation is not reported
+          // as an application failure.
+          const localIndex=fs.readFileSync('index.html','utf8');
+          const expectedLocale=localIndex.match(/locale-r15\.js\?v=[^"'<> ]+/)?.[0];
+          assert(expectedLocale,'versioned locale runtime missing from local index');
+          let liveReady=false;
+          for(let attempt=1;attempt<=24;attempt++){
+            try{
+              const html=await (await fetch(BASE+'/?audit=deploy-ready-'+Date.now(),{cache:'no-store'})).text();
+              if(html.includes(expectedLocale)){liveReady=true;break}
+            }catch{}
+            await new Promise(r=>setTimeout(r,10000));
+          }
+          assert(liveReady,`live deployment did not publish ${expectedLocale} within 4 minutes`);
+          console.log('LIVE DEPLOYMENT READY:',expectedLocale);
+
           const browser=await chromium.launch({headless:true});
           try {
             // 1) Select all 248 configured countries/territories one-by-one in the real live UI.
