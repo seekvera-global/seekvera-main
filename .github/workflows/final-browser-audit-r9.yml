@@ -5,6 +5,9 @@ on:
     paths:
       - '.github/workflows/final-browser-audit-r9.yml'
       - 'app.html'
+      - 'index.html'
+      - 'i18n-ui.js'
+      - 'locale-r15.js'
   workflow_dispatch:
 
 permissions:
