@@ -64,8 +64,15 @@ const LANGUAGE_NAME_FALLBACKS={
   ar:{dz:'الدزونخية',kl:'الغرينلاندية'},
   en:{dz:'Dzongkha',kl:'Greenlandic'}
 };
+const CURRENCY_NAME_FALLBACKS={
+  ar:{SLE:'ليون سيراليوني',ZWG:'ذهب زيمبابوي'},
+  en:{SLE:'Sierra Leonean Leone',ZWG:'Zimbabwe Gold'}
+};
 function languageNameFallback(code,displayLanguage){
   return LANGUAGE_NAME_FALLBACKS[normalizeLang(displayLanguage)]?.[code]||LANGUAGE_NAME_FALLBACKS.en[code]||code;
+}
+function currencyNameFallback(code,displayLanguage){
+  return CURRENCY_NAME_FALLBACKS[normalizeLang(displayLanguage)]?.[code]||CURRENCY_NAME_FALLBACKS.en[code]||code;
 }
 function localizeLanguageOptions(state){
   const l=$('#lang');if(!l)return;
@@ -77,6 +84,18 @@ function localizeLanguageOptions(state){
       const rendered=dn?.of(code);
       o.textContent=rendered&&rendered.toLowerCase()!==code?rendered:languageNameFallback(code,state.language);
     }catch{o.textContent=languageNameFallback(code,state.language)}
+  }
+}
+function localizeCurrencyOptions(state){
+  const c=$('#currency');if(!c)return;
+  let dn=null;try{dn=new Intl.DisplayNames([state.language],{type:'currency'})}catch{}
+  for(const o of c.options){
+    const code=String(o.value||'').toUpperCase();
+    if(!code||String(o.textContent||'').trim().toUpperCase()!==code)continue;
+    try{
+      const rendered=dn?.of(code);
+      o.textContent=rendered&&rendered.toUpperCase()!==code?rendered:currencyNameFallback(code,state.language);
+    }catch{o.textContent=currencyNameFallback(code,state.language)}
   }
 }
 function applyScope(state){
@@ -133,6 +152,7 @@ function applyState(state,{explicit=true,reason='manual'}={}){
     setTimeout(()=>{try{window.SEEKVERA_I18N?.schedule?.(0)}catch{}},1200);
     localizeCountryOptions(state);
     localizeLanguageOptions(state);
+    localizeCurrencyOptions(state);
     requestAnimationFrame(()=>requestAnimationFrame(()=>document.documentElement.classList.remove('sv-r15-applying')));
   },80);
   syncing=false;
@@ -183,8 +203,12 @@ document.addEventListener('change',handleChange,true);
 
 function ensureAllLanguageOptions(){
   const l=$('#lang');if(!l)return;
-  let dn=null;try{dn=new Intl.DisplayNames([normalizeLang(document.documentElement.lang||navigator.language||'en')],{type:'language'})}catch{}
-  for(const code of Object.keys(LANG_PRIMARY))ensureOption(l,code,dn?.of(code)||code);
+  const displayLanguage=normalizeLang(document.documentElement.lang||navigator.language||'en');
+  let dn=null;try{dn=new Intl.DisplayNames([displayLanguage],{type:'language'})}catch{}
+  for(const code of Object.keys(LANG_PRIMARY)){
+    const rendered=dn?.of(code);
+    ensureOption(l,code,rendered&&rendered.toLowerCase()!==code?rendered:languageNameFallback(code,displayLanguage));
+  }
 }
 function boot(){ensureAllLanguageOptions();
   // Existing saved selection is reconciled atomically. If there is no explicit selection,
