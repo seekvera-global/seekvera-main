@@ -179,7 +179,7 @@ jobs:
               assert(resp.ok(),`${f} HTTP ${resp.status()}`);
               const html=await resp.text();
               assert(html.includes('global-ui.js?v=20260924-final-r9e'),`${f} missing final R9e global runtime`);
-              assert(html.includes('i18n-ui.js?v=20260924-final-r9e'),`${f} missing final R9e i18n runtime`);
+              assert(html.includes('i18n-ui.js?v=20261026-r130-offline-fallback'),`${f} missing final R9e i18n runtime`);
               assert(html.includes('voice-ai.js?v=20260924-final-r9e'),`${f} missing final R9e voice runtime`);
             }
             console.log('ALL LOCALIZED PAGES PASS:',pages.length);
@@ -217,13 +217,16 @@ jobs:
             const voice=await (await fetch(BASE+'/voice-ai.js?v=20260924-final-r9e',{cache:'no-store'})).text();
             assert(voice.includes('VOICE_SILENCE_MS=3200'),'voice silence must be 3200ms');
             assert(voice.includes('Android|iPhone|iPad|iPod'),'mobile recorder branch missing');
-            const i18n=await (await fetch(BASE+'/i18n-ui.js?v=20260924-final-r9e',{cache:'no-store'})).text();
-            assert(i18n.includes("const VERSION='20260924-final-r9e'"),'R9e i18n version missing live');
+            const i18n=await (await fetch(BASE+'/i18n-ui.js?v=20261026-r130-offline-fallback',{cache:'no-store'})).text();
+            assert(i18n.includes("const VERSION='20261008-runtime-source-coverage'"),'current i18n version missing live');
             assert(i18n.includes('characterData:true'),'translation persistence observer missing live');
-            assert(i18n.includes("serviceWorker.register('sw.js?v=20260924-final-r9e')"),'R9e service-worker registration missing live');
-            assert(i18n.includes('window.__SEEKVERA_R9_QUICK=QUICK'),'primary translation unification missing live');
-            const sw=await (await fetch(BASE+'/sw.js?v=20260924-final-r9e',{cache:'no-store'})).text();
-            assert(sw.includes('seekvera-final-r9e-20260924'),'final R9e service-worker cache missing live');
+            assert(i18n.includes("'AI & Search':'الذكاء والبحث'"),'offline Arabic AI & Search fallback missing live');
+            assert(i18n.includes("'Flights':'الرحلات الجوية'"),'offline Arabic Flights fallback missing live');
+            const runtime=await (await fetch(BASE+'/r60-runtime-guard.js?v=20260927-r79-full-voice-turn',{cache:'no-store'})).text();
+            assert(runtime.includes("serviceWorker.register('/sw.js?v='+RELEASE"),'current service-worker registration missing live');
+            const sw=await (await fetch(BASE+'/sw.js?audit='+Date.now(),{cache:'no-store'})).text();
+            assert(sw.includes("const RELEASE='20260929-r116-universal-language-fast'"),'current service-worker release missing live');
+            assert(sw.includes('caches.delete'),'service-worker stale-cache cleanup missing live');
             console.log('VOICE + PWA CACHE PASS');
           } finally {
             await browser.close();
