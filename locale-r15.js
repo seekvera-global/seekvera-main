@@ -60,13 +60,23 @@ function localizeCountryOptions(state){
     if(/^[A-Z]{2}$/.test(cc)){try{const en=displayRegion(cc,'en'),tr=window.SEEKVERA_I18N?.t?.(en);o.textContent=tr&&tr!==en?tr:(dn?.of(cc)||o.textContent||cc)}catch{}}
   }
 }
+const LANGUAGE_NAME_FALLBACKS={
+  ar:{dz:'الدزونخية',kl:'الغرينلاندية'},
+  en:{dz:'Dzongkha',kl:'Greenlandic'}
+};
+function languageNameFallback(code,displayLanguage){
+  return LANGUAGE_NAME_FALLBACKS[normalizeLang(displayLanguage)]?.[code]||LANGUAGE_NAME_FALLBACKS.en[code]||code;
+}
 function localizeLanguageOptions(state){
   const l=$('#lang');if(!l)return;
   let dn=null;try{dn=new Intl.DisplayNames([state.language],{type:'language'})}catch{}
   for(const o of l.options){
     const code=String(o.value||'').toLowerCase();
     if(code==='auto')continue;
-    if(code)try{o.textContent=dn?.of(code)||o.textContent||code}catch{}
+    if(code)try{
+      const rendered=dn?.of(code);
+      o.textContent=rendered&&rendered.toLowerCase()!==code?rendered:languageNameFallback(code,state.language);
+    }catch{o.textContent=languageNameFallback(code,state.language)}
   }
 }
 function applyScope(state){
