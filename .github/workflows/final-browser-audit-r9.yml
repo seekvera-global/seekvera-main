@@ -215,7 +215,7 @@ jobs:
             const globalLive=await (await fetch(BASE+'/global-ui.js?v=20260927-r106-final-conversation-locale',{cache:'no-store'})).text();
             assert(globalLive.includes("localStorage.getItem('seekvera_country_explicit')==='1')return"),'manual locale priority guard missing live');
             const voice=await (await fetch(BASE+'/voice-ai.js?v=20261010-r127-voice-script-coverage',{cache:'no-store'})).text();
-            assert(voice.includes('VOICE_SILENCE_MS=3200'),'voice silence must be 3200ms');
+            assert(voice.includes('VOICE_SILENCE_MS=1800'),'current voice silence must be 1800ms');
             assert(voice.includes('Android|iPhone|iPad|iPod'),'mobile recorder branch missing');
             const i18n=await (await fetch(BASE+'/i18n-ui.js?v=20261026-r130-offline-fallback',{cache:'no-store'})).text();
             assert(i18n.includes("const VERSION='20261008-runtime-source-coverage'"),'current i18n version missing live');
