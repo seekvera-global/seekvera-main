@@ -74,7 +74,7 @@ jobs:
               assert.equal(state.lsCountry,cc,`${cc} stored country`);
               assert.equal(state.lsLang,prof.language,`${cc} stored language`);
               assert.equal(state.lsCurrency,prof.currency,`${cc} stored currency`);
-              const rtl=['ar','fa','ur','he','ps'].includes(prof.language);
+              const rtl=['ar','fa','ur','he','ps','dv'].includes(prof.language);
               assert.equal(state.dir,rtl?'rtl':'ltr',`${cc} direction`);
               checked++;
             }
