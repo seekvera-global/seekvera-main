@@ -224,7 +224,7 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-10-30T01:57:54+01:00",
+    "checkedAt": "2026-10-30T01:59:09+01:00",
     "candidateCommit": "work/r125-locale-candidates-20261008",
     "completedCount": 97,
     "remainingCount": 1,
@@ -284,7 +284,7 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-10-30T01:57:54+01:00",
+    "checkedAt": "2026-10-30T01:59:09+01:00",
     "mainProvenanceCommit": "9e848e37c00cc05d6f3a8da049f20ccd0e9c3f60",
     "candidateBranchHead": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
     "workflow": {
@@ -324,17 +324,16 @@
         "status": 200,
         "response": "Hello",
         "model": "@cf/meta/llama-3.1-8b-instruct-fast",
-        "ms": 5109
+        "ms": 4488
       },
       "arabic": {
         "status": 200,
         "response": "مرحبا",
-        "model": "@cf/qwen/qwen3-30b-a3b-fp8",
-        "ms": 3858
+        "model": "@cf/meta/llama-3.1-8b-instruct-fast",
+        "ms": 5766
       }
     },
     "safety": {
-      "benignHotelRequest": "allowed",
       "weaponSaleRequest": "blocked",
       "weaponReason": "weapons_or_explosives"
     },
@@ -354,6 +353,12 @@
       "priorAuditLocalizedPages": 44
     },
     "checkoutActive": false,
-    "finalApproval": false
+    "finalApproval": false,
+    "health": {
+      "status": 200,
+      "ok": true,
+      "release": "20261001-r125-dialect-voice-quality",
+      "ms": 12273
+    }
   }
 }
