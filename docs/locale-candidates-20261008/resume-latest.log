@@ -1,29 +1,8 @@
 CURRENT_SOURCE 1118 DELTA 73 6a1126e6a2ce5629
 VERIFIED_PUBLIC_UI_ONLY 69 6a1126e6a2ce5629
-/home/runner/work/seekvera-main/seekvera-main/tools/audit-candidate-scripts.cjs:7
-  const pattern=ctx.uiScriptPattern(code);
-                    ^
-
-TypeError: ctx.uiScriptPattern is not a function
-    at Socket.<anonymous> (/home/runner/work/seekvera-main/seekvera-main/tools/audit-candidate-scripts.cjs:7:21)
-    at Socket.emit (node:events:531:35)
-    at endReadableNT (node:internal/streams/readable:1698:12)
-    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
-
-Node.js v22.23.3
-Traceback (most recent call last):
-  File "/home/runner/work/seekvera-main/seekvera-main/tools/build_current_locale_delta.py", line 182, in <module>
-    if __name__=='__main__':raise SystemExit(main())
-                                             ^^^^^^
-  File "/home/runner/work/seekvera-main/seekvera-main/tools/build_current_locale_delta.py", line 136, in main
-    if code not in args.retranslate.split(',') and data.get('sourceHash')==source_hash and all(data.get('translations',{}).get(k) for k in source) and all(data['translations'].get(k)==v for k,v in reviewed.get(code,{}).items() if k in source) and data.get('qualityPolicy')=='source-overlap-5-v1' and (code=='en' or not any(suspicious_overlap(k,data['translations'][k]) for k in source)) and not script_mismatches(code,data['translations']):completed.append(code);print('RESUME',code,flush=True);continue
-                                                                                                                                                                                                                                                                                                                                                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/seekvera-main/seekvera-main/tools/build_current_locale_delta.py", line 82, in script_mismatches
-    result=json.loads(subprocess.check_output(['node',str(tool)],input=json.dumps({code:translations}),text=True,cwd=ROOT))
-                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/subprocess.py", line 466, in check_output
-    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/subprocess.py", line 571, in run
-    raise CalledProcessError(retcode, process.args,
-subprocess.CalledProcessError: Command '['node', '/home/runner/work/seekvera-main/seekvera-main/tools/audit-candidate-scripts.cjs']' returned non-zero exit status 1.
+SPLIT_RETRY Dhivehi 8 The read operation timed out
+SPLIT_RETRY Dhivehi 4 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Dhivehi 2 HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["
+SPLIT_RETRY Dhivehi 2 The read operation timed out
+DELTA_FAILURE dv HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["workers-ai:@cf/qwen/qwen3-30b-a3b-fp8:unparseable","workers-ai:@cf/google/gemma-4-26b-a4b-it:unparseable","workers-ai:@cf/meta/llama-3.1-8b-instruct-fast:unparseable"]}
+STAGED_ONLY 0 FAILED 1
