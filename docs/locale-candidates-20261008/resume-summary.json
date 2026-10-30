@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-29T23:51:27.276594+00:00",
+  "checkedAt": "2026-10-30T00:07:28.474670+00:00",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -106,7 +106,7 @@
   ],
   "structuralFailures": {
     "dv": [
-      "english_overlap:66"
+      "english_overlap:58"
     ]
   },
   "scriptWarnings": {
@@ -1039,74 +1039,6 @@
         {
           "source": "SV-YYYYMMDD-XXXXXXXX",
           "value": "SV-YYYYMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "dv": {
-      "count": 41,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX",
-        "Open matching section",
-        "Pop colorful balloons.",
-        "High-speed night racing.",
-        "Understanding your speech…",
-        "A fast safari obstacle run.",
-        "Fly through open sky gates.",
-        "Fast robot target challenge.",
-        "Survive a dense meteor field.",
-        "Stay sharp on a slippery frozen route.",
-        "Fast flight through narrow cloud lanes.",
-        "Collect glowing fireflies in the forest.",
-        "Collect reactor cells and avoid hazards.",
-        "Easy colorful snake for younger players.",
-        "Grab treasure while avoiding cave rocks.",
-        "Leap rooftop obstacles in a city sprint.",
-        "Read the lane pattern and choose safely.",
-        "Escape temple traps without slowing down.",
-        "Heavy obstacles and a rough canyon track.",
-        "Train reaction speed with bright targets.",
-        "Collect jungle gems before they disappear.",
-        "Gather moon crystals under falling debris.",
-        "Turn, collect energy and avoid your trail.",
-        "Keep the ball bouncing as long as possible.",
-        "Dodge jungle obstacles on a wild rally road.",
-        "Jump fiery rocks and survive the lava trail.",
-        "Tap moving space targets before they vanish.",
-        "Extreme lane switching through laser traffic.",
-        "Jump logs and keep running through the forest.",
-        "Audio could not play. Tap the speaker to retry.",
-        "A jungle version of the classic snake challenge.",
-        "Voice recognition is not supported in this browser.",
-        "Take or upload a product or object photo. Safety Gate runs first.",
-        "30 days, up to 8 images, standard placement. Paid boosts are optional.",
-        "No approved listings match this search yet. You can post the first one.",
-        "I could not understand that audio yet — tap the microphone and try again.",
-        "Your guide will appear here. Enter any destination anywhere in the world.",
-        "No fake metrics are shown. Sign in to query your actual Deal Agent records.",
-        "Enter the ad reference and request a promotion. No charge will be taken now.",
-        "New ads are moderated before they appear publicly. Featured placement is available separately.",
-        "Visual search is temporarily unavailable. Your image was not published or stored by this page."
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "އެސްވީ-ވައިވައިވައިއެމްއެމްޑީޑީ-އެކްސްއެކްސްއެކްސްއެކްސްއެކްސްއެކްސްއެކްސް"
-        },
-        {
-          "source": "Open matching section",
-          "value": "විරෝධී කොටස පිට කරන්න"
-        },
-        {
-          "source": "Pop colorful balloons.",
-          "value": "පැහැදිලි වර්ණ වාලුවන් පැහැර ගන්න."
-        },
-        {
-          "source": "High-speed night racing.",
-          "value": "රාත්‍රියේ ත්වරිතර ප්‍රවාහනය."
-        },
-        {
-          "source": "Understanding your speech…",
-          "value": "ඔබගේ බෝක් විසින් අවබෝධ කරවන්න."
         }
       ]
     },
