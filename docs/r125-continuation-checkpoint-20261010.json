@@ -224,18 +224,18 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-10-30T01:59:09+01:00",
+    "checkedAt": "2026-10-30T02:34:00+01:00",
     "candidateCommit": "work/r125-locale-candidates-20261008",
     "completedCount": 97,
     "remainingCount": 1,
     "firstFailure": "dv",
     "failureReason": "english_overlap:58",
-    "latestProviderBlocker": "HTTP 503 all_translation_backends_unavailable; Workers AI qwen/gemma/llama results reported unparseable",
+    "latestProviderBlocker": "A one-string Dhivehi probe returned 200 via Gemma, but the first guarded batch of 2 returned HTTP 503 all_translation_backends_unavailable and its split single request stalled until a controlled timeout",
     "quotaStillBlocked": false,
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false,
-    "note": "The latest guarded retry started from the preserved partial Divehi pack but produced no new translations. A one-string probe succeeded on Gemma, then the first continuation batch failed closed with all_translation_backends_unavailable. The stale uiScriptPattern resume log was replaced with the current backend failure. Divehi remains at english_overlap:58 with zero script warnings. No packs were published."
+    "note": "No new translations were saved. The remote candidate branch remains unchanged at cef6d804eb06d0c57d2e7c73650056d9edb26569 with Divehi at english_overlap:58 and zero script warnings. The service is intermittently capable of a single translation but not stable enough for continuation; no Google fallback or quota bypass was attempted."
   },
   "builderRepair": {
     "commit": "634a0d31cb571300d658bb24580bdad3cbaeb75b",
@@ -284,7 +284,7 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-10-30T01:59:09+01:00",
+    "checkedAt": "2026-10-30T02:34:00+01:00",
     "mainProvenanceCommit": "9e848e37c00cc05d6f3a8da049f20ccd0e9c3f60",
     "candidateBranchHead": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
     "workflow": {
@@ -311,13 +311,15 @@
       "singleDhivehiProbe": "passed",
       "singleProbeModel": "@cf/qwen/qwen3-30b-a3b-fp8",
       "continuationProgress": "48 of 106 repair inputs saved",
-      "continuationResult": "HTTP 503 all_translation_backends_unavailable",
+      "continuationResult": "First guarded batch of 2 returned HTTP 503 all_translation_backends_unavailable; the split single request then stalled until the controlled 90-second timeout (exit 124)",
       "dailyFreeLimitReturnedThisRun": false,
       "googleFallbackRetested": false,
       "latestSingleProbe": "passed",
       "latestSingleProbeModel": "@cf/google/gemma-4-26b-a4b-it",
-      "latestContinuationProgress": "0 new translations; 58 long-English overlaps remain",
-      "resumeLogCurrent": true
+      "latestContinuationProgress": "0 new translations; Divehi remains at english_overlap:58",
+      "resumeLogCurrent": true,
+      "latestSingleProbeTranslation": "މިނިވަން ސެކްޝަން އޮޅުން",
+      "candidateBranchModified": false
     },
     "aiChat": {
       "english": {
