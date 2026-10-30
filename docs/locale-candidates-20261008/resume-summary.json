@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-30T00:07:28.474670+00:00",
+  "checkedAt": "2026-10-30T00:57:30.623858+00:00",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -1334,7 +1334,7 @@
       ]
     }
   },
-  "exitCode": "not-run",
+  "exitCode": "1",
   "published": false,
   "finalApproval": false,
   "linguisticAccuracyCertified": false,
