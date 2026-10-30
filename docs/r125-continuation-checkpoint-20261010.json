@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-26",
+  "date": "2026-10-30",
   "finalApproval": false,
   "sourceHash": "6a1126e6a2ce5629",
   "sourceCount": 1118,
@@ -111,16 +111,16 @@
   "packsPublished": false,
   "linguisticAccuracyCertified": false,
   "blockedBy": [
-    "Project translation API daily_free_ai_limit",
-    "Existing Google translation fallback returned HTTP 429",
-    "Voice transcription ASR daily free allocation exhausted"
+    "Current /api/ui-translate continuation returned HTTP 503 all_translation_backends_unavailable after 48 successful Divehi repair translations",
+    "Existing Google translation fallback previously returned HTTP 429; it was not bypassed or retried through an alternate service",
+    "All 98 packs still require linguistic review; Divehi remains structurally incomplete",
+    "Physical microphone and audible-speaker tests remain pending",
+    "Payment checkout remains inactive pending merchant-account configuration"
   ],
   "knownTranslationFailures": [
     "dv"
   ],
-  "quotaStoppedPrefixes": [
-    "dv"
-  ],
+  "quotaStoppedPrefixes": [],
   "runtimeFixes": [
     "Reject degenerate repetitive translation output without rejecting normal longer phrasing",
     "Invalidate affected translation cache",
@@ -165,7 +165,7 @@
   },
   "remainingChecks": [
     "Finish and linguistically review the remaining Divehi (dv) pack, then linguistically review all 98 packs",
-    "Restore free ASR availability, then perform physical microphone and audible-speaker tests on Android, iPhone/iPad and desktop",
+    "Perform physical microphone and audible-speaker tests on Android, iPhone/iPad and desktop; programmatic TTS/ASR does not certify hardware",
     "Payment checkout remains inactive pending merchant-account configuration"
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
@@ -223,19 +223,19 @@
     "scope": "Source mapping, regression tests and production deployment only; ASR transcription and physical microphone/speaker certification remain blocked/pending."
   },
   "candidateResume": {
-    "run": 38971104197,
-    "checkedAt": "2026-10-16T21:42:05.892527+00:00",
+    "run": null,
+    "checkedAt": "2026-10-30T01:08:24+01:00",
     "candidateCommit": "work/r125-locale-candidates-20261008",
     "completedCount": 97,
     "remainingCount": 1,
     "firstFailure": "dv",
-    "failureReason": "english_overlap:66",
-    "latestProviderBlocker": "daily_free_ai_limit; Google fallback HTTP 429",
-    "quotaStillBlocked": true,
+    "failureReason": "english_overlap:58",
+    "latestProviderBlocker": "HTTP 503 all_translation_backends_unavailable; Workers AI qwen/gemma/llama results reported unparseable",
+    "quotaStillBlocked": false,
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false,
-    "note": "Latest R125 run was audit-only and completed successfully without sending translation requests. Latest saved candidate summary reports 97/98 structurally complete; dv remains. No packs were published."
+    "note": "A guarded local continuation used the public-source provenance gate and saved 48 successful Dhivehi repair translations plus placeholder normalization before the provider failed closed. Divehi script warnings fell from 41 to 0 and long-English overlap fell from 66 to 58. No packs were published."
   },
   "builderRepair": {
     "commit": "634a0d31cb571300d658bb24580bdad3cbaeb75b",
@@ -282,5 +282,74 @@
     "aiResponseMs": 363,
     "voiceAndPwaSourceChecks": "passed",
     "physicalAudioCertified": false
+  },
+  "latestContinuationVerification": {
+    "checkedAt": "2026-10-30T01:08:24+01:00",
+    "mainProvenanceCommit": "9e848e37c00cc05d6f3a8da049f20ccd0e9c3f60",
+    "candidateBranchHead": "d867608ef12951beb4f9d2778c7923ed1947f5b8",
+    "workflow": {
+      "latestRun": 150,
+      "conclusion": "success",
+      "activeRun": false,
+      "mode": "audit-only/manual translations only"
+    },
+    "candidateAudit": {
+      "completedCount": 97,
+      "remaining": [
+        "dv"
+      ],
+      "structuralFailures": {
+        "dv": [
+          "english_overlap:58"
+        ]
+      },
+      "dvScriptWarnings": 0,
+      "published": false,
+      "linguisticAccuracyCertified": false
+    },
+    "translationService": {
+      "singleDhivehiProbe": "passed",
+      "singleProbeModel": "@cf/qwen/qwen3-30b-a3b-fp8",
+      "continuationProgress": "48 of 106 repair inputs saved",
+      "continuationResult": "HTTP 503 all_translation_backends_unavailable",
+      "dailyFreeLimitReturnedThisRun": false,
+      "googleFallbackRetested": false
+    },
+    "aiChat": {
+      "english": {
+        "status": 200,
+        "response": "Hello",
+        "model": "@cf/meta/llama-3.1-8b-instruct-fast",
+        "ms": 5109
+      },
+      "arabic": {
+        "status": 200,
+        "response": "مرحبا",
+        "model": "@cf/qwen/qwen3-30b-a3b-fp8",
+        "ms": 3858
+      }
+    },
+    "safety": {
+      "benignHotelRequest": "allowed",
+      "weaponSaleRequest": "blocked",
+      "weaponReason": "weapons_or_explosives"
+    },
+    "voice": {
+      "ttsStatus": 200,
+      "ttsBytes": 30144,
+      "asrStatus": 200,
+      "asrLanguage": "ar",
+      "asrModel": "@cf/openai/whisper-large-v3-turbo",
+      "programmaticAudioOnly": true,
+      "physicalDeviceCertified": false
+    },
+    "countryCurrencySections": {
+      "freshRerun": false,
+      "reason": "Runtime source is unchanged since the successful 2026-10-26 full browser audit; this run changed provenance and candidate files only",
+      "priorAuditCountries": 248,
+      "priorAuditLocalizedPages": 44
+    },
+    "checkoutActive": false,
+    "finalApproval": false
   }
 }
