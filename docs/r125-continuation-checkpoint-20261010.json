@@ -224,7 +224,7 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-10-30T01:08:24+01:00",
+    "checkedAt": "2026-10-30T01:57:54+01:00",
     "candidateCommit": "work/r125-locale-candidates-20261008",
     "completedCount": 97,
     "remainingCount": 1,
@@ -235,7 +235,7 @@
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false,
-    "note": "A guarded local continuation used the public-source provenance gate and saved 48 successful Dhivehi repair translations plus placeholder normalization before the provider failed closed. Divehi script warnings fell from 41 to 0 and long-English overlap fell from 66 to 58. No packs were published."
+    "note": "The latest guarded retry started from the preserved partial Divehi pack but produced no new translations. A one-string probe succeeded on Gemma, then the first continuation batch failed closed with all_translation_backends_unavailable. The stale uiScriptPattern resume log was replaced with the current backend failure. Divehi remains at english_overlap:58 with zero script warnings. No packs were published."
   },
   "builderRepair": {
     "commit": "634a0d31cb571300d658bb24580bdad3cbaeb75b",
@@ -284,9 +284,9 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-10-30T01:08:24+01:00",
+    "checkedAt": "2026-10-30T01:57:54+01:00",
     "mainProvenanceCommit": "9e848e37c00cc05d6f3a8da049f20ccd0e9c3f60",
-    "candidateBranchHead": "d867608ef12951beb4f9d2778c7923ed1947f5b8",
+    "candidateBranchHead": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
     "workflow": {
       "latestRun": 150,
       "conclusion": "success",
@@ -313,7 +313,11 @@
       "continuationProgress": "48 of 106 repair inputs saved",
       "continuationResult": "HTTP 503 all_translation_backends_unavailable",
       "dailyFreeLimitReturnedThisRun": false,
-      "googleFallbackRetested": false
+      "googleFallbackRetested": false,
+      "latestSingleProbe": "passed",
+      "latestSingleProbeModel": "@cf/google/gemma-4-26b-a4b-it",
+      "latestContinuationProgress": "0 new translations; 58 long-English overlaps remain",
+      "resumeLogCurrent": true
     },
     "aiChat": {
       "english": {
