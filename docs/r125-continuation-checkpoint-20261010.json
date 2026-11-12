@@ -161,7 +161,13 @@
     "originalCommit": "aefa5f86a98a7d1232916a02627783f03159d5e9",
     "additionalCommit": "aba2512c6b021f14ecbcdcbb50d76be6ebb2e204",
     "manualOnly": true,
-    "note": "Ten additional obsolete R3/R9/R23/R30/R82/R113 and superseded live/visual workflows were still firing on current pushes and failing stale assertions. They are now manual-only; current R105 certification and Pages deployment remain active."
+    "note": "Ten additional obsolete R3/R9/R23/R30/R82/R113 and superseded live/visual workflows were still firing on current pushes and failing stale assertions. They are now manual-only; current R105 certification and Pages deployment remain active.",
+    "additionalManualOnly": {
+      "workflow": ".github/workflows/r76-serial-verified-final.yml",
+      "issue": "Automatic pushes failed because retained artifact r76-source from run 36254130119 no longer exists.",
+      "repair": "Removed push trigger; workflow_dispatch remains available for explicit historical recovery only.",
+      "commit": "5ed7919543ce07e82116a6674f56d4bbd2bef32c"
+    }
   },
   "remainingChecks": [
     "Finish and linguistically review the remaining Divehi (dv) pack, then linguistically review all 98 packs",
@@ -182,11 +188,15 @@
       "note": "Live HTTP probes only; not all-language certification."
     },
     "voiceTranscription": {
-      "run": 38082321988,
-      "checkedAt": "2026-10-10T20:06:24Z",
-      "status": "blocked",
-      "httpStatus": 503,
-      "reason": "Cloudflare Workers AI daily free allocation exhausted",
+      "run": 43219069259,
+      "checkedAt": "2026-11-12T12:35:08Z",
+      "status": "passed",
+      "languages": [
+        "ar",
+        "fr",
+        "en"
+      ],
+      "programmaticAudioOnly": true,
       "physicalDeviceCertified": false
     },
     "publicSite": {
@@ -260,7 +270,7 @@
       "kl": "Greenlandic"
     },
     "aiChat": "English jobs route passed in 613ms; Arabic hotel intent passed through the direct-intent route and resolved to travel.html.",
-    "voiceTranscription": "Fresh Arabic synthetic-WAV ASR probe reached production but returned HTTP 503 after both configured Whisper models timed out. English ASR was not attempted afterward. This does not certify physical microphones or speakers.",
+    "voiceTranscription": "Fresh server-generated TTS-to-ASR round trips passed for Arabic, French and English after the Worker deployment. These checks do not certify physical microphones or audible speakers.",
     "physicalDeviceCertified": false,
     "checkoutActive": false,
     "safety": "Deterministic moderation probe blocked a prohibited weapon-sale request with weapons_or_explosives."
@@ -401,17 +411,35 @@
     }
   },
   "latestProgrammaticAsrProbe": {
-    "checkedAt": "2026-11-12T11:54:55Z",
-    "run": 43213010581,
-    "language": "ar",
-    "fixture": "synthetic WAV generated with espeak-ng",
-    "httpStatus": 503,
-    "status": "blocked",
-    "reason": "capacity_busy",
-    "detail": "@cf/openai/whisper-large-v3-turbo:asr timeout | @cf/openai/whisper:asr timeout",
-    "requestsSent": 1,
-    "englishProbeSkipped": true,
+    "checkedAt": "2026-11-12T12:35:08Z",
+    "run": 43219069259,
+    "status": "passed",
+    "languages": {
+      "ar": {
+        "ttsBytes": 55488,
+        "asrModel": "@cf/openai/whisper-large-v3-turbo"
+      },
+      "fr": {
+        "ttsBytes": 30528,
+        "asrModel": "@cf/openai/whisper"
+      },
+      "en": {
+        "ttsBytes": 36096,
+        "asrModel": "@cf/openai/whisper-large-v3-turbo"
+      }
+    },
+    "scope": "Synthetic server-generated audio round-trip only; does not certify physical microphones or audible speakers.",
     "quotaBypassAttempted": false,
     "physicalDeviceCertified": false
+  },
+  "voiceFailureClassificationRepair": {
+    "issue": "Production ASR 503 responses exposed model timeout details but no structured reason.",
+    "repair": "worker-r76.js now classifies timeouts as capacity_busy and includes reason plus detail without changing models, quotas, or retry limits.",
+    "commit": "147b3aced5643fca3deb834dde394b26824c5b05",
+    "deployRun": 43219069481,
+    "deployConclusion": "success",
+    "liveCertification": "R107_LIVE_PASS",
+    "audioAuthorityRun": 43219069259,
+    "audioAuthorityConclusion": "success"
   }
 }
