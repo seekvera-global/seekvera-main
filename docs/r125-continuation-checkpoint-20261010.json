@@ -442,7 +442,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-12T16:51:49Z",
+  "checkedAt": "2026-11-12T21:38:29Z",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -535,5 +535,27 @@
     },
     "translationRequestsSent": 0,
     "quotaBypassAttempted": false
+  },
+  "liveHealthActionRuntimeRepair": {
+    "issue": "The active scheduled live-site health workflow still used actions/checkout@v4 and emitted the Node 20 forced-to-Node-24 warning.",
+    "repair": "Upgraded only checkout to v5; health probes and production behavior are unchanged.",
+    "commit": "3079e65311e5ca3e037012d3557771a67e145348",
+    "validation": {
+      "scheduledBaselineRun": 43298648616,
+      "repairedRun": 43312209691,
+      "conclusion": "success",
+      "result": "SEEKVERA OFFICIAL PRODUCTION HEALTH PASS",
+      "checks": [
+        "official home markers",
+        "production API health",
+        "robots and sitemap official-domain SEO",
+        "18 public pages return HTTP 200"
+      ],
+      "checkoutV5Confirmed": true,
+      "checkoutNode20WarningPresent": false
+    },
+    "scope": "Live availability only; does not certify all 44 localized pages, linguistic accuracy, translation quota, checkout, or physical audio devices.",
+    "translationRequestsSent": 0,
+    "candidateBranchWritten": false
   }
 }
