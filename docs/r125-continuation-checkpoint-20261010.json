@@ -442,7 +442,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-12T14:50:27Z",
+  "checkedAt": "2026-11-12T15:15:00Z",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -493,5 +493,15 @@
       "candidateBranchWritten": false
     },
     "remainingNonBlockingWarning": "Node DEP0040 punycode deprecation emitted by an internal dependency."
+  },
+  "r125AuditOnlyTruthfulnessRepair": {
+    "issue": "The manual audit-only branch wrote a stale reason claiming daily_free_ai_limit was confirmed even though it sent zero translation requests.",
+    "repair": "Audit-only status now records quotaChecked=false and explicitly says translation quota/backend availability were not queried; translation still requires run_translations=true.",
+    "commit": "a1f029a2d5633153be5d4bdea44e507778939908",
+    "translationRequestsSent": 0,
+    "candidateBranchWritten": false,
+    "quotaBypassAttempted": false,
+    "currentTranslationAvailability": "unknown-not-probed",
+    "lastObservedTranslationFailure": "HTTP 503 all_translation_backends_unavailable; earlier Google HTTP 429 remains un-retried"
   }
 }
