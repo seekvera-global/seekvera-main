@@ -44,8 +44,8 @@ jobs:
           code=${PIPESTATUS[0]}
           echo "$code" > docs/locale-candidates-20261008/resume-exit-code.txt
           exit 0
-      - name: Preserve live AI capacity during scheduled checks
-        if: github.event_name != 'workflow_dispatch' || !inputs.run_translations
+      - name: Record manual audit-only mode without querying translation quota
+        if: github.event_name == 'workflow_dispatch' && !inputs.run_translations
         run: |
           python - <<'PY'
           import json, datetime
@@ -53,7 +53,7 @@ jobs:
           stage=Path('docs/locale-candidates-20261008')
           stage.mkdir(parents=True, exist_ok=True)
           (stage/'resume-exit-code.txt').write_text('not-run')
-          status={'checkedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'mode':'audit-only','translationRequestsSent':0,'reason':'Production speech verification returned HTTP 503: daily free AI allocation exhausted. Background translation now requires explicit manual invocation.','finalApproval':False}
+          status={'checkedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'mode':'audit-only','translationRequestsSent':0,'quotaChecked':False,'reason':'Manual audit-only run; production translation quota and backend availability were not queried. Translation requires explicit run_translations=true.','finalApproval':False}
           (stage/'scheduled-mode.json').write_text(json.dumps(status,indent=2))
           PY
       - name: Audit all saved candidates
