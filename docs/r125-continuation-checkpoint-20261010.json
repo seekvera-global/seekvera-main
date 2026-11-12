@@ -441,5 +441,34 @@
     "liveCertification": "R107_LIVE_PASS",
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
+  },
+  "checkedAt": "2026-11-12T13:09:27Z",
+  "latestR125Run": {
+    "run": 38971104197,
+    "status": "completed",
+    "conclusion": "success",
+    "createdAt": "2026-10-16T21:41:54Z",
+    "activeRunFound": false,
+    "candidateWritesDeferred": false
+  },
+  "ciActionRuntimeRepair": {
+    "issue": "Current production release and audio authority workflows still used actions/checkout@v4, which emitted the Node 20 forced-to-Node-24 compatibility warning.",
+    "repair": "Upgraded only actions/checkout from v4 to v5 in R105 and R123; translation logic, quotas, models, retries and site behavior were unchanged.",
+    "commits": {
+      "r105": "2e62cfbfac147c56e3ece9dc86da658956f8d8d9",
+      "r123": "48113f14e13026edc5043043b8cc0f3048b61d38"
+    },
+    "validation": {
+      "r105Run": 43224392811,
+      "r105Conclusion": "success",
+      "liveCertification": "R107_LIVE_PASS",
+      "r123Run": 43224398292,
+      "r123Conclusion": "success",
+      "pagesRun": 43224395793,
+      "pagesConclusion": "success",
+      "checkoutV5Confirmed": true,
+      "checkoutNode20WarningPresent": false
+    },
+    "note": "Wrangler action still emits a benign npm no-install probe error before installing its default Wrangler version; deploy and live certification both succeed."
   }
 }
