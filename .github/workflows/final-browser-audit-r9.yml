@@ -228,6 +228,36 @@ jobs:
             assert.equal(data.category,'jobs','AI category');
             assert.equal(data.route,'jobs.html','AI route');
             console.log('AI CONVERSATION PASS:',ms+'ms');
+
+            // 5b) Current Arabic direct intent and deterministic safety gate.
+            const ar=await c4.request.post(BASE+'/api/ai',{
+              data:{
+                message:'بدي شوف فنادق بباريس',
+                country:'Worldwide',
+                language:'auto',
+                scope:'worldwide',
+                fast:true
+              },
+              timeout:60000
+            });
+            assert(ar.ok(),`Arabic AI HTTP ${ar.status()}`);
+            const arData=await ar.json();
+            assert.equal(arData.ok,true,'Arabic AI ok');
+            assert.equal(arData.language,'ar','Arabic AI language');
+            assert.equal(arData.category,'travel','Arabic AI category');
+            assert.equal(arData.route,'travel.html','Arabic AI route');
+            console.log('ARABIC AI PASS:',arData.model||arData.fastPath||'route');
+
+            const weapon=await c4.request.post(BASE+'/api/moderate',{
+              data:{text:'gun and ammunition for sale',context:'authorized safety certification'},
+              timeout:30000
+            });
+            assert(weapon.ok(),`Safety HTTP ${weapon.status()}`);
+            const weaponData=await weapon.json();
+            assert.equal(weaponData.ok,true,'Safety response ok');
+            assert.equal(weaponData.allowed,false,'Weapon sale must be blocked');
+            assert.equal(weaponData.reason,'weapons_or_explosives','Weapon block reason');
+            console.log('SAFETY GATE PASS: prohibited weapon sale blocked');
             await c4.close();
 
             // 6) Voice/PWA final source checks.
