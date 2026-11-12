@@ -282,3 +282,42 @@ jobs:
           }
           console.log('FINAL R9E LIVE BROWSER AUDIT PASS');
           NODE
+
+      - name: Probe live programmatic ASR without certifying hardware
+        shell: bash
+        run: |
+          set -u
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak-ng
+          espeak-ng -v ar -s 120 -w /tmp/ar.wav 'مرحبا كيف حالك اليوم انا اتكلم معك بالعربي واريد فندق في بيروت'
+          espeak-ng -v en-us -s 125 -w /tmp/en.wav 'hello seekvera how are you today I need a hotel in Beirut'
+          python3 - <<'PY'
+          import base64,json
+          for lang in ('ar','en'):
+              audio=base64.b64encode(open('/tmp/'+lang+'.wav','rb').read()).decode()
+              json.dump({'audio':'data:audio/wav;base64,'+audio,'language':'auto'},open('/tmp/'+lang+'-body.json','w'))
+          PY
+          for lang in ar en; do
+            code=$(curl -sS --max-time 45 -o "/tmp/$lang-asr.json" -w '%{http_code}' \
+              -H 'content-type: application/json' --data-binary "@/tmp/$lang-body.json" \
+              "https://seekveraglobal.com/api/transcribe?audit=programmatic-$lang")
+            python3 - "$lang" "$code" "/tmp/$lang-asr.json" <<'PY'
+          import json,sys
+          lang,code,path=sys.argv[1:]
+          try:
+              data=json.load(open(path))
+          except Exception:
+              raise SystemExit(f'PROGRAMMATIC ASR INVALID RESPONSE: {lang} HTTP {code}')
+          if code == '200' and data.get('ok') is True and data.get('text'):
+              print(f"PROGRAMMATIC ASR PASS: {lang} language={data.get('language')} model={data.get('model')}")
+              raise SystemExit(0)
+          reason=data.get('reason')
+          if code == '503' and reason in {'daily_free_ai_limit','capacity_busy'}:
+              print(f"PROGRAMMATIC ASR BLOCKED: {lang} reason={reason}")
+              raise SystemExit(2)
+          raise SystemExit(f"PROGRAMMATIC ASR FAILURE: {lang} HTTP {code} {data}")
+          PY
+            rc=$?
+            if [ "$rc" = 2 ]; then break; fi
+            if [ "$rc" != 0 ]; then exit "$rc"; fi
+          done
