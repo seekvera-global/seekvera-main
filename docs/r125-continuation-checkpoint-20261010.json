@@ -442,7 +442,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-12T15:15:00Z",
+  "checkedAt": "2026-11-12T16:51:49Z",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -503,5 +503,37 @@
     "quotaBypassAttempted": false,
     "currentTranslationAvailability": "unknown-not-probed",
     "lastObservedTranslationFailure": "HTTP 503 all_translation_backends_unavailable; earlier Google HTTP 429 remains un-retried"
+  },
+  "wranglerPreinstallRepair": {
+    "issue": "cloudflare/wrangler-action emitted a misleading npm error while probing for a missing local Wrangler before installing the same default version.",
+    "repair": "Preinstall pinned Wrangler 4.160.1 locally before the action in R105 and R123; deploy commands and production behavior are unchanged.",
+    "commits": {
+      "release": "eabb704b9555d762703925cf15312592ac169afa",
+      "audioCert": "29496890226af422dac34a5a74e2383532737cb2"
+    },
+    "validation": {
+      "releaseRun": 43262930208,
+      "releaseConclusion": "success",
+      "liveCertification": "R107_LIVE_PASS",
+      "audioRun": 43263096001,
+      "audioConclusion": "success",
+      "npmProbeErrorPresent": false,
+      "wranglerVersion": "4.160.1",
+      "liveAudioLanguages": [
+        "ar",
+        "fr",
+        "en"
+      ],
+      "liveChatRoutes": {
+        "fr": "jobs",
+        "ar": "jobs",
+        "es": "travel",
+        "ja": "jobs"
+      },
+      "countryCurrencyTests": "passed",
+      "physicalDeviceCertified": false
+    },
+    "translationRequestsSent": 0,
+    "quotaBypassAttempted": false
   }
 }
