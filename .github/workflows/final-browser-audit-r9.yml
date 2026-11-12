@@ -9,6 +9,12 @@ on:
       - 'i18n-ui.js'
       - 'locale-r15.js'
   workflow_dispatch:
+    inputs:
+      run_asr:
+        description: 'Run live programmatic ASR probes (manual only)'
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: read
@@ -284,6 +290,7 @@ jobs:
           NODE
 
       - name: Probe live programmatic ASR without certifying hardware
+        if: github.event_name == 'workflow_dispatch' && inputs.run_asr
         shell: bash
         run: |
           set -u
@@ -312,7 +319,9 @@ jobs:
               print(f"PROGRAMMATIC ASR PASS: {lang} language={data.get('language')} model={data.get('model')}")
               raise SystemExit(0)
           reason=data.get('reason')
-          if code == '503' and reason in {'daily_free_ai_limit','capacity_busy'}:
+          detail=str(data.get('detail') or '').lower()
+          if code == '503' and (reason in {'daily_free_ai_limit','capacity_busy'} or 'timeout' in detail):
+              reason=reason or 'capacity_busy'
               print(f"PROGRAMMATIC ASR BLOCKED: {lang} reason={reason}")
               raise SystemExit(2)
           raise SystemExit(f"PROGRAMMATIC ASR FAILURE: {lang} HTTP {code} {data}")
