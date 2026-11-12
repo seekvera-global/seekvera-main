@@ -442,7 +442,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-12T13:09:27Z",
+  "checkedAt": "2026-11-12T14:50:27Z",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -470,5 +470,28 @@
       "checkoutNode20WarningPresent": false
     },
     "note": "Wrangler action still emits a benign npm no-install probe error before installing its default Wrangler version; deploy and live certification both succeed."
+  },
+  "r125ActionRuntimeRepair": {
+    "issue": "The current R125 resume and isolated render workflows still used actions/checkout@v4 and actions/setup-node@v4.",
+    "repair": "Upgraded checkout and setup-node to v5 while preserving Node 22, Ubuntu 24.04, manual translation gating, candidate refs, and all build logic.",
+    "commits": {
+      "resumeWorkflow": "1be13ebf700e15bff6b520e9f770d5fc4341a9ad",
+      "renderWorkflow": "273049ba19604f21125c9f25e6ba556410b6aeae"
+    },
+    "validation": {
+      "renderRun": 43241261247,
+      "conclusion": "success",
+      "checks": [
+        "50 French game descriptions and filter logic",
+        "50 Arabic game descriptions and filter logic",
+        "Localized Hausa intro",
+        "Saved reply preservation"
+      ],
+      "checkoutV5Confirmed": true,
+      "setupNodeV5Confirmed": true,
+      "translationRequestsSent": 0,
+      "candidateBranchWritten": false
+    },
+    "remainingNonBlockingWarning": "Node DEP0040 punycode deprecation emitted by an internal dependency."
   }
 }
