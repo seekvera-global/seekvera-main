@@ -631,17 +631,18 @@
     "candidateBranchWritten": false
   },
   "latestScheduledHealthCheck": {
-    "run": 43382989023,
-    "runNumber": 318,
-    "checkedAt": "2026-11-13T07:03:29Z",
+    "run": 43496909277,
+    "runNumber": 319,
+    "checkedAt": "2026-11-13T19:56:39Z",
     "conclusion": "success",
-    "commit": "18b9599977f519d1e693eb6d35dcce2f6fdb2c6c",
+    "commit": "67aca2a5b46998c17c8bed0f1c6a5a75a408ec3e",
     "checks": [
-      "official homepage and API health",
-      "robots.txt and sitemap.xml",
+      "official production homepage and category/navigation assertions",
+      "API /api/health ok",
+      "robots.txt and sitemap.xml official domain",
       "18 public pages HTTP 200"
     ],
-    "scope": "Availability/SEO only; no all-language or AI/audio certification"
+    "scope": "Availability/SEO and category surface only; no AI generation, all-language, audio hardware or checkout certification."
   },
   "latestAudioAuthority": {
     "checkedAt": "2026-11-13T15:53:01Z",
@@ -720,8 +721,8 @@
       "latestAudioRun": 43456938311,
       "latestAudioNumber": 64,
       "latestAudioConclusion": "success",
-      "latestHealthRun": 43382989023,
-      "latestHealthNumber": 318,
+      "latestHealthRun": 43496909277,
+      "latestHealthNumber": 319,
       "latestHealthConclusion": "success",
       "newerR125Resume": false
     },
@@ -814,15 +815,17 @@
   "productionVerification": {
     "checkedAt": "2026-11-13T13:20:00Z",
     "health": {
-      "run": 43382989023,
-      "runNumber": 318,
-      "checkedAt": "2026-11-13T07:03:29Z",
+      "run": 43496909277,
+      "runNumber": 319,
+      "checkedAt": "2026-11-13T19:56:39Z",
       "conclusion": "success",
       "checks": [
-        "/api/health ok",
-        "robots.txt and sitemap.xml official domain",
+        "official homepage/categories/navigation",
+        "API health",
+        "robots/sitemap official domain",
         "18 public pages HTTP 200"
-      ]
+      ],
+      "scope": "Availability/SEO only"
     },
     "aiSafety": {
       "run": 43262930208,
@@ -1785,13 +1788,20 @@
         "liveTtsAsr": "skipped"
       },
       "latestHealth": {
-        "run": 318,
-        "id": 43382989023,
+        "run": 319,
+        "id": 43496909277,
         "conclusion": "success",
-        "createdAt": "2026-11-13T07:03:29Z",
-        "scope": "API/home, robots/sitemap, 18 pages HTTP 200"
+        "createdAt": "2026-11-13T19:56:39Z",
+        "scope": "homepage/categories, API health, robots/sitemap, 18 public pages"
       },
-      "activeRuns": 0
+      "activeRuns": 0,
+      "pagesAfterCheckpointCommit": {
+        "run": 1496,
+        "id": 43512665106,
+        "status": "in_progress",
+        "createdAt": "2026-11-13T21:39:42Z",
+        "headCommit": "1e8dc99a3c4ce935478f3a21190eed40d62547bd"
+      }
     },
     "quotaPolicy": {
       "dailyFreeAiLimitKnownBlocker": true,
