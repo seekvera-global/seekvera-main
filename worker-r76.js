@@ -381,6 +381,12 @@ async function degradedFallback(request,env,ctx,body,message){
  return json(request,{ok:true,response,language,speechLocale:speechLocaleFor(language,message,body?.history),category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model:'seekvera-r114-instant-local-fallback',fastPath:'r114-bounded-fallback',liveData:false},200)
 }
 
+function quotaLimited(error){
+ const nested=Array.isArray(error?.errors)?error.errors.map(x=>x?.message||x):[];
+ const detail=[String(error?.message??error??''),...nested].join(' ');
+ return /3036|daily free allocation|\\b429\\b|rate.?limit|too many requests/i.test(detail)
+}
+
 async function runStructured(env,body){
  const message=clean(body?.message??body?.prompt,2400);if(!message)return null;
  const selected=clean(body?.country,120)||'Worldwide',targetLanguage=messageLanguage(message,body?.language),history=languageSafeHistory(body?.history,targetLanguage);
@@ -400,14 +406,21 @@ Conversation history:\
 ${history||'(none)'}\
 Latest user message: ${message}`;
  const messages=[{role:'system',content:system},{role:'user',content:message}];
+ let quotaBlocked=false;
  const modelAttempt=async model=>{
+  try{
    const r=await Promise.race([env.AI.run(model,{messages,temperature:.18,max_tokens:420}),new Promise((_,reject)=>setTimeout(()=>reject(Error('model timeout')),3000))]),text=modelText(r),obj=parseJSON(text);if(!obj||!clean(obj.reply,5000))throw Error('invalid structured response');
    const act=actionState(message,obj.countryAction,obj.languageAction,body?.clientControls),language=messageLanguage(message,obj.languageCode||targetLanguage),declared=languageCode(obj.languageCode),meta=metaConversation(message),modelCat=category(obj.category),cat=(act.isAction||conversationOnly(message)||meta)?'general':directCategoryIntent(message,modelCat);
    if(declared&&declared!==language&&!translationRequest(message)&&!replyMatchesLanguage(obj.reply,language,message))throw Error('model language mismatch');
    let reply=act.isAction?actionReply(language,act.cc,act.ll):cat!=='general'&&routeReplyFor(language,message,body?.history)?routeReplyFor(language,message,body?.history):guardedReply(obj.reply,language,message);if(!reply)throw Error('reply language mismatch');if(meta&&(routeLikeReply(reply)||category(obj.category)!=='general'))reply=metaReply(message,language);
    return{ok:true,response:reply,language,speechLocale:speechLocaleFor(language,message,body?.history),category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model,fastPath:act.isAction?'r114-verified-action-first':meta?'r114-meta-conversation-guard':'r114-fast-model-race',liveData:false}
+  }catch(e){
+   if(quotaLimited(e))quotaBlocked=true;
+   throw e;
+  }
  };
- try{const winner=await Promise.race([Promise.any([FAST,PRIMARY,FALLBACK].map(modelAttempt)),new Promise(resolve=>setTimeout(()=>resolve(null),3300))]);if(winner)return winner}catch(_){}
+ try{const winner=await Promise.race([Promise.any([FAST,PRIMARY,FALLBACK].map(modelAttempt)),new Promise(resolve=>setTimeout(()=>resolve(null),3300))]);if(winner)return winner}catch(e){if(quotaLimited(e))quotaBlocked=true}
+ if(quotaBlocked)return null;
  // Keep a real conversational AI fallback, but never let it stall the UI.
  try{
    const backupPrompt=messages.map(x=>String(x?.role||'user').toUpperCase()+': '+String(x?.content||'')).join('\n').slice(-14000);
