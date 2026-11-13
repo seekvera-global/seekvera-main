@@ -36,6 +36,11 @@ assert.ok(worker.includes('if(quotaLimited(e))quotaBlocked=true;'),
 const workflow = fs.readFileSync('.github/workflows/r105-final-release.yml', 'utf8');
 assert.match(workflow, /run_live_ai_probes:[\s\S]*?default: false/);
 assert.ok(workflow.includes('RUN_LIVE_AI_PROBES'));
+const gateIndex = workflow.indexOf('if [[ "${RUN_LIVE_AI_PROBES:-false}" == "true" ]]');
+const chatProbeIndex = workflow.indexOf('Hello, how are you?');
+assert.ok(gateIndex >= 0 && chatProbeIndex > gateIndex,
+  'automatic deployments must not send live chat probes');
+
 assert.ok(workflow.includes('((.model // "")|startswith("@cf/"))'),
   'manual AI certification must require an actual Workers AI model response');
 assert.ok(workflow.includes('AI_PROBES_SKIPPED_BY_POLICY'),
