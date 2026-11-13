@@ -297,10 +297,10 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-13T19:11:42Z",
+    "checkedAt": "2026-11-13T22:16:00Z",
     "mainProvenanceCommit": "f15a04598170af0fe3ed353778f647908fe6beb7",
     "mainCheckpointBlobBeforeUpdate": "6ab91cfc0495f0dcc7d89eadfacc640832047c9c",
-    "candidateBranchHead": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
+    "candidateBranchHead": "4fe9c7c8f0ad4a780b90560b066fc934d27d82dd",
     "candidateSummaryBlob": "3afb7c9b4335deb1eef550630a96ef04165f886c",
     "candidateLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
     "workflow": {
@@ -453,7 +453,15 @@
       "physicalDeviceCertified": false
     },
     "checkoutActive": false,
-    "finalApproval": false
+    "finalApproval": false,
+    "mainHeadBeforeCheckpointUpdate": "3b12b575d807dcb02344892e56358250d6a37db5",
+    "candidateResumeRun": null,
+    "r125WorkflowLatestKnownRun": 150,
+    "r125WorkflowStatus": "no active run at 2026-11-13T22:14Z; workflow_dispatch only; run_translations defaults false",
+    "candidateWritesDeferredWhileR125Active": true,
+    "candidateWriteThisRun": "One deterministic repair to ar.json only after fresh in_progress query found zero R125 runs",
+    "candidatePacksPublished": false,
+    "linguisticAccuracyCertified": false
   },
   "verificationInfrastructureRepair": {
     "checkedAt": "2026-11-12T09:56:58Z",
@@ -1812,5 +1820,61 @@
       "updatedAt": "2026-11-13T21:40:45Z",
       "headCommit": "bb7556c46532716205f1fc982d9f515840f8d51e"
     }
+  },
+  "deterministicCandidateRepair": {
+    "checkedAt": "2026-11-13T22:15:00Z",
+    "repair": "docs/locale-candidates-20261008/ar.json translations['SV-YYYYMMDD-XXXXXXXX'] restored to exact immutable identifier",
+    "before": "SV-YYYYMMDD-XXXXXXXXX",
+    "after": "SV-YYYYMMDD-XXXXXXXX",
+    "locale": "ar",
+    "translationKeysPreserved": 1118,
+    "candidateCommit": "4fe9c7c8f0ad4a780b90560b066fc934d27d82dd",
+    "verifiedByReadback": true,
+    "translationRequestsSent": 0,
+    "linguisticCertification": false,
+    "publication": false,
+    "scope": "Deterministic identifier-only repair; no translation wording changed"
+  },
+  "repairInfrastructure": {
+    "checkedAt": "2026-11-13T22:15:00Z",
+    "scriptCommit": "0ded932294e80d7117efafffded8be79b7a9b78e",
+    "testCommit": "58e35351f8f358179ced0963408f0acadca69f99",
+    "r125WorkflowCommit": "21d5e2756be5c2b875e1d56c545c7ceacec49922",
+    "r105WorkflowCommit": "3b12b575d807dcb02344892e56358250d6a37db5",
+    "change": "Added idempotent deterministic repair for immutable SV identifier in locale candidate packs; R125 invokes it before audit; R105 runs quota-neutral regression test",
+    "validation": "R105 #81 queued/in progress; final test result pending",
+    "safety": "Only exact reserved placeholder value may be replaced; other translations untouched; no AI or quota call"
+  },
+  "currentVerification": {
+    "checkedAt": "2026-11-13T22:15:00Z",
+    "latestR105": {
+      "run": 81,
+      "runId": 43517683421,
+      "status": "in_progress",
+      "conclusion": null,
+      "html": "https://github.com/seekvera-global/seekvera-main/actions/runs/43517683421",
+      "liveAiProbe": "not enabled; no AI generation probe sent"
+    },
+    "latestPages": {
+      "run": 1500,
+      "runId": 43513201004,
+      "conclusion": "success"
+    },
+    "latestHealth": {
+      "run": 319,
+      "runId": 43496909277,
+      "conclusion": "success"
+    },
+    "latestAudio": {
+      "run": 64,
+      "runId": 43456938311,
+      "conclusion": "success",
+      "physicalDeviceCertified": false
+    },
+    "currentAIAvailability": "unknown-currently; no live generation probe this run",
+    "translationQuota": "not probed; daily_free_ai_limit remains historically observed; Google HTTP429 not retried",
+    "all98Structural": "97 complete, dv remains",
+    "countryCurrencySafety": "latest R105 #80 succeeded; Iceland country action, weapon listing blocked, quota boundaries passed",
+    "checkoutActive": false
   }
 }
