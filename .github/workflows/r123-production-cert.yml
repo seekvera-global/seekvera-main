@@ -1,6 +1,12 @@
 name: Audio authority production verification
 on:
   workflow_dispatch:
+    inputs:
+      run_live_audio_probes:
+        description: 'Send live TTS, ASR and chat probes; this may consume Workers AI allocation'
+        type: boolean
+        required: false
+        default: false
   push:
     branches: [main]
     paths:
@@ -61,6 +67,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --config wrangler.jsonc
       - name: Verify production asset and multilingual audio
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_live_audio_probes == 'true' }}
         run: |
           python3 - <<'PY'
           import urllib.request,urllib.error,json,base64,re,time
@@ -74,14 +81,12 @@ jobs:
           else: raise AssertionError('Production voice asset did not update')
           def post(path,payload):
               req=urllib.request.Request(B+path,data=json.dumps(payload,ensure_ascii=False).encode(),headers={'content-type':'application/json','user-agent':'Mozilla/5.0'},method='POST')
-              for attempt in range(3):
-                  try:
-                      with urllib.request.urlopen(req,timeout=30) as r:return r.read()
-                  except urllib.error.HTTPError as e:
-                      detail=e.read().decode()
-                      print('SERVICE_ERROR',path,e.code,detail[:500])
-                      if e.code not in (429,502,503,504) or attempt==2:raise
-                      time.sleep(3*(attempt+1))
+              try:
+                  with urllib.request.urlopen(req,timeout=30) as r:return r.read()
+              except urllib.error.HTTPError as e:
+                  detail=e.read().decode()
+                  print('SERVICE_ERROR',path,e.code,detail[:500])
+                  raise
           cases=[('ar','مرحبا أنا عم بحكي معك بالعربي، دوريني على شغل في بيروت'),
                  ('fr','Bonjour, je voudrais chercher un hôtel à Paris pour demain.'),
                  ('en','Hello, I would like to find a hotel in London for tomorrow.')]
@@ -100,8 +105,8 @@ jobs:
               ('ja','東京で仕事を探してください','jobs')]
           for lang,phrase,category in chat_cases:
               d=json.loads(post('/api/ai',{'message':phrase,'language':'auto','country':'Worldwide','history':[]}))
-              assert d.get('language')==lang and d.get('category')==category and not d.get('countryAction') and not d.get('languageAction'),(phrase,d)
-              print('LIVE_CHAT_PASS',lang,category)
+              assert d.get('language')==lang and d.get('category')==category and not d.get('countryAction') and not d.get('languageAction') and str(d.get('model','')).startswith('@cf/'),(phrase,d)
+              print('LIVE_CHAT_PASS',lang,category,d.get('model'))
           PY
       - name: Verify live category translations
         if: ${{ !cancelled() }}
