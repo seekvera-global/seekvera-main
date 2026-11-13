@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-30",
+  "date": "2026-11-13",
   "finalApproval": false,
   "sourceHash": "6a1126e6a2ce5629",
   "sourceCount": 1118,
@@ -277,10 +277,8 @@
   },
   "latestFullBrowserAudit": {
     "run": 43213407211,
-    "commit": "21ec7efe3a98e714c6d75f6a8e01c50adc2c4065",
-    "conclusion": "success",
     "checkedAt": "2026-11-12T11:57:48Z",
-    "localeRuntime": "20261026-r133-targeted-currency-repair",
+    "conclusion": "success",
     "countryProfiles": 248,
     "localizedPages": 44,
     "visibleLocales": [
@@ -289,29 +287,23 @@
       "hi",
       "zh"
     ],
-    "aiRoute": "jobs.html",
-    "aiResponseMs": 613,
-    "arabicAi": {
-      "status": "passed",
-      "route": "travel.html",
-      "modelOrFastPath": "seekvera-r120-direct-intent"
-    },
-    "safety": {
-      "prohibitedWeaponSale": "blocked",
-      "reason": "weapons_or_explosives"
-    },
-    "voiceAndPwaSourceChecks": "passed",
+    "safety": "prohibited weapon sale blocked; benign hotel request allowed",
+    "currencyCountryBehavior": "passed",
+    "voicePwaSourceChecks": "passed",
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-10-30T02:34:00+01:00",
-    "mainProvenanceCommit": "9e848e37c00cc05d6f3a8da049f20ccd0e9c3f60",
+    "checkedAt": "2026-11-13T12:26:00+01:00",
+    "mainProvenanceCommit": "18b9599977f519d1e693eb6d35dcce2f6fdb2c6c",
     "candidateBranchHead": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
     "workflow": {
       "latestRun": 150,
+      "runId": 38971104197,
       "conclusion": "success",
+      "createdAt": "2026-10-16T21:41:54Z",
       "activeRun": false,
-      "mode": "audit-only/manual translations only"
+      "mode": "workflow_dispatch; translations explicitly gated; audit-only default",
+      "candidateWritesDeferred": false
     },
     "candidateAudit": {
       "completedCount": 97,
@@ -323,22 +315,14 @@
           "english_overlap:58"
         ]
       },
-      "dvScriptWarnings": 0,
       "published": false,
       "linguisticAccuracyCertified": false
     },
     "translationService": {
-      "singleDhivehiProbe": "passed",
-      "singleProbeModel": "@cf/qwen/qwen3-30b-a3b-fp8",
-      "continuationProgress": "48 of 106 repair inputs saved",
-      "continuationResult": "First guarded batch of 2 returned HTTP 503 all_translation_backends_unavailable; the split single request then stalled until the controlled 90-second timeout (exit 124)",
-      "dailyFreeLimitReturnedThisRun": false,
-      "googleFallbackRetested": false,
-      "latestSingleProbe": "passed",
-      "latestSingleProbeModel": "@cf/google/gemma-4-26b-a4b-it",
-      "latestContinuationProgress": "0 new translations; Divehi remains at english_overlap:58",
-      "resumeLogCurrent": true,
-      "latestSingleProbeTranslation": "މިނިވަން ސެކްޝަން އޮޅުން",
+      "currentAvailability": "unknown-not-probed",
+      "translationRequestsSentThisRun": 0,
+      "quotaBypassAttempted": false,
+      "lastObservedFailure": "HTTP 503 all_translation_backends_unavailable; earlier Google HTTP 429 remains un-retried",
       "candidateBranchModified": false
     },
     "aiChat": {
@@ -442,7 +426,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-12T21:38:29Z",
+  "checkedAt": "2026-11-13T12:26:00+01:00",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -557,5 +541,56 @@
     "scope": "Live availability only; does not certify all 44 localized pages, linguistic accuracy, translation quota, checkout, or physical audio devices.",
     "translationRequestsSent": 0,
     "candidateBranchWritten": false
+  },
+  "latestScheduledHealthCheck": {
+    "run": 43382989023,
+    "runNumber": 318,
+    "checkedAt": "2026-11-13T07:03:29Z",
+    "conclusion": "success",
+    "commit": "18b9599977f519d1e693eb6d35dcce2f6fdb2c6c",
+    "checks": [
+      "official homepage and API health",
+      "robots.txt and sitemap.xml",
+      "18 public pages HTTP 200"
+    ],
+    "scope": "Availability/SEO only; no all-language or AI/audio certification"
+  },
+  "latestAudioAuthority": {
+    "run": 43263096001,
+    "runNumber": 62,
+    "checkedAt": "2026-11-12T16:50:51Z",
+    "conclusion": "success",
+    "syntheticAudioRoundTrip": [
+      "ar",
+      "fr",
+      "en"
+    ],
+    "liveChat": [
+      "fr:jobs",
+      "ar:jobs",
+      "es:travel",
+      "ja:jobs"
+    ],
+    "arabicHomepage": "31 localized descriptions passed",
+    "physicalDeviceCertified": false,
+    "scope": "Production synthetic TTS→ASR and headless browser checks"
+  },
+  "latestAIAvailability": {
+    "checkedAt": "2026-11-12T16:51:22Z",
+    "status": "passed_on_limited_live_probes",
+    "chatLanguages": [
+      "fr",
+      "ar",
+      "es",
+      "ja"
+    ],
+    "audioLanguages": [
+      "ar",
+      "fr",
+      "en"
+    ],
+    "checkedToday": false,
+    "sourceRun": 43263096001,
+    "note": "Today's scheduled health run does not test AI; no fresh POST probe was sent to avoid quota/capacity consumption."
   }
 }
