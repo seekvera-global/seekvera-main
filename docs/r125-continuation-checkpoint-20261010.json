@@ -295,8 +295,8 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-13T16:31:46Z",
-    "mainProvenanceCommit": "bae9a330c1dc99fcc72aae7dbeb314863d562cec",
+    "checkedAt": "2026-11-13T16:34:23Z",
+    "mainProvenanceCommit": "5aca0c0f9d15706934531add3025f92893dfa48b",
     "mainCheckpointBlobBeforeUpdate": "6bce52484854e9a1c076fb3bf427667ed593ea4f",
     "candidateBranchHead": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
     "candidateSummaryBlob": "3afb7c9b4335deb1eef550630a96ef04165f886c",
@@ -327,10 +327,16 @@
       "activeRunFound": false,
       "activeRunsCheck": "Repository-wide Actions query for status=in_progress returned zero runs at 2026-11-13T16:57:54+01:00",
       "candidateWritesDeferred": false,
-      "note": "The last known resume run is #150 and predates the current workflow revision. No active R125 resume run was found. The newer R125 staged-render run is a separate workflow and does not resume candidates.",
+      "note": "Run #150 used audit-only mode. It wrote only resume-summary.json and scheduled-mode.json, not locale packs. The current workflow revision has not yet had a newer resume run; the R125 staged-render workflow is separate.",
       "currentTrigger": "workflow_dispatch only",
       "latestKnownRun": 150,
-      "latestWorkflowRevisionCommit": "0160c0f0cbbbefee2af186fc1678602b8a6ac6ca"
+      "latestWorkflowRevisionCommit": "0160c0f0cbbbefee2af186fc1678602b8a6ac6ca",
+      "auditOnlyCommit": "cae69709e12739b6d9f9a1532850e479432ebf0e",
+      "auditOnlyCommitFiles": [
+        "docs/locale-candidates-20261008/resume-summary.json",
+        "docs/locale-candidates-20261008/scheduled-mode.json"
+      ],
+      "candidatePackFilesChangedByRun150": false
     },
     "candidateAudit": {
       "completedCount": 97,
@@ -1354,5 +1360,46 @@
     "run": 43463486862,
     "conclusion": "success",
     "headCommit": "bae9a330c1dc99fcc72aae7dbeb314863d562cec"
+  },
+  "run16CandidateHistoryReconciliation": {
+    "checkedAt": "2026-11-13T16:34:23Z",
+    "run150AuditOnlyCommit": {
+      "sha": "cae69709e12739b6d9f9a1532850e479432ebf0e",
+      "files": [
+        "docs/locale-candidates-20261008/resume-summary.json",
+        "docs/locale-candidates-20261008/scheduled-mode.json"
+      ],
+      "localePacksChanged": false,
+      "translationRequestsSent": 0,
+      "historicalQuotaSignal": "The audit-only status recorded production speech verification HTTP 503 daily free AI allocation exhausted; this was not a translation quota probe."
+    },
+    "candidateBranchCurrentHead": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
+    "commitsAfterRun150": [
+      "409d62524f7466047e2ec2e22d27431fb8127a02",
+      "dc667cc3778f84c87b0f64fe68470a0df75b9a13",
+      "d17a414c162c346f567927f9368c80ba0caf26a8",
+      "e01c271e2a776cb7ef75eba589a3736d53c3df98",
+      "d867608ef12951beb4f9d2778c7923ed1947f5b8",
+      "fd9a7e0dbdb6fe26f5f7f59a2530cace4cf03387",
+      "1c22837b32864d8a8499f57ba50ab19e64e55536",
+      "cef6d804eb06d0c57d2e7c73650056d9edb26569"
+    ],
+    "preservedWork": [
+      "Arabic candidate reviewed-label alignment commit 409d6252",
+      "Partial Divehi repair commit d17a414c; 48 successful repair translations were preserved before later backend failure",
+      "Latest candidate audit remains 97/98 with dv english_overlap:58"
+    ],
+    "branchFilesChangedSinceRun150": [
+      "docs/locale-candidates-20261008/ar.json",
+      "docs/locale-candidates-20261008/dv.json",
+      "docs/locale-candidates-20261008/progress.json",
+      "docs/locale-candidates-20261008/resume-latest.log",
+      "docs/locale-candidates-20261008/resume-summary.json"
+    ],
+    "progressJsonInterpretation": "progress.json completed=[] is run-scoped progress from the failed Divehi attempt, not the global candidate count. build_current_locale_delta.py writes this file but does not read it to decide which candidate packs are complete; resume-summary.json is the global audit.",
+    "candidateBranchModifiedThisRun": false,
+    "candidatePacksModifiedThisRun": false,
+    "translationRequestsSentThisRun": 0,
+    "quotaBypassAttempted": false
   }
 }
