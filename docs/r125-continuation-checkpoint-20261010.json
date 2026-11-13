@@ -236,18 +236,20 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-11-13T14:13:20+01:00",
+    "checkedAt": "2026-11-13T18:25:19Z",
     "candidateCommit": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
     "completedCount": 97,
     "remainingCount": 1,
     "firstFailure": "dv",
     "failureReason": "english_overlap:58",
     "latestProviderBlocker": "A one-string Dhivehi probe returned 200 via Gemma, but the first guarded batch of 2 returned HTTP 503 all_translation_backends_unavailable and its split single request stalled until a controlled timeout",
-    "quotaStillBlocked": false,
+    "quotaStillBlocked": null,
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false,
-    "note": "Fresh read of branch summary and resume-latest.log: no staged translations (STAGED_ONLY 0), one failed language, last log dated Oct 30; candidate branch HEAD unchanged. Latest main R125 #150 completed successfully but skipped translation step. Current translation service was not probed."
+    "note": "Freshly read summary/log unchanged (summary timestamp Oct 30; STAGED_ONLY 0; FAILED 1); current quota was not queried and no candidate pack was edited.",
+    "quotaStatusCurrent": "unknown-not-probed",
+    "knownDailyFreeAiLimitBlocker": true
   },
   "builderRepair": {
     "commit": "634a0d31cb571300d658bb24580bdad3cbaeb75b",
@@ -295,9 +297,9 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-13T16:34:23Z",
-    "mainProvenanceCommit": "5aca0c0f9d15706934531add3025f92893dfa48b",
-    "mainCheckpointBlobBeforeUpdate": "6bce52484854e9a1c076fb3bf427667ed593ea4f",
+    "checkedAt": "2026-11-13T18:25:19Z",
+    "mainProvenanceCommit": "f15a04598170af0fe3ed353778f647908fe6beb7",
+    "mainCheckpointBlobBeforeUpdate": "6ab91cfc0495f0dcc7d89eadfacc640832047c9c",
     "candidateBranchHead": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
     "candidateSummaryBlob": "3afb7c9b4335deb1eef550630a96ef04165f886c",
     "candidateLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
@@ -325,9 +327,9 @@
         "translationRequestsSent": 0
       },
       "activeRunFound": false,
-      "activeRunsCheck": "Repository-wide Actions query for status=in_progress returned zero runs at 2026-11-13T16:57:54+01:00",
+      "activeRunsCheck": "GitHub Actions status=in_progress query returned 0 repository runs at 2026-11-13T18:25:19Z; today's 24 runs and latest 100 runs contain no newer R125 resume.",
       "candidateWritesDeferred": false,
-      "note": "Run #150 used audit-only mode. It wrote only resume-summary.json and scheduled-mode.json, not locale packs. The current workflow revision has not yet had a newer resume run; the R125 staged-render workflow is separate.",
+      "note": "No R125 run is active; no candidate write or translation was initiated in this audit. Latest candidate branch files were read directly; packs remain unchanged.",
       "currentTrigger": "workflow_dispatch only",
       "latestKnownRun": 150,
       "latestWorkflowRevisionCommit": "0160c0f0cbbbefee2af186fc1678602b8a6ac6ca",
@@ -351,7 +353,7 @@
       },
       "scriptWarningLanguages": 83,
       "scriptWarningCount": 142,
-      "warningTriage": "New diagnostic categories now distinguish reserved identifier mutations, date/version formatting, case/punctuation-only changes, Latin-only or mixed values without the target script, and wrong/unverified scripts. Findings are not suppressed; all warnings remain review-blocking.",
+      "warningTriage": "Categories distinguish reserved identifier mutations, date/version formatting, case/punctuation-only changes, Latin-only or mixed values without target script, and wrong/unverified scripts; warnings remain review-blocking.",
       "published": false,
       "linguisticAccuracyCertified": false,
       "readyForLinguisticReview": false
@@ -361,7 +363,7 @@
       "translationRequestsSentThisRun": 0,
       "quotaBypassAttempted": false,
       "lastObservedFailure": "HTTP 503 all_translation_backends_unavailable; earlier Google HTTP 429 remains un-retried",
-      "dailyFreeAiLimit": "historically observed; not re-probed",
+      "dailyFreeAiLimit": "historically observed; current quota not re-probed",
       "candidateBranchModifiedThisRun": false,
       "quotaProbeSent": false
     },
@@ -481,7 +483,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-13T17:07:25Z",
+  "checkedAt": "2026-11-13",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -624,25 +626,17 @@
     "physicalDeviceCertified": false
   },
   "latestAIAvailability": {
-    "checkedAt": "2026-11-12T16:51:22Z",
-    "status": "passed_on_limited_live_probes",
-    "chatLanguages": [
-      "fr",
-      "ar",
-      "es",
-      "ja"
-    ],
-    "audioLanguages": [
-      "ar",
-      "fr",
-      "en"
-    ],
-    "checkedToday": false,
-    "sourceRun": 43263096001,
-    "note": "Today's scheduled health run does not test AI; no fresh POST probe was sent to avoid quota/capacity consumption."
+    "checkedAt": "2026-11-13T18:25:19Z",
+    "status": "unknown-currently",
+    "lastDirectProbe": "2026-11-13T13:18:20+01:00 English/Arabic HTTP 200",
+    "checkedToday": true,
+    "sourceRun": 43463488541,
+    "sourceRunLiveAiProbe": "skipped by policy",
+    "freshChatGenerationProbe": false,
+    "note": "R105 #79 verified health, country and safety but skipped live chat generation; no current AI generation availability claim."
   },
   "latestRunInspection": {
-    "checkedAt": "2026-11-13T13:18:20+01:00",
+    "checkedAt": "2026-11-13T18:25:19Z",
     "r125Run": {
       "id": 38971104197,
       "runNumber": 150,
@@ -674,18 +668,33 @@
       "auditOnlyWritesStatusAndSummary": true,
       "translationQuotaProbed": false
     },
-    "dvOverlapDiagnosis": {
-      "count": 58,
-      "method": "same structural audit suspicious_overlap: English word sequence contiguous match >=5",
-      "finding": "Several Dhivehi entries keep an entire English opening sentence and translate only the later sentence(s); these are genuine partial translations, not harmless product labels.",
-      "examples": [
-        "Fallback for unsupported eSIM devices. Registration rules, operators and pricing can change, so confirm current local requirements.",
-        "print this page and place it at reception, entrances, rooms, events or service desks.",
-        "paid calls, paid APIs, paid verification, ads, subscriptions or company payments require an owner notice first. Auto Recharge remains OFF.",
-        "You survived the crash, recovered basic gear, reached water and built a small fire. The next part goes deeper into the jungle and becomes harder."
-      ],
-      "action": "No candidate values edited; retranslation still requires the authorized translation endpoint and available quota."
-    }
+    "latestCandidateBranch": {
+      "head": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
+      "summaryBlob": "3afb7c9b4335deb1eef550630a96ef04165f886c",
+      "summaryCheckedAt": "2026-10-30T00:57:30.623858+00:00",
+      "resumeLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
+      "resumeLogLastDate": "2026-10-30",
+      "staged": 0,
+      "failed": 1
+    },
+    "todayActions": {
+      "date": "2026-11-13",
+      "total": 24,
+      "latestPagesRun": 43469998835,
+      "latestPagesNumber": 1489,
+      "latestPagesConclusion": "success",
+      "latestR105Run": 43463488541,
+      "latestR105Number": 79,
+      "latestR105Conclusion": "success",
+      "latestAudioRun": 43456938311,
+      "latestAudioNumber": 64,
+      "latestAudioConclusion": "success",
+      "latestHealthRun": 43382989023,
+      "latestHealthNumber": 318,
+      "latestHealthConclusion": "success",
+      "newerR125Resume": false
+    },
+    "activeRunsAtCheck": 0
   },
   "workflowRunInspection": {
     "checkedAt": "2026-11-13T13:13:20Z",
@@ -763,12 +772,13 @@
     "linguisticAccuracyCertified": false
   },
   "translationAvailabilityCurrent": {
-    "checkedAt": "2026-11-13T13:13:20Z",
+    "checkedAt": "2026-11-13T18:25:19Z",
     "status": "not_probed",
     "latestRecordedApiFailure": "HTTP 503 all_translation_backends_unavailable",
     "priorGoogleFallback": "HTTP 429",
-    "dailyFreeAiLimit": "historical blocker; not queried this run",
-    "action": "No translation request or quota probe sent"
+    "dailyFreeAiLimit": "historical blocker; current quota not queried",
+    "requestsThisRun": 0,
+    "quotaBypassAttempted": false
   },
   "productionVerification": {
     "checkedAt": "2026-11-13T13:20:00Z",
@@ -1356,10 +1366,11 @@
     "effect": "Improves diagnosis only; does not make any pack ready for linguistic review or publication."
   },
   "latestPagesDeployment": {
-    "checkedAt": "2026-11-13T16:31:46Z",
-    "run": 43463486862,
+    "checkedAt": "2026-11-13T17:10:19Z",
+    "run": 43469998835,
+    "runNumber": 1489,
     "conclusion": "success",
-    "headCommit": "bae9a330c1dc99fcc72aae7dbeb314863d562cec"
+    "headCommit": "f15a04598170af0fe3ed353778f647908fe6beb7"
   },
   "run16CandidateHistoryReconciliation": {
     "checkedAt": "2026-11-13T16:34:23Z",
@@ -1503,5 +1514,71 @@
     "allLanguageAndSectionCertification": false,
     "finalApproval": false,
     "action": "Fresh read plus independent exact 58-overlap recomputation; fetched latest R105/R123 job logs; no translation request, AI generation probe, quota probe, candidate edit, publish or deployment."
+  },
+  "run18IndependentAudit": {
+    "checkedAt": "2026-11-13T18:25:19Z",
+    "filesRead": [
+      "main:docs/r125-continuation-checkpoint-20261010.json",
+      "candidate branch:docs/locale-candidates-20261008/resume-summary.json",
+      "candidate branch:docs/locale-candidates-20261008/resume-latest.log",
+      "main:.github/workflows/r125-hourly-candidate-resume.yml"
+    ],
+    "mainHead": "f15a04598170af0fe3ed353778f647908fe6beb7",
+    "candidateBranchHead": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
+    "candidateSummaryBlob": "3afb7c9b4335deb1eef550630a96ef04165f886c",
+    "candidateLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
+    "r125Run": {
+      "id": 38971104197,
+      "number": 150,
+      "status": "completed",
+      "conclusion": "success",
+      "resumeStep": "skipped",
+      "translationRequests": 0
+    },
+    "r125CurrentTrigger": "workflow_dispatch only; run_translations default false",
+    "activeActions": 0,
+    "todayActions": 24,
+    "newerR125Run": false,
+    "pages": {
+      "id": 43469998835,
+      "number": 1489,
+      "conclusion": "success",
+      "headCommit": "f15a04598170af0fe3ed353778f647908fe6beb7"
+    },
+    "r105": {
+      "id": 43463488541,
+      "number": 79,
+      "conclusion": "success",
+      "health": "R107_DEPLOY_HEALTH_PASS",
+      "quotaBoundary": "PASS",
+      "candidateTriage": "PASS",
+      "countryIceland": "PASS",
+      "weaponSale": "blocked/reviewRequired",
+      "liveChatProbes": "skipped"
+    },
+    "audio": {
+      "id": 43456938311,
+      "number": 64,
+      "conclusion": "success",
+      "categoryTranslations": "PASS",
+      "headlessAcknowledgement": "PASS",
+      "dynamicPlaceholders": [
+        "fr",
+        "ar"
+      ],
+      "liveTtsAsr": "skipped"
+    },
+    "health": {
+      "id": 43382989023,
+      "number": 318,
+      "conclusion": "success",
+      "scope": "API/home, robots/sitemap, 18 pages HTTP 200"
+    },
+    "aiCurrent": "unknown-not-probed; latest English/Arabic direct HTTP 200 at 13:18; R105 #79 skipped live chat",
+    "translationCurrent": "unknown-not-probed; last failure 503, previous Google 429, daily_free_ai_limit historically observed",
+    "noTranslationOrQuotaProbe": true,
+    "noCandidatePackEdit": true,
+    "noPublish": true,
+    "noPhysicalAudioClaim": true
   }
 }
