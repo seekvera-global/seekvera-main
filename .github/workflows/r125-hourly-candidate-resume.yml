@@ -32,9 +32,13 @@ jobs:
         run: |
           git fetch origin main:refs/remotes/origin/main
           git show origin/main:worker.js > /tmp/seekvera-validation-worker.js
-          for file in tools/build_current_locale_delta.py tools/audit_locale_candidates.py tools/audit-candidate-scripts.cjs; do
+          for file in tools/build_current_locale_delta.py tools/audit_locale_candidates.py tools/audit-candidate-scripts.cjs tools/test-candidate-script-triage.cjs; do
             git show "origin/main:$file" > "$file"
           done
+      - name: Verify candidate warning triage without translation requests
+        env:
+          WORKER_VALIDATOR_SOURCE: /tmp/seekvera-validation-worker.js
+        run: node tools/test-candidate-script-triage.cjs
       - name: Resume public UI candidates
         if: github.event_name == 'workflow_dispatch' && inputs.run_translations
         shell: bash
