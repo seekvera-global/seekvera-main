@@ -82,7 +82,7 @@ jobs:
       - name: Certify live production health and optional AI
         shell: bash
         env:
-          RUN_LIVE_AI_PROBES: ${{ github.event_name == 'workflow_dispatch' && inputs.run_live_ai_probes }}
+          RUN_LIVE_AI_PROBES: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_live_ai_probes == 'true' }}
         run: |
           set -euo pipefail
           BASE='https://seekveraglobal.com'
