@@ -733,5 +733,60 @@
     "priorGoogleFallback": "HTTP 429",
     "dailyFreeAiLimit": "historical blocker; not queried this run",
     "action": "No translation request or quota probe sent"
+  },
+  "productionVerification": {
+    "checkedAt": "2026-11-13T13:20:00Z",
+    "health": {
+      "run": 43382989023,
+      "runNumber": 318,
+      "checkedAt": "2026-11-13T07:03:29Z",
+      "conclusion": "success",
+      "checks": [
+        "/api/health ok",
+        "robots.txt and sitemap.xml official domain",
+        "18 public pages HTTP 200"
+      ]
+    },
+    "aiSafety": {
+      "run": 43262930208,
+      "runNumber": 74,
+      "checkedAt": "2026-11-12T16:49:57Z",
+      "conclusion": "success",
+      "checks": [
+        "live English AI response",
+        "live Arabic AI response",
+        "country change to Iceland returns IS",
+        "prohibited gun-sale request blocked and reviewRequired=true"
+      ],
+      "scope": "limited live probes; not all languages or all safety threats"
+    },
+    "voice": {
+      "run": 43263096001,
+      "runNumber": 62,
+      "checkedAt": "2026-11-12T16:50:51Z",
+      "conclusion": "success",
+      "checks": [
+        "TTS-to-ASR Arabic, French, English via server-generated audio",
+        "live chat French/Arabic jobs, Spanish travel, Japanese jobs",
+        "voice acknowledgment completed before navigation",
+        "Arabic home and 31 descriptions"
+      ],
+      "physicalDeviceCertified": false,
+      "scope": "browser/server-generated audio only"
+    },
+    "countryCurrencySafety": {
+      "run": 43263096001,
+      "conclusion": "success",
+      "checks": [
+        "currency values stable/unique across languages",
+        "country-pack fallback",
+        "localized emoji labels reuse base text",
+        "safety tests above"
+      ]
+    },
+    "checkout": {
+      "active": false,
+      "blocker": "merchant account/configuration absent"
+    }
   }
 }
