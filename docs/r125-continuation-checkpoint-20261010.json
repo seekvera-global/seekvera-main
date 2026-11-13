@@ -1236,15 +1236,22 @@
     "rootCause": "The R123 gate assertions had been inserted as a literal escaped newline sequence inside the JavaScript test file.",
     "repair": {
       "branch": "fix/r126-quota-safe-ai-20261113",
-      "commit": "6c2b26f508adc426b9894bc410b76966010b9647",
+      "commit": "282bf027dfd1d08a11e16a16f323f30fb5b639b4",
       "file": "tools/test-ai-quota-boundary.cjs",
-      "change": "Replaced the literal \\\\n sequence with an actual source newline; re-read the file and verified the R123 input regex and gate assertions are on separate valid lines.",
+      "change": "Removed both literal escaped newline sequences from the JavaScript assertions: the initial malformed separator at line 52 and a second malformed continuation in the R123 gate assertion. The final source now has valid separate lines; only the intentional '\\\\n' inside the vm.runInContext string remains.",
       "manualStaticChecks": "R105/R123 default-false inputs, opt-in step conditions, no HTTP retry loops, Workers AI model assertions and quota classification cases all pass."
     },
     "nextValidation": "Fast-forward the corrected test to main; R105 should rerun with AI probes skipped by default. Do not rerun R123 live audio probes.",
     "candidateBranchModified": false,
     "translationRequestsSent": 0,
     "quotaProbeSent": false,
-    "additionalAiProbeSent": false
+    "additionalAiProbeSent": false,
+    "additionalIssueFound": "A second literal \\\\n sequence remained inside the multi-line assert.ok call after the first repair; it was found by scanning the final source for escaped-newline tokens and corrected before rerunning CI.",
+    "testSourceInspection": {
+      "literalBackslashNOccurrences": 1,
+      "onlyOccurrence": "Intentional newline escape inside vm.runInContext string literal",
+      "r123GateAssertionsSeparated": true,
+      "noCandidateFilesChanged": true
+    }
   }
 }
