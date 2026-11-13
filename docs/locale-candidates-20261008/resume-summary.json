@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-30T00:57:30.623858+00:00",
+  "checkedAt": "2026-11-13T23:23:32Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -110,30 +110,6 @@
     ]
   },
   "scriptWarnings": {
-    "ar": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "fr": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-AAAAMMJJ-XXXXXXXX"
-        }
-      ]
-    },
     "zh": {
       "count": 1,
       "sources": [
@@ -143,18 +119,6 @@
         {
           "source": "© SEEKVERA ·",
           "value": "© SEEKVERA·"
-        }
-      ]
-    },
-    "es": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-AAAAMMDD-XXXXXXX"
         }
       ]
     },
@@ -175,60 +139,11 @@
         }
       ]
     },
-    "pt": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-AAAAMMDD-XXXXXXX"
-        }
-      ]
-    },
-    "de": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-JJJJMMTT-XXXXXXXX"
-        }
-      ]
-    },
-    "tr": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYAMMDD-XXXXXXXX"
-        }
-      ]
-    },
-    "ru": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-ГГГГММДД-XXXXXXXX"
-        }
-      ]
-    },
     "ur": {
-      "count": 3,
+      "count": 2,
       "sources": [
         "REAL 3D BUILD",
-        "2026-09-26 · R74",
-        "SV-YYYYMMDD-XXXXXXXX"
+        "2026-09-26 · R74"
       ],
       "examples": [
         {
@@ -238,72 +153,26 @@
         {
           "source": "2026-09-26 · R74",
           "value": "26-09-2026 · R74"
-        },
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
         }
       ]
     },
     "bn": {
-      "count": 2,
+      "count": 1,
       "sources": [
-        "Message SEEKVERA AI…",
-        "SV-YYYYMMDD-XXXXXXXX"
+        "Message SEEKVERA AI…"
       ],
       "examples": [
         {
           "source": "Message SEEKVERA AI…",
           "value": "SEEKVERA AI…"
-        },
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "vi": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXX"
-        }
-      ]
-    },
-    "it": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-AAAAMMGG-XXXXXXX"
-        }
-      ]
-    },
-    "sw": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
         }
       ]
     },
     "fa": {
-      "count": 4,
+      "count": 3,
       "sources": [
         "Open QR →",
         "2026-09-26 · R74",
-        "SV-YYYYMMDD-XXXXXXXX",
         "📰 SEEKVERA NEWS & MEDIA"
       ],
       "examples": [
@@ -316,107 +185,18 @@
           "value": "26-09-2026 · R74"
         },
         {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        },
-        {
           "source": "📰 SEEKVERA NEWS & MEDIA",
           "value": "📰 SEEKVERA News & MEDIA"
         }
       ]
     },
-    "pl": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-RRRRMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "nl": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-JJJJMMDD-XXXXXXX"
-        }
-      ]
-    },
-    "ms": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "fil": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "ha": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "yo": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "ig": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        }
-      ]
-    },
     "am": {
-      "count": 6,
+      "count": 5,
       "sources": [
         "Open QR →",
         "Find Wi-Fi →",
         "✨ Ask SEEKVERA AI",
         "Speak to SEEKVERA AI",
-        "SV-YYYYMMDD-XXXXXXXX",
         "Share and install SEEKVERA"
       ],
       "examples": [
@@ -435,10 +215,6 @@
         {
           "source": "Speak to SEEKVERA AI",
           "value": "SEEKVERA AI"
-        },
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "ኤስቪ-አአአአህህወ-XXXXXXXXX"
         }
       ]
     },
@@ -455,11 +231,10 @@
       ]
     },
     "el": {
-      "count": 3,
+      "count": 2,
       "sources": [
         "AI Deal Agent",
-        "2026-09-26 · R74",
-        "SV-YYYYMMDD-XXXXXXXX"
+        "2026-09-26 · R74"
       ],
       "examples": [
         {
@@ -469,10 +244,6 @@
         {
           "source": "2026-09-26 · R74",
           "value": "26-09-2026 · R74"
-        },
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
         }
       ]
     },
@@ -488,253 +259,27 @@
         }
       ]
     },
-    "ro": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-AAAAMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "cs": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-RRRRMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "sk": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-RRRRMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "hu": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-ÉÉÉÉHHNN-XXXXXXXX"
-        }
-      ]
-    },
-    "sv": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-ÅÅÅÅMMDD-XXXXXXXX"
-        }
-      ]
-    },
-    "no": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-ÅÅÅÅMMDD-XXXXXXXX"
-        }
-      ]
-    },
-    "da": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-ÅÅÅÅMMDD-XXXXXXXX"
-        }
-      ]
-    },
-    "fi": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-VVVVKKPP-XXXXXXXX"
-        }
-      ]
-    },
-    "bg": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-ГГГГММДД-XXXXXXXX"
-        }
-      ]
-    },
-    "hr": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-GGGGMMDD-XXXXXXXX"
-        }
-      ]
-    },
-    "sr": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "СВ-ГГГГММДД-КСКСКСКСКСКСКСКСКС"
-        }
-      ]
-    },
-    "sl": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-LLLLMMDD-XXXXXXXX"
-        }
-      ]
-    },
-    "lv": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-GGGGMMDD-XXXXXXXX"
-        }
-      ]
-    },
-    "ca": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-AAAAMMDD-XXXXXXXX"
-        }
-      ]
-    },
-    "is": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-ÁÁÁÁMMDD-XXXXXXXX"
-        }
-      ]
-    },
-    "sq": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXXX"
-        }
-      ]
-    },
     "mk": {
-      "count": 2,
+      "count": 1,
       "sources": [
-        "2026-09-26 · R74",
-        "SV-YYYYMMDD-XXXXXXXX"
+        "2026-09-26 · R74"
       ],
       "examples": [
         {
           "source": "2026-09-26 · R74",
           "value": "26.09.2026 · R74"
-        },
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
         }
       ]
     },
     "ka": {
-      "count": 2,
+      "count": 1,
       "sources": [
-        "SEEKVERA finder",
-        "SV-YYYYMMDD-XXXXXXXX"
+        "SEEKVERA finder"
       ],
       "examples": [
         {
           "source": "SEEKVERA finder",
           "value": "SEEKVERA Finder"
-        },
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "hy": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "az": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
         }
       ]
     },
@@ -778,10 +323,9 @@
       ]
     },
     "tg": {
-      "count": 3,
+      "count": 2,
       "sources": [
         "2026-09-26 · R74",
-        "SV-YYYYMMDD-XXXXXXXX",
         "📰 SEEKVERA NEWS & MEDIA"
       ],
       "examples": [
@@ -790,26 +334,17 @@
           "value": "26-09-2026 · R74"
         },
         {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        },
-        {
           "source": "📰 SEEKVERA NEWS & MEDIA",
           "value": "📰 SEEKVERA News & MEDIA"
         }
       ]
     },
     "ne": {
-      "count": 2,
+      "count": 1,
       "sources": [
-        "SV-YYYYMMDD-XXXXXXXX",
         "SEEKVERA • JUNGLE SURVIVOR"
       ],
       "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        },
         {
           "source": "SEEKVERA • JUNGLE SURVIVOR",
           "value": "SEEKVERA • JUNGLE Survivor"
@@ -839,19 +374,14 @@
       ]
     },
     "ta": {
-      "count": 2,
+      "count": 1,
       "sources": [
-        "Open QR →",
-        "SV-YYYYMMDD-XXXXXXXX"
+        "Open QR →"
       ],
       "examples": [
         {
           "source": "Open QR →",
           "value": "QR →"
-        },
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
         }
       ]
     },
@@ -873,13 +403,12 @@
       ]
     },
     "my": {
-      "count": 8,
+      "count": 7,
       "sources": [
         "AI VISION",
         "Open QR →",
         "Message SEEKVERA AI",
         "Message SEEKVERA AI…",
-        "SV-YYYYMMDD-XXXXXXXX",
         "Prohibited on SEEKVERA",
         "About SEEKVERA — SEEKVERA",
         "🤝 Owner Control · Zero‑Cost‑First · Safety Gated"
@@ -900,10 +429,6 @@
         {
           "source": "Message SEEKVERA AI…",
           "value": "SEEKVERA AI…"
-        },
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
         }
       ]
     },
@@ -919,48 +444,11 @@
         }
       ]
     },
-    "zu": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "af": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-JJJJMMDD-XXXXXXXX"
-        }
-      ]
-    },
-    "bs": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-GGGGMMDD-XXXXXXXXX"
-        }
-      ]
-    },
     "dz": {
-      "count": 4,
+      "count": 3,
       "sources": [
         "Play inside SEEKVERA",
         "Search with SEEKVERA",
-        "SV-YYYYMMDD-XXXXXXXX",
         "Share and install SEEKVERA"
       ],
       "examples": [
@@ -973,170 +461,28 @@
           "value": "SEEKVERA"
         },
         {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "ཨེསི་ཝི་-ཡ་ཡ་ཡ་ཨེམ་ཨེམ་ཌི་-ཨེགསི་ཨེགསི་ཨེགསི་"
-        },
-        {
           "source": "Share and install SEEKVERA",
           "value": "SEEKVERA"
         }
       ]
     },
-    "fo": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-ÁÁÁÁMMDD-XXXXXXXX"
-        }
-      ]
-    },
-    "kl": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-Ukioq-XXXXXXXX"
-        }
-      ]
-    },
-    "sm": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "to": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-TA'UYMMDD-XXXXXXXX"
-        }
-      ]
-    },
-    "so": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "mt": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-SSSSMMJJ-XXXXXXXX"
-        }
-      ]
-    },
-    "mg": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "eu": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-AAAAMMDD-XXXXXXXX"
-        }
-      ]
-    },
-    "gl": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-AAAAMMDD-XXXXXXXX"
-        }
-      ]
-    },
     "te": {
-      "count": 2,
+      "count": 1,
       "sources": [
-        "Open QR →",
-        "SV-YYYYMMDD-XXXXXXXX"
+        "Open QR →"
       ],
       "examples": [
         {
           "source": "Open QR →",
           "value": "QR →"
-        },
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "ml": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "mr": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
         }
       ]
     },
     "gu": {
-      "count": 3,
+      "count": 2,
       "sources": [
         "SEEKVERA GUIDE",
-        "2026-09-26 · R74",
-        "SV-YYYYMMDD-XXXXXXXX"
+        "2026-09-26 · R74"
       ],
       "examples": [
         {
@@ -1146,17 +492,12 @@
         {
           "source": "2026-09-26 · R74",
           "value": "26-09-2026 · R74"
-        },
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
         }
       ]
     },
     "pa": {
-      "count": 18,
+      "count": 17,
       "sources": [
-        "SV-YYYYMMDD-XXXXXXXX",
         "Open matching section",
         "CROSS-BORDER LOGISTICS",
         "Pop colorful balloons.",
@@ -1177,10 +518,6 @@
       ],
       "examples": [
         {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        },
-        {
           "source": "Open matching section",
           "value": "खोल मेलिंग खंड"
         },
@@ -1199,12 +536,11 @@
       ]
     },
     "ps": {
-      "count": 4,
+      "count": 3,
       "sources": [
         "SEEKVERA —",
         "Zero‑Cost Mode",
-        "2026-09-26 · R74",
-        "SV-YYYYMMDD-XXXXXXXX"
+        "2026-09-26 · R74"
       ],
       "examples": [
         {
@@ -1218,118 +554,6 @@
         {
           "source": "2026-09-26 · R74",
           "value": "26-09-2026 · R74"
-        },
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "ga": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXX"
-        }
-      ]
-    },
-    "cy": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXX"
-        }
-      ]
-    },
-    "mi": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "fy": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-JJJJMMDD-XXXXXXXX"
-        }
-      ]
-    },
-    "lb": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-JJJJMMDD-XXXXXXXX"
-        }
-      ]
-    },
-    "rm": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-AAAAAAMMD-XXXXXXXX"
-        }
-      ]
-    },
-    "ku": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "st": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD-XXXXXXXXX"
-        }
-      ]
-    },
-    "tn": {
-      "count": 1,
-      "sources": [
-        "SV-YYYYMMDD-XXXXXXXX"
-      ],
-      "examples": [
-        {
-          "source": "SV-YYYYMMDD-XXXXXXXX",
-          "value": "SV-YYYYMMDD (XXXXXXXXXXXXXXX"
         }
       ]
     }
@@ -1340,5 +564,22 @@
   "linguisticAccuracyCertified": false,
   "scope": "Source coverage, reviewed labels, long English overlap and script screening. Structural completeness does not certify translation quality.",
   "resumeSucceeded": false,
-  "readyForLinguisticReview": false
+  "readyForLinguisticReview": false,
+  "deterministicRepair": {
+    "checkedAt": "2026-11-13T23:23:32Z",
+    "commit": "e140ffb2de0273abb9971ab72b1eae6d7310013a",
+    "baseCandidateCommit": "4fe9c7c8f0ad4a780b90560b066fc934d27d82dd",
+    "immutableKey": "SV-YYYYMMDD-XXXXXXXX",
+    "localesChanged": 73,
+    "localeAlreadyCorrect": "ar",
+    "occurrencesReplaced": 73,
+    "sourceFileChanged": false,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "publication": false,
+    "linguisticCertification": false,
+    "validation": "Git compare confirms 73 locale files each have exactly one line changed (one replacement); five sampled packs retain 1,118 keys and exact immutable value."
+  },
+  "scriptWarningCount": 68,
+  "scriptWarningLanguages": 25
 }
