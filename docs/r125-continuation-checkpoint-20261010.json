@@ -293,8 +293,8 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-13T12:26:00+01:00",
-    "mainProvenanceCommit": "18b9599977f519d1e693eb6d35dcce2f6fdb2c6c",
+    "checkedAt": "2026-11-13T13:18:20+01:00",
+    "mainProvenanceCommit": "02742ab6169fc1d6669eb0afc291e6fa00be72d2",
     "candidateBranchHead": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
     "workflow": {
       "latestRun": 150,
@@ -302,8 +302,20 @@
       "conclusion": "success",
       "createdAt": "2026-10-16T21:41:54Z",
       "activeRun": false,
-      "mode": "workflow_dispatch; translations explicitly gated; audit-only default",
-      "candidateWritesDeferred": false
+      "mode": "current workflow_dispatch; run_translations explicit true; audit-only default",
+      "candidateWritesDeferred": false,
+      "event": "push",
+      "resumeStep": "skipped",
+      "auditStep": "success",
+      "auditResult": {
+        "completedCount": 97,
+        "remaining": [
+          "dv"
+        ],
+        "resumeSucceeded": false,
+        "readyForLinguisticReview": false,
+        "translationRequestsSent": 0
+      }
     },
     "candidateAudit": {
       "completedCount": 97,
@@ -426,7 +438,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-13T12:26:00+01:00",
+  "checkedAt": "2026-11-13T13:18:20+01:00",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -592,5 +604,51 @@
     "checkedToday": false,
     "sourceRun": 43263096001,
     "note": "Today's scheduled health run does not test AI; no fresh POST probe was sent to avoid quota/capacity consumption."
+  },
+  "latestRunInspection": {
+    "checkedAt": "2026-11-13T13:18:20+01:00",
+    "r125Run": {
+      "id": 38971104197,
+      "runNumber": 150,
+      "event": "push",
+      "createdAt": "2026-10-16T21:41:54Z",
+      "conclusion": "success",
+      "jobId": 117209410195,
+      "resumeStep": "skipped",
+      "auditStep": "success",
+      "auditSummary": {
+        "completedCount": 97,
+        "remaining": [
+          "dv"
+        ],
+        "resumeSucceeded": false,
+        "readyForLinguisticReview": false,
+        "exitCode": "not-run"
+      },
+      "translationRequestsSent": 0,
+      "artifactId": 12077720489,
+      "candidateBranchCommitAtRun": "cae6970",
+      "currentCandidateBranchHead": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
+      "activeRun": false
+    },
+    "currentResumeWorkflow": {
+      "trigger": "workflow_dispatch only",
+      "translationInputDefault": false,
+      "translationStepRequiresExplicitTrue": true,
+      "auditOnlyWritesStatusAndSummary": true,
+      "translationQuotaProbed": false
+    },
+    "dvOverlapDiagnosis": {
+      "count": 58,
+      "method": "same structural audit suspicious_overlap: English word sequence contiguous match >=5",
+      "finding": "Several Dhivehi entries keep an entire English opening sentence and translate only the later sentence(s); these are genuine partial translations, not harmless product labels.",
+      "examples": [
+        "Fallback for unsupported eSIM devices. Registration rules, operators and pricing can change, so confirm current local requirements.",
+        "print this page and place it at reception, entrances, rooms, events or service desks.",
+        "paid calls, paid APIs, paid verification, ads, subscriptions or company payments require an owner notice first. Auto Recharge remains OFF.",
+        "You survived the crash, recovered basic gear, reached water and built a small fire. The next part goes deeper into the jungle and becomes harder."
+      ],
+      "action": "No candidate values edited; retranslation still requires the authorized translation endpoint and available quota."
+    }
   }
 }
