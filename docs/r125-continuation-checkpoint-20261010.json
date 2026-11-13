@@ -668,7 +668,7 @@
     "note": "R105 #79 log confirms RUN_LIVE_AI_PROBES=false and AI_PROBES_SKIPPED_BY_POLICY. It did perform country-change and safety classifier requests, but these do not prove general chat generation availability. No quota-consuming chat probe was sent this continuation."
   },
   "latestRunInspection": {
-    "checkedAt": "2026-11-13T21:38:10Z",
+    "checkedAt": "2026-11-13T21:43:10Z",
     "r125Run": {
       "id": 38971104197,
       "runNumber": 150,
@@ -712,11 +712,11 @@
     "todayActions": {
       "date": "2026-11-13",
       "total": 24,
-      "latestPagesRun": 43503887580,
-      "latestPagesNumber": 1495,
+      "latestPagesRun": 43513061573,
+      "latestPagesNumber": 1499,
       "latestPagesConclusion": "success",
-      "latestR105Run": 43463488541,
-      "latestR105Number": 79,
+      "latestR105Run": 43513062247,
+      "latestR105Number": 80,
       "latestR105Conclusion": "success",
       "latestAudioRun": 43456938311,
       "latestAudioNumber": 64,
@@ -1335,33 +1335,23 @@
     }
   },
   "latestProductionRelease": {
-    "checkedAt": "2026-11-13T16:31:30Z",
-    "run": 43463488541,
-    "runNumber": 79,
+    "checkedAt": "2026-11-13T21:42:23Z",
+    "run": 43513062247,
+    "runNumber": 80,
     "conclusion": "success",
-    "headCommit": "bae9a330c1dc99fcc72aae7dbeb314863d562cec",
-    "deployedWorkerVersion": "fb2a3f89-1342-40a7-b573-6765181fcdc3",
+    "headCommit": "dfc39a34de5cc94e7b842d9d1fbfdc6d19b2c5d7",
+    "deployedWorkerVersion": "from run #80 logs",
     "health": "R107_DEPLOY_HEALTH_PASS",
     "liveChecks": {
       "apiHealthAndAiBinding": "passed",
-      "centralSafetyGate": "enabled",
-      "failClosed": "true",
-      "countryChangeToIceland": "passed",
-      "prohibitedWeaponSale": "blocked; reviewRequired=true; route=null"
+      "centralSafetyGate": "enabled/fail-closed",
+      "countryChangeToIceland": "passed IS",
+      "prohibitedWeaponSale": "blocked reviewRequired=true route=null",
+      "quotaBoundaryTests": "R76_QUOTA_BOUNDARY_PASS"
     },
-    "liveAiChatProbes": "skipped by policy; current chat generation remains unverified",
-    "quotaBoundaryTests": "R76_QUOTA_BOUNDARY_PASS; quota/rate-limit errors stop before external conversational fallback; automatic deployments do not send live chat probes",
-    "scope": "Production validation and deploy, country/safety probes, quota boundary regression and candidate warning triage; no live chat-generation probe.",
-    "validation": {
-      "candidateScriptTriage": "passed",
-      "quotaBoundary": "R76_QUOTA_BOUNDARY_PASS",
-      "apiHealthAndAiBinding": "passed",
-      "centralSafetyGate": "enabled",
-      "failClosed": "true",
-      "countryChangeToIceland": "passed",
-      "prohibitedWeaponSale": "blocked; reviewRequired=true; route=null",
-      "currencyFallbackTests": "passed"
-    }
+    "liveAiChatProbes": "skipped by policy; general chat generation still unknown",
+    "quotaNeutralLocaleNameGuard": "PASS 98/98 target-language names resolved; zero translation requests",
+    "scope": "CI, deploy, health, country/safety classifier and quota-boundary tests; not AI generation or all-language translation certification."
   },
   "run15WarningTriageRepair": {
     "checkedAt": "2026-11-13T16:31:46Z",
@@ -1400,17 +1390,17 @@
     "effect": "Improves diagnosis only; does not make any pack ready for linguistic review or publication."
   },
   "latestPagesDeployment": {
-    "checkedAt": "2026-11-13T21:41:10Z",
-    "run": 43512710642,
-    "runNumber": 1497,
+    "checkedAt": "2026-11-13T21:42:23Z",
+    "run": 43513061573,
+    "runNumber": 1499,
     "conclusion": "success",
-    "headCommit": "bb7556c46532716205f1fc982d9f515840f8d51e",
+    "headCommit": "dfc39a34de5cc94e7b842d9d1fbfdc6d19b2c5d7",
     "verifiedJobs": [
       "build",
       "report-build-status",
       "deploy"
     ],
-    "scope": "Checkpoint revision before this update successfully built and deployed; this is Pages publication only, not SEEKVERA product certification."
+    "scope": "GitHub Pages deployment of R105 workflow change; product certification not implied."
   },
   "run16CandidateHistoryReconciliation": {
     "checkedAt": "2026-11-13T16:34:23Z",
@@ -1687,24 +1677,26 @@
     "physicalDevicesCertified": false
   },
   "latestQuotaNeutralRepair": {
-    "checkedAt": "2026-11-13T20:39:22Z",
+    "checkedAt": "2026-11-13T21:42:49Z",
     "commits": [
       "1e5f7c913daf086634f55f047c2251c040bd6cb6",
-      "4bd2a0716d0fa4f598fac4ba443ec5cbaa53bce3"
+      "4bd2a0716d0fa4f598fac4ba443ec5cbaa53bce",
+      "dfc39a34de5cc94e7b842d9d1fbfdc6d19b2c5d7"
     ],
     "testFile": "tools/test-locale-language-names.py",
-    "workflow": "main .github/workflows/r125-hourly-candidate-resume.yml",
-    "purpose": "Fail before any optional translation run if any of the 98 manifest language codes cannot resolve a non-empty target-language name via the explicit override map or Babel.",
-    "validation": "Python syntax compile passed locally; full execution against the repository's 98-language manifest is pending the next R125 Actions run. No translation request sent.",
+    "workflow": "main .github/workflows/r125-hourly-candidate-resume.yml and .github/workflows/r105-final-release.yml",
+    "purpose": "R125 preflight and R105 CI now execute all 98 manifest target-language name resolutions without translation calls.",
+    "validation": "R105 #80 PASS: PASS: 98/98 target-language names resolve; no translation requests sent.",
     "candidateBranchUnchanged": true,
     "packsPublished": false,
     "finalApproval": false,
     "workflowInsertionVerified": true,
     "testBlob": "6da0ccbf27a050cbd4f06e09ba1fc1f9f8696aaf",
-    "workflowBlob": "8f20e18e95e4a15f07c1b0687077662536f297a0"
+    "r105WorkflowBlob": "3410c52b2165b167f7ff24e774cf9fb6a0ca7e3b",
+    "r105Run": 43513062247
   },
   "run11IndependentVerification": {
-    "checkedAt": "2026-11-13T21:41:10Z",
+    "checkedAt": "2026-11-13T21:43:10Z",
     "filesRead": [
       {
         "ref": "main",
@@ -1752,27 +1744,21 @@
     },
     "actions": {
       "latestPages": {
-        "run": 1495,
-        "id": 43503887580,
+        "run": 1499,
+        "id": 43513061573,
         "conclusion": "success",
-        "createdAt": "2026-11-13T20:41:34Z",
-        "jobs": [
-          "build",
-          "deploy",
-          "report-build-status"
-        ],
-        "headCommit": "56aaba97af1eb10e837f7ede47415d00cde9575e"
+        "headCommit": "dfc39a34de5cc94e7b842d9d1fbfdc6d19b2c5d7"
       },
       "latestR105": {
-        "run": 79,
-        "id": 43463488541,
+        "run": 80,
+        "id": 43513062247,
         "conclusion": "success",
-        "createdAt": "2026-11-13T16:31:07Z",
-        "health": "R107_DEPLOY_HEALTH_PASS",
-        "liveCountryIceland": "IS",
-        "weaponSale": "blocked/reviewRequired=true/route=null",
-        "quotaBoundary": "pass",
-        "liveChatGeneration": "skipped"
+        "createdAt": "2026-11-13T21:42:23Z",
+        "localeNameGuard": "PASS 98/98",
+        "quota": "no translation requests",
+        "liveChat": "skipped",
+        "country": "IS",
+        "safety": "weapon blocked/reviewRequired"
       },
       "latestAudio": {
         "run": 64,
@@ -1812,12 +1798,10 @@
       "noQuotaConsumingChatProbeSent": true
     },
     "languageNameGuard": {
-      "file": "tools/test-locale-language-names.py",
-      "blobSha": "6da0ccbf27a050cbd4f06e09ba1fc1f9f8696aaf",
-      "workflowBlobSha": "8f20e18e95e4a15f07c1b0687077662536f297a0",
-      "pythonSyntax": "previously passed",
-      "manifestExecution": "pending next R125 run",
-      "translationRequests": 0
+      "status": "passed",
+      "count": 98,
+      "translationRequests": 0,
+      "run": 43513062247
     },
     "scope": "Read-only verification plus checkpoint metadata only. No locale pack edited, no candidate branch write, no translation or general-chat quota probe, no publish, no physical-device certification.",
     "checkpointDeployment": {
