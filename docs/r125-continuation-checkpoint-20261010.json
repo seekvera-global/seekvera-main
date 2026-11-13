@@ -481,7 +481,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-13T13:18:20+01:00",
+  "checkedAt": "2026-11-13T17:07:25Z",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -1401,5 +1401,107 @@
     "candidatePacksModifiedThisRun": false,
     "translationRequestsSentThisRun": 0,
     "quotaBypassAttempted": false
+  },
+  "run17IndependentAudit": {
+    "checkedAt": "2026-11-13T17:07:25Z",
+    "requestedFilesRead": {
+      "mainCheckpoint": "docs/r125-continuation-checkpoint-20261010.json",
+      "candidateSummary": "work/r125-locale-candidates-20261008:docs/locale-candidates-20261008/resume-summary.json",
+      "candidateResumeLog": "work/r125-locale-candidates-20261008:docs/locale-candidates-20261008/resume-latest.log",
+      "mainWorkflow": ".github/workflows/r125-hourly-candidate-resume.yml"
+    },
+    "candidateBranchHead": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
+    "summaryTimestamp": "2026-10-30T00:57:30.623858+00:00",
+    "resumeLogOutcome": "48 prior successful Dhivehi repair translations preserved; later batches timed out or returned 503 all_translation_backends_unavailable; STAGED_ONLY 0; FAILED 1",
+    "independentDhivehiOverlapRecheck": {
+      "sourceCount": 1118,
+      "candidateTranslationCount": 1118,
+      "retranslatedKeys": 88,
+      "overlapCount": 58,
+      "algorithm": "Reproduced suspicious_overlap in tools/build_current_locale_delta.py against branch source.json and dv.json",
+      "sample": "English opening sentences remain untranslated in several longer Dhivehi entries; confirmed genuine partial translations",
+      "result": "still structurally failing; no candidate values changed"
+    },
+    "workflowRunStatus": {
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "lastKnownHourlyResumeRun": {
+        "run": 150,
+        "id": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "conclusion": "success",
+        "resumeStep": "skipped",
+        "auditStep": "success",
+        "translationRequestsSent": 0
+      },
+      "latestSeparateRenderRun": {
+        "run": 2,
+        "id": 43241261247,
+        "createdAt": "2026-11-12T14:49:49Z",
+        "conclusion": "success",
+        "translationRequestsSent": 0
+      },
+      "activeActionsAtCheck": 0,
+      "recent100ActionsContainNewerHourlyResume": false,
+      "writesDeferred": false,
+      "candidateWritesThisRun": false
+    },
+    "productionLogRecheck": {
+      "r105": {
+        "run": 79,
+        "id": 43463488541,
+        "conclusion": "success",
+        "quotaBoundary": "R76_QUOTA_BOUNDARY_PASS",
+        "candidateTriage": "PASS",
+        "health": "R107_DEPLOY_HEALTH_PASS",
+        "liveChatProbe": "skipped; current generation availability unknown"
+      },
+      "r123": {
+        "run": 64,
+        "id": 43456938311,
+        "conclusion": "success",
+        "liveTtsAsrChat": "skipped by manual opt-in gate",
+        "categoryTranslations": "passed",
+        "voiceAcknowledgement": "passed",
+        "dynamicVoicePlaceholders": [
+          "fr",
+          "ar"
+        ]
+      },
+      "latestHealth": {
+        "run": 318,
+        "id": 43382989023,
+        "conclusion": "success",
+        "scope": "API/home, robots/sitemap, 18 public pages only"
+      }
+    },
+    "translationStatus": {
+      "current": "not-probed",
+      "lastApiFailure": "HTTP 503 all_translation_backends_unavailable",
+      "priorGoogleFallback": "HTTP 429",
+      "dailyFreeAiLimit": "historical blocker; no current quota probe",
+      "requestsThisRun": 0,
+      "quotaBypassAttempted": false
+    },
+    "safetyCountryCurrency": {
+      "latestReleaseRun": 43463488541,
+      "countryChangeToIceland": "passed",
+      "prohibitedWeaponSale": "blocked; reviewRequired=true; route=null",
+      "currencyFallbackAndUniqueness": "passed in deterministic tests",
+      "scope": "limited probes/tests, not full threat-model or all-country user journey certification"
+    },
+    "voice": {
+      "browserAcknowledgementAndPlaceholderChecks": "passed",
+      "latestSyntheticTtsAsr": "2026-11-12 ar/fr/en",
+      "liveTtsAsrThisRun": "skipped",
+      "physicalMicrophoneSpeakerCertification": false
+    },
+    "checkout": {
+      "active": false,
+      "blocker": "merchant account/configuration absent"
+    },
+    "allLanguageAndSectionCertification": false,
+    "finalApproval": false,
+    "action": "Fresh read plus independent exact 58-overlap recomputation; fetched latest R105/R123 job logs; no translation request, AI generation probe, quota probe, candidate edit, publish or deployment."
   }
 }
