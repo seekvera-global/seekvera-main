@@ -788,5 +788,116 @@
       "active": false,
       "blocker": "merchant account/configuration absent"
     }
+  },
+  "run11ContinuationAudit": {
+    "checkedAt": "2026-11-13T15:10:00+01:00",
+    "checkpointRead": {
+      "mainBlobSha": "703a1dd5042b4b2573207b952d7ee4fe1c1d0f21",
+      "sourceHash": "6a1126e6a2ce5629",
+      "structuralCandidates": 97,
+      "remaining": [
+        "dv"
+      ],
+      "published": false,
+      "linguisticallyCertified": false
+    },
+    "candidateBranch": {
+      "branch": "work/r125-locale-candidates-20261008",
+      "head": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
+      "summaryTimestamp": "2026-10-30T00:57:30.623858+00:00",
+      "completedCount": 97,
+      "remaining": [
+        "dv"
+      ],
+      "dvFailure": [
+        "english_overlap:58"
+      ],
+      "latestLog": "2026-10-30; 48 earlier successful repair translations then backend 503; 0 staged; 1 failed",
+      "changedThisAudit": false
+    },
+    "resumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "currentTrigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "candidateBuildRequiresExplicitTrue": true,
+      "latestObservedResumeRun": {
+        "id": 38971104197,
+        "runNumber": 150,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "conclusion": "success",
+        "resumeStep": "skipped",
+        "auditStep": "success",
+        "translationRequestsSent": 0,
+        "workflowRevisionOlderThanCurrent": true
+      },
+      "activeRun": false,
+      "recentActionsWindow": "100 latest repository runs fetched; no active or newer resume run appeared",
+      "writesDeferred": false,
+      "candidateWritesPerformed": false
+    },
+    "latestR125RelatedRun": {
+      "id": 43241261247,
+      "runNumber": 2,
+      "workflow": ".github/workflows/r125-candidate-render-20261010.yml",
+      "createdAt": "2026-11-12T14:49:49Z",
+      "conclusion": "success",
+      "job": "render",
+      "steps": [
+        "Verify candidate descriptions, filters and saved chat"
+      ],
+      "translationRequestsSent": 0,
+      "candidateBranchWritten": false,
+      "scope": "render/browser check only; not translation or linguistic certification"
+    },
+    "freshProductionStatus": {
+      "healthRun": {
+        "id": 43382989023,
+        "runNumber": 318,
+        "createdAt": "2026-11-13T07:03:29Z",
+        "conclusion": "success",
+        "scope": "API/home, robots/sitemap, 18 public pages"
+      },
+      "ai": {
+        "status": "not_reprobed_today",
+        "lastLimitedSuccessfulProbe": "2026-11-12 run 43262930208 / 43263096001",
+        "chatLanguages": [
+          "en",
+          "ar",
+          "fr",
+          "es",
+          "ja"
+        ],
+        "audioLanguages": [
+          "ar",
+          "fr",
+          "en"
+        ],
+        "quotaOrCapacityCurrent": "unknown",
+        "noNewAiRequestsSent": true
+      },
+      "countryCurrencyAndSafety": {
+        "lastSuccessRun": 43263096001,
+        "checkedAt": "2026-11-12",
+        "countries": 248,
+        "localizedPages": 44,
+        "currencyCountryBehavior": "passed",
+        "weaponSale": "blocked",
+        "benignHotel": "allowed"
+      },
+      "voice": {
+        "syntheticRoundTrip": [
+          "ar",
+          "fr",
+          "en"
+        ],
+        "physicalMicrophoneSpeakerCertified": false
+      },
+      "checkout": {
+        "active": false,
+        "blocker": "merchant configuration absent"
+      }
+    },
+    "actionThisAudit": "Re-read the current main checkpoint, candidate branch summary and resume log; inspected current resume workflow; queried latest 100 Actions runs and fetched render/R105/site-health job steps. No translation, candidate edit, publish, deployment or quota probe was triggered.",
+    "decision": "NO_GO; preserve staged candidate files and wait for available authorized translation capacity plus native review."
   }
 }
