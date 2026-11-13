@@ -1400,17 +1400,17 @@
     "effect": "Improves diagnosis only; does not make any pack ready for linguistic review or publication."
   },
   "latestPagesDeployment": {
-    "checkedAt": "2026-11-13T21:38:10Z",
-    "run": 43503887580,
-    "runNumber": 1495,
+    "checkedAt": "2026-11-13T21:41:10Z",
+    "run": 43512710642,
+    "runNumber": 1497,
     "conclusion": "success",
-    "headCommit": "56aaba97af1eb10e837f7ede47415d00cde9575e",
+    "headCommit": "bb7556c46532716205f1fc982d9f515840f8d51e",
     "verifiedJobs": [
       "build",
-      "deploy",
-      "report-build-status"
+      "report-build-status",
+      "deploy"
     ],
-    "scope": "GitHub Pages build/upload/deploy success; not application-language, AI, voice or checkout certification."
+    "scope": "Checkpoint revision before this update successfully built and deployed; this is Pages publication only, not SEEKVERA product certification."
   },
   "run16CandidateHistoryReconciliation": {
     "checkedAt": "2026-11-13T16:34:23Z",
@@ -1704,7 +1704,7 @@
     "workflowBlob": "8f20e18e95e4a15f07c1b0687077662536f297a0"
   },
   "run11IndependentVerification": {
-    "checkedAt": "2026-11-13T21:38:10Z",
+    "checkedAt": "2026-11-13T21:41:10Z",
     "filesRead": [
       {
         "ref": "main",
@@ -1819,6 +1819,14 @@
       "manifestExecution": "pending next R125 run",
       "translationRequests": 0
     },
-    "scope": "Read-only verification plus checkpoint metadata only. No locale pack edited, no candidate branch write, no translation or general-chat quota probe, no publish, no physical-device certification."
+    "scope": "Read-only verification plus checkpoint metadata only. No locale pack edited, no candidate branch write, no translation or general-chat quota probe, no publish, no physical-device certification.",
+    "checkpointDeployment": {
+      "run": 1497,
+      "id": 43512710642,
+      "status": "completed",
+      "conclusion": "success",
+      "updatedAt": "2026-11-13T21:40:45Z",
+      "headCommit": "bb7556c46532716205f1fc982d9f515840f8d51e"
+    }
   }
 }
