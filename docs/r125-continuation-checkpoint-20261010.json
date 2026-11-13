@@ -1205,6 +1205,46 @@
       "currentQuota": "unknown after the run #63 probes; no further probes sent."
     },
     "actionThisTurn": "Re-queried GitHub Actions collections: latest R125 run remains #150 (completed), latest scheduled #149 failed, no newer manual R125 runs; re-fetched R105 #75 and R123 #63 jobs/logs; confirmed R105 skipped AI probes and passed the quota regression test; discovered R123 automatically sent live AI/audio probes and had a three-attempt HTTP retry policy, then prepared a follow-up repair on the separate fix branch. No candidate writes, translation calls, quota probes or additional live AI requests were sent by this automation.",
-    "decision": "NO_GO; production chat quota guard is deployed, but R123 opt-in/no-retry protection awaits CI. Translation remains blocked/unprobed, Divehi is incomplete, no language packs are published or linguistically certified, physical audio and checkout remain unverified."
+    "decision": "NO_GO; R123 live probe gating and no-retry repair is deployed and verified by run #64. R105 regression test fix awaits a clean validation/deploy run. Translation, Divehi, linguistic certification, physical audio and checkout remain blockers.",
+    "r123Run64": {
+      "id": 43456938311,
+      "runNumber": 64,
+      "status": "completed",
+      "conclusion": "success",
+      "deploy": "success",
+      "liveAudioChatProbeStep": "skipped by manual opt-in gate",
+      "browserCategoryTranslations": "success",
+      "voiceAcknowledgementBeforeNavigation": "success",
+      "dynamicVoicePlaceholderLocalization": "success",
+      "aiRequestsSent": 0,
+      "translationRequestsSent": 0
+    },
+    "ciExecution": "R123 #64 completed successfully with live TTS/ASR/chat step skipped. R105 #76 failed before deploy because the new regression test had a literal backslash-n on line 52; the test was corrected on the repair branch and awaits a clean R105 rerun."
+  },
+  "run14RegressionTestSyntaxRepair": {
+    "checkedAt": "2026-11-13T16:53:00+01:00",
+    "failedRun": {
+      "id": 43456938114,
+      "runNumber": 76,
+      "status": "completed",
+      "conclusion": "failure",
+      "failedStep": "Validate production sources",
+      "exactError": "tools/test-ai-quota-boundary.cjs:52 SyntaxError: Invalid or unexpected token",
+      "deployStep": "skipped",
+      "liveAIProbesSent": 0
+    },
+    "rootCause": "The R123 gate assertions had been inserted as a literal escaped newline sequence inside the JavaScript test file.",
+    "repair": {
+      "branch": "fix/r126-quota-safe-ai-20261113",
+      "commit": "6c2b26f508adc426b9894bc410b76966010b9647",
+      "file": "tools/test-ai-quota-boundary.cjs",
+      "change": "Replaced the literal \\\\n sequence with an actual source newline; re-read the file and verified the R123 input regex and gate assertions are on separate valid lines.",
+      "manualStaticChecks": "R105/R123 default-false inputs, opt-in step conditions, no HTTP retry loops, Workers AI model assertions and quota classification cases all pass."
+    },
+    "nextValidation": "Fast-forward the corrected test to main; R105 should rerun with AI probes skipped by default. Do not rerun R123 live audio probes.",
+    "candidateBranchModified": false,
+    "translationRequestsSent": 0,
+    "quotaProbeSent": false,
+    "additionalAiProbeSent": false
   }
 }
