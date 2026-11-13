@@ -1026,10 +1026,27 @@
         "countryAndSafetyProbesRemainOutsideAiGate": true,
         "newR105NodeTest": "committed; CI execution pending"
       },
-      "productionDeployment": "pending fast-forward to main and R105 workflow validation",
+      "productionDeployment": {
+        "status": "deployed",
+        "commit": "87e641c594c5fe602b74e35f759c278395c1878f",
+        "r105Run": {
+          "id": 43455881307,
+          "runNumber": 75,
+          "status": "completed",
+          "conclusion": "success",
+          "markers": [
+            "R76_QUOTA_BOUNDARY_PASS",
+            "R107_DEPLOY_HEALTH_PASS",
+            "AI_PROBES_SKIPPED_BY_POLICY"
+          ],
+          "liveWorkersAiProbesSent": 0
+        },
+        "note": "The production worker quota guard is live. R105 health certification succeeded without sending live AI chat probes."
+      },
       "aiRequestsSent": 0,
       "translationRequestsSent": 0,
-      "quotaBypassAttempted": false
+      "quotaBypassAttempted": false,
+      "productionDeploymentPending": false
     },
     "productionVerification": {
       "latestHealthRun": {
@@ -1081,5 +1098,113 @@
     },
     "actionThisTurn": "Re-read the three requested R125 files and current workflow; re-fetched R125 #150 job steps and logs; inspected the deployed worker chain and found a quota-sensitive external chat fallback plus a weak R105 model assertion; prepared a quota-safe repair and regression test on a separate reversible branch. No candidate branch writes, translation requests, quota probes, live AI probes, or deployment were made.",
     "decision": "NO_GO; keep all candidate packs unpublished, do not probe translation until quota/backend capacity is legitimately available, and wait for R105 CI validation before treating the quota-boundary repair as deployed."
+  },
+  "run13AudioQuotaProtectionAudit": {
+    "checkedAt": "2026-11-13T16:48:00+01:00",
+    "latestR125Status": {
+      "latestKnownRun": {
+        "id": 38971104197,
+        "runNumber": 150,
+        "event": "push",
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "resumeStep": "skipped",
+        "auditStep": "success"
+      },
+      "latestScheduledRun": {
+        "id": 38970873888,
+        "runNumber": 149,
+        "event": "schedule",
+        "createdAt": "2026-10-16T21:39:49Z",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "newerManualR125Runs": 0,
+      "currentWorkflowTrigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "activeR125Run": false,
+      "candidateWritesThisTurn": false,
+      "candidateBranchModified": false
+    },
+    "productionRunsOnMainCommit": {
+      "commit": "87e641c594c5fe602b74e35f759c278395c1878f",
+      "r105": {
+        "id": 43455881307,
+        "runNumber": 75,
+        "status": "completed",
+        "conclusion": "success",
+        "markers": [
+          "R76_QUOTA_BOUNDARY_PASS",
+          "R107_DEPLOY_HEALTH_PASS",
+          "AI_PROBES_SKIPPED_BY_POLICY"
+        ],
+        "liveAiChatProbes": 0
+      },
+      "r123": {
+        "id": 43455881322,
+        "runNumber": 63,
+        "status": "completed",
+        "conclusion": "success",
+        "liveAudioLanguages": [
+          "ar",
+          "fr",
+          "en"
+        ],
+        "asrModels": [
+          "@cf/openai/whisper-large-v3-turbo"
+        ],
+        "liveChatLanguages": [
+          "fr",
+          "ar",
+          "es",
+          "ja"
+        ],
+        "chatModelRecorded": false,
+        "arabicHomeAndDescriptions": "31/31 passed",
+        "voiceAcknowledgementBeforeNavigation": "passed",
+        "dynamicVoicePlaceholders": [
+          "fr",
+          "ar"
+        ],
+        "physicalMicrophoneSpeakerCertified": false
+      },
+      "pages": {
+        "id": 43455877006,
+        "runNumber": 1479,
+        "status": "completed",
+        "conclusion": "success"
+      }
+    },
+    "r123QuotaRiskFound": {
+      "file": ".github/workflows/r123-production-cert.yml",
+      "priorBehavior": "Every relevant push ran 3 TTS, 3 ASR and 4 chat POSTs; post() retried HTTP 429, 502, 503 and 504 up to three attempts. No SERVICE_ERROR/retry occurred in run #63, but the retry policy could repeat quota/rate-limit requests and chat success did not assert a Workers AI model.",
+      "repairBranch": "fix/r126-quota-safe-ai-20261113",
+      "branchHeadBeforeCheckpoint": "8cf6c726116eb8284b67f6f9f1bca6297ba91704",
+      "changes": [
+        "Add run_live_audio_probes workflow_dispatch input default false; live TTS/ASR/chat step is skipped on automatic pushes",
+        "Remove all HTTPError retries from the live POST helper; 429/503 and other HTTP errors are logged and raised immediately",
+        "Require each manual live chat response model to start with @cf/ before counting it as Workers AI success",
+        "Extend tools/test-ai-quota-boundary.cjs to verify R123 gating, no retries and model assertion"
+      ],
+      "manualLogicChecks": {
+        "r123InputDefaultFalse": true,
+        "r123LiveStepGated": true,
+        "r123HttpRetriesRemoved": true,
+        "r123ChatRequiresWorkersAiModel": true,
+        "r105LiveAiProbesDefaultFalse": true,
+        "r105ChatRequiresWorkersAiModel": true,
+        "sixQuotaClassificationCasesPassed": true
+      },
+      "ciExecution": "pending merge to main"
+    },
+    "currentAITruth": {
+      "chat": "Run #63 returned language/category passes in fr/ar/es/ja, but did not record the model; it is not proof that those replies came from Workers AI rather than the degraded local/external fallback. R105 #75 skipped live chat probes by policy.",
+      "speechRecognition": "Synthetic TTS-to-ASR passed in ar/fr/en using @cf/openai/whisper-large-v3-turbo on run #63.",
+      "physicalDevices": "Not certified; headless/browser and generated audio do not test a real microphone or speaker.",
+      "currentQuota": "unknown after the run #63 probes; no further probes sent."
+    },
+    "actionThisTurn": "Re-queried GitHub Actions collections: latest R125 run remains #150 (completed), latest scheduled #149 failed, no newer manual R125 runs; re-fetched R105 #75 and R123 #63 jobs/logs; confirmed R105 skipped AI probes and passed the quota regression test; discovered R123 automatically sent live AI/audio probes and had a three-attempt HTTP retry policy, then prepared a follow-up repair on the separate fix branch. No candidate writes, translation calls, quota probes or additional live AI requests were sent by this automation.",
+    "decision": "NO_GO; production chat quota guard is deployed, but R123 opt-in/no-retry protection awaits CI. Translation remains blocked/unprobed, Divehi is incomplete, no language packs are published or linguistically certified, physical audio and checkout remain unverified."
   }
 }
