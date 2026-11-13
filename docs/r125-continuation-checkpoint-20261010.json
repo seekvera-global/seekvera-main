@@ -899,5 +899,187 @@
     },
     "actionThisAudit": "Re-read the current main checkpoint, candidate branch summary and resume log; inspected current resume workflow; queried latest 100 Actions runs and fetched render/R105/site-health job steps. No translation, candidate edit, publish, deployment or quota probe was triggered.",
     "decision": "NO_GO; preserve staged candidate files and wait for available authorized translation capacity plus native review."
+  },
+  "run12QuotaBoundaryAudit": {
+    "checkedAt": "2026-11-13T16:30:00+01:00",
+    "checkpointRead": {
+      "sourceHash": "6a1126e6a2ce5629",
+      "sourceCount": 1118,
+      "structuralCandidates": 97,
+      "remaining": [
+        "dv"
+      ],
+      "finalApproval": false,
+      "published": false,
+      "linguisticallyCertified": false
+    },
+    "candidateBranch": {
+      "branch": "work/r125-locale-candidates-20261008",
+      "head": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
+      "summaryCheckedAt": "2026-10-30T00:57:30.623858+00:00",
+      "latestLogCheckedAt": "2026-10-30",
+      "completed": 97,
+      "remaining": [
+        "dv"
+      ],
+      "dvStructuralFailure": [
+        "english_overlap:58"
+      ],
+      "staged": 0,
+      "lastObservedTranslationOutcome": "48 earlier repair translations; later split batches failed with HTTP 503 all_translation_backends_unavailable; provider outputs were unparseable or timed out",
+      "additionalDuplicateSignals": [
+        {
+          "occurrences": 12,
+          "value": "މަން މައު މައް",
+          "sources": [
+            "Kids games",
+            "Action games",
+            "Arcade games",
+            "Flying games",
+            "Puzzle games",
+            "Racing games",
+            "Sports games",
+            "Touch controls",
+            "Adventure games",
+            "Page navigation",
+            "Search marketplace",
+            "SEEKVERA quick tools"
+          ]
+        },
+        {
+          "occurrences": 8,
+          "value": "މަޢުގެ މައްޓަކު ރައްކާ ފައި މައްޓަކު މަޢުގެ މައްޓަކު ރައްކާ ފައި",
+          "sources": [
+            "Tap matching targets quickly.",
+            "React quickly to ninja targets.",
+            "Run a prehistoric jungle trail.",
+            "A faster space paddle challenge.",
+            "A quick superbike lane challenge.",
+            "Catch candy and avoid gray blocks.",
+            "Race across a fast desert highway.",
+            "A dark high-speed runner challenge."
+          ]
+        }
+      ],
+      "candidateBranchModified": false,
+      "candidateValuesModified": false
+    },
+    "r125Workflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "currentTrigger": "workflow_dispatch only; no schedule trigger despite historical hourly name",
+      "runTranslationsDefault": false,
+      "translationRequiresExplicitTrue": true,
+      "latestKnownRun": {
+        "id": 38971104197,
+        "runNumber": 150,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "resumeStep": "skipped",
+        "auditStep": "success",
+        "translationRequestsSent": 0,
+        "jobId": 117209410195,
+        "currentJobRechecked": "completed",
+        "jobSteps": [
+          "Resume public UI candidates: skipped",
+          "Preserve live AI capacity during scheduled checks: success",
+          "Audit all saved candidates: success",
+          "Save progress without publishing: success"
+        ],
+        "historicalQuotaSignal": "Job log recorded production speech verification HTTP 503 daily free AI allocation exhausted; this was not a fresh translation quota probe"
+      },
+      "latestFullRunListAudit": "2026-11-13T15:10:00+01:00; 100 latest repository Actions runs; no active or newer R125 run found",
+      "latestRunListFreshness": "No newer run-list API is exposed by the connected GitHub action set in this turn; run #150 job details and logs were re-fetched and are completed",
+      "candidateWritesPerformed": false
+    },
+    "translationService": {
+      "currentAvailability": "unknown-not-probed",
+      "lastCandidateLogFailure": "HTTP 503 all_translation_backends_unavailable; backend outputs unparseable or timed out",
+      "dailyFreeAiLimit": "historically confirmed by the 2026-10-16 production speech verification log; not probed this turn",
+      "googleHttp429": "historical blocker; not retried",
+      "currentUiTranslationImplementation": "The deployed worker chain reaches worker.js /api/ui-translate; it calls configured Workers AI models directly and returns daily_free_ai_limit or all_translation_backends_unavailable. No Google or Pollinations translation fallback was found in the current route.",
+      "translationRequestsSentThisTurn": 0,
+      "quotaProbeSent": false,
+      "quotaBypassAttempted": false
+    },
+    "productionChatQuotaBoundaryRepair": {
+      "finding": "Production entry is wrangler.jsonc -> worker-r76.js. runStructured attempted Pollinations after all Workers AI failures without distinguishing daily quota/HTTP 429; R105 accepted any nonempty chat response without asserting the model, so an external or local fallback could be mistaken for live Workers AI success.",
+      "repairBranch": "fix/r126-quota-safe-ai-20261113",
+      "repairBranchHeadBeforeCheckpoint": "dfe7ae4b2cd6b244da7fc919afac9b4b9de4ea9d",
+      "filesChanged": [
+        "worker-r76.js",
+        ".github/workflows/r105-final-release.yml",
+        "tools/test-ai-quota-boundary.cjs"
+      ],
+      "changes": [
+        "Classify daily_free_ai_limit, HTTP 429, rate-limit and too-many-requests model errors; stop before Pollinations fallback when any model attempt reports quota/rate-limit exhaustion",
+        "Keep existing local degraded response path; preserve Pollinations fallback only for non-quota transient failures",
+        "Make R105 live Workers AI probes manual opt-in with default false; automatic deploy certification runs health plus deterministic country/safety checks only",
+        "Require manual live chat probes to return a model name beginning @cf/ so local or Pollinations fallback cannot count as a Workers AI pass",
+        "Add Node regression coverage for 3036, HTTP 429, AggregateError, transient capacity and the opt-in gate"
+      ],
+      "validationBeforeMerge": {
+        "quotaErrorClassificationCases": "6/6 passed in isolated logic check",
+        "quotaGuardPrecedesExternalFallback": true,
+        "automaticAiProbesOptInDefaultFalse": true,
+        "manualProbeRequiresWorkersAiModel": true,
+        "countryAndSafetyProbesRemainOutsideAiGate": true,
+        "newR105NodeTest": "committed; CI execution pending"
+      },
+      "productionDeployment": "pending fast-forward to main and R105 workflow validation",
+      "aiRequestsSent": 0,
+      "translationRequestsSent": 0,
+      "quotaBypassAttempted": false
+    },
+    "productionVerification": {
+      "latestHealthRun": {
+        "id": 43382989023,
+        "runNumber": 318,
+        "checkedAt": "2026-11-13T07:03:29Z",
+        "conclusion": "success",
+        "scope": "API/home, robots/sitemap, 18 public pages"
+      },
+      "latestAi": {
+        "status": "not-reprobed-today",
+        "lastSuccessfulLimitedProbe": "2026-11-12",
+        "chatLanguages": [
+          "en",
+          "ar",
+          "fr",
+          "es",
+          "ja"
+        ],
+        "audioLanguages": [
+          "ar",
+          "fr",
+          "en"
+        ],
+        "currentQuotaOrCapacity": "unknown"
+      },
+      "countryCurrencySafety": {
+        "lastSuccessfulRun": 43263096001,
+        "checkedAt": "2026-11-12",
+        "countryProfiles": 248,
+        "localizedPages": 44,
+        "currencyCountryBehavior": "passed",
+        "weaponSale": "blocked",
+        "benignHotel": "allowed"
+      },
+      "voice": {
+        "lastSuccessfulSyntheticRoundTrip": "2026-11-12",
+        "languages": [
+          "ar",
+          "fr",
+          "en"
+        ],
+        "physicalMicrophoneSpeakerCertified": false
+      },
+      "checkout": {
+        "active": false,
+        "blocker": "merchant account/configuration absent"
+      }
+    },
+    "actionThisTurn": "Re-read the three requested R125 files and current workflow; re-fetched R125 #150 job steps and logs; inspected the deployed worker chain and found a quota-sensitive external chat fallback plus a weak R105 model assertion; prepared a quota-safe repair and regression test on a separate reversible branch. No candidate branch writes, translation requests, quota probes, live AI probes, or deployment were made.",
+    "decision": "NO_GO; keep all candidate packs unpublished, do not probe translation until quota/backend capacity is legitimately available, and wait for R105 CI validation before treating the quota-boundary repair as deployed."
   }
 }
