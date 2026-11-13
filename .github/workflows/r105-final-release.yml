@@ -61,6 +61,7 @@ jobs:
           node tools/test-ui-translation.cjs
           node tools/test-ai-quota-boundary.cjs
           node tools/test-candidate-script-triage.cjs
+          python tools/test-repair-candidate-reserved-identifiers.py
           node --check sw.js
           test "$(find i18n-r32 -maxdepth 1 -name '*.json' | wc -l)" -ge 98
           grep -F "const RELEASE='20261001-r125-dialect-voice-quality'" worker-r76.js
