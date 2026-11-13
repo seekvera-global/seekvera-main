@@ -295,18 +295,18 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-13T16:57:54+01:00",
-    "mainProvenanceCommit": "f4ea0b9b70af768ac0b98ad19d87068dc1c60cf7",
+    "checkedAt": "2026-11-13T16:31:46Z",
+    "mainProvenanceCommit": "bae9a330c1dc99fcc72aae7dbeb314863d562cec",
     "mainCheckpointBlobBeforeUpdate": "6bce52484854e9a1c076fb3bf427667ed593ea4f",
     "candidateBranchHead": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
     "candidateSummaryBlob": "3afb7c9b4335deb1eef550630a96ef04165f886c",
     "candidateLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
-      "fileSha": "71b38477ff18fae5e3a288a86785d2e6953f6820",
+      "fileSha": "52c5ea4e5c7ebc836dede489219f27c3f0e2b0c3",
       "actualTrigger": "workflow_dispatch only",
       "runTranslationsDefault": false,
-      "translationBuildCondition": "The candidate build runs only on a manual dispatch with run_translations=true; default mode is audit-only and does not query translation quota.",
+      "translationBuildCondition": "Candidate translation runs only after explicit manual run_translations=true; audit-only mode sends no translation request.",
       "latestRun": 150,
       "runId": 38971104197,
       "status": "completed",
@@ -327,7 +327,10 @@
       "activeRunFound": false,
       "activeRunsCheck": "Repository-wide Actions query for status=in_progress returned zero runs at 2026-11-13T16:57:54+01:00",
       "candidateWritesDeferred": false,
-      "note": "The workflow is not an hourly scheduled run despite its filename; it can resume actual builds when explicitly dispatched with run_translations=true. No such run is active now."
+      "note": "The last known resume run is #150 and predates the current workflow revision. No active R125 resume run was found. The newer R125 staged-render run is a separate workflow and does not resume candidates.",
+      "currentTrigger": "workflow_dispatch only",
+      "latestKnownRun": 150,
+      "latestWorkflowRevisionCommit": "0160c0f0cbbbefee2af186fc1678602b8a6ac6ca"
     },
     "candidateAudit": {
       "completedCount": 97,
@@ -342,7 +345,7 @@
       },
       "scriptWarningLanguages": 83,
       "scriptWarningCount": 142,
-      "warningTriage": "Warnings include altered reserved SV-YYYYMMDD-XXXXXXXX placeholders, locale-specific date formatting, brand/acronym-only values and punctuation, but also probable genuine issues. Punjabi has 18 warnings, including Devanagari text in a Gurmukhi pack and untranslated/incomplete UI labels; Amharic and Burmese examples also omit action words.",
+      "warningTriage": "New diagnostic categories now distinguish reserved identifier mutations, date/version formatting, case/punctuation-only changes, Latin-only or mixed values without the target script, and wrong/unverified scripts. Findings are not suppressed; all warnings remain review-blocking.",
       "published": false,
       "linguisticAccuracyCertified": false,
       "readyForLinguisticReview": false
@@ -352,8 +355,9 @@
       "translationRequestsSentThisRun": 0,
       "quotaBypassAttempted": false,
       "lastObservedFailure": "HTTP 503 all_translation_backends_unavailable; earlier Google HTTP 429 remains un-retried",
-      "dailyFreeAiLimit": "previously observed; not re-probed",
-      "candidateBranchModifiedThisRun": false
+      "dailyFreeAiLimit": "historically observed; not re-probed",
+      "candidateBranchModifiedThisRun": false,
+      "quotaProbeSent": false
     },
     "aiChat": {
       "lastDirectProbeAt": "2026-11-13T13:18:20+01:00",
@@ -370,14 +374,16 @@
         "ms": 5766
       },
       "freshProbeThisRun": false,
-      "latestReleaseRun": 43457348624,
-      "latestReleaseLiveAiProbe": "skipped by policy; no fresh confirmation at 16:57"
+      "latestReleaseRun": 43463488541,
+      "latestReleaseLiveAiProbe": "skipped by policy; no fresh chat-generation confirmation in R105 #79",
+      "aiBinding": "present in production health response",
+      "chatGenerationAvailability": "unknown-currently"
     },
     "countryCurrencySections": {
-      "latestReleaseRun": 43457348624,
+      "latestReleaseRun": 43463488541,
       "countryChangeToIceland": "passed",
-      "safetyProbe": "passed",
-      "currencyAndFallbackUnitTests": "passed in release validation",
+      "safetyProbe": "passed; prohibited weapon-sale request blocked with reviewRequired=true and no route",
+      "currencyAndFallbackUnitTests": "passed in R105 #79",
       "latestFullBrowserAuditRun": 43213407211,
       "latestFullBrowserAuditAt": "2026-11-12T11:57:48Z",
       "countryProfiles": 248,
@@ -397,7 +403,7 @@
         "fr",
         "ar"
       ],
-      "liveTtsAsrThisRun": "skipped by policy",
+      "liveTtsAsrThisRun": "skipped by manual opt-in gate",
       "latestSyntheticTtsAsrRun": 43219069259,
       "latestSyntheticTtsAsrAt": "2026-11-12T12:35:08Z",
       "syntheticLanguages": [
@@ -1279,11 +1285,11 @@
     }
   },
   "latestProductionRelease": {
-    "checkedAt": "2026-11-13T15:55:11Z",
-    "run": 43457348624,
-    "runNumber": 77,
+    "checkedAt": "2026-11-13T16:31:30Z",
+    "run": 43463488541,
+    "runNumber": 79,
     "conclusion": "success",
-    "headCommit": "f4ea0b9b70af768ac0b98ad19d87068dc1c60cf7",
+    "headCommit": "bae9a330c1dc99fcc72aae7dbeb314863d562cec",
     "deployedWorkerVersion": "fb2a3f89-1342-40a7-b573-6765181fcdc3",
     "health": "R107_DEPLOY_HEALTH_PASS",
     "liveChecks": {
@@ -1293,8 +1299,60 @@
       "countryChangeToIceland": "passed",
       "prohibitedWeaponSale": "blocked; reviewRequired=true; route=null"
     },
-    "liveAiChatProbes": "skipped by policy (RUN_LIVE_AI_PROBES=false); this run does not prove current chat availability",
+    "liveAiChatProbes": "skipped by policy; current chat generation remains unverified",
     "quotaBoundaryTests": "R76_QUOTA_BOUNDARY_PASS; quota/rate-limit errors stop before external conversational fallback; automatic deployments do not send live chat probes",
-    "scope": "Production deployment, health, country/safety probes and local regression tests; no live English/Arabic chat-generation probe."
+    "scope": "Production validation and deploy, country/safety probes, quota boundary regression and candidate warning triage; no live chat-generation probe.",
+    "validation": {
+      "candidateScriptTriage": "passed",
+      "quotaBoundary": "R76_QUOTA_BOUNDARY_PASS",
+      "apiHealthAndAiBinding": "passed",
+      "centralSafetyGate": "enabled",
+      "failClosed": "true",
+      "countryChangeToIceland": "passed",
+      "prohibitedWeaponSale": "blocked; reviewRequired=true; route=null",
+      "currencyFallbackTests": "passed"
+    }
+  },
+  "run15WarningTriageRepair": {
+    "checkedAt": "2026-11-13T16:31:46Z",
+    "mainCommits": {
+      "auditTriage": "91e37e66ffc1c3e1b77c868ccf3ecbf40b413717",
+      "regressionTest": "d9205830172fa09a37a9638114128b3757566dcc",
+      "r125Workflow": "0160c0f0cbbbefee2af186fc1678602b8a6ac6ca",
+      "r105Validation": "bae9a330c1dc99fcc72aae7dbeb314863d562cec"
+    },
+    "changes": [
+      "tools/audit-candidate-scripts.cjs now labels each existing warning by diagnostic category while preserving count, sources and examples.",
+      "Added tools/test-candidate-script-triage.cjs for reserved identifier mutations, wrong scripts, date/version formatting, case-only labels and incomplete Latin values.",
+      "R125 manual workflow now runs the quota-neutral triage regression before any optional translation step.",
+      "R105 production validation runs the same regression test."
+    ],
+    "validation": {
+      "test": "passed",
+      "run": 43463488541,
+      "runNumber": 79,
+      "conclusion": "success",
+      "marker": "PASS: candidate warning triage ... without suppressing warnings",
+      "quotaBoundary": "R76_QUOTA_BOUNDARY_PASS",
+      "productionHealth": "R107_DEPLOY_HEALTH_PASS",
+      "liveAiChatProbes": "skipped by policy; zero sent",
+      "pagesRun": 43463486862,
+      "pagesConclusion": "success"
+    },
+    "candidateBranchModified": false,
+    "candidatePacksModified": false,
+    "translationRequestsSent": 0,
+    "quotaProbeSent": false,
+    "quotaBypassAttempted": false,
+    "warningsSuppressed": 0,
+    "warningCountRemains": 142,
+    "warningLanguagesRemain": 83,
+    "effect": "Improves diagnosis only; does not make any pack ready for linguistic review or publication."
+  },
+  "latestPagesDeployment": {
+    "checkedAt": "2026-11-13T16:31:46Z",
+    "run": 43463486862,
+    "conclusion": "success",
+    "headCommit": "bae9a330c1dc99fcc72aae7dbeb314863d562cec"
   }
 }
