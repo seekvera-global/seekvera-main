@@ -384,7 +384,7 @@ async function degradedFallback(request,env,ctx,body,message){
 function quotaLimited(error){
  const nested=Array.isArray(error?.errors)?error.errors.map(x=>x?.message||x):[];
  const detail=[String(error?.message??error??''),...nested].join(' ');
- return /3036|daily free allocation|\\b429\\b|rate.?limit|too many requests/i.test(detail)
+ return /3036|daily free allocation|\b429\b|rate.?limit|too many requests/i.test(detail)
 }
 
 async function runStructured(env,body){
