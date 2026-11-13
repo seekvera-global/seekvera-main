@@ -236,8 +236,8 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-11-13T18:25:19Z",
-    "candidateCommit": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
+    "checkedAt": "2026-11-13T23:23:32Z",
+    "candidateCommit": "d17366541d19aa8b4c5190d14af479e8c0c596f2",
     "completedCount": 97,
     "remainingCount": 1,
     "firstFailure": "dv",
@@ -247,7 +247,7 @@
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false,
-    "note": "Freshly read summary/log unchanged (summary timestamp Oct 30; STAGED_ONLY 0; FAILED 1); current quota was not queried and no candidate pack was edited.",
+    "note": "This run deterministically restored the immutable identifier in 73 locale packs (ar was already correct), preserving all other raw file bytes. Branch summary now reflects 68 script warnings across 25 languages; Divehi remains structurally incomplete.",
     "quotaStatusCurrent": "unknown-not-probed",
     "knownDailyFreeAiLimitBlocker": true
   },
@@ -297,169 +297,52 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-13T22:17:00Z",
-    "mainProvenanceCommit": "f15a04598170af0fe3ed353778f647908fe6beb7",
-    "mainCheckpointBlobBeforeUpdate": "6ab91cfc0495f0dcc7d89eadfacc640832047c9c",
-    "candidateBranchHead": "4fe9c7c8f0ad4a780b90560b066fc934d27d82dd",
-    "candidateSummaryBlob": "3afb7c9b4335deb1eef550630a96ef04165f886c",
+    "checkedAt": "2026-11-13T23:23:32Z",
+    "mainCheckpointBlobBeforeUpdate": "2465a26212bc004f3c2bf1f22768fa12db45784e",
+    "candidateBranchHead": "d17366541d19aa8b4c5190d14af479e8c0c596f2",
+    "candidateSummaryBlob": "300fc1e9e9e1fb8635e0efafb95d73b81c696060",
     "candidateLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
-      "fileSha": "52c5ea4e5c7ebc836dede489219f27c3f0e2b0c3",
       "actualTrigger": "workflow_dispatch only",
       "runTranslationsDefault": false,
-      "translationBuildCondition": "Candidate translation runs only after explicit manual run_translations=true; audit-only mode sends no translation request.",
       "latestRun": 150,
       "runId": 38971104197,
       "status": "completed",
       "conclusion": "success",
-      "event": "push",
-      "createdAt": "2026-10-16T21:41:54Z",
       "resumeStep": "skipped",
       "auditStep": "success",
-      "auditResult": {
-        "completedCount": 97,
-        "remaining": [
-          "dv"
-        ],
-        "resumeSucceeded": false,
-        "readyForLinguisticReview": false,
-        "translationRequestsSent": 0
-      },
+      "translationRequestsSent": 0,
       "activeRunFound": false,
-      "activeRunsCheck": "Fresh GitHub API query for branch=main,status=in_progress returned total_count=0 at 2026-11-13T19:11:42Z; workflow-specific latest remains #150. Current YAML trigger is workflow_dispatch only.",
-      "candidateWritesDeferred": false,
-      "note": "No R125 active; no candidate write or translation initiated. #149 audit failed due parser SyntaxError; #150 audit-only push succeeded after current audited tools were substituted.",
-      "currentTrigger": "workflow_dispatch only",
-      "latestKnownRun": 150,
-      "latestWorkflowRevisionCommit": "0160c0f0cbbbefee2af186fc1678602b8a6ac6ca",
-      "auditOnlyCommit": "cae69709e12739b6d9f9a1532850e479432ebf0e",
-      "auditOnlyCommitFiles": [
-        "docs/locale-candidates-20261008/resume-summary.json",
-        "docs/locale-candidates-20261008/scheduled-mode.json"
-      ],
+      "activeRunsCheck": "Fresh repository Actions API query status=in_progress returned total_count=0 at 2026-11-13T23:23:32Z; workflow-specific latest remains #150.",
+      "candidateWritesDeferredWhileActive": true,
+      "candidateWriteThisRun": "73 deterministic locale-pack ID repairs plus summary refresh after confirming no in-progress Actions run; no translation calls.",
       "candidatePackFilesChangedByRun150": false,
-      "latestRunBeforeSuccess": {
-        "run": 149,
-        "runId": 38970873888,
-        "createdAt": "2026-10-16T21:39:49Z",
-        "status": "completed",
-        "conclusion": "failure",
-        "resumeStep": "skipped",
-        "auditStep": "failure",
-        "auditError": "SyntaxError: Unexpected end of input from tools/audit-candidate-scripts.cjs uiScriptPattern extraction; audit_locale_candidates.py raised CalledProcessError",
-        "translationRequestsSent": 0
-      },
-      "latestRunRepair": {
-        "run": 150,
-        "runId": 38971104197,
-        "createdAt": "2026-10-16T21:41:54Z",
-        "status": "completed",
-        "conclusion": "success",
-        "resumeStep": "skipped",
-        "auditStep": "success",
-        "auditResult": {
-          "completedCount": 97,
-          "remaining": [
-            "dv"
-          ],
-          "resumeSucceeded": false,
-          "readyForLinguisticReview": false,
-          "translationRequestsSent": 0
-        },
-        "mode": "audit-only",
-        "reason": "daily free AI allocation exhausted; translation manually gated"
-      }
+      "latestKnownRun": 150
     },
-    "candidateAudit": {
-      "completedCount": 97,
-      "sourceCount": 1118,
-      "remaining": [
-        "dv"
-      ],
-      "structuralFailures": {
-        "dv": [
-          "english_overlap:58"
-        ]
-      },
-      "scriptWarningLanguages": 83,
-      "scriptWarningCount": 142,
-      "warningTriage": "Categories distinguish reserved identifier mutations, date/version formatting, case/punctuation-only changes, Latin-only or mixed values without target script, and wrong/unverified scripts; warnings remain review-blocking.",
-      "published": false,
-      "linguisticAccuracyCertified": false,
-      "readyForLinguisticReview": false
-    },
-    "translationService": {
-      "currentAvailability": "unknown-not-probed",
-      "translationRequestsSentThisRun": 0,
-      "quotaBypassAttempted": false,
-      "lastObservedFailure": "HTTP 503 all_translation_backends_unavailable; earlier Google HTTP 429 remains un-retried",
-      "dailyFreeAiLimit": "historically observed; current quota not re-probed",
-      "candidateBranchModifiedThisRun": false,
-      "quotaProbeSent": false
-    },
-    "aiChat": {
-      "lastDirectProbeAt": "2026-11-13T13:18:20+01:00",
-      "english": {
-        "status": 200,
-        "response": "Hello",
-        "model": "@cf/meta/llama-3.1-8b-instruct-fast",
-        "ms": 4488
-      },
-      "arabic": {
-        "status": 200,
-        "response": "مرحبا",
-        "model": "@cf/meta/llama-3.1-8b-instruct-fast",
-        "ms": 5766
-      },
-      "freshProbeThisRun": false,
-      "latestReleaseRun": 43457348624,
-      "latestReleaseLiveAiProbe": "R105 #77 succeeded but explicitly emitted AI_PROBES_SKIPPED_BY_POLICY (RUN_LIVE_AI_PROBES=false); health confirms binding only",
-      "aiBinding": "present in production health response",
-      "chatGenerationAvailability": "unknown-currently"
-    },
-    "countryCurrencySections": {
-      "latestReleaseRun": 43457348624,
-      "countryChangeToIceland": "passed in R105 #77",
-      "safetyProbe": "passed in R105 #77: weapon-sale request blocked/reviewRequired true/no route",
-      "currencyAndFallbackUnitTests": "passed in R105 #79",
-      "latestFullBrowserAuditRun": 43213407211,
-      "latestFullBrowserAuditAt": "2026-11-12T11:57:48Z",
-      "countryProfiles": 248,
-      "localizedPages": 44,
-      "visibleLocales": [
-        "ar",
-        "fr",
-        "hi",
-        "zh"
-      ],
-      "allLanguagesAndAllSectionsCertified": false
-    },
-    "voice": {
-      "latestAudioAuthorityRun": 43456938311,
-      "headlessVoiceSequence": "passed in R123 #64",
-      "dynamicPlaceholders": [
-        "fr",
+    "candidateRepair": {
+      "commit": "e140ffb2de0273abb9971ab72b1eae6d7310013a",
+      "summaryCommit": "d17366541d19aa8b4c5190d14af479e8c0c596f2",
+      "localesChanged": 73,
+      "alreadyCorrect": [
         "ar"
       ],
-      "liveTtsAsrThisRun": "skipped by opt-in gate",
-      "latestSyntheticTtsAsrRun": 43219069259,
-      "latestSyntheticTtsAsrAt": "2026-11-12T12:35:08Z",
-      "syntheticLanguages": [
-        "ar",
+      "totalCorrectedIncludingArabic": 74,
+      "identifier": "SV-YYYYMMDD-XXXXXXXX",
+      "rawTextReplacement": true,
+      "compareFiles": 73,
+      "perFileDiff": "one line replaced, no formatting churn",
+      "sampledPacks": [
         "fr",
-        "en"
+        "am",
+        "dz",
+        "pa",
+        "tn"
       ],
-      "physicalDeviceCertified": false
+      "sampleKeyCount": 1118,
+      "remainingWarnings": 68,
+      "warningLanguages": 25
     },
-    "checkoutActive": false,
-    "finalApproval": false,
-    "mainHeadBeforeCheckpointUpdate": "42b436e959591908824a1b4647cb7e597557cda4",
-    "candidateResumeRun": null,
-    "r125WorkflowLatestKnownRun": 150,
-    "r125WorkflowStatus": "no active run at 2026-11-13T22:14Z; workflow_dispatch only; run_translations defaults false",
-    "candidateWritesDeferredWhileR125Active": true,
-    "candidateWriteThisRun": "One deterministic repair to ar.json only after fresh in_progress query found zero R125 runs",
     "candidatePacksPublished": false,
     "linguisticAccuracyCertified": false
   },
@@ -522,7 +405,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-13",
+  "checkedAt": "2026-11-13T23:23:32Z",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -1659,16 +1542,20 @@
     "translationRequestsThisRun": 0
   },
   "latestR105Verification": {
-    "checkedAt": "2026-11-13T15:54:46Z",
-    "run": 77,
-    "runId": 43457348624,
+    "run": 43517683421,
+    "runNumber": 81,
+    "checkedAt": "2026-11-13T22:14:50Z",
     "conclusion": "success",
-    "health": "R107_DEPLOY_HEALTH_PASS; AI binding present; central safety enabled and fail-closed",
+    "localeNames": "98/98 resolve; no translation requests",
+    "reservedIdentifierRepairTest": "PASS; deterministic, idempotent, preserves source/other strings",
     "quotaBoundary": "R76_QUOTA_BOUNDARY_PASS",
-    "currencyCountry": "currency uniqueness/stability and country-pack fallback tests passed; live Iceland change returned IS",
-    "safety": "weapon-sale request blocked; reviewRequired=true; route=null",
-    "liveAiGeneration": "AI_PROBES_SKIPPED_BY_POLICY (RUN_LIVE_AI_PROBES=false); no current generation confirmation",
-    "aiBinding": "present"
+    "productionHealth": "R107_DEPLOY_HEALTH_PASS",
+    "liveAIChat": "skipped by policy",
+    "countryChangeToIceland": "passed",
+    "prohibitedWeaponSale": "blocked; reviewRequired true; route null",
+    "currencyAndCountryFallback": "passed",
+    "checkoutActive": false,
+    "physicalAudioCertified": false
   },
   "latestAudioAuthorityVerification": {
     "checkedAt": "2026-11-13T15:52:20Z",
@@ -1895,5 +1782,93 @@
     "all98Structural": "97 complete, dv remains",
     "countryCurrencySafety": "latest R105 #80 succeeded; Iceland country action, weapon listing blocked, quota boundaries passed",
     "checkoutActive": false
+  },
+  "candidateAudit": {
+    "completedCount": 97,
+    "sourceCount": 1118,
+    "remaining": [
+      "dv"
+    ],
+    "structuralFailures": {
+      "dv": [
+        "english_overlap:58"
+      ]
+    },
+    "scriptWarningLanguages": 25,
+    "scriptWarningCount": 68,
+    "warningTriage": "After deterministic reserved-ID repair, 68 remaining script warnings across 25 languages; substantive wrong-script/incomplete text still requires review.",
+    "published": false,
+    "linguisticAccuracyCertified": false,
+    "readyForLinguisticReview": false
+  },
+  "translationService": {
+    "currentAvailability": "unknown-not-probed",
+    "translationRequestsSentThisRun": 0,
+    "quotaBypassAttempted": false,
+    "lastObservedFailure": "HTTP 503 all_translation_backends_unavailable; earlier Google HTTP 429 remains un-retried",
+    "dailyFreeAiLimit": "historically observed; current quota not re-probed",
+    "candidateBranchModifiedThisRun": true,
+    "quotaProbeSent": false,
+    "structuralRepairUsedNoAI": true
+  },
+  "aiChat": {
+    "lastDirectProbeAt": "2026-11-13T13:18:20+01:00",
+    "freshProbeThisRun": false,
+    "latestReleaseRun": 43517683421,
+    "latestReleaseLiveAiProbe": "R105 #81: RUN_LIVE_AI_PROBES=false; health/binding and country/safety probes passed, but general chat generation was skipped",
+    "aiBinding": "present in production health response",
+    "chatGenerationAvailability": "unknown-currently"
+  },
+  "countryCurrencySections": {
+    "latestReleaseRun": 43517683421,
+    "countryChangeToIceland": "passed in R105 #81",
+    "safetyProbe": "passed in R105 #81: prohibited weapon sale blocked/reviewRequired true/no route",
+    "currencyAndFallbackUnitTests": "passed in R105 #81",
+    "latestFullBrowserAuditRun": 43213407211,
+    "latestFullBrowserAuditAt": "2026-11-12T11:57:48Z",
+    "countryProfiles": 248,
+    "localizedPages": 44,
+    "allLanguagesAndAllSectionsCertified": false
+  },
+  "voice": {
+    "latestAudioAuthorityRun": 43456938311,
+    "headlessVoiceSequence": "passed in R123 #64",
+    "dynamicPlaceholders": [
+      "fr",
+      "ar"
+    ],
+    "liveTtsAsrThisRun": "skipped by opt-in gate",
+    "latestSyntheticTtsAsrRun": 43219069259,
+    "latestSyntheticTtsAsrAt": "2026-11-12T12:35:08Z",
+    "syntheticLanguages": [
+      "ar",
+      "fr",
+      "en"
+    ],
+    "physicalDeviceCertified": false
+  },
+  "run20ReservedIdentifierRepair": {
+    "checkedAt": "2026-11-13T23:23:32Z",
+    "branch": "work/r125-locale-candidates-20261008",
+    "commit": "e140ffb2de0273abb9971ab72b1eae6d7310013a",
+    "summaryCommit": "d17366541d19aa8b4c5190d14af479e8c0c596f2",
+    "repairedLocales": 73,
+    "alreadyCorrect": [
+      "ar"
+    ],
+    "totalPacksCorrected": 74,
+    "oldScriptWarnings": 142,
+    "newScriptWarnings": 68,
+    "warningLanguagesAfter": 25,
+    "sourceCount": 1118,
+    "completeCandidates": 97,
+    "remaining": [
+      "dv"
+    ],
+    "published": false,
+    "linguisticCertification": false,
+    "aiQuotaUsed": 0,
+    "translationRequestsSent": 0,
+    "verification": "Compare parent→repair commit: 73 locale files, each exactly one line changed; sampled 5 packs have 1,118 keys and exact immutable value."
   }
 }
