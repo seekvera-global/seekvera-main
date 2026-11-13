@@ -48,8 +48,8 @@ assert.ok(workflow.includes('AI_PROBES_SKIPPED_BY_POLICY'),
 
 
 const audioWorkflow = fs.readFileSync('.github/workflows/r123-production-cert.yml', 'utf8');
-assert.match(audioWorkflow, /run_live_audio_probes:[\\s\\S]*?default: false/);
-assert.ok(audioWorkflow.includes("github.event.inputs.run_live_audio_probes == 'true'"));
+assert.match(audioWorkflow, /run_live_audio_probes:[\s\S]*?default: false/);
+assert.ok(audioWorkflow.includes("github.event.inputs.run_live_audio_probes == 'true'"));\nassert.ok(audioWorkflow.includes("if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_live_audio_probes == 'true' }}"),\n  'automatic deploys must skip live audio/chat probes');
 assert.ok(!audioWorkflow.includes('for attempt in range(3)'),
   'live audio/chat probes must not retry quota or rate-limit responses');
 assert.ok(audioWorkflow.includes("str(d.get('model','')).startswith('@cf/')"),
