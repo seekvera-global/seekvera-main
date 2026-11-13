@@ -115,7 +115,8 @@
     "Existing Google translation fallback previously returned HTTP 429; it was not bypassed or retried through an alternate service",
     "All 98 packs still require linguistic review; Divehi remains structurally incomplete",
     "Physical microphone and audible-speaker tests remain pending",
-    "Payment checkout remains inactive pending merchant-account configuration"
+    "Payment checkout remains inactive pending merchant-account configuration",
+    "Candidate audit reports 142 script warnings across 83 languages; warnings mix preserved identifiers/date/brand/acronym cases with possible substantive wrong-script or incomplete translations and require triage before linguistic review."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -172,7 +173,8 @@
   "remainingChecks": [
     "Finish and linguistically review the remaining Divehi (dv) pack, then linguistically review all 98 packs",
     "Perform physical microphone and audible-speaker tests on Android, iPhone/iPad and desktop; programmatic TTS/ASR does not certify hardware",
-    "Payment checkout remains inactive pending merchant-account configuration"
+    "Payment checkout remains inactive pending merchant-account configuration",
+    "Triage candidate script warnings across 83 language packs (142 findings); distinguish reserved identifiers and formatting from genuine wrong-script or incomplete UI text."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
@@ -293,18 +295,24 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-13T13:18:20+01:00",
-    "mainProvenanceCommit": "02742ab6169fc1d6669eb0afc291e6fa00be72d2",
+    "checkedAt": "2026-11-13T16:57:54+01:00",
+    "mainProvenanceCommit": "f4ea0b9b70af768ac0b98ad19d87068dc1c60cf7",
+    "mainCheckpointBlobBeforeUpdate": "6bce52484854e9a1c076fb3bf427667ed593ea4f",
     "candidateBranchHead": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
+    "candidateSummaryBlob": "3afb7c9b4335deb1eef550630a96ef04165f886c",
+    "candidateLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
     "workflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "fileSha": "71b38477ff18fae5e3a288a86785d2e6953f6820",
+      "actualTrigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "translationBuildCondition": "The candidate build runs only on a manual dispatch with run_translations=true; default mode is audit-only and does not query translation quota.",
       "latestRun": 150,
       "runId": 38971104197,
+      "status": "completed",
       "conclusion": "success",
-      "createdAt": "2026-10-16T21:41:54Z",
-      "activeRun": false,
-      "mode": "current workflow_dispatch; run_translations explicit true; audit-only default",
-      "candidateWritesDeferred": false,
       "event": "push",
+      "createdAt": "2026-10-16T21:41:54Z",
       "resumeStep": "skipped",
       "auditStep": "success",
       "auditResult": {
@@ -315,10 +323,15 @@
         "resumeSucceeded": false,
         "readyForLinguisticReview": false,
         "translationRequestsSent": 0
-      }
+      },
+      "activeRunFound": false,
+      "activeRunsCheck": "Repository-wide Actions query for status=in_progress returned zero runs at 2026-11-13T16:57:54+01:00",
+      "candidateWritesDeferred": false,
+      "note": "The workflow is not an hourly scheduled run despite its filename; it can resume actual builds when explicitly dispatched with run_translations=true. No such run is active now."
     },
     "candidateAudit": {
       "completedCount": 97,
+      "sourceCount": 1118,
       "remaining": [
         "dv"
       ],
@@ -327,17 +340,23 @@
           "english_overlap:58"
         ]
       },
+      "scriptWarningLanguages": 83,
+      "scriptWarningCount": 142,
+      "warningTriage": "Warnings include altered reserved SV-YYYYMMDD-XXXXXXXX placeholders, locale-specific date formatting, brand/acronym-only values and punctuation, but also probable genuine issues. Punjabi has 18 warnings, including Devanagari text in a Gurmukhi pack and untranslated/incomplete UI labels; Amharic and Burmese examples also omit action words.",
       "published": false,
-      "linguisticAccuracyCertified": false
+      "linguisticAccuracyCertified": false,
+      "readyForLinguisticReview": false
     },
     "translationService": {
       "currentAvailability": "unknown-not-probed",
       "translationRequestsSentThisRun": 0,
       "quotaBypassAttempted": false,
       "lastObservedFailure": "HTTP 503 all_translation_backends_unavailable; earlier Google HTTP 429 remains un-retried",
-      "candidateBranchModified": false
+      "dailyFreeAiLimit": "previously observed; not re-probed",
+      "candidateBranchModifiedThisRun": false
     },
     "aiChat": {
+      "lastDirectProbeAt": "2026-11-13T13:18:20+01:00",
       "english": {
         "status": 200,
         "response": "Hello",
@@ -349,35 +368,47 @@
         "response": "مرحبا",
         "model": "@cf/meta/llama-3.1-8b-instruct-fast",
         "ms": 5766
-      }
-    },
-    "safety": {
-      "weaponSaleRequest": "blocked",
-      "weaponReason": "weapons_or_explosives"
-    },
-    "voice": {
-      "ttsStatus": 200,
-      "ttsBytes": 30144,
-      "asrStatus": 200,
-      "asrLanguage": "ar",
-      "asrModel": "@cf/openai/whisper-large-v3-turbo",
-      "programmaticAudioOnly": true,
-      "physicalDeviceCertified": false
+      },
+      "freshProbeThisRun": false,
+      "latestReleaseRun": 43457348624,
+      "latestReleaseLiveAiProbe": "skipped by policy; no fresh confirmation at 16:57"
     },
     "countryCurrencySections": {
-      "freshRerun": false,
-      "reason": "Runtime source is unchanged since the successful 2026-10-26 full browser audit; this run changed provenance and candidate files only",
-      "priorAuditCountries": 248,
-      "priorAuditLocalizedPages": 44
+      "latestReleaseRun": 43457348624,
+      "countryChangeToIceland": "passed",
+      "safetyProbe": "passed",
+      "currencyAndFallbackUnitTests": "passed in release validation",
+      "latestFullBrowserAuditRun": 43213407211,
+      "latestFullBrowserAuditAt": "2026-11-12T11:57:48Z",
+      "countryProfiles": 248,
+      "localizedPages": 44,
+      "visibleLocales": [
+        "ar",
+        "fr",
+        "hi",
+        "zh"
+      ],
+      "allLanguagesAndAllSectionsCertified": false
+    },
+    "voice": {
+      "latestAudioAuthorityRun": 43456938311,
+      "headlessVoiceSequence": "passed",
+      "dynamicPlaceholders": [
+        "fr",
+        "ar"
+      ],
+      "liveTtsAsrThisRun": "skipped by policy",
+      "latestSyntheticTtsAsrRun": 43219069259,
+      "latestSyntheticTtsAsrAt": "2026-11-12T12:35:08Z",
+      "syntheticLanguages": [
+        "ar",
+        "fr",
+        "en"
+      ],
+      "physicalDeviceCertified": false
     },
     "checkoutActive": false,
-    "finalApproval": false,
-    "health": {
-      "status": 200,
-      "ok": true,
-      "release": "20261001-r125-dialect-voice-quality",
-      "ms": 12273
-    }
+    "finalApproval": false
   },
   "verificationInfrastructureRepair": {
     "checkedAt": "2026-11-12T09:56:58Z",
@@ -568,24 +599,17 @@
     "scope": "Availability/SEO only; no all-language or AI/audio certification"
   },
   "latestAudioAuthority": {
-    "run": 43263096001,
-    "runNumber": 62,
-    "checkedAt": "2026-11-12T16:50:51Z",
+    "checkedAt": "2026-11-13T15:53:01Z",
+    "run": 43456938311,
+    "runNumber": 64,
     "conclusion": "success",
-    "syntheticAudioRoundTrip": [
-      "ar",
-      "fr",
-      "en"
-    ],
-    "liveChat": [
-      "fr:jobs",
-      "ar:jobs",
-      "es:travel",
-      "ja:jobs"
-    ],
-    "arabicHomepage": "31 localized descriptions passed",
-    "physicalDeviceCertified": false,
-    "scope": "Production synthetic TTS→ASR and headless browser checks"
+    "headCommit": "171427c89bb1098e443e1c9dcca1951d19bc1502",
+    "localTests": "passed: audio envelope, voice routing, language detection, sequence/acknowledgement, currency fallback and localization regression",
+    "liveCategoryTranslations": "passed",
+    "liveVoiceAcknowledgementBeforeNavigation": "passed in headless Android browser profile",
+    "dynamicVoicePlaceholders": "passed for French and Arabic",
+    "liveTtsAsrProbes": "skipped by policy (run_live_audio_probes=false)",
+    "physicalDeviceCertified": false
   },
   "latestAIAvailability": {
     "checkedAt": "2026-11-12T16:51:22Z",
@@ -1253,5 +1277,24 @@
       "r123GateAssertionsSeparated": true,
       "noCandidateFilesChanged": true
     }
+  },
+  "latestProductionRelease": {
+    "checkedAt": "2026-11-13T15:55:11Z",
+    "run": 43457348624,
+    "runNumber": 77,
+    "conclusion": "success",
+    "headCommit": "f4ea0b9b70af768ac0b98ad19d87068dc1c60cf7",
+    "deployedWorkerVersion": "fb2a3f89-1342-40a7-b573-6765181fcdc3",
+    "health": "R107_DEPLOY_HEALTH_PASS",
+    "liveChecks": {
+      "apiHealthAndAiBinding": "passed",
+      "centralSafetyGate": "enabled",
+      "failClosed": "true",
+      "countryChangeToIceland": "passed",
+      "prohibitedWeaponSale": "blocked; reviewRequired=true; route=null"
+    },
+    "liveAiChatProbes": "skipped by policy (RUN_LIVE_AI_PROBES=false); this run does not prove current chat availability",
+    "quotaBoundaryTests": "R76_QUOTA_BOUNDARY_PASS; quota/rate-limit errors stop before external conversational fallback; automatic deployments do not send live chat probes",
+    "scope": "Production deployment, health, country/safety probes and local regression tests; no live English/Arabic chat-generation probe."
   }
 }
