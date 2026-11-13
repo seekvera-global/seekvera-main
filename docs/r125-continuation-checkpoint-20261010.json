@@ -1686,9 +1686,12 @@
     "testFile": "tools/test-locale-language-names.py",
     "workflow": "main .github/workflows/r125-hourly-candidate-resume.yml",
     "purpose": "Fail before any optional translation run if any of the 98 manifest language codes cannot resolve a non-empty target-language name via the explicit override map or Babel.",
-    "validation": "Added and wired into the quota-neutral pre-resume path; not yet executed by GitHub Actions. No translation request sent.",
+    "validation": "Python syntax compile passed locally; full execution against the repository's 98-language manifest is pending the next R125 Actions run. No translation request sent.",
     "candidateBranchUnchanged": true,
     "packsPublished": false,
-    "finalApproval": false
+    "finalApproval": false,
+    "workflowInsertionVerified": true,
+    "testBlob": "6da0ccbf27a050cbd4f06e09ba1fc1f9f8696aaf",
+    "workflowBlob": "8f20e18e95e4a15f07c1b0687077662536f297a0"
   }
 }
