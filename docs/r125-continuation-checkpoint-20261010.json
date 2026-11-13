@@ -657,17 +657,17 @@
     "physicalDeviceCertified": false
   },
   "latestAIAvailability": {
-    "checkedAt": "2026-11-13T18:25:19Z",
+    "checkedAt": "2026-11-13T21:38:10Z",
     "status": "unknown-currently",
     "lastDirectProbe": "2026-11-13T13:18:20+01:00 English/Arabic HTTP 200",
     "checkedToday": true,
     "sourceRun": 43463488541,
     "sourceRunLiveAiProbe": "skipped by policy",
     "freshChatGenerationProbe": false,
-    "note": "R105 #79 verified health, country and safety but skipped live chat generation; no current AI generation availability claim."
+    "note": "R105 #79 log confirms RUN_LIVE_AI_PROBES=false and AI_PROBES_SKIPPED_BY_POLICY. It did perform country-change and safety classifier requests, but these do not prove general chat generation availability. No quota-consuming chat probe was sent this continuation."
   },
   "latestRunInspection": {
-    "checkedAt": "2026-11-13T18:25:19Z",
+    "checkedAt": "2026-11-13T21:38:10Z",
     "r125Run": {
       "id": 38971104197,
       "runNumber": 150,
@@ -711,8 +711,8 @@
     "todayActions": {
       "date": "2026-11-13",
       "total": 24,
-      "latestPagesRun": 43469998835,
-      "latestPagesNumber": 1489,
+      "latestPagesRun": 43503887580,
+      "latestPagesNumber": 1495,
       "latestPagesConclusion": "success",
       "latestR105Run": 43463488541,
       "latestR105Number": 79,
@@ -1397,11 +1397,17 @@
     "effect": "Improves diagnosis only; does not make any pack ready for linguistic review or publication."
   },
   "latestPagesDeployment": {
-    "checkedAt": "2026-11-13T17:10:19Z",
-    "run": 43469998835,
-    "runNumber": 1489,
+    "checkedAt": "2026-11-13T21:38:10Z",
+    "run": 43503887580,
+    "runNumber": 1495,
     "conclusion": "success",
-    "headCommit": "f15a04598170af0fe3ed353778f647908fe6beb7"
+    "headCommit": "56aaba97af1eb10e837f7ede47415d00cde9575e",
+    "verifiedJobs": [
+      "build",
+      "deploy",
+      "report-build-status"
+    ],
+    "scope": "GitHub Pages build/upload/deploy success; not application-language, AI, voice or checkout certification."
   },
   "run16CandidateHistoryReconciliation": {
     "checkedAt": "2026-11-13T16:34:23Z",
@@ -1693,5 +1699,116 @@
     "workflowInsertionVerified": true,
     "testBlob": "6da0ccbf27a050cbd4f06e09ba1fc1f9f8696aaf",
     "workflowBlob": "8f20e18e95e4a15f07c1b0687077662536f297a0"
+  },
+  "run11IndependentVerification": {
+    "checkedAt": "2026-11-13T21:38:10Z",
+    "filesRead": [
+      {
+        "ref": "main",
+        "path": "docs/r125-continuation-checkpoint-20261010.json",
+        "blobSha": "bd530da22e66e7fd4c8d68c76f2af7c41cd11b85"
+      },
+      {
+        "ref": "work/r125-locale-candidates-20261008",
+        "path": "docs/locale-candidates-20261008/resume-summary.json",
+        "blobSha": "3afb7c9b4335deb1eef550630a96ef04165f886c"
+      },
+      {
+        "ref": "work/r125-locale-candidates-20261008",
+        "path": "docs/locale-candidates-20261008/resume-latest.log",
+        "blobSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b"
+      },
+      {
+        "ref": "main",
+        "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+        "blobSha": "8f20e18e95e4a15f07c1b0687077662536f297a0"
+      }
+    ],
+    "candidateState": {
+      "completedCount": 97,
+      "remaining": [
+        "dv"
+      ],
+      "structuralFailure": "english_overlap:58",
+      "summaryTimestamp": "2026-10-30",
+      "resumeLog": "STAGED_ONLY 0 FAILED 1; last translation backend failure HTTP 503 all_translation_backends_unavailable; 8-string timeout and 4/2-string 503/timeout; last line DELTA_FAILURE dv",
+      "published": false,
+      "linguisticAccuracyCertified": false,
+      "branchHead": "cef6d804eb06d0c57d2e7c73650056d9edb26569"
+    },
+    "r125": {
+      "latestRun": 150,
+      "runId": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "resumeStep": "skipped",
+      "auditStep": "success",
+      "translationRequests": 0,
+      "active": false,
+      "currentWorkflow": "workflow_dispatch only; run_translations default false; explicit true required for candidate translation; audit-only writes status/summary and pushes candidate-branch metadata"
+    },
+    "actions": {
+      "latestPages": {
+        "run": 1495,
+        "id": 43503887580,
+        "conclusion": "success",
+        "createdAt": "2026-11-13T20:41:34Z",
+        "jobs": [
+          "build",
+          "deploy",
+          "report-build-status"
+        ],
+        "headCommit": "56aaba97af1eb10e837f7ede47415d00cde9575e"
+      },
+      "latestR105": {
+        "run": 79,
+        "id": 43463488541,
+        "conclusion": "success",
+        "createdAt": "2026-11-13T16:31:07Z",
+        "health": "R107_DEPLOY_HEALTH_PASS",
+        "liveCountryIceland": "IS",
+        "weaponSale": "blocked/reviewRequired=true/route=null",
+        "quotaBoundary": "pass",
+        "liveChatGeneration": "skipped"
+      },
+      "latestAudio": {
+        "run": 64,
+        "id": 43456938311,
+        "conclusion": "success",
+        "createdAt": "2026-11-13T15:52:20Z",
+        "headlessVoiceAck": "pass",
+        "categoryTranslation": "pass",
+        "dynamicVoicePlaceholder": [
+          "ar",
+          "fr"
+        ],
+        "liveTtsAsr": "skipped"
+      },
+      "latestHealth": {
+        "run": 318,
+        "id": 43382989023,
+        "conclusion": "success",
+        "createdAt": "2026-11-13T07:03:29Z",
+        "scope": "API/home, robots/sitemap, 18 pages HTTP 200"
+      },
+      "activeRuns": 0
+    },
+    "quotaPolicy": {
+      "dailyFreeAiLimitKnownBlocker": true,
+      "currentStatus": "not probed",
+      "googleTranslationHttp429PreviouslyObserved": true,
+      "lastUiTranslationFailure": "503 all_translation_backends_unavailable",
+      "noBypassOrPurchase": true,
+      "noQuotaConsumingChatProbeSent": true
+    },
+    "languageNameGuard": {
+      "file": "tools/test-locale-language-names.py",
+      "blobSha": "6da0ccbf27a050cbd4f06e09ba1fc1f9f8696aaf",
+      "workflowBlobSha": "8f20e18e95e4a15f07c1b0687077662536f297a0",
+      "pythonSyntax": "previously passed",
+      "manifestExecution": "pending next R125 run",
+      "translationRequests": 0
+    },
+    "scope": "Read-only verification plus checkpoint metadata only. No locale pack edited, no candidate branch write, no translation or general-chat quota probe, no publish, no physical-device certification."
   }
 }
