@@ -35,6 +35,8 @@ jobs:
           for file in tools/build_current_locale_delta.py tools/audit_locale_candidates.py tools/audit-candidate-scripts.cjs tools/test-candidate-script-triage.cjs; do
             git show "origin/main:$file" > "$file"
           done
+      - name: Verify all 98 target-language names without translation requests
+        run: python tools/test-locale-language-names.py
       - name: Verify candidate warning triage without translation requests
         env:
           WORKER_VALIDATOR_SOURCE: /tmp/seekvera-validation-worker.js
