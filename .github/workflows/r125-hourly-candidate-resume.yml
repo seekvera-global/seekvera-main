@@ -32,7 +32,7 @@ jobs:
         run: |
           git fetch origin main:refs/remotes/origin/main
           git show origin/main:worker.js > /tmp/seekvera-validation-worker.js
-          for file in tools/build_current_locale_delta.py tools/audit_locale_candidates.py tools/audit-candidate-scripts.cjs tools/test-candidate-script-triage.cjs; do
+          for file in tools/build_current_locale_delta.py tools/audit_locale_candidates.py tools/audit-candidate-scripts.cjs tools/test-candidate-script-triage.cjs tools/repair-candidate-reserved-identifiers.py tools/test-repair-candidate-reserved-identifiers.py; do
             git show "origin/main:$file" > "$file"
           done
       - name: Verify all 98 target-language names without translation requests
@@ -62,6 +62,12 @@ jobs:
           status={'checkedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'mode':'audit-only','translationRequestsSent':0,'quotaChecked':False,'reason':'Manual audit-only run; production translation quota and backend availability were not queried. Translation requires explicit run_translations=true.','finalApproval':False}
           (stage/'scheduled-mode.json').write_text(json.dumps(status,indent=2))
           PY
+      - name: Repair immutable locale identifiers (deterministic, no AI)
+        if: success()
+        run: python tools/repair-candidate-reserved-identifiers.py --stage docs/locale-candidates-20261008
+      - name: Test immutable locale identifier repair (quota-neutral)
+        if: success()
+        run: python tools/test-repair-candidate-reserved-identifiers.py
       - name: Audit all saved candidates
         if: always()
         env:
