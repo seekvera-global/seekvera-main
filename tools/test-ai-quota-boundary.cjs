@@ -46,4 +46,13 @@ assert.ok(workflow.includes('((.model // "")|startswith("@cf/"))'),
 assert.ok(workflow.includes('AI_PROBES_SKIPPED_BY_POLICY'),
   'automatic deploys must state that live AI probes were skipped');
 
+
+const audioWorkflow = fs.readFileSync('.github/workflows/r123-production-cert.yml', 'utf8');
+assert.match(audioWorkflow, /run_live_audio_probes:[\\s\\S]*?default: false/);
+assert.ok(audioWorkflow.includes("github.event.inputs.run_live_audio_probes == 'true'"));
+assert.ok(!audioWorkflow.includes('for attempt in range(3)'),
+  'live audio/chat probes must not retry quota or rate-limit responses');
+assert.ok(audioWorkflow.includes("str(d.get('model','')).startswith('@cf/')"),
+  'live chat certification must require an actual Workers AI model');
+
 console.log('R76_QUOTA_BOUNDARY_PASS');
