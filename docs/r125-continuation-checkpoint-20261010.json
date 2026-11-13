@@ -234,8 +234,8 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-10-30T02:34:00+01:00",
-    "candidateCommit": "work/r125-locale-candidates-20261008",
+    "checkedAt": "2026-11-13T14:13:20+01:00",
+    "candidateCommit": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
     "completedCount": 97,
     "remainingCount": 1,
     "firstFailure": "dv",
@@ -245,7 +245,7 @@
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false,
-    "note": "No new translations were saved. The remote candidate branch remains unchanged at cef6d804eb06d0c57d2e7c73650056d9edb26569 with Divehi at english_overlap:58 and zero script warnings. The service is intermittently capable of a single translation but not stable enough for continuation; no Google fallback or quota bypass was attempted."
+    "note": "Fresh read of branch summary and resume-latest.log: no staged translations (STAGED_ONLY 0), one failed language, last log dated Oct 30; candidate branch HEAD unchanged. Latest main R125 #150 completed successfully but skipped translation step. Current translation service was not probed."
   },
   "builderRepair": {
     "commit": "634a0d31cb571300d658bb24580bdad3cbaeb75b",
@@ -650,5 +650,88 @@
       ],
       "action": "No candidate values edited; retranslation still requires the authorized translation endpoint and available quota."
     }
+  },
+  "workflowRunInspection": {
+    "checkedAt": "2026-11-13T13:13:20Z",
+    "mainR125Latest": {
+      "run": 38971104197,
+      "runNumber": 150,
+      "createdAt": "2026-10-16T21:41:54Z",
+      "status": "completed",
+      "conclusion": "success",
+      "branch": "main",
+      "job": "resume",
+      "steps": {
+        "resumePublicUiCandidates": "skipped",
+        "auditSavedCandidates": "success",
+        "saveProgressWithoutPublishing": "success"
+      },
+      "actualRunnerVersions": {
+        "checkout": "v4",
+        "setupNode": "v4"
+      },
+      "note": "Successful audit-only run; no translation requests and no candidate generation. Run executed against an older workflow revision than current main YAML."
+    },
+    "latestCandidateRender": {
+      "run": 43241261247,
+      "runNumber": 2,
+      "createdAt": "2026-11-12T14:49:49Z",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "staged rendering/audit only; not candidate translation or linguistic certification"
+    },
+    "activeRunsAtCheck": 0,
+    "candidateBranchLatestResume": {
+      "run": 37938910866,
+      "runNumber": 20,
+      "createdAt": "2026-10-09T13:43:40Z",
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
+      "branchSummaryCheckedAt": "2026-10-30T00:57:30Z",
+      "resumeLogCheckedAt": "2026-10-30",
+      "translationRequestsInLatestLog": 0,
+      "staged": 0,
+      "failed": 1
+    }
+  },
+  "candidateQualityInspection": {
+    "checkedAt": "2026-11-13T13:13:20Z",
+    "branch": "work/r125-locale-candidates-20261008",
+    "branchHead": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
+    "language": "dv",
+    "sourceHash": "6a1126e6a2ce5629",
+    "sourceCount": 1118,
+    "candidateTranslationCount": 1118,
+    "retranslatedKeysCount": 88,
+    "structuralAuditFailure": "english_overlap:58",
+    "additionalQualitySignals": {
+      "duplicateExactTranslationValues": [
+        {
+          "occurrences": 12,
+          "value": "މަން މައު މައް"
+        },
+        {
+          "occurrences": 8,
+          "value": "މަޢުގެ މައްޓަކު ރައްކާ ފައި މައްޓަކު މަޢުގެ މައްޓަކު ރައްކާ ފައި"
+        }
+      ],
+      "observedExamples": [
+        "A dark high-speed runner challenge. → repeated generic output shared with multiple game descriptions",
+        "Action games / Adventure games / Arcade games → same short output repeated 12 times",
+        "Audio could not play... → mixed Dhivehi and English misspelling 'Spaker'"
+      ]
+    },
+    "interpretation": "Structural completeness is not linguistic quality. These are automated anomaly signals requiring native-speaker review; no pack is approved or published.",
+    "published": false,
+    "linguisticAccuracyCertified": false
+  },
+  "translationAvailabilityCurrent": {
+    "checkedAt": "2026-11-13T13:13:20Z",
+    "status": "not_probed",
+    "latestRecordedApiFailure": "HTTP 503 all_translation_backends_unavailable",
+    "priorGoogleFallback": "HTTP 429",
+    "dailyFreeAiLimit": "historical blocker; not queried this run",
+    "action": "No translation request or quota probe sent"
   }
 }
