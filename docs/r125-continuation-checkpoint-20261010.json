@@ -297,7 +297,7 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-13T18:25:19Z",
+    "checkedAt": "2026-11-13T19:11:42Z",
     "mainProvenanceCommit": "f15a04598170af0fe3ed353778f647908fe6beb7",
     "mainCheckpointBlobBeforeUpdate": "6ab91cfc0495f0dcc7d89eadfacc640832047c9c",
     "candidateBranchHead": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
@@ -327,9 +327,9 @@
         "translationRequestsSent": 0
       },
       "activeRunFound": false,
-      "activeRunsCheck": "GitHub Actions status=in_progress query returned 0 repository runs at 2026-11-13T18:25:19Z; today's 24 runs and latest 100 runs contain no newer R125 resume.",
+      "activeRunsCheck": "Fresh GitHub API query for branch=main,status=in_progress returned total_count=0 at 2026-11-13T19:11:42Z; workflow-specific latest remains #150. Current YAML trigger is workflow_dispatch only.",
       "candidateWritesDeferred": false,
-      "note": "No R125 run is active; no candidate write or translation was initiated in this audit. Latest candidate branch files were read directly; packs remain unchanged.",
+      "note": "No R125 active; no candidate write or translation initiated. #149 audit failed due parser SyntaxError; #150 audit-only push succeeded after current audited tools were substituted.",
       "currentTrigger": "workflow_dispatch only",
       "latestKnownRun": 150,
       "latestWorkflowRevisionCommit": "0160c0f0cbbbefee2af186fc1678602b8a6ac6ca",
@@ -338,7 +338,38 @@
         "docs/locale-candidates-20261008/resume-summary.json",
         "docs/locale-candidates-20261008/scheduled-mode.json"
       ],
-      "candidatePackFilesChangedByRun150": false
+      "candidatePackFilesChangedByRun150": false,
+      "latestRunBeforeSuccess": {
+        "run": 149,
+        "runId": 38970873888,
+        "createdAt": "2026-10-16T21:39:49Z",
+        "status": "completed",
+        "conclusion": "failure",
+        "resumeStep": "skipped",
+        "auditStep": "failure",
+        "auditError": "SyntaxError: Unexpected end of input from tools/audit-candidate-scripts.cjs uiScriptPattern extraction; audit_locale_candidates.py raised CalledProcessError",
+        "translationRequestsSent": 0
+      },
+      "latestRunRepair": {
+        "run": 150,
+        "runId": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "resumeStep": "skipped",
+        "auditStep": "success",
+        "auditResult": {
+          "completedCount": 97,
+          "remaining": [
+            "dv"
+          ],
+          "resumeSucceeded": false,
+          "readyForLinguisticReview": false,
+          "translationRequestsSent": 0
+        },
+        "mode": "audit-only",
+        "reason": "daily free AI allocation exhausted; translation manually gated"
+      }
     },
     "candidateAudit": {
       "completedCount": 97,
@@ -382,15 +413,15 @@
         "ms": 5766
       },
       "freshProbeThisRun": false,
-      "latestReleaseRun": 43463488541,
-      "latestReleaseLiveAiProbe": "skipped by policy; no fresh chat-generation confirmation in R105 #79",
+      "latestReleaseRun": 43457348624,
+      "latestReleaseLiveAiProbe": "R105 #77 succeeded but explicitly emitted AI_PROBES_SKIPPED_BY_POLICY (RUN_LIVE_AI_PROBES=false); health confirms binding only",
       "aiBinding": "present in production health response",
       "chatGenerationAvailability": "unknown-currently"
     },
     "countryCurrencySections": {
-      "latestReleaseRun": 43463488541,
-      "countryChangeToIceland": "passed",
-      "safetyProbe": "passed; prohibited weapon-sale request blocked with reviewRequired=true and no route",
+      "latestReleaseRun": 43457348624,
+      "countryChangeToIceland": "passed in R105 #77",
+      "safetyProbe": "passed in R105 #77: weapon-sale request blocked/reviewRequired true/no route",
       "currencyAndFallbackUnitTests": "passed in R105 #79",
       "latestFullBrowserAuditRun": 43213407211,
       "latestFullBrowserAuditAt": "2026-11-12T11:57:48Z",
@@ -406,12 +437,12 @@
     },
     "voice": {
       "latestAudioAuthorityRun": 43456938311,
-      "headlessVoiceSequence": "passed",
+      "headlessVoiceSequence": "passed in R123 #64",
       "dynamicPlaceholders": [
         "fr",
         "ar"
       ],
-      "liveTtsAsrThisRun": "skipped by manual opt-in gate",
+      "liveTtsAsrThisRun": "skipped by opt-in gate",
       "latestSyntheticTtsAsrRun": 43219069259,
       "latestSyntheticTtsAsrAt": "2026-11-12T12:35:08Z",
       "syntheticLanguages": [
@@ -1580,5 +1611,70 @@
     "noCandidatePackEdit": true,
     "noPublish": true,
     "noPhysicalAudioClaim": true
+  },
+  "latestR125RunInspection": {
+    "checkedAt": "2026-11-13T19:11:42Z",
+    "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
+    "workflowSha": "c1482fc1ae88ac522e91a759985c9fe49e8092fc",
+    "actualTrigger": "workflow_dispatch only",
+    "latestRun": {
+      "number": 150,
+      "id": 38971104197,
+      "createdAt": "2026-10-16T21:41:54Z",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success",
+      "translationStep": "skipped",
+      "auditStep": "success",
+      "candidateWrites": false
+    },
+    "previousRun": {
+      "number": 149,
+      "id": 38970873888,
+      "createdAt": "2026-10-16T21:39:49Z",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "failure",
+      "auditError": "SyntaxError: Unexpected end of input in uiScriptPattern extraction; audit_locale_candidates.py exited 1",
+      "translationStep": "skipped",
+      "candidatePackWrites": false
+    },
+    "activeRunQuery": {
+      "branch": "main",
+      "status": "in_progress",
+      "totalCount": 0,
+      "checkedAt": "2026-11-13T19:11:42Z"
+    },
+    "branchHead": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
+    "summaryChecked": "97/98; dv english_overlap:58; no staged pack",
+    "logChecked": "STAGED_ONLY 0 FAILED 1; dv HTTP503 all_translation_backends_unavailable; 48 prior repair translations; split batches timed out/503",
+    "candidateFilesModifiedThisRun": false,
+    "translationRequestsThisRun": 0
+  },
+  "latestR105Verification": {
+    "checkedAt": "2026-11-13T15:54:46Z",
+    "run": 77,
+    "runId": 43457348624,
+    "conclusion": "success",
+    "health": "R107_DEPLOY_HEALTH_PASS; AI binding present; central safety enabled and fail-closed",
+    "quotaBoundary": "R76_QUOTA_BOUNDARY_PASS",
+    "currencyCountry": "currency uniqueness/stability and country-pack fallback tests passed; live Iceland change returned IS",
+    "safety": "weapon-sale request blocked; reviewRequired=true; route=null",
+    "liveAiGeneration": "AI_PROBES_SKIPPED_BY_POLICY (RUN_LIVE_AI_PROBES=false); no current generation confirmation",
+    "aiBinding": "present"
+  },
+  "latestAudioAuthorityVerification": {
+    "checkedAt": "2026-11-13T15:52:20Z",
+    "run": 64,
+    "runId": 43456938311,
+    "conclusion": "success",
+    "categoryTranslation": "passed",
+    "voiceAcknowledgementBeforeNavigation": "passed",
+    "dynamicVoicePlaceholders": [
+      "ar",
+      "fr"
+    ],
+    "liveTtsAsr": "skipped by manual opt-in gate",
+    "physicalDevicesCertified": false
   }
 }
