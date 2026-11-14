@@ -386,27 +386,27 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-14T14:17:00Z",
-    "mainHeadBeforeCheckpointUpdate": "8cd4567efa3ddc672a3af755cb2a20618dc5206d",
-    "candidateBranchHead": "b6af6056aae5e46ad6b87d884f02a8818ebe3c4d",
+    "checkedAt": "2026-11-14T15:42:00Z",
+    "candidateBranchHeadBeforeSummaryUpdate": "b6af6056aae5e46ad6b87d884f02a8818ebe3c4d",
     "latestCandidatePackCommit": "e280de863bbd1e0546a5fa4e4fd3674a97db725f",
-    "candidateBranchReadmeCorrection": "b6af6056aae5e46ad6b87d884f02a8818ebe3c4d",
     "repositoryActions": {
-      "checkedAt": "2026-11-14T14:17:00Z",
-      "latest100Runs": "zero queued/in_progress",
-      "latestRun": {
-        "id": 43592832166,
-        "run": 1526,
+      "checkedAt": "2026-11-14T15:42:00Z",
+      "runsPagesScanned": 10,
+      "activeRunsObserved": 0,
+      "latestRepositoryRun": {
+        "id": 43604369351,
+        "run": 1527,
         "name": "pages build and deployment",
         "status": "completed",
         "conclusion": "success",
-        "createdAt": "2026-11-14T12:02:19Z"
+        "createdAt": "2026-11-14T14:20:40Z"
       },
       "latestProductionHealth": {
         "id": 43568474031,
         "run": 320,
         "conclusion": "success",
-        "createdAt": "2026-11-14T06:53:03Z"
+        "createdAt": "2026-11-14T06:53:03Z",
+        "logVerified": "API health, robots/sitemap canonical, 18 product sections HTTP 200, homepage category assertions"
       },
       "latestR105": {
         "id": 43517683421,
@@ -419,18 +419,29 @@
     },
     "r125": {
       "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
-      "trigger": "workflow_dispatch only",
+      "workflowTrigger": "workflow_dispatch only; explicit run_translations=true is required for live translation",
       "runTranslationsDefault": false,
-      "latestKnownRun": {
+      "latestRun": {
         "run": 150,
         "id": 38971104197,
         "status": "completed",
         "conclusion": "success",
         "createdAt": "2026-10-16T21:41:54Z",
         "resume": "skipped",
-        "audit": "success"
+        "audit": "success",
+        "auditOutput": "completedCount 97; remaining dv; resumeSucceeded false; exitCode not-run",
+        "candidateWrites": "checkpoint/audit metadata only; no translation calls"
       },
-      "latestRunInCurrent100": "none found; latest100 Actions snapshot had zero active runs",
+      "precedingRun": {
+        "run": 149,
+        "id": 38970873888,
+        "status": "completed",
+        "conclusion": "failure",
+        "createdAt": "2026-10-16T21:39:49Z",
+        "error": "SyntaxError: Unexpected end of input in audit-candidate-scripts.cjs while evaluating uiScriptPattern",
+        "resolution": "later #150 audit passed after workflow validation path changed"
+      },
+      "activeRunsObservedInPages1to10": 0,
       "candidateWritesThisPass": 0
     },
     "localeAudit": {
@@ -482,7 +493,7 @@
       "candidatePackWrites": 0,
       "translationRequestsSent": 0,
       "aiQuotaUsed": 0,
-      "mainCheckpointOnly": true
+      "checkpointAndSummaryOnly": true
     },
     "aiChatAvailability": "unknown-not-probed",
     "translationBackendAvailability": "unknown-not-probed",
@@ -550,7 +561,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-14T11:35:00Z",
+  "checkedAt": "2026-11-14T15:42:00Z",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
