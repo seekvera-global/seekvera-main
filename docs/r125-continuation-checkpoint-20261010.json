@@ -386,28 +386,110 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-14T11:35:00Z",
-    "mainHeadBeforeCheckpointUpdate": "c8726fc2cc2c1f8075734e22065464abcbe42419",
-    "candidateBranchHead": "58c854864f21660e4d29895f618363378bc72a38",
-    "candidatePackCommit": "e280de863bbd1e0546a5fa4e4fd3674a97db725f",
-    "latestR125RunId": 38971104197,
-    "latestR125RunStatus": "completed-success",
-    "resumeSkipped": true,
-    "auditSuccess": true,
-    "actionsSnapshotAt": "2026-11-14T10:10:00Z",
-    "activeRunsAtSnapshot": 0,
-    "actionsNotRepolledAtCurrentTimestamp": true,
-    "amharicPackCommit": "e280de863bbd1e0546a5fa4e4fd3674a97db725f",
-    "amharicKeys": 1118,
-    "sourceHash": "6a1126e6a2ce5629",
-    "amharicDuplicateClusterRemoved": true,
-    "exactManualEdits": 19,
-    "translationRequestsSent": 0,
-    "aiQuotaUsed": 0,
+    "checkedAt": "2026-11-14T14:17:00Z",
+    "mainHeadBeforeCheckpointUpdate": "8cd4567efa3ddc672a3af755cb2a20618dc5206d",
+    "candidateBranchHead": "b6af6056aae5e46ad6b87d884f02a8818ebe3c4d",
+    "latestCandidatePackCommit": "e280de863bbd1e0546a5fa4e4fd3674a97db725f",
+    "candidateBranchReadmeCorrection": "b6af6056aae5e46ad6b87d884f02a8818ebe3c4d",
+    "repositoryActions": {
+      "checkedAt": "2026-11-14T14:17:00Z",
+      "latest100Runs": "zero queued/in_progress",
+      "latestRun": {
+        "id": 43592832166,
+        "run": 1526,
+        "name": "pages build and deployment",
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-11-14T12:02:19Z"
+      },
+      "latestProductionHealth": {
+        "id": 43568474031,
+        "run": 320,
+        "conclusion": "success",
+        "createdAt": "2026-11-14T06:53:03Z"
+      },
+      "latestR105": {
+        "id": 43517683421,
+        "run": 81,
+        "conclusion": "success",
+        "createdAt": "2026-11-13T22:14:50Z",
+        "liveChatProbes": "skipped; RUN_LIVE_AI_PROBES=false",
+        "countryAndSafetyProbes": "passed"
+      }
+    },
+    "r125": {
+      "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "latestKnownRun": {
+        "run": 150,
+        "id": 38971104197,
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-10-16T21:41:54Z",
+        "resume": "skipped",
+        "audit": "success"
+      },
+      "latestRunInCurrent100": "none found; latest100 Actions snapshot had zero active runs",
+      "candidateWritesThisPass": 0
+    },
+    "localeAudit": {
+      "checkedAt": "2026-11-14T14:17:00Z",
+      "scope": [
+        "dv",
+        "am",
+        "my",
+        "pa"
+      ],
+      "sourceCount": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "packsChecked": {
+        "dv": {
+          "keys": 1118,
+          "sourceHashMatch": true,
+          "empty": 0,
+          "duplicateGroups": 10,
+          "duplicateKeys": 36,
+          "knownEnglishOverlapFailure": 58,
+          "remainingSemanticGroups": 2
+        },
+        "am": {
+          "keys": 1118,
+          "sourceHashMatch": true,
+          "empty": 0,
+          "duplicateGroups": 7,
+          "allObservedDuplicates": "case/capitalization variants after manual 19-key repair"
+        },
+        "my": {
+          "keys": 1118,
+          "sourceHashMatch": true,
+          "empty": 0,
+          "duplicateGroups": 3,
+          "allObservedDuplicates": "case/capitalization variants after manual 7-key repair"
+        },
+        "pa": {
+          "keys": 1118,
+          "sourceHashMatch": true,
+          "empty": 0,
+          "duplicateGroups": 7,
+          "observed": "case variants plus one near-identical delivery wording; native review pending"
+        }
+      },
+      "full98PackAudit": false,
+      "linguisticCertification": false
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "translationRequestsSent": 0,
+      "aiQuotaUsed": 0,
+      "mainCheckpointOnly": true
+    },
     "aiChatAvailability": "unknown-not-probed",
-    "translationAvailability": "unknown-not-probed",
-    "fullAuditPending": true,
-    "linguisticReviewPending": true
+    "translationBackendAvailability": "unknown-not-probed",
+    "dailyFreeAiLimit": "historical blocker; not probed/consumed",
+    "googleTranslation": "prior HTTP429; not retried",
+    "physicalAudio": "not-certified",
+    "checkout": "inactive-pending-merchant-configuration"
   },
   "verificationInfrastructureRepair": {
     "checkedAt": "2026-11-12T09:56:58Z",
