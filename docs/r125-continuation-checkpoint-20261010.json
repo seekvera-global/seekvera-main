@@ -376,11 +376,11 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-14T09:30:00Z",
-    "mainHead": "8b5ab19dce7cd776752870741934ef9dec41e061",
-    "candidateBranchHead": "f5b674447def79d3e6cd53de339550ef52cf31b8",
+    "checkedAt": "2026-11-14T10:10:00Z",
+    "mainHead": "a3323fbea61b4584b466ebdb8df5227ef47a2b5f",
+    "candidateBranchHead": "79dae9b4c771a2e322d9752ca781505b9d0d7264",
     "candidatePackCommit": "ba309c396ecd667f3d7d0f4818b3013305c2488a",
-    "candidateSummaryBlob": "a0c43fe1f448109876c933efb7aa3b52300f236f",
+    "candidateSummaryBlob": "dded3ef9a7e3b9a29af15c6f88012e3211c9e238",
     "candidateLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
@@ -400,10 +400,10 @@
         "conclusion": "success",
         "createdAt": "2026-11-12T14:49:49Z"
       },
-      "latest100RepositoryRunsCheckedAt": "2026-11-14T09:30:00Z",
+      "latest100RepositoryRunsCheckedAt": "2026-11-14T10:10:00Z",
       "activeQueuedOrInProgressRuns": 0,
       "candidateWritesDeferredWhileActive": true,
-      "candidateWriteThisPass": "Myanmar pack repair and summary only; no translation calls",
+      "candidateWriteThisPass": "checkpoint and summary documentation only; no locale pack changes or translation calls",
       "candidatePackFilesChangedByRun150": false
     },
     "latestR105": {
@@ -411,14 +411,15 @@
       "runId": 43517683421,
       "status": "completed",
       "conclusion": "success",
-      "createdAt": "2026-11-13T22:14:50Z"
+      "createdAt": "2026-11-13T22:14:50Z",
+      "liveAIProbe": "skipped by RUN_LIVE_AI_PROBES=false"
     },
     "latestPages": {
-      "run": 1522,
-      "runId": 43573884184,
+      "run": 1523,
+      "runId": 43581081467,
       "status": "completed",
       "conclusion": "success",
-      "createdAt": "2026-11-14T08:02:25Z",
+      "createdAt": "2026-11-14T09:33:04Z",
       "scope": "checkpoint/docs deploy only"
     },
     "candidatePacksPublished": false,
@@ -483,7 +484,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-14T09:30:00Z",
+  "checkedAt": "2026-11-14T10:10:00Z",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -2223,16 +2224,16 @@
     "note": "No candidate branch writes made; workflow dispatch unavailable in this execution."
   },
   "latestRunVerification": {
-    "checkedAt": "2026-11-14T09:30:00Z",
-    "mainHead": "8b5ab19dce7cd776752870741934ef9dec41e061",
+    "checkedAt": "2026-11-14T10:10:00Z",
+    "mainHead": "a3323fbea61b4584b466ebdb8df5227ef47a2b5f",
     "latestPagesDeploy": {
-      "run": 43573884184,
-      "runNumber": 1522,
+      "run": 43581081467,
+      "runNumber": 1523,
       "conclusion": "success",
-      "commit": "8b5ab19dce7cd776752870741934ef9dec41e061",
+      "commit": "a3323fbea61b4584b466ebdb8df5227ef47a2b5f",
       "scope": "checkpoint/docs deploy; not product certification"
     },
-    "candidateBranchHead": "f5b674447def79d3e6cd53de339550ef52cf31b8",
+    "candidateBranchHead": "79dae9b4c771a2e322d9752ca781505b9d0d7264",
     "candidateWritesThisPass": false,
     "candidateResumeLatestKnown": {
       "run": 150,
@@ -2243,7 +2244,7 @@
       "resume": "skipped",
       "audit": "success"
     },
-    "activeR125RunList": "Fresh repository Actions query at 2026-11-14T09:30Z: zero queued/in_progress among latest 100 runs; latest R125 resume #150 (Oct 16) and candidate render #2 (Nov 12) both completed; workflow_dispatch-only.",
+    "activeR125RunList": "Fresh GitHub Actions API query at 2026-11-14T10:10Z: zero queued/in_progress among latest 100 runs; latest R125 resume #150 (Oct 16) and candidate render #2 (Nov 12) completed; workflow_dispatch-only.",
     "spotQualityAudit": {
       "languages": [
         "pa",
@@ -2358,5 +2359,28 @@
     },
     "full98PackAudit": false,
     "linguisticCertification": false
+  },
+  "run27FreshContinuationCheck": {
+    "checkedAt": "2026-11-14T10:10:00Z",
+    "summaryCommit": "79dae9b4c771a2e322d9752ca781505b9d0d7264",
+    "summaryBlob": "dded3ef9a7e3b9a29af15c6f88012e3211c9e238",
+    "currentMainHead": "a3323fbea61b4584b466ebdb8df5227ef47a2b5f",
+    "activeRepositoryActionsLatest100": 0,
+    "r125Workflow": "workflow_dispatch only; translations default false",
+    "candidatePackFilesChanged": false,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "aiChatCurrentAvailability": "unknown-not-probed",
+    "translationBackendCurrentAvailability": "unknown-not-probed",
+    "knownBlockers": [
+      "daily_free_ai_limit",
+      "prior Google HTTP429",
+      "latest UI translation backend HTTP503",
+      "Divehi quality/structural failure",
+      "Amharic repeated output cluster",
+      "full 98-pack audit and native review pending",
+      "physical audio tests pending",
+      "merchant configuration pending"
+    ]
   }
 }
