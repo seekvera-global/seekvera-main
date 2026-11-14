@@ -386,17 +386,17 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-14T16:57:00Z",
+    "checkedAt": "2026-11-14T21:53:00Z",
     "currentActionsSnapshot": {
       "latest100Fetched": true,
       "activeRunsObserved": 0,
       "latestRepositoryRun": {
-        "run": 1528,
-        "id": 43611755514,
+        "run": 1538,
+        "id": 43636637588,
         "name": "pages build and deployment",
         "status": "completed",
         "conclusion": "success",
-        "createdAt": "2026-11-14T15:44:05Z"
+        "createdAt": "2026-11-14T20:16:47Z"
       }
     },
     "r125Workflow": {
@@ -418,13 +418,13 @@
         "conclusion": "success",
         "resume": "skipped",
         "audit": "success",
-        "result": "97 complete; dv remaining; resumeSucceeded=false; exitCode=not-run",
-        "reason": "Production speech verification returned HTTP 503; daily free AI allocation exhausted; background translation made manual-only"
+        "result": "97 complete; dv remaining; resumeSucceeded=false; exitCode=not-run"
       },
       "activeRunObserved": false
     },
     "thisPass": {
-      "candidatePackWrites": 0,
+      "candidatePackWrites": 6,
+      "exactManualReplacements": 12,
       "translationRequests": 0,
       "aiQuotaUsed": 0,
       "aiChatCurrent": "unknown-not-probed",
@@ -433,7 +433,7 @@
       "linguisticCertification": false,
       "published": false
     },
-    "note": "Fresh Actions API check at 16:57 UTC. No R125 active. The recurring hourly/push triggers were removed in commit 303f63e; current workflow is manual dispatch, translation opt-in only. No candidate writes while run active (none active)."
+    "note": "Fresh Actions API snapshot 2026-11-14 21:53 UTC: zero active among latest 100. Pages #1538 completed successfully. Manual-only R125 has no newer run than #150; translations were skipped. Six quota-neutral locale pack writes only; no AI/translation calls."
   },
   "verificationInfrastructureRepair": {
     "checkedAt": "2026-11-12T09:56:58Z",
@@ -494,7 +494,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-14",
+  "checkedAt": "2026-11-14T21:53:00Z",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -2773,5 +2773,44 @@
     "publication": false,
     "linguisticCertification": false,
     "readback": "Both packs fetched after commit; 7 distinct game category values each; Paystack brand preserved; native review pending."
+  },
+  "latestQuotaNeutralBrandRepair": {
+    "checkedAt": "2026-11-14T21:53:00Z",
+    "branch": "work/r125-locale-candidates-20261008",
+    "packs": {
+      "ti": {
+        "commit": "974c0eacae71e6f3341c6bc47f17f5683edb7322",
+        "exactEdits": 2
+      },
+      "dz": {
+        "commit": "ba3c14708c2ecaa222ce643adaa551de3a929f39",
+        "exactEdits": 2
+      },
+      "kl": {
+        "commit": "184a60f24e575528899bac4c26a4230ef9d23303",
+        "exactEdits": 2
+      },
+      "ga": {
+        "commit": "63d01c110dddbe52b0607c1f7410b68cdeb089e9",
+        "exactEdits": 2
+      },
+      "tn": {
+        "commit": "cbea551902db075e6e3f2f8d2142717b759a3806",
+        "exactEdits": 2
+      },
+      "rw": {
+        "commit": "b52c381646755d65904fcfa17e400b69778bf1b1",
+        "exactEdits": 2
+      }
+    },
+    "totalExactEdits": 12,
+    "sourceHash": "6a1126e6a2ce5629",
+    "sourceUnchanged": true,
+    "keysPerPack": 1118,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "validation": "Fetched and re-read ti/dz/kl/ga/tn/rw; all retain 1,118 keys and sourceHash; Payoneer and Paystack restored as exact brand names in all six packs. Manual deterministic brand normalization only; native review/full audit pending."
   }
 }
