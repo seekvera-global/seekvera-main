@@ -379,16 +379,17 @@
     "currentAI": "unknown-not-probed",
     "currentTranslationBackend": "unknown-not-probed",
     "latestActionsSnapshot": {
-      "latest100Fetched": true,
-      "activeRunsObserved": 0,
+      "latest100Fetched": false,
+      "activeRunsObserved": null,
       "latestRepositoryRun": {
-        "run": 1538,
-        "id": 43636637588,
+        "run": 1539,
+        "id": 43645382126,
         "name": "pages build and deployment",
         "status": "completed",
         "conclusion": "success",
-        "createdAt": "2026-11-14T20:16:47Z"
-      }
+        "createdAt": "2026-11-14T21:55:51Z"
+      },
+      "checkedAt": "2026-11-14T21:56:33Z"
     }
   },
   "latestContinuationVerification": {
