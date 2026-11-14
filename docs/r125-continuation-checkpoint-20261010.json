@@ -243,7 +243,7 @@
   "candidateResume": {
     "run": null,
     "checkedAt": "2026-11-14T06:00:00Z",
-    "candidateCommit": "50f397690baf59138afdb5d12c76b362de3901d1",
+    "candidateCommit": "ba309c396ecd667f3d7d0f4818b3013305c2488a",
     "completedCount": 97,
     "remainingCount": 1,
     "firstFailure": "dv",
@@ -253,7 +253,7 @@
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false,
-    "note": "This run deterministically restored the immutable identifier in 73 locale packs (ar was already correct), preserving all other raw file bytes. Branch summary now reflects 68 script warnings across 25 languages; Divehi remains structurally incomplete.; 2026-11-14 deterministic repairs: Lao Paystack brand spelling restored; Kyrgyz 'Nearby Now' typo corrected; Punjabi wrong Devanagari entries corrected to Gurmukhi, CROSS-BORDER typo corrected, zero-cost MVP sentence repaired, and translated CSS restored byte-for-byte to source. All edits limited to seven known strings in lo/ky/pa; source untouched; full audit not yet rerun.; seven deterministic locale repairs were committed on 2026-11-14 in lo/ky/pa. Candidate warning totals remain at last audit (68/25) pending a full rerun; no translation quota consumed.; extended deterministic repairs to 19 exact strings across lo/ky/pa/am/my, restoring missing action verbs in Amharic/Burmese and wrong-script Punjabi entries; full audit pending.; 2026-11-14: corrected 13 additional Punjabi UI/game strings from Devanagari into Gurmukhi; verified all 13 use Gurmukhi and pa retains 1,118 keys. Quota-neutral script predicate recomputed only for lo/ky/pa/am/my: warning count 68→40 (languages 25→23); full 98-pack audit still pending.; additional 4 quota-neutral fixes in Lao/Burmese (embedded trigger phrase and 3 UI labels); partial script scan now shows 36 warnings/21 languages, with touched-pack counts lo=0, ky=1 date-format review, pa=0, am=0, my=0. Full audit pending. 2026-11-14 05:27Z: repaired 8 exact labels/actions in fa/tg/ka/mk/ky/dz; all six packs re-read at 1,118 keys. Candidate summary reconciled script-warning map to 11 warnings across 10 languages. Full audit still pending; no quota use. 2026-11-14 05:30Z: localized Gujarati SEEKVERA GUIDE; 1,118 keys preserved. Partial warning map reconciled to 10 remaining date/presentation warnings across 10 languages. Full audit and native review pending. 2026-11-14 06:00Z: normalized the 10 known date/presentation tokens across ur/fa/el/uk/mk/kk/ky/tg/gu/ps; each pack remains 1,118 keys and sourceHash unchanged. Partial warning map 10→0; full 98-pack audit remains pending.",
+    "note": "This run deterministically restored the immutable identifier in 73 locale packs (ar was already correct), preserving all other raw file bytes. Branch summary now reflects 68 script warnings across 25 languages; Divehi remains structurally incomplete.; 2026-11-14 deterministic repairs: Lao Paystack brand spelling restored; Kyrgyz 'Nearby Now' typo corrected; Punjabi wrong Devanagari entries corrected to Gurmukhi, CROSS-BORDER typo corrected, zero-cost MVP sentence repaired, and translated CSS restored byte-for-byte to source. All edits limited to seven known strings in lo/ky/pa; source untouched; full audit not yet rerun.; seven deterministic locale repairs were committed on 2026-11-14 in lo/ky/pa. Candidate warning totals remain at last audit (68/25) pending a full rerun; no translation quota consumed.; extended deterministic repairs to 19 exact strings across lo/ky/pa/am/my, restoring missing action verbs in Amharic/Burmese and wrong-script Punjabi entries; full audit pending.; 2026-11-14: corrected 13 additional Punjabi UI/game strings from Devanagari into Gurmukhi; verified all 13 use Gurmukhi and pa retains 1,118 keys. Quota-neutral script predicate recomputed only for lo/ky/pa/am/my: warning count 68→40 (languages 25→23); full 98-pack audit still pending.; additional 4 quota-neutral fixes in Lao/Burmese (embedded trigger phrase and 3 UI labels); partial script scan now shows 36 warnings/21 languages, with touched-pack counts lo=0, ky=1 date-format review, pa=0, am=0, my=0. Full audit pending. 2026-11-14 05:27Z: repaired 8 exact labels/actions in fa/tg/ka/mk/ky/dz; all six packs re-read at 1,118 keys. Candidate summary reconciled script-warning map to 11 warnings across 10 languages. Full audit still pending; no quota use. 2026-11-14 05:30Z: localized Gujarati SEEKVERA GUIDE; 1,118 keys preserved. Partial warning map reconciled to 10 remaining date/presentation warnings across 10 languages. Full audit and native review pending. 2026-11-14 06:00Z: normalized the 10 known date/presentation tokens across ur/fa/el/uk/mk/kk/ky/tg/gu/ps; each pack remains 1,118 keys and sourceHash unchanged. Partial warning map 10→0; full 98-pack audit remains pending. 2026-11-14 09:30Z: manual quota-neutral Myanmar repair committed (7 exact strings); readback 1,118 keys. Amharic (10 repeated descriptions) and Divehi (20 repeated outputs in 2 groups) remain flagged; no AI/translation requests.",
     "quotaStatusCurrent": "unknown-not-probed",
     "knownDailyFreeAiLimitBlocker": true,
     "repairBatch20261114": {
@@ -288,8 +288,8 @@
     "auditPending": true,
     "scriptWarningCount": 0,
     "scriptWarningLanguages": 0,
-    "summaryCommit": "86e9ed8b9b102a127509763b3ec74aa0b35aa782",
-    "repairs": 74,
+    "summaryCommit": "f5b674447def79d3e6cd53de339550ef52cf31b8",
+    "repairs": 81,
     "lastQuotaNeutralRepair": {
       "checkedAt": "2026-11-14T03:07:00Z",
       "packCommits": {
@@ -376,61 +376,53 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-14T05:31:00Z",
-    "mainCheckpointBlobBeforeUpdate": "2465a26212bc004f3c2bf1f22768fa12db45784e",
-    "candidateBranchHead": "3170878c5bc2fc58571b2d3c303ca0401abac758",
-    "candidateSummaryBlob": "663f1df14ccec217a48e9d1acdd9a7ba4fbbcf97",
+    "checkedAt": "2026-11-14T09:30:00Z",
+    "mainHead": "8b5ab19dce7cd776752870741934ef9dec41e061",
+    "candidateBranchHead": "f5b674447def79d3e6cd53de339550ef52cf31b8",
+    "candidatePackCommit": "ba309c396ecd667f3d7d0f4818b3013305c2488a",
+    "candidateSummaryBlob": "a0c43fe1f448109876c933efb7aa3b52300f236f",
     "candidateLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
       "actualTrigger": "workflow_dispatch only",
       "runTranslationsDefault": false,
-      "latestRun": 150,
+      "latestCandidateResumeRun": 150,
       "runId": 38971104197,
       "status": "completed",
       "conclusion": "success",
       "resumeStep": "skipped",
       "auditStep": "success",
       "translationRequestsSent": 0,
-      "activeRunFound": "not freshly re-queried; last recorded check 04:48Z showed zero queued/in_progress; workflow_dispatch only",
-      "activeRunsCheck": "Latest 100 repository Actions runs at 2026-11-14T04:48:00Z: zero queued/in_progress; R125 candidate render #2 (43241261247) completed success 2026-11-12.",
+      "latestR125CandidateRender": {
+        "run": 2,
+        "runId": 43241261247,
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-11-12T14:49:49Z"
+      },
+      "latest100RepositoryRunsCheckedAt": "2026-11-14T09:30:00Z",
+      "activeQueuedOrInProgressRuns": 0,
       "candidateWritesDeferredWhileActive": true,
-      "candidateWriteThisRun": "9 deterministic locale repairs (8 across fa/tg/ka/mk/ky/dz plus Gujarati) and summary/checkpoint; no translation calls",
-      "candidatePackFilesChangedByRun150": false,
-      "latestKnownRun": 150
+      "candidateWriteThisPass": "Myanmar pack repair and summary only; no translation calls",
+      "candidatePackFilesChangedByRun150": false
     },
-    "candidateRepair": {
-      "commit": "e140ffb2de0273abb9971ab72b1eae6d7310013a",
-      "summaryCommit": "d17366541d19aa8b4c5190d14af479e8c0c596f2",
-      "localesChanged": 73,
-      "alreadyCorrect": [
-        "ar"
-      ],
-      "totalCorrectedIncludingArabic": 74,
-      "identifier": "SV-YYYYMMDD-XXXXXXXX",
-      "rawTextReplacement": true,
-      "compareFiles": 73,
-      "perFileDiff": "one line replaced, no formatting churn",
-      "sampledPacks": [
-        "fr",
-        "am",
-        "dz",
-        "pa",
-        "tn"
-      ],
-      "sampleKeyCount": 1118,
-      "remainingWarnings": 68,
-      "warningLanguages": 25
+    "latestR105": {
+      "run": 81,
+      "runId": 43517683421,
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-13T22:14:50Z"
+    },
+    "latestPages": {
+      "run": 1522,
+      "runId": 43573884184,
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-14T08:02:25Z",
+      "scope": "checkpoint/docs deploy only"
     },
     "candidatePacksPublished": false,
-    "linguisticAccuracyCertified": false,
-    "structuralVerification": {
-      "checkedLanguages": 97,
-      "expectedKeysPerPack": 1118,
-      "sourceHash": "6a1126e6a2ce5629",
-      "keySetMatch": "all 1,118 source strings exactly; zero missing/extra",
-      "result": "PASS structural only; no linguistic certification"
-    }
+    "linguisticAccuracyCertified": false
   },
   "verificationInfrastructureRepair": {
     "checkedAt": "2026-11-12T09:56:58Z",
@@ -491,7 +483,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-14T07:21:25Z",
+  "checkedAt": "2026-11-14T09:30:00Z",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -635,14 +627,13 @@
     "physicalDeviceCertified": false
   },
   "latestAIAvailability": {
-    "checkedAt": "2026-11-13T21:38:10Z",
-    "status": "unknown-currently",
-    "lastDirectProbe": "2026-11-13T13:18:20+01:00 English/Arabic HTTP 200",
-    "checkedToday": true,
-    "sourceRun": 43463488541,
-    "sourceRunLiveAiProbe": "skipped by policy",
-    "freshChatGenerationProbe": false,
-    "note": "R105 #79 log confirms RUN_LIVE_AI_PROBES=false and AI_PROBES_SKIPPED_BY_POLICY. It did perform country-change and safety classifier requests, but these do not prove general chat generation availability. No quota-consuming chat probe was sent this continuation."
+    "checkedAt": "2026-11-14T09:30:00Z",
+    "currentAIChat": "unknown-not-probed",
+    "translationAPI": "unknown-not-probed",
+    "lastLiveAIConfirmed": "2026-11-12 run 43213407211 English and Arabic passed",
+    "lastTranslationFailure": "HTTP 503 all_translation_backends_unavailable after 48 successful Divehi repair translations",
+    "quotaBlocker": "daily_free_ai_limit historically confirmed; Google HTTP429 previously; no bypass or probe sent",
+    "probeSent": false
   },
   "latestRunInspection": {
     "checkedAt": "2026-11-14T02:05:00Z",
@@ -1367,18 +1358,18 @@
     "effect": "Improves diagnosis only; does not make any pack ready for linguistic review or publication."
   },
   "latestPagesDeployment": {
-    "checkedAt": "2026-11-14T01:45:55Z",
-    "run": 1512,
-    "runNumber": 1512,
-    "runId": 43542439656,
+    "checkedAt": "2026-11-14T09:30:00Z",
+    "run": 1522,
+    "runNumber": 1522,
+    "runId": 43573884184,
     "conclusion": "success",
-    "headCommit": "965f4b67230b3f2bea2bc025c6e09a1930bc0198",
+    "headCommit": "8b5ab19dce7cd776752870741934ef9dec41e061",
     "verifiedJobs": [
       "build",
       "report-build-status",
       "deploy"
     ],
-    "scope": "GitHub Pages deployment of prior checkpoint commit; product certification not implied."
+    "scope": "GitHub Pages deploy of checkpoint/docs; product certification not implied."
   },
   "run16CandidateHistoryReconciliation": {
     "checkedAt": "2026-11-13T16:34:23Z",
@@ -2102,7 +2093,7 @@
     "linguisticCertification": false,
     "published": false
   },
-  "repairs": 74,
+  "repairs": 81,
   "scriptWarningCount": 0,
   "scriptWarningLanguages": 0,
   "run23QuotaNeutralLocaleRepair": {
@@ -2232,15 +2223,16 @@
     "note": "No candidate branch writes made; workflow dispatch unavailable in this execution."
   },
   "latestRunVerification": {
-    "checkedAt": "2026-11-14T07:59:00Z",
-    "mainHead": "39ed1454aa5ade2f7786cee01b0ae0ce37ed7220",
+    "checkedAt": "2026-11-14T09:30:00Z",
+    "mainHead": "8b5ab19dce7cd776752870741934ef9dec41e061",
     "latestPagesDeploy": {
-      "run": 43570872050,
+      "run": 43573884184,
+      "runNumber": 1522,
       "conclusion": "success",
-      "commit": "39ed1454aa5ade2f7786cee01b0ae0ce37ed7220",
-      "scope": "Jekyll build and Pages deploy; not product-wide certification"
+      "commit": "8b5ab19dce7cd776752870741934ef9dec41e061",
+      "scope": "checkpoint/docs deploy; not product certification"
     },
-    "candidateBranchHead": "86e9ed8b9b102a127509763b3ec74aa0b35aa782",
+    "candidateBranchHead": "f5b674447def79d3e6cd53de339550ef52cf31b8",
     "candidateWritesThisPass": false,
     "candidateResumeLatestKnown": {
       "run": 150,
@@ -2251,7 +2243,7 @@
       "resume": "skipped",
       "audit": "success"
     },
-    "activeR125RunList": "Could not freshly enumerate Actions workflow-runs collection through the available GitHub read endpoint; no candidate writes performed. Workflow YAML is workflow_dispatch-only, not hourly.",
+    "activeR125RunList": "Fresh repository Actions query at 2026-11-14T09:30Z: zero queued/in_progress among latest 100 runs; latest R125 resume #150 (Oct 16) and candidate render #2 (Nov 12) both completed; workflow_dispatch-only.",
     "spotQualityAudit": {
       "languages": [
         "pa",
@@ -2288,5 +2280,83 @@
         "action": "Flagged only; no pack edit without qualified Amharic review; no AI request"
       }
     ]
+  },
+  "run26MyanmarRepair": {
+    "checkedAt": "2026-11-14T09:30:00Z",
+    "branch": "work/r125-locale-candidates-20261008",
+    "packCommit": "ba309c396ecd667f3d7d0f4818b3013305c2488a",
+    "summaryCommit": "f5b674447def79d3e6cd53de339550ef52cf31b8",
+    "language": "my",
+    "exactEdits": 7,
+    "corrections": [
+      [
+        "Action games",
+        "အက်ရှင်ဂိမ်းများ"
+      ],
+      [
+        "Arcade games",
+        "အာကိတ်ဂိမ်းများ"
+      ],
+      [
+        "Puzzle games",
+        "ပဟေဠိဂိမ်းများ"
+      ],
+      [
+        "Adventure games",
+        "စွန့်စားခန်းဂိမ်းများ"
+      ],
+      [
+        "Chinese",
+        "တရုတ်ဘာသာ"
+      ],
+      [
+        "Guide the sea snake to glowing food.",
+        "တောက်ပနေသော အစာဆီသို့ ပင်လယ်မြွေကို လမ်းညွှန်ပါ။"
+      ],
+      [
+        "Low-altitude patrol above the ocean.",
+        "ပင်လယ်အပေါ် နိမ့်သောအမြင့်တွင် ကင်းလှည့်ပါ။"
+      ]
+    ],
+    "verification": "Read back all 1,118 translation entries; source/key set unchanged; 2 semantic duplicate groups removed. Remaining >=2 duplicates are case-variant UI labels only.",
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "publication": false,
+    "linguisticCertification": false,
+    "fullAuditPending": true
+  },
+  "semanticDuplicateFindings": {
+    "checkedAt": "2026-11-14T09:30:00Z",
+    "scope": [
+      "am",
+      "dv",
+      "my"
+    ],
+    "amharic": {
+      "duplicateOutputCount": 10,
+      "keys": 10,
+      "status": "unresolved",
+      "note": "Ten distinct game descriptions share one output; no unverified edits."
+    },
+    "divehi": {
+      "duplicateOutputCount": 20,
+      "groups": 2,
+      "status": "unresolved",
+      "note": "12 category/section labels and 8 game descriptions each share outputs; translation backend blocked."
+    },
+    "myanmar": {
+      "before": {
+        "duplicateOutputCount": 5,
+        "semanticGroups": 2
+      },
+      "after": {
+        "duplicateOutputCount": 0,
+        "semanticGroups": 0
+      },
+      "status": "partial_repair",
+      "note": "7 manual edits corrected four game category labels, Chinese-language label and two repeated game descriptions; only case variants remain in duplicate scan."
+    },
+    "full98PackAudit": false,
+    "linguisticCertification": false
   }
 }
