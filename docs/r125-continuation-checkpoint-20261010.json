@@ -2548,5 +2548,17 @@
     "audit": "success",
     "freshActiveRunCheck": "not confirmed in this pass; GitHub Actions run-list endpoint unavailable through connector",
     "candidateWritesThisPass": 0
+  },
+  "latestDocumentationDeployment": {
+    "run": 1529,
+    "runId": 43618431668,
+    "createdAt": "2026-11-14T16:57:34Z",
+    "conclusion": "success",
+    "jobs": {
+      "build": "success",
+      "deploy": "success",
+      "reportBuildStatus": "success"
+    },
+    "scope": "GitHub Pages documentation deployment only"
   }
 }
