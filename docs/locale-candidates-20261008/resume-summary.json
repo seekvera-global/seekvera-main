@@ -333,7 +333,7 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-14T20:20:00Z",
+    "checkedAt": "2026-11-14T21:53:00Z",
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
       "trigger": "workflow_dispatch only",
@@ -346,8 +346,7 @@
       "status": "completed",
       "conclusion": "success",
       "resume": "skipped",
-      "audit": "success",
-      "verifiedJobSteps": true
+      "audit": "success"
     },
     "latestPages": {
       "run": 1535,
@@ -367,17 +366,29 @@
       "quotaRequestsThisPass": 0
     },
     "thisPass": {
-      "candidatePackWrites": 2,
-      "exactManualReplacements": 18,
+      "candidatePackWrites": 6,
+      "exactManualReplacements": 12,
       "translationRequests": 0,
       "aiQuotaUsed": 0
     },
     "full98PackAudit": false,
     "linguisticCertification": false,
     "published": false,
-    "note": "Quota-neutral manual repairs in Hausa and Samoan only; no translation service or AI calls. R125 #150 remains last known audit-only run; Pages #1535 deployment verified success.",
+    "note": "Quota-neutral manual brand-name normalization in ti/dz/kl/ga/tn/rw (12 exact edits across 6 packs); no translation service or AI calls. Latest Actions snapshot: 0 active in 100 runs; Pages #1538 success; latest known R125 #150 remains audit-only.",
     "currentAI": "unknown-not-probed",
-    "currentTranslationBackend": "unknown-not-probed"
+    "currentTranslationBackend": "unknown-not-probed",
+    "latestActionsSnapshot": {
+      "latest100Fetched": true,
+      "activeRunsObserved": 0,
+      "latestRepositoryRun": {
+        "run": 1538,
+        "id": 43636637588,
+        "name": "pages build and deployment",
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-11-14T20:16:47Z"
+      }
+    }
   },
   "latestContinuationVerification": {
     "checkedAt": "2026-11-14T15:42:00Z",
@@ -651,5 +662,44 @@
     "published": false,
     "linguisticCertification": false,
     "validation": "Fetched and re-read both packs; 7 game-category labels are distinct in each; Paystack spelling restored as brand. Provisional manual strings, native review required."
+  },
+  "latestQuotaNeutralBrandRepair": {
+    "checkedAt": "2026-11-14T21:53:00Z",
+    "branch": "work/r125-locale-candidates-20261008",
+    "packs": {
+      "ti": {
+        "commit": "974c0eacae71e6f3341c6bc47f17f5683edb7322",
+        "exactEdits": 2
+      },
+      "dz": {
+        "commit": "ba3c14708c2ecaa222ce643adaa551de3a929f39",
+        "exactEdits": 2
+      },
+      "kl": {
+        "commit": "184a60f24e575528899bac4c26a4230ef9d23303",
+        "exactEdits": 2
+      },
+      "ga": {
+        "commit": "63d01c110dddbe52b0607c1f7410b68cdeb089e9",
+        "exactEdits": 2
+      },
+      "tn": {
+        "commit": "cbea551902db075e6e3f2f8d2142717b759a3806",
+        "exactEdits": 2
+      },
+      "rw": {
+        "commit": "b52c381646755d65904fcfa17e400b69778bf1b1",
+        "exactEdits": 2
+      }
+    },
+    "totalExactEdits": 12,
+    "sourceHash": "6a1126e6a2ce5629",
+    "sourceUnchanged": true,
+    "keysPerPack": 1118,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "validation": "Fetched and re-read ti/dz/kl/ga/tn/rw; all retain 1,118 keys and sourceHash; Payoneer and Paystack restored as exact brand names in all six packs. Manual deterministic brand normalization only; native review/full audit pending."
   }
 }
