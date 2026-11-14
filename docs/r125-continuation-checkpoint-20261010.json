@@ -116,7 +116,7 @@
     "All 98 packs still require linguistic review; Divehi remains structurally incomplete",
     "Physical microphone and audible-speaker tests remain pending",
     "Payment checkout remains inactive pending merchant-account configuration",
-    "Candidate audit reports 142 script warnings across 83 languages; warnings mix preserved identifiers/date/brand/acronym cases with possible substantive wrong-script or incomplete translations and require triage before linguistic review."
+    "Last audit before repairs reported 68 script warnings across 25 languages; seven exact candidate repairs have since been made, and warning totals are pending full re-audit."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -175,24 +175,26 @@
     "Perform physical microphone and audible-speaker tests on Android, iPhone/iPad and desktop; programmatic TTS/ASR does not certify hardware",
     "Payment checkout remains inactive pending merchant-account configuration",
     "Triage candidate script warnings across 83 language packs (142 findings); distinguish reserved identifiers and formatting from genuine wrong-script or incomplete UI text.",
-    "Re-run full candidate audit after 2026-11-14 repairs; do not infer warning totals until audit completes."
+    "Re-run full candidate audit after 2026-11-14 repairs; do not infer warning totals until audit completes.",
+    "Re-run full candidate audit after seven 2026-11-14 locale repairs; warning totals remain stale until then."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-10-11T00:52:30Z",
+    "checkedAt": "2026-11-14T00:46:00Z",
     "aiChat": {
-      "run": 38093026947,
-      "checkedAt": "2026-10-10T22:52:55Z",
+      "lastConfirmedLiveRun": 43213407211,
+      "checkedAt": "2026-11-12T11:57:45Z",
       "english": "passed",
       "arabic": "passed",
-      "countryChangeToIceland": "passed",
-      "prohibitedWeaponRequest": "blocked",
-      "note": "Live HTTP probes only; not all-language certification."
+      "countryChange": "passed",
+      "prohibitedWeapon": "blocked",
+      "currentAvailability": "unknown-not-probed",
+      "reason": "R105 #81 explicitly skipped live AI probes (RUN_LIVE_AI_PROBES=false); no quota-consuming live request sent in this run."
     },
     "voiceTranscription": {
       "run": 43219069259,
-      "checkedAt": "2026-11-12T12:35:08Z",
+      "checkedAt": "2026-11-13T15:52:20Z",
       "status": "passed",
       "languages": [
         "ar",
@@ -200,7 +202,10 @@
         "en"
       ],
       "programmaticAudioOnly": true,
-      "physicalDeviceCertified": false
+      "physicalDeviceCertified": false,
+      "latestAuthorityRun": 43456938311,
+      "programmaticTests": "passed",
+      "liveASR": "skipped"
     },
     "publicSite": {
       "run": 38099895807,
@@ -238,7 +243,7 @@
   "candidateResume": {
     "run": null,
     "checkedAt": "2026-11-14T00:46:00Z",
-    "candidateCommit": "2d378b1bf416cbc1e95db4d7b7cde0f6cc708d54",
+    "candidateCommit": "f6e66ed52c77e15ef887de9da487b0fa5c22c94b",
     "completedCount": 97,
     "remainingCount": 1,
     "firstFailure": "dv",
@@ -248,31 +253,23 @@
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false,
-    "note": "This run deterministically restored the immutable identifier in 73 locale packs (ar was already correct), preserving all other raw file bytes. Branch summary now reflects 68 script warnings across 25 languages; Divehi remains structurally incomplete.; 2026-11-14 deterministic repairs: Lao Paystack brand spelling restored; Kyrgyz 'Nearby Now' typo corrected; Punjabi wrong Devanagari entries corrected to Gurmukhi, CROSS-BORDER typo corrected, zero-cost MVP sentence repaired, and translated CSS restored byte-for-byte to source. All edits limited to seven known strings in lo/ky/pa; source untouched; full audit not yet rerun.",
+    "note": "This run deterministically restored the immutable identifier in 73 locale packs (ar was already correct), preserving all other raw file bytes. Branch summary now reflects 68 script warnings across 25 languages; Divehi remains structurally incomplete.; 2026-11-14 deterministic repairs: Lao Paystack brand spelling restored; Kyrgyz 'Nearby Now' typo corrected; Punjabi wrong Devanagari entries corrected to Gurmukhi, CROSS-BORDER typo corrected, zero-cost MVP sentence repaired, and translated CSS restored byte-for-byte to source. All edits limited to seven known strings in lo/ky/pa; source untouched; full audit not yet rerun.; seven deterministic locale repairs were committed on 2026-11-14 in lo/ky/pa. Candidate warning totals remain at last audit (68/25) pending a full rerun; no translation quota consumed.",
     "quotaStatusCurrent": "unknown-not-probed",
     "knownDailyFreeAiLimitBlocker": true,
     "repairBatch20261114": {
+      "summaryCommit": "f6e66ed52c77e15ef887de9da487b0fa5c22c94b",
+      "localeCommit": "2d378b1bf416cbc1e95db4d7b7cde0f6cc708d54",
+      "repairs": 7,
       "files": [
         "lo.json",
         "ky.json",
         "pa.json"
       ],
-      "verifiedTranslations": {
-        "loPaystack": "Paystack",
-        "kyNearby": "Азыр жакын жерде",
-        "paOpen": "ਮਿਲਦੇ ਭਾਗ ਨੂੰ ਖੋਲ੍ਹੋ",
-        "paCross": "ਸਰਹੱਦ ਪਾਰ ਲੌਜਿਸਟਿਕਸ",
-        "paBalloons": "ਰੰਗੀਨ ਗੁਬਾਰੇ ਫੋੜੋ।",
-        "paNight": "ਤੇਜ਼ ਰਫ਼ਤਾਰ ਰਾਤ ਦੀ ਰੇਸਿੰਗ।",
-        "paCss": "html.sv-r15-applying .r5-top,html.sv-r15-applying .r5-hero,html.sv-r15-applying .r5-chat,html.sv-r15-applying #categories{transition:none!important;animation:none!important} .sv-controls .sv-select{min-width:0;text-overflow:ellipsis}",
-        "counts": [
-          1118,
-          1118,
-          1118
-        ]
-      },
-      "scope": "7 exact key/value repairs only; no AI/translation quota calls; not a linguistic certification"
-    }
+      "allPacksStill1118Keys": true,
+      "sourceUnchanged": true,
+      "translationRequests": 0
+    },
+    "auditPending": true
   },
   "builderRepair": {
     "commit": "634a0d31cb571300d658bb24580bdad3cbaeb75b",
@@ -1893,5 +1890,49 @@
     "aiQuotaUsed": 0,
     "translationRequestsSent": 0,
     "verification": "Compare parent→repair commit: 73 locale files, each exactly one line changed; sampled 5 packs have 1,118 keys and exact immutable value."
+  },
+  "verificationRuns": {
+    "r105": {
+      "run": 43517683421,
+      "number": 81,
+      "conclusion": "success",
+      "liveAIProbes": "skipped",
+      "country": "Iceland IS passed",
+      "safety": "weapon blocked/reviewRequired true",
+      "quotaBoundary": "passed",
+      "localeNames": "98/98 passed"
+    },
+    "audio": {
+      "run": 43456938311,
+      "number": 64,
+      "conclusion": "success",
+      "liveTTSASR": "skipped",
+      "headlessVoiceAck": "passed",
+      "placeholders": [
+        "ar",
+        "fr"
+      ]
+    },
+    "browser": {
+      "run": 43213407211,
+      "number": 37,
+      "conclusion": "success",
+      "countries": 248,
+      "localizedPages": 44,
+      "liveAI": "passed English and Arabic",
+      "safety": "weapon blocked",
+      "physicalAudio": "not certified"
+    },
+    "health": {
+      "run": 43496909277,
+      "number": 319,
+      "conclusion": "success",
+      "publicPages": 18
+    },
+    "pages": {
+      "run": 43527927623,
+      "number": 1507,
+      "conclusion": "success"
+    }
   }
 }
