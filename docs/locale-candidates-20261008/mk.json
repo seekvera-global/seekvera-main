@@ -151,7 +151,8 @@
     "paid calls, paid APIs, paid verification, ads, subscriptions or company payments require an owner notice first. Auto Recharge remains OFF.",
     "print this page and place it at reception, entrances, rooms, events or service desks. People can scan without typing the website address.",
     "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
-    "🛡️ Games are self-contained SEEKVERA mini games. No stranger chat, gambling, paid loot boxes or external ad network is used."
+    "🛡️ Games are self-contained SEEKVERA mini games. No stranger chat, gambling, paid loot boxes or external ad network is used.",
+    "Paystack"
   ],
   "provider": "existing+@cf/google/gemma-4-26b-a4b-it+@cf/qwen/qwen3-30b-a3b-fp8",
   "translations": {
@@ -251,7 +252,7 @@
     "PART ONE": "ПРВ ДЕЛ",
     "Payments": "Плаќања",
     "Payoneer": "Payoneer",
-    "Paystack": "Платен стек",
+    "Paystack": "Paystack",
     "Pet Care": "Нега за домашни миленици",
     "Play Now": "Пушти сега",
     "Podcasts": "Поткасти",
