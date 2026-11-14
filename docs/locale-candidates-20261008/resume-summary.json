@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T00:46:00Z",
+  "checkedAt": "2026-11-14T00:50:00Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -631,8 +631,92 @@
       "before": "Punjabi-localized selectors and truncated CSS",
       "after": "exact source CSS restored",
       "kind": "non-translatable code preservation"
+    },
+    {
+      "language": "am",
+      "key": "Open QR →",
+      "before": "QR →",
+      "after": "QR ይክፈቱ →",
+      "kind": "restored missing action"
+    },
+    {
+      "language": "am",
+      "key": "Find Wi-Fi →",
+      "before": "Wi-Fi →",
+      "after": "Wi-Fi ይፈልጉ →",
+      "kind": "restored missing action"
+    },
+    {
+      "language": "am",
+      "key": "✨ Ask SEEKVERA AI",
+      "before": "✨ SEEKVERA AI",
+      "after": "✨ SEEKVERA AIን ይጠይቁ",
+      "kind": "restored missing verb"
+    },
+    {
+      "language": "am",
+      "key": "Speak to SEEKVERA AI",
+      "before": "SEEKVERA AI",
+      "after": "ከSEEKVERA AI ጋር ይነጋገሩ",
+      "kind": "restored missing action"
+    },
+    {
+      "language": "am",
+      "key": "Share and install SEEKVERA",
+      "before": "SEEKVERA",
+      "after": "SEEKVERAን ያጋሩ እና ይጫኑ",
+      "kind": "restored missing actions"
+    },
+    {
+      "language": "am",
+      "key": "Message SEEKVERA AI",
+      "before": "መልዕክት SEEKVERA AI",
+      "after": "ለSEEKVERA AI መልዕክት ይላኩ",
+      "kind": "restored send verb"
+    },
+    {
+      "language": "am",
+      "key": "Message SEEKVERA AI…",
+      "before": "መልዕክት SEEKVERA AI…",
+      "after": "ለSEEKVERA AI መልዕክት ይላኩ…",
+      "kind": "restored send verb"
+    },
+    {
+      "language": "my",
+      "key": "Open QR →",
+      "before": "QR →",
+      "after": "QR ကိုဖွင့်ပါ →",
+      "kind": "restored missing action"
+    },
+    {
+      "language": "my",
+      "key": "Share and install SEEKVERA",
+      "before": "မျှဝေပြီး SEEKVERA",
+      "after": "မျှဝေပြီး SEEKVERA ကို ထည့်သွင်းပါ",
+      "kind": "restored missing install action"
+    },
+    {
+      "language": "my",
+      "key": "Message SEEKVERA AI",
+      "before": "SEEKVERA AI",
+      "after": "SEEKVERA AI ကို စာပို့ပါ",
+      "kind": "restored missing send action"
+    },
+    {
+      "language": "my",
+      "key": "Message SEEKVERA AI…",
+      "before": "SEEKVERA AI…",
+      "after": "SEEKVERA AI ကို စာပို့ပါ…",
+      "kind": "restored missing send action"
+    },
+    {
+      "language": "my",
+      "key": "Prohibited on SEEKVERA",
+      "before": "SEEKVERA",
+      "after": "SEEKVERA တွင် တားမြစ်ထားသည်",
+      "kind": "restored missing prohibition"
     }
   ],
   "auditPending": true,
-  "auditNote": "Counts in scriptWarnings remain from 2026-11-13 audit; rerun tools/audit_locale_candidates.py before changing warning totals. No AI requests sent."
+  "auditNote": "Warning counts are from 2026-11-13 audit and are stale after 19 exact candidate text/code repairs across lo, ky, pa, am, my. Re-run full audit before revising counts; no AI requests sent."
 }
