@@ -77,7 +77,8 @@
     "Understanding your speech…",
     "Voice",
     "Voice recognition is not supported in this browser.",
-    "Voice reply"
+    "Voice reply",
+    "Paystack"
   ],
   "provider": "existing+@cf/google/gemma-4-26b-a4b-it+@cf/qwen/qwen3-30b-a3b-fp8",
   "translations": {
@@ -177,7 +178,7 @@
     "PART ONE": "APA KÌÍNÍ",
     "Payments": "Awọn sisanwo",
     "Payoneer": "Payoneer",
-    "Paystack": "Isanwo owo",
+    "Paystack": "Paystack",
     "Pet Care": "Itọju Ọsin",
     "Play Now": "Play Bayi",
     "Podcasts": "Awọn adarọ-ese",
