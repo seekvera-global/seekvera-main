@@ -116,7 +116,7 @@
     "All 98 packs still require linguistic review; Divehi remains structurally incomplete",
     "Physical microphone and audible-speaker tests remain pending",
     "Payment checkout remains inactive pending merchant-account configuration",
-    "Prior full audit reported 68 warnings; 44 exact repairs have since been made. Partial recomputation reduced 36 to 28 warnings across 17 languages; a full 98-pack audit remains pending."
+    "Current partial script-warning recomputation after 55 deterministic/manual repairs is 16 warnings across 11 languages; full 98-pack audit remains pending."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -243,13 +243,13 @@
   "candidateResume": {
     "run": null,
     "checkedAt": "2026-11-14T02:05:00Z",
-    "candidateCommit": "eb9325e93d7ff0b573969b2b5dffe579f6ab1049",
+    "candidateCommit": "fb4ec51551bd552982c4392b6fd13349e227e145",
     "completedCount": 97,
     "remainingCount": 1,
     "firstFailure": "dv",
     "failureReason": "english_overlap:58",
-    "latestProviderBlocker": "A one-string Dhivehi probe returned 200 via Gemma, but the first guarded batch of 2 returned HTTP 503 all_translation_backends_unavailable and its split single request stalled until a controlled timeout",
-    "quotaStillBlocked": null,
+    "latestProviderBlocker": "HTTP 503 all_translation_backends_unavailable; previous Google HTTP429 and daily_free_ai_limit remain historical blockers",
+    "quotaStillBlocked": true,
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false,
@@ -286,8 +286,39 @@
       "linguisticCertification": false
     },
     "auditPending": true,
-    "scriptWarningCount": 28,
-    "scriptWarningLanguages": 17
+    "scriptWarningCount": 16,
+    "scriptWarningLanguages": 11,
+    "summaryCommit": "9cbf48a6e77b44010f03e64f3ab51a6740137760",
+    "repairs": 55,
+    "lastQuotaNeutralRepair": {
+      "checkedAt": "2026-11-14T03:07:00Z",
+      "packCommits": {
+        "mn": "8ca74075ea2279d5974f9e0055bf3a5f63116931",
+        "ne": "97125eadf32dccc6f38fe000d7d57f74b08b93d6",
+        "ur": "f36f87b19a8f08ebf91edfe8b21fbd3a936ba1f1",
+        "el": "19f3aafa7261e5b59065d001068735884f87119f",
+        "he": "92a65625d7c77e4440988e664ce839c37c8dfd83",
+        "si": "b8db7ca042730cfc3b1b43e23f3cec214f19779a",
+        "ps": "fb4ec51551bd552982c4392b6fd13349e227e145"
+      },
+      "files": [
+        "mn.json",
+        "ne.json",
+        "ur.json",
+        "el.json",
+        "he.json",
+        "si.json",
+        "ps.json"
+      ],
+      "exactEdits": 11,
+      "sourceUnchanged": true,
+      "keysPerPack": 1118,
+      "translationRequestsSent": 0,
+      "aiQuotaUsed": 0,
+      "publication": false,
+      "linguisticCertification": false,
+      "validation": "Fetched and re-read each edited pack; all retain 1,118 translation keys. Summary warning map updated only for touched known entries; full audit remains pending."
+    }
   },
   "builderRepair": {
     "commit": "634a0d31cb571300d658bb24580bdad3cbaeb75b",
@@ -335,10 +366,10 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-13T23:23:32Z",
+    "checkedAt": "2026-11-14T03:07:00Z",
     "mainCheckpointBlobBeforeUpdate": "2465a26212bc004f3c2bf1f22768fa12db45784e",
-    "candidateBranchHead": "d17366541d19aa8b4c5190d14af479e8c0c596f2",
-    "candidateSummaryBlob": "300fc1e9e9e1fb8635e0efafb95d73b81c696060",
+    "candidateBranchHead": "9cbf48a6e77b44010f03e64f3ab51a6740137760",
+    "candidateSummaryBlob": "updated-by-summary-commit-9cbf48a6e77b44010f03e64f3ab51a6740137760",
     "candidateLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
@@ -352,9 +383,9 @@
       "auditStep": "success",
       "translationRequestsSent": 0,
       "activeRunFound": false,
-      "activeRunsCheck": "Fresh repository Actions API query status=in_progress returned total_count=0 at 2026-11-13T23:23:32Z; workflow-specific latest remains #150.",
+      "activeRunsCheck": "Fresh GitHub Actions API query status=in_progress returned total_count=0 at 2026-11-14T03:07:00Z; no candidate-resume run active.",
       "candidateWritesDeferredWhileActive": true,
-      "candidateWriteThisRun": "73 deterministic locale-pack ID repairs plus summary refresh after confirming no in-progress Actions run; no translation calls.",
+      "candidateWriteThisRun": "11 deterministic locale text repairs plus summary/checkpoint; no translation calls.",
       "candidatePackFilesChangedByRun150": false,
       "latestKnownRun": 150
     },
