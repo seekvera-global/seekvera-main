@@ -638,74 +638,27 @@
     "physicalDeviceCertified": false
   },
   "latestAIAvailability": {
-    "checkedAt": "2026-11-14T09:30:00Z",
-    "currentAIChat": "unknown-not-probed",
-    "translationAPI": "unknown-not-probed",
-    "lastLiveAIConfirmed": "2026-11-12 run 43213407211 English and Arabic passed",
-    "lastTranslationFailure": "HTTP 503 all_translation_backends_unavailable after 48 successful Divehi repair translations",
-    "quotaBlocker": "daily_free_ai_limit historically confirmed; Google HTTP429 previously; no bypass or probe sent",
-    "probeSent": false
+    "checkedAt": "2026-11-14",
+    "aiChat": "unknown-not-probed",
+    "translationBackend": "unknown-not-probed",
+    "quotaProbe": "not sent",
+    "reason": "avoid quota-consuming probe; prior daily_free_ai_limit, Google HTTP429 and Workers HTTP503 remain blockers"
   },
   "latestRunInspection": {
-    "checkedAt": "2026-11-14T02:05:00Z",
-    "r125Run": {
-      "id": 38971104197,
-      "runNumber": 150,
-      "event": "push",
-      "createdAt": "2026-10-16T21:41:54Z",
-      "conclusion": "success",
-      "jobId": 117209410195,
-      "resumeStep": "skipped",
-      "auditStep": "success",
-      "auditSummary": {
-        "completedCount": 97,
-        "remaining": [
-          "dv"
-        ],
-        "resumeSucceeded": false,
-        "readyForLinguisticReview": false,
-        "exitCode": "not-run"
-      },
-      "translationRequestsSent": 0,
-      "artifactId": 12077720489,
-      "candidateBranchCommitAtRun": "cae6970",
-      "currentCandidateBranchHead": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
-      "activeRun": false
-    },
-    "currentResumeWorkflow": {
-      "trigger": "workflow_dispatch only",
-      "translationInputDefault": false,
-      "translationStepRequiresExplicitTrue": true,
-      "auditOnlyWritesStatusAndSummary": true,
-      "translationQuotaProbed": false
-    },
-    "latestCandidateBranch": {
-      "head": "eb9325e93d7ff0b573969b2b5dffe579f6ab1049",
-      "summaryCheckedAt": "2026-11-14T02:05:00Z",
-      "resumeLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
-      "resumeLogLastDate": "2026-10-30",
-      "staged": 0,
-      "failed": 1
-    },
-    "todayActions": {
-      "date": "2026-11-14",
-      "latestPagesRun": 43542439656,
-      "latestPagesNumber": 1512,
-      "latestPagesConclusion": "success",
-      "latestR105Run": 43517683421,
-      "latestR105Number": 81,
-      "latestR105Conclusion": "success",
-      "latestAudioRun": 43456938311,
-      "latestAudioNumber": 64,
-      "latestAudioConclusion": "success",
-      "latestHealthRun": 43496909277,
-      "latestHealthNumber": 319,
-      "latestHealthConclusion": "success",
-      "newerR125Resume": false
-    },
-    "activeRunsAtCheck": 0,
-    "currentCandidateBranchHead": "eb9325e93d7ff0b573969b2b5dffe579f6ab1049",
-    "activeRun": false
+    "checkedAt": "2026-11-14",
+    "latestKnownR125Run": 150,
+    "runId": 38971104197,
+    "conclusion": "success",
+    "resume": "skipped",
+    "audit": "success",
+    "workflowTrigger": "workflow_dispatch only",
+    "runTranslationsDefault": false,
+    "translationRequiresExplicitTrue": true,
+    "latestActionsSnapshot": "2026-11-14T18:17:00Z showed 0 active runs; no R125 dispatch initiated by this pass; no fresh complete run-list available at current check",
+    "candidatePackWritesThisPass": 3,
+    "exactManualReplacements": 23,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0
   },
   "workflowRunInspection": {
     "checkedAt": "2026-11-13T13:13:20Z",
@@ -2668,5 +2621,50 @@
     "scope": "Structural coverage only; not translation accuracy, script-warning/full candidate audit, native review, UI end-to-end or publication",
     "translationRequestsSent": 0,
     "aiQuotaUsed": 0
+  },
+  "latestLocaleQualityRepair": {
+    "checkedAt": "2026-11-14",
+    "branch": "work/r125-locale-candidates-20261008",
+    "sourceHash": "6a1126e6a2ce5629",
+    "packsEdited": 3,
+    "exactStringReplacements": 23,
+    "languages": [
+      "yo",
+      "ig",
+      "zu"
+    ],
+    "commits": [
+      "2616e03b7ad2512cbcc2b63eef75d152dd2c0ebf",
+      "5fc96bdde160fed8fbd74fdcd46e2284ecf2b498",
+      "75135422cf088cb45deb02e6be48c06f6622e986",
+      "a57bd0d4b972c09b98d21e9380059e9ad50a5ac2"
+    ],
+    "readBack": "all three packs have 1,118 keys and matching sourceHash; repaired category values are distinct",
+    "sourceChanged": false,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticAccuracyCertified": false,
+    "limitation": "manual provisional category strings; native reviewers must approve; not full pack quality audit"
+  },
+  "latestLocaleDuplicateScreen": {
+    "checkedAt": "2026-11-14",
+    "packsChecked": 98,
+    "sourceCount": 1118,
+    "hashMatches": 98,
+    "missingKeys": 0,
+    "extraKeys": 0,
+    "emptyValues": 0,
+    "duplicateOutputGroups4plusBeforeRepairs": 44,
+    "languagesFlagged": 19,
+    "examples": {
+      "ha": 14,
+      "yo": 12,
+      "ig": 16,
+      "zu": 9,
+      "dz": 14,
+      "ti": 9
+    },
+    "note": "Heuristic duplicate scan. Three obvious game-category duplicate clusters repaired in yo/ig/zu; many repeated description clusters remain. Turkish brand repetition is expected."
   }
 }
