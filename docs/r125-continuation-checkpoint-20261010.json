@@ -171,13 +171,12 @@
     }
   },
   "remainingChecks": [
-    "Finish and linguistically review the remaining Divehi (dv) pack, then linguistically review all 98 packs",
-    "Perform physical microphone and audible-speaker tests on Android, iPhone/iPad and desktop; programmatic TTS/ASR does not certify hardware",
-    "Payment checkout remains inactive pending merchant-account configuration",
-    "Triage candidate script warnings across 83 language packs (142 findings); distinguish reserved identifiers and formatting from genuine wrong-script or incomplete UI text.",
-    "Re-run full candidate audit after 2026-11-14 repairs; do not infer warning totals until audit completes.",
-    "Re-run full candidate audit after seven 2026-11-14 locale repairs; warning totals remain stale until then.",
-    "Re-run full candidate audit after 19 deterministic repairs in lo/ky/pa/am/my; warning totals pending."
+    "Finish and linguistically review Divehi (dv), then review all 98 packs with qualified language reviewers; do not publish partial/unreviewed packs.",
+    "Run the full candidate audit after 32 exact repairs; current 40 warnings/23 languages are a partial recompute limited to lo, ky, pa, am, my, not a full audit.",
+    "Verify all 98 languages and all product sections end-to-end; current browser scope is 44 localized pages and selected languages, not full certification.",
+    "Re-probe AI Chat and translation only when quota-safe/authorized; current AI and translation availability are unknown, daily_free_ai_limit historically blocked, Google HTTP429 not retried.",
+    "Perform physical microphone and audible-speaker tests on Android, iPhone/iPad and desktop; headless/programmatic TTS-ASR is not hardware certification.",
+    "Checkout remains inactive pending merchant-account configuration and end-to-end merchant verification."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
@@ -244,7 +243,7 @@
   "candidateResume": {
     "run": null,
     "checkedAt": "2026-11-14T00:50:00Z",
-    "candidateCommit": "ad176cf7bb75a0baccf9000616f74431e2885692",
+    "candidateCommit": "766a1e21a462e1e28799b7f67b8c32637560dbcc",
     "completedCount": 97,
     "remainingCount": 1,
     "firstFailure": "dv",
@@ -254,13 +253,14 @@
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false,
-    "note": "This run deterministically restored the immutable identifier in 73 locale packs (ar was already correct), preserving all other raw file bytes. Branch summary now reflects 68 script warnings across 25 languages; Divehi remains structurally incomplete.; 2026-11-14 deterministic repairs: Lao Paystack brand spelling restored; Kyrgyz 'Nearby Now' typo corrected; Punjabi wrong Devanagari entries corrected to Gurmukhi, CROSS-BORDER typo corrected, zero-cost MVP sentence repaired, and translated CSS restored byte-for-byte to source. All edits limited to seven known strings in lo/ky/pa; source untouched; full audit not yet rerun.; seven deterministic locale repairs were committed on 2026-11-14 in lo/ky/pa. Candidate warning totals remain at last audit (68/25) pending a full rerun; no translation quota consumed.; extended deterministic repairs to 19 exact strings across lo/ky/pa/am/my, restoring missing action verbs in Amharic/Burmese and wrong-script Punjabi entries; full audit pending.",
+    "note": "This run deterministically restored the immutable identifier in 73 locale packs (ar was already correct), preserving all other raw file bytes. Branch summary now reflects 68 script warnings across 25 languages; Divehi remains structurally incomplete.; 2026-11-14 deterministic repairs: Lao Paystack brand spelling restored; Kyrgyz 'Nearby Now' typo corrected; Punjabi wrong Devanagari entries corrected to Gurmukhi, CROSS-BORDER typo corrected, zero-cost MVP sentence repaired, and translated CSS restored byte-for-byte to source. All edits limited to seven known strings in lo/ky/pa; source untouched; full audit not yet rerun.; seven deterministic locale repairs were committed on 2026-11-14 in lo/ky/pa. Candidate warning totals remain at last audit (68/25) pending a full rerun; no translation quota consumed.; extended deterministic repairs to 19 exact strings across lo/ky/pa/am/my, restoring missing action verbs in Amharic/Burmese and wrong-script Punjabi entries; full audit pending.; 2026-11-14: corrected 13 additional Punjabi UI/game strings from Devanagari into Gurmukhi; verified all 13 use Gurmukhi and pa retains 1,118 keys. Quota-neutral script predicate recomputed only for lo/ky/pa/am/my: warning count 68→40 (languages 25→23); full 98-pack audit still pending.",
     "quotaStatusCurrent": "unknown-not-probed",
     "knownDailyFreeAiLimitBlocker": true,
     "repairBatch20261114": {
-      "summaryCommit": "ad176cf7bb75a0baccf9000616f74431e2885692",
-      "latestCandidateCommit": "3f1c896a7b3ee21c14376f44887026aa215291cf",
-      "repairs": 19,
+      "summaryCommit": "766a1e21a462e1e28799b7f67b8c32637560dbcc",
+      "latestCandidateCommit": "766a1e21a462e1e28799b7f67b8c32637560dbcc",
+      "latestPackCommit": "d623ed12a5900a78e2ef49d053e19de1ab8d016d",
+      "repairs": 32,
       "files": [
         "lo.json",
         "ky.json",
@@ -271,9 +271,12 @@
       "allPacksStill1118Keys": true,
       "sourceUnchanged": true,
       "translationRequests": 0,
+      "aiQuotaUsed": 0,
       "linguisticCertification": false
     },
-    "auditPending": true
+    "auditPending": true,
+    "scriptWarningCount": 40,
+    "scriptWarningLanguages": 23
   },
   "builderRepair": {
     "commit": "634a0d31cb571300d658bb24580bdad3cbaeb75b",
@@ -429,7 +432,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-13T23:23:32Z",
+  "checkedAt": "2026-11-14T01:44:27.946Z",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -583,7 +586,7 @@
     "note": "R105 #79 log confirms RUN_LIVE_AI_PROBES=false and AI_PROBES_SKIPPED_BY_POLICY. It did perform country-change and safety classifier requests, but these do not prove general chat generation availability. No quota-consuming chat probe was sent this continuation."
   },
   "latestRunInspection": {
-    "checkedAt": "2026-11-13T21:43:10Z",
+    "checkedAt": "2026-11-14T01:44:27.946Z",
     "r125Run": {
       "id": 38971104197,
       "runNumber": 150,
@@ -641,7 +644,9 @@
       "latestHealthConclusion": "success",
       "newerR125Resume": false
     },
-    "activeRunsAtCheck": 0
+    "activeRunsAtCheck": 0,
+    "currentCandidateBranchHead": "766a1e21a462e1e28799b7f67b8c32637560dbcc",
+    "activeRun": false
   },
   "workflowRunInspection": {
     "checkedAt": "2026-11-13T13:13:20Z",
@@ -1305,17 +1310,18 @@
     "effect": "Improves diagnosis only; does not make any pack ready for linguistic review or publication."
   },
   "latestPagesDeployment": {
-    "checkedAt": "2026-11-13T21:42:23Z",
-    "run": 43513061573,
-    "runNumber": 1499,
+    "checkedAt": "2026-11-14T00:50:11Z",
+    "run": 1510,
+    "runNumber": 1510,
+    "runId": 43536698745,
     "conclusion": "success",
-    "headCommit": "dfc39a34de5cc94e7b842d9d1fbfdc6d19b2c5d7",
+    "headCommit": "6f688ccae08a02dbcd4789754541f686724c532f",
     "verifiedJobs": [
       "build",
       "report-build-status",
       "deploy"
     ],
-    "scope": "GitHub Pages deployment of R105 workflow change; product certification not implied."
+    "scope": "GitHub Pages deployment of checkpoint commit; product certification not implied."
   },
   "run16CandidateHistoryReconciliation": {
     "checkedAt": "2026-11-13T16:34:23Z",
@@ -1527,7 +1533,7 @@
     "noPhysicalAudioClaim": true
   },
   "latestR125RunInspection": {
-    "checkedAt": "2026-11-13T19:11:42Z",
+    "checkedAt": "2026-11-14T01:44:27.946Z",
     "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
     "workflowSha": "c1482fc1ae88ac522e91a759985c9fe49e8092fc",
     "actualTrigger": "workflow_dispatch only",
@@ -1557,12 +1563,12 @@
       "branch": "main",
       "status": "in_progress",
       "totalCount": 0,
-      "checkedAt": "2026-11-13T19:11:42Z"
+      "checkedAt": "2026-11-14T01:44:27.946Z"
     },
-    "branchHead": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
-    "summaryChecked": "97/98; dv english_overlap:58; no staged pack",
+    "branchHead": "766a1e21a462e1e28799b7f67b8c32637560dbcc",
+    "summaryChecked": "97/98; dv english_overlap:58; partial script scan 40/23; audit pending",
     "logChecked": "STAGED_ONLY 0 FAILED 1; dv HTTP503 all_translation_backends_unavailable; 48 prior repair translations; split batches timed out/503",
-    "candidateFilesModifiedThisRun": false,
+    "candidateFilesModifiedThisRun": true,
     "translationRequestsThisRun": 0
   },
   "latestR105Verification": {
@@ -1766,7 +1772,7 @@
     "safety": "Only exact reserved placeholder value may be replaced; other translations untouched; no AI or quota call"
   },
   "currentVerification": {
-    "checkedAt": "2026-11-13T22:17:00Z",
+    "checkedAt": "2026-11-14T01:44:27.946Z",
     "latestR105": {
       "run": 81,
       "runId": 43517683421,
@@ -1784,11 +1790,11 @@
       ]
     },
     "latestPages": {
-      "run": 1505,
-      "runId": 43517769765,
-      "status": "queued",
-      "conclusion": null,
-      "headSha": "42b436e959591908824a1b4647cb7e597557cda"
+      "run": 1510,
+      "runId": 43536698745,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "6f688ccae08a02dbcd4789754541f686724c532f"
     },
     "latestHealth": {
       "run": 319,
@@ -1803,7 +1809,7 @@
     },
     "currentAIAvailability": "unknown-currently; no live generation probe this run",
     "translationQuota": "not probed; daily_free_ai_limit remains historically observed; Google HTTP429 not retried",
-    "all98Structural": "97 complete, dv remains",
+    "all98Structural": "97 complete, dv remains; 13 Punjabi strings repaired to Gurmukhi; partial script scan 40/23, full audit pending",
     "countryCurrencySafety": "latest R105 #80 succeeded; Iceland country action, weapon listing blocked, quota boundaries passed",
     "checkoutActive": false
   },
@@ -1818,9 +1824,9 @@
         "english_overlap:58"
       ]
     },
-    "scriptWarningLanguages": 25,
-    "scriptWarningCount": 68,
-    "warningTriage": "After deterministic reserved-ID repair, 68 remaining script warnings across 25 languages; substantive wrong-script/incomplete text still requires review.",
+    "scriptWarningLanguages": 23,
+    "scriptWarningCount": 40,
+    "warningTriage": "Partial recompute for changed lo/ky/pa/am/my: 40 estimated current warnings across 23 languages (not a full 98-pack audit); pa=0, am=0, lo=1, ky=1, my=3. Full audit pending.",
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false
@@ -1833,7 +1839,8 @@
     "dailyFreeAiLimit": "historically observed; current quota not re-probed",
     "candidateBranchModifiedThisRun": true,
     "quotaProbeSent": false,
-    "structuralRepairUsedNoAI": true
+    "structuralRepairUsedNoAI": true,
+    "checkedAt": "2026-11-14T01:44:27.946Z"
   },
   "aiChat": {
     "lastDirectProbeAt": "2026-11-13T13:18:20+01:00",
@@ -1939,6 +1946,68 @@
       "conclusion": "success",
       "newCheckpointDeploy": 43536599146,
       "status": "in_progress"
+    },
+    "candidate": {
+      "branchHead": "766a1e21a462e1e28799b7f67b8c32637560dbcc",
+      "packCommit": "d623ed12a5900a78e2ef49d053e19de1ab8d016d",
+      "summaryCommit": "766a1e21a462e1e28799b7f67b8c32637560dbcc",
+      "language": "pa",
+      "stringsCorrected": 13,
+      "allGurmukhi": true,
+      "keys": 1118,
+      "partialWarningCount": 40,
+      "partialWarningLanguages": 23,
+      "fullAuditPending": true
     }
+  },
+  "run21PunjabiScriptRepair": {
+    "checkedAt": "2026-11-14T01:44:27.946Z",
+    "branch": "work/r125-locale-candidates-20261008",
+    "packCommit": "d623ed12a5900a78e2ef49d053e19de1ab8d016d",
+    "summaryCommit": "766a1e21a462e1e28799b7f67b8c32637560dbcc",
+    "language": "pa",
+    "stringsCorrected": 13,
+    "allCorrectedStringsGurmukhi": true,
+    "packKeys": 1118,
+    "sourceUnchanged": true,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "partialWarningRecompute": {
+      "lo": 1,
+      "ky": 1,
+      "pa": 0,
+      "am": 0,
+      "my": 3,
+      "total": 40,
+      "languages": 23
+    },
+    "fullAuditPending": true,
+    "linguisticCertification": false,
+    "publication": false
+  },
+  "latestLocaleRepair": {
+    "checkedAt": "2026-11-14T01:44:27.946Z",
+    "branch": "work/r125-locale-candidates-20261008",
+    "packCommit": "d623ed12a5900a78e2ef49d053e19de1ab8d016d",
+    "summaryCommit": "766a1e21a462e1e28799b7f67b8c32637560dbcc",
+    "language": "pa",
+    "stringsCorrected": 13,
+    "allCorrectedStringsGurmukhi": true,
+    "packKeys": 1118,
+    "sourceUnchanged": true,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "partialWarningRecompute": {
+      "lo": 1,
+      "ky": 1,
+      "pa": 0,
+      "am": 0,
+      "my": 3,
+      "total": 40,
+      "languages": 23
+    },
+    "fullAuditPending": true,
+    "linguisticCertification": false,
+    "publication": false
   }
 }
