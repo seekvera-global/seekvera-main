@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T01:44:56.274Z",
+  "checkedAt": "2026-11-14T02:55:00Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -110,29 +110,12 @@
     ]
   },
   "scriptWarnings": {
-    "zh": {
+    "hi": {
       "count": 1,
       "sources": [
         "© SEEKVERA ·"
       ],
       "examples": [
-        {
-          "source": "© SEEKVERA ·",
-          "value": "© SEEKVERA·"
-        }
-      ]
-    },
-    "hi": {
-      "count": 2,
-      "sources": [
-        "SEEKVERA —",
-        "© SEEKVERA ·"
-      ],
-      "examples": [
-        {
-          "source": "SEEKVERA —",
-          "value": "SEEKVERA—"
-        },
         {
           "source": "© SEEKVERA ·",
           "value": "© SEEKVERA·"
@@ -156,30 +139,13 @@
         }
       ]
     },
-    "bn": {
-      "count": 1,
-      "sources": [
-        "Message SEEKVERA AI…"
-      ],
-      "examples": [
-        {
-          "source": "Message SEEKVERA AI…",
-          "value": "SEEKVERA AI…"
-        }
-      ]
-    },
     "fa": {
-      "count": 3,
+      "count": 2,
       "sources": [
-        "Open QR →",
         "2026-09-26 · R74",
         "📰 SEEKVERA NEWS & MEDIA"
       ],
       "examples": [
-        {
-          "source": "Open QR →",
-          "value": "QR →"
-        },
         {
           "source": "2026-09-26 · R74",
           "value": "26-09-2026 · R74"
@@ -256,24 +222,14 @@
       ]
     },
     "kk": {
-      "count": 3,
+      "count": 1,
       "sources": [
-        "Open QR →",
-        "2026-09-26 · R74",
-        "Return to SEEKVERA"
+        "2026-09-26 · R74"
       ],
       "examples": [
         {
-          "source": "Open QR →",
-          "value": "QR →"
-        },
-        {
           "source": "2026-09-26 · R74",
           "value": "26.09.2026 · R74"
-        },
-        {
-          "source": "Return to SEEKVERA",
-          "value": "SEEKVERA"
         }
       ]
     },
@@ -340,18 +296,6 @@
         }
       ]
     },
-    "ta": {
-      "count": 1,
-      "sources": [
-        "Open QR →"
-      ],
-      "examples": [
-        {
-          "source": "Open QR →",
-          "value": "QR →"
-        }
-      ]
-    },
     "lo": {
       "count": 0,
       "sources": [],
@@ -388,18 +332,6 @@
         {
           "source": "Share and install SEEKVERA",
           "value": "SEEKVERA"
-        }
-      ]
-    },
-    "te": {
-      "count": 1,
-      "sources": [
-        "Open QR →"
-      ],
-      "examples": [
-        {
-          "source": "Open QR →",
-          "value": "QR →"
         }
       ]
     },
@@ -465,8 +397,8 @@
     "linguisticCertification": false,
     "validation": "Git compare confirms 73 locale files each have exactly one line changed (one replacement); five sampled packs retain 1,118 keys and exact immutable value."
   },
-  "scriptWarningCount": 36,
-  "scriptWarningLanguages": 21,
+  "scriptWarningCount": 28,
+  "scriptWarningLanguages": 17,
   "repairsSinceAudit": [
     {
       "language": "lo",
@@ -719,8 +651,64 @@
       "before": "🤝 Owner Control · Zero-Cost-First · Safety Gated",
       "after": "🤝 ပိုင်ရှင်ထိန်းချုပ်မှု · ကုန်ကျစရိတ်မရှိမှုကို ဦးစားပေး · လုံခြုံရေးစစ်ဆေးပြီးမှ",
       "kind": "localized governance/safety label"
+    },
+    {
+      "language": "fa",
+      "key": "Open QR →",
+      "before": "QR →",
+      "after": "QR را باز کنید →",
+      "kind": "restored missing open action"
+    },
+    {
+      "language": "kk",
+      "key": "Open QR →",
+      "before": "QR →",
+      "after": "QR-ды ашу →",
+      "kind": "restored missing open action"
+    },
+    {
+      "language": "kk",
+      "key": "Return to SEEKVERA",
+      "before": "SEEKVERA",
+      "after": "SEEKVERA-ға оралу",
+      "kind": "restored missing return action"
+    },
+    {
+      "language": "ta",
+      "key": "Open QR →",
+      "before": "QR →",
+      "after": "QR திறக்கவும் →",
+      "kind": "restored missing open action"
+    },
+    {
+      "language": "te",
+      "key": "Open QR →",
+      "before": "QR →",
+      "after": "QR తెరవండి →",
+      "kind": "restored missing open action"
+    },
+    {
+      "language": "bn",
+      "key": "Message SEEKVERA AI…",
+      "before": "SEEKVERA AI…",
+      "after": "SEEKVERA AI-কে বার্তা পাঠান…",
+      "kind": "restored missing send action"
+    },
+    {
+      "language": "hi",
+      "key": "SEEKVERA —",
+      "before": "SEEKVERA—",
+      "after": "SEEKVERA —",
+      "kind": "restored punctuation spacing"
+    },
+    {
+      "language": "zh",
+      "key": "© SEEKVERA ·",
+      "before": "© SEEKVERA·",
+      "after": "© SEEKVERA ·",
+      "kind": "restored punctuation spacing"
     }
   ],
   "auditPending": true,
-  "auditNote": "Partial quota-neutral script scan recomputed for changed packs lo, ky, pa, am, my after 36 exact repairs: current touched-pack warnings lo=0, ky=1 (date-format review), pa=0, am=0, my=0. Combined 36 warnings across 21 languages (68 prior minus old touched-pack counts, plus current). This is not a full 98-pack audit; Divehi remains incomplete. No AI requests sent."
+  "auditNote": "Partial quota-neutral warning recomputation after 44 deterministic/manual exact repairs; full 98-pack audit still pending. This pass removed 8 specific missing-action/punctuation warnings in fa, kk, ta, te, bn, hi and zh. No translation API or AI requests were sent."
 }
