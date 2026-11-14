@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-13T23:23:32Z",
+  "checkedAt": "2026-11-14T00:46:00Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -581,5 +581,58 @@
     "validation": "Git compare confirms 73 locale files each have exactly one line changed (one replacement); five sampled packs retain 1,118 keys and exact immutable value."
   },
   "scriptWarningCount": 68,
-  "scriptWarningLanguages": 25
+  "scriptWarningLanguages": 25,
+  "repairsSinceAudit": [
+    {
+      "language": "lo",
+      "key": "Paystack",
+      "before": "Paysack",
+      "after": "Paystack",
+      "kind": "brand spelling"
+    },
+    {
+      "language": "ky",
+      "key": "Nearby Now",
+      "before": "Narby Now",
+      "after": "Азыр жакын жерде",
+      "kind": "typo/localized phrase"
+    },
+    {
+      "language": "pa",
+      "key": "Open matching section",
+      "before": "खोल मेलिंग खंड",
+      "after": "ਮਿਲਦੇ ਭਾਗ ਨੂੰ ਖੋਲ੍ਹੋ",
+      "kind": "wrong script corrected to Gurmukhi"
+    },
+    {
+      "language": "pa",
+      "key": "CROSS-BORDER LOGISTICS",
+      "before": "CROSSS-BORDER LOGISTICS",
+      "after": "ਸਰਹੱਦ ਪਾਰ ਲੌਜਿਸਟਿਕਸ",
+      "kind": "typo and translation"
+    },
+    {
+      "language": "pa",
+      "key": "Pop colorful balloons.",
+      "before": "रंगीन बैलून फूटो",
+      "after": "ਰੰਗੀਨ ਗੁਬਾਰੇ ਫੋੜੋ।",
+      "kind": "wrong script corrected to Gurmukhi"
+    },
+    {
+      "language": "pa",
+      "key": "High-speed night racing.",
+      "before": "उच्च गति रात्रि दौड़",
+      "after": "ਤੇਜ਼ ਰਫ਼ਤਾਰ ਰਾਤ ਦੀ ਰੇਸਿੰਗ।",
+      "kind": "wrong script corrected to Gurmukhi"
+    },
+    {
+      "language": "pa",
+      "key": "CSS source string",
+      "before": "Punjabi-localized selectors and truncated CSS",
+      "after": "exact source CSS restored",
+      "kind": "non-translatable code preservation"
+    }
+  ],
+  "auditPending": true,
+  "auditNote": "Counts in scriptWarnings remain from 2026-11-13 audit; rerun tools/audit_locale_candidates.py before changing warning totals. No AI requests sent."
 }
