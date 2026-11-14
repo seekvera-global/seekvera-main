@@ -2230,5 +2230,63 @@
     "activeRunSnapshot": "zero queued/in_progress at 2026-11-14T04:48:00Z; not a live check at this timestamp",
     "candidateWritesThisContinuation": false,
     "note": "No candidate branch writes made; workflow dispatch unavailable in this execution."
+  },
+  "latestRunVerification": {
+    "checkedAt": "2026-11-14T07:59:00Z",
+    "mainHead": "39ed1454aa5ade2f7786cee01b0ae0ce37ed7220",
+    "latestPagesDeploy": {
+      "run": 43570872050,
+      "conclusion": "success",
+      "commit": "39ed1454aa5ade2f7786cee01b0ae0ce37ed7220",
+      "scope": "Jekyll build and Pages deploy; not product-wide certification"
+    },
+    "candidateBranchHead": "86e9ed8b9b102a127509763b3ec74aa0b35aa782",
+    "candidateWritesThisPass": false,
+    "candidateResumeLatestKnown": {
+      "run": 150,
+      "runId": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-10-16T21:41:54Z",
+      "resume": "skipped",
+      "audit": "success"
+    },
+    "activeR125RunList": "Could not freshly enumerate Actions workflow-runs collection through the available GitHub read endpoint; no candidate writes performed. Workflow YAML is workflow_dispatch-only, not hourly.",
+    "spotQualityAudit": {
+      "languages": [
+        "pa",
+        "lo",
+        "ky",
+        "am",
+        "my",
+        "hi",
+        "ar"
+      ],
+      "method": "builder suspicious_overlap heuristic",
+      "longEnglishOverlap": 0,
+      "emptyTranslations": 0,
+      "scope": "7 packs only; not full 97-pack audit"
+    },
+    "newQualityFindings": [
+      {
+        "language": "am",
+        "keyGroup": [
+          "Pop colorful balloons.",
+          "Fly through open sky gates.",
+          "Tap matching targets quickly.",
+          "React quickly to ninja targets.",
+          "Run a prehistoric jungle trail.",
+          "A faster space paddle challenge.",
+          "A quick superbike lane challenge.",
+          "Catch candy and avoid gray blocks.",
+          "Race across a fast desert highway.",
+          "A dark high-speed runner challenge."
+        ],
+        "duplicateTarget": "በመስመር ላይ የመስመር ብርቱ እንደገና አክል",
+        "count": 10,
+        "issue": "10 distinct game descriptions map to one identical Amharic output; linguistic quality failure, not structural failure",
+        "action": "Flagged only; no pack edit without qualified Amharic review; no AI request"
+      }
+    ]
   }
 }
