@@ -116,7 +116,7 @@
     "All 98 packs still require linguistic review; Divehi remains structurally incomplete",
     "Physical microphone and audible-speaker tests remain pending",
     "Payment checkout remains inactive pending merchant-account configuration",
-    "Last audit before repairs reported 68 warnings across 25 languages; 19 exact text/code repairs have since been made across five packs, and warning totals remain pending full re-audit."
+    "Prior full audit reported 68 warnings; 44 exact repairs have since been made. Partial recomputation reduced 36 to 28 warnings across 17 languages; a full 98-pack audit remains pending."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -242,8 +242,8 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-11-14T00:50:00Z",
-    "candidateCommit": "a452426f3439069c020cf9756d926afb4629e838",
+    "checkedAt": "2026-11-14T02:05:00Z",
+    "candidateCommit": "eb9325e93d7ff0b573969b2b5dffe579f6ab1049",
     "completedCount": 97,
     "remainingCount": 1,
     "firstFailure": "dv",
@@ -257,20 +257,27 @@
     "quotaStatusCurrent": "unknown-not-probed",
     "knownDailyFreeAiLimitBlocker": true,
     "repairBatch20261114": {
-      "summaryCommit": "a452426f3439069c020cf9756d926afb4629e838",
-      "latestCandidateCommit": "a452426f3439069c020cf9756d926afb4629e838",
+      "summaryCommit": "eb9325e93d7ff0b573969b2b5dffe579f6ab1049",
+      "latestCandidateCommit": "eb9325e93d7ff0b573969b2b5dffe579f6ab1049",
       "packCommits": {
         "pa": "d623ed12a5900a78e2ef49d053e19de1ab8d016d",
         "lo": "3bc2a9c37d339a36da4a6a9de30edafa73b8fbc3",
         "my": "6166f490414ab404ca4b4f66fc2635f314ef8bcc"
       },
-      "repairs": 36,
+      "repairs": 44,
       "files": [
         "lo.json",
         "ky.json",
         "pa.json",
         "am.json",
-        "my.json"
+        "my.json",
+        "fa.json",
+        "kk.json",
+        "ta.json",
+        "te.json",
+        "bn.json",
+        "hi.json",
+        "zh.json"
       ],
       "allPacksStill1118Keys": true,
       "sourceUnchanged": true,
@@ -279,8 +286,8 @@
       "linguisticCertification": false
     },
     "auditPending": true,
-    "scriptWarningCount": 36,
-    "scriptWarningLanguages": 21
+    "scriptWarningCount": 28,
+    "scriptWarningLanguages": 17
   },
   "builderRepair": {
     "commit": "634a0d31cb571300d658bb24580bdad3cbaeb75b",
@@ -436,7 +443,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-14T01:45:04.794Z",
+  "checkedAt": "2026-11-14T02:05:00Z",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -590,7 +597,7 @@
     "note": "R105 #79 log confirms RUN_LIVE_AI_PROBES=false and AI_PROBES_SKIPPED_BY_POLICY. It did perform country-change and safety classifier requests, but these do not prove general chat generation availability. No quota-consuming chat probe was sent this continuation."
   },
   "latestRunInspection": {
-    "checkedAt": "2026-11-14T01:45:04.794Z",
+    "checkedAt": "2026-11-14T02:05:00Z",
     "r125Run": {
       "id": 38971104197,
       "runNumber": 150,
@@ -623,22 +630,20 @@
       "translationQuotaProbed": false
     },
     "latestCandidateBranch": {
-      "head": "cef6d804eb06d0c57d2e7c73650056d9edb26569",
-      "summaryBlob": "3afb7c9b4335deb1eef550630a96ef04165f886c",
-      "summaryCheckedAt": "2026-10-30T00:57:30.623858+00:00",
+      "head": "eb9325e93d7ff0b573969b2b5dffe579f6ab1049",
+      "summaryCheckedAt": "2026-11-14T02:05:00Z",
       "resumeLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
       "resumeLogLastDate": "2026-10-30",
       "staged": 0,
       "failed": 1
     },
     "todayActions": {
-      "date": "2026-11-13",
-      "total": 24,
-      "latestPagesRun": 43513061573,
-      "latestPagesNumber": 1499,
+      "date": "2026-11-14",
+      "latestPagesRun": 43542439656,
+      "latestPagesNumber": 1512,
       "latestPagesConclusion": "success",
-      "latestR105Run": 43513062247,
-      "latestR105Number": 80,
+      "latestR105Run": 43517683421,
+      "latestR105Number": 81,
       "latestR105Conclusion": "success",
       "latestAudioRun": 43456938311,
       "latestAudioNumber": 64,
@@ -649,7 +654,7 @@
       "newerR125Resume": false
     },
     "activeRunsAtCheck": 0,
-    "currentCandidateBranchHead": "a452426f3439069c020cf9756d926afb4629e838",
+    "currentCandidateBranchHead": "eb9325e93d7ff0b573969b2b5dffe579f6ab1049",
     "activeRun": false
   },
   "workflowRunInspection": {
@@ -1259,11 +1264,11 @@
     }
   },
   "latestProductionRelease": {
-    "checkedAt": "2026-11-13T21:42:23Z",
-    "run": 43513062247,
-    "runNumber": 80,
+    "checkedAt": "2026-11-13T22:15:19Z",
+    "run": 43517683421,
+    "runNumber": 81,
     "conclusion": "success",
-    "headCommit": "dfc39a34de5cc94e7b842d9d1fbfdc6d19b2c5d7",
+    "headCommit": "3b12b575d807dcb02344892e56358250d6a37db5",
     "deployedWorkerVersion": "from run #80 logs",
     "health": "R107_DEPLOY_HEALTH_PASS",
     "liveChecks": {
@@ -1314,18 +1319,18 @@
     "effect": "Improves diagnosis only; does not make any pack ready for linguistic review or publication."
   },
   "latestPagesDeployment": {
-    "checkedAt": "2026-11-14T00:50:11Z",
-    "run": 1510,
-    "runNumber": 1510,
-    "runId": 43536698745,
+    "checkedAt": "2026-11-14T01:45:55Z",
+    "run": 1512,
+    "runNumber": 1512,
+    "runId": 43542439656,
     "conclusion": "success",
-    "headCommit": "6f688ccae08a02dbcd4789754541f686724c532f",
+    "headCommit": "965f4b67230b3f2bea2bc025c6e09a1930bc0198",
     "verifiedJobs": [
       "build",
       "report-build-status",
       "deploy"
     ],
-    "scope": "GitHub Pages deployment of checkpoint commit; product certification not implied."
+    "scope": "GitHub Pages deployment of prior checkpoint commit; product certification not implied."
   },
   "run16CandidateHistoryReconciliation": {
     "checkedAt": "2026-11-13T16:34:23Z",
@@ -1537,7 +1542,7 @@
     "noPhysicalAudioClaim": true
   },
   "latestR125RunInspection": {
-    "checkedAt": "2026-11-14T01:45:04.794Z",
+    "checkedAt": "2026-11-14T02:05:00Z",
     "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
     "workflowSha": "c1482fc1ae88ac522e91a759985c9fe49e8092fc",
     "actualTrigger": "workflow_dispatch only",
@@ -1567,10 +1572,10 @@
       "branch": "main",
       "status": "in_progress",
       "totalCount": 0,
-      "checkedAt": "2026-11-14T01:45:04.794Z"
+      "checkedAt": "2026-11-14T02:05:00Z"
     },
-    "branchHead": "a452426f3439069c020cf9756d926afb4629e838",
-    "summaryChecked": "97/98; dv english_overlap:58; partial script scan 36/21; audit pending",
+    "branchHead": "eb9325e93d7ff0b573969b2b5dffe579f6ab1049",
+    "summaryChecked": "97/98; dv english_overlap:58; partial script scan 28/17; audit pending",
     "logChecked": "STAGED_ONLY 0 FAILED 1; dv HTTP503 all_translation_backends_unavailable; 48 prior repair translations; split batches timed out/503",
     "candidateFilesModifiedThisRun": true,
     "translationRequestsThisRun": 0
@@ -1828,9 +1833,9 @@
         "english_overlap:58"
       ]
     },
-    "scriptWarningLanguages": 21,
-    "scriptWarningCount": 36,
-    "warningTriage": "Partial recompute for changed lo/ky/pa/am/my: 36 warnings across 21 languages (not a full 98-pack audit); touched packs lo=0, ky=1 date-format review, pa=0, am=0, my=0. Full audit pending.",
+    "scriptWarningLanguages": 17,
+    "scriptWarningCount": 28,
+    "warningTriage": "Partial quota-neutral recomputation after 44 exact repairs: 28 warnings across 17 languages remain (18 language entries include lo=0); eight specific missing-action/punctuation warnings removed in fa, kk, ta, te, bn, hi, zh. Full 98-pack audit pending.",
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false
@@ -1844,7 +1849,7 @@
     "candidateBranchModifiedThisRun": true,
     "quotaProbeSent": false,
     "structuralRepairUsedNoAI": true,
-    "checkedAt": "2026-11-14T01:45:04.794Z"
+    "checkedAt": "2026-11-14T02:05:00Z"
   },
   "aiChat": {
     "lastDirectProbeAt": "2026-11-13T13:18:20+01:00",
@@ -1996,33 +2001,57 @@
     "totalExactRepairs": 36
   },
   "latestLocaleRepair": {
-    "checkedAt": "2026-11-14T01:44:27.946Z",
+    "checkedAt": "2026-11-14T02:05:00Z",
     "branch": "work/r125-locale-candidates-20261008",
-    "packCommit": "d623ed12a5900a78e2ef49d053e19de1ab8d016d",
-    "summaryCommit": "a452426f3439069c020cf9756d926afb4629e838",
-    "language": "pa",
-    "stringsCorrected": 13,
-    "allCorrectedStringsGurmukhi": true,
+    "packCommit": "e9838774d0e82fb3a73d25d84f9a2356b3e7865b",
+    "summaryCommit": "eb9325e93d7ff0b573969b2b5dffe579f6ab1049",
+    "language": "fa,kk,ta,te,bn,hi,zh",
+    "stringsCorrected": 8,
     "packKeys": 1118,
     "sourceUnchanged": true,
     "translationRequestsSent": 0,
     "aiQuotaUsed": 0,
     "partialWarningRecompute": {
-      "lo": 0,
-      "ky": 1,
-      "pa": 0,
-      "am": 0,
-      "my": 0,
-      "total": 36,
-      "languages": 21
+      "total": 28,
+      "languages": 17,
+      "removedWarnings": 8,
+      "fullAuditPending": true
     },
     "fullAuditPending": true,
     "linguisticCertification": false,
     "publication": false,
-    "additionalRepairs": {
-      "lo": 1,
-      "my": 3
-    },
-    "totalExactRepairs": 36
+    "totalExactRepairs": 44,
+    "repairs": {
+      "fa": 1,
+      "kk": 2,
+      "ta": 1,
+      "te": 1,
+      "bn": 1,
+      "hi": 1,
+      "zh": 1
+    }
+  },
+  "run22QuotaNeutralLocaleRepairs": {
+    "checkedAt": "2026-11-14T02:05:00Z",
+    "branch": "work/r125-locale-candidates-20261008",
+    "branchHead": "eb9325e93d7ff0b573969b2b5dffe579f6ab1049",
+    "summaryCommit": "eb9325e93d7ff0b573969b2b5dffe579f6ab1049",
+    "repairs": 8,
+    "languagePacks": [
+      "fa",
+      "kk",
+      "ta",
+      "te",
+      "bn",
+      "hi",
+      "zh"
+    ],
+    "allChangedPacksValidatedAt1118Keys": true,
+    "sourceHash": "6a1126e6a2ce5629",
+    "warningReduction": 8,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "linguisticCertification": false,
+    "published": false
   }
 }
