@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T05:27:00Z",
+  "checkedAt": "2026-11-14T05:30:00Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -247,16 +247,11 @@
       "examples": []
     },
     "gu": {
-      "count": 2,
+      "count": 1,
       "sources": [
-        "SEEKVERA GUIDE",
         "2026-09-26 · R74"
       ],
       "examples": [
-        {
-          "source": "SEEKVERA GUIDE",
-          "value": "SEEKVERA Guide"
-        },
         {
           "source": "2026-09-26 · R74",
           "value": "26-09-2026 · R74"
@@ -303,7 +298,7 @@
     "linguisticCertification": false,
     "validation": "Git compare confirms 73 locale files each have exactly one line changed (one replacement); five sampled packs retain 1,118 keys and exact immutable value."
   },
-  "scriptWarningCount": 11,
+  "scriptWarningCount": 10,
   "scriptWarningLanguages": 10,
   "repairsSinceAudit": [
     {
@@ -746,10 +741,17 @@
       "before": "SEEKVERA",
       "after": "SEEKVERA བགོ་བཤའ་རྐྱབ་ནི་དང་བཙུགས།",
       "kind": "restored missing share/install actions"
+    },
+    {
+      "language": "gu",
+      "key": "SEEKVERA GUIDE",
+      "before": "SEEKVERA Guide",
+      "after": "સીકવેરા માર્ગદર્શિકા",
+      "kind": "localized Gujarati guide label"
     }
   ],
   "auditPending": true,
-  "auditNote": "Partial quota-neutral warning recomputation after 44 deterministic/manual exact repairs; full 98-pack audit still pending. This pass removed 8 specific missing-action/punctuation warnings in fa, kk, ta, te, bn, hi and zh. No translation API or AI requests were sent. Quota-neutral deterministic repairs on 2026-11-14: fixed 11 exact strings in mn/ne/ur/el/he/si/ps; updated known script-warning entries (hi/he/si/mn/ne/zh cleared; ur/el/ps retain date-format review). No translation API or AI requests sent; full 98-pack audit remains pending. Quota-neutral deterministic repairs 2026-11-14: corrected 8 exact strings across fa/tg/ka/mk/ky/dz; Dzongkha had 3 action labels reduced to brand-only text. Full 98-pack audit and native-language review remain pending; no translation API or AI requests.",
+  "auditNote": "Partial quota-neutral warning recomputation after 44 deterministic/manual exact repairs; full 98-pack audit still pending. This pass removed 8 specific missing-action/punctuation warnings in fa, kk, ta, te, bn, hi and zh. No translation API or AI requests were sent. Quota-neutral deterministic repairs on 2026-11-14: fixed 11 exact strings in mn/ne/ur/el/he/si/ps; updated known script-warning entries (hi/he/si/mn/ne/zh cleared; ur/el/ps retain date-format review). No translation API or AI requests sent; full 98-pack audit remains pending. Quota-neutral deterministic repairs 2026-11-14: corrected 8 exact strings across fa/tg/ka/mk/ky/dz; Dzongkha had 3 action labels reduced to brand-only text. Full 98-pack audit and native-language review remain pending; no translation API or AI requests. Quota-neutral 2026-11-14 repair: Gujarati SEEKVERA GUIDE localized; readback verified 1,118 keys. Warning map now 10 date/presentation warnings across 10 languages; full audit remains pending.",
   "structuralVerification": {
     "checkedAt": "2026-11-14T04:48:00Z",
     "checkedLanguages": 97,
@@ -786,30 +788,20 @@
     }
   },
   "latestQuotaNeutralRepair": {
-    "checkedAt": "2026-11-14T05:27:00Z",
+    "checkedAt": "2026-11-14T05:30:00Z",
     "commits": {
-      "fa": "c3226b7d3d201781a775fa12975f6370017b27b7",
-      "tg": "5748cd6cffcaa89bcbdf326ebe44b0b254ace9be",
-      "ka": "ebd3a51fbf6247cd359ab2d0724e590ff53eafb0",
-      "mk": "98d10cc232295b0e91cb2b092212a1b3e5546704",
-      "ky": "8ac35446c000792c0569e4fd36843b05734a2d54",
-      "dz": "a9ab35442a3c43ad6c1f796601f7cfe767486c39"
+      "gu": "a2bd0c4528505bc917e5a331a008b3dcbd47c543"
     },
     "files": [
-      "fa.json",
-      "tg.json",
-      "ka.json",
-      "mk.json",
-      "ky.json",
-      "dz.json"
+      "gu.json"
     ],
-    "exactEdits": 8,
+    "exactEdits": 1,
     "keysPerPack": 1118,
     "sourceUnchanged": true,
     "translationRequestsSent": 0,
     "aiQuotaUsed": 0,
     "publication": false,
     "linguisticCertification": false,
-    "validation": "All six edited packs re-read; all retain 1,118 keys and exact expected values. Warning-map recomputed from retained entries."
+    "validation": "Gujarati pack read back at 1,118 keys; exact guide label corrected; warning removed from partial map."
   }
 }
