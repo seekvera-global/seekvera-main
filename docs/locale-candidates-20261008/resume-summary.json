@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T17:35:00Z",
+  "checkedAt": "2026-11-14T17:37:00Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -476,5 +476,17 @@
     "emptyTranslations": 0,
     "linguisticCertification": false,
     "scope": "Independent read-back of 16 candidate JSON packs; not full 98-pack audit, not all-section end-to-end, and not native-language review."
+  },
+  "latestDocumentationDeployment": {
+    "run": 1529,
+    "runId": 43618431668,
+    "createdAt": "2026-11-14T16:57:34Z",
+    "conclusion": "success",
+    "jobs": {
+      "build": "success",
+      "deploy": "success",
+      "reportBuildStatus": "success"
+    },
+    "scope": "GitHub Pages documentation deployment only"
   }
 }
