@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T00:50:00Z",
+  "checkedAt": "2026-11-14T01:43:56.517Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -190,34 +190,6 @@
         }
       ]
     },
-    "am": {
-      "count": 5,
-      "sources": [
-        "Open QR →",
-        "Find Wi-Fi →",
-        "✨ Ask SEEKVERA AI",
-        "Speak to SEEKVERA AI",
-        "Share and install SEEKVERA"
-      ],
-      "examples": [
-        {
-          "source": "Open QR →",
-          "value": "QR →"
-        },
-        {
-          "source": "Find Wi-Fi →",
-          "value": "Wi-Fi →"
-        },
-        {
-          "source": "✨ Ask SEEKVERA AI",
-          "value": "✨ SEEKVERA AI"
-        },
-        {
-          "source": "Speak to SEEKVERA AI",
-          "value": "SEEKVERA AI"
-        }
-      ]
-    },
     "he": {
       "count": 1,
       "sources": [
@@ -306,16 +278,11 @@
       ]
     },
     "ky": {
-      "count": 2,
+      "count": 1,
       "sources": [
-        "Nearby Now",
         "2026-09-26 · R74"
       ],
       "examples": [
-        {
-          "source": "Nearby Now",
-          "value": "Narby Now"
-        },
         {
           "source": "2026-09-26 · R74",
           "value": "26-09-2026 · R74"
@@ -386,16 +353,11 @@
       ]
     },
     "lo": {
-      "count": 2,
+      "count": 1,
       "sources": [
-        "Paystack",
         "R9b embedded translation deployment trigger"
       ],
       "examples": [
-        {
-          "source": "Paystack",
-          "value": "Paysack"
-        },
         {
           "source": "R9b embedded translation deployment trigger",
           "value": "R9b embedded trigger deployment trigger"
@@ -403,13 +365,9 @@
       ]
     },
     "my": {
-      "count": 7,
+      "count": 3,
       "sources": [
         "AI VISION",
-        "Open QR →",
-        "Message SEEKVERA AI",
-        "Message SEEKVERA AI…",
-        "Prohibited on SEEKVERA",
         "About SEEKVERA — SEEKVERA",
         "🤝 Owner Control · Zero‑Cost‑First · Safety Gated"
       ],
@@ -419,16 +377,12 @@
           "value": "AI Vision"
         },
         {
-          "source": "Open QR →",
-          "value": "QR →"
+          "source": "About SEEKVERA — SEEKVERA",
+          "value": "SEEKVERA — SEEKVERA"
         },
         {
-          "source": "Message SEEKVERA AI",
-          "value": "SEEKVERA AI"
-        },
-        {
-          "source": "Message SEEKVERA AI…",
-          "value": "SEEKVERA AI…"
+          "source": "🤝 Owner Control · Zero‑Cost‑First · Safety Gated",
+          "value": "🤝 Owner Control · Zero-Cost-First · Safety Gated"
         }
       ]
     },
@@ -495,46 +449,6 @@
         }
       ]
     },
-    "pa": {
-      "count": 17,
-      "sources": [
-        "Open matching section",
-        "CROSS-BORDER LOGISTICS",
-        "Pop colorful balloons.",
-        "High-speed night racing.",
-        "Understanding your speech…",
-        "A fast safari obstacle run.",
-        "Fly through open sky gates.",
-        "Fast robot target challenge.",
-        "Survive a dense meteor field.",
-        "Tap matching targets quickly.",
-        "React quickly to ninja targets.",
-        "Run a prehistoric jungle trail.",
-        "A faster space paddle challenge.",
-        "A quick superbike lane challenge.",
-        "Catch candy and avoid gray blocks.",
-        "Race across a fast desert highway.",
-        "A dark high-speed runner challenge."
-      ],
-      "examples": [
-        {
-          "source": "Open matching section",
-          "value": "खोल मेलिंग खंड"
-        },
-        {
-          "source": "CROSS-BORDER LOGISTICS",
-          "value": "CROSSS-BORDER LOGISTICS"
-        },
-        {
-          "source": "Pop colorful balloons.",
-          "value": "रंगीन बैलून फूटो"
-        },
-        {
-          "source": "High-speed night racing.",
-          "value": "उच्च गति रात्रि दौड़"
-        }
-      ]
-    },
     "ps": {
       "count": 3,
       "sources": [
@@ -580,8 +494,8 @@
     "linguisticCertification": false,
     "validation": "Git compare confirms 73 locale files each have exactly one line changed (one replacement); five sampled packs retain 1,118 keys and exact immutable value."
   },
-  "scriptWarningCount": 68,
-  "scriptWarningLanguages": 25,
+  "scriptWarningCount": 40,
+  "scriptWarningLanguages": 23,
   "repairsSinceAudit": [
     {
       "language": "lo",
@@ -715,8 +629,99 @@
       "before": "SEEKVERA",
       "after": "SEEKVERA တွင် တားမြစ်ထားသည်",
       "kind": "restored missing prohibition"
+    },
+    {
+      "language": "pa",
+      "key": "Understanding your speech…",
+      "before": "अपनी बात समझो...",
+      "after": "ਤੁਹਾਡੀ ਗੱਲ ਸਮਝੀ ਜਾ ਰਹੀ ਹੈ…",
+      "kind": "wrong script corrected to Gurmukhi"
+    },
+    {
+      "language": "pa",
+      "key": "A fast safari obstacle run.",
+      "before": "एक तेज सफारी बाधा दौड़",
+      "after": "ਤੇਜ਼ ਸਫਾਰੀ ਰੁਕਾਵਟ ਦੌੜ।",
+      "kind": "wrong script corrected to Gurmukhi"
+    },
+    {
+      "language": "pa",
+      "key": "Fly through open sky gates.",
+      "before": "खुले आकाश गेट्स में उड़ो",
+      "after": "ਖੁੱਲ੍ਹੇ ਅਸਮਾਨੀ ਦਰਵਾਜ਼ਿਆਂ ਵਿਚੋਂ ਉੱਡੋ।",
+      "kind": "wrong script corrected to Gurmukhi"
+    },
+    {
+      "language": "pa",
+      "key": "Fast robot target challenge.",
+      "before": "तेज रोबोट लक्ष्य चुनौती",
+      "after": "ਤੇਜ਼ ਰੋਬੋਟ ਨਿਸ਼ਾਨੇ ਦੀ ਚੁਣੌਤੀ।",
+      "kind": "wrong script corrected to Gurmukhi"
+    },
+    {
+      "language": "pa",
+      "key": "Survive a dense meteor field.",
+      "before": "एक घन मौसम फील्ड में जीवित रहो",
+      "after": "ਘਣੇ ਉਲਕਾ-ਖੇਤਰ ਵਿੱਚ ਬਚ ਕੇ ਰਹੋ।",
+      "kind": "wrong script corrected to Gurmukhi"
+    },
+    {
+      "language": "pa",
+      "key": "Tap matching targets quickly.",
+      "before": "तेजी से मेलिंग लक्ष्य टैप करो",
+      "after": "ਮਿਲਦੇ ਨਿਸ਼ਾਨਿਆਂ 'ਤੇ ਤੇਜ਼ੀ ਨਾਲ ਟੈਪ ਕਰੋ।",
+      "kind": "wrong script corrected to Gurmukhi"
+    },
+    {
+      "language": "pa",
+      "key": "React quickly to ninja targets.",
+      "before": "निंजा लक्ष्य के तुरंत प्रतिक्रिया करो",
+      "after": "ਨਿੰਜਾ ਨਿਸ਼ਾਨਿਆਂ 'ਤੇ ਫੁਰਤੀ ਨਾਲ ਪ੍ਰਤੀਕਿਰਿਆ ਕਰੋ।",
+      "kind": "wrong script corrected to Gurmukhi"
+    },
+    {
+      "language": "pa",
+      "key": "Run a prehistoric jungle trail.",
+      "before": "प्राचीन जंगल के रास्ते पर दौड़ो",
+      "after": "ਪ੍ਰਾਚੀਨ ਜੰਗਲੀ ਰਸਤੇ 'ਤੇ ਦੌੜੋ।",
+      "kind": "wrong script corrected to Gurmukhi"
+    },
+    {
+      "language": "pa",
+      "key": "A faster space paddle challenge.",
+      "before": "एक तेज अंतरिक्ष पैडल चुनौती",
+      "after": "ਤੇਜ਼ ਅੰਤਰਿਕਸ਼ ਪੈਡਲ ਦੀ ਚੁਣੌਤੀ।",
+      "kind": "wrong script corrected to Gurmukhi"
+    },
+    {
+      "language": "pa",
+      "key": "A quick superbike lane challenge.",
+      "before": "एक तेज सुपरबाइक लेन चुनौती",
+      "after": "ਤੇਜ਼ ਸੁਪਰਬਾਈਕ ਲੇਨ ਦੀ ਚੁਣੌਤੀ।",
+      "kind": "wrong script corrected to Gurmukhi"
+    },
+    {
+      "language": "pa",
+      "key": "Catch candy and avoid gray blocks.",
+      "before": "मिठाई पकड़ो और ग्रे ब्लॉक से बचो",
+      "after": "ਟੌਫੀਆਂ ਫੜੋ ਅਤੇ ਸਲੇਟੀ ਬਲਾਕਾਂ ਤੋਂ ਬਚੋ।",
+      "kind": "wrong script corrected to Gurmukhi"
+    },
+    {
+      "language": "pa",
+      "key": "Race across a fast desert highway.",
+      "before": "एक तेज रेगिस्तान हाईवे पर प्रतिस्पर्धा करो",
+      "after": "ਤੇਜ਼ ਰੇਗਿਸਤਾਨੀ ਹਾਈਵੇਅ 'ਤੇ ਦੌੜ ਲਗਾਓ।",
+      "kind": "wrong script corrected to Gurmukhi"
+    },
+    {
+      "language": "pa",
+      "key": "A dark high-speed runner challenge.",
+      "before": "एक अंधेरा उच्च गति रनर चुनौती",
+      "after": "ਹਨੇਰੇ ਵਿੱਚ ਤੇਜ਼ ਦੌੜ ਦੀ ਚੁਣੌਤੀ।",
+      "kind": "wrong script corrected to Gurmukhi"
     }
   ],
   "auditPending": true,
-  "auditNote": "Warning counts are from 2026-11-13 audit and are stale after 19 exact candidate text/code repairs across lo, ky, pa, am, my. Re-run full audit before revising counts; no AI requests sent."
+  "auditNote": "Partial quota-neutral script scan recomputed for changed packs lo, ky, pa, am, my after 32 exact repairs: warnings now lo=1, ky=1, pa=0, am=0, my=3. Combined warning estimate 40 across 23 languages (68 prior minus stale counts for those five, plus current counts). Full 98-pack audit remains pending; Divehi remains incomplete. No AI requests sent."
 }
