@@ -2560,5 +2560,96 @@
       "reportBuildStatus": "success"
     },
     "scope": "GitHub Pages documentation deployment only"
+  },
+  "run28CurrentVerification": {
+    "checkedAt": "2026-11-14T18:17:00Z",
+    "sourceFilesRead": [
+      "main checkpoint",
+      "candidate resume-summary",
+      "candidate resume-latest.log",
+      "main R125 workflow"
+    ],
+    "actionsSnapshot": {
+      "latest30Fetched": true,
+      "activeRunsObserved": 0,
+      "latestPages": {
+        "run": 1531,
+        "runId": 43622038352,
+        "createdAt": "2026-11-14T17:36:34Z",
+        "conclusion": "success",
+        "jobs": {
+          "build": "success",
+          "deploy": "success",
+          "reportBuildStatus": "success"
+        }
+      },
+      "latestHealth": {
+        "run": 320,
+        "runId": 43568474031,
+        "createdAt": "2026-11-14T06:53:03Z",
+        "conclusion": "success"
+      },
+      "latestR105": {
+        "run": 81,
+        "runId": 43517683421,
+        "conclusion": "success",
+        "liveAIProbes": "skipped"
+      }
+    },
+    "r125": {
+      "workflow": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "latestKnownRun": {
+        "run": 150,
+        "runId": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "resume": "skipped",
+        "audit": "success"
+      },
+      "r125InLatest30": false,
+      "candidateWritesDeferredWhileActive": true,
+      "activeR125Observed": false
+    },
+    "candidateState": {
+      "complete": 97,
+      "remaining": [
+        "dv"
+      ],
+      "structuralFailure": "english_overlap:58",
+      "published": false,
+      "linguisticCertification": false,
+      "fullAuditPending": true
+    },
+    "ai": {
+      "chat": "unknown-not-probed",
+      "translation": "unknown-not-probed",
+      "dailyFreeAiLimit": "historical blocker",
+      "googleHTTP429": "historical blocker",
+      "newQuotaRequests": 0
+    },
+    "voice": {
+      "programmaticARFR_EN": "passed historically",
+      "liveASR": "skipped",
+      "physicalDeviceCertification": false
+    },
+    "countrySafety": {
+      "countries": 248,
+      "currencyBehavior": "passed historically",
+      "weaponSale": "blocked",
+      "benignHotel": "allowed",
+      "scope": "previous limited probes; not full threat-model"
+    },
+    "checkout": {
+      "active": false,
+      "blocker": "merchant configuration absent"
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "siteCodeChanges": 0
+    }
   }
 }
