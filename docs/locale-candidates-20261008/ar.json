@@ -7,7 +7,9 @@
   "retranslatedKeys": [
     "30 days, up to 8 images, standard placement. Paid boosts are optional.",
     "Mobile data, not Wi‑Fi. Compare verified provider plans by destination, data, validity, tethering and top-up when live provider data is connected.",
-    "Useful for families, laptops, groups and non-eSIM devices. Provider availability and pricing must be verified before purchase."
+    "Useful for families, laptops, groups and non-eSIM devices. Provider availability and pricing must be verified before purchase.",
+    "Payoneer",
+    "Paystack"
   ],
   "provider": "existing+@cf/qwen/qwen3-30b-a3b-fp8",
   "translations": {
@@ -106,8 +108,8 @@
     "Optional": "اختياري",
     "PART ONE": "الجزء الأول",
     "Payments": "المدفوعات",
-    "Payoneer": "بايونير",
-    "Paystack": "مكدس الراتب",
+    "Payoneer": "Payoneer",
+    "Paystack": "Paystack",
     "Pet Care": "رعاية الحيوانات الأليفة",
     "Play Now": "العب الآن",
     "Podcasts": "البودكاست",
