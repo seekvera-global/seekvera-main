@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T19:45:00Z",
+  "checkedAt": "2026-11-14T19:48:00Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -561,9 +561,10 @@
     "edits": [
       {
         "language": "yo",
-        "exactKeys": 5,
-        "commit": "2616e03b7ad2512cbcc2b63eef75d152dd2c0ebf",
-        "scope": "Distinct Yoruba game category labels"
+        "exactKeys": 9,
+        "commit": "242379a1475bfb8b8a94d3a4561bc33ea0e66f87",
+        "scope": "Distinct Yoruba game category labels",
+        "additionalCommit": "2616e03b7ad2512cbcc2b63eef75d152dd2c0ebf"
       },
       {
         "language": "ig",
@@ -578,9 +579,10 @@
         "scope": "Distinct Zulu game category labels"
       }
     ],
-    "totalExactReplacements": 23,
-    "validation": "Read back all three packs: 1,118 keys each; sourceHash unchanged; repaired category outputs now distinct within each category set. Manual provisional strings; native review required.",
-    "warning": "This is not a full translation audit or linguistic certification."
+    "totalExactReplacements": 27,
+    "validation": "Read back yo/ig/zu: 1,118 keys each; sourceHash unchanged; all nine game category labels are distinct in each pack. Manual provisional strings; native review required.",
+    "warning": "This is not a full translation audit or linguistic certification.",
+    "scope": "27 exact category replacements across Yoruba, Igbo and Zulu; three category duplicate clusters removed; game-description clusters remain"
   },
   "readOnlyDuplicateScreen": {
     "checkedAt": "2026-11-14",
