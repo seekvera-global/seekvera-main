@@ -2179,7 +2179,42 @@
     "translationRequestsSent": 0,
     "aiQuotaUsed": 0,
     "publication": false,
-    "linguisticCertification": false
+    "linguisticCertification": false,
+    "confirmedDuplicateOutputs": [
+      {
+        "count": 12,
+        "value": "މަން މައު މައް",
+        "keys": [
+          "Kids games",
+          "Action games",
+          "Arcade games",
+          "Flying games",
+          "Puzzle games",
+          "Racing games",
+          "Sports games",
+          "Touch controls",
+          "Adventure games",
+          "Page navigation",
+          "Search marketplace",
+          "SEEKVERA quick tools"
+        ]
+      },
+      {
+        "count": 8,
+        "value": "މަޢުގެ މައްޓަކު ރައްކާ ފައި މައްޓަކު މަޢުގެ މައްޓަކު ރައްކާ ފައި",
+        "keys": [
+          "Tap matching targets quickly.",
+          "React quickly to ninja targets.",
+          "Run a prehistoric jungle trail.",
+          "A faster space paddle challenge.",
+          "A quick superbike lane challenge.",
+          "Catch candy and avoid gray blocks.",
+          "Race across a fast desert highway.",
+          "A dark high-speed runner challenge."
+        ]
+      }
+    ],
+    "qualityFinding": "Confirmed two severe repeated-output clusters in dv: 12 distinct navigation/category labels share one identical value, and 8 distinct game descriptions share one repeated nonsensical value. These are translation-quality defects beyond the 58 long-English-overlap flags; no manual Dhivehi replacements made without qualified review."
   },
   "run25R125SafetySnapshot": {
     "checkedAt": "2026-11-14T07:21:25Z",
