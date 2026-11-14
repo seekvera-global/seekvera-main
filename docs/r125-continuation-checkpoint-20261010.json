@@ -243,7 +243,7 @@
   "candidateResume": {
     "run": null,
     "checkedAt": "2026-11-14T22:46:16Z",
-    "candidateCommit": "b334305abbe46fa81ffbe0d910e52a7069074a44",
+    "candidateCommit": "eea07c7e2b763459140ee75b054f5ccfcb57db48",
     "completedCount": 97,
     "remainingCount": 1,
     "firstFailure": "dv",
@@ -386,7 +386,7 @@
       "published": false,
       "note": "64 locale packs received 86 deterministic brand-name corrections; readback confirms 1,118 keys/sourceHash. No AI quota or translation requests. R125 #150 is completed audit-only; Pages #1539 completed. No final approval."
     },
-    "candidateSummaryCommit": "b334305abbe46fa81ffbe0d910e52a7069074a44"
+    "candidateSummaryCommit": "eea07c7e2b763459140ee75b054f5ccfcb57db48"
   },
   "builderRepair": {
     "commit": "634a0d31cb571300d658bb24580bdad3cbaeb75b",
