@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T12:01:00Z",
+  "checkedAt": "2026-11-14T15:42:00Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -333,8 +333,9 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-14T14:17:00Z",
-    "candidateBranchHead": "b6af6056aae5e46ad6b87d884f02a8818ebe3c4d",
+    "checkedAt": "2026-11-14T15:42:00Z",
+    "candidateBranchHeadBeforeSummaryUpdate": "7897ad06f2e9d571cb4d321b680e076828e256b4",
+    "latestCandidatePackCommit": "e280de863bbd1e0546a5fa4e4fd3674a97db725f",
     "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
     "workflowTrigger": "workflow_dispatch only",
     "runTranslationsDefault": false,
@@ -343,94 +344,67 @@
       "id": 38971104197,
       "status": "completed",
       "conclusion": "success",
+      "createdAt": "2026-10-16T21:41:54Z",
       "resume": "skipped",
-      "audit": "success"
+      "audit": "success",
+      "auditResult": "97 complete; dv remains; resumeSucceeded=false; exitCode=not-run"
+    },
+    "previousR125RunFailure": {
+      "run": 149,
+      "id": 38970873888,
+      "status": "failure",
+      "createdAt": "2026-10-16T21:39:49Z",
+      "cause": "SyntaxError Unexpected end of input in audit-candidate-scripts.cjs while evaluating uiScriptPattern",
+      "laterRun": "R125 #150 audit succeeded"
+    },
+    "actions": {
+      "pagesScanned": 10,
+      "activeRunsObserved": 0,
+      "latestRepositoryRun": {
+        "id": 43604369351,
+        "run": 1527,
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-11-14T14:20:40Z"
+      },
+      "latestProductionHealth": {
+        "id": 43568474031,
+        "run": 320,
+        "conclusion": "success",
+        "createdAt": "2026-11-14T06:53:03Z"
+      }
     },
     "activeR125RunObserved": false,
-    "latestActions100": "zero queued/in_progress",
     "candidatePackWritesThisPass": 0,
     "translationRequestsSent": 0,
     "aiQuotaUsed": 0,
     "currentAI": "unknown-not-probed",
     "currentTranslationBackend": "unknown-not-probed",
-    "note": "Fresh GitHub Actions run list checked 2026-11-14T14:17Z; no candidate resume running. Only documentation/checkpoint writes this pass."
+    "full98PackAudit": false,
+    "linguisticCertification": false,
+    "published": false,
+    "physicalAudio": "not-certified",
+    "checkout": "inactive-pending-merchant-configuration",
+    "note": "Fresh Actions pages 1-10 scanned at 2026-11-14T15:42Z: no active runs; latest Pages #1527 succeeded. Latest R125 #150 audit-only succeeded; no translations. Only checkpoint/summary documentation writes this pass."
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-14T14:17:00Z",
-    "candidateBranchHeadBeforeSummaryUpdate": "b6af6056aae5e46ad6b87d884f02a8818ebe3c4d",
-    "latestCandidatePackCommit": "e280de863bbd1e0546a5fa4e4fd3674a97db725f",
-    "mainCheckpointCommit": "301d69daf8fb35fc5f375d1040bc765ee2eb4072",
-    "repositoryActions": {
-      "latest100Runs": "zero queued/in_progress",
-      "latestRun": {
-        "id": 43592832166,
-        "run": 1526,
-        "status": "completed",
-        "conclusion": "success",
-        "createdAt": "2026-11-14T12:02:19Z"
-      },
-      "latestProductionHealth": {
-        "id": 43568474031,
-        "run": 320,
-        "conclusion": "success"
-      },
-      "latestR105": {
-        "id": 43517683421,
-        "run": 81,
-        "conclusion": "success",
-        "liveAI": "skipped"
-      }
+    "checkedAt": "2026-11-14T15:42:00Z",
+    "candidateBranchHeadBeforeSummaryUpdate": "7897ad06f2e9d571cb4d321b680e076828e256b4",
+    "mainCheckpointCommit": "8dead439a090795c66e3ce9fcda066d6eee1659a",
+    "actions": {
+      "pagesScanned": 10,
+      "activeRunsObserved": 0,
+      "latestRun": 43604369351,
+      "latestProductionHealth": 43568474031
     },
     "r125": {
-      "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
-      "trigger": "workflow_dispatch only",
-      "runTranslationsDefault": false,
-      "latestKnownRun": {
-        "run": 150,
-        "id": 38971104197,
-        "status": "completed",
-        "conclusion": "success",
-        "resume": "skipped",
-        "audit": "success"
-      },
-      "activeRunObserved": false,
-      "candidateWritesThisPass": 0
-    },
-    "quotaSafePackChecks": {
-      "sourceCount": 1118,
-      "sourceHash": "6a1126e6a2ce5629",
-      "dv": {
-        "keys": 1118,
-        "hashMatch": true,
-        "empty": 0,
-        "duplicateGroups": 10,
-        "duplicateKeys": 36,
-        "englishOverlapFailure": 58,
-        "semanticDuplicateGroups": 2,
-        "unresolved": true
-      },
-      "am": {
-        "keys": 1118,
-        "hashMatch": true,
-        "empty": 0,
-        "duplicateGroups": 7,
-        "duplicates": "case/capitalization only after 19-key manual repair",
-        "nativeReviewPending": true
-      },
-      "my": {
-        "keys": 1118,
-        "hashMatch": true,
-        "empty": 0,
-        "duplicateGroups": 3,
-        "duplicates": "case/capitalization only after 7-key manual repair"
-      },
-      "pa": {
-        "keys": 1118,
-        "hashMatch": true,
-        "empty": 0,
-        "duplicateGroups": 7,
-        "duplicates": "case variants plus one near-identical delivery wording; native review pending"
-      }
+      "latestRun": 150,
+      "latestRunId": 38971104197,
+      "conclusion": "success",
+      "resume": "skipped",
+      "audit": "success",
+      "previousFailure": 149,
+      "activeRunObserved": false
     },
     "thisPass": {
       "candidatePackWrites": 0,
@@ -442,16 +416,24 @@
     "currentTranslationBackend": "unknown-not-probed",
     "full98PackAudit": false,
     "linguisticCertification": false,
-    "published": false,
-    "physicalAudio": "not-certified",
-    "checkout": "inactive-pending-merchant-configuration"
+    "published": false
   },
   "candidateResume": {
-    "checkedAt": "2026-11-14T12:01:00Z",
+    "checkedAt": "2026-11-14T15:42:00Z",
     "run": null,
     "activeRunObserved": false,
     "candidatePackWritesThisPass": false,
     "translationRequestsSent": 0,
-    "aiQuotaUsed": 0
+    "aiQuotaUsed": 0,
+    "latestAuditOnlyRun": {
+      "run": 150,
+      "id": 38971104197,
+      "conclusion": "success",
+      "resume": "skipped",
+      "completedCount": 97,
+      "remaining": [
+        "dv"
+      ]
+    }
   }
 }
