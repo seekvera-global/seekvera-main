@@ -230,528 +230,9 @@
   },
   "scriptWarningCount": 0,
   "scriptWarningLanguages": 0,
-  "repairsSinceAudit": [
-    {
-      "language": "lo",
-      "key": "Paystack",
-      "before": "Paysack",
-      "after": "Paystack",
-      "kind": "brand spelling"
-    },
-    {
-      "language": "ky",
-      "key": "Nearby Now",
-      "before": "Narby Now",
-      "after": "Азыр жакын жерде",
-      "kind": "typo/localized phrase"
-    },
-    {
-      "language": "pa",
-      "key": "Open matching section",
-      "before": "खोल मेलिंग खंड",
-      "after": "ਮਿਲਦੇ ਭਾਗ ਨੂੰ ਖੋਲ੍ਹੋ",
-      "kind": "wrong script corrected to Gurmukhi"
-    },
-    {
-      "language": "pa",
-      "key": "CROSS-BORDER LOGISTICS",
-      "before": "CROSSS-BORDER LOGISTICS",
-      "after": "ਸਰਹੱਦ ਪਾਰ ਲੌਜਿਸਟਿਕਸ",
-      "kind": "typo and translation"
-    },
-    {
-      "language": "pa",
-      "key": "Pop colorful balloons.",
-      "before": "रंगीन बैलून फूटो",
-      "after": "ਰੰਗੀਨ ਗੁਬਾਰੇ ਫੋੜੋ।",
-      "kind": "wrong script corrected to Gurmukhi"
-    },
-    {
-      "language": "pa",
-      "key": "High-speed night racing.",
-      "before": "उच्च गति रात्रि दौड़",
-      "after": "ਤੇਜ਼ ਰਫ਼ਤਾਰ ਰਾਤ ਦੀ ਰੇਸਿੰਗ।",
-      "kind": "wrong script corrected to Gurmukhi"
-    },
-    {
-      "language": "pa",
-      "key": "CSS source string",
-      "before": "Punjabi-localized selectors and truncated CSS",
-      "after": "exact source CSS restored",
-      "kind": "non-translatable code preservation"
-    },
-    {
-      "language": "am",
-      "key": "Open QR →",
-      "before": "QR →",
-      "after": "QR ይክፈቱ →",
-      "kind": "restored missing action"
-    },
-    {
-      "language": "am",
-      "key": "Find Wi-Fi →",
-      "before": "Wi-Fi →",
-      "after": "Wi-Fi ይፈልጉ →",
-      "kind": "restored missing action"
-    },
-    {
-      "language": "am",
-      "key": "✨ Ask SEEKVERA AI",
-      "before": "✨ SEEKVERA AI",
-      "after": "✨ SEEKVERA AIን ይጠይቁ",
-      "kind": "restored missing verb"
-    },
-    {
-      "language": "am",
-      "key": "Speak to SEEKVERA AI",
-      "before": "SEEKVERA AI",
-      "after": "ከSEEKVERA AI ጋር ይነጋገሩ",
-      "kind": "restored missing action"
-    },
-    {
-      "language": "am",
-      "key": "Share and install SEEKVERA",
-      "before": "SEEKVERA",
-      "after": "SEEKVERAን ያጋሩ እና ይጫኑ",
-      "kind": "restored missing actions"
-    },
-    {
-      "language": "am",
-      "key": "Message SEEKVERA AI",
-      "before": "መልዕክት SEEKVERA AI",
-      "after": "ለSEEKVERA AI መልዕክት ይላኩ",
-      "kind": "restored send verb"
-    },
-    {
-      "language": "am",
-      "key": "Message SEEKVERA AI…",
-      "before": "መልዕክት SEEKVERA AI…",
-      "after": "ለSEEKVERA AI መልዕክት ይላኩ…",
-      "kind": "restored send verb"
-    },
-    {
-      "language": "my",
-      "key": "Open QR →",
-      "before": "QR →",
-      "after": "QR ကိုဖွင့်ပါ →",
-      "kind": "restored missing action"
-    },
-    {
-      "language": "my",
-      "key": "Share and install SEEKVERA",
-      "before": "မျှဝေပြီး SEEKVERA",
-      "after": "မျှဝေပြီး SEEKVERA ကို ထည့်သွင်းပါ",
-      "kind": "restored missing install action"
-    },
-    {
-      "language": "my",
-      "key": "Message SEEKVERA AI",
-      "before": "SEEKVERA AI",
-      "after": "SEEKVERA AI ကို စာပို့ပါ",
-      "kind": "restored missing send action"
-    },
-    {
-      "language": "my",
-      "key": "Message SEEKVERA AI…",
-      "before": "SEEKVERA AI…",
-      "after": "SEEKVERA AI ကို စာပို့ပါ…",
-      "kind": "restored missing send action"
-    },
-    {
-      "language": "my",
-      "key": "Prohibited on SEEKVERA",
-      "before": "SEEKVERA",
-      "after": "SEEKVERA တွင် တားမြစ်ထားသည်",
-      "kind": "restored missing prohibition"
-    },
-    {
-      "language": "pa",
-      "key": "Understanding your speech…",
-      "before": "अपनी बात समझो...",
-      "after": "ਤੁਹਾਡੀ ਗੱਲ ਸਮਝੀ ਜਾ ਰਹੀ ਹੈ…",
-      "kind": "wrong script corrected to Gurmukhi"
-    },
-    {
-      "language": "pa",
-      "key": "A fast safari obstacle run.",
-      "before": "एक तेज सफारी बाधा दौड़",
-      "after": "ਤੇਜ਼ ਸਫਾਰੀ ਰੁਕਾਵਟ ਦੌੜ।",
-      "kind": "wrong script corrected to Gurmukhi"
-    },
-    {
-      "language": "pa",
-      "key": "Fly through open sky gates.",
-      "before": "खुले आकाश गेट्स में उड़ो",
-      "after": "ਖੁੱਲ੍ਹੇ ਅਸਮਾਨੀ ਦਰਵਾਜ਼ਿਆਂ ਵਿਚੋਂ ਉੱਡੋ।",
-      "kind": "wrong script corrected to Gurmukhi"
-    },
-    {
-      "language": "pa",
-      "key": "Fast robot target challenge.",
-      "before": "तेज रोबोट लक्ष्य चुनौती",
-      "after": "ਤੇਜ਼ ਰੋਬੋਟ ਨਿਸ਼ਾਨੇ ਦੀ ਚੁਣੌਤੀ।",
-      "kind": "wrong script corrected to Gurmukhi"
-    },
-    {
-      "language": "pa",
-      "key": "Survive a dense meteor field.",
-      "before": "एक घन मौसम फील्ड में जीवित रहो",
-      "after": "ਘਣੇ ਉਲਕਾ-ਖੇਤਰ ਵਿੱਚ ਬਚ ਕੇ ਰਹੋ।",
-      "kind": "wrong script corrected to Gurmukhi"
-    },
-    {
-      "language": "pa",
-      "key": "Tap matching targets quickly.",
-      "before": "तेजी से मेलिंग लक्ष्य टैप करो",
-      "after": "ਮਿਲਦੇ ਨਿਸ਼ਾਨਿਆਂ 'ਤੇ ਤੇਜ਼ੀ ਨਾਲ ਟੈਪ ਕਰੋ।",
-      "kind": "wrong script corrected to Gurmukhi"
-    },
-    {
-      "language": "pa",
-      "key": "React quickly to ninja targets.",
-      "before": "निंजा लक्ष्य के तुरंत प्रतिक्रिया करो",
-      "after": "ਨਿੰਜਾ ਨਿਸ਼ਾਨਿਆਂ 'ਤੇ ਫੁਰਤੀ ਨਾਲ ਪ੍ਰਤੀਕਿਰਿਆ ਕਰੋ।",
-      "kind": "wrong script corrected to Gurmukhi"
-    },
-    {
-      "language": "pa",
-      "key": "Run a prehistoric jungle trail.",
-      "before": "प्राचीन जंगल के रास्ते पर दौड़ो",
-      "after": "ਪ੍ਰਾਚੀਨ ਜੰਗਲੀ ਰਸਤੇ 'ਤੇ ਦੌੜੋ।",
-      "kind": "wrong script corrected to Gurmukhi"
-    },
-    {
-      "language": "pa",
-      "key": "A faster space paddle challenge.",
-      "before": "एक तेज अंतरिक्ष पैडल चुनौती",
-      "after": "ਤੇਜ਼ ਅੰਤਰਿਕਸ਼ ਪੈਡਲ ਦੀ ਚੁਣੌਤੀ।",
-      "kind": "wrong script corrected to Gurmukhi"
-    },
-    {
-      "language": "pa",
-      "key": "A quick superbike lane challenge.",
-      "before": "एक तेज सुपरबाइक लेन चुनौती",
-      "after": "ਤੇਜ਼ ਸੁਪਰਬਾਈਕ ਲੇਨ ਦੀ ਚੁਣੌਤੀ।",
-      "kind": "wrong script corrected to Gurmukhi"
-    },
-    {
-      "language": "pa",
-      "key": "Catch candy and avoid gray blocks.",
-      "before": "मिठाई पकड़ो और ग्रे ब्लॉक से बचो",
-      "after": "ਟੌਫੀਆਂ ਫੜੋ ਅਤੇ ਸਲੇਟੀ ਬਲਾਕਾਂ ਤੋਂ ਬਚੋ।",
-      "kind": "wrong script corrected to Gurmukhi"
-    },
-    {
-      "language": "pa",
-      "key": "Race across a fast desert highway.",
-      "before": "एक तेज रेगिस्तान हाईवे पर प्रतिस्पर्धा करो",
-      "after": "ਤੇਜ਼ ਰੇਗਿਸਤਾਨੀ ਹਾਈਵੇਅ 'ਤੇ ਦੌੜ ਲਗਾਓ।",
-      "kind": "wrong script corrected to Gurmukhi"
-    },
-    {
-      "language": "pa",
-      "key": "A dark high-speed runner challenge.",
-      "before": "एक अंधेरा उच्च गति रनर चुनौती",
-      "after": "ਹਨੇਰੇ ਵਿੱਚ ਤੇਜ਼ ਦੌੜ ਦੀ ਚੁਣੌਤੀ।",
-      "kind": "wrong script corrected to Gurmukhi"
-    },
-    {
-      "language": "lo",
-      "key": "R9b embedded translation deployment trigger",
-      "before": "R9b embedded trigger deployment trigger",
-      "after": "R9b ຕົວກະຕຸ້ນການນຳໃຊ້ການແປທີ່ຝັງໄວ້",
-      "kind": "localized duplicated trigger phrase"
-    },
-    {
-      "language": "my",
-      "key": "AI VISION",
-      "before": "AI Vision",
-      "after": "AI အမြင်",
-      "kind": "localized label"
-    },
-    {
-      "language": "my",
-      "key": "About SEEKVERA — SEEKVERA",
-      "before": "SEEKVERA — SEEKVERA",
-      "after": "SEEKVERA အကြောင်း — SEEKVERA",
-      "kind": "restored About label"
-    },
-    {
-      "language": "my",
-      "key": "🤝 Owner Control · Zero‑Cost‑First · Safety Gated",
-      "before": "🤝 Owner Control · Zero-Cost-First · Safety Gated",
-      "after": "🤝 ပိုင်ရှင်ထိန်းချုပ်မှု · ကုန်ကျစရိတ်မရှိမှုကို ဦးစားပေး · လုံခြုံရေးစစ်ဆေးပြီးမှ",
-      "kind": "localized governance/safety label"
-    },
-    {
-      "language": "fa",
-      "key": "Open QR →",
-      "before": "QR →",
-      "after": "QR را باز کنید →",
-      "kind": "restored missing open action"
-    },
-    {
-      "language": "kk",
-      "key": "Open QR →",
-      "before": "QR →",
-      "after": "QR-ды ашу →",
-      "kind": "restored missing open action"
-    },
-    {
-      "language": "kk",
-      "key": "Return to SEEKVERA",
-      "before": "SEEKVERA",
-      "after": "SEEKVERA-ға оралу",
-      "kind": "restored missing return action"
-    },
-    {
-      "language": "ta",
-      "key": "Open QR →",
-      "before": "QR →",
-      "after": "QR திறக்கவும் →",
-      "kind": "restored missing open action"
-    },
-    {
-      "language": "te",
-      "key": "Open QR →",
-      "before": "QR →",
-      "after": "QR తెరవండి →",
-      "kind": "restored missing open action"
-    },
-    {
-      "language": "bn",
-      "key": "Message SEEKVERA AI…",
-      "before": "SEEKVERA AI…",
-      "after": "SEEKVERA AI-কে বার্তা পাঠান…",
-      "kind": "restored missing send action"
-    },
-    {
-      "language": "hi",
-      "key": "SEEKVERA —",
-      "before": "SEEKVERA—",
-      "after": "SEEKVERA —",
-      "kind": "restored punctuation spacing"
-    },
-    {
-      "language": "zh",
-      "key": "© SEEKVERA ·",
-      "before": "© SEEKVERA·",
-      "after": "© SEEKVERA ·",
-      "kind": "restored punctuation spacing"
-    },
-    {
-      "language": "mn",
-      "key": "Message SEEKVERA AI…",
-      "before": "SEEKVERA AI…",
-      "after": "SEEKVERA AI-д мессеж бичих…",
-      "kind": "restored missing message action"
-    },
-    {
-      "language": "ne",
-      "key": "SEEKVERA • JUNGLE SURVIVOR",
-      "before": "SEEKVERA • JUNGLE Survivor",
-      "after": "SEEKVERA • जङ्गलमा बाँच्ने",
-      "kind": "localized mixed English label"
-    },
-    {
-      "language": "ur",
-      "key": "Search with SEEKVERA",
-      "before": "SEKVERA کے ساتھ تلاش کریں",
-      "after": "SEEKVERA کے ساتھ تلاش کریں",
-      "kind": "brand typo correction"
-    },
-    {
-      "language": "ur",
-      "key": "REAL 3D BUILD",
-      "before": "Real 3D BUILD",
-      "after": "حقیقی 3D تعمیر",
-      "kind": "localized label"
-    },
-    {
-      "language": "el",
-      "key": "AI Deal Agent",
-      "before": "Agent Deal AI",
-      "after": "Πράκτορας συμφωνιών AI",
-      "kind": "corrected word order"
-    },
-    {
-      "language": "he",
-      "key": "📰 SEEKVERA NEWS & MEDIA",
-      "before": "📰 SEEKVERA NEWS & Media",
-      "after": "📰 חדשות ומדיה של SEEKVERA",
-      "kind": "localized section label"
-    },
-    {
-      "language": "si",
-      "key": "SEEKVERA finder",
-      "before": "SEEKVERA Finder",
-      "after": "SEEKVERA සොයන්නා",
-      "kind": "localized title"
-    },
-    {
-      "language": "si",
-      "key": "SEEKVERA • SURVIVAL",
-      "before": "SEEKVERA • Survival",
-      "after": "SEEKVERA • දිවි ගලවා ගැනීම",
-      "kind": "localized title"
-    },
-    {
-      "language": "si",
-      "key": "SEEKVERA • JUNGLE SURVIVOR",
-      "before": "SEEKVERA • JUNGLE Survivor",
-      "after": "SEEKVERA • කැලෑවේ දිවි ගලවාගන්නා",
-      "kind": "localized title"
-    },
-    {
-      "language": "ps",
-      "key": "SEEKVERA —",
-      "before": "SEEKVERA --",
-      "after": "SEEKVERA —",
-      "kind": "punctuation restored"
-    },
-    {
-      "language": "ps",
-      "key": "Zero‑Cost Mode",
-      "before": "Zero‑Cost mode",
-      "after": "د صفر لګښت حالت",
-      "kind": "localized mode label"
-    },
-    {
-      "language": "fa",
-      "key": "📰 SEEKVERA NEWS & MEDIA",
-      "before": "📰 SEEKVERA News & MEDIA",
-      "after": "📰 اخبار و رسانه‌های SEEKVERA",
-      "kind": "localized mixed-language section label"
-    },
-    {
-      "language": "tg",
-      "key": "📰 SEEKVERA NEWS & MEDIA",
-      "before": "📰 SEEKVERA News & MEDIA",
-      "after": "📰 Хабарҳо ва расонаҳои SEEKVERA",
-      "kind": "localized mixed-language section label"
-    },
-    {
-      "language": "ka",
-      "key": "SEEKVERA finder",
-      "before": "SEEKVERA Finder",
-      "after": "SEEKVERA-ის მაძიებელი",
-      "kind": "localized section label"
-    },
-    {
-      "language": "mk",
-      "key": "SEEKVERA GUIDE",
-      "before": "ВОДИЧ ЗА БАРАЈТЕ НА ВИДЕО",
-      "after": "Водич за SEEKVERA",
-      "kind": "corrected malformed guide translation"
-    },
-    {
-      "language": "ky",
-      "key": "SEEKVERA GUIDE",
-      "before": "SEEKVERA GUIDE",
-      "after": "SEEKVERA жол көрсөткүчү",
-      "kind": "localized guide label"
-    },
-    {
-      "language": "dz",
-      "key": "Play inside SEEKVERA",
-      "before": "SEEKVERA",
-      "after": "SEEKVERA ནང་ནི་རྩེད་འབད།",
-      "kind": "restored missing play action"
-    },
-    {
-      "language": "dz",
-      "key": "Search with SEEKVERA",
-      "before": "SEEKVERA",
-      "after": "SEEKVERA གིས་འཚོལ།",
-      "kind": "restored missing search action"
-    },
-    {
-      "language": "dz",
-      "key": "Share and install SEEKVERA",
-      "before": "SEEKVERA",
-      "after": "SEEKVERA བགོ་བཤའ་རྐྱབ་ནི་དང་བཙུགས།",
-      "kind": "restored missing share/install actions"
-    },
-    {
-      "language": "gu",
-      "key": "SEEKVERA GUIDE",
-      "before": "SEEKVERA Guide",
-      "after": "સીકવેરા માર્ગદર્શિકા",
-      "kind": "localized Gujarati guide label"
-    },
-    {
-      "language": "ur",
-      "key": "2026-09-26 · R74",
-      "before": "localized day-first date token",
-      "after": "2026-09-26 · R74",
-      "kind": "normalized stable ISO date token; release marker preserved"
-    },
-    {
-      "language": "fa",
-      "key": "2026-09-26 · R74",
-      "before": "localized day-first date token",
-      "after": "2026-09-26 · R74",
-      "kind": "normalized stable ISO date token; release marker preserved"
-    },
-    {
-      "language": "el",
-      "key": "2026-09-26 · R74",
-      "before": "localized day-first date token",
-      "after": "2026-09-26 · R74",
-      "kind": "normalized stable ISO date token; release marker preserved"
-    },
-    {
-      "language": "uk",
-      "key": "2026-09-26 · R74",
-      "before": "localized day-first date token",
-      "after": "2026-09-26 · R74",
-      "kind": "normalized stable ISO date token; release marker preserved"
-    },
-    {
-      "language": "mk",
-      "key": "2026-09-26 · R74",
-      "before": "localized day-first date token",
-      "after": "2026-09-26 · R74",
-      "kind": "normalized stable ISO date token; release marker preserved"
-    },
-    {
-      "language": "kk",
-      "key": "2026-09-26 · R74",
-      "before": "localized day-first date token",
-      "after": "2026-09-26 · R74",
-      "kind": "normalized stable ISO date token; release marker preserved"
-    },
-    {
-      "language": "ky",
-      "key": "2026-09-26 · R74",
-      "before": "localized day-first date token",
-      "after": "2026-09-26 · R74",
-      "kind": "normalized stable ISO date token; release marker preserved"
-    },
-    {
-      "language": "tg",
-      "key": "2026-09-26 · R74",
-      "before": "localized day-first date token",
-      "after": "2026-09-26 · R74",
-      "kind": "normalized stable ISO date token; release marker preserved"
-    },
-    {
-      "language": "gu",
-      "key": "2026-09-26 · R74",
-      "before": "localized day-first date token",
-      "after": "2026-09-26 · R74",
-      "kind": "normalized stable ISO date token; release marker preserved"
-    },
-    {
-      "language": "ps",
-      "key": "2026-09-26 · R74",
-      "before": "localized day-first date token",
-      "after": "2026-09-26 · R74",
-      "kind": "normalized stable ISO date token; release marker preserved"
-    }
-  ],
+  "repairsSinceAudit": 81,
   "auditPending": true,
-  "auditNote": "Partial quota-neutral warning recomputation after 44 deterministic/manual exact repairs; full 98-pack audit still pending. This pass removed 8 specific missing-action/punctuation warnings in fa, kk, ta, te, bn, hi and zh. No translation API or AI requests were sent. Quota-neutral deterministic repairs on 2026-11-14: fixed 11 exact strings in mn/ne/ur/el/he/si/ps; updated known script-warning entries (hi/he/si/mn/ne/zh cleared; ur/el/ps retain date-format review). No translation API or AI requests sent; full 98-pack audit remains pending. Quota-neutral deterministic repairs 2026-11-14: corrected 8 exact strings across fa/tg/ka/mk/ky/dz; Dzongkha had 3 action labels reduced to brand-only text. Full 98-pack audit and native-language review remain pending; no translation API or AI requests. Quota-neutral 2026-11-14 repair: Gujarati SEEKVERA GUIDE localized; readback verified 1,118 keys. Warning map now 10 date/presentation warnings across 10 languages; full audit remains pending. 2026-11-14 06:00Z: normalized the exact R74 date token in ur/fa/el/uk/mk/kk/ky/tg/gu/ps to the stable source ISO form; each pack read back at 1,118 keys and matching sourceHash. Partial known date/presentation warning map now 0/0. This is not a full 98-pack audit or linguistic certification.",
+  "auditNote": "Partial quota-neutral warning recomputation after 44 deterministic/manual exact repairs; full 98-pack audit still pending. This pass removed 8 specific missing-action/punctuation warnings in fa, kk, ta, te, bn, hi and zh. No translation API or AI requests were sent. Quota-neutral deterministic repairs on 2026-11-14: fixed 11 exact strings in mn/ne/ur/el/he/si/ps; updated known script-warning entries (hi/he/si/mn/ne/zh cleared; ur/el/ps retain date-format review). No translation API or AI requests sent; full 98-pack audit remains pending. Quota-neutral deterministic repairs 2026-11-14: corrected 8 exact strings across fa/tg/ka/mk/ky/dz; Dzongkha had 3 action labels reduced to brand-only text. Full 98-pack audit and native-language review remain pending; no translation API or AI requests. Quota-neutral 2026-11-14 repair: Gujarati SEEKVERA GUIDE localized; readback verified 1,118 keys. Warning map now 10 date/presentation warnings across 10 languages; full audit remains pending. 2026-11-14 06:00Z: normalized the exact R74 date token in ur/fa/el/uk/mk/kk/ky/tg/gu/ps to the stable source ISO form; each pack read back at 1,118 keys and matching sourceHash. Partial known date/presentation warning map now 0/0. This is not a full 98-pack audit or linguistic certification. 2026-11-14 09:30Z: quota-neutral manual Myanmar repair: corrected Action/Arcade/Puzzle/Adventure game labels, Chinese language vs China, and two distinct game descriptions that had identical Burmese output. Pack read back at 1,118 keys; source unchanged; translationRequestsSent=0; aiQuotaUsed=0. Partial duplicate scan of Myanmar now shows only expected case variants (AI DEAL AGENT/AI Deal Agent, All Categories/All categories, Worldwide Tourism/Worldwide tourism); full 98-pack audit and native review remain pending.",
   "structuralVerification": {
     "checkedAt": "2026-11-14T04:48:00Z",
     "checkedLanguages": 97,
@@ -788,28 +269,55 @@
     }
   },
   "latestQuotaNeutralRepair": {
-    "checkedAt": "2026-11-14T06:00:00Z",
-    "branchHead": "50f397690baf59138afdb5d12c76b362de3901d1",
+    "checkedAt": "2026-11-14T09:30:00Z",
+    "branch": "work/r125-locale-candidates-20261008",
+    "packCommit": "ba309c396ecd667f3d7d0f4818b3013305c2488a",
+    "language": "my",
+    "exactEdits": 7,
     "files": [
-      "ur.json",
-      "fa.json",
-      "el.json",
-      "uk.json",
-      "mk.json",
-      "kk.json",
-      "ky.json",
-      "tg.json",
-      "gu.json",
-      "ps.json"
+      "my.json"
     ],
-    "exactEdits": 10,
+    "sourceUnchanged": true,
     "keysPerPack": 1118,
-    "sourceHash": "6a1126e6a2ce5629",
     "translationRequestsSent": 0,
     "aiQuotaUsed": 0,
     "publication": false,
     "linguisticCertification": false,
-    "validation": "All 10 exact date tokens normalized and read back; no source or key-count change."
+    "validation": "Read back 1,118 translation keys; corrected 4 game category labels, Chinese language label, and 2 game descriptions. Duplicate scan >=2 now leaves only case-variant labels.",
+    "fullAuditPending": true
   },
-  "repairs": 74
+  "repairs": 81,
+  "semanticDuplicateFindings": {
+    "checkedAt": "2026-11-14T09:30:00Z",
+    "scope": [
+      "am",
+      "dv",
+      "my"
+    ],
+    "findings": [
+      {
+        "language": "am",
+        "count": 10,
+        "groupCount": 1,
+        "status": "unresolved",
+        "note": "10 distinct game descriptions share one Amharic translation; no unverified edits made."
+      },
+      {
+        "language": "dv",
+        "count": 20,
+        "groupCount": 2,
+        "status": "unresolved",
+        "note": "12 category/section labels share one output; 8 game descriptions share another output. Translation backend remains blocked."
+      },
+      {
+        "language": "my",
+        "count": 0,
+        "groupCount": 0,
+        "status": "repaired_partial",
+        "note": "7 manual corrections removed 2 semantic duplicate groups; 3 remaining duplicate groups are capitalization variants."
+      }
+    ],
+    "full98PackAudit": false,
+    "linguisticCertification": false
+  }
 }
