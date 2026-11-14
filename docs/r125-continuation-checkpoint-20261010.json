@@ -1805,46 +1805,141 @@
     "safety": "Only exact reserved placeholder value may be replaced; other translations untouched; no AI or quota call"
   },
   "currentVerification": {
-    "checkedAt": "2026-11-14T01:44:27.946Z",
-    "latestR105": {
-      "run": 81,
-      "runId": 43517683421,
-      "status": "completed",
-      "conclusion": "success",
-      "html": "https://github.com/seekvera-global/seekvera-main/actions/runs/43517683421",
-      "liveAiProbe": "skipped by policy; no AI generation request sent",
-      "checks": [
-        "deterministic reserved-ID repair regression passed",
-        "98/98 locale names resolved",
-        "country change Iceland passed",
-        "prohibited weapon request blocked",
-        "quota boundary tests passed",
-        "API health and AI binding passed"
-      ]
+    "checkedAt": "2026-11-14T12:01:00Z",
+    "actions": {
+      "latest100RunsChecked": true,
+      "queuedOrInProgress": 0,
+      "scope": "Repository Actions API latest 100 runs; all returned completed",
+      "latestPages": {
+        "run": 1525,
+        "runId": 43590760366,
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-11-14T11:35:31Z"
+      },
+      "latestProductionHealth": {
+        "run": 320,
+        "runId": 43568474031,
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-11-14T06:53:03Z",
+        "scope": "Official homepage, API health, robots/sitemap canonical, 18 named product pages HTTP 200; not all-language or full transaction audit"
+      }
     },
-    "latestPages": {
-      "run": 1510,
-      "runId": 43536698745,
-      "status": "completed",
-      "conclusion": "success",
-      "headSha": "6f688ccae08a02dbcd4789754541f686724c532f"
+    "candidateResume": {
+      "run": null,
+      "checkedAt": "2026-11-14T12:01:00Z",
+      "candidateCommit": "e280de863bbd1e0546a5fa4e4fd3674a97db725f",
+      "completedCount": 97,
+      "remainingCount": 1,
+      "firstFailure": "dv",
+      "failureReason": "english_overlap:58",
+      "latestProviderBlocker": "HTTP 503 all_translation_backends_unavailable; previous Google HTTP429 and daily_free_ai_limit remain historical blockers",
+      "quotaStillBlocked": true,
+      "published": false,
+      "linguisticAccuracyCertified": false,
+      "readyForLinguisticReview": false,
+      "note": "This run deterministically restored the immutable identifier in 73 locale packs (ar was already correct), preserving all other raw file bytes. Branch summary now reflects 68 script warnings across 25 languages; Divehi remains structurally incomplete.; 2026-11-14 deterministic repairs: Lao Paystack brand spelling restored; Kyrgyz 'Nearby Now' typo corrected; Punjabi wrong Devanagari entries corrected to Gurmukhi, CROSS-BORDER typo corrected, zero-cost MVP sentence repaired, and translated CSS restored byte-for-byte to source. All edits limited to seven known strings in lo/ky/pa; source untouched; full audit not yet rerun.; seven deterministic locale repairs were committed on 2026-11-14 in lo/ky/pa. Candidate warning totals remain at last audit (68/25) pending a full rerun; no translation quota consumed.; extended deterministic repairs to 19 exact strings across lo/ky/pa/am/my, restoring missing action verbs in Amharic/Burmese and wrong-script Punjabi entries; full audit pending.; 2026-11-14: corrected 13 additional Punjabi UI/game strings from Devanagari into Gurmukhi; verified all 13 use Gurmukhi and pa retains 1,118 keys. Quota-neutral script predicate recomputed only for lo/ky/pa/am/my: warning count 68→40 (languages 25→23); full 98-pack audit still pending.; additional 4 quota-neutral fixes in Lao/Burmese (embedded trigger phrase and 3 UI labels); partial script scan now shows 36 warnings/21 languages, with touched-pack counts lo=0, ky=1 date-format review, pa=0, am=0, my=0. Full audit pending. 2026-11-14 05:27Z: repaired 8 exact labels/actions in fa/tg/ka/mk/ky/dz; all six packs re-read at 1,118 keys. Candidate summary reconciled script-warning map to 11 warnings across 10 languages. Full audit still pending; no quota use. 2026-11-14 05:30Z: localized Gujarati SEEKVERA GUIDE; 1,118 keys preserved. Partial warning map reconciled to 10 remaining date/presentation warnings across 10 languages. Full audit and native review pending. 2026-11-14 06:00Z: normalized the 10 known date/presentation tokens across ur/fa/el/uk/mk/kk/ky/tg/gu/ps; each pack remains 1,118 keys and sourceHash unchanged. Partial warning map 10→0; full 98-pack audit remains pending. 2026-11-14 09:30Z: manual quota-neutral Myanmar repair committed (7 exact strings); readback 1,118 keys. Amharic (10 repeated descriptions) and Divehi (20 repeated outputs in 2 groups) remain flagged; no AI/translation requests. 2026-11-14 11:35Z: Amharic 19-key quota-neutral manual repair committed and read back; duplicate 10-game-description cluster removed, nine category labels corrected. Pack has 1,118 keys and sourceHash unchanged. Native review/full audit pending.",
+      "quotaStatusCurrent": "unknown-not-probed",
+      "knownDailyFreeAiLimitBlocker": true,
+      "repairBatch20261114": {
+        "summaryCommit": "eb9325e93d7ff0b573969b2b5dffe579f6ab1049",
+        "latestCandidateCommit": "eb9325e93d7ff0b573969b2b5dffe579f6ab1049",
+        "packCommits": {
+          "pa": "d623ed12a5900a78e2ef49d053e19de1ab8d016d",
+          "lo": "3bc2a9c37d339a36da4a6a9de30edafa73b8fbc3",
+          "my": "6166f490414ab404ca4b4f66fc2635f314ef8bcc"
+        },
+        "repairs": 44,
+        "files": [
+          "lo.json",
+          "ky.json",
+          "pa.json",
+          "am.json",
+          "my.json",
+          "fa.json",
+          "kk.json",
+          "ta.json",
+          "te.json",
+          "bn.json",
+          "hi.json",
+          "zh.json"
+        ],
+        "allPacksStill1118Keys": true,
+        "sourceUnchanged": true,
+        "translationRequests": 0,
+        "aiQuotaUsed": 0,
+        "linguisticCertification": false
+      },
+      "auditPending": true,
+      "scriptWarningCount": 0,
+      "scriptWarningLanguages": 0,
+      "summaryCommit": "f5b674447def79d3e6cd53de339550ef52cf31b8",
+      "repairs": 81,
+      "lastQuotaNeutralRepair": {
+        "checkedAt": "2026-11-14T03:07:00Z",
+        "packCommits": {
+          "mn": "8ca74075ea2279d5974f9e0055bf3a5f63116931",
+          "ne": "97125eadf32dccc6f38fe000d7d57f74b08b93d6",
+          "ur": "f36f87b19a8f08ebf91edfe8b21fbd3a936ba1f1",
+          "el": "19f3aafa7261e5b59065d001068735884f87119f",
+          "he": "92a65625d7c77e4440988e664ce839c37c8dfd83",
+          "si": "b8db7ca042730cfc3b1b43e23f3cec214f19779a",
+          "ps": "fb4ec51551bd552982c4392b6fd13349e227e145"
+        },
+        "files": [
+          "mn.json",
+          "ne.json",
+          "ur.json",
+          "el.json",
+          "he.json",
+          "si.json",
+          "ps.json"
+        ],
+        "exactEdits": 11,
+        "sourceUnchanged": true,
+        "keysPerPack": 1118,
+        "translationRequestsSent": 0,
+        "aiQuotaUsed": 0,
+        "publication": false,
+        "linguisticCertification": false,
+        "validation": "Fetched and re-read each edited pack; all retain 1,118 translation keys. Summary warning map updated only for touched known entries; full audit remains pending."
+      },
+      "structuralVerification": {
+        "checkedAt": "2026-11-14T04:48:00Z",
+        "languages": 97,
+        "keysPerPack": 1118,
+        "sourceHash": "6a1126e6a2ce5629",
+        "missingKeys": 0,
+        "extraKeys": 0,
+        "qualityCertification": false
+      },
+      "latestQuotaNeutralRepair": {
+        "checkedAt": "2026-11-14T11:35:00Z",
+        "language": "am",
+        "packCommit": "e280de863bbd1e0546a5fa4e4fd3674a97db725f",
+        "exactEdits": 19,
+        "keysPerPack": 1118,
+        "sourceUnchanged": true,
+        "translationRequestsSent": 0,
+        "aiQuotaUsed": 0,
+        "linguisticCertification": false
+      },
+      "workflowTrigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "activeRunObserved": false,
+      "candidatePackWritesThisPass": false,
+      "translationRequestsSent": 0,
+      "aiQuotaUsed": 0,
+      "reason": "Fresh repository Actions latest-100 snapshot contains no queued/in-progress run. No R125 dispatch was made; no candidate pack writes this pass."
     },
-    "latestHealth": {
-      "run": 319,
-      "runId": 43496909277,
-      "conclusion": "success"
+    "currentAIAndTranslation": {
+      "checkedAt": "2026-11-14T12:01:00Z",
+      "aiChat": "unknown-not-probed",
+      "translationBackend": "unknown-not-probed",
+      "quota": "not queried; daily_free_ai_limit remains historical blocker; no Google HTTP429 retry or quota bypass"
     },
-    "latestAudio": {
-      "run": 64,
-      "runId": 43456938311,
-      "conclusion": "success",
-      "physicalDeviceCertified": false
-    },
-    "currentAIAvailability": "unknown-currently; no live generation probe this run",
-    "translationQuota": "not probed; daily_free_ai_limit remains historically observed; Google HTTP429 not retried",
-    "all98Structural": "97 complete, dv remains; 13 Punjabi strings repaired to Gurmukhi; partial script scan 40/23, full audit pending",
-    "countryCurrencySafety": "latest R105 #80 succeeded; Iceland country action, weapon listing blocked, quota boundaries passed",
-    "checkoutActive": false
+    "lastCycleSummary": "Fresh Actions snapshot: 0 active among latest 100. Pages #1525 and official production health #320 succeeded. No candidate pack edits, translation calls, or AI quota use."
   },
   "candidateAudit": {
     "completedCount": 97,
