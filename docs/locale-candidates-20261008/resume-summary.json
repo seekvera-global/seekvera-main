@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T01:43:56.517Z",
+  "checkedAt": "2026-11-14T01:44:56.274Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -353,38 +353,9 @@
       ]
     },
     "lo": {
-      "count": 1,
-      "sources": [
-        "R9b embedded translation deployment trigger"
-      ],
-      "examples": [
-        {
-          "source": "R9b embedded translation deployment trigger",
-          "value": "R9b embedded trigger deployment trigger"
-        }
-      ]
-    },
-    "my": {
-      "count": 3,
-      "sources": [
-        "AI VISION",
-        "About SEEKVERA — SEEKVERA",
-        "🤝 Owner Control · Zero‑Cost‑First · Safety Gated"
-      ],
-      "examples": [
-        {
-          "source": "AI VISION",
-          "value": "AI Vision"
-        },
-        {
-          "source": "About SEEKVERA — SEEKVERA",
-          "value": "SEEKVERA — SEEKVERA"
-        },
-        {
-          "source": "🤝 Owner Control · Zero‑Cost‑First · Safety Gated",
-          "value": "🤝 Owner Control · Zero-Cost-First · Safety Gated"
-        }
-      ]
+      "count": 0,
+      "sources": [],
+      "examples": []
     },
     "mn": {
       "count": 1,
@@ -494,8 +465,8 @@
     "linguisticCertification": false,
     "validation": "Git compare confirms 73 locale files each have exactly one line changed (one replacement); five sampled packs retain 1,118 keys and exact immutable value."
   },
-  "scriptWarningCount": 40,
-  "scriptWarningLanguages": 23,
+  "scriptWarningCount": 36,
+  "scriptWarningLanguages": 21,
   "repairsSinceAudit": [
     {
       "language": "lo",
@@ -720,8 +691,36 @@
       "before": "एक अंधेरा उच्च गति रनर चुनौती",
       "after": "ਹਨੇਰੇ ਵਿੱਚ ਤੇਜ਼ ਦੌੜ ਦੀ ਚੁਣੌਤੀ।",
       "kind": "wrong script corrected to Gurmukhi"
+    },
+    {
+      "language": "lo",
+      "key": "R9b embedded translation deployment trigger",
+      "before": "R9b embedded trigger deployment trigger",
+      "after": "R9b ຕົວກະຕຸ້ນການນຳໃຊ້ການແປທີ່ຝັງໄວ້",
+      "kind": "localized duplicated trigger phrase"
+    },
+    {
+      "language": "my",
+      "key": "AI VISION",
+      "before": "AI Vision",
+      "after": "AI အမြင်",
+      "kind": "localized label"
+    },
+    {
+      "language": "my",
+      "key": "About SEEKVERA — SEEKVERA",
+      "before": "SEEKVERA — SEEKVERA",
+      "after": "SEEKVERA အကြောင်း — SEEKVERA",
+      "kind": "restored About label"
+    },
+    {
+      "language": "my",
+      "key": "🤝 Owner Control · Zero‑Cost‑First · Safety Gated",
+      "before": "🤝 Owner Control · Zero-Cost-First · Safety Gated",
+      "after": "🤝 ပိုင်ရှင်ထိန်းချုပ်မှု · ကုန်ကျစရိတ်မရှိမှုကို ဦးစားပေး · လုံခြုံရေးစစ်ဆေးပြီးမှ",
+      "kind": "localized governance/safety label"
     }
   ],
   "auditPending": true,
-  "auditNote": "Partial quota-neutral script scan recomputed for changed packs lo, ky, pa, am, my after 32 exact repairs: warnings now lo=1, ky=1, pa=0, am=0, my=3. Combined warning estimate 40 across 23 languages (68 prior minus stale counts for those five, plus current counts). Full 98-pack audit remains pending; Divehi remains incomplete. No AI requests sent."
+  "auditNote": "Partial quota-neutral script scan recomputed for changed packs lo, ky, pa, am, my after 36 exact repairs: current touched-pack warnings lo=0, ky=1 (date-format review), pa=0, am=0, my=0. Combined 36 warnings across 21 languages (68 prior minus old touched-pack counts, plus current). This is not a full 98-pack audit; Divehi remains incomplete. No AI requests sent."
 }
