@@ -2702,7 +2702,7 @@
     "validation": "Read-back verified; provisional manual Hausa UI terms; native review required."
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-14T20:15:00Z",
+    "checkedAt": "2026-11-14T20:20:00Z",
     "actions": {
       "latestR125Known": 150,
       "r125RunId": 38971104197,
@@ -2723,8 +2723,8 @@
       "explicitTranslationOptInRequired": true
     },
     "thisPass": {
-      "candidatePackWrites": 1,
-      "exactManualReplacements": 10,
+      "candidatePackWrites": 2,
+      "exactManualReplacements": 18,
       "translationRequests": 0,
       "aiQuotaUsed": 0
     },
@@ -2733,6 +2733,45 @@
     "full98PackAudit": false,
     "linguisticCertification": false,
     "published": false,
-    "note": "R125 #150 job/steps fetched and verified: translation resume skipped; saved-candidate audit passed. Pages #1535 build/report/deploy jobs confirmed success. No live AI/quota probe."
+    "note": "R125 #150 job/steps fetched and verified: translation resume skipped; saved-candidate audit passed. Pages #1535 build/report/deploy jobs confirmed success. No live AI/quota probe.",
+    "latestPages": {
+      "run": 1535,
+      "id": 43633978266,
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "documentation deployment only"
+    },
+    "latestR125": {
+      "run": 150,
+      "id": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "resume": "skipped",
+      "audit": "success",
+      "verifiedJobSteps": true
+    }
+  },
+  "latestQuotaNeutralManualBatch": {
+    "checkedAt": "2026-11-14T20:20:00Z",
+    "branch": "work/r125-locale-candidates-20261008",
+    "packs": {
+      "ha": {
+        "commit": "d30dd8524843765c5f664a63ab9183886ced5f39",
+        "exactEdits": 10
+      },
+      "sm": {
+        "commit": "be40c31533574fec8de144eba9e7836aebcfddac",
+        "exactEdits": 8
+      }
+    },
+    "totalExactEdits": 18,
+    "keysPerPack": 1118,
+    "sourceHash": "6a1126e6a2ce5629",
+    "sourceUnchanged": true,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "publication": false,
+    "linguisticCertification": false,
+    "readback": "Both packs fetched after commit; 7 distinct game category values each; Paystack brand preserved; native review pending."
   }
 }
