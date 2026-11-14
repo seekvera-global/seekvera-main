@@ -147,7 +147,8 @@
     "🛡️ Games are self-contained SEEKVERA mini games. No stranger chat, gambling, paid loot boxes or external ad network is used.",
     "🛡️ SEEKVERA Safety Gate · AI text + AI Vision + automatic review",
     "Payoneer",
-    "Paystack"
+    "Paystack",
+    "WhatsApp"
   ],
   "provider": "existing+@cf/google/gemma-4-26b-a4b-it",
   "translations": {
@@ -259,7 +260,7 @@
     "Software": "Dilo Tse Di Ikomosang",
     "THE ROAD": "ROAD",
     "Trending": "Go Dira Dilo ka Tsela E e Sa Tshwanelang",
-    "WhatsApp": "SeApp",
+    "WhatsApp": "WhatsApp",
     "YOU MADE": "O NE O ATLHAGA",
     "● ACTION": "● GO ATLHAGA",
     "● Online": "● Internet",
