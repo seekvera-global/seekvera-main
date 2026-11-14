@@ -333,59 +333,49 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-14T15:42:00Z",
-    "candidateBranchHeadBeforeSummaryUpdate": "7897ad06f2e9d571cb4d321b680e076828e256b4",
-    "latestCandidatePackCommit": "e280de863bbd1e0546a5fa4e4fd3674a97db725f",
-    "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
-    "workflowTrigger": "workflow_dispatch only",
-    "runTranslationsDefault": false,
-    "latestR125Run": {
-      "run": 150,
-      "id": 38971104197,
-      "status": "completed",
-      "conclusion": "success",
-      "createdAt": "2026-10-16T21:41:54Z",
-      "resume": "skipped",
-      "audit": "success",
-      "auditResult": "97 complete; dv remains; resumeSucceeded=false; exitCode=not-run"
-    },
-    "previousR125RunFailure": {
-      "run": 149,
-      "id": 38970873888,
-      "status": "failure",
-      "createdAt": "2026-10-16T21:39:49Z",
-      "cause": "SyntaxError Unexpected end of input in audit-candidate-scripts.cjs while evaluating uiScriptPattern",
-      "laterRun": "R125 #150 audit succeeded"
-    },
+    "checkedAt": "2026-11-14T16:57:00Z",
     "actions": {
-      "pagesScanned": 10,
+      "latest100Fetched": true,
       "activeRunsObserved": 0,
       "latestRepositoryRun": {
-        "id": 43604369351,
-        "run": 1527,
+        "run": 1528,
+        "id": 43611755514,
         "status": "completed",
         "conclusion": "success",
-        "createdAt": "2026-11-14T14:20:40Z"
-      },
-      "latestProductionHealth": {
-        "id": 43568474031,
-        "run": 320,
-        "conclusion": "success",
-        "createdAt": "2026-11-14T06:53:03Z"
+        "createdAt": "2026-11-14T15:44:05Z"
       }
     },
-    "activeR125RunObserved": false,
-    "candidatePackWritesThisPass": 0,
-    "translationRequestsSent": 0,
-    "aiQuotaUsed": 0,
+    "workflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "pauseCommit": "303f63e70cd03c2ec62abd580bfd182e50c6ab2f",
+      "currentTrigger": "workflow_dispatch only",
+      "scheduleAndPushTriggersRemoved": true,
+      "runTranslationsDefault": false,
+      "explicitTranslationOptInRequired": true
+    },
+    "latestR125": {
+      "run": 150,
+      "id": 38971104197,
+      "createdAt": "2026-10-16T21:41:54Z",
+      "status": "completed",
+      "conclusion": "success",
+      "resume": "skipped",
+      "audit": "success",
+      "candidateCount": 97,
+      "remaining": [
+        "dv"
+      ],
+      "reason": "HTTP 503/all_translation_backends_unavailable; daily_free_ai_limit historically exhausted; Google HTTP429 prior"
+    },
     "currentAI": "unknown-not-probed",
     "currentTranslationBackend": "unknown-not-probed",
+    "candidateWritesThisPass": 0,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
     "full98PackAudit": false,
     "linguisticCertification": false,
     "published": false,
-    "physicalAudio": "not-certified",
-    "checkout": "inactive-pending-merchant-configuration",
-    "note": "Fresh Actions pages 1-10 scanned at 2026-11-14T15:42Z: no active runs; latest Pages #1527 succeeded. Latest R125 #150 audit-only succeeded; no translations. Only checkpoint/summary documentation writes this pass."
+    "note": "Fresh Actions check at 16:57 UTC; no active run. Workflow can resume translations only on manual dispatch with run_translations=true. No live quota probe."
   },
   "latestContinuationVerification": {
     "checkedAt": "2026-11-14T15:42:00Z",
