@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T17:37:00Z",
+  "checkedAt": "2026-11-14T19:45:00Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -534,8 +534,8 @@
     }
   },
   "full98CoverageAudit": {
-    "checkedAt": "2026-11-14T18:17:00Z",
-    "method": "Read-only direct GitHub file audit: each of 98 manifest language packs compared against candidate source.json",
+    "checkedAt": "2026-11-14",
+    "method": "Read-only direct GitHub pack fetch and source-key comparison across all 98 manifest languages; three repaired packs re-read after edits",
     "checkedLanguages": 98,
     "sourceCount": 1118,
     "sourceHash": "6a1126e6a2ce5629",
@@ -545,9 +545,73 @@
     "extraKeys": 0,
     "emptyValues": 0,
     "result": "PASS key/coverage integrity for all 98 packs",
-    "qualityGate": "97/98 candidate audit complete; dv still fails english_overlap:58 and has severe duplicate-output groups",
-    "scope": "Structural coverage only; not translation accuracy, script-warning/full candidate audit, native review, UI end-to-end or publication",
+    "qualityGate": "97/98 candidate audit complete; dv still fails english_overlap:58; duplicate-output clusters also found in multiple other languages",
+    "scope": "Structural coverage only; duplicate screening is heuristic; not native review, full script audit, UI end-to-end or publication",
     "translationRequestsSent": 0,
     "aiQuotaUsed": 0
+  },
+  "manualDuplicateRepair": {
+    "checkedAt": "2026-11-14",
+    "sourceHash": "6a1126e6a2ce5629",
+    "sourceFileChanged": false,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "edits": [
+      {
+        "language": "yo",
+        "exactKeys": 5,
+        "commit": "2616e03b7ad2512cbcc2b63eef75d152dd2c0ebf",
+        "scope": "Distinct Yoruba game category labels"
+      },
+      {
+        "language": "ig",
+        "exactKeys": 9,
+        "commit": "5fc96bdde160fed8fbd74fdcd46e2284ecf2b498",
+        "scope": "Distinct Igbo game category labels; Sports games clarified in follow-up commit 75135422cf088cb45deb02e6be48c06f6622e986"
+      },
+      {
+        "language": "zu",
+        "exactKeys": 9,
+        "commit": "a57bd0d4b972c09b98d21e9380059e9ad50a5ac2",
+        "scope": "Distinct Zulu game category labels"
+      }
+    ],
+    "totalExactReplacements": 23,
+    "validation": "Read back all three packs: 1,118 keys each; sourceHash unchanged; repaired category outputs now distinct within each category set. Manual provisional strings; native review required.",
+    "warning": "This is not a full translation audit or linguistic certification."
+  },
+  "readOnlyDuplicateScreen": {
+    "checkedAt": "2026-11-14",
+    "scope": "98 locale packs; exact output values grouped; flag groups with 4+ source keys",
+    "packsChecked": 98,
+    "languageCountWithGroups": 19,
+    "duplicateGroups4plusBeforeRepair": 44,
+    "flaggedLanguages": [
+      "ha",
+      "yo",
+      "ig",
+      "tk",
+      "zu",
+      "dz",
+      "ti",
+      "kl",
+      "rw",
+      "sm",
+      "to",
+      "so",
+      "ga",
+      "mi",
+      "ku",
+      "xh",
+      "st",
+      "tn",
+      "dv"
+    ],
+    "findings": "Several low-resource packs contain large identical-output clusters across distinct game descriptions; e.g. Hausa 14, Igbo 16, Yoruba 12, Zulu 9, Dzongkha 14, Tigrinya 9. Turkish SEEKVERA brand repetition is expected.",
+    "repairsApplied": "Three category clusters (Yoruba, Igbo, Zulu) were manually separated; remaining description clusters unresolved.",
+    "certification": false,
+    "full98AuditPending": true
   }
 }
