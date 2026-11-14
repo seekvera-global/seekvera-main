@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T03:07:00Z",
+  "checkedAt": "2026-11-14T04:48:00Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -727,5 +727,40 @@
     }
   ],
   "auditPending": true,
-  "auditNote": "Partial quota-neutral warning recomputation after 44 deterministic/manual exact repairs; full 98-pack audit still pending. This pass removed 8 specific missing-action/punctuation warnings in fa, kk, ta, te, bn, hi and zh. No translation API or AI requests were sent. Quota-neutral deterministic repairs on 2026-11-14: fixed 11 exact strings in mn/ne/ur/el/he/si/ps; updated known script-warning entries (hi/he/si/mn/ne/zh cleared; ur/el/ps retain date-format review). No translation API or AI requests sent; full 98-pack audit remains pending."
+  "auditNote": "Partial quota-neutral warning recomputation after 44 deterministic/manual exact repairs; full 98-pack audit still pending. This pass removed 8 specific missing-action/punctuation warnings in fa, kk, ta, te, bn, hi and zh. No translation API or AI requests were sent. Quota-neutral deterministic repairs on 2026-11-14: fixed 11 exact strings in mn/ne/ur/el/he/si/ps; updated known script-warning entries (hi/he/si/mn/ne/zh cleared; ur/el/ps retain date-format review). No translation API or AI requests sent; full 98-pack audit remains pending.",
+  "structuralVerification": {
+    "checkedAt": "2026-11-14T04:48:00Z",
+    "checkedLanguages": 97,
+    "expectedKeysPerPack": 1118,
+    "sourceHash": "6a1126e6a2ce5629",
+    "keySetMatch": "all 1,118 source strings present exactly once; zero missing/extra keys",
+    "packCountAndHash": "97/97 packs report count=1118 and sourceHash match",
+    "result": "PASS structural only; does not certify translation quality",
+    "remaining": [
+      "dv"
+    ]
+  },
+  "latestVerifiedRuns": {
+    "r125ManualResume": {
+      "run": 150,
+      "runId": 38971104197,
+      "createdAt": "2026-10-16T21:41:54Z",
+      "conclusion": "success",
+      "resume": "skipped",
+      "audit": "success",
+      "candidateWrites": "workflow audit/checkpoint only; no translation requests"
+    },
+    "r125CandidateRender": {
+      "run": 2,
+      "runId": 43241261247,
+      "createdAt": "2026-11-12T14:49:49Z",
+      "conclusion": "success",
+      "scope": "50 game descriptions/filter logic in Arabic and French; Hausa intro; saved reply preserved"
+    },
+    "activeActionsCheck": {
+      "checkedAt": "2026-11-14T04:48:00Z",
+      "latest100Runs": "zero queued/in_progress",
+      "scope": "first 100 latest repo Actions runs"
+    }
+  }
 }
