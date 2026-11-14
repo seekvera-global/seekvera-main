@@ -333,7 +333,7 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-14T20:15:00Z",
+    "checkedAt": "2026-11-14T20:20:00Z",
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
       "trigger": "workflow_dispatch only",
@@ -367,15 +367,17 @@
       "quotaRequestsThisPass": 0
     },
     "thisPass": {
-      "candidatePackWrites": 1,
-      "exactManualReplacements": 10,
+      "candidatePackWrites": 2,
+      "exactManualReplacements": 18,
       "translationRequests": 0,
       "aiQuotaUsed": 0
     },
     "full98PackAudit": false,
     "linguisticCertification": false,
     "published": false,
-    "note": "Fetched R125 #150 job and steps directly; resume skipped and audit succeeded. Pages #1535 jobs now confirmed completed success. No new R125 dispatch or quota probe."
+    "note": "Quota-neutral manual repairs in Hausa and Samoan only; no translation service or AI calls. R125 #150 remains last known audit-only run; Pages #1535 deployment verified success.",
+    "currentAI": "unknown-not-probed",
+    "currentTranslationBackend": "unknown-not-probed"
   },
   "latestContinuationVerification": {
     "checkedAt": "2026-11-14T15:42:00Z",
@@ -626,5 +628,28 @@
     "publication": false,
     "linguisticCertification": false,
     "validation": "Read back ha.json; all 10 exact replacements persisted, 1,118 keys and sourceHash unchanged. Provisional manual Hausa strings; native review/full audit pending."
+  },
+  "latestQuotaNeutralManualBatch": {
+    "checkedAt": "2026-11-14T20:20:00Z",
+    "branch": "work/r125-locale-candidates-20261008",
+    "packs": {
+      "ha": {
+        "commit": "d30dd8524843765c5f664a63ab9183886ced5f39",
+        "exactEdits": 10
+      },
+      "sm": {
+        "commit": "be40c31533574fec8de144eba9e7836aebcfddac",
+        "exactEdits": 8
+      }
+    },
+    "totalExactEdits": 18,
+    "sourceHash": "6a1126e6a2ce5629",
+    "sourceUnchanged": true,
+    "keysPerPack": 1118,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "validation": "Fetched and re-read both packs; 7 game-category labels are distinct in each; Paystack spelling restored as brand. Provisional manual strings, native review required."
   }
 }
