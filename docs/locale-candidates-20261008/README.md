@@ -1,12 +1,13 @@
 # Unpublished R125 localization candidates
 
-These are resumable translation candidates, not production packs and not a certified release. Read `status.json` and `resume-summary.json` before using them.
+These are resumable translation candidates, not production packs and not a certified release. **Use `resume-summary.json` as the latest audit snapshot**. The original `status.json` and `progress.json` are historical initial-generation records (20 initial candidates / initial failed attempt), not the current 98-pack inventory.
 
-## Snapshot (2026-11-14 12:01 UTC)
+## Latest audit snapshot (2026-11-14 12:01 UTC)
 
 - Source inventory: **1,118 strings**, source hash `6a1126e6a2ce5629`.
 - **97/98** language packs pass the current structural/long-English-overlap screen.
 - **Divehi (`dv`) is the remaining pack**; its current audit reports `english_overlap:58`.
+- The directory contains 98 language JSON files, but file presence does not mean all 98 pass.
 - Candidate packs remain unpublished; final approval and linguistic accuracy certification are both false.
 - The latest resume log records 48 successful prior Divehi repair translations, then backend HTTP 503/unparseable outputs. Google translation previously returned HTTP 429. Do not bypass provider quotas or treat backend errors as successful translations.
 - The current partial warning map is cleared, but the full 98-pack audit is still pending. The 82 deterministic/manual repairs since the last audit are not native-language certification.
