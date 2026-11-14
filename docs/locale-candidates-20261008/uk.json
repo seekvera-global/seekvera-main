@@ -77,7 +77,8 @@
     "Voice",
     "Voice recognition is not supported in this browser.",
     "Voice reply",
-    "🛡️ SEEKVERA Safety Gate · AI text + AI Vision + automatic review"
+    "🛡️ SEEKVERA Safety Gate · AI text + AI Vision + automatic review",
+    "Paystack"
   ],
   "provider": "existing+@cf/qwen/qwen3-30b-a3b-fp8",
   "translations": {
@@ -177,7 +178,7 @@
     "PART ONE": "ЧАСТИНА ПЕРША",
     "Payments": "Платежі",
     "Payoneer": "Payoneer",
-    "Paystack": "Оплата",
+    "Paystack": "Paystack",
     "Pet Care": "Догляд за домашніми тваринами",
     "Play Now": "Грати зараз",
     "Podcasts": "Подкасти",
