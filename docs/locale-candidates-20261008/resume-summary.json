@@ -333,59 +333,116 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-14T11:35:00Z",
-    "candidateBranchHead": "e280de863bbd1e0546a5fa4e4fd3674a97db725f",
+    "checkedAt": "2026-11-14T14:17:00Z",
+    "candidateBranchHead": "b6af6056aae5e46ad6b87d884f02a8818ebe3c4d",
     "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
     "workflowTrigger": "workflow_dispatch only",
     "runTranslationsDefault": false,
-    "latestInspectedR125Run": {
+    "latestR125Run": {
       "run": 150,
-      "runId": 38971104197,
+      "id": 38971104197,
       "status": "completed",
       "conclusion": "success",
       "resume": "skipped",
-      "audit": "success",
-      "jobStepsInspected": true
+      "audit": "success"
     },
-    "latestActionsSnapshot": {
-      "checkedAt": "2026-11-14T10:10:00Z",
-      "latest100Runs": "zero queued/in_progress",
-      "scope": "last available fresh repository Actions query; not re-polled at 11:35Z"
-    },
-    "candidatePackWritesThisPass": true,
+    "activeR125RunObserved": false,
+    "latestActions100": "zero queued/in_progress",
+    "candidatePackWritesThisPass": 0,
     "translationRequestsSent": 0,
     "aiQuotaUsed": 0,
-    "aiChatCurrentAvailability": "unknown-not-probed",
-    "translationBackendCurrentAvailability": "unknown-not-probed",
-    "reason": "No quota-safe live AI/translation probe; preserve daily_free_ai_limit and prior Google HTTP429/503. No current R125 run was observed in last Actions snapshot; last inspected R125 #150 completed. Manual pack repair only."
+    "currentAI": "unknown-not-probed",
+    "currentTranslationBackend": "unknown-not-probed",
+    "note": "Fresh GitHub Actions run list checked 2026-11-14T14:17Z; no candidate resume running. Only documentation/checkpoint writes this pass."
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-14T12:01:00Z",
+    "checkedAt": "2026-11-14T14:17:00Z",
+    "candidateBranchHeadBeforeSummaryUpdate": "b6af6056aae5e46ad6b87d884f02a8818ebe3c4d",
+    "latestCandidatePackCommit": "e280de863bbd1e0546a5fa4e4fd3674a97db725f",
+    "mainCheckpointCommit": "301d69daf8fb35fc5f375d1040bc765ee2eb4072",
     "repositoryActions": {
       "latest100Runs": "zero queued/in_progress",
-      "latestPagesRun": 1525,
-      "latestPagesRunId": 43590760366,
-      "latestPagesConclusion": "success",
-      "latestOfficialHealthRun": 320,
-      "latestOfficialHealthRunId": 43568474031,
-      "latestOfficialHealthConclusion": "success"
+      "latestRun": {
+        "id": 43592832166,
+        "run": 1526,
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-11-14T12:02:19Z"
+      },
+      "latestProductionHealth": {
+        "id": 43568474031,
+        "run": 320,
+        "conclusion": "success"
+      },
+      "latestR105": {
+        "id": 43517683421,
+        "run": 81,
+        "conclusion": "success",
+        "liveAI": "skipped"
+      }
     },
     "r125": {
-      "latestKnownRun": 150,
-      "latestKnownRunId": 38971104197,
-      "latestKnownConclusion": "success",
-      "currentWorkflowTrigger": "workflow_dispatch only",
+      "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "trigger": "workflow_dispatch only",
       "runTranslationsDefault": false,
-      "activeRunObserved": false
+      "latestKnownRun": {
+        "run": 150,
+        "id": 38971104197,
+        "status": "completed",
+        "conclusion": "success",
+        "resume": "skipped",
+        "audit": "success"
+      },
+      "activeRunObserved": false,
+      "candidateWritesThisPass": 0
+    },
+    "quotaSafePackChecks": {
+      "sourceCount": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "dv": {
+        "keys": 1118,
+        "hashMatch": true,
+        "empty": 0,
+        "duplicateGroups": 10,
+        "duplicateKeys": 36,
+        "englishOverlapFailure": 58,
+        "semanticDuplicateGroups": 2,
+        "unresolved": true
+      },
+      "am": {
+        "keys": 1118,
+        "hashMatch": true,
+        "empty": 0,
+        "duplicateGroups": 7,
+        "duplicates": "case/capitalization only after 19-key manual repair",
+        "nativeReviewPending": true
+      },
+      "my": {
+        "keys": 1118,
+        "hashMatch": true,
+        "empty": 0,
+        "duplicateGroups": 3,
+        "duplicates": "case/capitalization only after 7-key manual repair"
+      },
+      "pa": {
+        "keys": 1118,
+        "hashMatch": true,
+        "empty": 0,
+        "duplicateGroups": 7,
+        "duplicates": "case variants plus one near-identical delivery wording; native review pending"
+      }
     },
     "thisPass": {
       "candidatePackWrites": 0,
       "translationRequests": 0,
       "aiQuotaUsed": 0,
-      "summaryOrCheckpointOnly": true
+      "summaryOnly": true
     },
-    "liveAI": "unknown-not-probed",
-    "translationBackend": "unknown-not-probed",
+    "currentAI": "unknown-not-probed",
+    "currentTranslationBackend": "unknown-not-probed",
+    "full98PackAudit": false,
+    "linguisticCertification": false,
+    "published": false,
     "physicalAudio": "not-certified",
     "checkout": "inactive-pending-merchant-configuration"
   },
