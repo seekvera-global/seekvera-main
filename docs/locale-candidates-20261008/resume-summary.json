@@ -333,59 +333,33 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-14T19:47:30Z",
-    "actions": {
-      "latest100Fetched": true,
-      "activeRunsObserved": 1,
-      "activeRun": {
-        "name": "pages build and deployment",
-        "run": 1535,
-        "id": 43633978266,
-        "status": "in_progress"
-      },
-      "latestR125Run": 150,
-      "latestR125Status": "completed",
-      "r125ActiveObserved": false,
-      "scope": "fresh latest 100 main-branch Actions runs; only Pages #1535 active; R125 workflow manual dispatch only"
-    },
+    "checkedAt": "2026-11-14T20:15:00Z",
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
-      "currentTrigger": "workflow_dispatch only",
+      "trigger": "workflow_dispatch only",
       "runTranslationsDefault": false,
       "explicitTranslationOptInRequired": true
     },
     "latestR125": {
       "run": 150,
       "id": 38971104197,
-      "createdAt": "2026-10-16T21:41:54Z",
       "status": "completed",
       "conclusion": "success",
       "resume": "skipped",
       "audit": "success",
-      "candidateCount": 97,
-      "remaining": [
-        "dv"
-      ],
-      "reason": "HTTP 503/all_translation_backends_unavailable; daily_free_ai_limit historically exhausted; Google HTTP429 prior"
+      "verifiedJobSteps": true
     },
-    "currentAI": "unknown-not-probed",
-    "currentTranslationBackend": "unknown-not-probed",
-    "candidateWritesThisPass": 0,
-    "translationRequestsSent": 0,
-    "aiQuotaUsed": 0,
-    "full98PackAudit": false,
-    "linguisticCertification": false,
-    "published": false,
-    "note": "Fresh Actions check at 16:57 UTC; no active run. Workflow can resume translations only on manual dispatch with run_translations=true. No live quota probe.",
-    "candidateState": {
-      "completedCount": 97,
-      "remaining": [
-        "dv"
+    "latestPages": {
+      "run": 1535,
+      "id": 43633978266,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        "build",
+        "report-build-status",
+        "deploy"
       ],
-      "structuralFailure": "english_overlap:58",
-      "published": false,
-      "linguisticCertification": false,
-      "fullAuditPending": true
+      "scope": "documentation deployment only"
     },
     "aiAvailability": {
       "chat": "unknown-not-probed",
@@ -393,11 +367,15 @@
       "quotaRequestsThisPass": 0
     },
     "thisPass": {
-      "candidatePackWrites": 3,
-      "exactManualReplacements": 27,
+      "candidatePackWrites": 1,
+      "exactManualReplacements": 10,
       "translationRequests": 0,
       "aiQuotaUsed": 0
-    }
+    },
+    "full98PackAudit": false,
+    "linguisticCertification": false,
+    "published": false,
+    "note": "Fetched R125 #150 job and steps directly; resume skipped and audit succeeded. Pages #1535 jobs now confirmed completed success. No new R125 dispatch or quota probe."
   },
   "latestContinuationVerification": {
     "checkedAt": "2026-11-14T15:42:00Z",
@@ -633,5 +611,20 @@
     "repairsApplied": "Three category clusters (Yoruba, Igbo, Zulu) were manually separated; remaining description clusters unresolved.",
     "certification": false,
     "full98AuditPending": true
+  },
+  "latestManualHausaRepair": {
+    "checkedAt": "2026-11-14T20:15:00Z",
+    "branch": "work/r125-locale-candidates-20261008",
+    "language": "ha",
+    "packCommit": "d30dd8524843765c5f664a63ab9183886ced5f39",
+    "exactEdits": 10,
+    "keysPerPack": 1118,
+    "sourceHash": "6a1126e6a2ce5629",
+    "sourceUnchanged": true,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "publication": false,
+    "linguisticCertification": false,
+    "validation": "Read back ha.json; all 10 exact replacements persisted, 1,118 keys and sourceHash unchanged. Provisional manual Hausa strings; native review/full audit pending."
   }
 }
