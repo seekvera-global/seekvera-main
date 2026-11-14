@@ -88,7 +88,8 @@
     "Voice reply",
     "You left the crash site with a knife, jacket, water and a bag. The jungle is now the game world. From here the full Part 1 can continue with water, shelter, fire, animals and the first night.",
     "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
-    "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts."
+    "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+    "Paystack"
   ],
   "provider": "existing+@cf/qwen/qwen3-30b-a3b-fp8",
   "translations": {
@@ -188,7 +189,7 @@
     "PART ONE": "حصہ ون",
     "Payments": "ادائیگی",
     "Payoneer": "Payoneer",
-    "Paystack": "پے اسٹیک",
+    "Paystack": "Paystack",
     "Pet Care": "پالتو جانوروں کی دیکھ بھال",
     "Play Now": "ابھی کھیلیں",
     "Podcasts": "Podcasts",
