@@ -242,8 +242,8 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-11-14T05:27:00Z",
-    "candidateCommit": "a9ab35442a3c43ad6c1f796601f7cfe767486c39",
+    "checkedAt": "2026-11-14T05:30:00Z",
+    "candidateCommit": "a2bd0c4528505bc917e5a331a008b3dcbd47c543",
     "completedCount": 97,
     "remainingCount": 1,
     "firstFailure": "dv",
@@ -253,7 +253,7 @@
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false,
-    "note": "This run deterministically restored the immutable identifier in 73 locale packs (ar was already correct), preserving all other raw file bytes. Branch summary now reflects 68 script warnings across 25 languages; Divehi remains structurally incomplete.; 2026-11-14 deterministic repairs: Lao Paystack brand spelling restored; Kyrgyz 'Nearby Now' typo corrected; Punjabi wrong Devanagari entries corrected to Gurmukhi, CROSS-BORDER typo corrected, zero-cost MVP sentence repaired, and translated CSS restored byte-for-byte to source. All edits limited to seven known strings in lo/ky/pa; source untouched; full audit not yet rerun.; seven deterministic locale repairs were committed on 2026-11-14 in lo/ky/pa. Candidate warning totals remain at last audit (68/25) pending a full rerun; no translation quota consumed.; extended deterministic repairs to 19 exact strings across lo/ky/pa/am/my, restoring missing action verbs in Amharic/Burmese and wrong-script Punjabi entries; full audit pending.; 2026-11-14: corrected 13 additional Punjabi UI/game strings from Devanagari into Gurmukhi; verified all 13 use Gurmukhi and pa retains 1,118 keys. Quota-neutral script predicate recomputed only for lo/ky/pa/am/my: warning count 68→40 (languages 25→23); full 98-pack audit still pending.; additional 4 quota-neutral fixes in Lao/Burmese (embedded trigger phrase and 3 UI labels); partial script scan now shows 36 warnings/21 languages, with touched-pack counts lo=0, ky=1 date-format review, pa=0, am=0, my=0. Full audit pending. 2026-11-14 05:27Z: repaired 8 exact labels/actions in fa/tg/ka/mk/ky/dz; all six packs re-read at 1,118 keys. Candidate summary reconciled script-warning map to 11 warnings across 10 languages. Full audit still pending; no quota use.",
+    "note": "This run deterministically restored the immutable identifier in 73 locale packs (ar was already correct), preserving all other raw file bytes. Branch summary now reflects 68 script warnings across 25 languages; Divehi remains structurally incomplete.; 2026-11-14 deterministic repairs: Lao Paystack brand spelling restored; Kyrgyz 'Nearby Now' typo corrected; Punjabi wrong Devanagari entries corrected to Gurmukhi, CROSS-BORDER typo corrected, zero-cost MVP sentence repaired, and translated CSS restored byte-for-byte to source. All edits limited to seven known strings in lo/ky/pa; source untouched; full audit not yet rerun.; seven deterministic locale repairs were committed on 2026-11-14 in lo/ky/pa. Candidate warning totals remain at last audit (68/25) pending a full rerun; no translation quota consumed.; extended deterministic repairs to 19 exact strings across lo/ky/pa/am/my, restoring missing action verbs in Amharic/Burmese and wrong-script Punjabi entries; full audit pending.; 2026-11-14: corrected 13 additional Punjabi UI/game strings from Devanagari into Gurmukhi; verified all 13 use Gurmukhi and pa retains 1,118 keys. Quota-neutral script predicate recomputed only for lo/ky/pa/am/my: warning count 68→40 (languages 25→23); full 98-pack audit still pending.; additional 4 quota-neutral fixes in Lao/Burmese (embedded trigger phrase and 3 UI labels); partial script scan now shows 36 warnings/21 languages, with touched-pack counts lo=0, ky=1 date-format review, pa=0, am=0, my=0. Full audit pending. 2026-11-14 05:27Z: repaired 8 exact labels/actions in fa/tg/ka/mk/ky/dz; all six packs re-read at 1,118 keys. Candidate summary reconciled script-warning map to 11 warnings across 10 languages. Full audit still pending; no quota use. 2026-11-14 05:30Z: localized Gujarati SEEKVERA GUIDE; 1,118 keys preserved. Partial warning map reconciled to 10 remaining date/presentation warnings across 10 languages. Full audit and native review pending.",
     "quotaStatusCurrent": "unknown-not-probed",
     "knownDailyFreeAiLimitBlocker": true,
     "repairBatch20261114": {
@@ -288,8 +288,8 @@
     "auditPending": true,
     "scriptWarningCount": 16,
     "scriptWarningLanguages": 11,
-    "summaryCommit": "468d5afc113d30e9c9e2299c9442c50890959755",
-    "repairs": 63,
+    "summaryCommit": "3170878c5bc2fc58571b2d3c303ca0401abac758",
+    "repairs": 64,
     "lastQuotaNeutralRepair": {
       "checkedAt": "2026-11-14T03:07:00Z",
       "packCommits": {
@@ -376,10 +376,10 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-14T05:27:00Z",
+    "checkedAt": "2026-11-14T05:30:00Z",
     "mainCheckpointBlobBeforeUpdate": "2465a26212bc004f3c2bf1f22768fa12db45784e",
-    "candidateBranchHead": "468d5afc113d30e9c9e2299c9442c50890959755",
-    "candidateSummaryBlob": "updated-by-quota-neutral-repair-commit-468d5afc113d30e9c9e2299c9442c50890959755",
+    "candidateBranchHead": "3170878c5bc2fc58571b2d3c303ca0401abac758",
+    "candidateSummaryBlob": "updated-by-quota-neutral-repair-commit-3170878c5bc2fc58571b2d3c303ca0401abac758",
     "candidateLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
@@ -392,10 +392,10 @@
       "resumeStep": "skipped",
       "auditStep": "success",
       "translationRequestsSent": 0,
-      "activeRunFound": "not freshly re-queried; latest recorded check at 04:48Z had zero queued/in_progress; workflow is workflow_dispatch only",
+      "activeRunFound": "not freshly re-queried; last recorded check 04:48Z showed zero queued/in_progress; workflow_dispatch only",
       "activeRunsCheck": "Latest 100 repository Actions runs at 2026-11-14T04:48:00Z: zero queued/in_progress; R125 candidate render #2 (43241261247) completed success 2026-11-12.",
       "candidateWritesDeferredWhileActive": true,
-      "candidateWriteThisRun": "8 deterministic locale repairs plus summary/checkpoint; no translation calls; candidate packs remain unpublished",
+      "candidateWriteThisRun": "9 deterministic locale repairs (8 across fa/tg/ka/mk/ky/dz plus Gujarati) and summary/checkpoint; no translation calls",
       "candidatePackFilesChangedByRun150": false,
       "latestKnownRun": 150
     },
@@ -491,7 +491,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-14T05:27:00Z",
+  "checkedAt": "2026-11-14T05:30:00Z",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -1882,8 +1882,8 @@
       ]
     },
     "scriptWarningLanguages": 10,
-    "scriptWarningCount": 11,
-    "warningTriage": "Quota-neutral partial warning-map reconciliation after 63 exact/manual repairs: 11 retained warnings across 10 languages (date-format/presentation items remain); full 98-pack audit pending.",
+    "scriptWarningCount": 10,
+    "warningTriage": "Quota-neutral partial warning-map recomputation after 64 exact/manual repairs: 10 remaining date/presentation warnings across 10 languages; full 98-pack audit pending.",
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false
@@ -2102,8 +2102,8 @@
     "linguisticCertification": false,
     "published": false
   },
-  "repairs": 63,
-  "scriptWarningCount": 11,
+  "repairs": 64,
+  "scriptWarningCount": 10,
   "scriptWarningLanguages": 10,
   "run23QuotaNeutralLocaleRepair": {
     "checkedAt": "2026-11-14T05:27:00Z",
@@ -2134,6 +2134,22 @@
     "partialWarningsAfter": 11,
     "warningLanguagesAfter": 10,
     "auditPending": true,
+    "publication": false,
+    "linguisticCertification": false
+  },
+  "run24GujaratiRepair": {
+    "checkedAt": "2026-11-14T05:30:00Z",
+    "branch": "work/r125-locale-candidates-20261008",
+    "packCommit": "a2bd0c4528505bc917e5a331a008b3dcbd47c543",
+    "summaryCommit": "3170878c5bc2fc58571b2d3c303ca0401abac758",
+    "language": "gu",
+    "exactEdits": 1,
+    "keyCount": 1118,
+    "sourceUnchanged": true,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "warningReduction": 1,
+    "fullAuditPending": true,
     "publication": false,
     "linguisticCertification": false
   }
