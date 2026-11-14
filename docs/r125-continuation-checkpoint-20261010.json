@@ -243,7 +243,7 @@
   "candidateResume": {
     "run": null,
     "checkedAt": "2026-11-14T22:46:16Z",
-    "candidateCommit": "eea07c7e2b763459140ee75b054f5ccfcb57db48",
+    "candidateCommit": "7fb45b569bea4ea3c803c150350e1c9aa514d802",
     "completedCount": 97,
     "remainingCount": 1,
     "firstFailure": "dv",
@@ -253,7 +253,7 @@
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false,
-    "note": "This run deterministically restored the immutable identifier in 73 locale packs (ar was already correct), preserving all other raw file bytes. Branch summary now reflects 68 script warnings across 25 languages; Divehi remains structurally incomplete.; 2026-11-14 deterministic repairs: Lao Paystack brand spelling restored; Kyrgyz 'Nearby Now' typo corrected; Punjabi wrong Devanagari entries corrected to Gurmukhi, CROSS-BORDER typo corrected, zero-cost MVP sentence repaired, and translated CSS restored byte-for-byte to source. All edits limited to seven known strings in lo/ky/pa; source untouched; full audit not yet rerun.; seven deterministic locale repairs were committed on 2026-11-14 in lo/ky/pa. Candidate warning totals remain at last audit (68/25) pending a full rerun; no translation quota consumed.; extended deterministic repairs to 19 exact strings across lo/ky/pa/am/my, restoring missing action verbs in Amharic/Burmese and wrong-script Punjabi entries; full audit pending.; 2026-11-14: corrected 13 additional Punjabi UI/game strings from Devanagari into Gurmukhi; verified all 13 use Gurmukhi and pa retains 1,118 keys. Quota-neutral script predicate recomputed only for lo/ky/pa/am/my: warning count 68→40 (languages 25→23); full 98-pack audit still pending.; additional 4 quota-neutral fixes in Lao/Burmese (embedded trigger phrase and 3 UI labels); partial script scan now shows 36 warnings/21 languages, with touched-pack counts lo=0, ky=1 date-format review, pa=0, am=0, my=0. Full audit pending. 2026-11-14 05:27Z: repaired 8 exact labels/actions in fa/tg/ka/mk/ky/dz; all six packs re-read at 1,118 keys. Candidate summary reconciled script-warning map to 11 warnings across 10 languages. Full audit still pending; no quota use. 2026-11-14 05:30Z: localized Gujarati SEEKVERA GUIDE; 1,118 keys preserved. Partial warning map reconciled to 10 remaining date/presentation warnings across 10 languages. Full audit and native review pending. 2026-11-14 06:00Z: normalized the 10 known date/presentation tokens across ur/fa/el/uk/mk/kk/ky/tg/gu/ps; each pack remains 1,118 keys and sourceHash unchanged. Partial warning map 10→0; full 98-pack audit remains pending. 2026-11-14 09:30Z: manual quota-neutral Myanmar repair committed (7 exact strings); readback 1,118 keys. Amharic (10 repeated descriptions) and Divehi (20 repeated outputs in 2 groups) remain flagged; no AI/translation requests. 2026-11-14 11:35Z: Amharic 19-key quota-neutral manual repair committed and read back; duplicate 10-game-description cluster removed, nine category labels corrected. Pack has 1,118 keys and sourceHash unchanged. Native review/full audit pending.",
+    "note": "This run deterministically restored the immutable identifier in 73 locale packs (ar was already correct), preserving all other raw file bytes. Branch summary now reflects 68 script warnings across 25 languages; Divehi remains structurally incomplete.; 2026-11-14 deterministic repairs: Lao Paystack brand spelling restored; Kyrgyz 'Nearby Now' typo corrected; Punjabi wrong Devanagari entries corrected to Gurmukhi, CROSS-BORDER typo corrected, zero-cost MVP sentence repaired, and translated CSS restored byte-for-byte to source. All edits limited to seven known strings in lo/ky/pa; source untouched; full audit not yet rerun.; seven deterministic locale repairs were committed on 2026-11-14 in lo/ky/pa. Candidate warning totals remain at last audit (68/25) pending a full rerun; no translation quota consumed.; extended deterministic repairs to 19 exact strings across lo/ky/pa/am/my, restoring missing action verbs in Amharic/Burmese and wrong-script Punjabi entries; full audit pending.; 2026-11-14: corrected 13 additional Punjabi UI/game strings from Devanagari into Gurmukhi; verified all 13 use Gurmukhi and pa retains 1,118 keys. Quota-neutral script predicate recomputed only for lo/ky/pa/am/my: warning count 68→40 (languages 25→23); full 98-pack audit still pending.; additional 4 quota-neutral fixes in Lao/Burmese (embedded trigger phrase and 3 UI labels); partial script scan now shows 36 warnings/21 languages, with touched-pack counts lo=0, ky=1 date-format review, pa=0, am=0, my=0. Full audit pending. 2026-11-14 05:27Z: repaired 8 exact labels/actions in fa/tg/ka/mk/ky/dz; all six packs re-read at 1,118 keys. Candidate summary reconciled script-warning map to 11 warnings across 10 languages. Full audit still pending; no quota use. 2026-11-14 05:30Z: localized Gujarati SEEKVERA GUIDE; 1,118 keys preserved. Partial warning map reconciled to 10 remaining date/presentation warnings across 10 languages. Full audit and native review pending. 2026-11-14 06:00Z: normalized the 10 known date/presentation tokens across ur/fa/el/uk/mk/kk/ky/tg/gu/ps; each pack remains 1,118 keys and sourceHash unchanged. Partial warning map 10→0; full 98-pack audit remains pending. 2026-11-14 09:30Z: manual quota-neutral Myanmar repair committed (7 exact strings); readback 1,118 keys. Amharic (10 repeated descriptions) and Divehi (20 repeated outputs in 2 groups) remain flagged; no AI/translation requests. 2026-11-14 11:35Z: Amharic 19-key quota-neutral manual repair committed and read back; duplicate 10-game-description cluster removed, nine category labels corrected. Pack has 1,118 keys and sourceHash unchanged. Native review/full audit pending. 2026-11-14 23:29Z: Divehi exact brand preservation repair (Payoneer/Paystack/WhatsApp) committed and read back; 1,118 keys/sourceHash preserved; english_overlap:58 unchanged; no AI or translation quota.",
     "quotaStatusCurrent": "unknown-not-probed",
     "knownDailyFreeAiLimitBlocker": true,
     "repairBatch20261114": {
@@ -386,7 +386,27 @@
       "published": false,
       "note": "64 locale packs received 86 deterministic brand-name corrections; readback confirms 1,118 keys/sourceHash. No AI quota or translation requests. R125 #150 is completed audit-only; Pages #1539 completed. No final approval."
     },
-    "candidateSummaryCommit": "eea07c7e2b763459140ee75b054f5ccfcb57db48"
+    "candidateSummaryCommit": "eea07c7e2b763459140ee75b054f5ccfcb57db48",
+    "lastManualRepair": {
+      "checkedAt": "2026-11-14T23:29:00Z",
+      "language": "dv",
+      "commit": "7fb45b569bea4ea3c803c150350e1c9aa514d802",
+      "exactReplacements": 3,
+      "keys": [
+        "Payoneer",
+        "Paystack",
+        "WhatsApp"
+      ],
+      "readback": {
+        "keyCount": 1118,
+        "sourceHash": "6a1126e6a2ce5629",
+        "brandValuesExact": true
+      },
+      "translationRequestsSent": 0,
+      "aiQuotaUsed": 0,
+      "published": false,
+      "linguisticCertification": false
+    }
   },
   "builderRepair": {
     "commit": "634a0d31cb571300d658bb24580bdad3cbaeb75b",
@@ -2860,5 +2880,6 @@
     "published": false,
     "linguisticCertification": false,
     "validation": "Fetched and re-read ti/dz/kl/ga/tn/rw; all retain 1,118 keys and sourceHash; Payoneer and Paystack restored as exact brand names in all six packs. Manual deterministic brand normalization only; native review/full audit pending."
-  }
+  },
+  "updatedAt": "2026-11-14T23:29:00Z"
 }
