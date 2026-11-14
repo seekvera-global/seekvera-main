@@ -242,7 +242,7 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-11-14T11:35:00Z",
+    "checkedAt": "2026-11-14T22:46:16Z",
     "candidateCommit": "e280de863bbd1e0546a5fa4e4fd3674a97db725f",
     "completedCount": 97,
     "remainingCount": 1,
@@ -289,7 +289,7 @@
     "scriptWarningCount": 0,
     "scriptWarningLanguages": 0,
     "summaryCommit": "f5b674447def79d3e6cd53de339550ef52cf31b8",
-    "repairs": 81,
+    "repairs": 168,
     "lastQuotaNeutralRepair": {
       "checkedAt": "2026-11-14T03:07:00Z",
       "packCommits": {
@@ -329,15 +329,62 @@
       "qualityCertification": false
     },
     "latestQuotaNeutralRepair": {
-      "checkedAt": "2026-11-14T11:35:00Z",
-      "language": "am",
-      "packCommit": "e280de863bbd1e0546a5fa4e4fd3674a97db725f",
-      "exactEdits": 19,
-      "keysPerPack": 1118,
+      "checkedAt": "2026-11-14T22:46:16Z",
+      "branch": "work/r125-locale-candidates-20261008",
+      "languageCount": 64,
+      "exactEdits": 86,
       "sourceUnchanged": true,
-      "translationRequestsSent": 0,
+      "keysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "translationRequests": 0,
       "aiQuotaUsed": 0,
-      "linguisticCertification": false
+      "publication": false,
+      "linguisticCertification": false,
+      "validation": "Read back all 64 touched packs: 1,118 translation keys each and matching sourceHash; exact Payoneer/Paystack/WhatsApp brand identifiers restored. Manual deterministic normalization, not native-language certification."
+    },
+    "latestContinuationCheck": {
+      "checkedAt": "2026-11-14T22:46:16Z",
+      "workflow": {
+        "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+        "trigger": "workflow_dispatch only",
+        "runTranslationsDefault": false,
+        "explicitTranslationOptInRequired": true
+      },
+      "latestR125": {
+        "run": 150,
+        "id": 38971104197,
+        "status": "completed",
+        "conclusion": "success",
+        "resume": "skipped",
+        "audit": "success"
+      },
+      "latestPages": {
+        "run": 1539,
+        "id": 43645382126,
+        "status": "completed",
+        "conclusion": "success",
+        "jobs": [
+          "build",
+          "report-build-status",
+          "deploy"
+        ],
+        "scope": "documentation deployment only"
+      },
+      "aiAvailability": {
+        "chat": "unknown-not-probed",
+        "translation": "unknown-not-probed",
+        "quotaRequestsThisPass": 0
+      },
+      "thisPass": {
+        "candidatePackWrites": 64,
+        "exactManualReplacements": 86,
+        "translationRequests": 0,
+        "aiQuotaUsed": 0
+      },
+      "full98PackAudit": false,
+      "linguisticCertification": false,
+      "published": false,
+      "note": "64 locale packs received 86 deterministic brand-name corrections; readback confirms 1,118 keys/sourceHash. No AI quota or translation requests. R125 #150 is completed audit-only; Pages #1539 completed. No final approval."
     }
   },
   "builderRepair": {
