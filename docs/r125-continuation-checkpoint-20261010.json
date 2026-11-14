@@ -386,121 +386,54 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-14T15:42:00Z",
-    "candidateBranchHeadBeforeSummaryUpdate": "b6af6056aae5e46ad6b87d884f02a8818ebe3c4d",
-    "latestCandidatePackCommit": "e280de863bbd1e0546a5fa4e4fd3674a97db725f",
-    "repositoryActions": {
-      "checkedAt": "2026-11-14T15:42:00Z",
-      "runsPagesScanned": 10,
+    "checkedAt": "2026-11-14T16:57:00Z",
+    "currentActionsSnapshot": {
+      "latest100Fetched": true,
       "activeRunsObserved": 0,
       "latestRepositoryRun": {
-        "id": 43604369351,
-        "run": 1527,
+        "run": 1528,
+        "id": 43611755514,
         "name": "pages build and deployment",
         "status": "completed",
         "conclusion": "success",
-        "createdAt": "2026-11-14T14:20:40Z"
-      },
-      "latestProductionHealth": {
-        "id": 43568474031,
-        "run": 320,
-        "conclusion": "success",
-        "createdAt": "2026-11-14T06:53:03Z",
-        "logVerified": "API health, robots/sitemap canonical, 18 product sections HTTP 200, homepage category assertions"
-      },
-      "latestR105": {
-        "id": 43517683421,
-        "run": 81,
-        "conclusion": "success",
-        "createdAt": "2026-11-13T22:14:50Z",
-        "liveChatProbes": "skipped; RUN_LIVE_AI_PROBES=false",
-        "countryAndSafetyProbes": "passed"
+        "createdAt": "2026-11-14T15:44:05Z"
       }
     },
-    "r125": {
-      "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
-      "workflowTrigger": "workflow_dispatch only; explicit run_translations=true is required for live translation",
+    "r125Workflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "pauseCommit": "303f63e70cd03c2ec62abd580bfd182e50c6ab2f",
+      "currentTriggers": "workflow_dispatch only",
+      "removedTriggers": [
+        "schedule cron 15 * * * *",
+        "push to main on workflow/tool changes"
+      ],
       "runTranslationsDefault": false,
+      "manualTranslationMode": "explicit run_translations=true executes build; false is audit-only",
       "latestRun": {
         "run": 150,
         "id": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "event": "push",
         "status": "completed",
         "conclusion": "success",
-        "createdAt": "2026-10-16T21:41:54Z",
         "resume": "skipped",
         "audit": "success",
-        "auditOutput": "completedCount 97; remaining dv; resumeSucceeded false; exitCode not-run",
-        "candidateWrites": "checkpoint/audit metadata only; no translation calls"
+        "result": "97 complete; dv remaining; resumeSucceeded=false; exitCode=not-run",
+        "reason": "Production speech verification returned HTTP 503; daily free AI allocation exhausted; background translation made manual-only"
       },
-      "precedingRun": {
-        "run": 149,
-        "id": 38970873888,
-        "status": "completed",
-        "conclusion": "failure",
-        "createdAt": "2026-10-16T21:39:49Z",
-        "error": "SyntaxError: Unexpected end of input in audit-candidate-scripts.cjs while evaluating uiScriptPattern",
-        "resolution": "later #150 audit passed after workflow validation path changed"
-      },
-      "activeRunsObservedInPages1to10": 0,
-      "candidateWritesThisPass": 0
-    },
-    "localeAudit": {
-      "checkedAt": "2026-11-14T14:17:00Z",
-      "scope": [
-        "dv",
-        "am",
-        "my",
-        "pa"
-      ],
-      "sourceCount": 1118,
-      "sourceHash": "6a1126e6a2ce5629",
-      "packsChecked": {
-        "dv": {
-          "keys": 1118,
-          "sourceHashMatch": true,
-          "empty": 0,
-          "duplicateGroups": 10,
-          "duplicateKeys": 36,
-          "knownEnglishOverlapFailure": 58,
-          "remainingSemanticGroups": 2
-        },
-        "am": {
-          "keys": 1118,
-          "sourceHashMatch": true,
-          "empty": 0,
-          "duplicateGroups": 7,
-          "allObservedDuplicates": "case/capitalization variants after manual 19-key repair"
-        },
-        "my": {
-          "keys": 1118,
-          "sourceHashMatch": true,
-          "empty": 0,
-          "duplicateGroups": 3,
-          "allObservedDuplicates": "case/capitalization variants after manual 7-key repair"
-        },
-        "pa": {
-          "keys": 1118,
-          "sourceHashMatch": true,
-          "empty": 0,
-          "duplicateGroups": 7,
-          "observed": "case variants plus one near-identical delivery wording; native review pending"
-        }
-      },
-      "full98PackAudit": false,
-      "linguisticCertification": false
+      "activeRunObserved": false
     },
     "thisPass": {
       "candidatePackWrites": 0,
-      "translationRequestsSent": 0,
+      "translationRequests": 0,
       "aiQuotaUsed": 0,
-      "checkpointAndSummaryOnly": true
+      "aiChatCurrent": "unknown-not-probed",
+      "translationBackendCurrent": "unknown-not-probed",
+      "full98PackAudit": false,
+      "linguisticCertification": false,
+      "published": false
     },
-    "aiChatAvailability": "unknown-not-probed",
-    "translationBackendAvailability": "unknown-not-probed",
-    "dailyFreeAiLimit": "historical blocker; not probed/consumed",
-    "googleTranslation": "prior HTTP429; not retried",
-    "physicalAudio": "not-certified",
-    "checkout": "inactive-pending-merchant-configuration"
+    "note": "Fresh Actions API check at 16:57 UTC. No R125 active. The recurring hourly/push triggers were removed in commit 303f63e; current workflow is manual dispatch, translation opt-in only. No candidate writes while run active (none active)."
   },
   "verificationInfrastructureRepair": {
     "checkedAt": "2026-11-12T09:56:58Z",
