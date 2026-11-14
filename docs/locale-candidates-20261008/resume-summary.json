@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T06:00:00Z",
+  "checkedAt": "2026-11-14T10:10:00Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -263,9 +263,25 @@
       "scope": "50 game descriptions/filter logic in Arabic and French; Hausa intro; saved reply preserved"
     },
     "activeActionsCheck": {
-      "checkedAt": "2026-11-14T04:48:00Z",
+      "checkedAt": "2026-11-14T10:10:00Z",
       "latest100Runs": "zero queued/in_progress",
-      "scope": "first 100 latest repo Actions runs"
+      "scope": "Fresh repository Actions query; first 100 latest runs",
+      "latestR125Resume": {
+        "run": 150,
+        "runId": 38971104197,
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-10-16T21:41:54Z",
+        "resume": "skipped",
+        "audit": "success"
+      },
+      "latestCandidateRender": {
+        "run": 2,
+        "runId": 43241261247,
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-11-12T14:49:49Z"
+      }
     }
   },
   "latestQuotaNeutralRepair": {
@@ -319,5 +335,20 @@
     ],
     "full98PackAudit": false,
     "linguisticCertification": false
+  },
+  "latestContinuationCheck": {
+    "checkedAt": "2026-11-14T10:10:00Z",
+    "candidateBranchHead": "f5b674447def79d3e6cd53de339550ef52cf31b8",
+    "mainHeadBeforeCheckpointUpdate": "a3323fbea61b4584b466ebdb8df5227ef47a2b5f",
+    "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
+    "workflowTrigger": "workflow_dispatch only",
+    "runTranslationsDefault": false,
+    "activeQueuedOrInProgressRuns": 0,
+    "candidatePackWritesThisPass": false,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "aiChatCurrentAvailability": "unknown-not-probed",
+    "translationBackendCurrentAvailability": "unknown-not-probed",
+    "reason": "No quota-safe live AI/translation probe; latest deployment release skipped live AI probes. Preserve daily_free_ai_limit and prior Google HTTP429."
   }
 }
