@@ -2686,5 +2686,53 @@
     },
     "note": "98-pack heuristic screen found 44 groups of 4+ identical outputs across 19 languages before repairs; 3 game-category clusters in yo/ig/zu repaired (27 values). Repeated game-description clusters remain; Turkish SEEKVERA brand repetition is expected.",
     "duplicateOutputGroups4plusBeforeRepair": 44
+  },
+  "latestManualHausaRepair": {
+    "checkedAt": "2026-11-14T20:15:00Z",
+    "branch": "work/r125-locale-candidates-20261008",
+    "language": "ha",
+    "packCommit": "d30dd8524843765c5f664a63ab9183886ced5f39",
+    "exactEdits": 10,
+    "keysPerPack": 1118,
+    "sourceHash": "6a1126e6a2ce5629",
+    "sourceUnchanged": true,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "linguisticCertification": false,
+    "validation": "Read-back verified; provisional manual Hausa UI terms; native review required."
+  },
+  "latestContinuationCheck": {
+    "checkedAt": "2026-11-14T20:15:00Z",
+    "actions": {
+      "latestR125Known": 150,
+      "r125RunId": 38971104197,
+      "r125Status": "completed",
+      "r125Conclusion": "success",
+      "resume": "skipped",
+      "audit": "success",
+      "activeR125NotObservedInCheckpoint": false,
+      "latestPagesRun": 1535,
+      "pagesRunId": 43633978266,
+      "pagesStatus": "completed",
+      "pagesConclusion": "success"
+    },
+    "workflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "explicitTranslationOptInRequired": true
+    },
+    "thisPass": {
+      "candidatePackWrites": 1,
+      "exactManualReplacements": 10,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "currentAI": "unknown-not-probed",
+    "currentTranslationBackend": "unknown-not-probed",
+    "full98PackAudit": false,
+    "linguisticCertification": false,
+    "published": false,
+    "note": "R125 #150 job/steps fetched and verified: translation resume skipped; saved-candidate audit passed. Pages #1535 build/report/deploy jobs confirmed success. No live AI/quota probe."
   }
 }
