@@ -78,7 +78,8 @@
     "Voice",
     "Voice recognition is not supported in this browser.",
     "Voice reply",
-    "Worldwide Tourism & AI Trip Planner — SEEKVERA"
+    "Worldwide Tourism & AI Trip Planner — SEEKVERA",
+    "Paystack"
   ],
   "provider": "existing+@cf/google/gemma-4-26b-a4b-it+@cf/qwen/qwen3-30b-a3b-fp8",
   "translations": {
@@ -178,7 +179,7 @@
     "PART ONE": "БИРИНЧИ БӨЛҮМ",
     "Payments": "Төлөмдөр",
     "Payoneer": "Payoneer",
-    "Paystack": "Пайстак",
+    "Paystack": "Paystack",
     "Pet Care": "Үй жаныбарларына кам көрүү",
     "Play Now": "Азыр ойноо",
     "Podcasts": "Подкасттар",
