@@ -488,5 +488,49 @@
       "reportBuildStatus": "success"
     },
     "scope": "GitHub Pages documentation deployment only"
+  },
+  "run28CurrentVerification": {
+    "checkedAt": "2026-11-14T18:17:00Z",
+    "latestPagesDeployment": {
+      "run": 1531,
+      "runId": 43622038352,
+      "conclusion": "success",
+      "scope": "documentation deployment only"
+    },
+    "latestActionsSnapshot": {
+      "latest30Fetched": true,
+      "activeRunsObserved": 0,
+      "latestR125InLatest30": false,
+      "latestKnownR125Run": 150
+    },
+    "resumeWorkflow": {
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "translationRequiresExplicitTrue": true
+    },
+    "candidateState": {
+      "completedCount": 97,
+      "remaining": [
+        "dv"
+      ],
+      "structuralFailure": "english_overlap:58",
+      "published": false,
+      "linguisticCertification": false,
+      "fullAuditPending": true
+    },
+    "resumeLog": {
+      "lastObserved": "48 prior successful repair translations; later split batches timed out/HTTP503; staged=0; failed=1",
+      "latestLogDate": "2026-10-30"
+    },
+    "aiAvailability": {
+      "chat": "unknown-not-probed",
+      "translation": "unknown-not-probed",
+      "quotaRequestsThisPass": 0
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    }
   }
 }
