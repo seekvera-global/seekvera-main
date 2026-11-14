@@ -318,6 +318,15 @@
       "publication": false,
       "linguisticCertification": false,
       "validation": "Fetched and re-read each edited pack; all retain 1,118 translation keys. Summary warning map updated only for touched known entries; full audit remains pending."
+    },
+    "structuralVerification": {
+      "checkedAt": "2026-11-14T04:48:00Z",
+      "languages": 97,
+      "keysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "missingKeys": 0,
+      "extraKeys": 0,
+      "qualityCertification": false
     }
   },
   "builderRepair": {
@@ -366,10 +375,10 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-14T03:07:00Z",
+    "checkedAt": "2026-11-14T04:48:00Z",
     "mainCheckpointBlobBeforeUpdate": "2465a26212bc004f3c2bf1f22768fa12db45784e",
-    "candidateBranchHead": "9cbf48a6e77b44010f03e64f3ab51a6740137760",
-    "candidateSummaryBlob": "updated-by-summary-commit-9cbf48a6e77b44010f03e64f3ab51a6740137760",
+    "candidateBranchHead": "2e2453c6c199db646c205cb9be6ad252a796f2fe",
+    "candidateSummaryBlob": "updated-by-structural-verification-commit-2e2453c6c199db646c205cb9be6ad252a796f2fe",
     "candidateLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
@@ -383,7 +392,7 @@
       "auditStep": "success",
       "translationRequestsSent": 0,
       "activeRunFound": false,
-      "activeRunsCheck": "Fresh GitHub Actions API query status=in_progress returned total_count=0 at 2026-11-14T03:07:00Z; no candidate-resume run active.",
+      "activeRunsCheck": "Latest 100 repository Actions runs at 2026-11-14T04:48:00Z: zero queued/in_progress; R125 candidate render #2 (43241261247) completed success 2026-11-12.",
       "candidateWritesDeferredWhileActive": true,
       "candidateWriteThisRun": "11 deterministic locale text repairs plus summary/checkpoint; no translation calls.",
       "candidatePackFilesChangedByRun150": false,
@@ -413,7 +422,14 @@
       "warningLanguages": 25
     },
     "candidatePacksPublished": false,
-    "linguisticAccuracyCertified": false
+    "linguisticAccuracyCertified": false,
+    "structuralVerification": {
+      "checkedLanguages": 97,
+      "expectedKeysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "keySetMatch": "all 1,118 source strings exactly; zero missing/extra",
+      "result": "PASS structural only; no linguistic certification"
+    }
   },
   "verificationInfrastructureRepair": {
     "checkedAt": "2026-11-12T09:56:58Z",
