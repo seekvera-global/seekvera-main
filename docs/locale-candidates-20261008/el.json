@@ -141,7 +141,8 @@
     "print this page and place it at reception, entrances, rooms, events or service desks. People can scan without typing the website address.",
     "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
     "🛡️ Games are self-contained SEEKVERA mini games. No stranger chat, gambling, paid loot boxes or external ad network is used.",
-    "🛡️ SEEKVERA Safety Gate · AI text + AI Vision + automatic review"
+    "🛡️ SEEKVERA Safety Gate · AI text + AI Vision + automatic review",
+    "Paystack"
   ],
   "provider": "existing+@cf/google/gemma-4-26b-a4b-it+@cf/qwen/qwen3-30b-a3b-fp8",
   "translations": {
@@ -241,7 +242,7 @@
     "PART ONE": "ΠΡΩΤΟ ΜΕΡΟΣ",
     "Payments": "Πληρωμές",
     "Payoneer": "Payoneer",
-    "Paystack": "Πληρωμή",
+    "Paystack": "Paystack",
     "Pet Care": "Περιποίηση κατοικιδίων",
     "Play Now": "Παίξτε τώρα",
     "Podcasts": "Podcasts",
