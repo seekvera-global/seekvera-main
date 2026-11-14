@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T04:48:00Z",
+  "checkedAt": "2026-11-14T05:27:00Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -128,19 +128,14 @@
       ]
     },
     "fa": {
-      "count": 2,
+      "count": 1,
       "sources": [
-        "2026-09-26 · R74",
-        "📰 SEEKVERA NEWS & MEDIA"
+        "2026-09-26 · R74"
       ],
       "examples": [
         {
           "source": "2026-09-26 · R74",
           "value": "26-09-2026 · R74"
-        },
-        {
-          "source": "📰 SEEKVERA NEWS & MEDIA",
-          "value": "📰 SEEKVERA News & MEDIA"
         }
       ]
     },
@@ -186,16 +181,9 @@
       ]
     },
     "ka": {
-      "count": 1,
-      "sources": [
-        "SEEKVERA finder"
-      ],
-      "examples": [
-        {
-          "source": "SEEKVERA finder",
-          "value": "SEEKVERA Finder"
-        }
-      ]
+      "count": 0,
+      "sources": [],
+      "examples": []
     },
     "kk": {
       "count": 1,
@@ -222,19 +210,14 @@
       ]
     },
     "tg": {
-      "count": 2,
+      "count": 1,
       "sources": [
-        "2026-09-26 · R74",
-        "📰 SEEKVERA NEWS & MEDIA"
+        "2026-09-26 · R74"
       ],
       "examples": [
         {
           "source": "2026-09-26 · R74",
           "value": "26-09-2026 · R74"
-        },
-        {
-          "source": "📰 SEEKVERA NEWS & MEDIA",
-          "value": "📰 SEEKVERA News & MEDIA"
         }
       ]
     },
@@ -259,26 +242,9 @@
       "examples": []
     },
     "dz": {
-      "count": 3,
-      "sources": [
-        "Play inside SEEKVERA",
-        "Search with SEEKVERA",
-        "Share and install SEEKVERA"
-      ],
-      "examples": [
-        {
-          "source": "Play inside SEEKVERA",
-          "value": "SEEKVERA"
-        },
-        {
-          "source": "Search with SEEKVERA",
-          "value": "SEEKVERA"
-        },
-        {
-          "source": "Share and install SEEKVERA",
-          "value": "SEEKVERA"
-        }
-      ]
+      "count": 0,
+      "sources": [],
+      "examples": []
     },
     "gu": {
       "count": 2,
@@ -337,8 +303,8 @@
     "linguisticCertification": false,
     "validation": "Git compare confirms 73 locale files each have exactly one line changed (one replacement); five sampled packs retain 1,118 keys and exact immutable value."
   },
-  "scriptWarningCount": 16,
-  "scriptWarningLanguages": 11,
+  "scriptWarningCount": 11,
+  "scriptWarningLanguages": 10,
   "repairsSinceAudit": [
     {
       "language": "lo",
@@ -724,10 +690,66 @@
       "before": "Zero‑Cost mode",
       "after": "د صفر لګښت حالت",
       "kind": "localized mode label"
+    },
+    {
+      "language": "fa",
+      "key": "📰 SEEKVERA NEWS & MEDIA",
+      "before": "📰 SEEKVERA News & MEDIA",
+      "after": "📰 اخبار و رسانه‌های SEEKVERA",
+      "kind": "localized mixed-language section label"
+    },
+    {
+      "language": "tg",
+      "key": "📰 SEEKVERA NEWS & MEDIA",
+      "before": "📰 SEEKVERA News & MEDIA",
+      "after": "📰 Хабарҳо ва расонаҳои SEEKVERA",
+      "kind": "localized mixed-language section label"
+    },
+    {
+      "language": "ka",
+      "key": "SEEKVERA finder",
+      "before": "SEEKVERA Finder",
+      "after": "SEEKVERA-ის მაძიებელი",
+      "kind": "localized section label"
+    },
+    {
+      "language": "mk",
+      "key": "SEEKVERA GUIDE",
+      "before": "ВОДИЧ ЗА БАРАЈТЕ НА ВИДЕО",
+      "after": "Водич за SEEKVERA",
+      "kind": "corrected malformed guide translation"
+    },
+    {
+      "language": "ky",
+      "key": "SEEKVERA GUIDE",
+      "before": "SEEKVERA GUIDE",
+      "after": "SEEKVERA жол көрсөткүчү",
+      "kind": "localized guide label"
+    },
+    {
+      "language": "dz",
+      "key": "Play inside SEEKVERA",
+      "before": "SEEKVERA",
+      "after": "SEEKVERA ནང་ནི་རྩེད་འབད།",
+      "kind": "restored missing play action"
+    },
+    {
+      "language": "dz",
+      "key": "Search with SEEKVERA",
+      "before": "SEEKVERA",
+      "after": "SEEKVERA གིས་འཚོལ།",
+      "kind": "restored missing search action"
+    },
+    {
+      "language": "dz",
+      "key": "Share and install SEEKVERA",
+      "before": "SEEKVERA",
+      "after": "SEEKVERA བགོ་བཤའ་རྐྱབ་ནི་དང་བཙུགས།",
+      "kind": "restored missing share/install actions"
     }
   ],
   "auditPending": true,
-  "auditNote": "Partial quota-neutral warning recomputation after 44 deterministic/manual exact repairs; full 98-pack audit still pending. This pass removed 8 specific missing-action/punctuation warnings in fa, kk, ta, te, bn, hi and zh. No translation API or AI requests were sent. Quota-neutral deterministic repairs on 2026-11-14: fixed 11 exact strings in mn/ne/ur/el/he/si/ps; updated known script-warning entries (hi/he/si/mn/ne/zh cleared; ur/el/ps retain date-format review). No translation API or AI requests sent; full 98-pack audit remains pending.",
+  "auditNote": "Partial quota-neutral warning recomputation after 44 deterministic/manual exact repairs; full 98-pack audit still pending. This pass removed 8 specific missing-action/punctuation warnings in fa, kk, ta, te, bn, hi and zh. No translation API or AI requests were sent. Quota-neutral deterministic repairs on 2026-11-14: fixed 11 exact strings in mn/ne/ur/el/he/si/ps; updated known script-warning entries (hi/he/si/mn/ne/zh cleared; ur/el/ps retain date-format review). No translation API or AI requests sent; full 98-pack audit remains pending. Quota-neutral deterministic repairs 2026-11-14: corrected 8 exact strings across fa/tg/ka/mk/ky/dz; Dzongkha had 3 action labels reduced to brand-only text. Full 98-pack audit and native-language review remain pending; no translation API or AI requests.",
   "structuralVerification": {
     "checkedAt": "2026-11-14T04:48:00Z",
     "checkedLanguages": 97,
@@ -762,5 +784,32 @@
       "latest100Runs": "zero queued/in_progress",
       "scope": "first 100 latest repo Actions runs"
     }
+  },
+  "latestQuotaNeutralRepair": {
+    "checkedAt": "2026-11-14T05:27:00Z",
+    "commits": {
+      "fa": "c3226b7d3d201781a775fa12975f6370017b27b7",
+      "tg": "5748cd6cffcaa89bcbdf326ebe44b0b254ace9be",
+      "ka": "ebd3a51fbf6247cd359ab2d0724e590ff53eafb0",
+      "mk": "98d10cc232295b0e91cb2b092212a1b3e5546704",
+      "ky": "8ac35446c000792c0569e4fd36843b05734a2d54",
+      "dz": "a9ab35442a3c43ad6c1f796601f7cfe767486c39"
+    },
+    "files": [
+      "fa.json",
+      "tg.json",
+      "ka.json",
+      "mk.json",
+      "ky.json",
+      "dz.json"
+    ],
+    "exactEdits": 8,
+    "keysPerPack": 1118,
+    "sourceUnchanged": true,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "publication": false,
+    "linguisticCertification": false,
+    "validation": "All six edited packs re-read; all retain 1,118 keys and exact expected values. Warning-map recomputed from retained entries."
   }
 }
