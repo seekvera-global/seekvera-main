@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-13",
+  "date": "2026-11-14",
   "finalApproval": false,
   "sourceHash": "6a1126e6a2ce5629",
   "sourceCount": 1118,
@@ -174,7 +174,8 @@
     "Finish and linguistically review the remaining Divehi (dv) pack, then linguistically review all 98 packs",
     "Perform physical microphone and audible-speaker tests on Android, iPhone/iPad and desktop; programmatic TTS/ASR does not certify hardware",
     "Payment checkout remains inactive pending merchant-account configuration",
-    "Triage candidate script warnings across 83 language packs (142 findings); distinguish reserved identifiers and formatting from genuine wrong-script or incomplete UI text."
+    "Triage candidate script warnings across 83 language packs (142 findings); distinguish reserved identifiers and formatting from genuine wrong-script or incomplete UI text.",
+    "Re-run full candidate audit after 2026-11-14 repairs; do not infer warning totals until audit completes."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
@@ -236,8 +237,8 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-11-13T23:23:32Z",
-    "candidateCommit": "d17366541d19aa8b4c5190d14af479e8c0c596f2",
+    "checkedAt": "2026-11-14T00:46:00Z",
+    "candidateCommit": "2d378b1bf416cbc1e95db4d7b7cde0f6cc708d54",
     "completedCount": 97,
     "remainingCount": 1,
     "firstFailure": "dv",
@@ -247,9 +248,31 @@
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false,
-    "note": "This run deterministically restored the immutable identifier in 73 locale packs (ar was already correct), preserving all other raw file bytes. Branch summary now reflects 68 script warnings across 25 languages; Divehi remains structurally incomplete.",
+    "note": "This run deterministically restored the immutable identifier in 73 locale packs (ar was already correct), preserving all other raw file bytes. Branch summary now reflects 68 script warnings across 25 languages; Divehi remains structurally incomplete.; 2026-11-14 deterministic repairs: Lao Paystack brand spelling restored; Kyrgyz 'Nearby Now' typo corrected; Punjabi wrong Devanagari entries corrected to Gurmukhi, CROSS-BORDER typo corrected, zero-cost MVP sentence repaired, and translated CSS restored byte-for-byte to source. All edits limited to seven known strings in lo/ky/pa; source untouched; full audit not yet rerun.",
     "quotaStatusCurrent": "unknown-not-probed",
-    "knownDailyFreeAiLimitBlocker": true
+    "knownDailyFreeAiLimitBlocker": true,
+    "repairBatch20261114": {
+      "files": [
+        "lo.json",
+        "ky.json",
+        "pa.json"
+      ],
+      "verifiedTranslations": {
+        "loPaystack": "Paystack",
+        "kyNearby": "Азыр жакын жерде",
+        "paOpen": "ਮਿਲਦੇ ਭਾਗ ਨੂੰ ਖੋਲ੍ਹੋ",
+        "paCross": "ਸਰਹੱਦ ਪਾਰ ਲੌਜਿਸਟਿਕਸ",
+        "paBalloons": "ਰੰਗੀਨ ਗੁਬਾਰੇ ਫੋੜੋ।",
+        "paNight": "ਤੇਜ਼ ਰਫ਼ਤਾਰ ਰਾਤ ਦੀ ਰੇਸਿੰਗ।",
+        "paCss": "html.sv-r15-applying .r5-top,html.sv-r15-applying .r5-hero,html.sv-r15-applying .r5-chat,html.sv-r15-applying #categories{transition:none!important;animation:none!important} .sv-controls .sv-select{min-width:0;text-overflow:ellipsis}",
+        "counts": [
+          1118,
+          1118,
+          1118
+        ]
+      },
+      "scope": "7 exact key/value repairs only; no AI/translation quota calls; not a linguistic certification"
+    }
   },
   "builderRepair": {
     "commit": "634a0d31cb571300d658bb24580bdad3cbaeb75b",
