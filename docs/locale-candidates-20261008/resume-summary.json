@@ -333,23 +333,24 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-14T16:57:00Z",
+    "checkedAt": "2026-11-14T19:47:30Z",
     "actions": {
       "latest100Fetched": true,
-      "activeRunsObserved": 0,
-      "latestRepositoryRun": {
-        "run": 1528,
-        "id": 43611755514,
-        "status": "completed",
-        "conclusion": "success",
-        "createdAt": "2026-11-14T15:44:05Z"
-      }
+      "activeRunsObserved": 1,
+      "activeRun": {
+        "name": "pages build and deployment",
+        "run": 1535,
+        "id": 43633978266,
+        "status": "in_progress"
+      },
+      "latestR125Run": 150,
+      "latestR125Status": "completed",
+      "r125ActiveObserved": false,
+      "scope": "fresh latest 100 main-branch Actions runs; only Pages #1535 active; R125 workflow manual dispatch only"
     },
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
-      "pauseCommit": "303f63e70cd03c2ec62abd580bfd182e50c6ab2f",
       "currentTrigger": "workflow_dispatch only",
-      "scheduleAndPushTriggersRemoved": true,
       "runTranslationsDefault": false,
       "explicitTranslationOptInRequired": true
     },
@@ -375,7 +376,28 @@
     "full98PackAudit": false,
     "linguisticCertification": false,
     "published": false,
-    "note": "Fresh Actions check at 16:57 UTC; no active run. Workflow can resume translations only on manual dispatch with run_translations=true. No live quota probe."
+    "note": "Fresh Actions check at 16:57 UTC; no active run. Workflow can resume translations only on manual dispatch with run_translations=true. No live quota probe.",
+    "candidateState": {
+      "completedCount": 97,
+      "remaining": [
+        "dv"
+      ],
+      "structuralFailure": "english_overlap:58",
+      "published": false,
+      "linguisticCertification": false,
+      "fullAuditPending": true
+    },
+    "aiAvailability": {
+      "chat": "unknown-not-probed",
+      "translation": "unknown-not-probed",
+      "quotaRequestsThisPass": 0
+    },
+    "thisPass": {
+      "candidatePackWrites": 3,
+      "exactManualReplacements": 27,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    }
   },
   "latestContinuationVerification": {
     "checkedAt": "2026-11-14T15:42:00Z",
@@ -478,16 +500,12 @@
     "scope": "Independent read-back of 16 candidate JSON packs; not full 98-pack audit, not all-section end-to-end, and not native-language review."
   },
   "latestDocumentationDeployment": {
-    "run": 1529,
-    "runId": 43618431668,
-    "createdAt": "2026-11-14T16:57:34Z",
-    "conclusion": "success",
-    "jobs": {
-      "build": "success",
-      "deploy": "success",
-      "reportBuildStatus": "success"
-    },
-    "scope": "GitHub Pages documentation deployment only"
+    "run": 1535,
+    "runId": 43633978266,
+    "createdAt": "2026-11-14T19:47:20Z",
+    "status": "in_progress",
+    "conclusion": null,
+    "scope": "Main checkpoint documentation deployment; not product release"
   },
   "run28CurrentVerification": {
     "checkedAt": "2026-11-14T18:17:00Z",
