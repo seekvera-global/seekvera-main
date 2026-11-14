@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T10:10:00Z",
+  "checkedAt": "2026-11-14T11:35:00Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -230,9 +230,9 @@
   },
   "scriptWarningCount": 0,
   "scriptWarningLanguages": 0,
-  "repairsSinceAudit": 81,
+  "repairsSinceAudit": 82,
   "auditPending": true,
-  "auditNote": "Partial quota-neutral warning recomputation after 44 deterministic/manual exact repairs; full 98-pack audit still pending. This pass removed 8 specific missing-action/punctuation warnings in fa, kk, ta, te, bn, hi and zh. No translation API or AI requests were sent. Quota-neutral deterministic repairs on 2026-11-14: fixed 11 exact strings in mn/ne/ur/el/he/si/ps; updated known script-warning entries (hi/he/si/mn/ne/zh cleared; ur/el/ps retain date-format review). No translation API or AI requests sent; full 98-pack audit remains pending. Quota-neutral deterministic repairs 2026-11-14: corrected 8 exact strings across fa/tg/ka/mk/ky/dz; Dzongkha had 3 action labels reduced to brand-only text. Full 98-pack audit and native-language review remain pending; no translation API or AI requests. Quota-neutral 2026-11-14 repair: Gujarati SEEKVERA GUIDE localized; readback verified 1,118 keys. Warning map now 10 date/presentation warnings across 10 languages; full audit remains pending. 2026-11-14 06:00Z: normalized the exact R74 date token in ur/fa/el/uk/mk/kk/ky/tg/gu/ps to the stable source ISO form; each pack read back at 1,118 keys and matching sourceHash. Partial known date/presentation warning map now 0/0. This is not a full 98-pack audit or linguistic certification. 2026-11-14 09:30Z: quota-neutral manual Myanmar repair: corrected Action/Arcade/Puzzle/Adventure game labels, Chinese language vs China, and two distinct game descriptions that had identical Burmese output. Pack read back at 1,118 keys; source unchanged; translationRequestsSent=0; aiQuotaUsed=0. Partial duplicate scan of Myanmar now shows only expected case variants (AI DEAL AGENT/AI Deal Agent, All Categories/All categories, Worldwide Tourism/Worldwide tourism); full 98-pack audit and native review remain pending.",
+  "auditNote": "Partial quota-neutral warning recomputation after 44 deterministic/manual exact repairs; full 98-pack audit still pending. This pass removed 8 specific missing-action/punctuation warnings in fa, kk, ta, te, bn, hi and zh. No translation API or AI requests were sent. Quota-neutral deterministic repairs on 2026-11-14: fixed 11 exact strings in mn/ne/ur/el/he/si/ps; updated known script-warning entries (hi/he/si/mn/ne/zh cleared; ur/el/ps retain date-format review). No translation API or AI requests sent; full 98-pack audit remains pending. Quota-neutral deterministic repairs 2026-11-14: corrected 8 exact strings across fa/tg/ka/mk/ky/dz; Dzongkha had 3 action labels reduced to brand-only text. Full 98-pack audit and native-language review remain pending; no translation API or AI requests. Quota-neutral 2026-11-14 repair: Gujarati SEEKVERA GUIDE localized; readback verified 1,118 keys. Warning map now 10 date/presentation warnings across 10 languages; full audit remains pending. 2026-11-14 06:00Z: normalized the exact R74 date token in ur/fa/el/uk/mk/kk/ky/tg/gu/ps to the stable source ISO form; each pack read back at 1,118 keys and matching sourceHash. Partial known date/presentation warning map now 0/0. This is not a full 98-pack audit or linguistic certification. 2026-11-14 09:30Z: quota-neutral manual Myanmar repair: corrected Action/Arcade/Puzzle/Adventure game labels, Chinese language vs China, and two distinct game descriptions that had identical Burmese output. Pack read back at 1,118 keys; source unchanged; translationRequestsSent=0; aiQuotaUsed=0. Partial duplicate scan of Myanmar now shows only expected case variants (AI DEAL AGENT/AI Deal Agent, All Categories/All categories, Worldwide Tourism/Worldwide tourism); full 98-pack audit and native review remain pending. 2026-11-14 11:35Z: quota-neutral manual Amharic repair: 19 exact keys (9 game-category labels + 10 game descriptions) corrected; removed the 10-description duplicate-output group. Pack re-read with 1,118 keys/sourceHash unchanged. No translation request or AI quota use. Native Amharic review and full 98-pack audit still pending.",
   "structuralVerification": {
     "checkedAt": "2026-11-14T04:48:00Z",
     "checkedLanguages": 97,
@@ -285,26 +285,22 @@
     }
   },
   "latestQuotaNeutralRepair": {
-    "checkedAt": "2026-11-14T09:30:00Z",
+    "checkedAt": "2026-11-14T11:35:00Z",
     "branch": "work/r125-locale-candidates-20261008",
-    "packCommit": "ba309c396ecd667f3d7d0f4818b3013305c2488a",
-    "language": "my",
-    "exactEdits": 7,
-    "files": [
-      "my.json"
-    ],
+    "language": "am",
+    "packCommit": "e280de863bbd1e0546a5fa4e4fd3674a97db725f",
+    "exactEdits": 19,
     "sourceUnchanged": true,
     "keysPerPack": 1118,
     "translationRequestsSent": 0,
     "aiQuotaUsed": 0,
     "publication": false,
     "linguisticCertification": false,
-    "validation": "Read back 1,118 translation keys; corrected 4 game category labels, Chinese language label, and 2 game descriptions. Duplicate scan >=2 now leaves only case-variant labels.",
-    "fullAuditPending": true
+    "validation": "Read back am.json: 1,118 keys, sourceHash matches; all 19 exact replacements persisted; prior duplicate group of 10 game descriptions no longer exists. Manual working translation, not native-language certification."
   },
-  "repairs": 81,
+  "repairs": 82,
   "semanticDuplicateFindings": {
-    "checkedAt": "2026-11-14T09:30:00Z",
+    "checkedAt": "2026-11-14T11:35:00Z",
     "scope": [
       "am",
       "dv",
@@ -313,10 +309,10 @@
     "findings": [
       {
         "language": "am",
-        "count": 10,
-        "groupCount": 1,
-        "status": "unresolved",
-        "note": "10 distinct game descriptions share one Amharic translation; no unverified edits made."
+        "count": 0,
+        "groupCount": 0,
+        "status": "repaired_manual_unreviewed",
+        "note": "19 manual exact edits corrected nine game category labels and ten distinct descriptions; previous 10-key identical-description cluster removed. Needs native Amharic review; full pack audit pending."
       },
       {
         "language": "dv",
@@ -337,18 +333,30 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-14T10:10:00Z",
-    "candidateBranchHead": "f5b674447def79d3e6cd53de339550ef52cf31b8",
-    "mainHeadBeforeCheckpointUpdate": "a3323fbea61b4584b466ebdb8df5227ef47a2b5f",
+    "checkedAt": "2026-11-14T11:35:00Z",
+    "candidateBranchHead": "e280de863bbd1e0546a5fa4e4fd3674a97db725f",
     "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
     "workflowTrigger": "workflow_dispatch only",
     "runTranslationsDefault": false,
-    "activeQueuedOrInProgressRuns": 0,
-    "candidatePackWritesThisPass": false,
+    "latestInspectedR125Run": {
+      "run": 150,
+      "runId": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "resume": "skipped",
+      "audit": "success",
+      "jobStepsInspected": true
+    },
+    "latestActionsSnapshot": {
+      "checkedAt": "2026-11-14T10:10:00Z",
+      "latest100Runs": "zero queued/in_progress",
+      "scope": "last available fresh repository Actions query; not re-polled at 11:35Z"
+    },
+    "candidatePackWritesThisPass": true,
     "translationRequestsSent": 0,
     "aiQuotaUsed": 0,
     "aiChatCurrentAvailability": "unknown-not-probed",
     "translationBackendCurrentAvailability": "unknown-not-probed",
-    "reason": "No quota-safe live AI/translation probe; latest deployment release skipped live AI probes. Preserve daily_free_ai_limit and prior Google HTTP429."
+    "reason": "No quota-safe live AI/translation probe; preserve daily_free_ai_limit and prior Google HTTP429/503. No current R125 run was observed in last Actions snapshot; last inspected R125 #150 completed. Manual pack repair only."
   }
 }
