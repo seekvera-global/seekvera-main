@@ -491,7 +491,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-14T05:30:00Z",
+  "checkedAt": "2026-11-14T07:21:25Z",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -2152,5 +2152,48 @@
     "fullAuditPending": true,
     "publication": false,
     "linguisticCertification": false
+  },
+  "run25DhivehiOverlapDiagnostic": {
+    "checkedAt": "2026-11-14T07:21:25Z",
+    "candidateBranch": "work/r125-locale-candidates-20261008",
+    "candidateHead": "50f397690baf59138afdb5d12c76b362de3901d1",
+    "sourceHash": "6a1126e6a2ce5629",
+    "sourceCount": 1118,
+    "dvPackCount": 1118,
+    "missingSourceKeys": 0,
+    "extraKeys": 0,
+    "retranslatedKeys": 88,
+    "exactEnglishIdentityValues": 2,
+    "englishOverlapCount": 58,
+    "overlapMethod": "same source audit rule: >=5-word longest contiguous English match in translated value, excluding protected technical/URL patterns",
+    "representativeKeys": [
+      "Fallback for unsupported eSIM devices. Registration rules, operators and pricing can change, so confirm current local requirements.",
+      "I’m the SEEKVERA AI assistant. Tell me what you need and I’ll help you find the right section, compare options or search worldwide.",
+      "print this page and place it at reception, entrances, rooms, events or service desks. People can scan without typing the website address",
+      "paid calls, paid APIs, paid verification, ads, subscriptions or company payments require an owner notice first. Auto Recharge remains OFF.",
+      "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+      "Phone: left stick moves • drag the right side to turn camera • ACTION changes with what is nearby • JUMP. Desktop: WASD / arrows • mouse drag • E • Space • Shift to run"
+    ],
+    "finding": "The 58 overlap flags are mixed strings retaining long English source clauses/sentences, not 58 fully unchanged translation values. Structural coverage is complete for dv but language quality is not.",
+    "disposition": "No edits to dv: without quota-safe translation or qualified Dhivehi review, replacing these phrases manually would risk inaccurate language. Translation quota was not queried or consumed.",
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "publication": false,
+    "linguisticCertification": false
+  },
+  "run25R125SafetySnapshot": {
+    "checkedAt": "2026-11-14T07:21:25Z",
+    "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
+    "workflowTrigger": "workflow_dispatch only",
+    "translationsDefault": false,
+    "latestKnownRun": 38971104197,
+    "latestKnownRunNumber": 150,
+    "latestKnownRunConclusion": "success",
+    "latestKnownRunTranslationStep": "skipped",
+    "latestKnownRunAuditStep": "success",
+    "latestCandidateResumeSnapshot": "resume-summary checked 2026-11-14T06:00:00Z; run=null",
+    "activeRunSnapshot": "zero queued/in_progress at 2026-11-14T04:48:00Z; not a live check at this timestamp",
+    "candidateWritesThisContinuation": false,
+    "note": "No candidate branch writes made; workflow dispatch unavailable in this execution."
   }
 }
