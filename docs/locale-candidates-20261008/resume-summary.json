@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T05:30:00Z",
+  "checkedAt": "2026-11-14T06:00:00Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -116,28 +116,14 @@
       "examples": []
     },
     "ur": {
-      "count": 1,
-      "sources": [
-        "2026-09-26 · R74"
-      ],
-      "examples": [
-        {
-          "source": "2026-09-26 · R74",
-          "value": "26-09-2026 · R74"
-        }
-      ]
+      "count": 0,
+      "sources": [],
+      "examples": []
     },
     "fa": {
-      "count": 1,
-      "sources": [
-        "2026-09-26 · R74"
-      ],
-      "examples": [
-        {
-          "source": "2026-09-26 · R74",
-          "value": "26-09-2026 · R74"
-        }
-      ]
+      "count": 0,
+      "sources": [],
+      "examples": []
     },
     "he": {
       "count": 0,
@@ -145,40 +131,19 @@
       "examples": []
     },
     "el": {
-      "count": 1,
-      "sources": [
-        "2026-09-26 · R74"
-      ],
-      "examples": [
-        {
-          "source": "2026-09-26 · R74",
-          "value": "26-09-2026 · R74"
-        }
-      ]
+      "count": 0,
+      "sources": [],
+      "examples": []
     },
     "uk": {
-      "count": 1,
-      "sources": [
-        "2026-09-26 · R74"
-      ],
-      "examples": [
-        {
-          "source": "2026-09-26 · R74",
-          "value": "26.09.2026 · R74"
-        }
-      ]
+      "count": 0,
+      "sources": [],
+      "examples": []
     },
     "mk": {
-      "count": 1,
-      "sources": [
-        "2026-09-26 · R74"
-      ],
-      "examples": [
-        {
-          "source": "2026-09-26 · R74",
-          "value": "26.09.2026 · R74"
-        }
-      ]
+      "count": 0,
+      "sources": [],
+      "examples": []
     },
     "ka": {
       "count": 0,
@@ -186,40 +151,19 @@
       "examples": []
     },
     "kk": {
-      "count": 1,
-      "sources": [
-        "2026-09-26 · R74"
-      ],
-      "examples": [
-        {
-          "source": "2026-09-26 · R74",
-          "value": "26.09.2026 · R74"
-        }
-      ]
+      "count": 0,
+      "sources": [],
+      "examples": []
     },
     "ky": {
-      "count": 1,
-      "sources": [
-        "2026-09-26 · R74"
-      ],
-      "examples": [
-        {
-          "source": "2026-09-26 · R74",
-          "value": "26-09-2026 · R74"
-        }
-      ]
+      "count": 0,
+      "sources": [],
+      "examples": []
     },
     "tg": {
-      "count": 1,
-      "sources": [
-        "2026-09-26 · R74"
-      ],
-      "examples": [
-        {
-          "source": "2026-09-26 · R74",
-          "value": "26-09-2026 · R74"
-        }
-      ]
+      "count": 0,
+      "sources": [],
+      "examples": []
     },
     "ne": {
       "count": 0,
@@ -247,28 +191,14 @@
       "examples": []
     },
     "gu": {
-      "count": 1,
-      "sources": [
-        "2026-09-26 · R74"
-      ],
-      "examples": [
-        {
-          "source": "2026-09-26 · R74",
-          "value": "26-09-2026 · R74"
-        }
-      ]
+      "count": 0,
+      "sources": [],
+      "examples": []
     },
     "ps": {
-      "count": 1,
-      "sources": [
-        "2026-09-26 · R74"
-      ],
-      "examples": [
-        {
-          "source": "2026-09-26 · R74",
-          "value": "26-09-2026 · R74"
-        }
-      ]
+      "count": 0,
+      "sources": [],
+      "examples": []
     },
     "zh": {
       "count": 0,
@@ -298,8 +228,8 @@
     "linguisticCertification": false,
     "validation": "Git compare confirms 73 locale files each have exactly one line changed (one replacement); five sampled packs retain 1,118 keys and exact immutable value."
   },
-  "scriptWarningCount": 10,
-  "scriptWarningLanguages": 10,
+  "scriptWarningCount": 0,
+  "scriptWarningLanguages": 0,
   "repairsSinceAudit": [
     {
       "language": "lo",
@@ -748,10 +678,80 @@
       "before": "SEEKVERA Guide",
       "after": "સીકવેરા માર્ગદર્શિકા",
       "kind": "localized Gujarati guide label"
+    },
+    {
+      "language": "ur",
+      "key": "2026-09-26 · R74",
+      "before": "localized day-first date token",
+      "after": "2026-09-26 · R74",
+      "kind": "normalized stable ISO date token; release marker preserved"
+    },
+    {
+      "language": "fa",
+      "key": "2026-09-26 · R74",
+      "before": "localized day-first date token",
+      "after": "2026-09-26 · R74",
+      "kind": "normalized stable ISO date token; release marker preserved"
+    },
+    {
+      "language": "el",
+      "key": "2026-09-26 · R74",
+      "before": "localized day-first date token",
+      "after": "2026-09-26 · R74",
+      "kind": "normalized stable ISO date token; release marker preserved"
+    },
+    {
+      "language": "uk",
+      "key": "2026-09-26 · R74",
+      "before": "localized day-first date token",
+      "after": "2026-09-26 · R74",
+      "kind": "normalized stable ISO date token; release marker preserved"
+    },
+    {
+      "language": "mk",
+      "key": "2026-09-26 · R74",
+      "before": "localized day-first date token",
+      "after": "2026-09-26 · R74",
+      "kind": "normalized stable ISO date token; release marker preserved"
+    },
+    {
+      "language": "kk",
+      "key": "2026-09-26 · R74",
+      "before": "localized day-first date token",
+      "after": "2026-09-26 · R74",
+      "kind": "normalized stable ISO date token; release marker preserved"
+    },
+    {
+      "language": "ky",
+      "key": "2026-09-26 · R74",
+      "before": "localized day-first date token",
+      "after": "2026-09-26 · R74",
+      "kind": "normalized stable ISO date token; release marker preserved"
+    },
+    {
+      "language": "tg",
+      "key": "2026-09-26 · R74",
+      "before": "localized day-first date token",
+      "after": "2026-09-26 · R74",
+      "kind": "normalized stable ISO date token; release marker preserved"
+    },
+    {
+      "language": "gu",
+      "key": "2026-09-26 · R74",
+      "before": "localized day-first date token",
+      "after": "2026-09-26 · R74",
+      "kind": "normalized stable ISO date token; release marker preserved"
+    },
+    {
+      "language": "ps",
+      "key": "2026-09-26 · R74",
+      "before": "localized day-first date token",
+      "after": "2026-09-26 · R74",
+      "kind": "normalized stable ISO date token; release marker preserved"
     }
   ],
   "auditPending": true,
-  "auditNote": "Partial quota-neutral warning recomputation after 44 deterministic/manual exact repairs; full 98-pack audit still pending. This pass removed 8 specific missing-action/punctuation warnings in fa, kk, ta, te, bn, hi and zh. No translation API or AI requests were sent. Quota-neutral deterministic repairs on 2026-11-14: fixed 11 exact strings in mn/ne/ur/el/he/si/ps; updated known script-warning entries (hi/he/si/mn/ne/zh cleared; ur/el/ps retain date-format review). No translation API or AI requests sent; full 98-pack audit remains pending. Quota-neutral deterministic repairs 2026-11-14: corrected 8 exact strings across fa/tg/ka/mk/ky/dz; Dzongkha had 3 action labels reduced to brand-only text. Full 98-pack audit and native-language review remain pending; no translation API or AI requests. Quota-neutral 2026-11-14 repair: Gujarati SEEKVERA GUIDE localized; readback verified 1,118 keys. Warning map now 10 date/presentation warnings across 10 languages; full audit remains pending.",
+  "auditNote": "Partial quota-neutral warning recomputation after 44 deterministic/manual exact repairs; full 98-pack audit still pending. This pass removed 8 specific missing-action/punctuation warnings in fa, kk, ta, te, bn, hi and zh. No translation API or AI requests were sent. Quota-neutral deterministic repairs on 2026-11-14: fixed 11 exact strings in mn/ne/ur/el/he/si/ps; updated known script-warning entries (hi/he/si/mn/ne/zh cleared; ur/el/ps retain date-format review). No translation API or AI requests sent; full 98-pack audit remains pending. Quota-neutral deterministic repairs 2026-11-14: corrected 8 exact strings across fa/tg/ka/mk/ky/dz; Dzongkha had 3 action labels reduced to brand-only text. Full 98-pack audit and native-language review remain pending; no translation API or AI requests. Quota-neutral 2026-11-14 repair: Gujarati SEEKVERA GUIDE localized; readback verified 1,118 keys. Warning map now 10 date/presentation warnings across 10 languages; full audit remains pending. 2026-11-14 06:00Z: normalized the exact R74 date token in ur/fa/el/uk/mk/kk/ky/tg/gu/ps to the stable source ISO form; each pack read back at 1,118 keys and matching sourceHash. Partial known date/presentation warning map now 0/0. This is not a full 98-pack audit or linguistic certification.",
   "structuralVerification": {
     "checkedAt": "2026-11-14T04:48:00Z",
     "checkedLanguages": 97,
@@ -788,20 +788,28 @@
     }
   },
   "latestQuotaNeutralRepair": {
-    "checkedAt": "2026-11-14T05:30:00Z",
-    "commits": {
-      "gu": "a2bd0c4528505bc917e5a331a008b3dcbd47c543"
-    },
+    "checkedAt": "2026-11-14T06:00:00Z",
+    "branchHead": "50f397690baf59138afdb5d12c76b362de3901d1",
     "files": [
-      "gu.json"
+      "ur.json",
+      "fa.json",
+      "el.json",
+      "uk.json",
+      "mk.json",
+      "kk.json",
+      "ky.json",
+      "tg.json",
+      "gu.json",
+      "ps.json"
     ],
-    "exactEdits": 1,
+    "exactEdits": 10,
     "keysPerPack": 1118,
-    "sourceUnchanged": true,
+    "sourceHash": "6a1126e6a2ce5629",
     "translationRequestsSent": 0,
     "aiQuotaUsed": 0,
     "publication": false,
     "linguisticCertification": false,
-    "validation": "Gujarati pack read back at 1,118 keys; exact guide label corrected; warning removed from partial map."
-  }
+    "validation": "All 10 exact date tokens normalized and read back; no source or key-count change."
+  },
+  "repairs": 74
 }
