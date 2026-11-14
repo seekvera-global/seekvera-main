@@ -76,7 +76,8 @@
     "Understanding your speech…",
     "Voice",
     "Voice recognition is not supported in this browser.",
-    "Voice reply"
+    "Voice reply",
+    "Paystack"
   ],
   "provider": "existing+@cf/qwen/qwen3-30b-a3b-fp8",
   "translations": {
@@ -176,7 +177,7 @@
     "PART ONE": "БІРІНШІ БӨЛІМ",
     "Payments": "Төлемдер",
     "Payoneer": "Payoneer",
-    "Paystack": "Пайстак",
+    "Paystack": "Paystack",
     "Pet Care": "Үй жануарларына күтім жасау",
     "Play Now": "Қазір ойнату",
     "Podcasts": "Подкасттар",
