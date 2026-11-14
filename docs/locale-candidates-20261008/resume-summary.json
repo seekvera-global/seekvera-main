@@ -230,9 +230,9 @@
   },
   "scriptWarningCount": 0,
   "scriptWarningLanguages": 0,
-  "repairsSinceAudit": 82,
+  "repairsSinceAudit": 168,
   "auditPending": true,
-  "auditNote": "Partial quota-neutral warning recomputation after 44 deterministic/manual exact repairs; full 98-pack audit still pending. This pass removed 8 specific missing-action/punctuation warnings in fa, kk, ta, te, bn, hi and zh. No translation API or AI requests were sent. Quota-neutral deterministic repairs on 2026-11-14: fixed 11 exact strings in mn/ne/ur/el/he/si/ps; updated known script-warning entries (hi/he/si/mn/ne/zh cleared; ur/el/ps retain date-format review). No translation API or AI requests sent; full 98-pack audit remains pending. Quota-neutral deterministic repairs 2026-11-14: corrected 8 exact strings across fa/tg/ka/mk/ky/dz; Dzongkha had 3 action labels reduced to brand-only text. Full 98-pack audit and native-language review remain pending; no translation API or AI requests. Quota-neutral 2026-11-14 repair: Gujarati SEEKVERA GUIDE localized; readback verified 1,118 keys. Warning map now 10 date/presentation warnings across 10 languages; full audit remains pending. 2026-11-14 06:00Z: normalized the exact R74 date token in ur/fa/el/uk/mk/kk/ky/tg/gu/ps to the stable source ISO form; each pack read back at 1,118 keys and matching sourceHash. Partial known date/presentation warning map now 0/0. This is not a full 98-pack audit or linguistic certification. 2026-11-14 09:30Z: quota-neutral manual Myanmar repair: corrected Action/Arcade/Puzzle/Adventure game labels, Chinese language vs China, and two distinct game descriptions that had identical Burmese output. Pack read back at 1,118 keys; source unchanged; translationRequestsSent=0; aiQuotaUsed=0. Partial duplicate scan of Myanmar now shows only expected case variants (AI DEAL AGENT/AI Deal Agent, All Categories/All categories, Worldwide Tourism/Worldwide tourism); full 98-pack audit and native review remain pending. 2026-11-14 11:35Z: quota-neutral manual Amharic repair: 19 exact keys (9 game-category labels + 10 game descriptions) corrected; removed the 10-description duplicate-output group. Pack re-read with 1,118 keys/sourceHash unchanged. No translation request or AI quota use. Native Amharic review and full 98-pack audit still pending.",
+  "auditNote": "Partial quota-neutral warning recomputation after 44 deterministic/manual exact repairs; full 98-pack audit still pending. This pass removed 8 specific missing-action/punctuation warnings in fa, kk, ta, te, bn, hi and zh. No translation API or AI requests were sent. Quota-neutral deterministic repairs on 2026-11-14: fixed 11 exact strings in mn/ne/ur/el/he/si/ps; updated known script-warning entries (hi/he/si/mn/ne/zh cleared; ur/el/ps retain date-format review). No translation API or AI requests sent; full 98-pack audit remains pending. Quota-neutral deterministic repairs 2026-11-14: corrected 8 exact strings across fa/tg/ka/mk/ky/dz; Dzongkha had 3 action labels reduced to brand-only text. Full 98-pack audit and native-language review remain pending; no translation API or AI requests. Quota-neutral 2026-11-14 repair: Gujarati SEEKVERA GUIDE localized; readback verified 1,118 keys. Warning map now 10 date/presentation warnings across 10 languages; full audit remains pending. 2026-11-14 06:00Z: normalized the exact R74 date token in ur/fa/el/uk/mk/kk/ky/tg/gu/ps to the stable source ISO form; each pack read back at 1,118 keys and matching sourceHash. Partial known date/presentation warning map now 0/0. This is not a full 98-pack audit or linguistic certification. 2026-11-14 09:30Z: quota-neutral manual Myanmar repair: corrected Action/Arcade/Puzzle/Adventure game labels, Chinese language vs China, and two distinct game descriptions that had identical Burmese output. Pack read back at 1,118 keys; source unchanged; translationRequestsSent=0; aiQuotaUsed=0. Partial duplicate scan of Myanmar now shows only expected case variants (AI DEAL AGENT/AI Deal Agent, All Categories/All categories, Worldwide Tourism/Worldwide tourism); full 98-pack audit and native review remain pending. 2026-11-14 11:35Z: quota-neutral manual Amharic repair: 19 exact keys (9 game-category labels + 10 game descriptions) corrected; removed the 10-description duplicate-output group. Pack re-read with 1,118 keys/sourceHash unchanged. No translation request or AI quota use. Native Amharic review and full 98-pack audit still pending. 2026-11-14 22:46Z: deterministic brand-preservation pass: restored exact Payoneer/Paystack/WhatsApp identifiers across 64 locale packs (86 exact replacements). Read back all 64: 1,118 keys each, sourceHash 6a1126e6a2ce5629, repaired brand values exact. No translation API or AI calls; no publication or linguistic certification. Full 98-pack audit/native review still pending.",
   "structuralVerification": {
     "checkedAt": "2026-11-14T04:48:00Z",
     "checkedLanguages": 97,
@@ -285,20 +285,20 @@
     }
   },
   "latestQuotaNeutralRepair": {
-    "checkedAt": "2026-11-14T11:35:00Z",
+    "checkedAt": "2026-11-14T22:46:16Z",
     "branch": "work/r125-locale-candidates-20261008",
-    "language": "am",
-    "packCommit": "e280de863bbd1e0546a5fa4e4fd3674a97db725f",
-    "exactEdits": 19,
+    "languageCount": 64,
+    "exactEdits": 86,
     "sourceUnchanged": true,
     "keysPerPack": 1118,
+    "sourceHash": "6a1126e6a2ce5629",
     "translationRequestsSent": 0,
     "aiQuotaUsed": 0,
     "publication": false,
     "linguisticCertification": false,
-    "validation": "Read back am.json: 1,118 keys, sourceHash matches; all 19 exact replacements persisted; prior duplicate group of 10 game descriptions no longer exists. Manual working translation, not native-language certification."
+    "validation": "Read back all 64 touched packs: 1,118 translation keys each and matching sourceHash; all changed Payoneer/Paystack/WhatsApp brand strings now exact. This is deterministic brand normalization, not native-language certification."
   },
-  "repairs": 82,
+  "repairs": 168,
   "semanticDuplicateFindings": {
     "checkedAt": "2026-11-14T11:35:00Z",
     "scope": [
@@ -333,7 +333,7 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-14T21:53:00Z",
+    "checkedAt": "2026-11-14T22:46:16Z",
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
       "trigger": "workflow_dispatch only",
@@ -366,15 +366,16 @@
       "quotaRequestsThisPass": 0
     },
     "thisPass": {
-      "candidatePackWrites": 6,
-      "exactManualReplacements": 12,
+      "candidatePackWrites": 64,
+      "exactManualReplacements": 86,
       "translationRequests": 0,
-      "aiQuotaUsed": 0
+      "aiQuotaUsed": 0,
+      "summaryOnly": false
     },
     "full98PackAudit": false,
     "linguisticCertification": false,
     "published": false,
-    "note": "Quota-neutral manual brand-name normalization in ti/dz/kl/ga/tn/rw (12 exact edits across 6 packs); no translation service or AI calls. Latest Actions snapshot: 0 active in 100 runs; Pages #1538 success; latest known R125 #150 remains audit-only.",
+    "note": "Quota-neutral deterministic brand normalization in 64 locale packs (86 exact replacements), all packs read back at 1,118 keys/sourceHash. No translation service or AI calls. R125 #150 remains audit-only/completed; latest observed Pages #1539 success. Current AI/translation availability unknown; full audit and native review pending.",
     "currentAI": "unknown-not-probed",
     "currentTranslationBackend": "unknown-not-probed",
     "latestActionsSnapshot": {
