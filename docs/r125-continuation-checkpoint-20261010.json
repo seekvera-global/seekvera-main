@@ -2651,5 +2651,22 @@
       "aiQuotaUsed": 0,
       "siteCodeChanges": 0
     }
+  },
+  "full98CoverageAudit": {
+    "checkedAt": "2026-11-14T18:17:00Z",
+    "method": "Read-only direct GitHub file audit: each of 98 manifest language packs compared against candidate source.json",
+    "checkedLanguages": 98,
+    "sourceCount": 1118,
+    "sourceHash": "6a1126e6a2ce5629",
+    "packsWith1118Entries": 98,
+    "hashMatches": 98,
+    "missingKeys": 0,
+    "extraKeys": 0,
+    "emptyValues": 0,
+    "result": "PASS key/coverage integrity for all 98 packs",
+    "qualityGate": "97/98 candidate audit complete; dv still fails english_overlap:58 and has severe duplicate-output groups",
+    "scope": "Structural coverage only; not translation accuracy, script-warning/full candidate audit, native review, UI end-to-end or publication",
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0
   }
 }
