@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T11:35:00Z",
+  "checkedAt": "2026-11-14T12:01:00Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -358,5 +358,43 @@
     "aiChatCurrentAvailability": "unknown-not-probed",
     "translationBackendCurrentAvailability": "unknown-not-probed",
     "reason": "No quota-safe live AI/translation probe; preserve daily_free_ai_limit and prior Google HTTP429/503. No current R125 run was observed in last Actions snapshot; last inspected R125 #150 completed. Manual pack repair only."
+  },
+  "latestContinuationVerification": {
+    "checkedAt": "2026-11-14T12:01:00Z",
+    "repositoryActions": {
+      "latest100Runs": "zero queued/in_progress",
+      "latestPagesRun": 1525,
+      "latestPagesRunId": 43590760366,
+      "latestPagesConclusion": "success",
+      "latestOfficialHealthRun": 320,
+      "latestOfficialHealthRunId": 43568474031,
+      "latestOfficialHealthConclusion": "success"
+    },
+    "r125": {
+      "latestKnownRun": 150,
+      "latestKnownRunId": 38971104197,
+      "latestKnownConclusion": "success",
+      "currentWorkflowTrigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "activeRunObserved": false
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "summaryOrCheckpointOnly": true
+    },
+    "liveAI": "unknown-not-probed",
+    "translationBackend": "unknown-not-probed",
+    "physicalAudio": "not-certified",
+    "checkout": "inactive-pending-merchant-configuration"
+  },
+  "candidateResume": {
+    "checkedAt": "2026-11-14T12:01:00Z",
+    "run": null,
+    "activeRunObserved": false,
+    "candidatePackWritesThisPass": false,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0
   }
 }
