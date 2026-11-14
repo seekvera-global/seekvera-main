@@ -376,10 +376,10 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-14T05:30:00Z",
+    "checkedAt": "2026-11-14T05:31:00Z",
     "mainCheckpointBlobBeforeUpdate": "2465a26212bc004f3c2bf1f22768fa12db45784e",
     "candidateBranchHead": "3170878c5bc2fc58571b2d3c303ca0401abac758",
-    "candidateSummaryBlob": "updated-by-quota-neutral-repair-commit-3170878c5bc2fc58571b2d3c303ca0401abac758",
+    "candidateSummaryBlob": "663f1df14ccec217a48e9d1acdd9a7ba4fbbcf97",
     "candidateLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
