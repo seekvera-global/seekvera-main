@@ -242,8 +242,8 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-11-14T06:00:00Z",
-    "candidateCommit": "ba309c396ecd667f3d7d0f4818b3013305c2488a",
+    "checkedAt": "2026-11-14T11:35:00Z",
+    "candidateCommit": "e280de863bbd1e0546a5fa4e4fd3674a97db725f",
     "completedCount": 97,
     "remainingCount": 1,
     "firstFailure": "dv",
@@ -253,7 +253,7 @@
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false,
-    "note": "This run deterministically restored the immutable identifier in 73 locale packs (ar was already correct), preserving all other raw file bytes. Branch summary now reflects 68 script warnings across 25 languages; Divehi remains structurally incomplete.; 2026-11-14 deterministic repairs: Lao Paystack brand spelling restored; Kyrgyz 'Nearby Now' typo corrected; Punjabi wrong Devanagari entries corrected to Gurmukhi, CROSS-BORDER typo corrected, zero-cost MVP sentence repaired, and translated CSS restored byte-for-byte to source. All edits limited to seven known strings in lo/ky/pa; source untouched; full audit not yet rerun.; seven deterministic locale repairs were committed on 2026-11-14 in lo/ky/pa. Candidate warning totals remain at last audit (68/25) pending a full rerun; no translation quota consumed.; extended deterministic repairs to 19 exact strings across lo/ky/pa/am/my, restoring missing action verbs in Amharic/Burmese and wrong-script Punjabi entries; full audit pending.; 2026-11-14: corrected 13 additional Punjabi UI/game strings from Devanagari into Gurmukhi; verified all 13 use Gurmukhi and pa retains 1,118 keys. Quota-neutral script predicate recomputed only for lo/ky/pa/am/my: warning count 68→40 (languages 25→23); full 98-pack audit still pending.; additional 4 quota-neutral fixes in Lao/Burmese (embedded trigger phrase and 3 UI labels); partial script scan now shows 36 warnings/21 languages, with touched-pack counts lo=0, ky=1 date-format review, pa=0, am=0, my=0. Full audit pending. 2026-11-14 05:27Z: repaired 8 exact labels/actions in fa/tg/ka/mk/ky/dz; all six packs re-read at 1,118 keys. Candidate summary reconciled script-warning map to 11 warnings across 10 languages. Full audit still pending; no quota use. 2026-11-14 05:30Z: localized Gujarati SEEKVERA GUIDE; 1,118 keys preserved. Partial warning map reconciled to 10 remaining date/presentation warnings across 10 languages. Full audit and native review pending. 2026-11-14 06:00Z: normalized the 10 known date/presentation tokens across ur/fa/el/uk/mk/kk/ky/tg/gu/ps; each pack remains 1,118 keys and sourceHash unchanged. Partial warning map 10→0; full 98-pack audit remains pending. 2026-11-14 09:30Z: manual quota-neutral Myanmar repair committed (7 exact strings); readback 1,118 keys. Amharic (10 repeated descriptions) and Divehi (20 repeated outputs in 2 groups) remain flagged; no AI/translation requests.",
+    "note": "This run deterministically restored the immutable identifier in 73 locale packs (ar was already correct), preserving all other raw file bytes. Branch summary now reflects 68 script warnings across 25 languages; Divehi remains structurally incomplete.; 2026-11-14 deterministic repairs: Lao Paystack brand spelling restored; Kyrgyz 'Nearby Now' typo corrected; Punjabi wrong Devanagari entries corrected to Gurmukhi, CROSS-BORDER typo corrected, zero-cost MVP sentence repaired, and translated CSS restored byte-for-byte to source. All edits limited to seven known strings in lo/ky/pa; source untouched; full audit not yet rerun.; seven deterministic locale repairs were committed on 2026-11-14 in lo/ky/pa. Candidate warning totals remain at last audit (68/25) pending a full rerun; no translation quota consumed.; extended deterministic repairs to 19 exact strings across lo/ky/pa/am/my, restoring missing action verbs in Amharic/Burmese and wrong-script Punjabi entries; full audit pending.; 2026-11-14: corrected 13 additional Punjabi UI/game strings from Devanagari into Gurmukhi; verified all 13 use Gurmukhi and pa retains 1,118 keys. Quota-neutral script predicate recomputed only for lo/ky/pa/am/my: warning count 68→40 (languages 25→23); full 98-pack audit still pending.; additional 4 quota-neutral fixes in Lao/Burmese (embedded trigger phrase and 3 UI labels); partial script scan now shows 36 warnings/21 languages, with touched-pack counts lo=0, ky=1 date-format review, pa=0, am=0, my=0. Full audit pending. 2026-11-14 05:27Z: repaired 8 exact labels/actions in fa/tg/ka/mk/ky/dz; all six packs re-read at 1,118 keys. Candidate summary reconciled script-warning map to 11 warnings across 10 languages. Full audit still pending; no quota use. 2026-11-14 05:30Z: localized Gujarati SEEKVERA GUIDE; 1,118 keys preserved. Partial warning map reconciled to 10 remaining date/presentation warnings across 10 languages. Full audit and native review pending. 2026-11-14 06:00Z: normalized the 10 known date/presentation tokens across ur/fa/el/uk/mk/kk/ky/tg/gu/ps; each pack remains 1,118 keys and sourceHash unchanged. Partial warning map 10→0; full 98-pack audit remains pending. 2026-11-14 09:30Z: manual quota-neutral Myanmar repair committed (7 exact strings); readback 1,118 keys. Amharic (10 repeated descriptions) and Divehi (20 repeated outputs in 2 groups) remain flagged; no AI/translation requests. 2026-11-14 11:35Z: Amharic 19-key quota-neutral manual repair committed and read back; duplicate 10-game-description cluster removed, nine category labels corrected. Pack has 1,118 keys and sourceHash unchanged. Native review/full audit pending.",
     "quotaStatusCurrent": "unknown-not-probed",
     "knownDailyFreeAiLimitBlocker": true,
     "repairBatch20261114": {
@@ -328,7 +328,17 @@
       "extraKeys": 0,
       "qualityCertification": false
     },
-    "latestQuotaNeutralRepair": "10 exact date-token normalizations across ur/fa/el/uk/mk/kk/ky/tg/gu/ps; all 10 packs read back at 1,118 keys; partial warning map 0; no AI/translation requests"
+    "latestQuotaNeutralRepair": {
+      "checkedAt": "2026-11-14T11:35:00Z",
+      "language": "am",
+      "packCommit": "e280de863bbd1e0546a5fa4e4fd3674a97db725f",
+      "exactEdits": 19,
+      "keysPerPack": 1118,
+      "sourceUnchanged": true,
+      "translationRequestsSent": 0,
+      "aiQuotaUsed": 0,
+      "linguisticCertification": false
+    }
   },
   "builderRepair": {
     "commit": "634a0d31cb571300d658bb24580bdad3cbaeb75b",
@@ -376,54 +386,28 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-14T10:10:00Z",
-    "mainHead": "a3323fbea61b4584b466ebdb8df5227ef47a2b5f",
-    "candidateBranchHead": "79dae9b4c771a2e322d9752ca781505b9d0d7264",
-    "candidatePackCommit": "ba309c396ecd667f3d7d0f4818b3013305c2488a",
-    "candidateSummaryBlob": "dded3ef9a7e3b9a29af15c6f88012e3211c9e238",
-    "candidateLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
-    "workflow": {
-      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
-      "actualTrigger": "workflow_dispatch only",
-      "runTranslationsDefault": false,
-      "latestCandidateResumeRun": 150,
-      "runId": 38971104197,
-      "status": "completed",
-      "conclusion": "success",
-      "resumeStep": "skipped",
-      "auditStep": "success",
-      "translationRequestsSent": 0,
-      "latestR125CandidateRender": {
-        "run": 2,
-        "runId": 43241261247,
-        "status": "completed",
-        "conclusion": "success",
-        "createdAt": "2026-11-12T14:49:49Z"
-      },
-      "latest100RepositoryRunsCheckedAt": "2026-11-14T10:10:00Z",
-      "activeQueuedOrInProgressRuns": 0,
-      "candidateWritesDeferredWhileActive": true,
-      "candidateWriteThisPass": "checkpoint and summary documentation only; no locale pack changes or translation calls",
-      "candidatePackFilesChangedByRun150": false
-    },
-    "latestR105": {
-      "run": 81,
-      "runId": 43517683421,
-      "status": "completed",
-      "conclusion": "success",
-      "createdAt": "2026-11-13T22:14:50Z",
-      "liveAIProbe": "skipped by RUN_LIVE_AI_PROBES=false"
-    },
-    "latestPages": {
-      "run": 1523,
-      "runId": 43581081467,
-      "status": "completed",
-      "conclusion": "success",
-      "createdAt": "2026-11-14T09:33:04Z",
-      "scope": "checkpoint/docs deploy only"
-    },
-    "candidatePacksPublished": false,
-    "linguisticAccuracyCertified": false
+    "checkedAt": "2026-11-14T11:35:00Z",
+    "mainHeadBeforeCheckpointUpdate": "c8726fc2cc2c1f8075734e22065464abcbe42419",
+    "candidateBranchHead": "58c854864f21660e4d29895f618363378bc72a38",
+    "candidatePackCommit": "e280de863bbd1e0546a5fa4e4fd3674a97db725f",
+    "latestR125RunId": 38971104197,
+    "latestR125RunStatus": "completed-success",
+    "resumeSkipped": true,
+    "auditSuccess": true,
+    "actionsSnapshotAt": "2026-11-14T10:10:00Z",
+    "activeRunsAtSnapshot": 0,
+    "actionsNotRepolledAtCurrentTimestamp": true,
+    "amharicPackCommit": "e280de863bbd1e0546a5fa4e4fd3674a97db725f",
+    "amharicKeys": 1118,
+    "sourceHash": "6a1126e6a2ce5629",
+    "amharicDuplicateClusterRemoved": true,
+    "exactManualEdits": 19,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "aiChatAvailability": "unknown-not-probed",
+    "translationAvailability": "unknown-not-probed",
+    "fullAuditPending": true,
+    "linguisticReviewPending": true
   },
   "verificationInfrastructureRepair": {
     "checkedAt": "2026-11-12T09:56:58Z",
@@ -484,7 +468,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-14T10:10:00Z",
+  "checkedAt": "2026-11-14T11:35:00Z",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -2327,17 +2311,17 @@
     "fullAuditPending": true
   },
   "semanticDuplicateFindings": {
-    "checkedAt": "2026-11-14T09:30:00Z",
+    "checkedAt": "2026-11-14T11:35:00Z",
     "scope": [
       "am",
       "dv",
       "my"
     ],
     "amharic": {
-      "duplicateOutputCount": 10,
-      "keys": 10,
-      "status": "unresolved",
-      "note": "Ten distinct game descriptions share one output; no unverified edits."
+      "duplicateOutputCount": 0,
+      "keys": 0,
+      "status": "repaired_manual_unreviewed",
+      "note": "19 exact manual edits (9 game categories + 10 distinct descriptions) removed the prior 10-description duplicate group. Needs native Amharic review; full 98-pack audit pending."
     },
     "divehi": {
       "duplicateOutputCount": 20,
