@@ -645,7 +645,7 @@
     "reason": "avoid quota-consuming probe; prior daily_free_ai_limit, Google HTTP429 and Workers HTTP503 remain blockers"
   },
   "latestRunInspection": {
-    "checkedAt": "2026-11-14",
+    "checkedAt": "2026-11-14T19:48:00Z",
     "latestKnownR125Run": 150,
     "runId": 38971104197,
     "conclusion": "success",
@@ -656,9 +656,25 @@
     "translationRequiresExplicitTrue": true,
     "latestActionsSnapshot": "2026-11-14T18:17:00Z showed 0 active runs; no R125 dispatch initiated by this pass; no fresh complete run-list available at current check",
     "candidatePackWritesThisPass": 3,
-    "exactManualReplacements": 23,
+    "exactManualReplacements": 27,
     "translationRequestsSent": 0,
-    "aiQuotaUsed": 0
+    "aiQuotaUsed": 0,
+    "activeActionsAtCheck": 1,
+    "activeAction": "Pages #1534 (documentation deployment), not R125",
+    "latestProductionHealth": {
+      "run": 321,
+      "id": 43626407995,
+      "conclusion": "success",
+      "checkedAt": "2026-11-14T18:24:16Z",
+      "scope": "official homepage/API/public pages health only; no live AI probe"
+    },
+    "latestPagesDeployment": {
+      "run": 1534,
+      "id": 43633896833,
+      "status": "in_progress",
+      "createdAt": "2026-11-14T19:46:24Z",
+      "scope": "checkpoint/docs deployment only"
+    }
   },
   "workflowRunInspection": {
     "checkedAt": "2026-11-13T13:13:20Z",
@@ -2627,7 +2643,7 @@
     "branch": "work/r125-locale-candidates-20261008",
     "sourceHash": "6a1126e6a2ce5629",
     "packsEdited": 3,
-    "exactStringReplacements": 23,
+    "exactStringReplacements": 27,
     "languages": [
       "yo",
       "ig",
@@ -2637,15 +2653,18 @@
       "2616e03b7ad2512cbcc2b63eef75d152dd2c0ebf",
       "5fc96bdde160fed8fbd74fdcd46e2284ecf2b498",
       "75135422cf088cb45deb02e6be48c06f6622e986",
-      "a57bd0d4b972c09b98d21e9380059e9ad50a5ac2"
+      "a57bd0d4b972c09b98d21e9380059e9ad50a5ac2",
+      "242379a1475bfb8b8a94d3a4561bc33ea0e66f87",
+      "e0bce706b6d874ce8fd87a79a52a66ebbf3eee68"
     ],
-    "readBack": "all three packs have 1,118 keys and matching sourceHash; repaired category values are distinct",
+    "readBack": "yo/ig/zu each read back at 1,118 keys, matching sourceHash; all nine game category values distinct per pack",
     "sourceChanged": false,
     "translationRequestsSent": 0,
     "aiQuotaUsed": 0,
     "published": false,
     "linguisticAccuracyCertified": false,
-    "limitation": "manual provisional category strings; native reviewers must approve; not full pack quality audit"
+    "limitation": "manual provisional category strings; native reviewers must approve; not full pack quality audit",
+    "scope": "27 exact category replacements across Yoruba, Igbo and Zulu; provisional manual strings only; native review pending"
   },
   "latestLocaleDuplicateScreen": {
     "checkedAt": "2026-11-14",
@@ -2665,6 +2684,7 @@
       "dz": 14,
       "ti": 9
     },
-    "note": "Heuristic duplicate scan. Three obvious game-category duplicate clusters repaired in yo/ig/zu; many repeated description clusters remain. Turkish brand repetition is expected."
+    "note": "98-pack heuristic screen found 44 groups of 4+ identical outputs across 19 languages before repairs; 3 game-category clusters in yo/ig/zu repaired (27 values). Repeated game-description clusters remain; Turkish SEEKVERA brand repetition is expected.",
+    "duplicateOutputGroups4plusBeforeRepair": 44
   }
 }
