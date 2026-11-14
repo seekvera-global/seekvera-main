@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T15:42:00Z",
+  "checkedAt": "2026-11-14T17:35:00Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -425,5 +425,56 @@
         "dv"
       ]
     }
+  },
+  "supplementalLocaleAudit": {
+    "checkedAt": "2026-11-14T17:35:00Z",
+    "sourceHash": "6a1126e6a2ce5629",
+    "sourceCount": 1118,
+    "languages": [
+      {
+        "codes": [
+          "en",
+          "ar",
+          "fr",
+          "hi",
+          "zh",
+          "es",
+          "pt",
+          "de"
+        ],
+        "checks": [
+          "1118 keys",
+          "count=1118",
+          "sourceHash match",
+          "0 empty",
+          "0 exact source-value matches"
+        ],
+        "result": "structural PASS; translation quality not certified"
+      },
+      {
+        "codes": [
+          "ru",
+          "ja",
+          "ko",
+          "tr",
+          "ur",
+          "bn",
+          "id",
+          "vi"
+        ],
+        "checks": [
+          "1118 keys",
+          "sourceHash match",
+          "0 empty",
+          "no exact-output duplicate group with >=4 keys"
+        ],
+        "result": "structural + coarse duplicate scan PASS; translation quality not certified"
+      }
+    ],
+    "totalLanguages": 16,
+    "structuralFailures": 0,
+    "emptyTranslations": 0,
+    "linguisticCertification": false,
+    "scope": "Independent read-back of 16 candidate JSON packs; not full 98-pack audit, not all-section end-to-end, and not native-language review."
   }
 }
