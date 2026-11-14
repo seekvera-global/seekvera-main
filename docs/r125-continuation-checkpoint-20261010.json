@@ -116,7 +116,7 @@
     "All 98 packs still require linguistic review; Divehi remains structurally incomplete",
     "Physical microphone and audible-speaker tests remain pending",
     "Payment checkout remains inactive pending merchant-account configuration",
-    "Last audit before repairs reported 68 script warnings across 25 languages; seven exact candidate repairs have since been made, and warning totals are pending full re-audit."
+    "Last audit before repairs reported 68 warnings across 25 languages; 19 exact text/code repairs have since been made across five packs, and warning totals remain pending full re-audit."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -176,12 +176,13 @@
     "Payment checkout remains inactive pending merchant-account configuration",
     "Triage candidate script warnings across 83 language packs (142 findings); distinguish reserved identifiers and formatting from genuine wrong-script or incomplete UI text.",
     "Re-run full candidate audit after 2026-11-14 repairs; do not infer warning totals until audit completes.",
-    "Re-run full candidate audit after seven 2026-11-14 locale repairs; warning totals remain stale until then."
+    "Re-run full candidate audit after seven 2026-11-14 locale repairs; warning totals remain stale until then.",
+    "Re-run full candidate audit after 19 deterministic repairs in lo/ky/pa/am/my; warning totals pending."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-14T00:46:00Z",
+    "checkedAt": "2026-11-14T00:50:00Z",
     "aiChat": {
       "lastConfirmedLiveRun": 43213407211,
       "checkedAt": "2026-11-12T11:57:45Z",
@@ -190,7 +191,7 @@
       "countryChange": "passed",
       "prohibitedWeapon": "blocked",
       "currentAvailability": "unknown-not-probed",
-      "reason": "R105 #81 explicitly skipped live AI probes (RUN_LIVE_AI_PROBES=false); no quota-consuming live request sent in this run."
+      "reason": "Latest R105 #81 skipped live AI probes (RUN_LIVE_AI_PROBES=false); no quota-consuming live request sent."
     },
     "voiceTranscription": {
       "run": 43219069259,
@@ -242,8 +243,8 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-11-14T00:46:00Z",
-    "candidateCommit": "f6e66ed52c77e15ef887de9da487b0fa5c22c94b",
+    "checkedAt": "2026-11-14T00:50:00Z",
+    "candidateCommit": "ad176cf7bb75a0baccf9000616f74431e2885692",
     "completedCount": 97,
     "remainingCount": 1,
     "firstFailure": "dv",
@@ -253,21 +254,24 @@
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false,
-    "note": "This run deterministically restored the immutable identifier in 73 locale packs (ar was already correct), preserving all other raw file bytes. Branch summary now reflects 68 script warnings across 25 languages; Divehi remains structurally incomplete.; 2026-11-14 deterministic repairs: Lao Paystack brand spelling restored; Kyrgyz 'Nearby Now' typo corrected; Punjabi wrong Devanagari entries corrected to Gurmukhi, CROSS-BORDER typo corrected, zero-cost MVP sentence repaired, and translated CSS restored byte-for-byte to source. All edits limited to seven known strings in lo/ky/pa; source untouched; full audit not yet rerun.; seven deterministic locale repairs were committed on 2026-11-14 in lo/ky/pa. Candidate warning totals remain at last audit (68/25) pending a full rerun; no translation quota consumed.",
+    "note": "This run deterministically restored the immutable identifier in 73 locale packs (ar was already correct), preserving all other raw file bytes. Branch summary now reflects 68 script warnings across 25 languages; Divehi remains structurally incomplete.; 2026-11-14 deterministic repairs: Lao Paystack brand spelling restored; Kyrgyz 'Nearby Now' typo corrected; Punjabi wrong Devanagari entries corrected to Gurmukhi, CROSS-BORDER typo corrected, zero-cost MVP sentence repaired, and translated CSS restored byte-for-byte to source. All edits limited to seven known strings in lo/ky/pa; source untouched; full audit not yet rerun.; seven deterministic locale repairs were committed on 2026-11-14 in lo/ky/pa. Candidate warning totals remain at last audit (68/25) pending a full rerun; no translation quota consumed.; extended deterministic repairs to 19 exact strings across lo/ky/pa/am/my, restoring missing action verbs in Amharic/Burmese and wrong-script Punjabi entries; full audit pending.",
     "quotaStatusCurrent": "unknown-not-probed",
     "knownDailyFreeAiLimitBlocker": true,
     "repairBatch20261114": {
-      "summaryCommit": "f6e66ed52c77e15ef887de9da487b0fa5c22c94b",
-      "localeCommit": "2d378b1bf416cbc1e95db4d7b7cde0f6cc708d54",
-      "repairs": 7,
+      "summaryCommit": "ad176cf7bb75a0baccf9000616f74431e2885692",
+      "latestCandidateCommit": "3f1c896a7b3ee21c14376f44887026aa215291cf",
+      "repairs": 19,
       "files": [
         "lo.json",
         "ky.json",
-        "pa.json"
+        "pa.json",
+        "am.json",
+        "my.json"
       ],
       "allPacksStill1118Keys": true,
       "sourceUnchanged": true,
-      "translationRequests": 0
+      "translationRequests": 0,
+      "linguisticCertification": false
     },
     "auditPending": true
   },
@@ -1930,9 +1934,11 @@
       "publicPages": 18
     },
     "pages": {
-      "run": 43527927623,
+      "latestSuccess": 43527927623,
       "number": 1507,
-      "conclusion": "success"
+      "conclusion": "success",
+      "newCheckpointDeploy": 43536599146,
+      "status": "in_progress"
     }
   }
 }
