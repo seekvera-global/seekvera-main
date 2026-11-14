@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T02:55:00Z",
+  "checkedAt": "2026-11-14T03:07:00Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -111,28 +111,16 @@
   },
   "scriptWarnings": {
     "hi": {
-      "count": 1,
-      "sources": [
-        "© SEEKVERA ·"
-      ],
-      "examples": [
-        {
-          "source": "© SEEKVERA ·",
-          "value": "© SEEKVERA·"
-        }
-      ]
+      "count": 0,
+      "sources": [],
+      "examples": []
     },
     "ur": {
-      "count": 2,
+      "count": 1,
       "sources": [
-        "REAL 3D BUILD",
         "2026-09-26 · R74"
       ],
       "examples": [
-        {
-          "source": "REAL 3D BUILD",
-          "value": "Real 3D BUILD"
-        },
         {
           "source": "2026-09-26 · R74",
           "value": "26-09-2026 · R74"
@@ -157,28 +145,16 @@
       ]
     },
     "he": {
-      "count": 1,
-      "sources": [
-        "📰 SEEKVERA NEWS & MEDIA"
-      ],
-      "examples": [
-        {
-          "source": "📰 SEEKVERA NEWS & MEDIA",
-          "value": "📰 SEEKVERA NEWS & Media"
-        }
-      ]
+      "count": 0,
+      "sources": [],
+      "examples": []
     },
     "el": {
-      "count": 2,
+      "count": 1,
       "sources": [
-        "AI Deal Agent",
         "2026-09-26 · R74"
       ],
       "examples": [
-        {
-          "source": "AI Deal Agent",
-          "value": "Agent Deal AI"
-        },
         {
           "source": "2026-09-26 · R74",
           "value": "26-09-2026 · R74"
@@ -263,38 +239,14 @@
       ]
     },
     "ne": {
-      "count": 1,
-      "sources": [
-        "SEEKVERA • JUNGLE SURVIVOR"
-      ],
-      "examples": [
-        {
-          "source": "SEEKVERA • JUNGLE SURVIVOR",
-          "value": "SEEKVERA • JUNGLE Survivor"
-        }
-      ]
+      "count": 0,
+      "sources": [],
+      "examples": []
     },
     "si": {
-      "count": 3,
-      "sources": [
-        "SEEKVERA finder",
-        "SEEKVERA • SURVIVAL",
-        "SEEKVERA • JUNGLE SURVIVOR"
-      ],
-      "examples": [
-        {
-          "source": "SEEKVERA finder",
-          "value": "SEEKVERA Finder"
-        },
-        {
-          "source": "SEEKVERA • SURVIVAL",
-          "value": "SEEKVERA • Survival"
-        },
-        {
-          "source": "SEEKVERA • JUNGLE SURVIVOR",
-          "value": "SEEKVERA • JUNGLE Survivor"
-        }
-      ]
+      "count": 0,
+      "sources": [],
+      "examples": []
     },
     "lo": {
       "count": 0,
@@ -302,16 +254,9 @@
       "examples": []
     },
     "mn": {
-      "count": 1,
-      "sources": [
-        "Message SEEKVERA AI…"
-      ],
-      "examples": [
-        {
-          "source": "Message SEEKVERA AI…",
-          "value": "SEEKVERA AI…"
-        }
-      ]
+      "count": 0,
+      "sources": [],
+      "examples": []
     },
     "dz": {
       "count": 3,
@@ -353,26 +298,21 @@
       ]
     },
     "ps": {
-      "count": 3,
+      "count": 1,
       "sources": [
-        "SEEKVERA —",
-        "Zero‑Cost Mode",
         "2026-09-26 · R74"
       ],
       "examples": [
-        {
-          "source": "SEEKVERA —",
-          "value": "SEEKVERA --"
-        },
-        {
-          "source": "Zero‑Cost Mode",
-          "value": "Zero‑Cost mode"
-        },
         {
           "source": "2026-09-26 · R74",
           "value": "26-09-2026 · R74"
         }
       ]
+    },
+    "zh": {
+      "count": 0,
+      "sources": [],
+      "examples": []
     }
   },
   "exitCode": "1",
@@ -397,8 +337,8 @@
     "linguisticCertification": false,
     "validation": "Git compare confirms 73 locale files each have exactly one line changed (one replacement); five sampled packs retain 1,118 keys and exact immutable value."
   },
-  "scriptWarningCount": 28,
-  "scriptWarningLanguages": 17,
+  "scriptWarningCount": 16,
+  "scriptWarningLanguages": 11,
   "repairsSinceAudit": [
     {
       "language": "lo",
@@ -707,8 +647,85 @@
       "before": "© SEEKVERA·",
       "after": "© SEEKVERA ·",
       "kind": "restored punctuation spacing"
+    },
+    {
+      "language": "mn",
+      "key": "Message SEEKVERA AI…",
+      "before": "SEEKVERA AI…",
+      "after": "SEEKVERA AI-д мессеж бичих…",
+      "kind": "restored missing message action"
+    },
+    {
+      "language": "ne",
+      "key": "SEEKVERA • JUNGLE SURVIVOR",
+      "before": "SEEKVERA • JUNGLE Survivor",
+      "after": "SEEKVERA • जङ्गलमा बाँच्ने",
+      "kind": "localized mixed English label"
+    },
+    {
+      "language": "ur",
+      "key": "Search with SEEKVERA",
+      "before": "SEKVERA کے ساتھ تلاش کریں",
+      "after": "SEEKVERA کے ساتھ تلاش کریں",
+      "kind": "brand typo correction"
+    },
+    {
+      "language": "ur",
+      "key": "REAL 3D BUILD",
+      "before": "Real 3D BUILD",
+      "after": "حقیقی 3D تعمیر",
+      "kind": "localized label"
+    },
+    {
+      "language": "el",
+      "key": "AI Deal Agent",
+      "before": "Agent Deal AI",
+      "after": "Πράκτορας συμφωνιών AI",
+      "kind": "corrected word order"
+    },
+    {
+      "language": "he",
+      "key": "📰 SEEKVERA NEWS & MEDIA",
+      "before": "📰 SEEKVERA NEWS & Media",
+      "after": "📰 חדשות ומדיה של SEEKVERA",
+      "kind": "localized section label"
+    },
+    {
+      "language": "si",
+      "key": "SEEKVERA finder",
+      "before": "SEEKVERA Finder",
+      "after": "SEEKVERA සොයන්නා",
+      "kind": "localized title"
+    },
+    {
+      "language": "si",
+      "key": "SEEKVERA • SURVIVAL",
+      "before": "SEEKVERA • Survival",
+      "after": "SEEKVERA • දිවි ගලවා ගැනීම",
+      "kind": "localized title"
+    },
+    {
+      "language": "si",
+      "key": "SEEKVERA • JUNGLE SURVIVOR",
+      "before": "SEEKVERA • JUNGLE Survivor",
+      "after": "SEEKVERA • කැලෑවේ දිවි ගලවාගන්නා",
+      "kind": "localized title"
+    },
+    {
+      "language": "ps",
+      "key": "SEEKVERA —",
+      "before": "SEEKVERA --",
+      "after": "SEEKVERA —",
+      "kind": "punctuation restored"
+    },
+    {
+      "language": "ps",
+      "key": "Zero‑Cost Mode",
+      "before": "Zero‑Cost mode",
+      "after": "د صفر لګښت حالت",
+      "kind": "localized mode label"
     }
   ],
   "auditPending": true,
-  "auditNote": "Partial quota-neutral warning recomputation after 44 deterministic/manual exact repairs; full 98-pack audit still pending. This pass removed 8 specific missing-action/punctuation warnings in fa, kk, ta, te, bn, hi and zh. No translation API or AI requests were sent."
+  "auditNote": "Partial quota-neutral warning recomputation after 44 deterministic/manual exact repairs; full 98-pack audit still pending. This pass removed 8 specific missing-action/punctuation warnings in fa, kk, ta, te, bn, hi and zh. No translation API or AI requests were sent. Quota-neutral deterministic repairs on 2026-11-14: fixed 11 exact strings in mn/ne/ur/el/he/si/ps; updated known script-warning entries (hi/he/si/mn/ne/zh cleared; ur/el/ps retain date-format review). No translation API or AI requests sent; full 98-pack audit remains pending."
 }
