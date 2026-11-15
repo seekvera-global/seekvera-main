@@ -1781,7 +1781,7 @@
     "qualityGate": "NOT PASS"
   },
   "latestRunInspection": {
-    "checkedAt": "2026-11-15T10:46:35Z",
+    "checkedAt": "2026-11-15T15:41:52Z",
     "latestR125": {
       "run": 150,
       "runId": 38971104197,
@@ -1795,11 +1795,11 @@
     "activeRunsInLatest100": 0,
     "latestRepositoryRun": {
       "name": "pages build and deployment",
-      "run": 1559,
-      "runId": 43705274006,
+      "run": 1563,
+      "runId": 43722728419,
       "status": "completed",
       "conclusion": "success",
-      "createdAt": "2026-11-15T10:41:11Z"
+      "createdAt": "2026-11-15T14:08:42Z"
     },
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
@@ -1818,5 +1818,38 @@
       }
     },
     "note": "Latest R125 remains #150; no R125 run is active. Current latest repository Actions page shows no queued/in-progress runs. No candidate pack writes were made during this pass."
+  },
+  "latestReadOnlySpotAudit": {
+    "checkedAt": "2026-11-15T15:41:52Z",
+    "report": "docs/locale-candidates-20261008/readonly-spot-audit-20261115-154152Z.json",
+    "commit": "28c2c6ffc705cd1761738c75ead81a58cfb816e4",
+    "packsFetched": 12,
+    "keysPerPack": 1118,
+    "sourceHashMatches": 12,
+    "missingKeys": 0,
+    "extraKeys": 0,
+    "duplicateGroups": 27,
+    "duplicateKeys": 255,
+    "affectedLanguages": 10,
+    "languages": [
+      "dv",
+      "kl",
+      "st",
+      "xh",
+      "rw",
+      "to",
+      "ku",
+      "ti",
+      "tn",
+      "dz",
+      "am",
+      "my"
+    ],
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "publication": false,
+    "linguisticCertification": false,
+    "scope": "Read-only spot audit, not full 98-pack quality audit."
   }
 }
