@@ -2052,5 +2052,109 @@
       "sourceOrCandidateFilesModified": false
     },
     "decision": "NO-GO; structural verification is complete, but quality/native review, all-language/all-section UI tests, live AI availability, physical audio, and merchant checkout remain unverified."
+  },
+  "latestReadOnlyFull98StructuralReadback": {
+    "checkedAt": "2026-11-15T22:42:00Z",
+    "report": "docs/locale-candidates-20261008/full-structural-readback-20261115-224200Z.json",
+    "reportCommit": "ae252d0f7716480a174a6382ca7454c2ffa4cfce",
+    "packsRead": 98,
+    "keysPerPack": 1118,
+    "sourceHash": "6a1126e6a2ce5629",
+    "keySetMatchesEnglish": 98,
+    "missingKeys": 0,
+    "extraKeys": 0,
+    "emptyOrNonStringValues": 0,
+    "sourceHashMatches": 98,
+    "qualityPolicyMatches": 98,
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "result": "STRUCTURAL PASS; full quality audit and native review still pending"
+  },
+  "run14AutomationAudit": {
+    "checkedAt": "2026-11-15T22:42:00Z",
+    "filesRead": [
+      "main docs/r125-continuation-checkpoint-20261010.json",
+      "candidate docs/locale-candidates-20261008/resume-summary.json",
+      "candidate docs/locale-candidates-20261008/resume-latest.log",
+      "main .github/workflows/r125-hourly-candidate-resume.yml"
+    ],
+    "actions": {
+      "latest100RunsFetched": true,
+      "latest100ActiveCount": 0,
+      "latestActiveRuns": [],
+      "latestRepositoryRun": {
+        "id": 43765833200,
+        "number": 1568,
+        "name": "pages build and deployment",
+        "path": "dynamic/pages/pages-build-deployment",
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-11-15T21:49:46Z",
+        "updatedAt": "2026-11-15T21:50:30Z",
+        "headBranch": "main",
+        "headSha": "edea67146bdac1cfb0f10ba4f2a8c2af97b7ccfe"
+      },
+      "latestR125": {
+        "id": 38971104197,
+        "number": 150,
+        "status": "completed",
+        "conclusion": "success",
+        "resume": "skipped",
+        "audit": "success",
+        "active": false
+      },
+      "r125ActiveInLatest100": false,
+      "siteHealth": {
+        "id": 43750027183,
+        "number": 324,
+        "status": "completed",
+        "conclusion": "success"
+      }
+    },
+    "candidateState": {
+      "structural": 98,
+      "total": 98,
+      "sourceKeysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "structuralResult": "PASS",
+      "qualityCandidates": 97,
+      "qualityRemaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "full98QualityAudit": false,
+      "published": false,
+      "linguisticCertification": false
+    },
+    "workflow": {
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "translationOptInRequired": true,
+      "saveProgressMayWriteMetadata": true
+    },
+    "ai": {
+      "chat": "unknown-not-probed",
+      "translationBackend": "unknown-not-probed",
+      "quotaUsed": 0,
+      "translationRequests": 0,
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "last translation log HTTP503 all_translation_backends_unavailable"
+      ]
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "structuralPacksRead": 98,
+      "sourceOrCandidateFilesModifiedBeforeAudit": false
+    },
+    "decision": "NO-GO"
   }
 }
