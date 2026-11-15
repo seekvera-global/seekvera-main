@@ -3736,5 +3736,41 @@
       "No native-language review or linguistic certification was performed."
     ],
     "qualityGate": "NOT PASS"
+  },
+  "latestActionsObservation": {
+    "checkedAt": "2026-11-15T11:44:10Z",
+    "method": "GitHub Actions repository runs API, latest 100 runs",
+    "latest100ContainsR125": false,
+    "queuedOrInProgressR125": 0,
+    "latestRepositoryRun": {
+      "run": 1562,
+      "id": 43710291005,
+      "name": "pages build and deployment",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-15T11:43:26Z",
+      "completedAt": "2026-11-15T11:44:06Z"
+    },
+    "latestR125": {
+      "run": 150,
+      "id": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-10-16T21:41:54Z",
+      "resume": "skipped",
+      "audit": "success"
+    },
+    "workflowCurrent": {
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "auditAlways": true,
+      "auditOnlyMayCommitCandidateBranchMetadata": true,
+      "translationStepRequiresExplicitOptIn": true
+    },
+    "candidatePackWritesThisPass": 0,
+    "translationRequestsThisPass": 0,
+    "aiQuotaUsedThisPass": 0,
+    "note": "Audit-only can write updated summary/checkpoint metadata to the candidate branch via Save progress; candidate pack repair steps are gated off by default. No R125 run was queued/in progress in the latest 100 repository runs."
   }
 }
