@@ -1,0 +1,87 @@
+{
+  "checkedAt": "2026-11-15T18:47:35Z",
+  "scope": "Direct GitHub read-back of all 98 candidate locale JSON packs against candidate source.json; structural coverage only, not linguistic quality or UI end-to-end certification.",
+  "sourceHash": "6a1126e6a2ce5629",
+  "sourceCount": 1118,
+  "packsChecked": 98,
+  "structural": {
+    "packFilesPresent": 98,
+    "expectedKeysPerPack": 1118,
+    "keysPerPack": "98/98 exactly 1118",
+    "missingKeys": 0,
+    "extraKeys": 0,
+    "emptyOrNonStringValues": 0,
+    "sourceHashMatches": 98,
+    "qualityPolicyMatches": 98,
+    "result": "PASS"
+  },
+  "candidateQuality": {
+    "auditCompletedCandidates": 97,
+    "auditRemaining": 1,
+    "remainingLanguage": "dv",
+    "reason": "english_overlap:58",
+    "duplicateOutputGroups": "27 groups across 10 languages in latest 10-pack quality spot audit; not recomputed in this structural pass",
+    "fullQualityAudit": "PENDING"
+  },
+  "writes": {
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false
+  },
+  "runtime": {
+    "currentAIAvailability": "unknown-not-probed",
+    "lastLiveChatConfirmed": "2026-11-12 English and Arabic passed",
+    "translationBlockers": [
+      "daily_free_ai_limit historically observed",
+      "Google HTTP429 previously observed",
+      "latest translation attempt HTTP503 all_translation_backends_unavailable"
+    ],
+    "noQuotaProbeSent": true
+  },
+  "actions": {
+    "checkedAt": "2026-11-15T18:47:35Z",
+    "latest100RunsReturned": 100,
+    "queuedOrInProgress": 0,
+    "latestRun": {
+      "id": 43734236295,
+      "run": 1564,
+      "name": "pages build and deployment",
+      "createdAt": "2026-11-15T16:13:14Z",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "latestKnownR125": {
+      "run": 150,
+      "id": 38971104197,
+      "createdAt": "2026-10-16T21:41:54Z",
+      "status": "completed",
+      "conclusion": "success",
+      "resume": "skipped",
+      "audit": "success"
+    },
+    "r125InLatest100": false,
+    "r125Active": false
+  },
+  "workflow": {
+    "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+    "trigger": "workflow_dispatch only; no hourly schedule",
+    "runTranslationsDefault": false,
+    "repairCandidatesDefault": false,
+    "packWritesRequireExplicitOptIn": true,
+    "auditOnlyCanWriteProgressMetadata": true
+  },
+  "remaining": {
+    "all98LanguagesAndSectionsE2E": "NOT CERTIFIED",
+    "safety": "prior two probes only; not full threat-model certification",
+    "countryCurrency": "previous tests passed; not all 98 locales end-to-end",
+    "voice": {
+      "programmaticTTS": "passed",
+      "liveASR": "skipped",
+      "physicalDevices": "pending"
+    },
+    "checkout": "inactive pending merchant configuration"
+  },
+  "verdict": "STRUCTURAL PASS 98/98; CANDIDATE QUALITY 97/98; RELEASE NO-GO"
+}
