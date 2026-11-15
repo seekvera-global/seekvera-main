@@ -2851,7 +2851,7 @@
     "full98PackAudit": false,
     "linguisticCertification": false,
     "published": false,
-    "note": "2026-11-15 08:57Z: restored 24 exact CSS source values in eight packs (mi/ga/zu/so/am/my/ig/yo), all read back with 1,118 keys and matching sourceHash. No AI/translation calls. Full quality audit and native review pending. Latest Actions read at 08:58Z: one Pages deployment #1556 in progress; no R125 run in latest 30, latest R125 #150 remains completed.",
+    "note": "2026-11-15 08:57Z: restored 24 exact CSS source values in eight packs (mi/ga/zu/so/am/my/ig/yo), all read back with 1,118 keys and matching sourceHash. No AI/translation calls. Full quality audit and native review pending. Latest Actions read at 08:58Z: one Pages deployment #1556 in progress; no R125 run in latest 30, latest R125 #150 remains completed. Snapshot correction: Pages #1557 (43696945239) was the active deployment at 08:58:30Z; it is not an R125 candidate-resume run.",
     "latestPages": {
       "run": 1535,
       "id": 43633978266,
@@ -2873,10 +2873,11 @@
       "queuedOrInProgressObserved": 1,
       "activeRuns": [
         {
-          "run": 1556,
-          "id": 43696906795,
+          "run": 1557,
+          "id": 43696945239,
           "path": "dynamic/pages/pages-build-deployment",
-          "status": "in_progress"
+          "status": "in_progress",
+          "createdAt": "2026-11-15T08:58:12Z"
         }
       ],
       "r125RunInLatest30": false,
