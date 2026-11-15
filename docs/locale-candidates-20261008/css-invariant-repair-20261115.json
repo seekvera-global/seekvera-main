@@ -1,0 +1,45 @@
+{
+  "checkedAt": "2026-11-15T08:57:08Z",
+  "repairType": "deterministic CSS/source-invariant normalization",
+  "sourceHash": "6a1126e6a2ce5629",
+  "sourceCount": 1118,
+  "invariantSourceIndices": [
+    "1106",
+    "1108",
+    "1114"
+  ],
+  "languages": [
+    "mi",
+    "ga",
+    "zu",
+    "so",
+    "am",
+    "my",
+    "ig",
+    "yo"
+  ],
+  "exactReplacements": 24,
+  "perLanguage": {
+    "mi": 3,
+    "ga": 3,
+    "zu": 3,
+    "so": 3,
+    "am": 3,
+    "my": 3,
+    "ig": 3,
+    "yo": 3
+  },
+  "validation": {
+    "allPacksReadBack": true,
+    "keysPerPack": 1118,
+    "sourceHashMatches": true,
+    "allThreeCssValuesExact": true,
+    "sourceFileChanged": false
+  },
+  "translationRequestsSent": 0,
+  "aiQuotaUsed": 0,
+  "published": false,
+  "linguisticCertification": false,
+  "full98PackAudit": false,
+  "note": "CSS selectors/animation/transition strings are executable source, not translatable prose. Restored exact source values in eight previously repaired packs. This is a deterministic code-preservation fix, not native-language review."
+}
