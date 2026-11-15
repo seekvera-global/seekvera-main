@@ -915,38 +915,37 @@
     "published": false
   },
   "latestContinuationPass": {
-    "checkedAt": "2026-11-15T04:50:30Z",
+    "checkedAt": "2026-11-15T07:17:00Z",
     "candidatePackWrites": 1,
     "translationRequests": 0,
     "aiQuotaUsed": 0,
-    "verifiedRun": {
+    "latestRecordedR125": {
       "run": 150,
       "id": 38971104197,
       "status": "completed",
       "conclusion": "success",
-      "resumeTranslations": "skipped",
-      "candidateAudit": "success",
-      "progressSave": "success"
+      "resume": "skipped",
+      "audit": "success"
     },
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
       "trigger": "workflow_dispatch only",
       "runTranslationsDefault": false,
-      "translationRequiresExplicitOptIn": true
+      "explicitTranslationOptInRequired": true
     },
-    "activeRunList": "GitHub Actions API status=in_progress: 0 active runs at 2026-11-15T01:40Z; workflow_dispatch recent-run page contains no R125 run; latest R125 #150 remains completed audit-only.",
+    "activeRunCheck": {
+      "checkedAt": "2026-11-15T07:17:00Z",
+      "latest100RunsFetched": true,
+      "queuedOrInProgressObserved": 0,
+      "r125RunInLatest100": false,
+      "latestKnownR125": 150,
+      "status": "completed"
+    },
     "full98StructuralAudit": true,
     "full98QualityAudit": false,
     "linguisticCertification": false,
     "published": false,
-    "activeRunObservation": {
-      "checkedAt": "2026-11-15T03:31:00Z",
-      "apiRecent100ActiveRuns": 0,
-      "r125LatestRun": 150,
-      "r125LatestStatus": "completed",
-      "r125LatestConclusion": "success"
-    },
-    "note": "Somali 12-key duplicate game-description cluster repaired and read back; 1,118 keys/sourceHash preserved, zero >=4 duplicate groups in so. No AI/translation requests; global quality audit and native review pending."
+    "note": "Four provisional Maori game descriptions were diversified; pack read-back confirms 1,118 keys/sourceHash and no >=4 duplicate-output group in mi. R125 #150 remains completed audit-only; latest 100 repository runs contain no queued/in-progress runs and no newer R125. AI/translation not probed; no quota consumed."
   },
   "latestManualHausaGameDescriptionRepair": {
     "checkedAt": "2026-11-15T01:40:00Z",
@@ -1173,5 +1172,25 @@
     "translationRequests": 0,
     "aiQuotaUsed": 0,
     "action": "Prepared exact source/partial-output review list; no Dhivehi wording guessed or changed."
+  },
+  "latestManualMaoriRepair": {
+    "checkedAt": "2026-11-15T07:17:00Z",
+    "language": "mi",
+    "commit": "ce8cd7853e7bcfe1486e7cc667ca2e2d5887ce00",
+    "exactEdits": 4,
+    "issue": "One 4-key duplicate-output group across four distinct game descriptions",
+    "readback": {
+      "keyCount": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "hashMatches": true,
+      "editedValuesExact": true,
+      "duplicateGroupsAtLeast4": 0
+    },
+    "sourceFileChanged": false,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "note": "Provisional Maori game-description wording; native review and full 98-pack audit remain pending."
   }
 }
