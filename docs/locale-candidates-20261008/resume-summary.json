@@ -887,7 +887,7 @@
     ]
   },
   "latestContinuationPass": {
-    "checkedAt": "2026-11-15T00:10:47Z",
+    "checkedAt": "2026-11-15T01:40:00Z",
     "candidatePackWrites": 0,
     "translationRequests": 0,
     "aiQuotaUsed": 0,
@@ -906,7 +906,7 @@
       "runTranslationsDefault": false,
       "translationRequiresExplicitOptIn": true
     },
-    "activeRunList": "Not independently queried in this pass; latest recorded R125 remains #150.",
+    "activeRunList": "GitHub Actions API status=in_progress: 0 active runs at 2026-11-15T01:40Z; workflow_dispatch recent-run page contains no R125 run; latest R125 #150 remains completed audit-only.",
     "full98StructuralAudit": true,
     "full98QualityAudit": false,
     "linguisticCertification": false,
