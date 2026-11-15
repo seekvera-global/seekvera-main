@@ -915,8 +915,8 @@
     "published": false
   },
   "latestContinuationPass": {
-    "checkedAt": "2026-11-15T07:17:00Z",
-    "candidatePackWrites": 1,
+    "checkedAt": "2026-11-15T07:17:20Z",
+    "candidatePackWrites": 2,
     "translationRequests": 0,
     "aiQuotaUsed": 0,
     "latestRecordedR125": {
@@ -945,7 +945,8 @@
     "full98QualityAudit": false,
     "linguisticCertification": false,
     "published": false,
-    "note": "Four provisional Maori game descriptions were diversified; pack read-back confirms 1,118 keys/sourceHash and no >=4 duplicate-output group in mi. R125 #150 remains completed audit-only; latest 100 repository runs contain no queued/in-progress runs and no newer R125. AI/translation not probed; no quota consumed."
+    "note": "Maori (4) and Irish Gaelic (9) game descriptions diversified and read back; both packs retain 1,118 keys/sourceHash and zero >=4 duplicate groups. Latest 100 Actions runs: no queued/in-progress runs; latest known R125 #150 completed audit-only. No AI/translation requests or quota use; full 98-pack quality audit/native review pending.",
+    "exactManualReplacements": 13
   },
   "latestManualHausaGameDescriptionRepair": {
     "checkedAt": "2026-11-15T01:40:00Z",
@@ -1192,5 +1193,25 @@
     "published": false,
     "linguisticCertification": false,
     "note": "Provisional Maori game-description wording; native review and full 98-pack audit remain pending."
+  },
+  "latestManualIrishRepair": {
+    "checkedAt": "2026-11-15T07:17:20Z",
+    "language": "ga",
+    "commit": "391ffa0773b9c775e0570f825b73c9b23e3f89d8",
+    "exactEdits": 9,
+    "issue": "Two duplicate-output groups (5 and 4 distinct game descriptions)",
+    "readback": {
+      "keyCount": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "hashMatches": true,
+      "editedValuesExact": true,
+      "duplicateGroupsAtLeast4": 0
+    },
+    "sourceFileChanged": false,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "note": "Provisional Irish Gaelic game-description wording; qualified native review remains required."
   }
 }
