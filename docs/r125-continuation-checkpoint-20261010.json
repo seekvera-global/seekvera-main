@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-14",
+  "date": "2026-11-15",
   "finalApproval": false,
   "sourceHash": "6a1126e6a2ce5629",
   "sourceCount": 1118,
@@ -176,7 +176,8 @@
     "Verify all 98 languages and all product sections end-to-end; current browser scope is 44 localized pages and selected languages, not full certification.",
     "Re-probe AI Chat and translation only when quota-safe/authorized; current AI and translation availability are unknown, daily_free_ai_limit historically blocked, Google HTTP429 not retried.",
     "Perform physical microphone and audible-speaker tests on Android, iPhone/iPad and desktop; headless/programmatic TTS-ASR is not hardware certification.",
-    "Checkout remains inactive pending merchant-account configuration and end-to-end merchant verification."
+    "Checkout remains inactive pending merchant-account configuration and end-to-end merchant verification.",
+    "Re-run full candidate quality/script audit after 18 provisional Hausa game-description edits; no native Hausa review yet."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
@@ -562,7 +563,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-14T21:53:00Z",
+  "checkedAt": "2026-11-15T01:40:00Z",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -1629,7 +1630,7 @@
     "noPhysicalAudioClaim": true
   },
   "latestR125RunInspection": {
-    "checkedAt": "2026-11-14T02:05:00Z",
+    "checkedAt": "2026-11-15T01:40:00Z",
     "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
     "workflowSha": "c1482fc1ae88ac522e91a759985c9fe49e8092fc",
     "actualTrigger": "workflow_dispatch only",
@@ -1659,11 +1660,11 @@
       "branch": "main",
       "status": "in_progress",
       "totalCount": 0,
-      "checkedAt": "2026-11-14T02:05:00Z"
+      "checkedAt": "2026-11-15T01:40:00Z"
     },
-    "branchHead": "eb9325e93d7ff0b573969b2b5dffe579f6ab1049",
-    "summaryChecked": "97/98; dv english_overlap:58; partial script scan 28/17; audit pending",
-    "logChecked": "STAGED_ONLY 0 FAILED 1; dv HTTP503 all_translation_backends_unavailable; 48 prior repair translations; split batches timed out/503",
+    "branchHead": "30fdf0b4ec8f8a2ceef79baea614aa3161f0f12f",
+    "summaryChecked": "97/98; dv english_overlap:58; full quality audit pending; Hausa large duplicate groups repaired",
+    "logChecked": "STAGED_ONLY 0 FAILED 1; dv HTTP503 all_translation_backends_unavailable; split batches timeout/503; 48 prior successful repair translations",
     "candidateFilesModifiedThisRun": true,
     "translationRequestsThisRun": 0
   },
@@ -2927,7 +2928,7 @@
   },
   "updatedAt": "2026-11-14T23:29:00Z",
   "latestReadOnlyFull98Audit": {
-    "checkedAt": "2026-11-15T00:20:00Z",
+    "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
     "sourceCount": 1118,
     "sourceHash": "6a1126e6a2ce5629",
@@ -2949,11 +2950,19 @@
       "lt",
       "sm",
       "to"
-    ]
+    ],
+    "structuralResult": "PASS 98/98 packs; 1,118 keys/sourceHash; 0 missing/extra/empty",
+    "duplicateOutputScreen": {
+      "threshold": 4,
+      "languageCount": 17,
+      "groups": 38,
+      "hausa": "0 groups >=4 after 18 manual distinct game-description replacements; read-back verified",
+      "scope": "Prior read-only 98-pack scan at 00:20Z with Hausa re-read after 01:40Z repair; heuristic only; linguistic review pending"
+    }
   },
   "latestContinuationPass": {
-    "checkedAt": "2026-11-15T00:10:47Z",
-    "candidatePackWrites": 0,
+    "checkedAt": "2026-11-15T01:40:00Z",
+    "candidatePackWrites": 1,
     "translationRequests": 0,
     "aiQuotaUsed": 0,
     "latestRecordedR125": {
@@ -2963,7 +2972,7 @@
       "resume": "skipped",
       "audit": "success"
     },
-    "activeRunList": "Not independently queried in this pass; latest recorded R125 remains #150.",
+    "activeRunList": "GitHub Actions API: status=in_progress returned 0 runs; workflow_dispatch recent-run query returned no R125 runs; latest R125 remains #150.",
     "workflowDispatchOnly": true,
     "runTranslationsDefault": false,
     "full98StructuralAudit": true,
@@ -2986,6 +2995,19 @@
         "5d89fdbc77ae9bd1f799e5083b85498ee61af7d2",
         "eb424e8e9974edc341a7cba5551c252fd3786479"
       ]
+    },
+    "latestManualHausaGameDescriptionRepair": {
+      "language": "ha",
+      "commit": "3b943185e3333ab5680ed10971fcdd5155700c3c",
+      "exactEdits": 18,
+      "keys": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "duplicateGroupsThreshold4": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "readback": true,
+      "published": false,
+      "linguisticCertification": false
     }
   }
 }
