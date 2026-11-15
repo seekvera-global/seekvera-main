@@ -395,15 +395,16 @@
     },
     "activeActionsCheck": {
       "checkedAt": "2026-11-15T08:58:30Z",
-      "latest100Runs": "one active Pages deployment; no active R125 in latest 30",
-      "scope": "GitHub Actions API status=queued and status=in_progress both returned total_count=0",
+      "latest100Runs": "latest 30 repository runs: Pages #1557 in progress; no R125 run in latest 30",
+      "scope": "latest 30 GitHub Actions runs list; R125 is not active",
       "queuedOrInProgressObserved": 1,
       "activeRuns": [
         {
-          "run": 1556,
-          "id": 43696906795,
+          "run": 1557,
+          "id": 43696945239,
           "path": "dynamic/pages/pages-build-deployment",
-          "status": "in_progress"
+          "status": "in_progress",
+          "createdAt": "2026-11-15T08:58:12Z"
         }
       ],
       "latestR125Resume": {
