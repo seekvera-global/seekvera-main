@@ -2843,47 +2843,91 @@
     "readback": "Both packs fetched after commit; 7 distinct game category values each; Paystack brand preserved; native review pending."
   },
   "latestQuotaNeutralBrandRepair": {
-    "checkedAt": "2026-11-14T21:53:00Z",
+    "checkedAt": "2026-11-15T00:20:00Z",
     "branch": "work/r125-locale-candidates-20261008",
-    "packs": {
-      "ti": {
-        "commit": "974c0eacae71e6f3341c6bc47f17f5683edb7322",
-        "exactEdits": 2
-      },
-      "dz": {
-        "commit": "ba3c14708c2ecaa222ce643adaa551de3a929f39",
-        "exactEdits": 2
-      },
-      "kl": {
-        "commit": "184a60f24e575528899bac4c26a4230ef9d23303",
-        "exactEdits": 2
-      },
-      "ga": {
-        "commit": "63d01c110dddbe52b0607c1f7410b68cdeb089e9",
-        "exactEdits": 2
-      },
-      "tn": {
-        "commit": "cbea551902db075e6e3f2f8d2142717b759a3806",
-        "exactEdits": 2
-      },
-      "rw": {
-        "commit": "b52c381646755d65904fcfa17e400b69778bf1b1",
-        "exactEdits": 2
-      }
-    },
-    "totalExactEdits": 12,
-    "sourceHash": "6a1126e6a2ce5629",
-    "sourceUnchanged": true,
-    "keysPerPack": 1118,
+    "totalExactReplacements": 6,
     "translationRequestsSent": 0,
     "aiQuotaUsed": 0,
-    "published": false,
-    "linguisticCertification": false,
-    "validation": "Fetched and re-read ti/dz/kl/ga/tn/rw; all retain 1,118 keys and sourceHash; Payoneer and Paystack restored as exact brand names in all six packs. Manual deterministic brand normalization only; native review/full audit pending."
+    "sourceUnchanged": true,
+    "readback": {
+      "packs": [
+        "am",
+        "lt",
+        "sm",
+        "to"
+      ],
+      "keysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "brandValuesExact": true
+    },
+    "edits": [
+      {
+        "language": "am",
+        "keys": [
+          "Payoneer",
+          "Paystack",
+          "WhatsApp"
+        ],
+        "before": [
+          "ከፋይ",
+          "ክፍያ",
+          "ዋትስአፕ"
+        ],
+        "after": [
+          "Payoneer",
+          "Paystack",
+          "WhatsApp"
+        ],
+        "commit": "bb0d3bc2f476e0a7bfdfc74da7aa7948a7de32a4"
+      },
+      {
+        "language": "lt",
+        "keys": [
+          "Paystack"
+        ],
+        "before": [
+          "Atlyginimas"
+        ],
+        "after": [
+          "Paystack"
+        ],
+        "commit": "c0faac227112bb25c1e7f1224dcf49bf73b0269e"
+      },
+      {
+        "language": "sm",
+        "keys": [
+          "Payoneer"
+        ],
+        "before": [
+          "Totogi totogi"
+        ],
+        "after": [
+          "Payoneer"
+        ],
+        "commit": "5d89fdbc77ae9bd1f799e5083b85498ee61af7d2"
+      },
+      {
+        "language": "to",
+        "keys": [
+          "Payoneer",
+          "Paystack"
+        ],
+        "before": [
+          "Totongi",
+          "Totongi"
+        ],
+        "after": [
+          "Payoneer",
+          "Paystack"
+        ],
+        "commit": "eb424e8e9974edc341a7cba5551c252fd3786479"
+      }
+    ],
+    "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
   "updatedAt": "2026-11-14T23:29:00Z",
   "latestReadOnlyFull98Audit": {
-    "checkedAt": "2026-11-15T00:10:47Z",
+    "checkedAt": "2026-11-15T00:20:00Z",
     "languagesFetched": 98,
     "sourceCount": 1118,
     "sourceHash": "6a1126e6a2ce5629",
@@ -2899,7 +2943,13 @@
     "published": false,
     "translationRequestsSent": 0,
     "aiQuotaUsed": 0,
-    "scope": "Direct read-only pack integrity audit; not native linguistic review or UI end-to-end."
+    "scope": "Direct read-only fetch of all 98 packs; four packs re-read after deterministic brand repairs. Structural coverage only; not linguistic review or end-to-end.",
+    "packsReReadAfterRepair": [
+      "am",
+      "lt",
+      "sm",
+      "to"
+    ]
   },
   "latestContinuationPass": {
     "checkedAt": "2026-11-15T00:10:47Z",
@@ -2919,6 +2969,23 @@
     "full98StructuralAudit": true,
     "full98QualityAudit": false,
     "linguisticCertification": false,
-    "published": false
+    "published": false,
+    "latestManualBrandRepair": {
+      "languages": [
+        "am",
+        "lt",
+        "sm",
+        "to"
+      ],
+      "exactReplacements": 6,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "commits": [
+        "bb0d3bc2f476e0a7bfdfc74da7aa7948a7de32a4",
+        "c0faac227112bb25c1e7f1224dcf49bf73b0269e",
+        "5d89fdbc77ae9bd1f799e5083b85498ee61af7d2",
+        "eb424e8e9974edc341a7cba5551c252fd3786479"
+      ]
+    }
   }
 }
