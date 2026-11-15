@@ -177,7 +177,8 @@
     "Re-probe AI Chat and translation only when quota-safe/authorized; current AI and translation availability are unknown, daily_free_ai_limit historically blocked, Google HTTP429 not retried.",
     "Perform physical microphone and audible-speaker tests on Android, iPhone/iPad and desktop; headless/programmatic TTS-ASR is not hardware certification.",
     "Checkout remains inactive pending merchant-account configuration and end-to-end merchant verification.",
-    "Re-run full candidate quality/script audit after 18 provisional Hausa game-description edits; no native Hausa review yet."
+    "Re-run full candidate quality/script audit after 18 provisional Hausa game-description edits; no native Hausa review yet.",
+    "Resolve 58 Dhivehi English-overlap entries with qualified native translation/review; review artifact created 2026-11-15."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
@@ -243,13 +244,13 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-11-15T05:32:06Z",
+    "checkedAt": "2026-11-15T06:52:00Z",
     "candidateCommit": "7e5bf641a760a104a07b4eda858cd0b37836b848",
     "completedCount": 97,
     "remainingCount": 1,
     "firstFailure": "dv",
     "failureReason": "english_overlap:58",
-    "latestProviderBlocker": "HTTP 503 all_translation_backends_unavailable; previous Google HTTP429 and daily_free_ai_limit remain historical blockers",
+    "latestProviderBlocker": "HTTP 503 all_translation_backends_unavailable; prior Google HTTP429 and daily_free_ai_limit; no new quota probe",
     "quotaStillBlocked": true,
     "published": false,
     "linguisticAccuracyCertified": false,
@@ -438,6 +439,30 @@
       "fullAudit": false,
       "publication": false,
       "linguisticCertification": false
+    },
+    "dhivehiOverlapReview": {
+      "artifact": "docs/locale-candidates-20261008/dv-english-overlap-review-20261115.json",
+      "commit": "416feaeb01644494d9431ccc4a3244fba71e83d8",
+      "count": 58,
+      "checkedAt": "2026-11-15T06:52:00Z"
+    },
+    "activeRunObservation": {
+      "checkedAt": "2026-11-15T06:52:00Z",
+      "repositoryActionsInProgress": 0,
+      "latestPages": {
+        "run": 1552,
+        "id": 43681641095,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "latestR125": {
+        "run": 150,
+        "id": 38971104197,
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-10-16T21:41:54Z"
+      },
+      "candidateWritesDeferredWhileActive": true
     }
   },
   "builderRepair": {
