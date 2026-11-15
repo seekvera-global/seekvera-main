@@ -3708,27 +3708,27 @@
     "qualityGate": "NOT PASS"
   },
   "latestActionsObservation": {
-    "checkedAt": "2026-11-15T21:48:19Z",
+    "checkedAt": "2026-11-15T22:42:00Z",
     "latest100Fetched": true,
     "latest100ActiveCount": 0,
     "latestActiveRuns": [],
     "latestRepositoryRun": {
-      "id": 43759737316,
-      "number": 1567,
+      "id": 43765833200,
+      "number": 1568,
       "name": "pages build and deployment",
       "path": "dynamic/pages/pages-build-deployment",
       "status": "completed",
       "conclusion": "success",
-      "createdAt": "2026-11-15T20:44:13Z",
-      "updatedAt": "2026-11-15T20:44:57Z",
-      "headSha": "f1cd534dd0370c1524fce1296bd8d199e3574b40"
+      "createdAt": "2026-11-15T21:49:46Z",
+      "updatedAt": "2026-11-15T21:50:30Z",
+      "headSha": "edea67146bdac1cfb0f10ba4f2a8c2af97b7ccfe"
     },
     "latestPages": {
-      "run": 1567,
-      "id": 43759737316,
+      "run": 1568,
+      "id": 43765833200,
       "status": "completed",
       "conclusion": "success",
-      "updatedAt": "2026-11-15T20:44:57Z"
+      "updatedAt": "2026-11-15T21:50:30Z"
     },
     "latestSiteHealth": {
       "run": 324,
@@ -3764,7 +3764,8 @@
       "candidateMetadataWrites": 0,
       "translationRequests": 0,
       "aiQuotaUsed": 0,
-      "sourceOrCandidateFilesModified": false
+      "sourceOrCandidateFilesModified": false,
+      "structuralPacksRead": 98
     },
     "aiChat": "unknown-not-probed",
     "translationBackend": "unknown-not-probed",
@@ -3773,7 +3774,7 @@
       "Google HTTP429",
       "last translation log HTTP503 all_translation_backends_unavailable"
     ],
-    "full98StructuralAudit": "PASS (latest read-only audit 2026-11-15T18:47:35Z)",
+    "full98StructuralAudit": "PASS (fresh direct read-back 2026-11-15T22:42:00Z)",
     "full98QualityAudit": false,
     "linguisticCertification": false,
     "published": false,
@@ -4020,6 +4021,47 @@
       "last translation log HTTP503 all_translation_backends_unavailable"
     ],
     "full98StructuralAudit": "PASS (latest read-only audit 2026-11-15T18:47:35Z)",
+    "full98QualityAudit": false,
+    "linguisticCertification": false,
+    "published": false,
+    "decision": "NO-GO"
+  },
+  "latestReadOnlyFull98StructuralReadback": {
+    "checkedAt": "2026-11-15T22:42:00Z",
+    "report": "docs/locale-candidates-20261008/full-structural-readback-20261115-224200Z.json",
+    "reportCommit": "ae252d0f7716480a174a6382ca7454c2ffa4cfce",
+    "packsRead": 98,
+    "keysPerPack": 1118,
+    "sourceHash": "6a1126e6a2ce5629",
+    "keySetMatchesEnglish": 98,
+    "missingKeys": 0,
+    "extraKeys": 0,
+    "emptyOrNonStringValues": 0,
+    "sourceHashMatches": 98,
+    "qualityPolicyMatches": 98,
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "result": "STRUCTURAL PASS; full quality audit and native review still pending"
+  },
+  "run14AutomationAudit": {
+    "checkedAt": "2026-11-15T22:42:00Z",
+    "candidateBranch": "work/r125-locale-candidates-20261008",
+    "candidateReportCommit": "ae252d0f7716480a174a6382ca7454c2ffa4cfce",
+    "candidateSummaryCommit": "1bec9711bd6faa650e87b3b90c84479d32bc49cd",
+    "actionsLatest100Active": 0,
+    "latestPagesRun": 1568,
+    "latestPagesConclusion": "success",
+    "latestR125": 150,
+    "r125Conclusion": "success",
+    "r125Resume": "skipped",
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "candidatePackWrites": 0,
+    "candidateMetadataWrites": 0,
+    "structuralPacksRead": 98,
     "full98QualityAudit": false,
     "linguisticCertification": false,
     "published": false,
