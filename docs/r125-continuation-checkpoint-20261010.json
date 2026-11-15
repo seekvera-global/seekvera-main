@@ -3708,10 +3708,12 @@
     "qualityGate": "NOT PASS"
   },
   "latestActionsObservation": {
-    "checkedAt": "2026-11-15T19:28:06Z",
+    "checkedAt": "2026-11-15T20:42:06Z",
     "latest100Runs": "zero queued/in_progress",
-    "latestRun": 43750027183,
+    "latestRun": 43752697851,
     "latestRunConclusion": "success",
+    "latestRunNumber": 1566,
+    "latestRunPath": "dynamic/pages/pages-build-deployment",
     "latestKnownR125": 150,
     "r125Active": false
   },
@@ -3779,5 +3781,114 @@
     "aiQuotaUsed": 0,
     "finalApproval": false,
     "decision": "NO-GO; preserve candidates and continue only quota-neutral work; do not pause automation."
+  },
+  "run12AutomationAudit": {
+    "checkedAt": "2026-11-15T20:42:06Z",
+    "filesRead": [
+      "main docs/r125-continuation-checkpoint-20261010.json",
+      "candidate docs/locale-candidates-20261008/resume-summary.json",
+      "candidate docs/locale-candidates-20261008/resume-latest.log",
+      "main .github/workflows/r125-hourly-candidate-resume.yml"
+    ],
+    "actions": {
+      "checkedAt": "2026-11-15T20:42:06Z",
+      "latest100RunsFetched": true,
+      "latest100QueuedOrInProgress": 0,
+      "latestRun": {
+        "id": 43752697851,
+        "number": 1566,
+        "path": "dynamic/pages/pages-build-deployment",
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-11-15T19:29:28Z"
+      },
+      "latestProductionHealth": {
+        "id": 43750027183,
+        "number": 324,
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-11-15T19:01:23Z",
+        "pagesHTTP200": 18,
+        "apiHealth": "pass",
+        "robots": "pass",
+        "sitemap": "pass"
+      },
+      "latestR125": {
+        "id": 38971104197,
+        "number": 150,
+        "status": "completed",
+        "conclusion": "success",
+        "resume": "skipped",
+        "audit": "success",
+        "active": false
+      },
+      "r125Active": false
+    },
+    "candidateBranchLatestCommit": {
+      "sha": "65466023766160e66c177eda361649ad813d5bdb",
+      "createdAt": "2026-11-15T18:49:37Z",
+      "message": "docs(r125): record full 98-pack structural readback",
+      "note": "No candidate-pack edits after the 18:47:35Z full structural audit were observed; latest branch commits were audit metadata."
+    },
+    "candidateState": {
+      "structural": 98,
+      "total": 98,
+      "sourceKeysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "structuralResult": "PASS",
+      "qualityCandidates": 97,
+      "qualityRemaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "duplicateSpotAudit": {
+        "groups": 27,
+        "languages": 10,
+        "keysAffected": 255,
+        "checkedAt": "2026-11-15T16:12:00Z"
+      },
+      "full98QualityAudit": false,
+      "published": false,
+      "linguisticCertification": false
+    },
+    "r125Workflow": {
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "translationOptInRequired": true,
+      "saveProgressMayWriteMetadata": true
+    },
+    "ai": {
+      "chat": "unknown-not-probed",
+      "translationBackend": "unknown-not-probed",
+      "quotaUsed": 0,
+      "translationRequests": 0,
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "latest translation log HTTP503 all_translation_backends_unavailable"
+      ]
+    },
+    "production": {
+      "r105Run": 81,
+      "r105Conclusion": "success",
+      "countryChangeIceland": "passed",
+      "prohibitedWeapon": "blocked",
+      "liveEnglishArabicChatProbes": "skipped by policy",
+      "audioAuthorityRun": 64,
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "liveASR": "skipped",
+      "physicalAudio": "pending",
+      "checkout": "inactive until merchant configuration"
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "sourceOrCandidateFilesModified": false
+    },
+    "decision": "NO-GO; structural verification is complete, but quality/native review, all-language/all-section UI tests, live AI availability, physical audio, and merchant checkout remain unverified."
   }
 }
