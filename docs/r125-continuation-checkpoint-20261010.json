@@ -2827,73 +2827,46 @@
     "validation": "Read-back verified; provisional manual Hausa UI terms; native review required."
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-15T08:57:08Z",
+    "checkedAt": "2026-11-15T16:12:00Z",
     "actions": {
-      "latestR125Known": 150,
+      "latestRepositoryRun": 1563,
+      "latestRepositoryRunId": 43722728419,
+      "latestRepositoryStatus": "completed",
+      "latestRepositoryConclusion": "success",
+      "latestRepositoryPath": "dynamic/pages/pages-build-deployment",
+      "latest100R125QueuedOrInProgress": 0,
+      "latestKnownR125": 150,
       "r125RunId": 38971104197,
       "r125Status": "completed",
-      "r125Conclusion": "success",
-      "resume": "skipped",
-      "audit": "success",
-      "activeR125NotObservedInCheckpoint": false,
-      "latestPagesRun": 1535,
-      "pagesRunId": 43633978266,
-      "pagesStatus": "completed",
-      "pagesConclusion": "success"
+      "r125Conclusion": "success"
     },
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
       "trigger": "workflow_dispatch only",
       "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
       "explicitTranslationOptInRequired": true
     },
     "thisPass": {
-      "candidatePackWrites": 2,
-      "exactManualReplacements": 18,
+      "candidatePackWrites": 0,
+      "candidateMetadataWritesOnCandidateBranch": 1,
       "translationRequests": 0,
-      "aiQuotaUsed": 0
+      "aiQuotaUsed": 0,
+      "readOnlyLocalePacksChecked": 10,
+      "sourceHashMatches": 10,
+      "missingKeys": 0,
+      "extraKeys": 0,
+      "emptyValues": 0,
+      "duplicateOutputGroups": 27,
+      "duplicateKeysAffected": 255,
+      "divehiEnglishOverlap": 58
     },
     "currentAI": "unknown-not-probed",
     "currentTranslationBackend": "unknown-not-probed",
     "full98PackAudit": false,
     "linguisticCertification": false,
     "published": false,
-    "note": "2026-11-15 08:57Z: restored 24 exact CSS source values in eight packs (mi/ga/zu/so/am/my/ig/yo), all read back with 1,118 keys and matching sourceHash. No AI/translation calls. Full quality audit and native review pending. Latest Actions read at 08:58Z: one Pages deployment #1556 in progress; no R125 run in latest 30, latest R125 #150 remains completed. Snapshot correction: Pages #1557 (43696945239) was the active deployment at 08:58:30Z; it is not an R125 candidate-resume run.",
-    "latestPages": {
-      "run": 1535,
-      "id": 43633978266,
-      "status": "completed",
-      "conclusion": "success",
-      "scope": "documentation deployment only"
-    },
-    "latestR125": {
-      "run": 150,
-      "id": 38971104197,
-      "status": "completed",
-      "conclusion": "success",
-      "resume": "skipped",
-      "audit": "success"
-    },
-    "activeRunCheck": {
-      "checkedAt": "2026-11-15T08:58:30Z",
-      "latestActionsPageSize": 30,
-      "queuedOrInProgressObserved": 1,
-      "activeRuns": [
-        {
-          "run": 1557,
-          "id": 43696945239,
-          "path": "dynamic/pages/pages-build-deployment",
-          "status": "in_progress",
-          "createdAt": "2026-11-15T08:58:12Z"
-        }
-      ],
-      "r125RunInLatest30": false,
-      "latestKnownR125": 150,
-      "status": "completed",
-      "conclusion": "success"
-    },
-    "full98StructuralAudit": true,
-    "full98QualityAudit": false
+    "note": "2026-11-15 16:12Z: fresh direct read-only spot audit of kl/st/xh/rw/to/dv/ku/ti/tn/dz. All 10 packs have 1,118 keys and matching sourceHash; 27 duplicate-output groups affecting 255 keys remain, plus 58 unresolved Divehi English-overlap entries. Common news-source string overlap is exempt. No candidate-pack writes, translation requests, AI quota use or publication. Latest 100 Actions runs show no queued/in-progress R125; latest known R125 #150 completed 2026-10-16 with resume skipped and audit successful. Latest repository run Pages #1563 completed successfully; this is not R125."
   },
   "latestQuotaNeutralManualBatch": {
     "checkedAt": "2026-11-14T20:20:00Z",
