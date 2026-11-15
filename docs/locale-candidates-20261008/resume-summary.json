@@ -723,5 +723,146 @@
     "aiQuotaUsed": 0,
     "published": false,
     "linguisticCertification": false
+  },
+  "latestReadOnlyFull98Audit": {
+    "checkedAt": "2026-11-15T00:10:47Z",
+    "method": "Read-only direct fetch of all 98 candidate JSON packs from work/r125-locale-candidates-20261008; compared each translations key set and values against source.json; grouped exact duplicate outputs >=4 keys, excluding common preserved brand strings.",
+    "languagesFetched": 98,
+    "sourceCount": 1118,
+    "sourceHash": "6a1126e6a2ce5629",
+    "packsWith1118Translations": 98,
+    "hashMatches": 98,
+    "missingKeys": 0,
+    "extraKeys": 0,
+    "emptyValues": 0,
+    "structuralResult": "PASS",
+    "duplicateOutputScreen": {
+      "threshold": 4,
+      "languageCount": 18,
+      "groups": 40,
+      "languages": [
+        {
+          "code": "ha",
+          "groups": 2,
+          "largest": 14
+        },
+        {
+          "code": "yo",
+          "groups": 2,
+          "largest": 12
+        },
+        {
+          "code": "ig",
+          "groups": 1,
+          "largest": 16
+        },
+        {
+          "code": "zu",
+          "groups": 2,
+          "largest": 13
+        },
+        {
+          "code": "dz",
+          "groups": 1,
+          "largest": 14
+        },
+        {
+          "code": "ti",
+          "groups": 2,
+          "largest": 9
+        },
+        {
+          "code": "kl",
+          "groups": 5,
+          "largest": 12
+        },
+        {
+          "code": "rw",
+          "groups": 3,
+          "largest": 14
+        },
+        {
+          "code": "sm",
+          "groups": 2,
+          "largest": 16
+        },
+        {
+          "code": "to",
+          "groups": 3,
+          "largest": 13
+        },
+        {
+          "code": "so",
+          "groups": 1,
+          "largest": 12
+        },
+        {
+          "code": "dv",
+          "groups": 2,
+          "largest": 12
+        },
+        {
+          "code": "ga",
+          "groups": 2,
+          "largest": 5
+        },
+        {
+          "code": "mi",
+          "groups": 1,
+          "largest": 4
+        },
+        {
+          "code": "ku",
+          "groups": 2,
+          "largest": 11
+        },
+        {
+          "code": "xh",
+          "groups": 3,
+          "largest": 13
+        },
+        {
+          "code": "st",
+          "groups": 4,
+          "largest": 13
+        },
+        {
+          "code": "tn",
+          "groups": 2,
+          "largest": 14
+        }
+      ]
+    },
+    "qualityGate": "NOT PASS: exact duplicate grouping is heuristic; 97/98 saved-candidate audit remains the last recorded quality result, Divehi english_overlap:58; duplicates across low-resource packs need language review and selective repair.",
+    "scope": "Structural coverage only; no native linguistic review, all-section browser testing, or publication.",
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "candidatePackWrites": 0
+  },
+  "latestContinuationPass": {
+    "checkedAt": "2026-11-15T00:10:47Z",
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "verifiedRun": {
+      "run": 150,
+      "id": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "resumeTranslations": "skipped",
+      "candidateAudit": "success",
+      "progressSave": "success"
+    },
+    "workflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "translationRequiresExplicitOptIn": true
+    },
+    "activeRunList": "Not independently queried in this pass; latest recorded R125 remains #150.",
+    "full98StructuralAudit": true,
+    "full98QualityAudit": false,
+    "linguisticCertification": false,
+    "published": false
   }
 }
