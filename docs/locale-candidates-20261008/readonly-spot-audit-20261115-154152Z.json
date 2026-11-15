@@ -1,0 +1,91 @@
+{
+  "checkedAt": "2026-11-15T15:41:52Z",
+  "branch": "work/r125-locale-candidates-20261008",
+  "mode": "read-only-spot-audit",
+  "scope": "12 candidate packs; exact source-key coverage, sourceHash, and exact duplicate groups of >=4 identical target values",
+  "source": {
+    "count": 1118,
+    "hash": "6a1126e6a2ce5629"
+  },
+  "checks": {
+    "packsFetched": 12,
+    "keysPerPack": 1118,
+    "sourceHashMatches": 12,
+    "missingKeys": 0,
+    "extraKeys": 0,
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "publication": false,
+    "linguisticCertification": false
+  },
+  "results": [
+    {
+      "language": "dv",
+      "duplicateGroups": 2,
+      "duplicateKeys": 20,
+      "englishOverlapReviewItems": 58
+    },
+    {
+      "language": "kl",
+      "duplicateGroups": 5,
+      "duplicateKeys": 44
+    },
+    {
+      "language": "st",
+      "duplicateGroups": 4,
+      "duplicateKeys": 37
+    },
+    {
+      "language": "xh",
+      "duplicateGroups": 3,
+      "duplicateKeys": 30
+    },
+    {
+      "language": "rw",
+      "duplicateGroups": 3,
+      "duplicateKeys": 35
+    },
+    {
+      "language": "to",
+      "duplicateGroups": 3,
+      "duplicateKeys": 26
+    },
+    {
+      "language": "ku",
+      "duplicateGroups": 2,
+      "duplicateKeys": 15
+    },
+    {
+      "language": "ti",
+      "duplicateGroups": 2,
+      "duplicateKeys": 14
+    },
+    {
+      "language": "tn",
+      "duplicateGroups": 2,
+      "duplicateKeys": 20
+    },
+    {
+      "language": "dz",
+      "duplicateGroups": 1,
+      "duplicateKeys": 14
+    },
+    {
+      "language": "am",
+      "duplicateGroups": 0,
+      "duplicateKeys": 0
+    },
+    {
+      "language": "my",
+      "duplicateGroups": 0,
+      "duplicateKeys": 0
+    }
+  ],
+  "totals": {
+    "duplicateGroups": 27,
+    "duplicateKeys": 255,
+    "affectedLanguages": 10
+  },
+  "limitation": "Heuristic exact-duplicate screen only; not a full 98-pack audit or native-language quality certification."
+}
