@@ -333,12 +333,20 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-15T05:32:06Z",
+    "checkedAt": "2026-11-15T11:44:10Z",
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
       "trigger": "workflow_dispatch only",
       "runTranslationsDefault": false,
-      "explicitTranslationOptInRequired": true
+      "explicitTranslationOptInRequired": true,
+      "writeBehavior": {
+        "auditOnlyMayWriteCandidateBranchMetadata": true,
+        "candidatePackRepairStepsRequireExplicitOptIn": true,
+        "runTranslationsDefault": false,
+        "repairCandidatesDefault": false,
+        "translationStepRequiresRunTranslations": true,
+        "operationalRule": "Before any candidate-pack mutation, query current Actions and defer if R125 is queued/in_progress. Audit-only may update summary/checkpoint metadata but does not run candidate repair steps by default."
+      }
     },
     "latestR125": {
       "run": 150,
@@ -366,8 +374,9 @@
       "quotaRequestsThisPass": 0
     },
     "thisPass": {
-      "candidatePackWrites": 1,
-      "exactManualReplacements": 4,
+      "actionsRunsInspected": 100,
+      "candidatePackWrites": 0,
+      "candidateMetadataCheckpointWrites": 1,
       "translationRequests": 0,
       "aiQuotaUsed": 0,
       "publication": false,
@@ -377,7 +386,7 @@
     "full98PackAudit": false,
     "linguisticCertification": false,
     "published": false,
-    "note": "Quota-neutral deterministic brand normalization in 64 locale packs (86 exact replacements), all packs read back at 1,118 keys/sourceHash. No translation service or AI calls. R125 #150 remains audit-only/completed; latest observed Pages #1539 success. Current AI/translation availability unknown; full audit and native review pending.",
+    "note": "Fresh Actions check: latest 100 repository runs contain no R125; latest repo run Pages #1562 succeeded. R125 #150 remains the last known R125 run (completed 2026-10-16). No candidate packs or translation requests were written in this pass.",
     "currentAI": "unknown-not-probed",
     "currentTranslationBackend": "unknown-not-probed",
     "latestActionsSnapshot": {
@@ -394,24 +403,25 @@
       "checkedAt": "2026-11-14T21:56:33Z"
     },
     "activeActionsCheck": {
-      "checkedAt": "2026-11-15T08:58:30Z",
-      "latest100Runs": "latest 30 repository runs: Pages #1557 in progress; no R125 run in latest 30",
-      "scope": "latest 30 GitHub Actions runs list; R125 is not active",
-      "queuedOrInProgressObserved": 1,
-      "activeRuns": [
-        {
-          "run": 1557,
-          "id": 43696945239,
-          "path": "dynamic/pages/pages-build-deployment",
-          "status": "in_progress",
-          "createdAt": "2026-11-15T08:58:12Z"
-        }
-      ],
+      "checkedAt": "2026-11-15T11:44:10Z",
+      "scope": "GitHub Actions repository runs API; latest 100 runs",
+      "latest100Fetched": true,
+      "r125RunsInLatest100": 0,
+      "queuedOrInProgressR125": 0,
+      "latestRepositoryRun": {
+        "run": 1562,
+        "id": 43710291005,
+        "path": "dynamic/pages/pages-build-deployment",
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-11-15T11:43:26Z"
+      },
       "latestR125Resume": {
         "run": 150,
         "runId": 38971104197,
         "status": "completed",
-        "conclusion": "success"
+        "conclusion": "success",
+        "createdAt": "2026-10-16T21:41:54Z"
       }
     },
     "latestR125Resume": {
