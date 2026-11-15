@@ -183,7 +183,7 @@
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-14T00:50:00Z",
+    "checkedAt": "2026-11-15T18:47:35Z",
     "aiChat": {
       "lastConfirmedLiveRun": 43213407211,
       "checkedAt": "2026-11-12T11:57:45Z",
@@ -192,7 +192,7 @@
       "countryChange": "passed",
       "prohibitedWeapon": "blocked",
       "currentAvailability": "unknown-not-probed",
-      "reason": "Latest R105 #81 skipped live AI probes (RUN_LIVE_AI_PROBES=false); no quota-consuming live request sent."
+      "reason": "No quota-consuming probe; last confirmed English/Arabic 2026-11-12; latest R105 live probes skipped."
     },
     "voiceTranscription": {
       "run": 43219069259,
@@ -3711,39 +3711,28 @@
     "qualityGate": "NOT PASS"
   },
   "latestActionsObservation": {
-    "checkedAt": "2026-11-15T11:44:10Z",
-    "method": "GitHub Actions repository runs API, latest 100 runs",
-    "latest100ContainsR125": false,
-    "queuedOrInProgressR125": 0,
-    "latestRepositoryRun": {
-      "run": 1562,
-      "id": 43710291005,
-      "name": "pages build and deployment",
-      "status": "completed",
-      "conclusion": "success",
-      "createdAt": "2026-11-15T11:43:26Z",
-      "completedAt": "2026-11-15T11:44:06Z"
-    },
-    "latestR125": {
-      "run": 150,
-      "id": 38971104197,
-      "status": "completed",
-      "conclusion": "success",
-      "createdAt": "2026-10-16T21:41:54Z",
-      "resume": "skipped",
-      "audit": "success"
-    },
-    "workflowCurrent": {
-      "trigger": "workflow_dispatch only",
-      "runTranslationsDefault": false,
-      "repairCandidatesDefault": false,
-      "auditAlways": true,
-      "auditOnlyMayCommitCandidateBranchMetadata": true,
-      "translationStepRequiresExplicitOptIn": true
-    },
-    "candidatePackWritesThisPass": 0,
-    "translationRequestsThisPass": 0,
-    "aiQuotaUsedThisPass": 0,
-    "note": "Audit-only can write updated summary/checkpoint metadata to the candidate branch via Save progress; candidate pack repair steps are gated off by default. No R125 run was queued/in progress in the latest 100 repository runs."
+    "checkedAt": "2026-11-15T18:47:35Z",
+    "latest100Runs": "zero queued/in_progress",
+    "latestRun": 43734236295,
+    "latestRunConclusion": "success",
+    "latestKnownR125": 150,
+    "r125Active": false
+  },
+  "structuralVerification": {
+    "checkedAt": "2026-11-15T18:47:35Z",
+    "checkedLanguages": 98,
+    "expectedKeysPerPack": 1118,
+    "sourceHash": "6a1126e6a2ce5629",
+    "keySetMatch": "all 1,118 source keys present exactly once; zero missing/extra/empty values",
+    "packCountAndHash": "98/98 candidate packs report 1118 keys, matching sourceHash and qualityPolicy",
+    "result": "PASS structural only; candidate quality 97/98 because dv english_overlap:58",
+    "auditReport": "docs/locale-candidates-20261008/full-structural-audit-20261115-184735Z.json"
+  },
+  "fullStructuralAudit": {
+    "report": "docs/locale-candidates-20261008/full-structural-audit-20261115-184735Z.json",
+    "commit": "855ec0340a762494a24a0cc49e0fd66612d51328",
+    "checkedAt": "2026-11-15T18:47:35Z",
+    "packs": 98,
+    "result": "PASS"
   }
 }
