@@ -2820,7 +2820,7 @@
     "validation": "Read-back verified; provisional manual Hausa UI terms; native review required."
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-14T20:20:00Z",
+    "checkedAt": "2026-11-15T08:57:08Z",
     "actions": {
       "latestR125Known": 150,
       "r125RunId": 38971104197,
@@ -2851,7 +2851,7 @@
     "full98PackAudit": false,
     "linguisticCertification": false,
     "published": false,
-    "note": "R125 #150 job/steps fetched and verified: translation resume skipped; saved-candidate audit passed. Pages #1535 build/report/deploy jobs confirmed success. No live AI/quota probe.",
+    "note": "2026-11-15 08:57Z: restored 24 exact CSS source values in eight packs (mi/ga/zu/so/am/my/ig/yo), all read back with 1,118 keys and matching sourceHash. No AI/translation calls. Full quality audit and native review pending.",
     "latestPages": {
       "run": 1535,
       "id": 43633978266,
@@ -2865,9 +2865,18 @@
       "status": "completed",
       "conclusion": "success",
       "resume": "skipped",
-      "audit": "success",
-      "verifiedJobSteps": true
-    }
+      "audit": "success"
+    },
+    "activeRunCheck": {
+      "checkedAt": "2026-11-15T08:55:00Z",
+      "latestRunsPageFetched": true,
+      "queuedOrInProgressObserved": 0,
+      "r125RunInLatest30": false,
+      "latestKnownR125": 150,
+      "status": "completed"
+    },
+    "full98StructuralAudit": true,
+    "full98QualityAudit": false
   },
   "latestQuotaNeutralManualBatch": {
     "checkedAt": "2026-11-14T20:20:00Z",
@@ -2975,7 +2984,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-15T07:17:20Z",
+  "updatedAt": "2026-11-15T08:57:08Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -3131,7 +3140,7 @@
     "linguisticCertification": false,
     "note": "Manual provisional Somali wording; qualified native review required."
   },
-  "repairsSinceAudit": 297,
+  "repairsSinceAudit": 321,
   "latestManualMaoriRepair": {
     "checkedAt": "2026-11-15T07:17:00Z",
     "language": "mi",
@@ -3171,5 +3180,50 @@
     "published": false,
     "linguisticCertification": false,
     "note": "Nine provisional Irish Gaelic game descriptions diversified; native review required."
+  },
+  "latestCssInvariantRepair": {
+    "checkedAt": "2026-11-15T08:57:08Z",
+    "repairType": "deterministic CSS/source-invariant normalization",
+    "sourceHash": "6a1126e6a2ce5629",
+    "sourceCount": 1118,
+    "invariantSourceIndices": [
+      "1106",
+      "1108",
+      "1114"
+    ],
+    "languages": [
+      "mi",
+      "ga",
+      "zu",
+      "so",
+      "am",
+      "my",
+      "ig",
+      "yo"
+    ],
+    "exactReplacements": 24,
+    "perLanguage": {
+      "mi": 3,
+      "ga": 3,
+      "zu": 3,
+      "so": 3,
+      "am": 3,
+      "my": 3,
+      "ig": 3,
+      "yo": 3
+    },
+    "validation": {
+      "allPacksReadBack": true,
+      "keysPerPack": 1118,
+      "sourceHashMatches": true,
+      "allThreeCssValuesExact": true,
+      "sourceFileChanged": false
+    },
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "full98PackAudit": false,
+    "note": "CSS selectors/animation/transition strings are executable source, not translatable prose. Restored exact source values in eight repaired packs. Deterministic code-preservation fix, not native-language review."
   }
 }
