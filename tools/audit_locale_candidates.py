@@ -1,7 +1,7 @@
 """Audit staged packs without claiming linguistic review or publishing them."""
 import argparse,datetime,json,subprocess
 from pathlib import Path
-from tools.build_current_locale_delta import ROOT,reviewed_labels,suspicious_overlap
+from tools.build_current_locale_delta import ROOT,reviewed_labels,suspicious_overlap,source_invariant_keys
 
 def audit(stage,exit_code='not-run'):
  source=json.loads((stage/'source.json').read_text());languages=json.loads((ROOT/'i18n-r32/manifest.json').read_text())['languages'];reviewed=reviewed_labels();completed=[];failures={};packs={}
@@ -13,6 +13,9 @@ def audit(stage,exit_code='not-run'):
   if data.get('qualityPolicy')!='source-overlap-5-v1':reasons.append('quality_policy_mismatch')
   if not all(isinstance(values.get(k),str) and values[k].strip() for k in source['strings']):reasons.append('missing_strings')
   if not all(values.get(k)==v for k,v in reviewed.get(code,{}).items() if k in source['strings']):reasons.append('reviewed_label_mismatch')
+  invariants=source_invariant_keys(source['strings'])
+  invariant_mismatches=[k for k in invariants if values.get(k)!=k]
+  if invariant_mismatches:reasons.append('source_invariant_mismatch:'+str(len(invariant_mismatches)))
   overlap=[k for k in source['strings'] if code!='en' and suspicious_overlap(k,values.get(k,''))]
   if overlap:reasons.append('english_overlap:'+str(len(overlap)))
   if reasons:failures[code]=reasons

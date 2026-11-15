@@ -32,7 +32,7 @@ jobs:
         run: |
           git fetch origin main:refs/remotes/origin/main
           git show origin/main:worker.js > /tmp/seekvera-validation-worker.js
-          for file in tools/build_current_locale_delta.py tools/audit_locale_candidates.py tools/audit-candidate-scripts.cjs tools/test-candidate-script-triage.cjs tools/repair-candidate-reserved-identifiers.py tools/test-repair-candidate-reserved-identifiers.py; do
+          for file in tools/build_current_locale_delta.py tools/audit_locale_candidates.py tools/audit-candidate-scripts.cjs tools/test-candidate-script-triage.cjs tools/repair-candidate-reserved-identifiers.py tools/test-repair-candidate-reserved-identifiers.py tools/repair-candidate-source-invariants.py tools/test-repair-candidate-source-invariants.py; do
             git show "origin/main:$file" > "$file"
           done
       - name: Verify all 98 target-language names without translation requests
@@ -68,6 +68,12 @@ jobs:
       - name: Test immutable locale identifier repair (quota-neutral)
         if: success()
         run: python tools/test-repair-candidate-reserved-identifiers.py
+      - name: Repair executable CSS source invariants (deterministic, no AI)
+        if: success()
+        run: PYTHONPATH=. python tools/repair-candidate-source-invariants.py --stage docs/locale-candidates-20261008
+      - name: Test executable CSS source invariant repair (quota-neutral)
+        if: success()
+        run: PYTHONPATH=. python tools/test-repair-candidate-source-invariants.py
       - name: Audit all saved candidates
         if: always()
         env:

@@ -6,6 +6,17 @@ from bs4 import BeautifulSoup
 ROOT=Path(__file__).resolve().parent.parent
 VERSION='20261008-r125-runtime-source-coverage'
 ALLOWED_PUBLIC_STRINGS=set()
+
+# Executable CSS selectors and layout rules are source invariants, not prose.
+# Keep them byte-for-byte identical in every locale pack and never send them
+# to the translation service.
+SOURCE_INVARIANT_MARKERS = (
+    "html.sv-r15-applying .r5-top",
+    ".sv-r31-switching .r5-center",
+    "#categories .r5-tile-body{",
+)
+def source_invariant_keys(source):
+    return {key for key in source if any(marker in key for marker in SOURCE_INVARIANT_MARKERS)}
 def canonical(s):return ' '.join(str(s).split())
 
 # Explicit names for target languages not consistently exposed by Babel's
@@ -139,6 +150,7 @@ def main():
    saved=json.loads(out.read_text())
    if saved.get('language')==code and saved.get('qualityPolicy')=='source-overlap-5-v1':trans.update(saved.get('translations',{}));retranslated.update(saved.get('retranslatedKeys',[]))
   trans.update(reviewed.get(code,{}))
+  for key in source_invariant_keys(source):trans[key]=key
   for key in source:
    if key=='SV-YYYYMMDD-XXXXXXXX':trans[key]=key
   folded={canonical(k).casefold():v for k,v in trans.items()}
