@@ -243,8 +243,8 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-11-14T22:46:16Z",
-    "candidateCommit": "d1d7ff77e68ab550f16fdfae4ac13ef07c7a1b5c",
+    "checkedAt": "2026-11-15T03:31:00Z",
+    "candidateCommit": "7cb0863b6be65c95e8eb97c51484e50a1bbdc2c2",
     "completedCount": 97,
     "remainingCount": 1,
     "firstFailure": "dv",
@@ -423,7 +423,8 @@
         "published": false,
         "linguisticCertification": false
       }
-    ]
+    ],
+    "latestManualSamoanRepair": "20 quota-neutral manual Samoan strings corrected; provisional wording, native review required."
   },
   "builderRepair": {
     "commit": "634a0d31cb571300d658bb24580bdad3cbaeb75b",
@@ -471,17 +472,17 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-15T02:30:10Z",
+    "checkedAt": "2026-11-15T03:31:00Z",
     "currentActionsSnapshot": {
-      "latest1000Fetched": true,
+      "latest100Fetched": true,
       "activeRunsObserved": 0,
       "latestRepositoryRun": {
-        "run": 1546,
-        "id": 43664388875,
+        "run": 1548,
+        "id": 43668323427,
         "name": "pages build and deployment",
         "status": "completed",
         "conclusion": "success",
-        "createdAt": "2026-11-15T01:42:58Z"
+        "createdAt": "2026-11-15T02:33:10Z"
       }
     },
     "r125Workflow": {
@@ -2935,7 +2936,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-14T23:29:00Z",
+  "updatedAt": "2026-11-15T03:31:00Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -3019,5 +3020,49 @@
       "linguisticCertification": false
     }
   },
-  "auditPending": true
+  "auditPending": true,
+  "latestManualSamoanRepair": {
+    "checkedAt": "2026-11-15T03:31:00Z",
+    "language": "sm",
+    "commits": [
+      "16e8b97ce332b880625b53a8636d0a04f937bc0a",
+      "7cb0863b6be65c95e8eb97c51484e50a1bbdc2c2"
+    ],
+    "exactReplacements": 20,
+    "keys": [
+      "Open matching section",
+      "Pop colorful balloons.",
+      "High-speed night racing.",
+      "Understanding your speech…",
+      "A fast safari obstacle run.",
+      "Fly through open sky gates.",
+      "Fast robot target challenge.",
+      "Survive a dense meteor field.",
+      "Tap matching targets quickly.",
+      "React quickly to ninja targets.",
+      "Run a prehistoric jungle trail.",
+      "A faster space paddle challenge.",
+      "A quick superbike lane challenge.",
+      "Catch candy and avoid gray blocks.",
+      "Race across a fast desert highway.",
+      "A dark high-speed runner challenge.",
+      "Touch controls",
+      "Page navigation",
+      "Search marketplace",
+      "SEEKVERA quick tools"
+    ],
+    "readback": {
+      "keyCount": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "hashMatches": true,
+      "editedValuesExact": true,
+      "duplicateGroupsAtLeast4": 0
+    },
+    "sourceFileChanged": false,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "note": "20 quota-neutral manual Samoan strings corrected; provisional wording, native review required."
+  }
 }
