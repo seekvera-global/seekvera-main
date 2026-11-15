@@ -729,18 +729,18 @@
     "candidateBranchWritten": false
   },
   "latestScheduledHealthCheck": {
-    "run": 43496909277,
-    "runNumber": 319,
-    "checkedAt": "2026-11-13T19:56:39Z",
+    "run": 324,
+    "runId": 43750027183,
+    "checkedAt": "2026-11-15T19:01:23Z",
     "conclusion": "success",
-    "commit": "67aca2a5b46998c17c8bed0f1c6a5a75a408ec3e",
+    "commit": "c7ee0f2fe6023fa66cdce16b022e7dad6de3e619",
     "checks": [
       "official production homepage and category/navigation assertions",
-      "API /api/health ok",
-      "robots.txt and sitemap.xml official domain",
-      "18 public pages HTTP 200"
+      "/api/health ok",
+      "robots.txt and sitemap.xml official-domain assertions",
+      "18 public product pages HTTP 200"
     ],
-    "scope": "Availability/SEO and category surface only; no AI generation, all-language, audio hardware or checkout certification."
+    "scope": "Live production availability and SEO/category surface only; not AI generation, all-language interaction, physical audio or checkout certification."
   },
   "latestAudioAuthority": {
     "checkedAt": "2026-11-13T15:53:01Z",
@@ -2827,18 +2827,20 @@
     "validation": "Read-back verified; provisional manual Hausa UI terms; native review required."
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-15T16:12:00Z",
+    "checkedAt": "2026-11-15T19:28:06Z",
     "actions": {
-      "latestRepositoryRun": 1563,
-      "latestRepositoryRunId": 43722728419,
+      "latestRepositoryRun": 324,
+      "latestRepositoryRunId": 43750027183,
       "latestRepositoryStatus": "completed",
       "latestRepositoryConclusion": "success",
-      "latestRepositoryPath": "dynamic/pages/pages-build-deployment",
+      "latestRepositoryPath": ".github/workflows/site-health.yml",
+      "latest100QueuedOrInProgress": 0,
       "latest100R125QueuedOrInProgress": 0,
       "latestKnownR125": 150,
       "r125RunId": 38971104197,
       "r125Status": "completed",
-      "r125Conclusion": "success"
+      "r125Conclusion": "success",
+      "latestR125ObservedInLatest100Runs": false
     },
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
@@ -2849,24 +2851,19 @@
     },
     "thisPass": {
       "candidatePackWrites": 0,
-      "candidateMetadataWritesOnCandidateBranch": 1,
+      "candidateMetadataWritesOnCandidateBranch": 0,
       "translationRequests": 0,
       "aiQuotaUsed": 0,
-      "readOnlyLocalePacksChecked": 10,
-      "sourceHashMatches": 10,
-      "missingKeys": 0,
-      "extraKeys": 0,
-      "emptyValues": 0,
-      "duplicateOutputGroups": 27,
-      "duplicateKeysAffected": 255,
-      "divehiEnglishOverlap": 58
+      "sourceFilesRead": 3,
+      "full98StructuralReadbackPreviouslyVerifiedAt": "2026-11-15T18:47:35Z",
+      "full98QualityAudit": false
     },
     "currentAI": "unknown-not-probed",
     "currentTranslationBackend": "unknown-not-probed",
     "full98PackAudit": false,
     "linguisticCertification": false,
     "published": false,
-    "note": "2026-11-15 16:12Z: fresh direct read-only spot audit of kl/st/xh/rw/to/dv/ku/ti/tn/dz. All 10 packs have 1,118 keys and matching sourceHash; 27 duplicate-output groups affecting 255 keys remain, plus 58 unresolved Divehi English-overlap entries. Common news-source string overlap is exempt. No candidate-pack writes, translation requests, AI quota use or publication. Latest 100 Actions runs show no queued/in-progress R125; latest known R125 #150 completed 2026-10-16 with resume skipped and audit successful. Latest repository run Pages #1563 completed successfully; this is not R125."
+    "note": "Fresh 2026-11-15 19:28Z read of main checkpoint, candidate resume-summary and resume-latest.log; inspected current R125 workflow and latest 100 Actions runs. Latest repo run is scheduled Site Health #324, completed success at 19:01Z; no queued/in-progress runs in latest100 and no R125 active. Last known R125 #150 (2026-10-16) completed audit-only with resume skipped. Translation log remains HTTP503 after 48 Divehi translations; previous Google HTTP429 and daily_free_ai_limit are recorded. No quota probe, translation request, candidate write, publication or linguistic certification this pass."
   },
   "latestQuotaNeutralManualBatch": {
     "checkedAt": "2026-11-14T20:20:00Z",
@@ -3711,9 +3708,9 @@
     "qualityGate": "NOT PASS"
   },
   "latestActionsObservation": {
-    "checkedAt": "2026-11-15T18:47:35Z",
+    "checkedAt": "2026-11-15T19:28:06Z",
     "latest100Runs": "zero queued/in_progress",
-    "latestRun": 43734236295,
+    "latestRun": 43750027183,
     "latestRunConclusion": "success",
     "latestKnownR125": 150,
     "r125Active": false
@@ -3734,5 +3731,53 @@
     "checkedAt": "2026-11-15T18:47:35Z",
     "packs": 98,
     "result": "PASS"
+  },
+  "run11AutomationAudit": {
+    "checkedAt": "2026-11-15T19:28:06Z",
+    "filesRead": [
+      "main docs/r125-continuation-checkpoint-20261010.json",
+      "candidate docs/locale-candidates-20261008/resume-summary.json",
+      "candidate docs/locale-candidates-20261008/resume-latest.log",
+      "main .github/workflows/r125-hourly-candidate-resume.yml"
+    ],
+    "freshActionsQuery": {
+      "latest100": 100,
+      "active": 0,
+      "latestRun": 43750027183,
+      "latestRunNumber": 324,
+      "latestRunPath": ".github/workflows/site-health.yml",
+      "latestRunConclusion": "success",
+      "r125Active": false
+    },
+    "latestProductionHealth": {
+      "run": 324,
+      "runId": 43750027183,
+      "conclusion": "success",
+      "pagesHTTP200": 18,
+      "apiHealth": "pass",
+      "robots": "pass",
+      "sitemap": "pass"
+    },
+    "candidateState": {
+      "structural": 97,
+      "total": 98,
+      "remaining": [
+        "dv"
+      ],
+      "published": false,
+      "linguisticCertification": false
+    },
+    "ai": {
+      "chat": "unknown-not-probed",
+      "translation": "unknown-not-probed",
+      "dailyFreeAiLimit": "historical blocker",
+      "googleHTTP429": "historical blocker",
+      "latestTranslationFailure": "HTTP503 all_translation_backends_unavailable"
+    },
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "finalApproval": false,
+    "decision": "NO-GO; preserve candidates and continue only quota-neutral work; do not pause automation."
   }
 }
