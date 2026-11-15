@@ -2975,7 +2975,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-15T07:17:00Z",
+  "updatedAt": "2026-11-15T07:17:20Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -3014,8 +3014,8 @@
     }
   },
   "latestContinuationPass": {
-    "checkedAt": "2026-11-15T07:17:00Z",
-    "candidatePackWrites": 1,
+    "checkedAt": "2026-11-15T07:17:20Z",
+    "candidatePackWrites": 2,
     "translationRequests": 0,
     "aiQuotaUsed": 0,
     "latestRecordedR125": {
@@ -3033,7 +3033,7 @@
       "explicitTranslationOptInRequired": true
     },
     "activeRunCheck": {
-      "checkedAt": "2026-11-15T07:17:00Z",
+      "checkedAt": "2026-11-15T07:17:20Z",
       "latest100RunsFetched": true,
       "queuedOrInProgressObserved": 0,
       "r125RunInLatest100": false,
@@ -3044,7 +3044,7 @@
     "full98QualityAudit": false,
     "linguisticCertification": false,
     "published": false,
-    "note": "Four Maori candidate values repaired and re-read (1,118 keys/sourceHash; no >=4 duplicate group in mi). Latest 100 repository Actions runs show no queued/in-progress runs and no newer R125; R125 #150 remains completed audit-only. AI/translation not probed; quota use 0."
+    "note": "Four provisional Maori and nine Irish Gaelic game descriptions repaired/read back; both packs retain 1,118 keys/sourceHash and zero >=4 duplicate groups. Latest 100 Actions runs at 07:17Z show no queued/in-progress runs; R125 #150 remains completed audit-only. Site Health #323 passed 18 page/API/SEO checks. No AI/translation requests; full 98-pack quality audit and native review pending."
   },
   "auditPending": true,
   "latestManualSamoanRepair": {
@@ -3131,7 +3131,7 @@
     "linguisticCertification": false,
     "note": "Manual provisional Somali wording; qualified native review required."
   },
-  "repairsSinceAudit": 288,
+  "repairsSinceAudit": 297,
   "latestManualMaoriRepair": {
     "checkedAt": "2026-11-15T07:17:00Z",
     "language": "mi",
@@ -3151,5 +3151,25 @@
     "published": false,
     "linguisticCertification": false,
     "note": "Four provisional Maori game descriptions diversified; native review required."
+  },
+  "latestManualIrishRepair": {
+    "checkedAt": "2026-11-15T07:17:20Z",
+    "language": "ga",
+    "candidateCommit": "391ffa0773b9c775e0570f825b73c9b23e3f89d8",
+    "exactReplacements": 9,
+    "duplicateGroupsBefore": 2,
+    "duplicateGroupsAtLeast4After": 0,
+    "readback": {
+      "keyCount": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "hashMatches": true,
+      "editedValuesExact": true
+    },
+    "sourceFileChanged": false,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "note": "Nine provisional Irish Gaelic game descriptions diversified; native review required."
   }
 }
