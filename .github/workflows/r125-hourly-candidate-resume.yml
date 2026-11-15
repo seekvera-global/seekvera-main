@@ -7,6 +7,11 @@ on:
         type: boolean
         required: false
         default: false
+      repair_candidates:
+        description: 'Apply deterministic quota-neutral repairs to candidate packs (may write candidate files)'
+        type: boolean
+        required: false
+        default: false
 permissions:
   contents: write
 concurrency:
@@ -63,13 +68,13 @@ jobs:
           (stage/'scheduled-mode.json').write_text(json.dumps(status,indent=2))
           PY
       - name: Repair immutable locale identifiers (deterministic, no AI)
-        if: success()
+        if: success() && (inputs.run_translations || inputs.repair_candidates)
         run: python tools/repair-candidate-reserved-identifiers.py --stage docs/locale-candidates-20261008
       - name: Test immutable locale identifier repair (quota-neutral)
         if: success()
         run: python tools/test-repair-candidate-reserved-identifiers.py
       - name: Repair executable CSS source invariants (deterministic, no AI)
-        if: success()
+        if: success() && (inputs.run_translations || inputs.repair_candidates)
         run: PYTHONPATH=. python tools/repair-candidate-source-invariants.py --stage docs/locale-candidates-20261008
       - name: Test executable CSS source invariant repair (quota-neutral)
         if: success()
