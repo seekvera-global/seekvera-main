@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T23:29:00Z",
+  "checkedAt": "2026-11-15T01:40:00Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -230,7 +230,7 @@
   },
   "scriptWarningCount": 0,
   "scriptWarningLanguages": 0,
-  "repairsSinceAudit": 171,
+  "repairsSinceAudit": 189,
   "auditPending": true,
   "auditNote": "Partial quota-neutral warning recomputation after 44 deterministic/manual exact repairs; full 98-pack audit still pending. This pass removed 8 specific missing-action/punctuation warnings in fa, kk, ta, te, bn, hi and zh. No translation API or AI requests were sent. Quota-neutral deterministic repairs on 2026-11-14: fixed 11 exact strings in mn/ne/ur/el/he/si/ps; updated known script-warning entries (hi/he/si/mn/ne/zh cleared; ur/el/ps retain date-format review). No translation API or AI requests sent; full 98-pack audit remains pending. Quota-neutral deterministic repairs 2026-11-14: corrected 8 exact strings across fa/tg/ka/mk/ky/dz; Dzongkha had 3 action labels reduced to brand-only text. Full 98-pack audit and native-language review remain pending; no translation API or AI requests. Quota-neutral 2026-11-14 repair: Gujarati SEEKVERA GUIDE localized; readback verified 1,118 keys. Warning map now 10 date/presentation warnings across 10 languages; full audit remains pending. 2026-11-14 06:00Z: normalized the exact R74 date token in ur/fa/el/uk/mk/kk/ky/tg/gu/ps to the stable source ISO form; each pack read back at 1,118 keys and matching sourceHash. Partial known date/presentation warning map now 0/0. This is not a full 98-pack audit or linguistic certification. 2026-11-14 09:30Z: quota-neutral manual Myanmar repair: corrected Action/Arcade/Puzzle/Adventure game labels, Chinese language vs China, and two distinct game descriptions that had identical Burmese output. Pack read back at 1,118 keys; source unchanged; translationRequestsSent=0; aiQuotaUsed=0. Partial duplicate scan of Myanmar now shows only expected case variants (AI DEAL AGENT/AI Deal Agent, All Categories/All categories, Worldwide Tourism/Worldwide tourism); full 98-pack audit and native review remain pending. 2026-11-14 11:35Z: quota-neutral manual Amharic repair: 19 exact keys (9 game-category labels + 10 game descriptions) corrected; removed the 10-description duplicate-output group. Pack re-read with 1,118 keys/sourceHash unchanged. No translation request or AI quota use. Native Amharic review and full 98-pack audit still pending. 2026-11-14 22:46Z: deterministic brand-preservation pass: restored exact Payoneer/Paystack/WhatsApp identifiers across 64 locale packs (86 exact replacements). Read back all 64: 1,118 keys each, sourceHash 6a1126e6a2ce5629, repaired brand values exact. No translation API or AI calls; no publication or linguistic certification. Full 98-pack audit/native review still pending. 2026-11-14 23:29Z: quota-neutral Divehi brand preservation repair: Payoneer, Paystack and WhatsApp restored to exact Latin brand spellings (3 replacements); pack read back with 1,118 keys and sourceHash 6a1126e6a2ce5629. This does not reduce english_overlap:58 or certify Dhivehi. No translation API/AI request, no publication.",
   "structuralVerification": {
@@ -298,7 +298,7 @@
     "linguisticCertification": false,
     "validation": "Read back all 64 touched packs: 1,118 translation keys each and matching sourceHash; all changed Payoneer/Paystack/WhatsApp brand strings now exact. This is deterministic brand normalization, not native-language certification."
   },
-  "repairs": 168,
+  "repairs": 186,
   "semanticDuplicateFindings": {
     "checkedAt": "2026-11-14T11:35:00Z",
     "scope": [
@@ -628,11 +628,11 @@
     "full98AuditPending": true
   },
   "latestManualHausaRepair": {
-    "checkedAt": "2026-11-14T20:15:00Z",
+    "checkedAt": "2026-11-15T01:40:00Z",
     "branch": "work/r125-locale-candidates-20261008",
     "language": "ha",
-    "packCommit": "d30dd8524843765c5f664a63ab9183886ced5f39",
-    "exactEdits": 10,
+    "packCommit": "3b943185e3333ab5680ed10971fcdd5155700c3c",
+    "exactEdits": 28,
     "keysPerPack": 1118,
     "sourceHash": "6a1126e6a2ce5629",
     "sourceUnchanged": true,
@@ -640,7 +640,7 @@
     "aiQuotaUsed": 0,
     "publication": false,
     "linguisticCertification": false,
-    "validation": "Read back ha.json; all 10 exact replacements persisted, 1,118 keys and sourceHash unchanged. Provisional manual Hausa strings; native review/full audit pending."
+    "validation": "Combined prior 10 deterministic Hausa fixes plus 18 game-description repairs; latest read-back confirms 1,118 keys/sourceHash unchanged. Provisional Hausa wording; native review required."
   },
   "latestQuotaNeutralManualBatch": {
     "checkedAt": "2026-11-14T20:20:00Z",
@@ -769,7 +769,7 @@
     "linguisticCertification": false
   },
   "latestReadOnlyFull98Audit": {
-    "checkedAt": "2026-11-15T00:20:00Z",
+    "checkedAt": "2026-11-15T01:40:00Z",
     "method": "Read-only direct fetch of all 98 candidate JSON packs from work/r125-locale-candidates-20261008; compared each translations key set and values against source.json; grouped exact duplicate outputs >=4 keys, excluding common preserved brand strings.",
     "languagesFetched": 98,
     "sourceCount": 1118,
@@ -782,14 +782,9 @@
     "structuralResult": "PASS",
     "duplicateOutputScreen": {
       "threshold": 4,
-      "languageCount": 18,
-      "groups": 40,
+      "languageCount": 17,
+      "groups": 38,
       "languages": [
-        {
-          "code": "ha",
-          "groups": 2,
-          "largest": 14
-        },
         {
           "code": "yo",
           "groups": 2,
@@ -875,10 +870,11 @@
           "groups": 2,
           "largest": 14
         }
-      ]
+      ],
+      "repairsSinceBaseline": "Hausa (ha): two groups >=4 removed by 18 exact manual game-description replacements; re-read confirms no remaining >=4 exact-output group in ha."
     },
     "qualityGate": "NOT PASS: exact duplicate grouping is heuristic; 97/98 saved-candidate audit remains the last recorded quality result, Divehi english_overlap:58; duplicates across low-resource packs need language review and selective repair.",
-    "scope": "Direct read-only fetch of all 98 packs; four packs re-read after deterministic brand repairs. Structural coverage only; not linguistic review or end-to-end.",
+    "scope": "Full 98-pack read-only structural scan at 00:20Z; Hausa pack re-read after 18 manual replacements at 01:40Z. Structural coverage only; not linguistic review or end-to-end.",
     "translationRequestsSent": 0,
     "aiQuotaUsed": 0,
     "candidatePackWrites": 0,
@@ -886,7 +882,8 @@
       "am",
       "lt",
       "sm",
-      "to"
+      "to",
+      "ha"
     ]
   },
   "latestContinuationPass": {
@@ -914,5 +911,37 @@
     "full98QualityAudit": false,
     "linguisticCertification": false,
     "published": false
+  },
+  "latestManualHausaGameDescriptionRepair": {
+    "checkedAt": "2026-11-15T01:40:00Z",
+    "branch": "work/r125-locale-candidates-20261008",
+    "language": "ha",
+    "commit": "3b943185e3333ab5680ed10971fcdd5155700c3c",
+    "exactEdits": 18,
+    "keysPerPack": 1118,
+    "sourceHash": "6a1126e6a2ce5629",
+    "sourceUnchanged": true,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "validation": "Re-read ha.json after two sequential commits; 1,118 keys/sourceHash unchanged; 18 distinct provisional Hausa game descriptions restored; no exact-output group >=4 remains in Hausa. Native review and full audit still pending."
+  },
+  "latestManualRepairPass": {
+    "checkedAt": "2026-11-15T01:40:00Z",
+    "candidateBranch": "work/r125-locale-candidates-20261008",
+    "language": "ha",
+    "exactEdits": 18,
+    "packCommit": "3b943185e3333ab5680ed10971fcdd5155700c3c",
+    "candidatePackWrites": 1,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "readback": {
+      "keys": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "duplicateGroupsThreshold4": 0
+    },
+    "published": false,
+    "linguisticCertification": false
   }
 }
