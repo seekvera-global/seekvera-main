@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-15T04:50:30Z",
+  "checkedAt": "2026-11-15T05:32:06Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -333,7 +333,7 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-14T22:46:16Z",
+    "checkedAt": "2026-11-15T05:32:06Z",
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
       "trigger": "workflow_dispatch only",
@@ -366,11 +366,13 @@
       "quotaRequestsThisPass": 0
     },
     "thisPass": {
-      "candidatePackWrites": 64,
-      "exactManualReplacements": 86,
+      "candidatePackWrites": 1,
+      "exactManualReplacements": 4,
       "translationRequests": 0,
       "aiQuotaUsed": 0,
-      "summaryOnly": false
+      "publication": false,
+      "linguisticCertification": false,
+      "full98PackAudit": false
     },
     "full98PackAudit": false,
     "linguisticCertification": false,
@@ -390,6 +392,20 @@
         "createdAt": "2026-11-14T21:55:51Z"
       },
       "checkedAt": "2026-11-14T21:56:33Z"
+    },
+    "activeActionsCheck": {
+      "checkedAt": "2026-11-15T05:32:06Z",
+      "latest100Runs": "zero queued/in_progress",
+      "scope": "GitHub Actions API status=queued and status=in_progress both returned total_count=0"
+    },
+    "latestR125Resume": {
+      "run": 150,
+      "runId": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-10-16T21:41:54Z",
+      "resume": "skipped",
+      "audit": "success"
     }
   },
   "latestContinuationVerification": {
@@ -1126,5 +1142,21 @@
     "published": false,
     "linguisticCertification": false,
     "note": "20 quota-neutral manual Samoan strings corrected; provisional wording, native review required."
-  }
+  },
+  "latestDeterministicRepair": {
+    "checkedAt": "2026-11-15T05:32:06Z",
+    "branch": "work/r125-locale-candidates-20261008",
+    "languageCount": 1,
+    "language": "dv",
+    "exactEdits": 4,
+    "sourceUnchanged": true,
+    "keysPerPack": 1118,
+    "sourceHash": "6a1126e6a2ce5629",
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "publication": false,
+    "linguisticCertification": false,
+    "validation": "Restored four CSS/markup strings byte-for-byte to their immutable English source keys; read back all 1,118 Divehi keys, zero missing/extra, matching sourceHash. Does not change english_overlap:58; full audit/native review pending."
+  },
+  "latestCandidateCommit": "7e5bf641a760a104a07b4eda858cd0b37836b848"
 }
