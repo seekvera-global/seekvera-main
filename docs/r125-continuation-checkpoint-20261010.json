@@ -763,36 +763,33 @@
     "reason": "avoid quota-consuming probe; prior daily_free_ai_limit, Google HTTP429 and Workers HTTP503 remain blockers"
   },
   "latestRunInspection": {
-    "checkedAt": "2026-11-14T19:48:00Z",
-    "latestKnownR125Run": 150,
-    "runId": 38971104197,
-    "conclusion": "success",
-    "resume": "skipped",
-    "audit": "success",
-    "workflowTrigger": "workflow_dispatch only",
-    "runTranslationsDefault": false,
-    "translationRequiresExplicitTrue": true,
-    "latestActionsSnapshot": "2026-11-14T18:17:00Z showed 0 active runs; no R125 dispatch initiated by this pass; no fresh complete run-list available at current check",
-    "candidatePackWritesThisPass": 3,
-    "exactManualReplacements": 27,
-    "translationRequestsSent": 0,
-    "aiQuotaUsed": 0,
-    "activeActionsAtCheck": 1,
-    "activeAction": "Pages #1534 (documentation deployment), not R125",
-    "latestProductionHealth": {
-      "run": 321,
-      "id": 43626407995,
+    "checkedAt": "2026-11-15T10:46:35Z",
+    "latestR125": {
+      "run": 150,
+      "runId": 38971104197,
+      "status": "completed",
       "conclusion": "success",
-      "checkedAt": "2026-11-14T18:24:16Z",
-      "scope": "official homepage/API/public pages health only; no live AI probe"
+      "resume": "skipped",
+      "audit": "success",
+      "createdAt": "2026-10-16T21:41:54Z"
     },
-    "latestPagesDeployment": {
-      "run": 1534,
-      "id": 43633896833,
-      "status": "in_progress",
-      "createdAt": "2026-11-14T19:46:24Z",
-      "scope": "checkpoint/docs deployment only"
-    }
+    "latestR125ObservedInLatest100Runs": false,
+    "activeRunsInLatest100": 0,
+    "latestRepositoryRun": {
+      "name": "pages build and deployment",
+      "run": 1559,
+      "runId": 43705274006,
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-15T10:41:11Z"
+    },
+    "workflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "explicitTranslationOptInRequired": true
+    },
+    "note": "Latest R125 remains #150; no R125 run is active. Current latest repository Actions page shows no queued/in-progress runs. No candidate pack writes were made during this pass."
   },
   "workflowRunInspection": {
     "checkedAt": "2026-11-13T13:13:20Z",
@@ -3235,5 +3232,499 @@
     "linguisticCertification": false,
     "full98PackAudit": false,
     "note": "CSS selectors/animation/transition strings are executable source, not translatable prose. Restored exact source values in eight repaired packs. Deterministic code-preservation fix, not native-language review."
+  },
+  "latestReadOnlyStructuralDuplicateAudit": {
+    "checkedAt": "2026-11-15T10:46:35Z",
+    "method": "Read-only direct GitHub fetch of all 98 locale pack JSON files on work/r125-locale-candidates-20261008; compared translations key sets and nonempty values to source.json; checked three executable CSS/source invariants; grouped exact identical translation outputs with threshold >=4.",
+    "source": {
+      "count": 1118,
+      "sourceHash": "6a1126e6a2ce5629"
+    },
+    "structuralAudit": {
+      "packFiles": 98,
+      "packsFetched": 98,
+      "packsWith1118Keys": 98,
+      "sourceHashMatches": 98,
+      "missingKeys": 0,
+      "extraKeys": 0,
+      "emptyValues": 0,
+      "executableInvariantKeys": 3,
+      "packsWithAllThreeInvariantsExact": 98,
+      "result": "PASS structural key/hash/nonempty and executable source-invariant integrity"
+    },
+    "duplicateOutputScreen": {
+      "threshold": 4,
+      "languagesWithGroups": 10,
+      "exactDuplicateGroups": 27,
+      "excludedExpectedBrandGroup": {
+        "language": "tk",
+        "value": "SEEKVERA",
+        "reason": "All six source strings are brand-bearing labels; retained as an expected brand repetition, not counted as a translation duplicate."
+      },
+      "findings": [
+        {
+          "language": "dv",
+          "groups": [
+            {
+              "value": "މަން މައު މައް",
+              "sourceKeys": [
+                "Kids games",
+                "Action games",
+                "Arcade games",
+                "Flying games",
+                "Puzzle games",
+                "Racing games",
+                "Sports games",
+                "Touch controls",
+                "Adventure games",
+                "Page navigation",
+                "Search marketplace",
+                "SEEKVERA quick tools"
+              ]
+            },
+            {
+              "value": "މަޢުގެ މައްޓަކު ރައްކާ ފައި މައްޓަކު މަޢުގެ މައްޓަކު ރައްކާ ފައި",
+              "sourceKeys": [
+                "Tap matching targets quickly.",
+                "React quickly to ninja targets.",
+                "Run a prehistoric jungle trail.",
+                "A faster space paddle challenge.",
+                "A quick superbike lane challenge.",
+                "Catch candy and avoid gray blocks.",
+                "Race across a fast desert highway.",
+                "A dark high-speed runner challenge."
+              ]
+            }
+          ]
+        },
+        {
+          "language": "dz",
+          "groups": [
+            {
+              "value": "གཞིགས་པོ་གི་མཐོ་རུ་གཏན་ལག་བྱེད་པར་བྱེད་དགོས།",
+              "sourceKeys": [
+                "Collect glowing fireflies in the forest.",
+                "Collect reactor cells and avoid hazards.",
+                "Easy colorful snake for younger players.",
+                "Grab treasure while avoiding cave rocks.",
+                "Leap rooftop obstacles in a city sprint.",
+                "Read the lane pattern and choose safely.",
+                "Escape temple traps without slowing down.",
+                "Heavy obstacles and a rough canyon track.",
+                "Train reaction speed with bright targets.",
+                "Collect jungle gems before they disappear.",
+                "Gather moon crystals under falling debris.",
+                "Turn, collect energy and avoid your trail.",
+                "Keep the ball bouncing as long as possible.",
+                "Dodge jungle obstacles on a wild rally road."
+              ]
+            }
+          ]
+        },
+        {
+          "language": "kl",
+          "groups": [
+            {
+              "value": "Kikisut niorfiit",
+              "sourceKeys": [
+                "Action games",
+                "Arcade games",
+                "Flying games",
+                "Puzzle games",
+                "Racing games",
+                "Sports games",
+                "Touch controls",
+                "Adventure games",
+                "Page navigation",
+                "Search marketplace",
+                "SEEKVERA quick tools"
+              ]
+            },
+            {
+              "value": "Aput qinnuq qulit qulit piniartut",
+              "sourceKeys": [
+                "Fast robot target challenge.",
+                "Survive a dense meteor field.",
+                "A faster space paddle challenge.",
+                "A quick superbike lane challenge.",
+                "Race across a fast desert highway.",
+                "A dark high-speed runner challenge."
+              ]
+            },
+            {
+              "value": "Kattu qinnuut akilaa atuqatigiinni.",
+              "sourceKeys": [
+                "Catch pearls and avoid sea hazards.",
+                "Guide the sea snake to glowing food.",
+                "React to shots and protect the goal.",
+                "Collect energy while dodging meteors.",
+                "Keep your jet clear of canyon towers.",
+                "Sprint through snow and icy barriers.",
+                "Hit alien targets under time pressure."
+              ]
+            },
+            {
+              "value": "Kattu qilaa atuqatigiinni.",
+              "sourceKeys": [
+                "Catch stars and avoid dark hazards.",
+                "Fast city traffic with tighter gaps.",
+                "Low-altitude patrol above the ocean.",
+                "Switch lanes and avoid neon traffic.",
+                "Keep the ball alive with your paddle.",
+                "Pilot through a field of space gates.",
+                "Tap pirate targets and build a combo.",
+                "Please check the words, then tap Send."
+              ]
+            },
+            {
+              "value": "Kassi qaniteq kipikkuq qassiit.",
+              "sourceKeys": [
+                "Collect glowing fireflies in the forest.",
+                "Grab treasure while avoiding cave rocks.",
+                "Leap rooftop obstacles in a city sprint.",
+                "Read the lane pattern and choose safely.",
+                "Escape temple traps without slowing down.",
+                "Heavy obstacles and a rough canyon track.",
+                "Train reaction speed with bright targets.",
+                "Collect jungle gems before they disappear.",
+                "Gather moon crystals under falling debris.",
+                "Turn, collect energy and avoid your trail.",
+                "Keep the ball bouncing as long as possible.",
+                "Dodge jungle obstacles on a wild rally road."
+              ]
+            }
+          ]
+        },
+        {
+          "language": "ku",
+          "groups": [
+            {
+              "value": "Oyunan bi xwendekar",
+              "sourceKeys": [
+                "Flying games",
+                "Racing games",
+                "Sports games",
+                "Adventure games"
+              ]
+            },
+            {
+              "value": "چەند گەرمی سوور بکە.",
+              "sourceKeys": [
+                "Guide the sea snake to glowing food.",
+                "Low-altitude patrol above the ocean.",
+                "React to shots and protect the goal.",
+                "Switch lanes and avoid neon traffic.",
+                "Collect energy while dodging meteors.",
+                "Keep the ball alive with your paddle.",
+                "Keep your jet clear of canyon towers.",
+                "Pilot through a field of space gates.",
+                "Sprint through snow and icy barriers.",
+                "Tap pirate targets and build a combo.",
+                "Hit alien targets under time pressure."
+              ]
+            }
+          ]
+        },
+        {
+          "language": "rw",
+          "groups": [
+            {
+              "value": "Kurora kuri ibihugu by'ibarugendo by'abandi",
+              "sourceKeys": [
+                "A fast safari obstacle run.",
+                "Fly through open sky gates.",
+                "Fast robot target challenge.",
+                "Survive a dense meteor field.",
+                "Tap matching targets quickly.",
+                "React quickly to ninja targets.",
+                "Run a prehistoric jungle trail.",
+                "A faster space paddle challenge.",
+                "A quick superbike lane challenge.",
+                "Catch candy and avoid gray blocks.",
+                "Race across a fast desert highway."
+              ]
+            },
+            {
+              "value": "Kurwaga amashuri y'ibihugu kuri amakarere ari kuri amabwirondi.",
+              "sourceKeys": [
+                "Guide the sea snake to glowing food.",
+                "React to shots and protect the goal.",
+                "Switch lanes and avoid neon traffic.",
+                "Collect energy while dodging meteors.",
+                "Keep the ball alive with your paddle.",
+                "Keep your jet clear of canyon towers.",
+                "Pilot through a field of space gates.",
+                "Sprint through snow and icy barriers.",
+                "Tap pirate targets and build a combo.",
+                "Hit alien targets under time pressure."
+              ]
+            },
+            {
+              "value": "Kanda kuri amakuru, kanda kuri Send.",
+              "sourceKeys": [
+                "Fast flight through narrow cloud lanes.",
+                "Collect glowing fireflies in the forest.",
+                "Collect reactor cells and avoid hazards.",
+                "Easy colorful snake for younger players.",
+                "Grab treasure while avoiding cave rocks.",
+                "Leap rooftop obstacles in a city sprint.",
+                "Read the lane pattern and choose safely.",
+                "Escape temple traps without slowing down.",
+                "Heavy obstacles and a rough canyon track.",
+                "Train reaction speed with bright targets.",
+                "Collect jungle gems before they disappear.",
+                "Gather moon crystals under falling debris.",
+                "Turn, collect energy and avoid your trail.",
+                "Keep the ball bouncing as long as possible."
+              ]
+            }
+          ]
+        },
+        {
+          "language": "st",
+          "groups": [
+            {
+              "value": "Khotso ya mokotlo o tšwaelo",
+              "sourceKeys": [
+                "High-speed night racing.",
+                "A fast safari obstacle run.",
+                "Fly through open sky gates.",
+                "Fast robot target challenge.",
+                "Survive a dense meteor field.",
+                "Tap matching targets quickly.",
+                "React quickly to ninja targets.",
+                "Run a prehistoric jungle trail.",
+                "A faster space paddle challenge.",
+                "A quick superbike lane challenge.",
+                "Catch candy and avoid gray blocks.",
+                "Race across a fast desert highway.",
+                "A dark high-speed runner challenge."
+              ]
+            },
+            {
+              "value": "Kgona mokgolo o ka kgone ka bophara ba meteors.",
+              "sourceKeys": [
+                "Collect energy while dodging meteors.",
+                "Keep the ball alive with your paddle.",
+                "Keep your jet clear of canyon towers.",
+                "Pilot through a field of space gates.",
+                "Sprint through snow and icy barriers.",
+                "Tap pirate targets and build a combo.",
+                "Hit alien targets under time pressure.",
+                "Please check the words, then tap Send."
+              ]
+            },
+            {
+              "value": "Kgona mokgwa o kholo le mokgwa o tsejwe oa canyon.",
+              "sourceKeys": [
+                "Train reaction speed with bright targets.",
+                "Collect jungle gems before they disappear.",
+                "Gather moon crystals under falling debris.",
+                "Turn, collect energy and avoid your trail.",
+                "Keep the ball bouncing as long as possible."
+              ]
+            },
+            {
+              "value": "Tšebetso ya mohlala e tšwaela ka nako. Lebaka la mohlala ha e fapana ka nako le e tšwaela ka nako.",
+              "sourceKeys": [
+                "Visual search is temporarily unavailable. Your image was not published or stored by this page.",
+                "Magic-link authentication is used for the Deal Agent database. No Gmail password is requested or stored.",
+                "Photos do not make an ad public automatically. Listings and uploaded media remain pending until the listing is approved.",
+                "Enter the role once. SEEKVERA uses your selected country automatically and opens live job-search sources for that market.",
+                "Find community-mapped places offering Wi‑Fi or internet access. Always confirm availability and conditions with the venue.",
+                "🛡️ Games are self-contained SEEKVERA mini games. No stranger chat, gambling, paid loot boxes or external ad network is used.",
+                "Useful for families, laptops, groups and non-eSIM devices. Provider availability and pricing must be verified before purchase.",
+                "Fallback for unsupported eSIM devices. Registration rules, operators and pricing can change, so confirm current local requirements.",
+                "I’m the SEEKVERA AI assistant. Tell me what you need and I’ll help you find the right section, compare options or search worldwide.",
+                "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+                "print this page and place it at reception, entrances, rooms, events or service desks. People can scan without typing the website address."
+              ]
+            }
+          ]
+        },
+        {
+          "language": "ti",
+          "groups": [
+            {
+              "value": "ስርዕ እና ደብዳቤ ምዕራ እንዳይተባበር.",
+              "sourceKeys": [
+                "Tap fruits and build a happy score.",
+                "React to shots and protect the goal.",
+                "Collect energy while dodging meteors.",
+                "Keep the ball alive with your paddle.",
+                "Keep your jet clear of canyon towers.",
+                "Pilot through a field of space gates.",
+                "Sprint through snow and icy barriers.",
+                "Tap pirate targets and build a combo.",
+                "Hit alien targets under time pressure."
+              ]
+            },
+            {
+              "value": "በመጥፎ ውስጥ ያለው የመጠን ስፍራ እንደ አስፈላጊ መሆን አለበት.",
+              "sourceKeys": [
+                "Collect jungle gems before they disappear.",
+                "Gather moon crystals under falling debris.",
+                "Turn, collect energy and avoid your trail.",
+                "Keep the ball bouncing as long as possible.",
+                "Dodge jungle obstacles on a wild rally road."
+              ]
+            }
+          ]
+        },
+        {
+          "language": "tn",
+          "groups": [
+            {
+              "value": "Kakana kwa koto ya bophara bohlokoa.",
+              "sourceKeys": [
+                "High-speed night racing.",
+                "Understanding your speech…",
+                "A fast safari obstacle run.",
+                "Fly through open sky gates.",
+                "Fast robot target challenge.",
+                "Open the SEEKVERA games hub.",
+                "Survive a dense meteor field.",
+                "Tap matching targets quickly.",
+                "All SEEKVERA Services — One App",
+                "React quickly to ninja targets.",
+                "Run a prehistoric jungle trail.",
+                "A faster space paddle challenge.",
+                "A quick superbike lane challenge.",
+                "Internet, Wi‑Fi & eSIM — SEEKVERA"
+              ]
+            },
+            {
+              "value": "Kgona kwa mokoro wakho ka bokgoni ba bophara ba bokgole.",
+              "sourceKeys": [
+                "Sprint through snow and icy barriers.",
+                "Tap pirate targets and build a combo.",
+                "Hit alien targets under time pressure.",
+                "Please check the words, then tap Send.",
+                "Stay sharp on a slippery frozen route.",
+                "Fast flight through narrow cloud lanes."
+              ]
+            }
+          ]
+        },
+        {
+          "language": "to",
+          "groups": [
+            {
+              "value": "Fakaʻapaʻapa ʻa e fakaʻapaʻapa ʻo e fakaʻapaʻapa",
+              "sourceKeys": [
+                "Racing games",
+                "Sports games",
+                "Touch controls",
+                "Adventure games",
+                "Page navigation",
+                "Search marketplace",
+                "SEEKVERA quick tools"
+              ]
+            },
+            {
+              "value": "Faiʻa i le tala faʻamaoni o le tala faʻamaoni",
+              "sourceKeys": [
+                "Survive a dense meteor field.",
+                "A faster space paddle challenge.",
+                "A quick superbike lane challenge.",
+                "Catch candy and avoid gray blocks.",
+                "Race across a fast desert highway.",
+                "A dark high-speed runner challenge."
+              ]
+            },
+            {
+              "value": "Fai ‘ese ‘o le tala fa’afitaulu e fai ‘ese ‘o le tala fa’afitaulu.",
+              "sourceKeys": [
+                "Collect reactor cells and avoid hazards.",
+                "Easy colorful snake for younger players.",
+                "Grab treasure while avoiding cave rocks.",
+                "Leap rooftop obstacles in a city sprint.",
+                "Read the lane pattern and choose safely.",
+                "Escape temple traps without slowing down.",
+                "Heavy obstacles and a rough canyon track.",
+                "Train reaction speed with bright targets.",
+                "Collect jungle gems before they disappear.",
+                "Gather moon crystals under falling debris.",
+                "Turn, collect energy and avoid your trail.",
+                "Keep the ball bouncing as long as possible.",
+                "Dodge jungle obstacles on a wild rally road."
+              ]
+            }
+          ]
+        },
+        {
+          "language": "xh",
+          "groups": [
+            {
+              "value": "Khubaza kwi-secshini yekufunyanisa",
+              "sourceKeys": [
+                "Fly through open sky gates.",
+                "Survive a dense meteor field.",
+                "Tap matching targets quickly.",
+                "React quickly to ninja targets.",
+                "Run a prehistoric jungle trail.",
+                "A faster space paddle challenge.",
+                "A quick superbike lane challenge.",
+                "Catch candy and avoid gray blocks.",
+                "Race across a fast desert highway.",
+                "A dark high-speed runner challenge."
+              ]
+            },
+            {
+              "value": "Kufika amaningi kwaye ukhetha imizi yase-Dark.",
+              "sourceKeys": [
+                "Catch stars and avoid dark hazards.",
+                "Collect energy while dodging meteors.",
+                "Keep your jet clear of canyon towers.",
+                "Pilot through a field of space gates.",
+                "Sprint through snow and icy barriers.",
+                "Hit alien targets under time pressure.",
+                "Please check the words, then tap Send."
+              ]
+            },
+            {
+              "value": "Ukubhala kwezilwane zokukhala kwiqhelo yemakamano yekhakha.",
+              "sourceKeys": [
+                "Dodge jungle obstacles on a wild rally road.",
+                "Extreme lane switching through laser traffic.",
+                "Audio could not play. Tap the speaker to retry.",
+                "A jungle version of the classic snake challenge.",
+                "🤝 Owner Control · Zero‑Cost‑First · Safety Gated",
+                "Voice recognition is not supported in this browser.",
+                "I could not understand that audio yet — tap the microphone and try again.",
+                "SEEKVERA may later earn commission from approved tracked partner links. A partner's commission should not be the only reason it is recommended.",
+                "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+                "You survived the crash, recovered basic gear, reached water and built a small fire. The next part goes deeper into the jungle and becomes harder.",
+                "Mobile data, not Wi‑Fi. Compare verified provider plans by destination, data, validity, tethering and top-up when live provider data is connected.",
+                "SEEKVERA will show only gateways that are enabled for the merchant account. Card acceptance depends on the customer bank, card network and country.",
+                "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "candidateReadiness": {
+      "completedCandidates": 97,
+      "remaining": [
+        "dv"
+      ],
+      "remainingFailure": "dv: english_overlap:58",
+      "readyForLinguisticReview": false,
+      "published": false,
+      "linguisticAccuracyCertified": false
+    },
+    "execution": {
+      "candidatePackWrites": 0,
+      "translationRequestsSent": 0,
+      "aiQuotaUsed": 0,
+      "published": false
+    },
+    "limitations": [
+      "This is a read-only structural and exact-duplicate screen, not the official full quality/script audit.",
+      "Exact duplicate grouping is heuristic; repeated labels may be legitimate, while clusters spanning unrelated game descriptions or sections require qualified language review.",
+      "No native-language review or linguistic certification was performed."
+    ],
+    "qualityGate": "NOT PASS"
   }
 }
