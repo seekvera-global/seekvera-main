@@ -1,0 +1,361 @@
+{
+  "checkedAt": "2026-11-15T06:52:00Z",
+  "language": "dv",
+  "sourceHash": "6a1126e6a2ce5629",
+  "sourceCount": 1118,
+  "overlapCount": 58,
+  "rule": "same contiguous English word run >=5, from audit_locale_candidates.py suspicious_overlap; excludes code/CSS/URLs and known preserved identifiers",
+  "status": "BLOCKED_FOR_NATIVE_REVIEW",
+  "translationRequests": 0,
+  "aiQuotaUsed": 0,
+  "items": [
+    {
+      "source": "Fallback for unsupported eSIM devices. Registration rules, operators and pricing can change, so confirm current local requirements.",
+      "target": "Fallback for unsupported eSIM devices. ރަޖިސްޓްރޭޝަންގެ އުސޫލުތަކާއި، އޮޕަރޭޓަރުންނާއި، އަގު ކަނޑައެޅުމަށް ބަދަލު އަތުވެދާނެތީ، މިހާރު ލޯކަލް ރިކުއަރމަންޓްސް ކަށަވަރުކުރުން.",
+      "longestEnglishRun": "fallback for unsupported esim devices",
+      "sharedWords": 5
+    },
+    {
+      "source": "I’m the SEEKVERA AI assistant. Tell me what you need and I’ll help you find the right section, compare options or search worldwide.",
+      "target": "I’m the SEEKVERA AI assistant. ބޭނުންވާ އެއްޗެއް ކިޔައިދީ، ރަނގަޅު ބައި ހޯދުމަށް، އޮޕްޝަންތައް އަޅާކިޔުމަށް ނުވަތަ ދުނިޔޭގެ އެކި ކަންކޮޅުތަކުގައި ހޯދުމަށް އެހީތެރިވެދޭނަމެވެ.",
+      "longestEnglishRun": "i’m the seekvera ai assistant",
+      "sharedWords": 5
+    },
+    {
+      "source": "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+      "target": "You reached a remote village alive. އެމީހުން ބުނަނީ އެންމެ ކައިރީގައި އޮންނަ މަގެއް އަދިވެސް ދުވަހަކަށް ވުރެ ގިނަ ދުވަސް ބާކީ އޮތް ކަމަށެވެ. މިތަނުން ޖަންގަލި ހަރުވެގެން ދެއެވެ.",
+      "longestEnglishRun": "you reached a remote village alive",
+      "sharedWords": 6
+    },
+    {
+      "source": "print this page and place it at reception, entrances, rooms, events or service desks. People can scan without typing the website address.",
+      "target": "print this page and place it at reception, entrances, rooms, events or service desks. ވެބްސައިޓް އެޑްރެސް ޓައިޕް ނުކޮށް މީހުންނަށް ސްކޭން ކުރެވޭނެއެވެ.",
+      "longestEnglishRun": "print this page and place it at reception entrances rooms events or service desks",
+      "sharedWords": 14
+    },
+    {
+      "source": "paid calls, paid APIs, paid verification, ads, subscriptions or company payments require an owner notice first. Auto Recharge remains OFF.",
+      "target": "paid calls, paid APIs, paid verification, ads, subscriptions or company payments require an owner notice first. އޮޓޯ ރީޗާޖް އޮންނާނީ އޮފް ގޮތަކަށެވެ.",
+      "longestEnglishRun": "paid calls paid apis paid verification ads subscriptions or company payments require an owner notice first",
+      "sharedWords": 16
+    },
+    {
+      "source": "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+      "target": "Best in landscape, but it also works in portrait. ހަރަކާތްތެރިވާން ކަނާތު ދަނޑިގަނޑުގައި އަތްލާށެވެ. ބަލާލަން އެހެން ތަނެއްގައި ސްވައިޕް ކޮށްލާށެވެ. ބޭނުންތެރި ތަކެތި ކައިރީގައި ACTION ބޭނުންކުރުން.",
+      "longestEnglishRun": "best in landscape but it also works in portrait",
+      "sharedWords": 9
+    },
+    {
+      "source": "Future participating venues may offer time-limited access by QR or voucher. No venue is shown as participating until configured and verified.",
+      "target": "Future participating venues may offer time-limited access by QR or voucher. ކޮންފިގްރޭޓްކޮށް ވެރިފައި ނުކުރެވެންދެން އެއްވެސް ތަނެއް ބައިވެރިވާ ގޮތަށް ނުދައްކައެވެ.",
+      "longestEnglishRun": "future participating venues may offer time-limited access by qr or voucher",
+      "sharedWords": 11
+    },
+    {
+      "source": "SEEKVERA may later earn commission from approved tracked partner links. A partner's commission should not be the only reason it is recommended.",
+      "target": "SEEKVERA may later earn commission from approved tracked partner links. ޕާޓްނަރެއްގެ ކޮމިޝަނަކީ ހަމައެކަނި އެކަން ރެކޮމެންޑް ކުރެވޭ ސަބަބަކަށް ވެގެން ނުވާނެއެވެ.",
+      "longestEnglishRun": "seekvera may later earn commission from approved tracked partner links",
+      "sharedWords": 10
+    },
+    {
+      "source": "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+      "target": "the customer chooses an available payment gateway. މިތަނުން އެއްވެސް ފައިސާއެއް ނުނަގައެވެ. ފައިނަލް އަގުތަކާއި ލައިވް ޗެކްއައުޓްތަކަށް ގުޅިފައިވާ މާޗެންޓް އެކައުންޓްތައް ބޭނުންވެއެވެ.",
+      "longestEnglishRun": "the customer chooses an available payment gateway",
+      "sharedWords": 7
+    },
+    {
+      "source": "You survived the crash, recovered basic gear, reached water and built a small fire. The next part goes deeper into the jungle and becomes harder.",
+      "target": "You survived the crash, recovered basic gear, reached water and built a small fire. ދެން އޮންނަ ބައި ޖަންގަލީގެ ތެރެއަށް ފުންކޮށް ވަދެ ހަރުވެގެން ދެއެވެ.",
+      "longestEnglishRun": "you survived the crash recovered basic gear reached water and built a small fire",
+      "sharedWords": 14
+    },
+    {
+      "source": "Mobile data, not Wi‑Fi. Compare verified provider plans by destination, data, validity, tethering and top-up when live provider data is connected.",
+      "target": "Mobile data, not Wi‑Fi. ލައިވް ޕްރޮވައިޑަރ ޑޭޓާ ގުޅިފައި ހުންނައިރު މަންޒިލް، ޑޭޓާ، ވެލިޑިޓީ، ޓެދަރިންގ އަދި ޓޮޕްއަޕް އަށް ބަލައިގެން ވެރިފައިޑް ޕްރޮވައިޑަރ ޕްލޭންތައް އަޅާކިޔުން.",
+      "longestEnglishRun": "mobile data not wi fi",
+      "sharedWords": 5
+    },
+    {
+      "source": "SEEKVERA will show only gateways that are enabled for the merchant account. Card acceptance depends on the customer bank, card network and country.",
+      "target": "SEEKVERA will show only gateways that are enabled for the merchant account. ކާޑު ބަލައިގަތުން ބިނާވެފައިވަނީ ކަސްޓަމަރ ބޭންކާއި ކާޑު ނެޓްވޯކާއި ޤައުމުގެ މައްޗަށެވެ.",
+      "longestEnglishRun": "seekvera will show only gateways that are enabled for the merchant account",
+      "sharedWords": 12
+    },
+    {
+      "source": "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue.",
+      "target": "Avoid sensitive banking on untrusted Wi‑Fi. އެޗްޓީޓީޕީއެސް ބޭނުންކުރުން. ދުވަހަކުވެސް އޯޓީޕީ، ޕިން، ޕާސްވޯޑް ނުވަތަ ކާޑު ސެކިއުރިޓީ ކޯޑް ހިއްސާ ނުކުރާށެވެ. ވެނިއުއާއެކު ނެޓްވޯކް ނަން ކަށަވަރުކުރުން.",
+      "longestEnglishRun": "avoid sensitive banking on untrusted wi fi",
+      "sharedWords": 7
+    },
+    {
+      "source": "SEEKVERA does not guarantee customs clearance, transit time or shipping price. Confirm current requirements with the chosen provider and relevant authorities.",
+      "target": "SEEKVERA does not guarantee customs clearance, transit time or shipping price. މިހާރު ބޭނުންވާ ކަންކަން ހޮވާފައިވާ ޕްރޮވައިޑަރާއި ކަމާބެހޭ ފަރާތްތަކާއެކު ކަށަވަރުކުރުން.",
+      "longestEnglishRun": "seekvera does not guarantee customs clearance transit time or shipping price",
+      "sharedWords": 11
+    },
+    {
+      "source": "SEEKVERA helps travelers find and compare verified connectivity options. Live prices, coverage and availability must come from current providers or venue data.",
+      "target": "SEEKVERA helps travelers find and compare verified connectivity options. ލައިވް އަގުތަކާއި، ކަވަރޭޖް އަދި ލިބޭނެ ގޮތް އަންނަންވާނީ މިހާރު ޕްރޮވައިޑަރުން ނުވަތަ ވެނިއު ޑޭޓާއިންނެވެ.",
+      "longestEnglishRun": "seekvera helps travelers find and compare verified connectivity options",
+      "sharedWords": 9
+    },
+    {
+      "source": "50 free touch-friendly mini games for Android, iPhone and desktop. Racing, action, flying, forest adventures, space, puzzles and kids games — no purchase required.",
+      "target": "50 free touch-friendly mini games for Android, iPhone and desktop. ރޭސިން، އެކްޝަން، ފްލައިން، ފަޅު އެޑްވެންޗަރސް، ސްޕޭސް، ޕަޒްލްސް އަދި ކުޑަކުދިންގެ ގޭމްސް — ގަންނަން ނުޖެހޭނެ.",
+      "longestEnglishRun": "free touch-friendly mini games for android iphone and desktop",
+      "sharedWords": 9
+    },
+    {
+      "source": "The site saves only non-sensitive interface preferences such as language. Request descriptions and contact details are not stored in your browser after submission.",
+      "target": "The site saves only non-sensitive interface preferences such as language. ރިކުއެސްޓް ޑިސްކްރިޕްޝަންސް އަދި ކޮންޓެކްޓް ޑީޓެއިލްސް ހުށަހެޅުމަށްފަހު ބްރައުޒާގައި ރައްކާކުރެވިފައެއް ނުވެއެވެ.",
+      "longestEnglishRun": "the site saves only non-sensitive interface preferences such as language",
+      "sharedWords": 10
+    },
+    {
+      "source": "Phone: left stick moves • drag the right side to turn camera • ACTION changes with what is nearby • JUMP. Desktop: WASD / arrows • mouse drag • E • Space • Shift to run.",
+      "target": "Phone: left stick moves • drag the right side to turn camera • ACTION changes with what is nearby • JUMP. ޑެސްކްޓޮޕް: WASD / އެރޯސް • މައުސް ޑްރެގް • އީ • ސްޕޭސް • ޝިފްޓް ޓު ރަން.",
+      "longestEnglishRun": "phone left stick moves drag the right side to turn camera action changes with what is nearby jump",
+      "sharedWords": 18
+    },
+    {
+      "source": "not active in the SEEKVERA server yet. A secure OAuth connection plus scheduled worker/queue execution is required before the system can send or read emails autonomously.",
+      "target": "not active in the SEEKVERA server yet. ސިސްޓަމަށް އަމިއްލައަށް އީމެއިލް ފޮނުވުމުގެ ނުވަތަ ކިޔުމުގެ ކުރިން ސެކިއުރިޓީ އޯއޯތް ކަނެކްޝަން ޕްލަސް ޝެޑިއުލްޑް ވޯކަރ/ކިއު އެގްޒެކެޝަން އެއް ބޭނުންވެއެވެ.",
+      "longestEnglishRun": "not active in the seekvera server yet",
+      "sharedWords": 7
+    },
+    {
+      "source": "Participating venues can display SEEKVERA QR with an authorized offer, duration and instructions. Private Wi‑Fi passwords must never be exposed without venue authorization.",
+      "target": "Participating venues can display SEEKVERA QR with an authorized offer, duration and instructions. އަމިއްލަ ވައިފައި ޕާސްވޯޑްތައް ދުވަހަކުވެސް ވެނިއު ހުއްދަ ނެތި ހާމަވެގެން ނުވާނެއެވެ.",
+      "longestEnglishRun": "participating venues can display seekvera qr with an authorized offer duration and instructions",
+      "sharedWords": 13
+    },
+    {
+      "source": "Choose a country once and SEEKVERA switches the app language, currency, AI context and country-aware sections automatically. You can still change language manually if you want.",
+      "target": "Choose a country once and SEEKVERA switches the app language, currency, AI context and country-aware sections automatically. އަދިވެސް ބޭނުންނަމަ އަމިއްލައަށް ބަސް ބަދަލުކުރެވޭނެއެވެ.",
+      "longestEnglishRun": "choose a country once and seekvera switches the app language currency ai context and country-aware sections automatically",
+      "sharedWords": 17
+    },
+    {
+      "source": "Type any destination anywhere in the world. SEEKVERA AI will build a practical guide with tourist places, safety, transport, food, culture and an itinerary matched to your trip.",
+      "target": "Type any destination anywhere in the world. ސީކްވެރާ އައި އިން ފަތުރުވެރިންގެ ތަންތަނާއި، ސަލާމަތާއި، ދަތުރުފަތުރާއި، ކާނާއާއި، ސަގާފަތާއި، ދަތުރާ އެއްގޮތްވާ ގޮތަށް މަންޒިލް ޕްލޭނެއް ހިމެނޭ ޕްރެކްޓިކަލް ގައިޑެއް އުފައްދާނެއެވެ.",
+      "longestEnglishRun": "type any destination anywhere in the world",
+      "sharedWords": 7
+    },
+    {
+      "source": "AI guidance is not an official visa, immigration or safety advisory. Verify critical rules and emergency information with official sources, especially before international travel.",
+      "target": "AI guidance is not an official visa, immigration or safety advisory. ޚާއްޞަކޮށް ބައިނަލްއަޤްވާމީ ދަތުރުތަކުގެ ކުރިން ރަސްމީ މަސްދަރުތަކާއެކު މުހިންމު އުސޫލުތަކާއި ކުއްލި މަޢުލޫމާތު ޔަޤީންކުރުން.",
+      "longestEnglishRun": "ai guidance is not an official visa immigration or safety advisory",
+      "sharedWords": 11
+    },
+    {
+      "source": "Health search requires extra care. SEEKVERA can help route users to providers, but important medical decisions should be made with qualified professionals and legitimate facilities.",
+      "target": "Health search requires extra care. ސީކްވެރާ އިން ޔޫޒަރުން ޕްރޮވައިޑަރުންނަށް ރޫޓް ކުރުމަށް އެހީތެރިވެދެވޭނެ ނަމަވެސް މުހިންމު މެޑިކަލް ނިންމުންތައް ނިންމަން ޖެހެނީ ޤާބިލް ޕްރޮފެޝަނަލުންނާއި ޝަރުޢީ ވަސީލަތްތަކާއެކުގައެވެ.",
+      "longestEnglishRun": "health search requires extra care",
+      "sharedWords": 5
+    },
+    {
+      "source": "Search nearby services, transport, food, shopping, family needs, utilities, emergency help and local information. SEEKVERA routes each request to the right service or trusted source.",
+      "target": "Search nearby services, transport, food, shopping, family needs, utilities, emergency help and local information. ސީކްވެރާ އިން ކޮންމެ ރިކުއެސްޓެއް ރަނގަޅު ޚިދުމަތަކަށް ނުވަތަ އިތުބާރު ކުރެވޭ މަސްދަރަކަށް ރޫޓް ކުރެއެވެ.",
+      "longestEnglishRun": "search nearby services transport food shopping family needs utilities emergency help and local information",
+      "sharedWords": 14
+    },
+    {
+      "source": "Choose any country or city. SEEKVERA can help you discover tourist places, build an AI trip plan, find hotels and transport, open maps, check nearby essentials and look for public Wi-Fi.",
+      "target": "Choose any country or city. ސީކްވެރާ އިން ފަތުރުވެރިންގެ ތަންތަން ހޯދުމާއި، އެއައި ޓްރިޕް ޕްލޭނެއް ހެދުމާއި، ހޮޓަލާއި ދަތުރުފަތުރު ހޯދުމާއި، މެޕްތައް ހުޅުވުމާއި، ކައިރީގައި ހުންނަ ކޮންމެހެން ބޭނުންވާ ތަކެތި ޗެކްކުރުމާއި، އާންމު ވައިފައި ހޯދުމަށް އެހީތެރިވެދެވޭނެއެވެ.",
+      "longestEnglishRun": "choose any country or city",
+      "sharedWords": 5
+    },
+    {
+      "source": "Messages sent to the SEEKVERA AI assistant may be processed by external AI infrastructure used to generate a response. Only send information you are comfortable sharing for that purpose.",
+      "target": "Messages sent to the SEEKVERA AI assistant may be processed by external AI infrastructure used to generate a response. ހަމައެކަނި އެކަމަށްޓަކައި ހިއްސާކުރަން ފަސޭހަވާ މައުލޫމާތު ފޮނުވާށެވެ.",
+      "longestEnglishRun": "messages sent to the seekvera ai assistant may be processed by external ai infrastructure used to generate a response",
+      "sharedWords": 19
+    },
+    {
+      "source": "Health content is informational and is not a medical diagnosis. Travel, safety, legal and financial information can change and should be independently verified when the decision is important.",
+      "target": "Health content is informational and is not a medical diagnosis. ދަތުރުފަތުރާއި، ރައްކާތެރިކަމާއި، ޤާނޫނީ އަދި މާލީ މަޢުލޫމާތަށް ބަދަލު އަތުވެދާނެ ކަމަށާއި، ނިންމުން މުހިންމު ވަގުތެއްގައި މިނިވަންކަމާއެކު ޔަޤީންކުރަންޖެހޭނެ ކަމަށެވެ.",
+      "longestEnglishRun": "health content is informational and is not a medical diagnosis",
+      "sharedWords": 10
+    },
+    {
+      "source": "You left the crash site with a knife, jacket, water and a bag. The jungle is now the game world. From here the full Part 1 can continue with water, shelter, fire, animals and the first night.",
+      "target": "You left the crash site with a knife, jacket, water and a bag. ޖަންގަލީއަކީ މިހާރު ކުޅިވަރުގެ ދުނިޔެއެވެ. މިތަނުން ފުރިހަމަ 1 ވަނަ ބައި ކުރިއަށް ގެންދެވޭނީ ފެނާއި، ހިޔާވަހިކަމާއި، އަލިފާނާއި، ޖަނަވާރުތަކާއި އަދި ފުރަތަމަ ރޭއާއެކުގައެވެ.",
+      "longestEnglishRun": "you left the crash site with a knife jacket water and a bag",
+      "sharedWords": 13
+    },
+    {
+      "source": "Individuals and businesses can advertise lawful products, property, vehicles, jobs, services and equipment. Every new ad stays pending and is not publicly listed until it passes safety review.",
+      "target": "Individuals and businesses can advertise lawful products, property, vehicles, jobs, services and equipment. ކޮންމެ އާ އިޝްތިހާރެއް ޕެންޑިންގައި ހުންނައިރު، ސޭފްޓީ ރިވިއު ފާސްނުވާހާ ހިނދަކު އާންމުކޮށް ލިސްޓް ނުކުރެވެއެވެ.",
+      "longestEnglishRun": "individuals and businesses can advertise lawful products property vehicles jobs services and equipment",
+      "sharedWords": 13
+    },
+    {
+      "source": "Emergency results should prioritize verified official police, ambulance, fire, hospital and embassy contacts for the user’s country and location. SEEKVERA should never invent emergency numbers.",
+      "target": "Emergency results should prioritize verified official police, ambulance, fire, hospital and embassy contacts for the user’s country and location. ސީކްވެރާ އިން ދުވަހަކުވެސް ކުއްލި ހާލަތުގައި ނަންބަރު އީޖާދުކޮށްގެން ނުވާނެއެވެ.",
+      "longestEnglishRun": "emergency results should prioritize verified official police ambulance fire hospital and embassy contacts for the user’s country and location",
+      "sharedWords": 19
+    },
+    {
+      "source": "entertainment discovery must use official/licensed providers and respect regional availability. Safety Gate protections apply to user-submitted entertainment links, comments, media and listings.",
+      "target": "entertainment discovery must use official/licensed providers and respect regional availability. ސޭފްޓީ ގޭޓްގެ ރައްކާތެރިކަންތައްތައް ޢަމަލުކުރެވޭނީ ޔޫޒަރުން ހުށަހަޅާ މުނިފޫހިފިލުވުމުގެ ލިންކްތަކާއި، ކޮމެންޓްތަކާއި، މީޑިއާތަކާއި، ލިސްޓިންގްތަކަށެވެ.",
+      "longestEnglishRun": "entertainment discovery must use official licensed providers and respect regional availability",
+      "sharedWords": 11
+    },
+    {
+      "source": "Find lawful entertainment options available in your country. SEEKVERA can guide users to official streaming, rental, purchase, music, game and reading providers instead of hosting pirated content.",
+      "target": "Find lawful entertainment options available in your country. ސީކްވެރާ އިން ޕައިރޭޓް ކޮންޓެންޓް ހޯސްޓް ކުރުމުގެ ބަދަލުގައި އޮފިޝަލް ސްޓްރީމިންގ، ރެންޓަލް، ޕާޗޭސް، މިއުޒިކް، ގޭމް އަދި ރީޑިންގ ޕްރޮވައިޑަރުންނަށް ޔޫޒަރުންނަށް މަގުދައްކައިދެވޭނެއެވެ.",
+      "longestEnglishRun": "find lawful entertainment options available in your country",
+      "sharedWords": 8
+    },
+    {
+      "source": "Users may report suspicious or unlawful content. SEEKVERA may act on valid legal requests and may preserve or disclose information when required by applicable law, court order or lawful authority.",
+      "target": "Users may report suspicious or unlawful content. ސައްހަ ގާނޫނީ އެދުންތަކަށް ސީކްވެރާއަށް އަމަލުކުރެވިދާނެ ކަމަށާއި، ގާނޫނު، ކޯޓު އަމުރު ނުވަތަ ގާނޫނީ ބާރަކުން ލާޒިމުކުރާ ހާލަތްތަކުގައި މައުލޫމާތު ރައްކާތެރިކޮށް ނުވަތަ ހާމަކޮށްފާނެ ކަމަށެވެ.",
+      "longestEnglishRun": "users may report suspicious or unlawful content",
+      "sharedWords": 7
+    },
+    {
+      "source": "Hosting comparisons should consider reliability, renewal pricing, support, backups, email needs and where the audience is located. The cheapest first-year offer is not always the cheapest long term.",
+      "target": "Hosting comparisons should consider reliability, renewal pricing, support, backups, email needs and where the audience is located. އެންމެ އަގުހެޔޮ ފުރަތަމަ އަހަރުގެ އޮފާއަކީ އަބަދުވެސް އެންމެ އަގުހެޔޮ ލޯންގް ޓާމް އޮފާއެއް ނޫނެވެ.",
+      "longestEnglishRun": "hosting comparisons should consider reliability renewal pricing support backups email needs and where the audience is located",
+      "sharedWords": 17
+    },
+    {
+      "source": "Solar should be sized around actual load, hours of backup, battery chemistry and local installation conditions. A cheap package can become expensive if it is undersized or built with poor components.",
+      "target": "Solar should be sized around actual load, hours of backup, battery chemistry and local installation conditions. އަގުހެޔޮ ޕެކޭޖެއް އަގުބޮޑުވެވޭނީ އެއީ ކުޑަ ޕެކޭޖެއް ނުވަތަ ދަށް ކޮމްޕޯނެންޓްތަކެއް އެކުލެވޭ ޕެކޭޖެކެވެ.",
+      "longestEnglishRun": "solar should be sized around actual load hours of backup battery chemistry and local installation conditions",
+      "sharedWords": 16
+    },
+    {
+      "source": "He came for a quiet trek near the edge of the rainforest. One wrong path, no signal, and daylight is disappearing. Find water, make a fire, recover useful gear, reach shelter and keep moving toward people.",
+      "target": "He came for a quiet trek near the edge of the rainforest. އެއް ގޯސް މަގެއް، އެއްވެސް ސިގްނަލެއް ނެތް، އަދި ދުވާލު އަލިކަން ނެތިގެން ދަނީ. ފެން ހޯދައި، އަލިފާން ރޯކޮށް، ބޭނުންތެރި ގިއާތައް ހޯދައި، ހިޔާވަހިކަމަށް ވާސިލްވެ، މީހުންނާ ދިމާއަށް ދަތުރުކުރަމުން ގެންދާށެވެ.",
+      "longestEnglishRun": "he came for a quiet trek near the edge of the rainforest",
+      "sharedWords": 12
+    },
+    {
+      "source": "SEEKVERA can guide and organize the trip, but visa rules, official travel advisories, emergency numbers and opening hours can change. Verify critical travel information with official sources before acting.",
+      "target": "SEEKVERA can guide and organize the trip, but visa rules, official travel advisories, emergency numbers and opening hours can change. ފިޔަވަޅު އެޅުމުގެ ކުރިން ރަސްމީ މަސްދަރުތަކާއެކު ދަތުރުފަތުރުގެ މުހިންމު މައުލޫމާތު ޔަގީންކުރުން.",
+      "longestEnglishRun": "seekvera can guide and organize the trip but visa rules official travel advisories emergency numbers and opening hours can change",
+      "sharedWords": 20
+    },
+    {
+      "source": "Education searches include very different needs: a student looking for a course, a school buying management software, or a professional comparing certification programs. SEEKVERA keeps those intents separate.",
+      "target": "Education searches include very different needs: a student looking for a course, a school buying management software, or a professional comparing certification programs. ސީކްވެރާ އިން އެ ނިޔަތްތައް ވަކިން ގެންގުޅެއެވެ.",
+      "longestEnglishRun": "education searches include very different needs a student looking for a course a school buying management software or a professional comparing certification programs",
+      "sharedWords": 23
+    },
+    {
+      "source": "Start inside the aircraft, survive the crash, collect what you can from the wreckage, then walk into the jungle. This preview uses the realistic visual direction you approved — not the cartoon-style 3D build.",
+      "target": "Start inside the aircraft, survive the crash, collect what you can from the wreckage, then walk into the jungle. މި ޕްރިވިއު ބޭނުންކުރަނީ ތިބާ ފާސްކުރި ރިއަލިސްޓިކް ވިޝުއަލް ޑިރެކްޝަން — ކާޓޫން ސްޓައިލްގެ 3ޑީ ބިލްޑް ނޫނެވެ.",
+      "longestEnglishRun": "start inside the aircraft survive the crash collect what you can from the wreckage then walk into the jungle",
+      "sharedWords": 19
+    },
+    {
+      "source": "Job seekers need verified vacancies, clear role requirements and safe application channels. SEEKVERA's job section is intended to route users toward legitimate platforms and employers as partners are verified.",
+      "target": "Job seekers need verified vacancies, clear role requirements and safe application channels. ސީކްވެރާގެ ޖޮބް ސެކްޝަނަކީ ޕާޓްނަރުން ޔަގީން ކުރެވޭ ވަރަކަށް ގާނޫނީ ޕްލެޓްފޯމްތަކާއި ވަޒީފާދޭ ފަރާތްތަކާ ދިމާއަށް ޔޫޒަރުން ރޫޓް ކުރުމެވެ.",
+      "longestEnglishRun": "job seekers need verified vacancies clear role requirements and safe application channels",
+      "sharedWords": 12
+    },
+    {
+      "source": "Property search should separate long-term rent, shortlets, land and property-management tools. Prices alone do not tell the full story: agency fees, service charges, location, utilities and verification matter.",
+      "target": "Property search should separate long-term rent, shortlets, land and property-management tools. ހަމައެކަނި އަގުތަކުން ފުރިހަމަ ވާހަކައެއް ނުބުނެވޭނެ: އެޖެންސީ ފީ، ސާވިސް ޗާޖް، ލޮކޭޝަން، ޔުޓިލިޓީސް އަދި ވެރިފިކޭޝަން މައްސަލަ.",
+      "longestEnglishRun": "property search should separate long-term rent shortlets land and property-management tools",
+      "sharedWords": 11
+    },
+    {
+      "source": "These platform rules help reduce risk but do not replace local legal advice. Marketplace laws differ by country, so SEEKVERA should obtain jurisdiction-specific legal review before large-scale commercial launch.",
+      "target": "These platform rules help reduce risk but do not replace local legal advice. މާކެޓްޕްލޭސްގެ ގާނޫނުތައް ގައުމުތަކަށް ބަލާއިރު ތަފާތުވާތީ، ބޮޑެތި ވިޔަފާރި އުސޫލުން ލޯންޗު ކުރުމުގެ ކުރިން ސީކްވެރާ އިން ޖުރިސިޑިކްޓަކަށް ޚާއްޞަ ގާނޫނީ ރިވިއުއެއް ހޯދަން ޖެހެ އެވެ.",
+      "longestEnglishRun": "these platform rules help reduce risk but do not replace local legal advice",
+      "sharedWords": 13
+    },
+    {
+      "source": "With your permission, SEEKVERA uses your phone location to look for nearby places in OpenStreetMap data that are tagged with Wi-Fi or internet access. Availability is community-supplied and may not always be current.",
+      "target": "With your permission, SEEKVERA uses your phone location to look for nearby places in OpenStreetMap data that are tagged with Wi-Fi or internet access. ލިބޭނެ ގޮތް މުޖުތަމަޢުން ފޯރުކޮށްދޭ އެއްޗެއް ކަމުން އަބަދުވެސް ކަރަންޓް ނުވެދާނެއެވެ.",
+      "longestEnglishRun": "with your permission seekvera uses your phone location to look for nearby places in openstreetmap data that are tagged with wi-fi or internet access",
+      "sharedWords": 24
+    },
+    {
+      "source": "SEEKVERA is a global discovery and comparison project. The zero-cost MVP helps users organize a need by country and category, then routes them toward eligible third-party providers as partner relationships are approved.",
+      "target": "SEEKVERA is a global discovery and comparison project. ޒީރޯ ކޮސްޓް އެމްވީޕީ އިން ޔޫޒަރުންނަށް އެހީތެރިވެދެނީ ގައުމާއި ކެޓަގަރީއަށް ބަލައިގެން ބޭނުންއެއް އިންތިޒާމުކޮށް، ދެން ޕާޓްނަރ ރިލޭޝަންޝިޕްތައް ފާސްވުމުން ޝަރުތު ހަމަވާ ތިންވަނަ ފަރާތެއްގެ ޕްރޮވައިޑަރުންނާ ދިމާއަށެވެ.",
+      "longestEnglishRun": "seekvera is a global discovery and comparison project",
+      "sharedWords": 8
+    },
+    {
+      "source": "SEEKVERA is an information, discovery, referral and marketplace interface. Third-party sellers and providers are responsible for their listings, ownership, permissions, legal compliance, delivery and service performance.",
+      "target": "SEEKVERA is an information, discovery, referral and marketplace interface. ތިންވަނަ ފަރާތެއްގެ ސޭލަރުންނާއި ޕްރޮވައިޑަރުން ޒިންމާވާނީ އެމީހުންގެ ލިސްޓިންގްސް، މިލްކުވެރިކަމާއި، ހުއްދަތަކާއި، ގާނޫނީ ގޮތުން ތަބާވުމާއި، ޑެލިވަރީ އަދި ސާވިސް ޕާފޯމަންސް އެވެ.",
+      "longestEnglishRun": "seekvera is an information discovery referral and marketplace interface",
+      "sharedWords": 9
+    },
+    {
+      "source": "You may use SEEKVERA only for lawful products, services, travel, property, jobs, businesses and information. You must follow the laws that apply to you, the item or service, and the country where the activity takes place.",
+      "target": "You may use SEEKVERA only for lawful products, services, travel, property, jobs, businesses and information. ތިމާއަށް އަމަލުކުރާ ގާނޫނުތަކާއި، އެ އެއްޗެއް ނުވަތަ ހިދުމަތާއި، އެ ހަރަކާތް ހިނގާ ގައުމަށް އަމަލުކުރަންވާނެއެވެ.",
+      "longestEnglishRun": "you may use seekvera only for lawful products services travel property jobs businesses and information",
+      "sharedWords": 15
+    },
+    {
+      "source": "New or edited ads, user media, links, profiles, offers and future user-generated features should inherit the same Safety Gate. Unsafe or uncertain content stays blocked or pending rather than being published automatically.",
+      "target": "New or edited ads, user media, links, profiles, offers and future user-generated features should inherit the same Safety Gate. ރައްކާތެރި ނޫން ނުވަތަ ޔަގީން ނުވާ ކޮންޓެންޓް އޮޓޮމެޓިކުން ޝާއިއު ކުރުމުގެ ބަދަލުގައި ބްލޮކް ނުވަތަ ޕެންޑިންގ ގައި ހުރެއެވެ.",
+      "longestEnglishRun": "new or edited ads user media links profiles offers and future user-generated features should inherit the same safety gate",
+      "sharedWords": 19
+    },
+    {
+      "source": "The architecture separates routine research/negotiation from paid actions and irreversible owner approvals. Background email execution is not claimed active until secure app-side OAuth and scheduled execution are connected.",
+      "target": "The architecture separates routine research/negotiation from paid actions and irreversible owner approvals. ސެކިއުރިޓީ އެޕް-ސައިޑް އޯއޯތު އަދި ޝެޑިއުލް އެގްޒެކެޝަން ގުޅިފައި ނުވާހާ ހިނދަކު ބެކްގްރައުންޑް އީމެއިލް އެގްޒެކެޝަން އެކްޓިވް ކަމަށް ކްލޭމް ނުކުރެވެއެވެ.",
+      "longestEnglishRun": "the architecture separates routine research negotiation from paid actions and irreversible owner approvals",
+      "sharedWords": 13
+    },
+    {
+      "source": "SEEKVERA does not require an account for basic search and discovery. Do not submit passwords, payment-card details, government ID numbers or other highly sensitive information through search, Request Anything or the AI assistant.",
+      "target": "SEEKVERA does not require an account for basic search and discovery. ޕާސްވޯޑް، ޕޭމަންޓް-ކާޑްގެ ތަފްސީލް، ސަރުކާރުގެ އައިޑީ ނަންބަރު ނުވަތަ އެނޫންވެސް ވަރަށް ނާޒުކު މައުލޫމާތު ސަރޗް، ރިކުއެސްޓް އެނީތިންގ ނުވަތަ އެއައި އެސިސްޓެންޓް މެދުވެރިކޮށް ހުށަނާޅާށެވެ.",
+      "longestEnglishRun": "seekvera does not require an account for basic search and discovery",
+      "sharedWords": 11
+    },
+    {
+      "source": "Some current or future tracked links may use cookies or attribution technologies under the destination provider or affiliate-network privacy policy. SEEKVERA may receive a commission without increasing the price charged to you by the destination provider.",
+      "target": "Some current or future tracked links may use cookies or attribution technologies under the destination provider or affiliate-network privacy policy. މަންޒިލް ޕްރޮވައިޑަރ އިން ނަގާ އަގު ބޮޑު ނުކޮށް ސީކްވެރާއަށް ކޮމިޝަނެއް ލިބިދާނެއެވެ.",
+      "longestEnglishRun": "some current or future tracked links may use cookies or attribution technologies under the destination provider or affiliate-network privacy policy",
+      "sharedWords": 20
+    },
+    {
+      "source": "A low sticker price is not enough. A useful comparison should consider warranty, seller reputation, delivery, return policy, voltage or network compatibility, and total landed cost. SEEKVERA will activate tracked merchant links only after partner approval.",
+      "target": "A low sticker price is not enough. ބޭނުންތެރި އަޅާކިޔުމެއްގައި ވޮރެންޓީ، ސެލަރ ރެޕިއުޓޭޝަން، ޑެލިވަރީ، ރިޓަރން ޕޮލިސީ، ވޯލްޓޭޖް ނުވަތަ ނެޓްވޯކް ކޮމްޕެޓިބިލިޓީ، އަދި ޓޯޓަލް ލޭންޑްޑް ކޮސްޓް އަށް ރިއާޔަތް ކުރަންވާނެއެވެ. ސީކްވެރާ އިން ޓްރެކް ކުރެވިފައިވާ މާޗެންޓް ލިންކްތައް އެކްޓިވޭޓް ކުރާނީ ޕާޓްނަރ އެޕްރޫވަލް އަށް ފަހުގައެވެ.",
+      "longestEnglishRun": "a low sticker price is not enough",
+      "sharedWords": 7
+    },
+    {
+      "source": "Users must verify identity, ownership, title documents, product authenticity, licences, permits, prices and payment instructions before completing a transaction. SEEKVERA is not the merchant of record for ordinary third-party listings unless a specific transaction clearly states otherwise.",
+      "target": "Users must verify identity, ownership, title documents, product authenticity, licences, permits, prices and payment instructions before completing a transaction. ވަކި މުއާމަލާތެއްގައި ސާފުކޮށް އެކަން ބަޔާންކޮށްފައި ނުވާނަމަ ސީކްވެރާ އަކީ އާދައިގެ ތިންވަނަ ފަރާތެއްގެ ލިސްޓިންގތަކުގެ މާޗެންޓް އޮފް ރެކޯޑް ނޫނެވެ.",
+      "longestEnglishRun": "users must verify identity ownership title documents product authenticity licences permits prices and payment instructions before completing a transaction",
+      "sharedWords": 19
+    },
+    {
+      "source": "SEEKVERA may earn a commission when a user completes a qualifying purchase, booking, subscription or referral through certain tracked links. This should not create an extra charge to the user unless the provider clearly states otherwise. Partner compensation is not intended to be the only ranking factor.",
+      "target": "SEEKVERA may earn a commission when a user completes a qualifying purchase, booking, subscription or referral through certain tracked links. މިއީ ޕްރޮވައިޑަރ ސާފުކޮށް އެހެން ގޮތަކަށް ބަޔާންކޮށްފައި ނުވާނަމަ ޔޫޒަރަށް އިތުރު ޗާޖެއް އުފެދިގެން ނުވާނެއެވެ. ޕާޓްނަރ ކޮމްޕެންސޭޝަން އަކީ ހަމައެކަނި ރޭންކިންގ ފެކްޓަރަކަށް ވާން ގަސްތުކުރާ އެއްޗެއް ނޫނެވެ.",
+      "longestEnglishRun": "seekvera may earn a commission when a user completes a qualifying purchase booking subscription or referral through certain tracked links",
+      "sharedWords": 20
+    },
+    {
+      "source": "SEEKVERA AI may refuse requests that involve prohibited or illegal goods, services or content. Automated moderation can make mistakes, so suspicious content may also require manual review. Users must not try to bypass safety checks by changing spelling, using coded language or hiding prohibited content in images.",
+      "target": "SEEKVERA AI may refuse requests that involve prohibited or illegal goods, services or content. އޮޓޮމެޓިކް މޮޑެރޭޝަން އިން ގޯސްތައް ހެދިދާނެތީ ޝައްކު ކުރެވޭ ކޮންޓެންޓް ވެސް މެނުއަލްކޮށް ރިވިއު ކުރަން ޖެހިދާނެ އެވެ. އިމްތިޙާނު ބަދަލުކޮށް، ކޯޑް ކުރެވިފައިވާ ބަސް ބޭނުންކޮށްގެން ނުވަތަ ތަސްވީރުތަކުގައި މަނާ ކޮންޓެންޓް ފޮރުވައިގެން ސޭފްޓީ ޗެކްތައް ބައިޕާސް ކުރަން ޔޫޒަރުން މަސައްކަތްކޮށްގެން ނުވާނެއެވެ.",
+      "longestEnglishRun": "seekvera ai may refuse requests that involve prohibited or illegal goods services or content",
+      "sharedWords": 14
+    },
+    {
+      "source": "By posting an ad, you confirm that you own the item/property/content or are authorized by the owner to advertise it. You also confirm that you have the right to use every photo, video, document and description you upload. You must not advertise another person's house, land, vehicle, business or belongings without permission.",
+      "target": "By posting an ad, you confirm that you own the item/property/content or are authorized by the owner to advertise it. އަދި އަޕްލޯޑްކުރާ ކޮންމެ ފޮޓޯއަކާއި ވީޑިއޯއަކާއި ލިޔުމަކާއި ޑިސްކްރިޕްޝަނެއް ބޭނުންކުރުމުގެ ހައްގު ލިބިގެންވާކަން ކަށަވަރުކޮށްދެއެވެ. އެހެން މީހެއްގެ ގެއެއް، ބިމެއް، އުޅަނދެއް، ވިޔަފާރިއެއް ނުވަތަ ތަކެތި ހުއްދަ ނެތި އިޝްތިހާރުކޮށްގެން ނުވާނެއެވެ.",
+      "longestEnglishRun": "by posting an ad you confirm that you own the item property content or are authorized by the owner to advertise it",
+      "sharedWords": 22
+    },
+    {
+      "source": "Weapons, ammunition, explosives, military/police uniforms or combat equipment, explicit nudity/pornography or sexual services, controlled drugs, stolen/counterfeit goods, fake documents, scams/fraud, trafficking, extremist/terrorist material, privacy abuse, and other illegal goods or services. Unsafe ads are blocked or rejected.",
+      "target": "Weapons, ammunition, explosives, military/police uniforms or combat equipment, explicit nudity/pornography or sexual services, controlled drugs, stolen/counterfeit goods, fake documents, scams/fraud, trafficking, extremist/terrorist material, privacy abuse, and other illegal goods or services. ރައްކާތެރި ނޫން އިޝްތިހާރުތައް ބްލޮކް ނުވަތަ ރިޖެކްޓް ކުރެވެއެވެ.",
+      "longestEnglishRun": "weapons ammunition explosives military police uniforms or combat equipment explicit nudity pornography or sexual services controlled drugs stolen counterfeit goods fake documents scams fraud trafficking extremist terrorist material privacy abuse and other illegal goods or services",
+      "sharedWords": 36
+    },
+    {
+      "source": "New marketplace ads may be screened by automated safety checks and may remain pending until reviewed. SEEKVERA may reject, hide, remove, restrict or preserve records of content that appears unsafe, unlawful, misleading or unauthorized. Approval is not a guarantee that a listing is genuine, legal in every jurisdiction or risk-free.",
+      "target": "New marketplace ads may be screened by automated safety checks and may remain pending until reviewed. ރައްކާތެރި ނޫން، ގާނޫނާ ހިލާފު، އޮޅުވާލާ ނުވަތަ ހުއްދަ ނެތް ކަމަށް ފެންނަ ކޮންޓެންޓްގެ ރެކޯޑްތައް ސީކްވެރާއަށް ދޮގުކޮށް، ފޮރުވައި، ނައްތާލައި، ހަނިކޮށް ނުވަތަ ރައްކާތެރިކޮށްދެވިދާނެއެވެ. އެޕްރޫވަލް އަކީ ލިސްޓިންގ އަކީ އަސްލު، ކޮންމެ ޖުރިސިޑިކްޓެއްގައި ގާނޫނީ ނުވަތަ ރިސްކް ފްރީ ލިސްޓިންގ އެއް ކަމުގެ ޔަގީންކަމެއް ނޫނެވެ.",
+      "longestEnglishRun": "new marketplace ads may be screened by automated safety checks and may remain pending until reviewed",
+      "sharedWords": 16
+    }
+  ]
+}
