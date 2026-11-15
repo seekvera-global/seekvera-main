@@ -787,7 +787,17 @@
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
       "trigger": "workflow_dispatch only",
       "runTranslationsDefault": false,
-      "explicitTranslationOptInRequired": true
+      "explicitTranslationOptInRequired": true,
+      "writeBehavior": {
+        "auditOnlyMayWriteCandidates": true,
+        "translationStepSkippedWhenRunTranslationsFalse": true,
+        "candidateMutationSteps": [
+          "Repair immutable locale identifiers (deterministic, no AI)",
+          "Repair executable CSS source invariants (deterministic, no AI)"
+        ],
+        "persistenceStep": "Save progress without publishing commits changed files under docs/locale-candidates-20261008 to the candidate branch.",
+        "operationalRule": "Do not start another R125 run or write candidate packs while an R125 run is queued/in progress; re-check the workflow run list immediately before any candidate mutation."
+      }
     },
     "note": "Latest R125 remains #150; no R125 run is active. Current latest repository Actions page shows no queued/in-progress runs. No candidate pack writes were made during this pass."
   },
