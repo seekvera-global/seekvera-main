@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-15T05:32:06Z",
+  "checkedAt": "2026-11-15T06:52:00Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -440,7 +440,7 @@
     "published": false
   },
   "candidateResume": {
-    "checkedAt": "2026-11-14T15:42:00Z",
+    "checkedAt": "2026-11-15T06:52:00Z",
     "run": null,
     "activeRunObserved": false,
     "candidatePackWritesThisPass": false,
@@ -455,7 +455,12 @@
       "remaining": [
         "dv"
       ]
-    }
+    },
+    "quotaStatusCurrent": "unknown-not-probed",
+    "latestProviderBlocker": "HTTP 503 all_translation_backends_unavailable in resume-latest.log; historical Google HTTP429 and daily_free_ai_limit remain blockers",
+    "published": false,
+    "linguisticAccuracyCertified": false,
+    "auditPending": true
   },
   "supplementalLocaleAudit": {
     "checkedAt": "2026-11-14T17:35:00Z",
@@ -1158,5 +1163,15 @@
     "linguisticCertification": false,
     "validation": "Restored four CSS/markup strings byte-for-byte to their immutable English source keys; read back all 1,118 Divehi keys, zero missing/extra, matching sourceHash. Does not change english_overlap:58; full audit/native review pending."
   },
-  "latestCandidateCommit": "7e5bf641a760a104a07b4eda858cd0b37836b848"
+  "latestCandidateCommit": "7e5bf641a760a104a07b4eda858cd0b37836b848",
+  "dhivehiOverlapReview": {
+    "checkedAt": "2026-11-15T06:52:00Z",
+    "artifact": "docs/locale-candidates-20261008/dv-english-overlap-review-20261115.json",
+    "commit": "416feaeb01644494d9431ccc4a3244fba71e83d8",
+    "overlapCount": 58,
+    "sourceHash": "6a1126e6a2ce5629",
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "action": "Prepared exact source/partial-output review list; no Dhivehi wording guessed or changed."
+  }
 }
