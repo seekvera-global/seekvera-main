@@ -1,0 +1,113 @@
+{
+  "checkedAt": "2026-11-15T16:12:00Z",
+  "sourceHash": "6a1126e6a2ce5629",
+  "sourceCount": 1118,
+  "scope": "Fresh direct GitHub read-only spot audit of ten previously flagged locale packs; not the full 98-pack audit and not linguistic certification.",
+  "candidatePackWrites": 0,
+  "translationRequests": 0,
+  "aiQuotaUsed": 0,
+  "published": false,
+  "linguisticCertification": false,
+  "structural": {
+    "packsChecked": 10,
+    "keysPerPack": 1118,
+    "sourceHashMatches": 10,
+    "missingKeys": 0,
+    "extraKeys": 0,
+    "emptyValues": 0
+  },
+  "duplicateOutputGroupsThreshold": 4,
+  "duplicateOutputGroups": 27,
+  "duplicateKeysAffected": 255,
+  "englishOverlapDetector": "Longest common contiguous English-word sequence >=5; source URLs/code/brand/news-source strings excluded or noted",
+  "englishOverlapFindings": [
+    {
+      "language": "kl",
+      "count": 1,
+      "source": "Al Jazeera, Al Arabiya, CNN, BBC, Reuters and more official sources.",
+      "classification": "common source/news names; exempt"
+    },
+    {
+      "language": "st",
+      "count": 1,
+      "source": "Al Jazeera, Al Arabiya, CNN, BBC, Reuters and more official sources.",
+      "classification": "common source/news names; exempt"
+    },
+    {
+      "language": "xh",
+      "count": 1,
+      "source": "Al Jazeera, Al Arabiya, CNN, BBC, Reuters and more official sources.",
+      "classification": "common source/news names; exempt"
+    },
+    {
+      "language": "rw",
+      "count": 1,
+      "source": "Al Jazeera, Al Arabiya, CNN, BBC, Reuters and more official sources.",
+      "classification": "common source/news names; exempt"
+    },
+    {
+      "language": "ku",
+      "count": 1,
+      "source": "Al Jazeera, Al Arabiya, CNN, BBC, Reuters and more official sources.",
+      "classification": "common source/news names; exempt"
+    },
+    {
+      "language": "dv",
+      "count": 58,
+      "classification": "unresolved English-overlap; native review required"
+    }
+  ],
+  "perLanguage": [
+    {
+      "code": "kl",
+      "duplicateGroups": 5,
+      "keysAffected": 44
+    },
+    {
+      "code": "st",
+      "duplicateGroups": 4,
+      "keysAffected": 37
+    },
+    {
+      "code": "xh",
+      "duplicateGroups": 3,
+      "keysAffected": 30
+    },
+    {
+      "code": "rw",
+      "duplicateGroups": 3,
+      "keysAffected": 35
+    },
+    {
+      "code": "to",
+      "duplicateGroups": 3,
+      "keysAffected": 26
+    },
+    {
+      "code": "dv",
+      "duplicateGroups": 2,
+      "keysAffected": 20
+    },
+    {
+      "code": "ku",
+      "duplicateGroups": 2,
+      "keysAffected": 15
+    },
+    {
+      "code": "ti",
+      "duplicateGroups": 2,
+      "keysAffected": 14
+    },
+    {
+      "code": "tn",
+      "duplicateGroups": 2,
+      "keysAffected": 20
+    },
+    {
+      "code": "dz",
+      "duplicateGroups": 1,
+      "keysAffected": 14
+    }
+  ],
+  "verdict": "Structural spot check PASS for the ten packs. Duplicate groups persist and require qualified language review. Divehi remains incomplete with 58 English-overlap entries. Do not publish."
+}
