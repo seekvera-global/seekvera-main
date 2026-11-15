@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-15T18:47:35Z",
+  "checkedAt": "2026-11-15T21:48:19Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -368,35 +368,76 @@
     "note": "Fresh Actions inspection through 2026-11-15T20:42:06Z: latest Pages #1566 completed success; latest Site Health #324 success; zero active/queued runs; no R125 active. R105 #81 live chat probes and R123 #64 live ASR/audio were skipped; no quota-consuming probes."
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-14T15:42:00Z",
-    "candidateBranchHeadBeforeSummaryUpdate": "7897ad06f2e9d571cb4d321b680e076828e256b4",
-    "mainCheckpointCommit": "8dead439a090795c66e3ce9fcda066d6eee1659a",
-    "actions": {
-      "pagesScanned": 10,
-      "activeRunsObserved": 0,
-      "latestRun": 43604369351,
-      "latestProductionHealth": 43568474031
+    "checkedAt": "2026-11-15T21:48:19Z",
+    "latest100Fetched": true,
+    "latest100ActiveCount": 0,
+    "latestActiveRuns": [],
+    "latestRepositoryRun": {
+      "id": 43759737316,
+      "number": 1567,
+      "name": "pages build and deployment",
+      "path": "dynamic/pages/pages-build-deployment",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-15T20:44:13Z",
+      "updatedAt": "2026-11-15T20:44:57Z",
+      "headSha": "f1cd534dd0370c1524fce1296bd8d199e3574b40"
     },
-    "r125": {
-      "latestRun": 150,
-      "latestRunId": 38971104197,
+    "latestPages": {
+      "run": 1567,
+      "id": 43759737316,
+      "status": "completed",
+      "conclusion": "success",
+      "updatedAt": "2026-11-15T20:44:57Z"
+    },
+    "latestSiteHealth": {
+      "run": 324,
+      "id": 43750027183,
+      "status": "completed",
+      "conclusion": "success",
+      "pagesHTTP200": 18,
+      "apiHealth": "pass",
+      "robots": "pass",
+      "sitemap": "pass"
+    },
+    "latestR125": {
+      "run": 150,
+      "id": 38971104197,
+      "status": "completed",
       "conclusion": "success",
       "resume": "skipped",
       "audit": "success",
-      "previousFailure": 149,
-      "activeRunObserved": false
+      "createdAt": "2026-10-16T21:41:54Z",
+      "active": false
+    },
+    "r125ActiveInLatest100": false,
+    "workflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "translationOptInRequired": true,
+      "saveProgressMayWriteMetadata": true
     },
     "thisPass": {
       "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
       "translationRequests": 0,
       "aiQuotaUsed": 0,
-      "summaryOnly": true
+      "sourceOrCandidateFilesModified": false
     },
-    "currentAI": "unknown-not-probed",
-    "currentTranslationBackend": "unknown-not-probed",
-    "full98PackAudit": false,
+    "aiChat": "unknown-not-probed",
+    "translationBackend": "unknown-not-probed",
+    "knownBlockers": [
+      "daily_free_ai_limit",
+      "Google HTTP429",
+      "last translation log HTTP503 all_translation_backends_unavailable"
+    ],
+    "full98StructuralAudit": "PASS (latest read-only audit 2026-11-15T18:47:35Z)",
+    "full98QualityAudit": false,
     "linguisticCertification": false,
-    "published": false
+    "published": false,
+    "decision": "NO-GO"
   },
   "candidateResume": {
     "checkedAt": "2026-11-15T06:52:00Z",
@@ -874,38 +915,83 @@
     "published": false
   },
   "latestContinuationPass": {
-    "checkedAt": "2026-11-15T07:17:20Z",
-    "candidatePackWrites": 2,
-    "translationRequests": 0,
-    "aiQuotaUsed": 0,
-    "latestRecordedR125": {
+    "checkedAt": "2026-11-15T21:48:19Z",
+    "latest100Fetched": true,
+    "latest100ActiveCount": 0,
+    "latestActiveRuns": [],
+    "latestRepositoryRun": {
+      "id": 43759737316,
+      "number": 1567,
+      "name": "pages build and deployment",
+      "path": "dynamic/pages/pages-build-deployment",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-15T20:44:13Z",
+      "updatedAt": "2026-11-15T20:44:57Z",
+      "headSha": "f1cd534dd0370c1524fce1296bd8d199e3574b40"
+    },
+    "latestPages": {
+      "run": 1567,
+      "id": 43759737316,
+      "status": "completed",
+      "conclusion": "success",
+      "updatedAt": "2026-11-15T20:44:57Z"
+    },
+    "latestSiteHealth": {
+      "run": 324,
+      "id": 43750027183,
+      "status": "completed",
+      "conclusion": "success",
+      "pagesHTTP200": 18,
+      "apiHealth": "pass",
+      "robots": "pass",
+      "sitemap": "pass"
+    },
+    "latestR125": {
       "run": 150,
       "id": 38971104197,
       "status": "completed",
       "conclusion": "success",
       "resume": "skipped",
-      "audit": "success"
+      "audit": "success",
+      "createdAt": "2026-10-16T21:41:54Z",
+      "active": false
     },
+    "r125ActiveInLatest100": false,
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
       "trigger": "workflow_dispatch only",
       "runTranslationsDefault": false,
-      "explicitTranslationOptInRequired": true
+      "repairCandidatesDefault": false,
+      "translationOptInRequired": true,
+      "saveProgressMayWriteMetadata": true
     },
-    "activeRunCheck": {
-      "checkedAt": "2026-11-15T07:17:00Z",
-      "latest100RunsFetched": true,
-      "queuedOrInProgressObserved": 0,
-      "r125RunInLatest100": false,
-      "latestKnownR125": 150,
-      "status": "completed"
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "sourceOrCandidateFilesModified": false
     },
-    "full98StructuralAudit": true,
+    "aiChat": "unknown-not-probed",
+    "translationBackend": "unknown-not-probed",
+    "knownBlockers": [
+      "daily_free_ai_limit",
+      "Google HTTP429",
+      "last translation log HTTP503 all_translation_backends_unavailable"
+    ],
+    "full98StructuralAudit": "PASS (latest read-only audit 2026-11-15T18:47:35Z)",
     "full98QualityAudit": false,
     "linguisticCertification": false,
     "published": false,
-    "note": "Maori (4) and Irish Gaelic (9) game descriptions diversified and read back; both packs retain 1,118 keys/sourceHash and zero >=4 duplicate groups. Latest 100 Actions runs: no queued/in-progress runs; latest known R125 #150 completed audit-only. No AI/translation requests or quota use; full 98-pack quality audit/native review pending.",
-    "exactManualReplacements": 13
+    "decision": "NO-GO",
+    "filesRead": [
+      "main checkpoint",
+      "candidate resume-summary",
+      "resume-latest.log",
+      "main R125 workflow"
+    ],
+    "readBackPending": true
   },
   "latestManualHausaGameDescriptionRepair": {
     "checkedAt": "2026-11-15T01:40:00Z",
@@ -1780,14 +1866,76 @@
     "result": "PASS"
   },
   "latestActionsObservation": {
-    "checkedAt": "2026-11-15T20:42:06Z",
-    "latest100Runs": "zero queued/in_progress",
-    "latestRun": 43752697851,
-    "latestRunConclusion": "success",
-    "latestRunNumber": 1566,
-    "latestRunPath": "dynamic/pages/pages-build-deployment",
-    "latestKnownR125": 150,
-    "r125Active": false
+    "checkedAt": "2026-11-15T21:48:19Z",
+    "latest100Fetched": true,
+    "latest100ActiveCount": 0,
+    "latestActiveRuns": [],
+    "latestRepositoryRun": {
+      "id": 43759737316,
+      "number": 1567,
+      "name": "pages build and deployment",
+      "path": "dynamic/pages/pages-build-deployment",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-15T20:44:13Z",
+      "updatedAt": "2026-11-15T20:44:57Z",
+      "headSha": "f1cd534dd0370c1524fce1296bd8d199e3574b40"
+    },
+    "latestPages": {
+      "run": 1567,
+      "id": 43759737316,
+      "status": "completed",
+      "conclusion": "success",
+      "updatedAt": "2026-11-15T20:44:57Z"
+    },
+    "latestSiteHealth": {
+      "run": 324,
+      "id": 43750027183,
+      "status": "completed",
+      "conclusion": "success",
+      "pagesHTTP200": 18,
+      "apiHealth": "pass",
+      "robots": "pass",
+      "sitemap": "pass"
+    },
+    "latestR125": {
+      "run": 150,
+      "id": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "resume": "skipped",
+      "audit": "success",
+      "createdAt": "2026-10-16T21:41:54Z",
+      "active": false
+    },
+    "r125ActiveInLatest100": false,
+    "workflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "translationOptInRequired": true,
+      "saveProgressMayWriteMetadata": true
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "sourceOrCandidateFilesModified": false
+    },
+    "aiChat": "unknown-not-probed",
+    "translationBackend": "unknown-not-probed",
+    "knownBlockers": [
+      "daily_free_ai_limit",
+      "Google HTTP429",
+      "last translation log HTTP503 all_translation_backends_unavailable"
+    ],
+    "full98StructuralAudit": "PASS (latest read-only audit 2026-11-15T18:47:35Z)",
+    "full98QualityAudit": false,
+    "linguisticCertification": false,
+    "published": false,
+    "decision": "NO-GO"
   },
   "runtimeAvailability": {
     "checkedAt": "2026-11-15T18:47:35Z",
