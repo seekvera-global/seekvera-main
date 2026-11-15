@@ -333,106 +333,38 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-15T11:44:10Z",
+    "checkedAt": "2026-11-15T16:12:00Z",
+    "actionsObservation": {
+      "latestRepositoryRun": 1563,
+      "runId": 43722728419,
+      "status": "completed",
+      "conclusion": "success",
+      "path": "dynamic/pages/pages-build-deployment",
+      "createdAt": "2026-11-15T14:08:42Z",
+      "latest100R125QueuedOrInProgress": 0,
+      "latestKnownR125": 150,
+      "r125RunId": 38971104197,
+      "r125Status": "completed",
+      "r125Conclusion": "success"
+    },
     "workflow": {
-      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
       "trigger": "workflow_dispatch only",
       "runTranslationsDefault": false,
-      "explicitTranslationOptInRequired": true,
-      "writeBehavior": {
-        "auditOnlyMayWriteCandidateBranchMetadata": true,
-        "candidatePackRepairStepsRequireExplicitOptIn": true,
-        "runTranslationsDefault": false,
-        "repairCandidatesDefault": false,
-        "translationStepRequiresRunTranslations": true,
-        "operationalRule": "Before any candidate-pack mutation, query current Actions and defer if R125 is queued/in_progress. Audit-only may update summary/checkpoint metadata but does not run candidate repair steps by default."
-      }
-    },
-    "latestR125": {
-      "run": 150,
-      "id": 38971104197,
-      "status": "completed",
-      "conclusion": "success",
-      "resume": "skipped",
-      "audit": "success"
-    },
-    "latestPages": {
-      "run": 1535,
-      "id": 43633978266,
-      "status": "completed",
-      "conclusion": "success",
-      "jobs": [
-        "build",
-        "report-build-status",
-        "deploy"
-      ],
-      "scope": "documentation deployment only"
-    },
-    "aiAvailability": {
-      "chat": "unknown-not-probed",
-      "translation": "unknown-not-probed",
-      "quotaRequestsThisPass": 0
+      "repairCandidatesDefault": false,
+      "explicitTranslationOptInRequired": true
     },
     "thisPass": {
-      "actionsRunsInspected": 100,
       "candidatePackWrites": 0,
-      "candidateMetadataCheckpointWrites": 1,
+      "candidateMetadataAuditWrite": 1,
       "translationRequests": 0,
-      "aiQuotaUsed": 0,
-      "publication": false,
-      "linguisticCertification": false,
-      "full98PackAudit": false
+      "aiQuotaUsed": 0
     },
+    "currentAI": "unknown-not-probed",
+    "currentTranslationBackend": "unknown-not-probed",
     "full98PackAudit": false,
     "linguisticCertification": false,
     "published": false,
-    "note": "Fresh Actions check: latest 100 repository runs contain no R125; latest repo run Pages #1562 succeeded. R125 #150 remains the last known R125 run (completed 2026-10-16). No candidate packs or translation requests were written in this pass.",
-    "currentAI": "unknown-not-probed",
-    "currentTranslationBackend": "unknown-not-probed",
-    "latestActionsSnapshot": {
-      "latest100Fetched": false,
-      "activeRunsObserved": null,
-      "latestRepositoryRun": {
-        "run": 1539,
-        "id": 43645382126,
-        "name": "pages build and deployment",
-        "status": "completed",
-        "conclusion": "success",
-        "createdAt": "2026-11-14T21:55:51Z"
-      },
-      "checkedAt": "2026-11-14T21:56:33Z"
-    },
-    "activeActionsCheck": {
-      "checkedAt": "2026-11-15T11:44:10Z",
-      "scope": "GitHub Actions repository runs API; latest 100 runs",
-      "latest100Fetched": true,
-      "r125RunsInLatest100": 0,
-      "queuedOrInProgressR125": 0,
-      "latestRepositoryRun": {
-        "run": 1562,
-        "id": 43710291005,
-        "path": "dynamic/pages/pages-build-deployment",
-        "status": "completed",
-        "conclusion": "success",
-        "createdAt": "2026-11-15T11:43:26Z"
-      },
-      "latestR125Resume": {
-        "run": 150,
-        "runId": 38971104197,
-        "status": "completed",
-        "conclusion": "success",
-        "createdAt": "2026-10-16T21:41:54Z"
-      }
-    },
-    "latestR125Resume": {
-      "run": 150,
-      "runId": 38971104197,
-      "status": "completed",
-      "conclusion": "success",
-      "createdAt": "2026-10-16T21:41:54Z",
-      "resume": "skipped",
-      "audit": "success"
-    }
+    "note": "Fresh direct spot audit of 10 flagged candidate packs. No candidate pack writes or quota use; no R125 active in latest 100 runs."
   },
   "latestContinuationVerification": {
     "checkedAt": "2026-11-14T15:42:00Z",
@@ -1820,36 +1752,23 @@
     "note": "Latest R125 remains #150; no R125 run is active. Current latest repository Actions page shows no queued/in-progress runs. No candidate pack writes were made during this pass."
   },
   "latestReadOnlySpotAudit": {
-    "checkedAt": "2026-11-15T15:41:52Z",
-    "report": "docs/locale-candidates-20261008/readonly-spot-audit-20261115-154152Z.json",
-    "commit": "28c2c6ffc705cd1761738c75ead81a58cfb816e4",
-    "packsFetched": 12,
+    "checkedAt": "2026-11-15T16:12:00Z",
+    "path": "docs/locale-candidates-20261008/readonly-spot-audit-20261115-161200Z.json",
+    "commit": "3875d96cbaed07dfd556870c9672e49926cdb1ae",
+    "scope": "10 packs direct read-only fetch; structural and duplicate/English-overlap screening only",
+    "packsChecked": 10,
     "keysPerPack": 1118,
-    "sourceHashMatches": 12,
+    "sourceHashMatches": 10,
     "missingKeys": 0,
     "extraKeys": 0,
-    "duplicateGroups": 27,
-    "duplicateKeys": 255,
-    "affectedLanguages": 10,
-    "languages": [
-      "dv",
-      "kl",
-      "st",
-      "xh",
-      "rw",
-      "to",
-      "ku",
-      "ti",
-      "tn",
-      "dz",
-      "am",
-      "my"
-    ],
+    "emptyValues": 0,
+    "duplicateOutputGroups": 27,
+    "duplicateKeysAffected": 255,
+    "divehiEnglishOverlap": 58,
     "candidatePackWrites": 0,
     "translationRequests": 0,
     "aiQuotaUsed": 0,
-    "publication": false,
-    "linguisticCertification": false,
-    "scope": "Read-only spot audit, not full 98-pack quality audit."
+    "published": false,
+    "linguisticCertification": false
   }
 }
