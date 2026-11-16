@@ -5880,5 +5880,19 @@
     "candidatePackWrites": 0,
     "published": false,
     "linguisticCertification": false
+  },
+  "latestPagesAfterMainCheckpoint": {
+    "run": 1587,
+    "id": 43945705356,
+    "status": "completed",
+    "conclusion": "success",
+    "headSha": "cd6224e08ba4e69ba8aa5c1cc267b085cd1fec66",
+    "checkedAt": "2026-11-16T21:29:42Z",
+    "jobs": {
+      "build": "success",
+      "deploy": "success",
+      "reportBuildStatus": "success"
+    },
+    "scope": "Pages documentation deployment only; not product certification."
   }
 }
