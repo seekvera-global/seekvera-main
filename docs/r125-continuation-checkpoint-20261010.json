@@ -127,7 +127,8 @@
     "Invalidate affected translation cache",
     "Scale output tokens for long UI descriptions",
     "Use existing primary model after light-model validation failure",
-    "Cover 12 previously unmapped non-Latin script families in voice language detection, scoring and TTS locale selection"
+    "Cover 12 previously unmapped non-Latin script families in voice language detection, scoring and TTS locale selection",
+    "R76 production quota classifier now recognizes exact daily_free_ai_limit and spaced/hyphenated variants; nested AggregateError regression added; quota/rate-limit errors suppress external fallback."
   ],
   "runtimeCommit": "ce6e189e21b927b50d07ac96466a3ea4bdc69e47",
   "runtimeDeployRun": 38093026947,
@@ -183,7 +184,7 @@
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-16T03:15:02Z",
+    "checkedAt": "2026-11-16T22:56:09Z",
     "aiChat": {
       "lastConfirmedLiveRun": 43213407211,
       "checkedAt": "2026-11-12T11:57:45Z",
@@ -192,7 +193,7 @@
       "countryChange": "passed",
       "prohibitedWeapon": "blocked",
       "currentAvailability": "unknown-not-probed",
-      "reason": "No quota-safe non-consuming live AI endpoint was available; last confirmed English/Arabic probes were 2026-11-12, latest R105 probes skipped."
+      "reason": "R105 #84 live AI probes were skipped by policy; last confirmed English/Arabic probes remain 2026-11-12."
     },
     "voiceTranscription": {
       "run": 43219069259,
@@ -220,7 +221,12 @@
     },
     "translation": {
       "currentAvailability": "unknown-not-probed",
-      "reason": "No translation request sent; daily_free_ai_limit, Google HTTP429 and latest HTTP503 remain historical blockers."
+      "reason": "No translation request sent; daily_free_ai_limit, Google HTTP429 and historical HTTP503 remain provider blockers."
+    },
+    "quotaBoundary": {
+      "regression": "passed in R105 #84",
+      "productionWorkerDeployed": true,
+      "externalFallbackSuppressedForQuotaErrors": true
     }
   },
   "voiceScriptCoverage": {
@@ -515,22 +521,100 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "currentMainBlob": "44f7d9a451b339834d2b91c992f51b60c03eca68",
-    "currentTrigger": "workflow_dispatch only",
-    "runTranslationsDefault": false,
-    "repairCandidatesDefault": false,
-    "candidateWritesPossibleOnlyWhenManualRepairOrTranslationOptIn": true,
-    "currentRunObserved": false,
-    "historicalR125": {
-      "run": 150,
-      "id": 38971104197,
-      "event": "push",
-      "headSha": "0911d8f826e7347f3b5dbf9aacccc7893ee85dd8",
+    "checkedAt": "2026-11-16T22:56:09Z",
+    "mainHeadAtRepair": "4580be6565005b7f36892f78036b92bc3213f7b1",
+    "latestPages": {
+      "run": 1592,
+      "id": 43974587513,
       "status": "completed",
       "conclusion": "success",
-      "workflowAtThatCommitHadScheduleAndPushTriggers": true
+      "jobs": {
+        "build": "success",
+        "reportBuildStatus": "success",
+        "deploy": "success"
+      }
     },
-    "correction": "R125 #150 is a historical run of the older scheduled/push workflow, not an execution of the current workflow_dispatch-only version. Its audit result was 97 complete, dv remaining; translation step skipped."
+    "latestR105": {
+      "run": 84,
+      "id": 43974590208,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": {
+        "sourceValidation": "success",
+        "languageNameValidation": "success",
+        "workerDeploy": "success",
+        "productionHealth": "success"
+      },
+      "liveAiProbes": "skipped-by-policy"
+    },
+    "latestR123": {
+      "run": 66,
+      "id": 43974590077,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": {
+        "audioValidation": "success",
+        "workerDeploy": "success",
+        "categoryTranslations": "success",
+        "voiceAcknowledgement": "success",
+        "dynamicVoicePlaceholders": "success"
+      },
+      "liveAudioTtsAsr": "skipped-by-opt-in"
+    },
+    "latestSafetySmoke": {
+      "run": 29,
+      "id": 43961457780,
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "live Supabase moderation categories, benign property review path, public post-ad UI fail-closed markers"
+    },
+    "latestSiteHealth": {
+      "run": 327,
+      "id": 43969921597,
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "official production API health, robots/sitemap and 18 named public pages"
+    },
+    "latestR125": {
+      "run": 150,
+      "id": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push on legacy workflow revision",
+      "resume": "skipped",
+      "audit": "success",
+      "candidatePackChanges": 0
+    },
+    "currentR125Run": "none found; current workflow_dispatch-only; no R125 run in latest 50 repository runs or the 5 workflow_dispatch runs returned",
+    "candidateState": {
+      "structural": 98,
+      "total": 98,
+      "keysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "qualityCandidates": 97,
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "full98QualityAudit": false,
+      "nativeCertification": 0,
+      "published": false
+    },
+    "ai": {
+      "chat": "unknown-not-probed",
+      "translation": "unknown-not-probed",
+      "quotaRequests": 0,
+      "quotaUsed": 0,
+      "probeSent": false
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataPackWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "published": false,
+      "linguisticCertification": false
+    }
   },
   "verificationInfrastructureRepair": {
     "checkedAt": "2026-11-12T09:56:58Z",
@@ -5894,5 +5978,55 @@
       "reportBuildStatus": "success"
     },
     "scope": "Pages documentation deployment only; not product certification."
+  },
+  "latestQuotaGuardRepair": {
+    "checkedAt": "2026-11-16T22:56:09Z",
+    "finding": "The production entry worker-r76.js did not recognize the literal daily_free_ai_limit token in quotaLimited(), so the external-fallback suppression guard could fail to activate for that exact error string. The base worker already recognized it; the production R76 classifier was narrower.",
+    "commit": "4580be6565005b7f36892f78036b92bc3213f7b1",
+    "files": [
+      "worker-r76.js",
+      "tools/test-ai-quota-boundary.cjs"
+    ],
+    "regressionCases": [
+      "daily_free_ai_limit",
+      "daily free AI limit",
+      "AggregateError containing daily_free_ai_limit"
+    ],
+    "tests": {
+      "r105Run": 84,
+      "r105RunId": 43974590208,
+      "conclusion": "success",
+      "productionSourceValidation": "success",
+      "all98LanguageNames": "success",
+      "workerDeploy": "success",
+      "productionHealth": "success",
+      "liveAiProbes": "skipped-by-policy"
+    },
+    "production": {
+      "r123Run": 66,
+      "r123RunId": 43974590077,
+      "conclusion": "success",
+      "audioValidation": "success",
+      "workerDeploy": "success",
+      "liveAudioTtsAsr": "skipped-by-opt-in",
+      "categoryTranslations": "success",
+      "voiceAcknowledgement": "success",
+      "dynamicVoicePlaceholders": "success"
+    },
+    "pages": {
+      "run": 1592,
+      "id": 43974587513,
+      "conclusion": "success",
+      "build": "success",
+      "deploy": "success"
+    },
+    "quotaUse": {
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "candidatePackWrites": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "aiAvailability": "unknown-not-probed"
   }
 }
