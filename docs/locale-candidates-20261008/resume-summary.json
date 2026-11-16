@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-16T19:58:09Z",
+  "checkedAt": "2026-11-16T20:03:51.207Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -3879,5 +3879,75 @@
       "published": false,
       "linguisticCertification": false
     }
+  },
+  "latestManualTkRepair": {
+    "checkedAt": "2026-11-16T20:03:51.207Z",
+    "commit": "aa1ea2c0107531ec342ca60131a028314c5b15b9",
+    "language": "tk",
+    "exactReplacements": 6,
+    "sourceStrings": [
+      "Return to SEEKVERA",
+      "Play inside SEEKVERA",
+      "Search with SEEKVERA",
+      "Scan & Share SEEKVERA",
+      "Prohibited on SEEKVERA",
+      "Share and install SEEKVERA"
+    ],
+    "previousOutput": "SEEKVERA for all six distinct action labels",
+    "provisionalOutputs": {
+      "Return to SEEKVERA": "SEEKVERA'ya dön",
+      "Play inside SEEKVERA": "SEEKVERA'da oyna",
+      "Search with SEEKVERA": "SEEKVERA ile ara",
+      "Scan & Share SEEKVERA": "SEEKVERA'yı Tara ve Paylaş",
+      "Prohibited on SEEKVERA": "SEEKVERA'da yasak",
+      "Share and install SEEKVERA": "SEEKVERA'yı paylaş ve yükle"
+    },
+    "readback": {
+      "keyCount": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "sourceHashPreserved": true,
+      "qualityPolicy": "source-overlap-5-v1",
+      "allSixValuesChanged": true,
+      "duplicateGroupsAtLeast4InTk": 0
+    },
+    "method": "Manual provisional Turkish correction of six distinct CTA labels; no translation service or AI used.",
+    "nativeReviewRequired": true,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false
+  },
+  "postTkRepairDuplicateScreen": {
+    "checkedAt": "2026-11-16T20:03:51.207Z",
+    "method": "Combined prior 98-pack read-only screen with exact post-repair read-back of tk.json; no other candidate pack was changed after the full screen.",
+    "duplicateOutputGroups": 27,
+    "duplicateKeysAffected": 255,
+    "languages": [
+      "dz",
+      "ti",
+      "kl",
+      "rw",
+      "to",
+      "dv",
+      "ku",
+      "xh",
+      "st",
+      "tn"
+    ],
+    "removedFromPriorScreen": {
+      "language": "tk",
+      "groups": 1,
+      "keys": 6
+    },
+    "full98RescanAfterTkRepair": false,
+    "interpretation": "Derived count, not a fresh 98-file re-fetch; official quality audit and native review remain pending."
+  },
+  "latestPagesAfterMainCheckpoint": {
+    "run": 1587,
+    "id": 43945705356,
+    "status": "queued",
+    "createdAt": "2026-11-16T20:03:05Z",
+    "headSha": "cd6224e08ba4e69ba8aa5c1cc267b085cd1fec66",
+    "note": "Pages build triggered by Main checkpoint documentation commit; no R125 candidate workflow is active."
   }
 }
