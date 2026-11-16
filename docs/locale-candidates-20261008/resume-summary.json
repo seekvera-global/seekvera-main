@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-16T12:15:20Z",
+  "checkedAt": "2026-11-16T15:56:00Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -334,102 +334,66 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-16T11:06:00Z",
-    "filesRead": [
-      "main docs/r125-continuation-checkpoint-20261010.json",
-      "candidate docs/locale-candidates-20261008/resume-summary.json",
-      "candidate docs/locale-candidates-20261008/resume-latest.log",
-      "main .github/workflows/r125-hourly-candidate-resume.yml",
-      "candidate docs/locale-candidates-20261008/dv-english-overlap-review-20261115.json",
-      "candidate docs/locale-candidates-20261008/full-structural-readback-20261115-224200Z.json"
-    ],
+    "checkedAt": "2026-11-16T15:56:00Z",
+    "latestPages": {
+      "run": 1582,
+      "id": 43887482410,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "86879375d733eb56c4a1298ca6232945ee866063"
+    },
     "actions": {
-      "latestPagesRun": {
-        "run": 1578,
-        "id": 43821015289,
-        "status": "completed",
-        "conclusion": "success",
-        "updatedAt": "2026-11-16T07:03:46Z",
-        "headSha": "dfc53494620e2a8a6bb84551ac0fa7ae7af6d181"
-      },
-      "latestR125": {
-        "run": 150,
-        "id": 38971104197,
-        "status": "completed",
-        "conclusion": "success",
-        "resume": "skipped",
-        "audit": "success",
-        "active": false
-      },
-      "activePagesAtCheck": null,
-      "latest100Listing": "Full latest-100 listing unavailable through current connector; directly fetched Pages #1578 and its jobs, all completed successfully."
+      "inProgress": 0,
+      "queued": 0
+    },
+    "latestR125": {
+      "run": 150,
+      "id": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "resume": "skipped",
+      "audit": "success",
+      "createdAt": "2026-10-16T21:41:54Z"
     },
     "workflow": {
-      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
-      "commit": "298d8ab8c82e234094db2edaf3c71408344042a0",
       "trigger": "workflow_dispatch only",
       "runTranslationsDefault": false,
       "repairCandidatesDefault": false,
-      "explicitTranslationOptInRequired": true,
-      "auditOnlyBranchWrites": false,
-      "deterministicRepairStepsMayWriteCandidates": true,
-      "publication": false
+      "translationOptInRequired": true,
+      "auditOnlyWritesCandidatePacks": false,
+      "deterministicRepairStepsMayWriteCandidatePacks": true
     },
     "candidateState": {
       "structural": 98,
-      "total": 98,
       "keysPerPack": 1118,
       "sourceHash": "6a1126e6a2ce5629",
-      "structuralResult": "PASS",
       "qualityCandidates": 97,
       "remaining": [
         "dv"
       ],
       "divehiEnglishOverlap": 58,
-      "full98QualityAudit": false,
-      "published": false,
-      "linguisticCertification": false
+      "fullQualityAudit": false,
+      "nativeCertification": 0,
+      "published": false
     },
     "ai": {
       "chat": "unknown-not-probed",
       "translation": "unknown-not-probed",
       "quotaUsed": 0,
       "translationRequests": 0,
-      "knownBlockers": [
+      "blockers": [
         "daily_free_ai_limit",
         "Google HTTP429",
         "HTTP503 all_translation_backends_unavailable"
       ]
     },
-    "production": {
-      "pagesRun": 1578,
-      "pagesConclusion": "success",
-      "pagesJobs": {
-        "build": "success",
-        "reportBuildStatus": "success",
-        "deploy": "success"
-      },
-      "siteHealthRun": 324,
-      "siteHealthConclusion": "success",
-      "countryChangeIceland": "passed",
-      "fullCountryCurrencyMatrix": "not certified",
-      "prohibitedWeapon": "blocked",
-      "liveEnglishArabicChatProbes": "skipped by policy",
-      "programmaticTTS": "passed",
-      "voiceAcknowledgement": "passed",
-      "liveASR": "skipped",
-      "physicalAudio": "pending",
-      "checkout": "inactive"
-    },
     "thisPass": {
       "candidatePackWrites": 0,
-      "candidateMetadataWrites": 0,
       "translationRequests": 0,
       "aiQuotaUsed": 0,
-      "published": false,
-      "linguisticCertification": false
-    },
-    "decision": "NO-GO; Pages #1578 and its build/report/deploy jobs passed. 98/98 packs are structurally aligned, but Divehi has 58 English-overlap entries; full 98-pack quality/native review, all-language/all-section coverage, current AI availability, full country/currency matrix, physical audio and merchant checkout remain incomplete."
+      "mainCheckpointCommit": "1de274982b42500c4fb38dd8d4047c91d4e0aef5",
+      "note": "Corrected stale claim that Divehi was structurally incomplete; structural read-back is PASS, while 58 English-overlap entries remain a quality blocker. No pack edits or quota-consuming requests."
+    }
   },
   "latestContinuationVerification": {
     "checkedAt": "2026-11-16T11:06:00Z",
