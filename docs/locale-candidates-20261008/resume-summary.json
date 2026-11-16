@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-16T11:06:00Z",
+  "checkedAt": "2026-11-16T11:32:39Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -2733,17 +2733,65 @@
     "decision": "NO-GO; Pages #1577 deployment and 98-pack structural parity pass; Divehi overlap, full quality/native reviews, all-language/all-section coverage, current AI, full country/currency matrix, physical audio and merchant checkout remain incomplete."
   },
   "lastAutomationPass": {
-    "checkedAt": "2026-11-16T07:02:00Z",
-    "mainCheckpointCommit": "dfc53494620e2a8a6bb84551ac0fa7ae7af6d181",
-    "latestPagesRun": 1577,
-    "latestPagesConclusion": "success",
-    "latestR125Run": 150,
-    "latestR125Conclusion": "success",
+    "checkedAt": "2026-11-16T11:32:39Z",
+    "liveRepositoryActions": {
+      "queriedStatuses": [
+        "in_progress",
+        "queued"
+      ],
+      "inProgressCount": 0,
+      "queuedCount": 0,
+      "latestPages": {
+        "run": 1579,
+        "runId": 43854922473,
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-11-16T11:07:24Z",
+        "commit": "a09a494d"
+      }
+    },
+    "latestSiteHealth": {
+      "run": 325,
+      "runId": 43821298704,
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-16T07:05:16Z",
+      "checks": [
+        "official homepage and navigation assertions",
+        "/api/health ok",
+        "canonical robots.txt and sitemap.xml",
+        "18 named public product pages HTTP 200"
+      ]
+    },
+    "latestR125": {
+      "run": 150,
+      "runId": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "resume": "skipped",
+      "audit": "success",
+      "createdAt": "2026-10-16T21:41:54Z"
+    },
+    "activeR125": false,
     "candidatePackWrites": 0,
-    "translationRequests": 0,
+    "translationRequestsSent": 0,
     "aiQuotaUsed": 0,
-    "fullAudit": false,
-    "nativeCertification": false,
-    "published": false
+    "candidateState": {
+      "completedCount": 97,
+      "remaining": [
+        "dv"
+      ],
+      "structuralFailures": {
+        "dv": [
+          "english_overlap:58"
+        ]
+      },
+      "published": false,
+      "linguisticAccuracyCertified": false,
+      "full98QualityAuditPending": true
+    },
+    "aiAvailability": "unknown-not-probed; no quota-safe non-consuming endpoint; do not probe translation or chat while daily_free_ai_limit/HTTP429/HTTP503 blockers remain",
+    "decision": "NO-GO",
+    "note": "Read-only Actions status verification plus summary documentation update only; no candidate pack changes, no translation calls, no publication."
   }
 }
