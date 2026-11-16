@@ -515,47 +515,22 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-15T04:50:30Z",
-    "currentActionsSnapshot": {
-      "latest100Fetched": true,
-      "activeRunsObserved": 1,
-      "latestRepositoryRun": {
-        "run": 1550,
-        "id": 43678554537,
-        "name": "pages build and deployment",
-        "status": "in_progress",
-        "conclusion": null,
-        "createdAt": "2026-11-15T04:51:19Z"
-      }
+    "currentMainBlob": "44f7d9a451b339834d2b91c992f51b60c03eca68",
+    "currentTrigger": "workflow_dispatch only",
+    "runTranslationsDefault": false,
+    "repairCandidatesDefault": false,
+    "candidateWritesPossibleOnlyWhenManualRepairOrTranslationOptIn": true,
+    "currentRunObserved": false,
+    "historicalR125": {
+      "run": 150,
+      "id": 38971104197,
+      "event": "push",
+      "headSha": "0911d8f826e7347f3b5dbf9aacccc7893ee85dd8",
+      "status": "completed",
+      "conclusion": "success",
+      "workflowAtThatCommitHadScheduleAndPushTriggers": true
     },
-    "r125Workflow": {
-      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
-      "currentTriggers": "workflow_dispatch only",
-      "runTranslationsDefault": false,
-      "manualTranslationMode": "explicit run_translations=true executes build; false is audit-only",
-      "latestRun": {
-        "run": 150,
-        "id": 38971104197,
-        "createdAt": "2026-10-16T21:41:54Z",
-        "status": "completed",
-        "conclusion": "success",
-        "resume": "skipped",
-        "audit": "success"
-      },
-      "activeRunObserved": false
-    },
-    "thisPass": {
-      "candidatePackWrites": 1,
-      "exactManualReplacements": 12,
-      "translationRequests": 0,
-      "aiQuotaUsed": 0,
-      "aiChatCurrent": "unknown-not-probed",
-      "translationBackendCurrent": "unknown-not-probed",
-      "full98PackAudit": false,
-      "linguisticCertification": false,
-      "published": false
-    },
-    "note": "Fresh Actions inspection 2026-11-15 04:50Z: latest R125 #150 is completed audit-only; no R125 active. Pages #1550 is in progress (not candidate resume). Somali 12-string repair verified at 1,118 keys/sourceHash, zero >=4 duplicate groups in so. No AI/translation calls. Full quality audit/native review pending."
+    "correction": "R125 #150 is a historical run of the older scheduled/push workflow, not an execution of the current workflow_dispatch-only version. Its audit result was 97 complete, dv remaining; translation step skipped."
   },
   "verificationInfrastructureRepair": {
     "checkedAt": "2026-11-12T09:56:58Z",
@@ -3771,32 +3746,18 @@
     "qualityGate": "NOT PASS"
   },
   "latestActionsObservation": {
-    "latest100Fetched": true,
-    "latest100ActiveCount": 0,
-    "latest100ActiveObservationAt": "2026-11-16T11:32:39Z",
-    "latestRepositoryRun": {
-      "id": 43854922473,
-      "number": 1579,
-      "path": "dynamic/pages/pages-build-deployment",
+    "endpointTotalCount": 5459,
+    "returnedRuns": 30,
+    "activeOrQueuedInReturnedRuns": 0,
+    "latestPages": {
+      "run": 1581,
+      "id": 43865039957,
       "status": "completed",
       "conclusion": "success",
-      "createdAt": "2026-11-16T11:07:24Z",
-      "headSha": "a09a494d68fc76a722cc0ac4a16a05f51b104372"
+      "updatedAt": "2026-11-16T12:17:02Z",
+      "headSha": "71821b1382e54a30eebc8b313b1280c313fd94d9"
     },
-    "latestR125": {
-      "run": 150,
-      "id": 38971104197,
-      "status": "completed",
-      "conclusion": "success",
-      "resume": "skipped",
-      "audit": "success",
-      "active": false,
-      "createdAt": "2026-10-16T21:41:54Z"
-    },
-    "queriedStatuses": [
-      "in_progress",
-      "queued"
-    ]
+    "note": "Actions list endpoint returned 30 records (not 100); no active/queued status in those 30. Latest returned run is Pages #1581."
   },
   "structuralVerification": {
     "checkedAt": "2026-11-15T18:47:35Z",
@@ -3816,52 +3777,78 @@
     "result": "PASS"
   },
   "run11AutomationAudit": {
-    "checkedAt": "2026-11-15T19:28:06Z",
+    "checkedAt": "2026-11-16T14:34:00Z",
     "filesRead": [
       "main docs/r125-continuation-checkpoint-20261010.json",
-      "candidate docs/locale-candidates-20261008/resume-summary.json",
-      "candidate docs/locale-candidates-20261008/resume-latest.log",
+      "branch docs/locale-candidates-20261008/resume-summary.json",
+      "branch docs/locale-candidates-20261008/resume-latest.log",
       "main .github/workflows/r125-hourly-candidate-resume.yml"
     ],
-    "freshActionsQuery": {
-      "latest100": 100,
-      "active": 0,
-      "latestRun": 43750027183,
-      "latestRunNumber": 324,
-      "latestRunPath": ".github/workflows/site-health.yml",
-      "latestRunConclusion": "success",
-      "r125Active": false
+    "liveActions": {
+      "endpointTotalCount": 5459,
+      "returnedRuns": 30,
+      "activeOrQueuedInReturnedRuns": 0,
+      "latestPages": {
+        "run": 1581,
+        "id": 43865039957,
+        "status": "completed",
+        "conclusion": "success",
+        "updatedAt": "2026-11-16T12:17:02Z",
+        "headSha": "71821b1382e54a30eebc8b313b1280c313fd94d9"
+      },
+      "note": "Actions list endpoint returned 30 records (not 100); no active/queued status in those 30. Latest returned run is Pages #1581."
     },
-    "latestProductionHealth": {
-      "run": 324,
-      "runId": 43750027183,
-      "conclusion": "success",
-      "pagesHTTP200": 18,
-      "apiHealth": "pass",
-      "robots": "pass",
-      "sitemap": "pass"
+    "workflow": {
+      "currentMainBlob": "44f7d9a451b339834d2b91c992f51b60c03eca68",
+      "currentTrigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "candidateWritesPossibleOnlyWhenManualRepairOrTranslationOptIn": true,
+      "currentRunObserved": false,
+      "historicalR125": {
+        "run": 150,
+        "id": 38971104197,
+        "event": "push",
+        "headSha": "0911d8f826e7347f3b5dbf9aacccc7893ee85dd8",
+        "status": "completed",
+        "conclusion": "success",
+        "workflowAtThatCommitHadScheduleAndPushTriggers": true
+      },
+      "correction": "R125 #150 is a historical run of the older scheduled/push workflow, not an execution of the current workflow_dispatch-only version. Its audit result was 97 complete, dv remaining; translation step skipped."
     },
     "candidateState": {
-      "structural": 97,
+      "structural": 98,
       "total": 98,
+      "keysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "qualityCandidates": 97,
       "remaining": [
         "dv"
       ],
+      "divehiEnglishOverlap": 58,
+      "full98QualityAudit": false,
       "published": false,
       "linguisticCertification": false
     },
     "ai": {
       "chat": "unknown-not-probed",
       "translation": "unknown-not-probed",
-      "dailyFreeAiLimit": "historical blocker",
-      "googleHTTP429": "historical blocker",
-      "latestTranslationFailure": "HTTP503 all_translation_backends_unavailable"
+      "quotaRequests": 0,
+      "quotaUsed": 0,
+      "blockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable"
+      ]
     },
-    "candidatePackWrites": 0,
-    "translationRequests": 0,
-    "aiQuotaUsed": 0,
-    "finalApproval": false,
-    "decision": "NO-GO; preserve candidates and continue only quota-neutral work; do not pause automation."
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "publication": false,
+      "linguisticCertification": false
+    },
+    "decision": "NO-GO; latest Pages deployment succeeds, but full quality/native review, all-language/all-section checks, current AI, full country/currency matrix, physical audio, and merchant checkout remain incomplete."
   },
   "run12AutomationAudit": {
     "checkedAt": "2026-11-15T20:42:06Z",
@@ -5050,5 +5037,13 @@
       "linguisticCertification": false
     },
     "decision": "NO-GO; Pages #1580 build/deploy and structural parity pass; native/full quality audit, all-language/all-section, live AI, full country/currency matrix, physical audio and merchant checkout remain incomplete."
+  },
+  "latestVerifiedPages": {
+    "run": 1581,
+    "id": 43865039957,
+    "status": "completed",
+    "conclusion": "success",
+    "updatedAt": "2026-11-16T12:17:02Z",
+    "headSha": "71821b1382e54a30eebc8b313b1280c313fd94d9"
   }
 }
