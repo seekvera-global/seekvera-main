@@ -369,7 +369,18 @@
       "event": "push on legacy workflow revision",
       "resume": "skipped",
       "audit": "success",
-      "candidatePackChanges": 0
+      "candidatePackChanges": 0,
+      "createdAt": "2026-10-16T21:41:54Z",
+      "preserveLiveAiCapacity": "success",
+      "artifactUpload": "success",
+      "saveProgress": "success",
+      "savedCommit": "cae69709e12739b6d9f9a1532850e479432ebf0e",
+      "savedFiles": [
+        "resume-summary.json",
+        "scheduled-mode.json"
+      ],
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
     },
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
@@ -4177,5 +4188,32 @@
     "published": false,
     "linguisticCertification": false,
     "aiAvailability": "unknown-not-probed"
+  },
+  "latestR125RunInspection": {
+    "checkedAt": "2026-11-16T23:02:38Z",
+    "run": 150,
+    "id": 38971104197,
+    "status": "completed",
+    "conclusion": "success",
+    "createdAt": "2026-10-16T21:41:54Z",
+    "event": "push",
+    "headSha": "0911d8f826e7347f3b5dbf9aacccc7893ee85dd8",
+    "workflowRevision": "legacy revision; current Main workflow is workflow_dispatch-only",
+    "steps": {
+      "resumePublicUiCandidates": "skipped",
+      "preserveLiveAiCapacity": "success",
+      "auditAllSavedCandidates": "success",
+      "artifactUpload": "success",
+      "saveProgressWithoutPublishing": "success"
+    },
+    "savedCommit": "cae69709e12739b6d9f9a1532850e479432ebf0e",
+    "savedFiles": [
+      "docs/locale-candidates-20261008/resume-summary.json",
+      "docs/locale-candidates-20261008/scheduled-mode.json"
+    ],
+    "candidatePackChanges": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "interpretation": "Historical audit-only run; it did not resume candidate translation. It preserved live AI capacity after daily free AI allocation exhaustion."
   }
 }
