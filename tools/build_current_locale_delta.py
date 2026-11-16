@@ -102,6 +102,9 @@ def translate(language,strings):
  bad=[(s,v) for s,v in zip(strings,vals) if suspicious_overlap(s,v)]
  if bad:raise RuntimeError('Target output still contains a long English source phrase: '+repr(bad[0])[:350])
  return vals,d.get('model','unknown')
+def quota_or_rate_limit(detail):
+ return bool(re.search(r'(?:3036|daily[_\s-]*free[_\s-]*(?:ai[_\s-]*)?(?:limit|allocation)|\b429\b|rate.?limit|too many requests)',str(detail),re.I))
+
 def translate_small(language,strings):
  try:
   for attempt in range(3):
@@ -112,7 +115,7 @@ def translate_small(language,strings):
  except Exception as e:
   detail=str(e)
   if isinstance(e,urllib.error.HTTPError):detail+=' '+e.read().decode()[:900]
-  if 'daily_free_ai_limit' in detail:raise RuntimeError(detail) from e
+  if quota_or_rate_limit(detail):raise RuntimeError(detail) from e
   if len(strings)<=1:raise RuntimeError(detail) from e
   print('SPLIT_RETRY',language,len(strings),detail[:180],flush=True)
   mid=len(strings)//2

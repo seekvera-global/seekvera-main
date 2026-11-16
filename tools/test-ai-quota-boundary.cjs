@@ -73,6 +73,33 @@ function extractFunction(source, signature) {
 }
 
 const baseWorker = fs.readFileSync('worker.js', 'utf8');
+const translationQuota = extractFunction(baseWorker, 'function translationQuotaReason(');
+const translationContext = {};
+vm.createContext(translationContext);
+vm.runInContext(translationQuota + '\nthis.translationQuotaReason = translationQuotaReason;', translationContext);
+for (const [message, expected] of [
+  ['daily_free_ai_limit', 'daily_free_ai_limit'],
+  ['daily free AI limit', 'daily_free_ai_limit'],
+  ['Error 3036: daily free allocation exhausted', 'daily_free_ai_limit'],
+  ['Google HTTP 429 Too Many Requests', 'provider_rate_limited'],
+  ['provider rate limit exceeded', 'provider_rate_limited'],
+  [new AggregateError([new Error('capacity busy'), new Error('daily_free_ai_limit')], 'all models failed'), 'daily_free_ai_limit'],
+  ['capacity temporarily exceeded', '']
+]) assert.equal(translationContext.translationQuotaReason(message), expected);
+
+const translationStart = baseWorker.indexOf("if(u.pathname==='/api/ui-translate')");
+const translationEnd = baseWorker.indexOf("if(u.pathname==='/api/transcribe')", translationStart);
+const translationHandler = baseWorker.slice(translationStart, translationEnd);
+assert.ok(translationHandler.includes('quotaReason=translationQuotaReason(e)'), 'UI translation must classify quota and rate-limit errors');
+assert.ok(translationHandler.includes('if(quotaReason)return j('), 'UI translation must stop before trying the next model on quota/rate-limit errors');
+
+const translationBuilder = fs.readFileSync('tools/build_current_locale_delta.py', 'utf8');
+assert.ok(translationBuilder.includes('def quota_or_rate_limit(detail):'), 'translation builder must classify quota/rate-limit responses');
+assert.ok(translationBuilder.includes('if quota_or_rate_limit(detail):raise RuntimeError(detail) from e'), 'translation builder must stop immediately on quota/rate-limit errors');
+const stopIndex = translationBuilder.indexOf('if quota_or_rate_limit(detail):raise RuntimeError(detail) from e');
+const splitIndex = translationBuilder.indexOf("print('SPLIT_RETRY'");
+assert.ok(stopIndex >= 0 && splitIndex > stopIndex, 'translation builder must stop before splitting/retrying a quota/rate-limit failure');
+
 const baseAi = extractFunction(baseWorker, 'async function ai(');
 const baseSafety = extractFunction(baseWorker, 'async function safety(');
 assert.ok(
