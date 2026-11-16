@@ -4959,5 +4959,96 @@
     ],
     "candidatePackWritesThisPass": 0,
     "decision": "NO-GO"
+  },
+  "run25AutomationAudit": {
+    "checkedAt": "2026-11-16T12:15:20Z",
+    "filesRead": [
+      "main docs/r125-continuation-checkpoint-20261010.json",
+      "candidate docs/locale-candidates-20261008/resume-summary.json",
+      "candidate docs/locale-candidates-20261008/resume-latest.log",
+      "main .github/workflows/r125-hourly-candidate-resume.yml"
+    ],
+    "latestPages": {
+      "run": 1580,
+      "id": 43858975587,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "4e228608",
+      "jobs": {
+        "build": "success",
+        "reportBuildStatus": "success",
+        "deploy": "success"
+      }
+    },
+    "latestSiteHealth": {
+      "run": 325,
+      "id": 43821298704,
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "official navigation, API health, robots/sitemap, 18 fixed product pages HTTP 200"
+    },
+    "latestR125": {
+      "run": 150,
+      "id": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "resume": "skipped",
+      "audit": "success",
+      "candidateWrites": "none",
+      "active": false
+    },
+    "workflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "explicitTranslationOptInRequired": true,
+      "auditOnlyBranchWrites": false,
+      "deterministicRepairModeMayWriteCandidates": true
+    },
+    "candidateState": {
+      "structural": "98/98 key/hash parity",
+      "quality": "97/98",
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "full98QualityAudit": "pending",
+      "nativeCertification": "0/98",
+      "published": false
+    },
+    "ai": {
+      "chat": "unknown-not-probed",
+      "translation": "unknown-not-probed",
+      "translationRequests": 0,
+      "quotaUsed": 0,
+      "blockers": [
+        "daily_free_ai_limit (historical)",
+        "Google HTTP429 (historical)",
+        "HTTP503 all_translation_backends_unavailable (latest log)"
+      ]
+    },
+    "production": {
+      "latestPages1580": "success",
+      "countryChangeIceland": "passed in R105 #81",
+      "fullCountryCurrencyMatrix": "pending",
+      "prohibitedWeapon": "blocked in scoped probe",
+      "benignHotelRequest": "allowed in scoped probe",
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "liveASR": "skipped",
+      "physicalAudio": "pending",
+      "checkout": "inactive"
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "mainCheckpointDocumentationUpdated": true,
+      "candidatePackContentChanged": false,
+      "published": false,
+      "linguisticCertification": false
+    },
+    "decision": "NO-GO; Pages #1580 build/deploy and structural parity pass; native/full quality audit, all-language/all-section, live AI, full country/currency matrix, physical audio and merchant checkout remain incomplete."
   }
 }
