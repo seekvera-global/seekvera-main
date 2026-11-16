@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-16T06:39:31Z",
+  "checkedAt": "2026-11-16T11:06:00Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -334,23 +334,23 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-16T07:02:00Z",
+    "checkedAt": "2026-11-16T11:06:00Z",
     "filesRead": [
       "main docs/r125-continuation-checkpoint-20261010.json",
       "candidate docs/locale-candidates-20261008/resume-summary.json",
       "candidate docs/locale-candidates-20261008/resume-latest.log",
       "main .github/workflows/r125-hourly-candidate-resume.yml",
-      "candidate dv-english-overlap-review-20261115.json",
-      "candidate full-structural-readback-20261115-224200Z.json"
+      "candidate docs/locale-candidates-20261008/dv-english-overlap-review-20261115.json",
+      "candidate docs/locale-candidates-20261008/full-structural-readback-20261115-224200Z.json"
     ],
     "actions": {
       "latestPagesRun": {
-        "run": 1577,
-        "id": 43818503401,
+        "run": 1578,
+        "id": 43821015289,
         "status": "completed",
         "conclusion": "success",
-        "updatedAt": "2026-11-16T06:42:11Z",
-        "headSha": "614b38edcf37d111aee0b58120452fc6d98d28c4"
+        "updatedAt": "2026-11-16T07:03:46Z",
+        "headSha": "dfc53494620e2a8a6bb84551ac0fa7ae7af6d181"
       },
       "latestR125": {
         "run": 150,
@@ -361,8 +361,8 @@
         "audit": "success",
         "active": false
       },
-      "activePagesAtCheck": false,
-      "latest100Listing": "not available through current connector; latest known Pages run fetched directly"
+      "activePagesAtCheck": null,
+      "latest100Listing": "Full latest-100 listing unavailable through current connector; directly fetched Pages #1578 and its jobs, all completed successfully."
     },
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
@@ -402,7 +402,7 @@
       ]
     },
     "production": {
-      "pagesRun": 1577,
+      "pagesRun": 1578,
       "pagesConclusion": "success",
       "pagesJobs": {
         "build": "success",
@@ -429,40 +429,16 @@
       "published": false,
       "linguisticCertification": false
     },
-    "decision": "NO-GO; Pages #1577 deployment and 98-pack structural parity pass; Divehi overlap, full quality/native reviews, all-language/all-section coverage, current AI, full country/currency matrix, physical audio and merchant checkout remain incomplete."
+    "decision": "NO-GO; Pages #1578 and its build/report/deploy jobs passed. 98/98 packs are structurally aligned, but Divehi has 58 English-overlap entries; full 98-pack quality/native review, all-language/all-section coverage, current AI availability, full country/currency matrix, physical audio and merchant checkout remain incomplete."
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-15T21:48:19Z",
-    "latest100Fetched": true,
-    "latest100ActiveCount": 0,
-    "latestActiveRuns": [],
-    "latestRepositoryRun": {
-      "id": 43759737316,
-      "number": 1567,
-      "name": "pages build and deployment",
-      "path": "dynamic/pages/pages-build-deployment",
-      "status": "completed",
-      "conclusion": "success",
-      "createdAt": "2026-11-15T20:44:13Z",
-      "updatedAt": "2026-11-15T20:44:57Z",
-      "headSha": "f1cd534dd0370c1524fce1296bd8d199e3574b40"
-    },
+    "checkedAt": "2026-11-16T11:06:00Z",
     "latestPages": {
-      "run": 1567,
-      "id": 43759737316,
+      "run": 1578,
+      "id": 43821015289,
       "status": "completed",
       "conclusion": "success",
-      "updatedAt": "2026-11-15T20:44:57Z"
-    },
-    "latestSiteHealth": {
-      "run": 324,
-      "id": 43750027183,
-      "status": "completed",
-      "conclusion": "success",
-      "pagesHTTP200": 18,
-      "apiHealth": "pass",
-      "robots": "pass",
-      "sitemap": "pass"
+      "updatedAt": "2026-11-16T07:03:46Z"
     },
     "latestR125": {
       "run": 150,
@@ -470,38 +446,18 @@
       "status": "completed",
       "conclusion": "success",
       "resume": "skipped",
-      "audit": "success",
-      "createdAt": "2026-10-16T21:41:54Z",
-      "active": false
+      "audit": "success"
     },
-    "r125ActiveInLatest100": false,
-    "workflow": {
-      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
-      "trigger": "workflow_dispatch only",
-      "runTranslationsDefault": false,
-      "repairCandidatesDefault": false,
-      "translationOptInRequired": true,
-      "saveProgressMayWriteMetadata": true
-    },
+    "activePagesRun": "not established by full repository-wide run listing; latest direct Pages run completed",
+    "candidateWritesDeferred": true,
     "thisPass": {
       "candidatePackWrites": 0,
-      "candidateMetadataWrites": 0,
       "translationRequests": 0,
       "aiQuotaUsed": 0,
-      "sourceOrCandidateFilesModified": false
-    },
-    "aiChat": "unknown-not-probed",
-    "translationBackend": "unknown-not-probed",
-    "knownBlockers": [
-      "daily_free_ai_limit",
-      "Google HTTP429",
-      "last translation log HTTP503 all_translation_backends_unavailable"
-    ],
-    "full98StructuralAudit": "PASS (latest read-only audit 2026-11-15T18:47:35Z)",
-    "full98QualityAudit": false,
-    "linguisticCertification": false,
-    "published": false,
-    "decision": "NO-GO"
+      "full98PackAudit": false,
+      "linguisticCertification": false,
+      "published": false
+    }
   },
   "candidateResume": {
     "checkedAt": "2026-11-15T06:52:00Z",
