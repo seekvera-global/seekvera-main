@@ -334,17 +334,17 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-16T22:56:09Z",
+    "checkedAt": "2026-11-16T23:00:51Z",
     "latestPages": {
-      "run": 1592,
-      "id": 43974587513,
+      "run": 1594,
+      "id": 43975275499,
       "status": "completed",
       "conclusion": "success",
-      "headSha": "4580be6565005b7f36892f78036b92bc3213f7b1",
+      "headSha": "4f299ac397c8b0e8c03a26a400f7b2702efc3473",
       "jobs": {
         "build": "success",
-        "deploy": "success",
-        "reportBuildStatus": "success"
+        "reportBuildStatus": "success",
+        "deploy": "success"
       }
     },
     "siteHealth": {
@@ -355,25 +355,21 @@
       "scope": "live official domain; API health ok; robots/sitemap checks passed; 18 named pages returned HTTP 200"
     },
     "actions": {
-      "totalCount": 5479,
+      "totalCount": 5486,
       "returnedRuns": 50,
       "activeOrQueuedAtLastCheck": 0,
       "latestR125InLatest50": false,
-      "manualDispatchRunsReturned": 5,
-      "latestCurrentR125Run": null
+      "currentR125Run": null
     },
     "latestR125": {
       "run": 150,
       "id": 38971104197,
       "status": "completed",
       "conclusion": "success",
-      "createdAt": "2026-10-16T21:41:54Z",
       "event": "push on legacy workflow revision",
       "resume": "skipped",
       "audit": "success",
-      "candidatePackChanges": 0,
-      "translationRequests": 0,
-      "aiQuotaUsed": 0
+      "candidatePackChanges": 0
     },
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
@@ -407,13 +403,14 @@
       "translation": "unknown-not-probed",
       "quotaRequests": 0,
       "quotaUsed": 0,
+      "probeSent": false,
       "quotaBoundaryRegression": "pass",
+      "translationQuotaStopRegression": "pass",
       "blockers": [
-        "daily_free_ai_limit remains provider availability/quota blocker",
-        "Google HTTP429 remains historical provider blocker",
-        "HTTP503 all_translation_backends_unavailable remains historical translation blocker"
-      ],
-      "probeSent": false
+        "daily_free_ai_limit remains a real provider quota blocker",
+        "Google HTTP429 remains a real provider rate-limit blocker",
+        "Historical HTTP503 all_translation_backends_unavailable remains unresolved"
+      ]
     },
     "thisPass": {
       "candidatePackWrites": 0,
@@ -421,30 +418,32 @@
       "translationRequests": 0,
       "aiQuotaUsed": 0,
       "quotaGuardRepairCommitted": true,
-      "quotaGuardProductionDeploy": "success",
+      "translationQuotaStopRepairCommitted": true,
+      "productionWorkerDeploy": "success",
       "published": false,
-      "linguisticCertification": false,
-      "mainCheckpointUpdated": true,
-      "mainCheckpointCommit": "ea20415d39d7acd857ffeef1204d7aa254a66446",
-      "pagesAfterCheckpoint": "1593 success"
+      "linguisticCertification": false
     },
     "latestR105": {
-      "run": 84,
-      "id": 43974590208,
+      "run": 85,
+      "id": 43975276337,
       "status": "completed",
       "conclusion": "success",
-      "headSha": "4580be6565005b7f36892f78036b92bc3213f7b1",
+      "headSha": "4f299ac397c8b0e8c03a26a400f7b2702efc3473",
+      "sourceValidation": "success",
+      "quotaBoundaryTests": "success",
+      "all98LanguageNames": "success",
       "workerDeploy": "success",
       "productionHealth": "success",
       "liveAiProbes": "skipped-by-policy"
     },
     "latestR123": {
-      "run": 66,
-      "id": 43974590077,
+      "run": 67,
+      "id": 43975276258,
       "status": "completed",
       "conclusion": "success",
-      "headSha": "4580be6565005b7f36892f78036b92bc3213f7b1",
+      "headSha": "4f299ac397c8b0e8c03a26a400f7b2702efc3473",
       "audioValidation": "success",
+      "workerDeploy": "success",
       "liveAudioTtsAsr": "skipped-by-opt-in",
       "categoryTranslations": "success",
       "voiceAcknowledgement": "success",
@@ -461,7 +460,30 @@
       "status": "completed",
       "conclusion": "success",
       "headSha": "ea20415d39d7acd857ffeef1204d7aa254a66446"
-    }
+    },
+    "latestSafetySmoke": {
+      "run": 30,
+      "id": 43975276247,
+      "status": "completed",
+      "conclusion": "success",
+      "blockedCases": 4,
+      "benignLand": "allowed_pending_human_review",
+      "marketplaceFailClosed": "success"
+    },
+    "latestSiteHealth": {
+      "run": 328,
+      "id": 43975276221,
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "official domain API health, robots/sitemap and 18 named public pages"
+    },
+    "latestAiFallback": {
+      "run": 57,
+      "id": 43975276177,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "currentR125Run": null
   },
   "latestContinuationVerification": {
     "checkedAt": "2026-11-16T11:06:00Z",
@@ -3792,7 +3814,7 @@
     "linguisticCertification": false
   },
   "latestAutomationPass": {
-    "checkedAt": "2026-11-16T22:56:09Z",
+    "checkedAt": "2026-11-16T23:00:51Z",
     "filesRead": [
       "main: docs/r125-continuation-checkpoint-20261010.json",
       "branch: docs/locale-candidates-20261008/resume-summary.json",
@@ -3800,39 +3822,51 @@
       "main: .github/workflows/r125-hourly-candidate-resume.yml",
       "main: worker-r76.js",
       "main: worker.js",
+      "main: tools/build_current_locale_delta.py",
       "main: tools/test-ai-quota-boundary.cjs"
     ],
-    "latestQuotaGuardRepair": {
-      "checkedAt": "2026-11-16T22:56:09Z",
-      "finding": "The production R76 quota classifier did not match the literal daily_free_ai_limit token, although it matched numeric 3036, daily free allocation, HTTP 429 and rate-limit wording. That left the external-fallback suppression guard unreliable for this exact provider error.",
-      "repair": {
-        "commit": "4580be6565005b7f36892f78036b92bc3213f7b1",
-        "files": [
-          "worker-r76.js",
-          "tools/test-ai-quota-boundary.cjs"
-        ],
-        "newPattern": "3036|daily[_\\\\s-]*free[_\\\\s-]*(?:ai[_\\\\s-]*)?(?:limit|allocation)|\\\\b429\\\\b|rate.?limit|too many requests",
-        "addedRegressionCases": [
+    "latestR76QuotaRepair": {
+      "commit": "4580be6565005b7f36892f78036b92bc3213f7b1",
+      "r105Run": 84,
+      "conclusion": "success"
+    },
+    "latestTranslationQuotaStopRepair": {
+      "checkedAt": "2026-11-16T23:00:51Z",
+      "finding": "The /api/ui-translate handler recognized 3036 and 'daily free allocation' but did not recognize the exact daily_free_ai_limit token or HTTP 429/rate-limit errors. It could continue to the next Workers AI model. The delta builder also split a failed batch and retried unless the response contained the exact daily_free_ai_limit text. This could issue additional requests after a provider rate limit.",
+      "commit": "4f299ac397c8b0e8c03a26a400f7b2702efc3473",
+      "files": [
+        "worker.js",
+        "tools/build_current_locale_delta.py",
+        "tools/test-ai-quota-boundary.cjs"
+      ],
+      "changes": {
+        "api": "translationQuotaReason now classifies daily quota as daily_free_ai_limit and HTTP429/rate-limit/too-many-requests as provider_rate_limited; /api/ui-translate returns immediately before trying another model.",
+        "builder": "quota_or_rate_limit stops translation processing before SPLIT_RETRY or recursive batch splitting.",
+        "tests": [
           "daily_free_ai_limit",
           "daily free AI limit",
-          "AggregateError containing daily_free_ai_limit"
-        ],
-        "readBack": "Both files re-fetched at the new commit; updated pattern and tests present."
+          "3036 daily free allocation",
+          "Google HTTP 429",
+          "provider rate limit",
+          "nested AggregateError",
+          "non-quota capacity remains distinct"
+        ]
       },
       "verification": {
         "r105": {
-          "run": 84,
-          "id": 43974590208,
+          "run": 85,
+          "id": 43975276337,
           "conclusion": "success",
           "sourceValidation": "success",
+          "quotaBoundaryTests": "success",
           "all98LanguageNames": "success",
           "workerDeploy": "success",
           "productionHealth": "success",
           "liveAiProbes": "skipped-by-policy"
         },
         "r123": {
-          "run": 66,
-          "id": 43974590077,
+          "run": 67,
+          "id": 43975276258,
           "conclusion": "success",
           "audioValidation": "success",
           "workerDeploy": "success",
@@ -3841,12 +3875,31 @@
           "voiceAcknowledgement": "success",
           "dynamicVoicePlaceholders": "success"
         },
+        "safety": {
+          "run": 30,
+          "id": 43975276247,
+          "conclusion": "success",
+          "blockedCases": 4,
+          "benignLand": "allowed_pending_human_review",
+          "marketplaceFailClosed": "success"
+        },
+        "siteHealth": {
+          "run": 328,
+          "id": 43975276221,
+          "conclusion": "success",
+          "officialProductionHealth": "success"
+        },
         "pages": {
-          "run": 1592,
-          "id": 43974587513,
+          "run": 1594,
+          "id": 43975275499,
           "conclusion": "success",
           "build": "success",
           "deploy": "success"
+        },
+        "aiFallback": {
+          "run": 57,
+          "id": 43975276177,
+          "conclusion": "success"
         }
       },
       "quotaUse": {
@@ -3858,26 +3911,31 @@
       "linguisticCertification": false,
       "aiAvailability": "unknown-not-probed"
     },
-    "latestPages": {
-      "run": 1592,
-      "id": 43974587513,
-      "conclusion": "success"
-    },
     "latestR105": {
-      "run": 84,
-      "id": 43974590208,
+      "run": 85,
+      "id": 43975276337,
       "conclusion": "success"
     },
     "latestR123": {
-      "run": 66,
-      "id": 43974590077,
+      "run": 67,
+      "id": 43975276258,
+      "conclusion": "success",
+      "liveAudioTtsAsr": "skipped-by-opt-in"
+    },
+    "latestSafety": {
+      "run": 30,
+      "id": 43975276247,
       "conclusion": "success"
     },
     "latestSiteHealth": {
-      "run": 327,
-      "id": 43969921597,
-      "conclusion": "success",
-      "scope": "official domain API health, robots/sitemap and 18 named pages"
+      "run": 328,
+      "id": 43975276221,
+      "conclusion": "success"
+    },
+    "latestPages": {
+      "run": 1594,
+      "id": 43975275499,
+      "conclusion": "success"
     },
     "latestR125": {
       "run": 150,
@@ -3887,22 +3945,13 @@
       "audit": "success",
       "historicalOldWorkflowRevision": true
     },
-    "currentR125Run": "none",
+    "currentR125Run": null,
     "candidatePackWrites": 0,
     "translationRequests": 0,
     "aiQuotaUsed": 0,
     "published": false,
     "linguisticCertification": false,
-    "decision": "NO-GO",
-    "mainCheckpointCommit": "ea20415d39d7acd857ffeef1204d7aa254a66446",
-    "mainCheckpointReadBack": "pass",
-    "pagesAfterCheckpoint": {
-      "run": 1593,
-      "id": 43974865175,
-      "status": "completed",
-      "conclusion": "success"
-    },
-    "activeOrQueuedAtLastCheck": 0
+    "decision": "NO-GO"
   },
   "latestManualTkRepair": {
     "checkedAt": "2026-11-16T20:03:51.207Z",
@@ -4025,6 +4074,87 @@
         "conclusion": "success",
         "build": "success",
         "deploy": "success"
+      }
+    },
+    "quotaUse": {
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "candidatePackWrites": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "aiAvailability": "unknown-not-probed"
+  },
+  "latestTranslationQuotaStopRepair": {
+    "checkedAt": "2026-11-16T23:00:51Z",
+    "finding": "The /api/ui-translate handler recognized 3036 and 'daily free allocation' but did not recognize the exact daily_free_ai_limit token or HTTP 429/rate-limit errors. It could continue to the next Workers AI model. The delta builder also split a failed batch and retried unless the response contained the exact daily_free_ai_limit text. This could issue additional requests after a provider rate limit.",
+    "commit": "4f299ac397c8b0e8c03a26a400f7b2702efc3473",
+    "files": [
+      "worker.js",
+      "tools/build_current_locale_delta.py",
+      "tools/test-ai-quota-boundary.cjs"
+    ],
+    "changes": {
+      "api": "translationQuotaReason now classifies daily quota as daily_free_ai_limit and HTTP429/rate-limit/too-many-requests as provider_rate_limited; /api/ui-translate returns immediately before trying another model.",
+      "builder": "quota_or_rate_limit stops translation processing before SPLIT_RETRY or recursive batch splitting.",
+      "tests": [
+        "daily_free_ai_limit",
+        "daily free AI limit",
+        "3036 daily free allocation",
+        "Google HTTP 429",
+        "provider rate limit",
+        "nested AggregateError",
+        "non-quota capacity remains distinct"
+      ]
+    },
+    "verification": {
+      "r105": {
+        "run": 85,
+        "id": 43975276337,
+        "conclusion": "success",
+        "sourceValidation": "success",
+        "quotaBoundaryTests": "success",
+        "all98LanguageNames": "success",
+        "workerDeploy": "success",
+        "productionHealth": "success",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r123": {
+        "run": 67,
+        "id": 43975276258,
+        "conclusion": "success",
+        "audioValidation": "success",
+        "workerDeploy": "success",
+        "liveAudioTtsAsr": "skipped-by-opt-in",
+        "categoryTranslations": "success",
+        "voiceAcknowledgement": "success",
+        "dynamicVoicePlaceholders": "success"
+      },
+      "safety": {
+        "run": 30,
+        "id": 43975276247,
+        "conclusion": "success",
+        "blockedCases": 4,
+        "benignLand": "allowed_pending_human_review",
+        "marketplaceFailClosed": "success"
+      },
+      "siteHealth": {
+        "run": 328,
+        "id": 43975276221,
+        "conclusion": "success",
+        "officialProductionHealth": "success"
+      },
+      "pages": {
+        "run": 1594,
+        "id": 43975275499,
+        "conclusion": "success",
+        "build": "success",
+        "deploy": "success"
+      },
+      "aiFallback": {
+        "run": 57,
+        "id": 43975276177,
+        "conclusion": "success"
       }
     },
     "quotaUse": {
