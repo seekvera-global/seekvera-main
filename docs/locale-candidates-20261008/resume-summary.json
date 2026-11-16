@@ -423,7 +423,9 @@
       "quotaGuardRepairCommitted": true,
       "quotaGuardProductionDeploy": "success",
       "published": false,
-      "linguisticCertification": false
+      "linguisticCertification": false,
+      "mainCheckpointUpdated": true,
+      "mainCheckpointCommit": "ea20415d39d7acd857ffeef1204d7aa254a66446"
     },
     "latestR105": {
       "run": 84,
@@ -446,6 +448,17 @@
       "categoryTranslations": "success",
       "voiceAcknowledgement": "success",
       "dynamicVoicePlaceholders": "success"
+    },
+    "mainCheckpoint": {
+      "commit": "ea20415d39d7acd857ffeef1204d7aa254a66446",
+      "readBack": "pass",
+      "finalApproval": false
+    },
+    "latestPagesAfterCheckpoint": {
+      "run": 1593,
+      "id": 43974865175,
+      "status": "queued",
+      "headSha": "ea20415d39d7acd857ffeef1204d7aa254a66446"
     }
   },
   "latestContinuationVerification": {
@@ -3878,7 +3891,14 @@
     "aiQuotaUsed": 0,
     "published": false,
     "linguisticCertification": false,
-    "decision": "NO-GO"
+    "decision": "NO-GO",
+    "mainCheckpointCommit": "ea20415d39d7acd857ffeef1204d7aa254a66446",
+    "mainCheckpointReadBack": "pass",
+    "pagesAfterCheckpoint": {
+      "run": 1593,
+      "id": 43974865175,
+      "status": "queued"
+    }
   },
   "latestManualTkRepair": {
     "checkedAt": "2026-11-16T20:03:51.207Z",
