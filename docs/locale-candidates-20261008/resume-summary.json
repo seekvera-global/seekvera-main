@@ -355,7 +355,7 @@
       "scope": "live official domain; API health ok; robots/sitemap checks passed; 18 named pages returned HTTP 200"
     },
     "actions": {
-      "totalCount": 5486,
+      "totalCount": 5487,
       "returnedRuns": 50,
       "activeOrQueuedAtLastCheck": 0,
       "latestR125InLatest50": false,
@@ -421,7 +421,10 @@
       "translationQuotaStopRepairCommitted": true,
       "productionWorkerDeploy": "success",
       "published": false,
-      "linguisticCertification": false
+      "linguisticCertification": false,
+      "mainCheckpointUpdated": true,
+      "mainCheckpointCommit": "5152a5265d5a6c440d27148bed485d9674a79b94",
+      "pagesAfterCheckpoint": "1595 success"
     },
     "latestR105": {
       "run": 85,
@@ -450,16 +453,16 @@
       "dynamicVoicePlaceholders": "success"
     },
     "mainCheckpoint": {
-      "commit": "ea20415d39d7acd857ffeef1204d7aa254a66446",
+      "commit": "5152a5265d5a6c440d27148bed485d9674a79b94",
       "readBack": "pass",
       "finalApproval": false
     },
     "latestPagesAfterCheckpoint": {
-      "run": 1593,
-      "id": 43974865175,
+      "run": 1595,
+      "id": 43975599293,
       "status": "completed",
       "conclusion": "success",
-      "headSha": "ea20415d39d7acd857ffeef1204d7aa254a66446"
+      "headSha": "5152a5265d5a6c440d27148bed485d9674a79b94"
     },
     "latestSafetySmoke": {
       "run": 30,
@@ -3951,7 +3954,16 @@
     "aiQuotaUsed": 0,
     "published": false,
     "linguisticCertification": false,
-    "decision": "NO-GO"
+    "decision": "NO-GO",
+    "mainCheckpointCommit": "5152a5265d5a6c440d27148bed485d9674a79b94",
+    "mainCheckpointReadBack": "pass",
+    "pagesAfterCheckpoint": {
+      "run": 1595,
+      "id": 43975599293,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "activeOrQueuedAtLastCheck": 0
   },
   "latestManualTkRepair": {
     "checkedAt": "2026-11-16T20:03:51.207Z",
