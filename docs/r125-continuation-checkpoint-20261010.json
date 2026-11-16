@@ -591,7 +591,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-16T11:32:39Z",
+  "checkedAt": "2026-11-16T17:20:00Z",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -3010,7 +3010,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-16T15:56:00Z",
+  "updatedAt": "2026-11-16T17:20:00Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -5042,19 +5042,23 @@
     "decision": "NO-GO; Pages #1580 build/deploy and structural parity pass; native/full quality audit, all-language/all-section, live AI, full country/currency matrix, physical audio and merchant checkout remain incomplete."
   },
   "latestVerifiedPages": {
-    "run": 1582,
-    "id": 43887482410,
-    "status": "completed",
+    "run": 1584,
+    "id": 43906634749,
+    "commit": "2093efaee2b67c6dbd37d8c2a00c0bc70a8a5abb",
     "conclusion": "success",
-    "updatedAt": "2026-11-16T14:37:14Z",
-    "headSha": "86879375d733eb56c4a1298ca6232945ee866063"
+    "jobs": {
+      "build": "success",
+      "uploadArtifact": "success",
+      "deploy": "success",
+      "reportBuildStatus": "success"
+    }
   },
   "latestVerification": {
-    "checkedAt": "2026-11-16T16:20:20Z",
+    "checkedAt": "2026-11-16T17:20:00Z",
     "pages": {
-      "run": 1583,
-      "id": 43902152639,
-      "commit": "1de274982b42500c4fb38dd8d4047c91d4e0aef5",
+      "run": 1584,
+      "id": 43906634749,
+      "commit": "2093efaee2b67c6dbd37d8c2a00c0bc70a8a5abb",
       "conclusion": "success",
       "jobs": {
         "build": "success",
@@ -5092,16 +5096,130 @@
       "auditOnlyCandidateWrites": false,
       "repairModeMayWriteCandidates": true
     },
-    "activeR125Run": "none found in latest 100 Actions runs; no recent manual dispatch run identified",
-    "newFinding": "The 58 Divehi overlap entries include many untranslated complete English lead sentences (not merely technical brands/CSS); native review remains required.",
+    "activeR125Run": "none observed; no in_progress or queued Actions runs at check time",
+    "divehiReview": {
+      "reviewItems": 58,
+      "englishLeadingSentenceDetected": 51,
+      "topicKeywordMatchesForSafetyLegalPaymentHealthPrivacyEmergencyMerchantCustoms": 33,
+      "method": "deterministic regex classification of review targets; not a translation or linguistic judgment",
+      "nativeReviewRequired": true
+    },
     "blockersUnchanged": [
       "daily_free_ai_limit",
       "Google HTTP429",
-      "latest translation log HTTP503 all_translation_backends_unavailable",
-      "AI current availability unknown",
-      "native review 0/98",
-      "physical audio pending",
-      "checkout inactive"
+      "HTTP503 all_translation_backends_unavailable"
     ]
+  },
+  "run26AutomationAudit": {
+    "checkedAt": "2026-11-16T17:20:00Z",
+    "filesRead": [
+      "main docs/r125-continuation-checkpoint-20261010.json",
+      "branch docs/locale-candidates-20261008/resume-summary.json",
+      "branch docs/locale-candidates-20261008/resume-latest.log",
+      "main .github/workflows/r125-hourly-candidate-resume.yml",
+      "branch dv-english-overlap-review-20261115.json",
+      "branch source.json and dv.json"
+    ],
+    "actions": {
+      "latestPages": {
+        "run": 1584,
+        "id": 43906634749,
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-11-16T16:21:47Z",
+        "updatedAt": "2026-11-16T16:22:39Z",
+        "headSha": "2093efaee2b67c6dbd37d8c2a00c0bc70a8a5abb"
+      },
+      "inProgressCount": 0,
+      "queuedCount": 0
+    },
+    "workflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "translationRequiresExplicitOptIn": true,
+      "auditOnlyCandidateWrites": false,
+      "deterministicRepairStepsMayWriteCandidates": true
+    },
+    "r125": {
+      "latestKnownRun": 150,
+      "id": 38971104197,
+      "event": "push on legacy workflow revision",
+      "status": "completed",
+      "conclusion": "success",
+      "resume": "skipped",
+      "audit": "success",
+      "saveProgress": "success",
+      "candidatePackChanges": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "activeOrQueuedCurrentR125": "none observed"
+    },
+    "candidateState": {
+      "structural": 98,
+      "total": 98,
+      "keysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "qualityCandidates": 97,
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "full98QualityAudit": false,
+      "published": false,
+      "linguisticCertification": false
+    },
+    "divehiReview": {
+      "reviewItems": 58,
+      "englishLeadingSentenceDetected": 51,
+      "topicKeywordMatchesForSafetyLegalPaymentHealthPrivacyEmergencyMerchantCustoms": 33,
+      "method": "deterministic regex classification of review targets; not a translation or linguistic judgment",
+      "nativeReviewRequired": true
+    },
+    "ai": {
+      "chat": "unknown-not-probed",
+      "translation": "unknown-not-probed",
+      "quotaRequests": 0,
+      "quotaUsed": 0,
+      "blockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable"
+      ]
+    },
+    "production": {
+      "pagesRun": 1584,
+      "pagesConclusion": "success",
+      "pagesJobs": {
+        "build": "success",
+        "uploadArtifact": "success",
+        "reportBuildStatus": "success",
+        "deploy": "success"
+      },
+      "siteHealthLatestKnownRun": 325,
+      "siteHealthConclusion": "success",
+      "siteHealthScope": "18 named pages plus API/robots/sitemap; not all-language coverage",
+      "countryChangeIceland": "passed previously",
+      "fullCountryCurrencyMatrix": "not certified",
+      "prohibitedWeaponListing": "blocked",
+      "benignHotelRequest": "allowed",
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "liveASR": "skipped",
+      "physicalAudio": "pending",
+      "checkout": "inactive"
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "published": false,
+      "linguisticCertification": false,
+      "mainCheckpointUpdated": true,
+      "branchSummaryMetadataUpdated": true
+    },
+    "decision": "NO-GO; latest Pages deployment succeeds and all 98 packs are structurally aligned, but 58 Dhivehi overlap entries, full quality/native reviews, complete all-language/all-section coverage, current AI, full country/currency matrix, physical audio, and merchant checkout remain incomplete."
   }
 }
