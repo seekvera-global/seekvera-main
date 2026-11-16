@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-15T21:48:19Z",
+  "checkedAt": "2026-11-16T00:19:45Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -334,38 +334,44 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-15T20:42:06Z",
+    "checkedAt": "2026-11-16T00:19:45Z",
     "actionsObservation": {
-      "latestRepositoryRun": 1566,
-      "runId": 43752697851,
+      "latestRepositoryRun": 1570,
+      "runId": 43773040253,
       "status": "completed",
       "conclusion": "success",
       "path": "dynamic/pages/pages-build-deployment",
-      "createdAt": "2026-11-15T19:29:28Z",
-      "latest100R125QueuedOrInProgress": 0,
+      "createdAt": "2026-11-15T23:07:08Z",
+      "latest100Active": 0,
+      "latest100R125Active": 0,
       "latestKnownR125": 150,
       "r125RunId": 38971104197,
       "r125Status": "completed",
       "r125Conclusion": "success"
     },
     "workflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
       "trigger": "workflow_dispatch only",
       "runTranslationsDefault": false,
       "repairCandidatesDefault": false,
-      "explicitTranslationOptInRequired": true
+      "explicitTranslationOptInRequired": true,
+      "auditOnlyBranchWrites": "disabled by main commit 298d8ab8"
     },
     "thisPass": {
       "candidatePackWrites": 0,
       "candidateMetadataAuditWrite": 0,
       "translationRequests": 0,
-      "aiQuotaUsed": 0
+      "aiQuotaUsed": 0,
+      "filesRead": 3,
+      "latestFullStructuralReadback": "2026-11-15T22:42:00Z",
+      "full98QualityAudit": false
     },
     "currentAI": "unknown-not-probed",
     "currentTranslationBackend": "unknown-not-probed",
     "full98PackAudit": false,
     "linguisticCertification": false,
     "published": false,
-    "note": "Fresh Actions inspection through 2026-11-15T20:42:06Z: latest Pages #1566 completed success; latest Site Health #324 success; zero active/queued runs; no R125 active. R105 #81 live chat probes and R123 #64 live ASR/audio were skipped; no quota-consuming probes."
+    "note": "Fresh 2026-11-16 00:19Z read of main checkpoint, candidate summary and resume-latest.log; Actions API latest100 shows Pages #1570 success and no active runs. Site Health #324 remains latest scheduled health PASS. R125 #150 is last known, completed audit-only in Oct; no R125 active. Audit-only workflow branch metadata save was corrected in main commit 298d8ab8 and Pages #1570 validated that commit's site build. No candidate writes, AI/translation calls or quota used."
   },
   "latestContinuationVerification": {
     "checkedAt": "2026-11-15T21:48:19Z",
@@ -2156,5 +2162,53 @@
       "sourceOrCandidateFilesModifiedBeforeAudit": false
     },
     "decision": "NO-GO"
+  },
+  "run15AutomationAudit": {
+    "checkedAt": "2026-11-16T00:19:45Z",
+    "filesRead": [
+      "main docs/r125-continuation-checkpoint-20261010.json",
+      "candidate docs/locale-candidates-20261008/resume-summary.json",
+      "candidate docs/locale-candidates-20261008/resume-latest.log",
+      "main .github/workflows/r125-hourly-candidate-resume.yml"
+    ],
+    "actions": {
+      "latestRun": 43773040253,
+      "latestRunNumber": 1570,
+      "latestRunPath": "dynamic/pages/pages-build-deployment",
+      "latestRunConclusion": "success",
+      "latest100Active": 0,
+      "latest100R125Active": 0
+    },
+    "workflowRepair": {
+      "commit": "298d8ab8c82e234094db2edaf3c71408344042a0",
+      "change": "Audit-only no longer commits/pushes candidate-branch metadata; Save progress requires run_translations or repair_candidates",
+      "validationRun": 43773040253,
+      "validationConclusion": "success"
+    },
+    "candidateState": {
+      "structural": 98,
+      "total": 98,
+      "quality": 97,
+      "remaining": [
+        "dv"
+      ],
+      "published": false,
+      "linguisticCertification": false
+    },
+    "ai": {
+      "chat": "unknown-not-probed",
+      "translation": "unknown-not-probed",
+      "dailyFreeAiLimit": "historical blocker",
+      "googleHTTP429": "historical blocker",
+      "latestTranslationFailure": "HTTP503 all_translation_backends_unavailable"
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "finalApproval": false
+    },
+    "decision": "NO-GO; retain candidate packs and quota; continue native review and full audits."
   }
 }
