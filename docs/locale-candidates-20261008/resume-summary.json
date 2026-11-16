@@ -334,13 +334,13 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-16T19:46:07Z",
+    "checkedAt": "2026-11-16T22:56:09Z",
     "latestPages": {
-      "run": 1585,
-      "id": 43917504343,
+      "run": 1592,
+      "id": 43974587513,
       "status": "completed",
       "conclusion": "success",
-      "headSha": "5a873ea7157b8ebc05295414796b408654a94931",
+      "headSha": "4580be6565005b7f36892f78036b92bc3213f7b1",
       "jobs": {
         "build": "success",
         "deploy": "success",
@@ -355,10 +355,12 @@
       "scope": "live official domain; API health ok; robots/sitemap checks passed; 18 named pages returned HTTP 200"
     },
     "actions": {
-      "totalCount": 5463,
-      "returnedRuns": 30,
-      "activeOrQueued": 0,
-      "latestR125InLatest30": false
+      "totalCount": 5479,
+      "returnedRuns": 50,
+      "activeOrQueuedAtLastCheck": 0,
+      "latestR125InLatest50": false,
+      "manualDispatchRunsReturned": 5,
+      "latestCurrentR125Run": null
     },
     "latestR125": {
       "run": 150,
@@ -375,7 +377,6 @@
     },
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
-      "blob": "44f7d9a451b339834d2b91c992f51b60c03eca68",
       "triggers": [
         "workflow_dispatch"
       ],
@@ -385,8 +386,7 @@
       "repairCandidatesDefault": false,
       "translationRequiresExplicitOptIn": true,
       "auditOnlyPersistentCandidatePackWrites": false,
-      "repairModeMayWriteCandidatePacks": true,
-      "note": "Despite the filename containing 'hourly', the current YAML has no schedule trigger. The latest known R125 run (#150) used an older workflow revision."
+      "repairModeMayWriteCandidatePacks": true
     },
     "candidateState": {
       "structural": 98,
@@ -407,19 +407,45 @@
       "translation": "unknown-not-probed",
       "quotaRequests": 0,
       "quotaUsed": 0,
+      "quotaBoundaryRegression": "pass",
       "blockers": [
-        "daily_free_ai_limit",
-        "Google HTTP429",
-        "HTTP503 all_translation_backends_unavailable"
+        "daily_free_ai_limit remains provider availability/quota blocker",
+        "Google HTTP429 remains historical provider blocker",
+        "HTTP503 all_translation_backends_unavailable remains historical translation blocker"
       ],
-      "nonConsumingHealthEndpoint": "/api/health reports aiBinding presence and model names only; it does not test live model capacity or generation.",
       "probeSent": false
     },
     "thisPass": {
       "candidatePackWrites": 0,
+      "candidateMetadataPackWrites": 0,
       "translationRequests": 0,
       "aiQuotaUsed": 0,
-      "branchSummaryMetadataUpdated": true
+      "quotaGuardRepairCommitted": true,
+      "quotaGuardProductionDeploy": "success",
+      "published": false,
+      "linguisticCertification": false
+    },
+    "latestR105": {
+      "run": 84,
+      "id": 43974590208,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "4580be6565005b7f36892f78036b92bc3213f7b1",
+      "workerDeploy": "success",
+      "productionHealth": "success",
+      "liveAiProbes": "skipped-by-policy"
+    },
+    "latestR123": {
+      "run": 66,
+      "id": 43974590077,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "4580be6565005b7f36892f78036b92bc3213f7b1",
+      "audioValidation": "success",
+      "liveAudioTtsAsr": "skipped-by-opt-in",
+      "categoryTranslations": "success",
+      "voiceAcknowledgement": "success",
+      "dynamicVoicePlaceholders": "success"
     }
   },
   "latestContinuationVerification": {
@@ -3751,134 +3777,108 @@
     "linguisticCertification": false
   },
   "latestAutomationPass": {
-    "checkedAt": "2026-11-16T19:58:09Z",
+    "checkedAt": "2026-11-16T22:56:09Z",
     "filesRead": [
       "main: docs/r125-continuation-checkpoint-20261010.json",
       "branch: docs/locale-candidates-20261008/resume-summary.json",
       "branch: docs/locale-candidates-20261008/resume-latest.log",
       "main: .github/workflows/r125-hourly-candidate-resume.yml",
+      "main: worker-r76.js",
       "main: worker.js",
-      "branch: source.json and all 98 locale JSON packs"
+      "main: tools/test-ai-quota-boundary.cjs"
     ],
+    "latestQuotaGuardRepair": {
+      "checkedAt": "2026-11-16T22:56:09Z",
+      "finding": "The production R76 quota classifier did not match the literal daily_free_ai_limit token, although it matched numeric 3036, daily free allocation, HTTP 429 and rate-limit wording. That left the external-fallback suppression guard unreliable for this exact provider error.",
+      "repair": {
+        "commit": "4580be6565005b7f36892f78036b92bc3213f7b1",
+        "files": [
+          "worker-r76.js",
+          "tools/test-ai-quota-boundary.cjs"
+        ],
+        "newPattern": "3036|daily[_\\\\s-]*free[_\\\\s-]*(?:ai[_\\\\s-]*)?(?:limit|allocation)|\\\\b429\\\\b|rate.?limit|too many requests",
+        "addedRegressionCases": [
+          "daily_free_ai_limit",
+          "daily free AI limit",
+          "AggregateError containing daily_free_ai_limit"
+        ],
+        "readBack": "Both files re-fetched at the new commit; updated pattern and tests present."
+      },
+      "verification": {
+        "r105": {
+          "run": 84,
+          "id": 43974590208,
+          "conclusion": "success",
+          "sourceValidation": "success",
+          "all98LanguageNames": "success",
+          "workerDeploy": "success",
+          "productionHealth": "success",
+          "liveAiProbes": "skipped-by-policy"
+        },
+        "r123": {
+          "run": 66,
+          "id": 43974590077,
+          "conclusion": "success",
+          "audioValidation": "success",
+          "workerDeploy": "success",
+          "liveAudioTtsAsr": "skipped-by-opt-in",
+          "categoryTranslations": "success",
+          "voiceAcknowledgement": "success",
+          "dynamicVoicePlaceholders": "success"
+        },
+        "pages": {
+          "run": 1592,
+          "id": 43974587513,
+          "conclusion": "success",
+          "build": "success",
+          "deploy": "success"
+        }
+      },
+      "quotaUse": {
+        "translationRequests": 0,
+        "aiQuotaUsed": 0
+      },
+      "candidatePackWrites": 0,
+      "published": false,
+      "linguisticCertification": false,
+      "aiAvailability": "unknown-not-probed"
+    },
     "latestPages": {
-      "run": 1586,
-      "id": 43942841499,
-      "status": "completed",
+      "run": 1592,
+      "id": 43974587513,
+      "conclusion": "success"
+    },
+    "latestR105": {
+      "run": 84,
+      "id": 43974590208,
+      "conclusion": "success"
+    },
+    "latestR123": {
+      "run": 66,
+      "id": 43974590077,
+      "conclusion": "success"
+    },
+    "latestSiteHealth": {
+      "run": 327,
+      "id": 43969921597,
       "conclusion": "success",
-      "createdAt": "2026-11-16T19:46:35Z",
-      "updatedAt": "2026-11-16T19:47:16Z",
-      "headSha": "771c0485eb2757e14fbe10f103092279fc580726",
-      "jobs": {
-        "build": "success",
-        "deploy": "success",
-        "reportBuildStatus": "success"
-      }
+      "scope": "official domain API health, robots/sitemap and 18 named pages"
     },
-    "actionsObservation": {
-      "latest100Returned": 100,
-      "totalCount": 5464,
-      "activeOrQueued": 0,
-      "r125RunsInLatest100": 0,
-      "limitation": "Repository-wide latest-100 observation, not an exhaustive workflow-filtered run listing."
-    },
-    "latestKnownR125": {
+    "latestR125": {
       "run": 150,
       "id": 38971104197,
-      "status": "completed",
       "conclusion": "success",
-      "createdAt": "2026-10-16T21:41:54Z",
-      "event": "push on legacy workflow revision",
       "resume": "skipped",
       "audit": "success",
-      "candidatePackChanges": 0,
-      "metadataFilesCommitted": [
-        "resume-summary.json",
-        "scheduled-mode.json"
-      ],
-      "note": "The old run committed two metadata files despite zero candidate-pack changes. Current Main workflow now guards Save progress behind explicit translation or repair opt-in."
+      "historicalOldWorkflowRevision": true
     },
-    "currentWorkflow": {
-      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
-      "blob": "44f7d9a451b339834d2b91c992f51b60c03eca68",
-      "triggers": [
-        "workflow_dispatch"
-      ],
-      "scheduleTriggerPresent": false,
-      "pushTriggerPresent": false,
-      "runTranslationsDefault": false,
-      "repairCandidatesDefault": false,
-      "translationRequiresExplicitOptIn": true,
-      "currentAuditOnlyPersistentBranchWrites": false,
-      "repairModeMayWriteCandidatePacks": true
-    },
-    "latestResumeLog": {
-      "blob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
-      "lineCount": 8,
-      "lastKnownDate": "2026-10-30",
-      "currentSourceCount": 1118,
-      "deltaCount": 73,
-      "verifiedPublicUiOnly": 69,
-      "finalStatus": "STAGED_ONLY 0 FAILED 1",
-      "lastFailure": "HTTP 503 all_translation_backends_unavailable; Qwen/Gemma/Llama outputs unparseable; split batches also timed out/503",
-      "historicalSuccessfulDivehiRepairs": 48
-    },
-    "ai": {
-      "chat": "unknown-not-probed",
-      "translation": "unknown-not-probed",
-      "healthEndpoint": "/api/health reports aiBinding presence and model names only; it does not execute generation",
-      "knownBlockers": [
-        "daily_free_ai_limit",
-        "Google HTTP429",
-        "HTTP503 all_translation_backends_unavailable"
-      ],
-      "probeSent": false,
-      "quotaRequests": 0,
-      "quotaUsed": 0
-    },
-    "production": {
-      "pagesRun": 1586,
-      "pagesConclusion": "success",
-      "siteHealthRun": 325,
-      "siteHealthId": 43821298704,
-      "siteHealthConclusion": "success",
-      "siteHealthScope": "live official domain, API health, robots/sitemap, and 18 named pages only"
-    },
-    "safety": {
-      "run": 81,
-      "id": 43517683421,
-      "conclusion": "success",
-      "prohibitedListing": "blocked; reviewRequired=true; route=null",
-      "benignHotel": "allowed in prior browser audit",
-      "databaseRls": "17/17 public tables enabled; zero error/warning advisories; two informational advisories",
-      "fullThreatModelCertification": false
-    },
-    "countryCurrency": {
-      "countryChangeIceland": "passed in R105 #81",
-      "currencyAndFallbackUnitTests": "passed in R105 #81",
-      "countryProfilesPreviouslyAudited": 248,
-      "localizedPagesPreviouslyAudited": 44,
-      "fullCountryCurrencyMatrix": false
-    },
-    "voice": {
-      "authorityRun": 43219069259,
-      "programmaticAudioTests": "passed",
-      "syntheticLanguages": [
-        "ar",
-        "fr",
-        "en"
-      ],
-      "liveTtsAsrLatest": "skipped by opt-in gate",
-      "physicalMicrophoneSpeakerCertified": false
-    },
-    "checkout": "inactive pending merchant-account configuration and end-to-end merchant verification",
-    "thisPass": {
-      "candidatePackWrites": 0,
-      "candidateMetadataPackWrites": 0,
-      "translationRequests": 0,
-      "aiQuotaUsed": 0,
-      "published": false,
-      "linguisticCertification": false
-    }
+    "currentR125Run": "none found; current workflow_dispatch-only and no matching run in latest 50 repository runs or 5 manual-dispatch runs",
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "decision": "NO-GO"
   },
   "latestManualTkRepair": {
     "checkedAt": "2026-11-16T20:03:51.207Z",
@@ -3955,5 +3955,61 @@
       "reportBuildStatus": "success"
     },
     "note": "Pages deployment is running after the Main checkpoint documentation commit. This is not an R125 candidate-resume run."
+  },
+  "latestQuotaGuardRepair": {
+    "checkedAt": "2026-11-16T22:56:09Z",
+    "finding": "The production R76 quota classifier did not match the literal daily_free_ai_limit token, although it matched numeric 3036, daily free allocation, HTTP 429 and rate-limit wording. That left the external-fallback suppression guard unreliable for this exact provider error.",
+    "repair": {
+      "commit": "4580be6565005b7f36892f78036b92bc3213f7b1",
+      "files": [
+        "worker-r76.js",
+        "tools/test-ai-quota-boundary.cjs"
+      ],
+      "newPattern": "3036|daily[_\\\\s-]*free[_\\\\s-]*(?:ai[_\\\\s-]*)?(?:limit|allocation)|\\\\b429\\\\b|rate.?limit|too many requests",
+      "addedRegressionCases": [
+        "daily_free_ai_limit",
+        "daily free AI limit",
+        "AggregateError containing daily_free_ai_limit"
+      ],
+      "readBack": "Both files re-fetched at the new commit; updated pattern and tests present."
+    },
+    "verification": {
+      "r105": {
+        "run": 84,
+        "id": 43974590208,
+        "conclusion": "success",
+        "sourceValidation": "success",
+        "all98LanguageNames": "success",
+        "workerDeploy": "success",
+        "productionHealth": "success",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r123": {
+        "run": 66,
+        "id": 43974590077,
+        "conclusion": "success",
+        "audioValidation": "success",
+        "workerDeploy": "success",
+        "liveAudioTtsAsr": "skipped-by-opt-in",
+        "categoryTranslations": "success",
+        "voiceAcknowledgement": "success",
+        "dynamicVoicePlaceholders": "success"
+      },
+      "pages": {
+        "run": 1592,
+        "id": 43974587513,
+        "conclusion": "success",
+        "build": "success",
+        "deploy": "success"
+      }
+    },
+    "quotaUse": {
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "candidatePackWrites": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "aiAvailability": "unknown-not-probed"
   }
 }
