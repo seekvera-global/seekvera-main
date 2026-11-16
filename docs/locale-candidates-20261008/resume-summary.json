@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-16T11:32:39Z",
+  "checkedAt": "2026-11-16T12:15:20Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -2793,5 +2793,50 @@
     "aiAvailability": "unknown-not-probed; no quota-safe non-consuming endpoint; do not probe translation or chat while daily_free_ai_limit/HTTP429/HTTP503 blockers remain",
     "decision": "NO-GO",
     "note": "Read-only Actions status verification plus summary documentation update only; no candidate pack changes, no translation calls, no publication."
+  },
+  "latestAutomationVerification": {
+    "checkedAt": "2026-11-16T12:15:20Z",
+    "latestPages": {
+      "run": 1580,
+      "id": 43858975587,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "4e228608",
+      "jobs": {
+        "build": "success",
+        "reportBuildStatus": "success",
+        "deploy": "success"
+      }
+    },
+    "latestSiteHealth": {
+      "run": 325,
+      "id": 43821298704,
+      "conclusion": "success"
+    },
+    "latestR125": {
+      "run": 150,
+      "id": 38971104197,
+      "conclusion": "success",
+      "resume": "skipped",
+      "audit": "success",
+      "candidateWrites": 0
+    },
+    "workflow": {
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "explicitTranslationOptInRequired": true,
+      "auditOnlyWritesCandidatePacks": false,
+      "repairModeMayWriteCandidatePacks": true
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "candidatePackContentChanged": false,
+      "published": false,
+      "linguisticCertification": false
+    },
+    "decision": "NO-GO"
   }
 }
