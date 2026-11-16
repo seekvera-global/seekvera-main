@@ -616,7 +616,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-16T11:06:00Z",
+  "checkedAt": "2026-11-16T11:32:39Z",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -733,18 +733,18 @@
     "candidateBranchWritten": false
   },
   "latestScheduledHealthCheck": {
-    "run": 324,
-    "runId": 43750027183,
-    "checkedAt": "2026-11-15T19:01:23Z",
+    "run": 325,
+    "runId": 43821298704,
+    "checkedAt": "2026-11-16T07:05:16Z",
     "conclusion": "success",
-    "commit": "c7ee0f2fe6023fa66cdce16b022e7dad6de3e619",
+    "commit": "dfc53494620e2a8a6bb84551ac0fa7ae7af6d181",
     "checks": [
       "official production homepage and category/navigation assertions",
       "/api/health ok",
       "robots.txt and sitemap.xml official-domain assertions",
       "18 public product pages HTTP 200"
     ],
-    "scope": "Live production availability and SEO/category surface only; not AI generation, all-language interaction, physical audio or checkout certification."
+    "scope": "Live production availability and selected navigation/API/SEO surface only; not all-language interaction, physical audio, merchant checkout, or full safety certification."
   },
   "latestAudioAuthority": {
     "checkedAt": "2026-11-13T15:53:01Z",
@@ -3034,7 +3034,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-16T11:06:00Z",
+  "updatedAt": "2026-11-16T11:32:39Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -3773,16 +3773,15 @@
   "latestActionsObservation": {
     "latest100Fetched": true,
     "latest100ActiveCount": 0,
-    "latest100ActiveObservationAt": "2026-11-16T04:28:00Z",
+    "latest100ActiveObservationAt": "2026-11-16T11:32:39Z",
     "latestRepositoryRun": {
-      "id": 43797218207,
-      "number": 1574,
+      "id": 43854922473,
+      "number": 1579,
       "path": "dynamic/pages/pages-build-deployment",
       "status": "completed",
       "conclusion": "success",
-      "createdAt": "2026-11-16T03:16:47Z",
-      "updatedAt": "2026-11-16T03:17:35Z",
-      "headSha": "07cbbe2c4836140aaa5bc0b3abcb53f5804b8d77"
+      "createdAt": "2026-11-16T11:07:24Z",
+      "headSha": "a09a494d68fc76a722cc0ac4a16a05f51b104372"
     },
     "latestR125": {
       "run": 150,
@@ -3793,7 +3792,11 @@
       "audit": "success",
       "active": false,
       "createdAt": "2026-10-16T21:41:54Z"
-    }
+    },
+    "queriedStatuses": [
+      "in_progress",
+      "queued"
+    ]
   },
   "structuralVerification": {
     "checkedAt": "2026-11-15T18:47:35Z",
@@ -4877,6 +4880,84 @@
     "candidateWritesDeferred": false,
     "translationRequests": 0,
     "aiQuotaUsed": 0,
+    "decision": "NO-GO"
+  },
+  "run24AutomationAudit": {
+    "checkedAt": "2026-11-16T11:32:39Z",
+    "latestPages": {
+      "run": 1579,
+      "id": 43854922473,
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-16T11:07:24Z",
+      "commit": "a09a494d",
+      "jobs": {
+        "build": "success",
+        "reportBuildStatus": "success",
+        "deploy": "success"
+      }
+    },
+    "latestSiteHealth": {
+      "run": 325,
+      "id": 43821298704,
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-16T07:05:16Z",
+      "checks": "official homepage/navigation; API health; canonical robots/sitemap; 18 product pages HTTP 200"
+    },
+    "latestR125": {
+      "run": 150,
+      "id": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-10-16T21:41:54Z",
+      "resume": "skipped",
+      "audit": "success",
+      "candidateWrites": "none in run"
+    },
+    "actionsStatusQuery": {
+      "inProgress": 0,
+      "queued": 0,
+      "checkedAt": "2026-11-16T11:32:39Z"
+    },
+    "workflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "translationOptInRequired": true,
+      "auditOnlyWritesCandidatePacks": false,
+      "repairModeMayWriteCandidatePacks": true
+    },
+    "candidateState": {
+      "structural": "98/98 key/hash integrity",
+      "quality": "97/98",
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "full98QualityAudit": "pending",
+      "nativeCertification": "0/98",
+      "published": false
+    },
+    "translation": {
+      "requestsSent": 0,
+      "quotaUsed": 0,
+      "currentAvailability": "unknown-not-probed",
+      "blockers": [
+        "daily_free_ai_limit (historical)",
+        "Google HTTP429 (historical)",
+        "latest HTTP503 all_translation_backends_unavailable"
+      ]
+    },
+    "scopeLimitations": [
+      "All 98 languages and all sections are not end-to-end certified",
+      "Country/currency matrix not fully re-run",
+      "AI chat availability unknown",
+      "Physical microphone/speaker tests pending",
+      "Checkout inactive pending merchant configuration"
+    ],
+    "candidatePackWritesThisPass": 0,
     "decision": "NO-GO"
   }
 }
