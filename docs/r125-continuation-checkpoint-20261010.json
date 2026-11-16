@@ -5048,5 +5048,60 @@
     "conclusion": "success",
     "updatedAt": "2026-11-16T14:37:14Z",
     "headSha": "86879375d733eb56c4a1298ca6232945ee866063"
+  },
+  "latestVerification": {
+    "checkedAt": "2026-11-16T16:20:20Z",
+    "pages": {
+      "run": 1583,
+      "id": 43902152639,
+      "commit": "1de274982b42500c4fb38dd8d4047c91d4e0aef5",
+      "conclusion": "success",
+      "jobs": {
+        "build": "success",
+        "uploadArtifact": "success",
+        "deploy": "success",
+        "reportBuildStatus": "success"
+      }
+    },
+    "r125": {
+      "latestKnownRun": 150,
+      "id": 38971104197,
+      "createdAt": "2026-10-16T21:41:54Z",
+      "event": "push",
+      "headSha": "0911d8f826e7347f3b5dbf9aacccc7893ee85dd8",
+      "conclusion": "success",
+      "resume": "skipped",
+      "audit": "success",
+      "saveProgress": "success",
+      "commitChangedOnly": [
+        "resume-summary.json",
+        "scheduled-mode.json"
+      ],
+      "candidatePackChanges": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "currentWorkflow": {
+      "file": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "mainTriggers": [
+        "workflow_dispatch"
+      ],
+      "defaultRunTranslations": false,
+      "defaultRepairCandidates": false,
+      "translationRequiresExplicitOptIn": true,
+      "auditOnlyCandidateWrites": false,
+      "repairModeMayWriteCandidates": true
+    },
+    "activeR125Run": "none found in latest 100 Actions runs; no recent manual dispatch run identified",
+    "newFinding": "The 58 Divehi overlap entries include many untranslated complete English lead sentences (not merely technical brands/CSS); native review remains required.",
+    "blockersUnchanged": [
+      "daily_free_ai_limit",
+      "Google HTTP429",
+      "latest translation log HTTP503 all_translation_backends_unavailable",
+      "AI current availability unknown",
+      "native review 0/98",
+      "physical audio pending",
+      "checkout inactive"
+    ]
   }
 }
