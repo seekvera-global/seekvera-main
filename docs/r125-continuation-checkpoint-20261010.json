@@ -183,7 +183,7 @@
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-15T18:47:35Z",
+    "checkedAt": "2026-11-16T03:15:02Z",
     "aiChat": {
       "lastConfirmedLiveRun": 43213407211,
       "checkedAt": "2026-11-12T11:57:45Z",
@@ -192,7 +192,7 @@
       "countryChange": "passed",
       "prohibitedWeapon": "blocked",
       "currentAvailability": "unknown-not-probed",
-      "reason": "No quota-consuming probe; last confirmed English/Arabic 2026-11-12; latest R105 live probes skipped."
+      "reason": "No quota-safe non-consuming live AI endpoint was available; last confirmed English/Arabic probes were 2026-11-12, latest R105 probes skipped."
     },
     "voiceTranscription": {
       "run": 43219069259,
@@ -217,6 +217,10 @@
       "sitemap": "passed",
       "pagesChecked": 18,
       "scope": "Live HTTP availability and SEO-file assertions only; not full interaction, all-language, audio, or physical-device certification."
+    },
+    "translation": {
+      "currentAvailability": "unknown-not-probed",
+      "reason": "No translation request sent; daily_free_ai_limit, Google HTTP429 and latest HTTP503 remain historical blockers."
     }
   },
   "voiceScriptCoverage": {
@@ -3709,84 +3713,29 @@
     "qualityGate": "NOT PASS"
   },
   "latestActionsObservation": {
-    "checkedAt": "2026-11-16T01:34:43Z",
-    "latest100Fetched": true,
-    "latest100ActiveCount": 0,
-    "latestActiveRuns": [],
-    "latestRepositoryRun": {
-      "id": 43779906354,
-      "number": 1571,
-      "name": "pages build and deployment",
+    "checkedAt": "2026-11-16T03:15:02Z",
+    "latestKnownRepositoryRun": {
+      "id": 43793145037,
+      "number": 1573,
       "path": "dynamic/pages/pages-build-deployment",
       "status": "completed",
       "conclusion": "success",
-      "createdAt": "2026-11-16T00:21:44Z",
-      "updatedAt": "2026-11-16T00:22:20Z",
-      "headBranch": "main",
-      "headSha": "0d1bdf328ce27929003aaaee13b13fb27fbe48ea"
+      "createdAt": "2026-11-16T02:35:56Z",
+      "updatedAt": "2026-11-16T02:36:35Z",
+      "headSha": "df127e65ce1892b0b83349a0c4ed9b965048f11a"
     },
-    "latestPages": {
-      "run": 1571,
-      "id": 43779906354,
-      "status": "completed",
-      "conclusion": "success",
-      "updatedAt": "2026-11-16T00:22:20Z",
-      "jobs": {
-        "build": "success",
-        "reportBuildStatus": "success",
-        "deploy": "success"
-      }
-    },
-    "latestSiteHealth": {
-      "run": 324,
-      "id": 43750027183,
-      "status": "completed",
-      "conclusion": "success",
-      "pagesHTTP200": 18,
-      "apiHealth": "pass",
-      "robots": "pass",
-      "sitemap": "pass",
-      "checkedAt": "2026-11-15T19:01:23Z"
-    },
-    "latestR125": {
+    "latest100ActiveCount": 0,
+    "latest100ActiveObservationAt": "2026-11-16T02:33:47Z",
+    "latestKnownR125": {
       "run": 150,
       "id": 38971104197,
       "status": "completed",
       "conclusion": "success",
       "resume": "skipped",
       "audit": "success",
-      "createdAt": "2026-10-16T21:41:54Z",
       "active": false
     },
-    "r125ActiveInLatest100": false,
-    "workflow": {
-      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
-      "trigger": "workflow_dispatch only",
-      "runTranslationsDefault": false,
-      "repairCandidatesDefault": false,
-      "translationOptInRequired": true,
-      "auditOnlyBranchWrites": "disabled by main commit 298d8ab8; audit creates local workspace metadata/artifact only, no candidate-branch commit"
-    },
-    "thisPass": {
-      "candidatePackWrites": 0,
-      "candidateMetadataBranchWrites": 0,
-      "translationRequests": 0,
-      "aiQuotaUsed": 0,
-      "structuralPacksRead": 0,
-      "sourceOrCandidateFilesModifiedBeforeCheckpoint": false
-    },
-    "aiChat": "unknown-not-probed",
-    "translationBackend": "unknown-not-probed",
-    "knownBlockers": [
-      "daily_free_ai_limit (historical)",
-      "Google HTTP429 (historical)",
-      "latest translation log HTTP503 all_translation_backends_unavailable"
-    ],
-    "full98StructuralAudit": "PASS (latest direct read-back 2026-11-15T22:42:00Z)",
-    "full98QualityAudit": false,
-    "linguisticCertification": false,
-    "published": false,
-    "decision": "NO-GO"
+    "r125ActiveObserved": false
   },
   "structuralVerification": {
     "checkedAt": "2026-11-15T18:47:35Z",
@@ -4326,5 +4275,103 @@
       "checkpointWrite": true
     },
     "decision": "NO-GO; 98/98 structural read-back is not full quality/native certification or launch readiness."
+  },
+  "run18AutomationAudit": {
+    "checkedAt": "2026-11-16T03:15:02Z",
+    "filesRead": [
+      "main docs/r125-continuation-checkpoint-20261010.json",
+      "candidate docs/locale-candidates-20261008/resume-summary.json",
+      "candidate docs/locale-candidates-20261008/resume-latest.log",
+      "main .github/workflows/r125-hourly-candidate-resume.yml",
+      "candidate full-structural-readback-20261115-224200Z.json"
+    ],
+    "actions": {
+      "latestKnownRepositoryRun": {
+        "id": 43793145037,
+        "number": 1573,
+        "status": "completed",
+        "conclusion": "success",
+        "updatedAt": "2026-11-16T02:36:35Z"
+      },
+      "latest100ActiveCount": 0,
+      "latest100ActiveObservationAt": "2026-11-16T02:33:47Z",
+      "latestR125": {
+        "run": 150,
+        "id": 38971104197,
+        "status": "completed",
+        "conclusion": "success",
+        "resume": "skipped",
+        "audit": "success",
+        "active": false
+      }
+    },
+    "workflow": {
+      "commit": "298d8ab8c82e234094db2edaf3c71408344042a0",
+      "auditOnlyBranchCommit": false,
+      "explicitOptInRequired": true,
+      "publication": false
+    },
+    "candidateState": {
+      "structural": 98,
+      "total": 98,
+      "keysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "qualityCandidates": 97,
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "full98QualityAudit": false,
+      "published": false,
+      "linguisticCertification": false
+    },
+    "reportReadback": {
+      "path": "docs/locale-candidates-20261008/full-structural-readback-20261115-224200Z.json",
+      "checkedAt": "2026-11-15T22:42:00Z",
+      "packsRead": 98,
+      "keySetMatchesEnglish": 98,
+      "missingKeys": 0,
+      "extraKeys": 0,
+      "emptyOrNonStringValues": 0,
+      "sourceHashMatches": 98,
+      "qualityPolicyMatches": 98,
+      "result": "PASS"
+    },
+    "ai": {
+      "chat": "unknown-not-probed",
+      "translation": "unknown-not-probed",
+      "quotaUsed": 0,
+      "translationRequests": 0,
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable"
+      ]
+    },
+    "production": {
+      "pagesRun": 1573,
+      "pagesConclusion": "success",
+      "siteHealthRun": 324,
+      "siteHealthConclusion": "success",
+      "r105Run": 81,
+      "r105Conclusion": "success",
+      "countryChangeIceland": "passed",
+      "prohibitedWeapon": "blocked",
+      "audioAuthorityRun": 64,
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "liveASR": "skipped",
+      "physicalAudio": "pending",
+      "checkout": "inactive"
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "candidateSummaryBranchCommit": "73d2b031ddbef36096f0e48459acc7d9eb9ddb17",
+      "published": false,
+      "linguisticCertification": false
+    },
+    "decision": "NO-GO"
   }
 }
