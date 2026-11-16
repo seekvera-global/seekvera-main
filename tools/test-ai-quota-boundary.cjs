@@ -57,4 +57,78 @@ assert.ok(!audioWorkflow.includes('for attempt in range(3)'),
 assert.ok(audioWorkflow.includes("str(d.get('model','')).startswith('@cf/')"),
   'live chat certification must require an actual Workers AI model');
 
-console.log('R76_QUOTA_BOUNDARY_PASS');
+function extractFunction(source, signature) {
+  const start = source.indexOf(signature);
+  assert.notEqual(start, -1, signature + ' missing');
+  const open = source.indexOf('{', start);
+  let depth = 0;
+  for (let i = open; i < source.length; i++) {
+    if (source[i] === '{') depth++;
+    else if (source[i] === '}' && --depth === 0) return source.slice(start, i + 1);
+  }
+  assert.fail(signature + ' is incomplete');
+}
+
+const baseWorker = fs.readFileSync('worker.js', 'utf8');
+const baseAi = extractFunction(baseWorker, 'async function ai(');
+const baseSafety = extractFunction(baseWorker, 'async function safety(');
+assert.ok(
+  baseAi.includes('daily[_\\s-]*free[_\\s-]*(?:ai[_\\s-]*)?(?:limit|allocation)') &&
+  baseAi.includes('\\b429\\b') &&
+  baseAi.includes('rate.?limit'),
+  'base-worker AI helper must identify daily quota and rate-limit errors'
+);
+assert.ok(baseAi.indexOf('AI quota/rate limit reached') < baseAi.indexOf('https://text.pollinations.ai/'),
+  'base-worker moderation must stop before external fallback on quota/rate-limit errors');
+
+let externalCalls = 0;
+const baseContext = {
+  PRIMARY: '@cf/google/gemma-4-26b-a4b-it',
+  FALLBACK: '@cf/zai-org/glm-4.7-flash',
+  LIGHT: '@cf/qwen/qwen3-30b-a3b-fp8',
+  FASTCHAT: '@cf/meta/llama-3.1-8b-instruct-fast',
+  clean: (v, n = 400) => String(v ?? '').replace(/[\u0000-\u001F\u007F]/g, ' ').trim().slice(0, n),
+  out: x => typeof x === 'string' ? x.trim() : '',
+  rules: () => ({ d: 'CLEAR', reason: 'safe' }),
+  console: { warn() {} },
+  AbortSignal: { timeout: () => ({}) },
+  fetch: async () => {
+    externalCalls++;
+    return { ok: true, status: 200, text: async () => 'external fallback response' };
+  }
+};
+vm.createContext(baseContext);
+vm.runInContext(baseAi + '\n' + baseSafety + '\nthis.ai = ai; this.safety = safety;', baseContext);
+
+(async () => {
+  for (const message of [
+    'Error 3036: daily free allocation exhausted',
+    'daily_free_ai_limit',
+    'Google HTTP 429 Too Many Requests',
+    'provider rate limit exceeded'
+  ]) {
+    externalCalls = 0;
+    const result = await baseContext.safety(
+      { AI: { run: async () => { throw new Error(message); } } },
+      'ordinary lawful hotel request',
+      'request'
+    );
+    assert.equal(result.allowed, false, message);
+    assert.equal(result.reviewRequired, true, message);
+    assert.equal(result.reason, 'moderation_unavailable_hold', message);
+    assert.equal(externalCalls, 0, 'external provider must not run after ' + message);
+  }
+
+  externalCalls = 0;
+  const nonQuotaFallback = await baseContext.ai(
+    { AI: { run: async () => { throw new Error('capacity temporarily exceeded'); } } },
+    [{ role: 'user', content: 'hello' }]
+  );
+  assert.equal(nonQuotaFallback.model, 'pollinations-private-backup');
+  assert.equal(externalCalls, 1, 'non-quota availability fallback should remain available');
+
+  console.log('R76_AND_BASE_SAFETY_QUOTA_BOUNDARY_PASS');
+})().catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});
