@@ -113,7 +113,7 @@
   "blockedBy": [
     "Current /api/ui-translate continuation returned HTTP 503 all_translation_backends_unavailable after 48 successful Divehi repair translations",
     "Existing Google translation fallback previously returned HTTP 429; it was not bypassed or retried through an alternate service",
-    "All 98 packs still require linguistic review; Divehi remains structurally incomplete",
+    "All 98 packs still require linguistic review; Divehi is structurally PASS (1,118 keys/sourceHash) but quality-blocked by 58 English-overlap entries.",
     "Physical microphone and audible-speaker tests remain pending",
     "Payment checkout remains inactive pending merchant-account configuration",
     "Quota-neutral normalization cleared the 10 known date-token warnings; full 98-pack audit remains pending."
@@ -259,7 +259,7 @@
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false,
-    "note": "This run deterministically restored the immutable identifier in 73 locale packs (ar was already correct), preserving all other raw file bytes. Branch summary now reflects 68 script warnings across 25 languages; Divehi remains structurally incomplete.; 2026-11-14 deterministic repairs: Lao Paystack brand spelling restored; Kyrgyz 'Nearby Now' typo corrected; Punjabi wrong Devanagari entries corrected to Gurmukhi, CROSS-BORDER typo corrected, zero-cost MVP sentence repaired, and translated CSS restored byte-for-byte to source. All edits limited to seven known strings in lo/ky/pa; source untouched; full audit not yet rerun.; seven deterministic locale repairs were committed on 2026-11-14 in lo/ky/pa. Candidate warning totals remain at last audit (68/25) pending a full rerun; no translation quota consumed.; extended deterministic repairs to 19 exact strings across lo/ky/pa/am/my, restoring missing action verbs in Amharic/Burmese and wrong-script Punjabi entries; full audit pending.; 2026-11-14: corrected 13 additional Punjabi UI/game strings from Devanagari into Gurmukhi; verified all 13 use Gurmukhi and pa retains 1,118 keys. Quota-neutral script predicate recomputed only for lo/ky/pa/am/my: warning count 68→40 (languages 25→23); full 98-pack audit still pending.; additional 4 quota-neutral fixes in Lao/Burmese (embedded trigger phrase and 3 UI labels); partial script scan now shows 36 warnings/21 languages, with touched-pack counts lo=0, ky=1 date-format review, pa=0, am=0, my=0. Full audit pending. 2026-11-14 05:27Z: repaired 8 exact labels/actions in fa/tg/ka/mk/ky/dz; all six packs re-read at 1,118 keys. Candidate summary reconciled script-warning map to 11 warnings across 10 languages. Full audit still pending; no quota use. 2026-11-14 05:30Z: localized Gujarati SEEKVERA GUIDE; 1,118 keys preserved. Partial warning map reconciled to 10 remaining date/presentation warnings across 10 languages. Full audit and native review pending. 2026-11-14 06:00Z: normalized the 10 known date/presentation tokens across ur/fa/el/uk/mk/kk/ky/tg/gu/ps; each pack remains 1,118 keys and sourceHash unchanged. Partial warning map 10→0; full 98-pack audit remains pending. 2026-11-14 09:30Z: manual quota-neutral Myanmar repair committed (7 exact strings); readback 1,118 keys. Amharic (10 repeated descriptions) and Divehi (20 repeated outputs in 2 groups) remain flagged; no AI/translation requests. 2026-11-14 11:35Z: Amharic 19-key quota-neutral manual repair committed and read back; duplicate 10-game-description cluster removed, nine category labels corrected. Pack has 1,118 keys and sourceHash unchanged. Native review/full audit pending. 2026-11-14 23:29Z: Divehi exact brand preservation repair (Payoneer/Paystack/WhatsApp) committed and read back; 1,118 keys/sourceHash preserved; english_overlap:58 unchanged; no AI or translation quota.; 2026-11-15 02:30Z: manual quota-neutral Igbo repair fixed 16 exact duplicate outputs (15 game descriptions + Send prompt); pack read back 1,118 keys/sourceHash, large duplicate group removed; no AI or translation requests; native review and full audit pending.; 2026-11-15 02:30Z: manual quota-neutral Yoruba repair fixed 21 exact outputs in two duplicate groups (20 game descriptions + Send prompt); readback 1,118 keys/sourceHash and no duplicate group >=4; no AI/translation calls; native review/full audit pending.; 2026-11-15 04:49Z: quota-neutral Zulu repair committed (22 exact strings across two duplicate game-description groups); pack read-back 1,118 keys/sourceHash; zero >=4 duplicate groups in zu. No AI/translation requests; native review and global quality audit pending.; 2026-11-15 04:50Z: Somali 12-key duplicate game-description cluster repaired; pack read-back 1,118 keys/sourceHash; zero >=4 duplicate groups in so. No AI/translation requests; native review/global audit pending. 2026-11-15 05:32Z: restored four Dhivehi CSS/markup strings exactly to immutable source; read back 1,118 keys/sourceHash; no AI or translation quota; english_overlap:58 unchanged and full audit pending.",
+    "note": "This run deterministically restored the immutable identifier in 73 locale packs (ar was already correct), preserving all other raw file bytes. Branch summary now reflects 68 script warnings across 25 languages; Divehi is structurally complete but quality-blocked by english_overlap:58.; 2026-11-14 deterministic repairs: Lao Paystack brand spelling restored; Kyrgyz 'Nearby Now' typo corrected; Punjabi wrong Devanagari entries corrected to Gurmukhi, CROSS-BORDER typo corrected, zero-cost MVP sentence repaired, and translated CSS restored byte-for-byte to source. All edits limited to seven known strings in lo/ky/pa; source untouched; full audit not yet rerun.; seven deterministic locale repairs were committed on 2026-11-14 in lo/ky/pa. Candidate warning totals remain at last audit (68/25) pending a full rerun; no translation quota consumed.; extended deterministic repairs to 19 exact strings across lo/ky/pa/am/my, restoring missing action verbs in Amharic/Burmese and wrong-script Punjabi entries; full audit pending.; 2026-11-14: corrected 13 additional Punjabi UI/game strings from Devanagari into Gurmukhi; verified all 13 use Gurmukhi and pa retains 1,118 keys. Quota-neutral script predicate recomputed only for lo/ky/pa/am/my: warning count 68→40 (languages 25→23); full 98-pack audit still pending.; additional 4 quota-neutral fixes in Lao/Burmese (embedded trigger phrase and 3 UI labels); partial script scan now shows 36 warnings/21 languages, with touched-pack counts lo=0, ky=1 date-format review, pa=0, am=0, my=0. Full audit pending. 2026-11-14 05:27Z: repaired 8 exact labels/actions in fa/tg/ka/mk/ky/dz; all six packs re-read at 1,118 keys. Candidate summary reconciled script-warning map to 11 warnings across 10 languages. Full audit still pending; no quota use. 2026-11-14 05:30Z: localized Gujarati SEEKVERA GUIDE; 1,118 keys preserved. Partial warning map reconciled to 10 remaining date/presentation warnings across 10 languages. Full audit and native review pending. 2026-11-14 06:00Z: normalized the 10 known date/presentation tokens across ur/fa/el/uk/mk/kk/ky/tg/gu/ps; each pack remains 1,118 keys and sourceHash unchanged. Partial warning map 10→0; full 98-pack audit remains pending. 2026-11-14 09:30Z: manual quota-neutral Myanmar repair committed (7 exact strings); readback 1,118 keys. Amharic (10 repeated descriptions) and Divehi (20 repeated outputs in 2 groups) remain flagged; no AI/translation requests. 2026-11-14 11:35Z: Amharic 19-key quota-neutral manual repair committed and read back; duplicate 10-game-description cluster removed, nine category labels corrected. Pack has 1,118 keys and sourceHash unchanged. Native review/full audit pending. 2026-11-14 23:29Z: Divehi exact brand preservation repair (Payoneer/Paystack/WhatsApp) committed and read back; 1,118 keys/sourceHash preserved; english_overlap:58 unchanged; no AI or translation quota.; 2026-11-15 02:30Z: manual quota-neutral Igbo repair fixed 16 exact duplicate outputs (15 game descriptions + Send prompt); pack read back 1,118 keys/sourceHash, large duplicate group removed; no AI or translation requests; native review and full audit pending.; 2026-11-15 02:30Z: manual quota-neutral Yoruba repair fixed 21 exact outputs in two duplicate groups (20 game descriptions + Send prompt); readback 1,118 keys/sourceHash and no duplicate group >=4; no AI/translation calls; native review/full audit pending.; 2026-11-15 04:49Z: quota-neutral Zulu repair committed (22 exact strings across two duplicate game-description groups); pack read-back 1,118 keys/sourceHash; zero >=4 duplicate groups in zu. No AI/translation requests; native review and global quality audit pending.; 2026-11-15 04:50Z: Somali 12-key duplicate game-description cluster repaired; pack read-back 1,118 keys/sourceHash; zero >=4 duplicate groups in so. No AI/translation requests; native review/global audit pending. 2026-11-15 05:32Z: restored four Dhivehi CSS/markup strings exactly to immutable source; read back 1,118 keys/sourceHash; no AI or translation quota; english_overlap:58 unchanged and full audit pending.",
     "quotaStatusCurrent": "unknown-not-probed",
     "knownDailyFreeAiLimitBlocker": true,
     "repairBatch20261114": {
@@ -2806,7 +2806,7 @@
     "validation": "Read-back verified; provisional manual Hausa UI terms; native review required."
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-16T11:06:00Z",
+    "checkedAt": "2026-11-16T15:56:00Z",
     "filesRead": [
       "main docs/r125-continuation-checkpoint-20261010.json",
       "candidate docs/locale-candidates-20261008/resume-summary.json",
@@ -2817,12 +2817,12 @@
     ],
     "actions": {
       "latestPagesRun": {
-        "run": 1578,
-        "id": 43821015289,
+        "run": 1582,
+        "id": 43887482410,
         "status": "completed",
         "conclusion": "success",
-        "updatedAt": "2026-11-16T07:03:46Z",
-        "headSha": "dfc53494620e2a8a6bb84551ac0fa7ae7af6d181"
+        "updatedAt": "2026-11-16T14:37:14Z",
+        "headSha": "86879375d733eb56c4a1298ca6232945ee866063"
       },
       "latestR125": {
         "run": 150,
@@ -2831,14 +2831,15 @@
         "conclusion": "success",
         "resume": "skipped",
         "audit": "success",
-        "active": false
+        "active": false,
+        "createdAt": "2026-10-16T21:41:54Z"
       },
-      "activePagesAtCheck": null,
-      "latest100Listing": "Full latest-100 listing unavailable through current connector; directly fetched Pages #1578 and its jobs, all completed successfully."
+      "repositoryInProgress": 0,
+      "repositoryQueued": 0,
+      "checkedBy": "GitHub Actions API status filters"
     },
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
-      "commit": "298d8ab8c82e234094db2edaf3c71408344042a0",
       "trigger": "workflow_dispatch only",
       "runTranslationsDefault": false,
       "repairCandidatesDefault": false,
@@ -2874,21 +2875,21 @@
       ]
     },
     "production": {
-      "pagesRun": 1578,
+      "pagesRun": 1582,
       "pagesConclusion": "success",
       "pagesJobs": {
         "build": "success",
         "reportBuildStatus": "success",
         "deploy": "success"
       },
-      "siteHealthRun": 324,
+      "siteHealthRun": 325,
       "siteHealthConclusion": "success",
-      "countryChangeIceland": "passed",
+      "countryChangeIceland": "passed historically",
       "fullCountryCurrencyMatrix": "not certified",
       "prohibitedWeapon": "blocked",
-      "liveEnglishArabicChatProbes": "skipped by policy",
-      "programmaticTTS": "passed",
-      "voiceAcknowledgement": "passed",
+      "liveEnglishArabicChatProbes": "not probed this pass",
+      "programmaticTTS": "passed historically",
+      "voiceAcknowledgement": "passed historically",
       "liveASR": "skipped",
       "physicalAudio": "pending",
       "checkout": "inactive"
@@ -2901,7 +2902,7 @@
       "published": false,
       "linguisticCertification": false
     },
-    "decision": "NO-GO; Pages #1578 and its build/report/deploy jobs passed. 98/98 packs are structurally aligned, but Divehi has 58 English-overlap entries; full 98-pack quality/native review, all-language/all-section coverage, current AI availability, full country/currency matrix, physical audio and merchant checkout remain incomplete."
+    "decision": "NO-GO; Pages #1582 and build/report/deploy passed. 98/98 packs structurally aligned; Divehi has 58 English-overlap quality failures. Full quality/native review, all-language/all-section coverage, current AI availability, full country/currency matrix, physical audio and merchant checkout remain incomplete."
   },
   "latestQuotaNeutralManualBatch": {
     "checkedAt": "2026-11-14T20:20:00Z",
@@ -3009,7 +3010,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-16T11:32:39Z",
+  "updatedAt": "2026-11-16T15:56:00Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -3746,18 +3747,20 @@
     "qualityGate": "NOT PASS"
   },
   "latestActionsObservation": {
-    "endpointTotalCount": 5459,
+    "endpointTotalCount": 5460,
     "returnedRuns": 30,
-    "activeOrQueuedInReturnedRuns": 0,
+    "activeRuns": 0,
+    "queuedRuns": 0,
+    "checkedAt": "2026-11-16T15:56:00Z",
     "latestPages": {
-      "run": 1581,
-      "id": 43865039957,
+      "run": 1582,
+      "id": 43887482410,
       "status": "completed",
       "conclusion": "success",
-      "updatedAt": "2026-11-16T12:17:02Z",
-      "headSha": "71821b1382e54a30eebc8b313b1280c313fd94d9"
+      "updatedAt": "2026-11-16T14:37:14Z",
+      "headSha": "86879375d733eb56c4a1298ca6232945ee866063"
     },
-    "note": "Actions list endpoint returned 30 records (not 100); no active/queued status in those 30. Latest returned run is Pages #1581."
+    "note": "Direct Actions API checks: latest 30 run listing; separate status=in_progress and status=queued queries both returned total_count 0. No active/queued Actions runs at this check."
   },
   "structuralVerification": {
     "checkedAt": "2026-11-15T18:47:35Z",
@@ -5039,11 +5042,11 @@
     "decision": "NO-GO; Pages #1580 build/deploy and structural parity pass; native/full quality audit, all-language/all-section, live AI, full country/currency matrix, physical audio and merchant checkout remain incomplete."
   },
   "latestVerifiedPages": {
-    "run": 1581,
-    "id": 43865039957,
+    "run": 1582,
+    "id": 43887482410,
     "status": "completed",
     "conclusion": "success",
-    "updatedAt": "2026-11-16T12:17:02Z",
-    "headSha": "71821b1382e54a30eebc8b313b1280c313fd94d9"
+    "updatedAt": "2026-11-16T14:37:14Z",
+    "headSha": "86879375d733eb56c4a1298ca6232945ee866063"
   }
 }
