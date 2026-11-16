@@ -128,7 +128,8 @@
     "Scale output tokens for long UI descriptions",
     "Use existing primary model after light-model validation failure",
     "Cover 12 previously unmapped non-Latin script families in voice language detection, scoring and TTS locale selection",
-    "R76 production quota classifier now recognizes exact daily_free_ai_limit and spaced/hyphenated variants; nested AggregateError regression added; quota/rate-limit errors suppress external fallback."
+    "R76 production quota classifier now recognizes exact daily_free_ai_limit and spaced/hyphenated variants; nested AggregateError regression added; quota/rate-limit errors suppress external fallback.",
+    "UI translation now stops immediately on daily_free_ai_limit and provider HTTP429/rate limits before trying another model; locale delta builder stops before split/retry on quota/rate-limit responses. No translation request or quota was consumed."
   ],
   "runtimeCommit": "ce6e189e21b927b50d07ac96466a3ea4bdc69e47",
   "runtimeDeployRun": 38093026947,
@@ -184,7 +185,7 @@
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-16T22:56:09Z",
+    "checkedAt": "2026-11-16T23:00:51Z",
     "aiChat": {
       "lastConfirmedLiveRun": 43213407211,
       "checkedAt": "2026-11-12T11:57:45Z",
@@ -193,7 +194,7 @@
       "countryChange": "passed",
       "prohibitedWeapon": "blocked",
       "currentAvailability": "unknown-not-probed",
-      "reason": "R105 #84 live AI probes were skipped by policy; last confirmed English/Arabic probes remain 2026-11-12."
+      "reason": "R105 #85 live AI probes were skipped by policy; no quota-safe generation probe was available."
     },
     "voiceTranscription": {
       "run": 43219069259,
@@ -221,12 +222,15 @@
     },
     "translation": {
       "currentAvailability": "unknown-not-probed",
-      "reason": "No translation request sent; daily_free_ai_limit, Google HTTP429 and historical HTTP503 remain provider blockers."
+      "reason": "No translation request sent. Code now stops on daily_free_ai_limit and provider HTTP429; actual provider availability remains unknown."
     },
     "quotaBoundary": {
       "regression": "passed in R105 #84",
       "productionWorkerDeployed": true,
-      "externalFallbackSuppressedForQuotaErrors": true
+      "externalFallbackSuppressedForQuotaErrors": true,
+      "r76Guard": "passed and deployed in R105 #84",
+      "translationStopGuard": "passed and deployed in R105 #85",
+      "noQuotaBypassRequestsSent": true
     }
   },
   "voiceScriptCoverage": {
@@ -521,11 +525,11 @@
     "physicalAudioCertified": false
   },
   "latestContinuationVerification": {
-    "checkedAt": "2026-11-16T22:56:09Z",
-    "mainHeadAtRepair": "4580be6565005b7f36892f78036b92bc3213f7b1",
+    "checkedAt": "2026-11-16T23:00:51Z",
+    "mainHeadAtRepair": "4f299ac397c8b0e8c03a26a400f7b2702efc3473",
     "latestPages": {
-      "run": 1592,
-      "id": 43974587513,
+      "run": 1594,
+      "id": 43975275499,
       "status": "completed",
       "conclusion": "success",
       "jobs": {
@@ -535,12 +539,13 @@
       }
     },
     "latestR105": {
-      "run": 84,
-      "id": 43974590208,
+      "run": 85,
+      "id": 43975276337,
       "status": "completed",
       "conclusion": "success",
       "jobs": {
         "sourceValidation": "success",
+        "quotaBoundaryTests": "success",
         "languageNameValidation": "success",
         "workerDeploy": "success",
         "productionHealth": "success"
@@ -548,8 +553,8 @@
       "liveAiProbes": "skipped-by-policy"
     },
     "latestR123": {
-      "run": 66,
-      "id": 43974590077,
+      "run": 67,
+      "id": 43975276258,
       "status": "completed",
       "conclusion": "success",
       "jobs": {
@@ -562,18 +567,20 @@
       "liveAudioTtsAsr": "skipped-by-opt-in"
     },
     "latestSafetySmoke": {
-      "run": 29,
-      "id": 43961457780,
+      "run": 30,
+      "id": 43975276247,
       "status": "completed",
       "conclusion": "success",
-      "scope": "live Supabase moderation categories, benign property review path, public post-ad UI fail-closed markers"
+      "blockedCases": 4,
+      "benignLand": "allowed_pending_human_review",
+      "marketplaceFailClosed": "success"
     },
     "latestSiteHealth": {
-      "run": 327,
-      "id": 43969921597,
+      "run": 328,
+      "id": 43975276221,
       "status": "completed",
       "conclusion": "success",
-      "scope": "official production API health, robots/sitemap and 18 named public pages"
+      "scope": "official domain API health, robots/sitemap and 18 named pages"
     },
     "latestR125": {
       "run": 150,
@@ -585,7 +592,14 @@
       "audit": "success",
       "candidatePackChanges": 0
     },
-    "currentR125Run": "none found; current workflow_dispatch-only; no R125 run in latest 50 repository runs or the 5 workflow_dispatch runs returned",
+    "currentR125Run": null,
+    "actions": {
+      "totalCount": 5486,
+      "returnedRuns": 50,
+      "activeOrQueuedAtLastCheck": 0,
+      "latestR125InLatest50": false,
+      "currentR125Run": null
+    },
     "candidateState": {
       "structural": 98,
       "total": 98,
@@ -605,13 +619,18 @@
       "translation": "unknown-not-probed",
       "quotaRequests": 0,
       "quotaUsed": 0,
-      "probeSent": false
+      "probeSent": false,
+      "quotaBoundaryRegression": "pass",
+      "translationQuotaStopRegression": "pass"
     },
     "thisPass": {
       "candidatePackWrites": 0,
       "candidateMetadataPackWrites": 0,
       "translationRequests": 0,
       "aiQuotaUsed": 0,
+      "quotaGuardRepairCommitted": true,
+      "translationQuotaStopRepairCommitted": true,
+      "productionWorkerDeploy": "success",
       "published": false,
       "linguisticCertification": false
     }
@@ -6019,6 +6038,81 @@
       "conclusion": "success",
       "build": "success",
       "deploy": "success"
+    },
+    "quotaUse": {
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "candidatePackWrites": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "aiAvailability": "unknown-not-probed"
+  },
+  "latestTranslationQuotaStopRepair": {
+    "checkedAt": "2026-11-16T23:00:51Z",
+    "finding": "The UI translation service did not stop on the literal daily_free_ai_limit or HTTP429/rate-limit errors; it could try the next model. The locale delta builder could split a batch and retry after provider rate limiting. This was an unintended retry path against quota/rate limits.",
+    "commit": "4f299ac397c8b0e8c03a26a400f7b2702efc3473",
+    "files": [
+      "worker.js",
+      "tools/build_current_locale_delta.py",
+      "tools/test-ai-quota-boundary.cjs"
+    ],
+    "changes": {
+      "worker": "translationQuotaReason classifies daily quota as daily_free_ai_limit and HTTP429/rate-limit/too-many-requests as provider_rate_limited; /api/ui-translate returns immediately before another model attempt.",
+      "builder": "quota_or_rate_limit stops before SPLIT_RETRY and recursive batch splitting.",
+      "tests": [
+        "daily_free_ai_limit",
+        "daily free AI limit",
+        "3036 daily free allocation",
+        "Google HTTP429",
+        "provider rate limit",
+        "nested AggregateError",
+        "non-quota capacity remains distinct"
+      ]
+    },
+    "verification": {
+      "r105": {
+        "run": 85,
+        "id": 43975276337,
+        "conclusion": "success",
+        "quotaBoundaryTests": "success",
+        "all98LanguageNames": "success",
+        "workerDeploy": "success",
+        "productionHealth": "success",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r123": {
+        "run": 67,
+        "id": 43975276258,
+        "conclusion": "success",
+        "audioValidation": "success",
+        "workerDeploy": "success",
+        "liveAudioTtsAsr": "skipped-by-opt-in",
+        "categoryTranslations": "success",
+        "voiceAcknowledgement": "success",
+        "dynamicVoicePlaceholders": "success"
+      },
+      "safety": {
+        "run": 30,
+        "id": 43975276247,
+        "conclusion": "success",
+        "blockedCases": 4,
+        "benignLand": "allowed_pending_human_review",
+        "marketplaceFailClosed": "success"
+      },
+      "siteHealth": {
+        "run": 328,
+        "id": 43975276221,
+        "conclusion": "success",
+        "scope": "official domain API health, robots/sitemap and 18 named pages"
+      },
+      "pages": {
+        "run": 1594,
+        "id": 43975275499,
+        "conclusion": "success",
+        "build": "success",
+        "deploy": "success"
+      }
     },
     "quotaUse": {
       "translationRequests": 0,
