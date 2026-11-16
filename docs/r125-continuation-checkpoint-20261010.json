@@ -591,7 +591,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-16T17:20:00Z",
+  "checkedAt": "2026-11-16T19:46:07Z",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -3010,7 +3010,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-16T17:20:00Z",
+  "updatedAt": "2026-11-16T19:46:07Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -5054,61 +5054,205 @@
     }
   },
   "latestVerification": {
-    "checkedAt": "2026-11-16T17:20:00Z",
+    "checkedAt": "2026-11-16T19:46:07Z",
     "pages": {
-      "run": 1584,
-      "id": 43906634749,
-      "commit": "2093efaee2b67c6dbd37d8c2a00c0bc70a8a5abb",
+      "run": 1585,
+      "id": 43917504343,
+      "status": "completed",
       "conclusion": "success",
+      "headSha": "5a873ea7157b8ebc05295414796b408654a94931",
       "jobs": {
         "build": "success",
-        "uploadArtifact": "success",
         "deploy": "success",
         "reportBuildStatus": "success"
       }
     },
-    "r125": {
-      "latestKnownRun": 150,
-      "id": 38971104197,
-      "createdAt": "2026-10-16T21:41:54Z",
-      "event": "push",
-      "headSha": "0911d8f826e7347f3b5dbf9aacccc7893ee85dd8",
+    "siteHealth": {
+      "run": 325,
+      "id": 43821298704,
+      "createdAt": "2026-11-16T07:05:16Z",
       "conclusion": "success",
+      "scope": "live official domain; API health ok; robots/sitemap checks passed; 18 named pages returned HTTP 200"
+    },
+    "r125": {
+      "run": 150,
+      "id": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-10-16T21:41:54Z",
+      "event": "push on legacy workflow revision",
       "resume": "skipped",
       "audit": "success",
-      "saveProgress": "success",
-      "commitChangedOnly": [
-        "resume-summary.json",
-        "scheduled-mode.json"
-      ],
       "candidatePackChanges": 0,
       "translationRequests": 0,
       "aiQuotaUsed": 0
     },
     "currentWorkflow": {
-      "file": ".github/workflows/r125-hourly-candidate-resume.yml",
-      "mainTriggers": [
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "blob": "44f7d9a451b339834d2b91c992f51b60c03eca68",
+      "triggers": [
         "workflow_dispatch"
       ],
-      "defaultRunTranslations": false,
-      "defaultRepairCandidates": false,
+      "scheduleTriggerPresent": false,
+      "pushTriggerPresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
       "translationRequiresExplicitOptIn": true,
-      "auditOnlyCandidateWrites": false,
-      "repairModeMayWriteCandidates": true
+      "auditOnlyPersistentCandidatePackWrites": false,
+      "repairModeMayWriteCandidatePacks": true,
+      "note": "Despite the filename containing 'hourly', the current YAML has no schedule trigger. The latest known R125 run (#150) used an older workflow revision."
     },
-    "activeR125Run": "none observed; no in_progress or queued Actions runs at check time",
-    "divehiReview": {
-      "reviewItems": 58,
-      "englishLeadingSentenceDetected": 51,
-      "topicKeywordMatchesForSafetyLegalPaymentHealthPrivacyEmergencyMerchantCustoms": 33,
-      "method": "deterministic regex classification of review targets; not a translation or linguistic judgment",
-      "nativeReviewRequired": true
+    "candidateState": {
+      "structural": 98,
+      "total": 98,
+      "keysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "qualityCandidates": 97,
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "full98QualityAudit": false,
+      "nativeCertification": 0,
+      "published": false
     },
-    "blockersUnchanged": [
-      "daily_free_ai_limit",
-      "Google HTTP429",
-      "HTTP503 all_translation_backends_unavailable"
-    ]
+    "duplicateRecheck": {
+      "checkedAt": "2026-11-16T19:44:59Z",
+      "scope": [
+        "dv",
+        "dz",
+        "kl",
+        "ku",
+        "rw",
+        "st",
+        "ti",
+        "tn",
+        "to",
+        "xh"
+      ],
+      "method": "Fresh direct GitHub read-back of ten previously flagged locale packs; exact output grouping threshold >=4; heuristic only.",
+      "source": {
+        "count": 1118,
+        "sourceHash": "6a1126e6a2ce5629"
+      },
+      "packsFetched": 10,
+      "packsWith1118Keys": 10,
+      "sourceHashMatches": 10,
+      "missingKeys": 0,
+      "extraKeys": 0,
+      "emptyValues": 0,
+      "duplicateOutputGroups": 27,
+      "duplicateKeysAffected": 255,
+      "findings": [
+        {
+          "language": "dv",
+          "groups": 2,
+          "keys": 20
+        },
+        {
+          "language": "dz",
+          "groups": 1,
+          "keys": 14
+        },
+        {
+          "language": "kl",
+          "groups": 5,
+          "keys": 44
+        },
+        {
+          "language": "ku",
+          "groups": 2,
+          "keys": 15
+        },
+        {
+          "language": "rw",
+          "groups": 3,
+          "keys": 35
+        },
+        {
+          "language": "st",
+          "groups": 4,
+          "keys": 37
+        },
+        {
+          "language": "ti",
+          "groups": 2,
+          "keys": 14
+        },
+        {
+          "language": "tn",
+          "groups": 2,
+          "keys": 20
+        },
+        {
+          "language": "to",
+          "groups": 3,
+          "keys": 26
+        },
+        {
+          "language": "xh",
+          "groups": 3,
+          "keys": 30
+        }
+      ],
+      "linguisticJudgment": "not performed",
+      "nativeReviewRequired": true,
+      "candidatePackWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "ai": {
+      "chat": "unknown-not-probed",
+      "translation": "unknown-not-probed",
+      "quotaRequests": 0,
+      "quotaUsed": 0,
+      "blockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable"
+      ],
+      "nonConsumingHealthEndpoint": "/api/health reports aiBinding presence and model names only; it does not test live model capacity or generation.",
+      "probeSent": false
+    },
+    "safety": {
+      "latestLiveSafetyRun": 43517683421,
+      "prohibitedWeaponSale": "blocked; reviewRequired=true; route=null",
+      "benignHotelRequest": "allowed in prior browser audit",
+      "databaseRLS": "17/17 public tables enabled; 0 error/warning advisories; 2 informational advisories",
+      "fullThreatModelCertification": false
+    },
+    "countryCurrency": {
+      "countryChangeIceland": "passed in R105 #81",
+      "currencyAndFallbackUnitTests": "passed in R105 #81",
+      "countryProfilesPreviouslyAudited": 248,
+      "localizedPagesPreviouslyAudited": 44,
+      "visibleLocalesPreviouslyAudited": [
+        "ar",
+        "fr",
+        "hi",
+        "zh"
+      ],
+      "fullCountryCurrencyMatrix": false,
+      "allLanguagesAndAllSectionsCertified": false
+    },
+    "voice": {
+      "headlessVoiceSequence": "passed in R123 #64",
+      "voiceAcknowledgementBeforeNavigation": "passed",
+      "dynamicPlaceholders": [
+        "ar",
+        "fr"
+      ],
+      "syntheticTtsAsrRun": 43219069259,
+      "syntheticLanguages": [
+        "ar",
+        "fr",
+        "en"
+      ],
+      "liveTtsAsrLatest": "skipped by opt-in gate",
+      "physicalMicrophoneSpeakerCertified": false
+    },
+    "checkout": "inactive",
+    "decision": "NO-GO"
   },
   "run26AutomationAudit": {
     "checkedAt": "2026-11-16T17:20:00Z",
@@ -5221,5 +5365,249 @@
       "branchSummaryMetadataUpdated": true
     },
     "decision": "NO-GO; latest Pages deployment succeeds and all 98 packs are structurally aligned, but 58 Dhivehi overlap entries, full quality/native reviews, complete all-language/all-section coverage, current AI, full country/currency matrix, physical audio, and merchant checkout remain incomplete."
+  },
+  "run27AutomationAudit": {
+    "checkedAt": "2026-11-16T19:46:07Z",
+    "filesRead": [
+      "main docs/r125-continuation-checkpoint-20261010.json",
+      "branch docs/locale-candidates-20261008/resume-summary.json",
+      "branch docs/locale-candidates-20261008/resume-latest.log",
+      "main .github/workflows/r125-hourly-candidate-resume.yml",
+      "branch source.json and ten flagged locale packs"
+    ],
+    "baselineReconciliation": {
+      "userSuppliedBaseline": "63/98 complete; 35 remaining",
+      "actualMainCheckpoint": "97/98 quality candidates; one remaining (dv)",
+      "structuralStatus": "98/98 packs; 1,118 keys and sourceHash match",
+      "conclusion": "The 63/98 figure is stale and is not the current checkpoint value."
+    },
+    "actions": {
+      "checkedAt": "2026-11-16T19:46:07Z",
+      "totalCount": 5463,
+      "returnedRuns": 30,
+      "activeOrQueuedInReturnedRuns": 0,
+      "latestRepositoryRun": {
+        "run": 1585,
+        "id": 43917504343,
+        "name": "pages build and deployment",
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-11-16T17:21:24Z",
+        "headSha": "5a873ea7157b8ebc05295414796b408654a94931"
+      },
+      "r125FoundInLatest30": false,
+      "latestKnownR125": {
+        "run": 150,
+        "id": 38971104197,
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-10-16T21:41:54Z",
+        "event": "push on legacy workflow revision",
+        "resume": "skipped",
+        "audit": "success",
+        "candidatePackChanges": 0,
+        "translationRequests": 0,
+        "aiQuotaUsed": 0
+      },
+      "limitation": "Repository Actions query returned the latest 30 only; no R125 appears in that page. #150 remains the latest known R125 run, not a proven exhaustive workflow-filtered listing."
+    },
+    "workflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "blob": "44f7d9a451b339834d2b91c992f51b60c03eca68",
+      "triggers": [
+        "workflow_dispatch"
+      ],
+      "scheduleTriggerPresent": false,
+      "pushTriggerPresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "translationRequiresExplicitOptIn": true,
+      "auditOnlyPersistentCandidatePackWrites": false,
+      "repairModeMayWriteCandidatePacks": true,
+      "note": "Despite the filename containing 'hourly', the current YAML has no schedule trigger. The latest known R125 run (#150) used an older workflow revision."
+    },
+    "candidateState": {
+      "structural": 98,
+      "total": 98,
+      "keysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "qualityCandidates": 97,
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "full98QualityAudit": false,
+      "nativeCertification": 0,
+      "published": false
+    },
+    "duplicateRecheck": {
+      "checkedAt": "2026-11-16T19:44:59Z",
+      "scope": [
+        "dv",
+        "dz",
+        "kl",
+        "ku",
+        "rw",
+        "st",
+        "ti",
+        "tn",
+        "to",
+        "xh"
+      ],
+      "method": "Fresh direct GitHub read-back of ten previously flagged locale packs; exact output grouping threshold >=4; heuristic only.",
+      "source": {
+        "count": 1118,
+        "sourceHash": "6a1126e6a2ce5629"
+      },
+      "packsFetched": 10,
+      "packsWith1118Keys": 10,
+      "sourceHashMatches": 10,
+      "missingKeys": 0,
+      "extraKeys": 0,
+      "emptyValues": 0,
+      "duplicateOutputGroups": 27,
+      "duplicateKeysAffected": 255,
+      "findings": [
+        {
+          "language": "dv",
+          "groups": 2,
+          "keys": 20
+        },
+        {
+          "language": "dz",
+          "groups": 1,
+          "keys": 14
+        },
+        {
+          "language": "kl",
+          "groups": 5,
+          "keys": 44
+        },
+        {
+          "language": "ku",
+          "groups": 2,
+          "keys": 15
+        },
+        {
+          "language": "rw",
+          "groups": 3,
+          "keys": 35
+        },
+        {
+          "language": "st",
+          "groups": 4,
+          "keys": 37
+        },
+        {
+          "language": "ti",
+          "groups": 2,
+          "keys": 14
+        },
+        {
+          "language": "tn",
+          "groups": 2,
+          "keys": 20
+        },
+        {
+          "language": "to",
+          "groups": 3,
+          "keys": 26
+        },
+        {
+          "language": "xh",
+          "groups": 3,
+          "keys": 30
+        }
+      ],
+      "linguisticJudgment": "not performed",
+      "nativeReviewRequired": true,
+      "candidatePackWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "ai": {
+      "chat": "unknown-not-probed",
+      "translation": "unknown-not-probed",
+      "quotaRequests": 0,
+      "quotaUsed": 0,
+      "blockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable"
+      ],
+      "nonConsumingHealthEndpoint": "/api/health reports aiBinding presence and model names only; it does not test live model capacity or generation.",
+      "probeSent": false
+    },
+    "production": {
+      "latestPages": {
+        "run": 1585,
+        "id": 43917504343,
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "5a873ea7157b8ebc05295414796b408654a94931",
+        "jobs": {
+          "build": "success",
+          "deploy": "success",
+          "reportBuildStatus": "success"
+        }
+      },
+      "latestSiteHealth": {
+        "run": 325,
+        "id": 43821298704,
+        "createdAt": "2026-11-16T07:05:16Z",
+        "conclusion": "success",
+        "scope": "live official domain; API health ok; robots/sitemap checks passed; 18 named pages returned HTTP 200"
+      },
+      "fullAllLanguageAndSectionE2E": false
+    },
+    "safety": {
+      "latestLiveSafetyRun": 43517683421,
+      "prohibitedWeaponSale": "blocked; reviewRequired=true; route=null",
+      "benignHotelRequest": "allowed in prior browser audit",
+      "databaseRLS": "17/17 public tables enabled; 0 error/warning advisories; 2 informational advisories",
+      "fullThreatModelCertification": false
+    },
+    "countryCurrency": {
+      "countryChangeIceland": "passed in R105 #81",
+      "currencyAndFallbackUnitTests": "passed in R105 #81",
+      "countryProfilesPreviouslyAudited": 248,
+      "localizedPagesPreviouslyAudited": 44,
+      "visibleLocalesPreviouslyAudited": [
+        "ar",
+        "fr",
+        "hi",
+        "zh"
+      ],
+      "fullCountryCurrencyMatrix": false,
+      "allLanguagesAndAllSectionsCertified": false
+    },
+    "voice": {
+      "headlessVoiceSequence": "passed in R123 #64",
+      "voiceAcknowledgementBeforeNavigation": "passed",
+      "dynamicPlaceholders": [
+        "ar",
+        "fr"
+      ],
+      "syntheticTtsAsrRun": 43219069259,
+      "syntheticLanguages": [
+        "ar",
+        "fr",
+        "en"
+      ],
+      "liveTtsAsrLatest": "skipped by opt-in gate",
+      "physicalMicrophoneSpeakerCertified": false
+    },
+    "checkout": "inactive pending merchant configuration",
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "published": false,
+      "linguisticCertification": false,
+      "mainCheckpointUpdated": true,
+      "branchSummaryMetadataUpdated": true
+    },
+    "decision": "NO-GO; 98 packs are structurally aligned, but Divehi overlap and duplicate clusters in ten low-resource languages, native review, full all-language/all-section end-to-end coverage, live AI availability, full country/currency matrix, physical audio and merchant checkout remain incomplete."
   }
 }
