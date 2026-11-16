@@ -591,7 +591,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-16T19:46:07Z",
+  "checkedAt": "2026-11-16T21:29:42Z",
   "latestR125Run": {
     "run": 38971104197,
     "status": "completed",
@@ -3010,7 +3010,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-16T19:46:07Z",
+  "updatedAt": "2026-11-16T21:29:42Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -5838,5 +5838,47 @@
       "linguisticCertification": false
     },
     "decision": "NO-GO"
+  },
+  "latestQuotaSafetyFallbackRepair": {
+    "checkedAt": "2026-11-16T21:29:42Z",
+    "productionEntrypoint": "wrangler.jsonc -> worker-r76.js",
+    "activeBaseChain": "worker-r76.js -> worker-r31.js -> worker-r30.js -> worker.js",
+    "affectedPaths": [
+      "/api/request moderation via safety()",
+      "/api/visual-search image-description moderation via safety()"
+    ],
+    "issue": "The base worker ai() stopped trying Workers AI models on a daily allocation error but still proceeded to the external Pollinations fallback. This could let moderation continue through another provider after a daily quota or HTTP 429/rate-limit response.",
+    "repair": "The base worker now throws immediately on Workers AI 3036/daily-free allocation patterns, daily_free_ai_limit, HTTP 429, rate-limit and too-many-requests errors before external fallback. safety() catches the failure and returns moderation_unavailable_hold (fail-closed). Non-quota availability fallback remains available.",
+    "commits": {
+      "worker": "7a24140d88f896638a6bf4d951d183f6bc24f98",
+      "regressionTest": "45a96b3cd580478e49f0ba0563c684b4d9dc5208"
+    },
+    "readBack": {
+      "workerBlob": "1b3f108ceaf6b63063fdb128c86b8fce7525b760",
+      "regressionTestBlob": "e3ba81360404c5b57d77dc461e595b4dd216137b",
+      "sourceHashReadBack": true
+    },
+    "quotaNeutralExecution": {
+      "actualWorkerFunctionsExecutedWithStubbedProviders": true,
+      "quotaCases": [
+        "3036 daily free allocation",
+        "daily_free_ai_limit",
+        "Google HTTP 429 Too Many Requests",
+        "provider rate limit"
+      ],
+      "quotaCasesResult": "all fail-closed; allowed=false; reviewRequired=true; moderation_unavailable_hold; external provider calls=0",
+      "nonQuotaCapacityFailure": "external fallback still called once; behavior preserved"
+    },
+    "ci": {
+      "r105WorkflowContainsQuotaBoundaryTest": true,
+      "r105WorkflowLiveAiProbeDefault": false,
+      "r123WorkflowLiveAudioProbeDefault": false,
+      "commitStatusQuery": "No status entries returned at the time of this checkpoint; do not claim CI/deployment success for these two code commits yet."
+    },
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "candidatePackWrites": 0,
+    "published": false,
+    "linguisticCertification": false
   }
 }
