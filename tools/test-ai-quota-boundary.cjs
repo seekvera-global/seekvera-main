@@ -18,6 +18,9 @@ vm.runInContext(worker.slice(start, end) + '\nthis.quotaLimited = quotaLimited;'
 
 const cases = [
   [new Error('Error 3036: daily free allocation exhausted'), true],
+  [new Error('daily_free_ai_limit'), true],
+  [new Error('daily free AI limit'), true],
+  [new AggregateError([new Error('capacity busy'), new Error('daily_free_ai_limit')], 'all models failed'), true],
   [new Error('HTTP 429 Too Many Requests'), true],
   [new Error('provider rate limit exceeded'), true],
   [new AggregateError([new Error('capacity busy'), new Error('HTTP 429 Too Many Requests')], 'all models failed'), true],
