@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-16T04:28:00Z",
+  "checkedAt": "2026-11-16T06:39:31Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -334,27 +334,24 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-16T05:07:00Z",
+    "checkedAt": "2026-11-16T06:39:31Z",
     "filesRead": [
       "main docs/r125-continuation-checkpoint-20261010.json",
       "candidate docs/locale-candidates-20261008/resume-summary.json",
       "candidate docs/locale-candidates-20261008/resume-latest.log",
-      "main .github/workflows/r125-hourly-candidate-resume.yml",
-      "main tools/r100_all_country_audit.mjs",
-      "main .github/workflows/r100-all-country-live-audit.yml"
+      "main .github/workflows/r125-hourly-candidate-resume.yml"
     ],
     "actions": {
       "latest100Fetched": true,
       "latest100ActiveCount": 0,
       "latestRepositoryRun": {
-        "id": 43804443223,
-        "number": 1575,
+        "id": 43808310765,
+        "number": 1576,
         "path": "dynamic/pages/pages-build-deployment",
         "status": "completed",
         "conclusion": "success",
-        "createdAt": "2026-11-16T04:29:48Z",
-        "updatedAt": "2026-11-16T04:30:26Z",
-        "headSha": "9ba0a691510a122ed1c3fdf7c3d7bd6921a96c5e"
+        "updatedAt": "2026-11-16T05:09:30Z",
+        "headSha": "c7109ed3b72db7755d26709f29477d40ec0cb7e2"
       },
       "latestR125": {
         "run": 150,
@@ -368,6 +365,7 @@
       }
     },
     "workflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
       "commit": "298d8ab8c82e234094db2edaf3c71408344042a0",
       "trigger": "workflow_dispatch only",
       "runTranslationsDefault": false,
@@ -382,6 +380,7 @@
       "total": 98,
       "keysPerPack": 1118,
       "sourceHash": "6a1126e6a2ce5629",
+      "structuralResult": "PASS",
       "qualityCandidates": 97,
       "remaining": [
         "dv"
@@ -402,20 +401,33 @@
         "HTTP503 all_translation_backends_unavailable"
       ]
     },
-    "coverageClarification": {
-      "siteHealth": "18 fixed pages; availability/SEO checks only",
-      "r105": "country action Iceland and weapon block assertions; live English/Arabic chat probes skipped",
-      "r100": "all-country audit script exists for >=240 profiles and atomic country/language/currency/HTML state, but no successful latest run verified in this pass",
-      "voice": "programmatic TTS and acknowledgement only; ASR and physical device checks pending",
-      "checkout": "inactive until merchant configuration"
+    "production": {
+      "pagesRun": 1576,
+      "pagesConclusion": "success",
+      "siteHealthRun": 324,
+      "siteHealthConclusion": "success",
+      "siteHealthScope": "18 fixed pages/API/robots/sitemap only",
+      "r105Run": 81,
+      "r105Conclusion": "success",
+      "countryChangeIceland": "passed",
+      "fullCountryCurrencyMatrix": "not certified",
+      "prohibitedWeapon": "blocked",
+      "liveEnglishArabicChatProbes": "skipped by policy",
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "liveASR": "skipped",
+      "physicalAudio": "pending",
+      "checkout": "inactive"
     },
     "thisPass": {
       "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
       "translationRequests": 0,
       "aiQuotaUsed": 0,
       "published": false,
       "linguisticCertification": false
-    }
+    },
+    "decision": "NO-GO; latest Pages deploy and 98-pack structural parity pass, but full quality/native review, all-language/all-section UI, current AI availability, full country/currency matrix, live ASR/physical audio, and merchant checkout remain incomplete."
   },
   "latestContinuationVerification": {
     "checkedAt": "2026-11-15T21:48:19Z",
@@ -2567,5 +2579,101 @@
     "published": false,
     "linguisticCertification": false
   },
-  "scriptWarningInterpretation": "Zero in the reconciled partial warning map is not a full 98-pack script/quality audit; global audit remains pending."
+  "scriptWarningInterpretation": "Zero in the reconciled partial warning map is not a full 98-pack script/quality audit; global audit remains pending.",
+  "run21AutomationAudit": {
+    "checkedAt": "2026-11-16T06:39:31Z",
+    "filesRead": [
+      "main docs/r125-continuation-checkpoint-20261010.json",
+      "candidate docs/locale-candidates-20261008/resume-summary.json",
+      "candidate docs/locale-candidates-20261008/resume-latest.log",
+      "main .github/workflows/r125-hourly-candidate-resume.yml"
+    ],
+    "actions": {
+      "latest100Fetched": true,
+      "latest100ActiveCount": 0,
+      "latestRepositoryRun": {
+        "id": 43808310765,
+        "number": 1576,
+        "path": "dynamic/pages/pages-build-deployment",
+        "status": "completed",
+        "conclusion": "success",
+        "updatedAt": "2026-11-16T05:09:30Z",
+        "headSha": "c7109ed3b72db7755d26709f29477d40ec0cb7e2"
+      },
+      "latestR125": {
+        "run": 150,
+        "id": 38971104197,
+        "status": "completed",
+        "conclusion": "success",
+        "resume": "skipped",
+        "audit": "success",
+        "active": false,
+        "createdAt": "2026-10-16T21:41:54Z"
+      }
+    },
+    "workflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "commit": "298d8ab8c82e234094db2edaf3c71408344042a0",
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "explicitTranslationOptInRequired": true,
+      "auditOnlyBranchWrites": false,
+      "deterministicRepairStepsMayWriteCandidates": true,
+      "publication": false
+    },
+    "candidateState": {
+      "structural": 98,
+      "total": 98,
+      "keysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "structuralResult": "PASS",
+      "qualityCandidates": 97,
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "full98QualityAudit": false,
+      "published": false,
+      "linguisticCertification": false
+    },
+    "ai": {
+      "chat": "unknown-not-probed",
+      "translation": "unknown-not-probed",
+      "quotaUsed": 0,
+      "translationRequests": 0,
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable"
+      ]
+    },
+    "production": {
+      "pagesRun": 1576,
+      "pagesConclusion": "success",
+      "siteHealthRun": 324,
+      "siteHealthConclusion": "success",
+      "siteHealthScope": "18 fixed pages/API/robots/sitemap only",
+      "r105Run": 81,
+      "r105Conclusion": "success",
+      "countryChangeIceland": "passed",
+      "fullCountryCurrencyMatrix": "not certified",
+      "prohibitedWeapon": "blocked",
+      "liveEnglishArabicChatProbes": "skipped by policy",
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "liveASR": "skipped",
+      "physicalAudio": "pending",
+      "checkout": "inactive"
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "published": false,
+      "linguisticCertification": false
+    },
+    "decision": "NO-GO; latest Pages deploy and 98-pack structural parity pass, but full quality/native review, all-language/all-section UI, current AI availability, full country/currency matrix, live ASR/physical audio, and merchant checkout remain incomplete."
+  }
 }
