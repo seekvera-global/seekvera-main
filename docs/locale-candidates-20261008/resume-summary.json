@@ -425,7 +425,8 @@
       "published": false,
       "linguisticCertification": false,
       "mainCheckpointUpdated": true,
-      "mainCheckpointCommit": "ea20415d39d7acd857ffeef1204d7aa254a66446"
+      "mainCheckpointCommit": "ea20415d39d7acd857ffeef1204d7aa254a66446",
+      "pagesAfterCheckpoint": "1593 success"
     },
     "latestR105": {
       "run": 84,
@@ -457,7 +458,8 @@
     "latestPagesAfterCheckpoint": {
       "run": 1593,
       "id": 43974865175,
-      "status": "queued",
+      "status": "completed",
+      "conclusion": "success",
       "headSha": "ea20415d39d7acd857ffeef1204d7aa254a66446"
     }
   },
@@ -3885,7 +3887,7 @@
       "audit": "success",
       "historicalOldWorkflowRevision": true
     },
-    "currentR125Run": "none found; current workflow_dispatch-only and no matching run in latest 50 repository runs or 5 manual-dispatch runs",
+    "currentR125Run": "none",
     "candidatePackWrites": 0,
     "translationRequests": 0,
     "aiQuotaUsed": 0,
@@ -3897,8 +3899,10 @@
     "pagesAfterCheckpoint": {
       "run": 1593,
       "id": 43974865175,
-      "status": "queued"
-    }
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "activeOrQueuedAtLastCheck": 0
   },
   "latestManualTkRepair": {
     "checkedAt": "2026-11-16T20:03:51.207Z",
