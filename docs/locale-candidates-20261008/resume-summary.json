@@ -3945,9 +3945,15 @@
   "latestPagesAfterMainCheckpoint": {
     "run": 1587,
     "id": 43945705356,
-    "status": "queued",
+    "status": "in_progress",
     "createdAt": "2026-11-16T20:03:05Z",
+    "updatedAt": "2026-11-16T20:03:41Z",
     "headSha": "cd6224e08ba4e69ba8aa5c1cc267b085cd1fec66",
-    "note": "Pages build triggered by Main checkpoint documentation commit; no R125 candidate workflow is active."
+    "jobs": {
+      "build": "success",
+      "deploy": "in_progress",
+      "reportBuildStatus": "success"
+    },
+    "note": "Pages deployment is running after the Main checkpoint documentation commit. This is not an R125 candidate-resume run."
   }
 }
