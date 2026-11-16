@@ -2976,7 +2976,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-16T02:33:47Z",
+  "updatedAt": "2026-11-16T06:39:31Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -4597,5 +4597,104 @@
       "linguisticCertification": false
     },
     "decision": "NO-GO; Pages deploy and structural parity pass, but full 98-pack quality audit, native review, all-language/all-section UI tests, current AI availability, full country/currency matrix, live ASR/physical audio, and merchant checkout remain incomplete."
+  },
+  "run21AutomationAudit": {
+    "checkedAt": "2026-11-16T06:39:31Z",
+    "filesRead": [
+      "main docs/r125-continuation-checkpoint-20261010.json",
+      "candidate docs/locale-candidates-20261008/resume-summary.json",
+      "candidate docs/locale-candidates-20261008/resume-latest.log",
+      "main .github/workflows/r125-hourly-candidate-resume.yml"
+    ],
+    "actions": {
+      "latest100Fetched": true,
+      "latest100ActiveCount": 0,
+      "latest100ActiveObservationAt": "2026-11-16T06:39:31Z",
+      "latestRepositoryRun": {
+        "id": 43808310765,
+        "number": 1576,
+        "path": "dynamic/pages/pages-build-deployment",
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-11-16T05:08:40Z",
+        "updatedAt": "2026-11-16T05:09:30Z",
+        "headBranch": "main",
+        "headSha": "c7109ed3b72db7755d26709f29477d40ec0cb7e2"
+      },
+      "latestR125": {
+        "run": 150,
+        "id": 38971104197,
+        "status": "completed",
+        "conclusion": "success",
+        "resume": "skipped",
+        "audit": "success",
+        "active": false,
+        "createdAt": "2026-10-16T21:41:54Z"
+      }
+    },
+    "workflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "commit": "298d8ab8c82e234094db2edaf3c71408344042a0",
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "explicitTranslationOptInRequired": true,
+      "auditOnlyBranchWrites": false,
+      "deterministicRepairStepsMayWriteCandidates": true,
+      "publication": false
+    },
+    "candidateState": {
+      "structural": 98,
+      "total": 98,
+      "sourceKeysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "structuralResult": "PASS",
+      "qualityCandidates": 97,
+      "qualityRemaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "full98QualityAudit": false,
+      "published": false,
+      "linguisticCertification": false
+    },
+    "ai": {
+      "chat": "unknown-not-probed",
+      "translationBackend": "unknown-not-probed",
+      "quotaUsed": 0,
+      "translationRequests": 0,
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable"
+      ]
+    },
+    "production": {
+      "pagesRun": 1576,
+      "pagesConclusion": "success",
+      "siteHealthRun": 324,
+      "siteHealthConclusion": "success",
+      "siteHealthScope": "18 fixed pages/API/robots/sitemap only",
+      "r105Run": 81,
+      "r105Conclusion": "success",
+      "countryChangeIceland": "passed",
+      "fullCountryCurrencyMatrix": "not certified",
+      "prohibitedWeapon": "blocked",
+      "liveEnglishArabicChatProbes": "skipped by policy",
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "liveASR": "skipped",
+      "physicalAudio": "pending",
+      "checkout": "inactive"
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "published": false,
+      "linguisticCertification": false
+    },
+    "decision": "NO-GO; latest Pages deploy and 98-pack structural parity pass, but full quality/native review, all-language/all-section UI, current AI availability, full country/currency matrix, live ASR/physical audio, and merchant checkout remain incomplete."
   }
 }
