@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-16T19:46:07Z",
+  "checkedAt": "2026-11-16T19:58:09Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -3656,5 +3656,228 @@
     "candidatePackWrites": 0,
     "translationRequests": 0,
     "aiQuotaUsed": 0
+  },
+  "latestReadOnly98PackScreen": {
+    "checkedAt": "2026-11-16T19:58:09Z",
+    "method": "Direct read-only fetch of all 98 locale packs; checked exact source-key coverage, sourceHash, qualityPolicy, nonempty string values, three executable CSS source invariants, immutable ID placeholder, suspicious English overlap using the repository's five-word contiguous-run rule, and exact target-output groups of 4+ distinct source strings.",
+    "languagesFetched": 98,
+    "sourceCount": 1118,
+    "totalTranslationEntries": 109564,
+    "sourceHash": "6a1126e6a2ce5629",
+    "packsWith1118Keys": 98,
+    "sourceHashMatches": 98,
+    "qualityPolicyMatches": 98,
+    "missingKeys": 0,
+    "extraKeys": 0,
+    "emptyOrNonStringValues": 0,
+    "cssInvariantMismatches": 0,
+    "reservedIdentifierMismatches": 0,
+    "englishOverlapTotal": 58,
+    "englishOverlapLanguages": [
+      {
+        "language": "dv",
+        "count": 58
+      }
+    ],
+    "duplicateOutputThreshold": 4,
+    "duplicateOutputGroups": 28,
+    "duplicateKeysAffected": 261,
+    "duplicateLanguages": [
+      {
+        "language": "tk",
+        "groups": 1,
+        "keys": 6,
+        "note": "Six distinct CTA source strings (Return/Play/Search/Scan/Prohibited/Share) collapse to the same target output 'SEEKVERA'; likely missing action meaning, native review required."
+      },
+      {
+        "language": "dz",
+        "groups": 1,
+        "keys": 14
+      },
+      {
+        "language": "ti",
+        "groups": 2,
+        "keys": 14
+      },
+      {
+        "language": "kl",
+        "groups": 5,
+        "keys": 44
+      },
+      {
+        "language": "rw",
+        "groups": 3,
+        "keys": 35
+      },
+      {
+        "language": "to",
+        "groups": 3,
+        "keys": 26
+      },
+      {
+        "language": "dv",
+        "groups": 2,
+        "keys": 20
+      },
+      {
+        "language": "ku",
+        "groups": 2,
+        "keys": 15
+      },
+      {
+        "language": "xh",
+        "groups": 3,
+        "keys": 30
+      },
+      {
+        "language": "st",
+        "groups": 4,
+        "keys": 37
+      },
+      {
+        "language": "tn",
+        "groups": 2,
+        "keys": 20
+      }
+    ],
+    "interpretation": "Structural and deterministic invariant checks pass. Duplicate grouping is a quality heuristic, not a native-language verdict. English overlap remains concentrated in Divehi. This screen does not run the official script-warning/reviewed-label audit and does not certify linguistic accuracy.",
+    "structuralResult": "PASS",
+    "officialFullQualityAudit": false,
+    "nativeLanguageReview": false,
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false
+  },
+  "latestAutomationPass": {
+    "checkedAt": "2026-11-16T19:58:09Z",
+    "filesRead": [
+      "main: docs/r125-continuation-checkpoint-20261010.json",
+      "branch: docs/locale-candidates-20261008/resume-summary.json",
+      "branch: docs/locale-candidates-20261008/resume-latest.log",
+      "main: .github/workflows/r125-hourly-candidate-resume.yml",
+      "main: worker.js",
+      "branch: source.json and all 98 locale JSON packs"
+    ],
+    "latestPages": {
+      "run": 1586,
+      "id": 43942841499,
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-16T19:46:35Z",
+      "updatedAt": "2026-11-16T19:47:16Z",
+      "headSha": "771c0485eb2757e14fbe10f103092279fc580726",
+      "jobs": {
+        "build": "success",
+        "deploy": "success",
+        "reportBuildStatus": "success"
+      }
+    },
+    "actionsObservation": {
+      "latest100Returned": 100,
+      "totalCount": 5464,
+      "activeOrQueued": 0,
+      "r125RunsInLatest100": 0,
+      "limitation": "Repository-wide latest-100 observation, not an exhaustive workflow-filtered run listing."
+    },
+    "latestKnownR125": {
+      "run": 150,
+      "id": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-10-16T21:41:54Z",
+      "event": "push on legacy workflow revision",
+      "resume": "skipped",
+      "audit": "success",
+      "candidatePackChanges": 0,
+      "metadataFilesCommitted": [
+        "resume-summary.json",
+        "scheduled-mode.json"
+      ],
+      "note": "The old run committed two metadata files despite zero candidate-pack changes. Current Main workflow now guards Save progress behind explicit translation or repair opt-in."
+    },
+    "currentWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "blob": "44f7d9a451b339834d2b91c992f51b60c03eca68",
+      "triggers": [
+        "workflow_dispatch"
+      ],
+      "scheduleTriggerPresent": false,
+      "pushTriggerPresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "translationRequiresExplicitOptIn": true,
+      "currentAuditOnlyPersistentBranchWrites": false,
+      "repairModeMayWriteCandidatePacks": true
+    },
+    "latestResumeLog": {
+      "blob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
+      "lineCount": 8,
+      "lastKnownDate": "2026-10-30",
+      "currentSourceCount": 1118,
+      "deltaCount": 73,
+      "verifiedPublicUiOnly": 69,
+      "finalStatus": "STAGED_ONLY 0 FAILED 1",
+      "lastFailure": "HTTP 503 all_translation_backends_unavailable; Qwen/Gemma/Llama outputs unparseable; split batches also timed out/503",
+      "historicalSuccessfulDivehiRepairs": 48
+    },
+    "ai": {
+      "chat": "unknown-not-probed",
+      "translation": "unknown-not-probed",
+      "healthEndpoint": "/api/health reports aiBinding presence and model names only; it does not execute generation",
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable"
+      ],
+      "probeSent": false,
+      "quotaRequests": 0,
+      "quotaUsed": 0
+    },
+    "production": {
+      "pagesRun": 1586,
+      "pagesConclusion": "success",
+      "siteHealthRun": 325,
+      "siteHealthId": 43821298704,
+      "siteHealthConclusion": "success",
+      "siteHealthScope": "live official domain, API health, robots/sitemap, and 18 named pages only"
+    },
+    "safety": {
+      "run": 81,
+      "id": 43517683421,
+      "conclusion": "success",
+      "prohibitedListing": "blocked; reviewRequired=true; route=null",
+      "benignHotel": "allowed in prior browser audit",
+      "databaseRls": "17/17 public tables enabled; zero error/warning advisories; two informational advisories",
+      "fullThreatModelCertification": false
+    },
+    "countryCurrency": {
+      "countryChangeIceland": "passed in R105 #81",
+      "currencyAndFallbackUnitTests": "passed in R105 #81",
+      "countryProfilesPreviouslyAudited": 248,
+      "localizedPagesPreviouslyAudited": 44,
+      "fullCountryCurrencyMatrix": false
+    },
+    "voice": {
+      "authorityRun": 43219069259,
+      "programmaticAudioTests": "passed",
+      "syntheticLanguages": [
+        "ar",
+        "fr",
+        "en"
+      ],
+      "liveTtsAsrLatest": "skipped by opt-in gate",
+      "physicalMicrophoneSpeakerCertified": false
+    },
+    "checkout": "inactive pending merchant-account configuration and end-to-end merchant verification",
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataPackWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "published": false,
+      "linguisticCertification": false
+    }
   }
 }
