@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-16T00:19:45Z",
+  "checkedAt": "2026-11-16T01:34:43Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -334,14 +334,14 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-16T00:19:45Z",
+    "checkedAt": "2026-11-16T01:34:43Z",
     "actionsObservation": {
-      "latestRepositoryRun": 1570,
-      "runId": 43773040253,
+      "latestRepositoryRun": 1571,
+      "runId": 43779906354,
       "status": "completed",
       "conclusion": "success",
       "path": "dynamic/pages/pages-build-deployment",
-      "createdAt": "2026-11-15T23:07:08Z",
+      "createdAt": "2026-11-16T00:21:44Z",
       "latest100Active": 0,
       "latest100R125Active": 0,
       "latestKnownR125": 150,
@@ -359,19 +359,16 @@
     },
     "thisPass": {
       "candidatePackWrites": 0,
-      "candidateMetadataAuditWrite": 0,
+      "candidateMetadataBranchWrites": 1,
       "translationRequests": 0,
       "aiQuotaUsed": 0,
-      "filesRead": 3,
-      "latestFullStructuralReadback": "2026-11-15T22:42:00Z",
-      "full98QualityAudit": false
+      "full98QualityAudit": false,
+      "linguisticCertification": false,
+      "published": false
     },
     "currentAI": "unknown-not-probed",
     "currentTranslationBackend": "unknown-not-probed",
-    "full98PackAudit": false,
-    "linguisticCertification": false,
-    "published": false,
-    "note": "Fresh 2026-11-16 00:19Z read of main checkpoint, candidate summary and resume-latest.log; Actions API latest100 shows Pages #1570 success and no active runs. Site Health #324 remains latest scheduled health PASS. R125 #150 is last known, completed audit-only in Oct; no R125 active. Audit-only workflow branch metadata save was corrected in main commit 298d8ab8 and Pages #1570 validated that commit's site build. No candidate writes, AI/translation calls or quota used."
+    "note": "Run 16 reconciled with main checkpoint: latest Actions API shows Pages #1571 success and no active runs at check time; R125 #150 completed audit-only, no R125 active. Audit-only creates local metadata/artifacts but no candidate branch commit after workflow repair 298d8ab8. This summary metadata was updated only; no locale packs, translations, AI quota, or publication."
   },
   "latestContinuationVerification": {
     "checkedAt": "2026-11-15T21:48:19Z",
@@ -2210,5 +2207,101 @@
       "finalApproval": false
     },
     "decision": "NO-GO; retain candidate packs and quota; continue native review and full audits."
+  },
+  "run16AutomationAudit": {
+    "checkedAt": "2026-11-16T01:34:43Z",
+    "filesRead": [
+      "main docs/r125-continuation-checkpoint-20261010.json",
+      "candidate docs/locale-candidates-20261008/resume-summary.json",
+      "candidate docs/locale-candidates-20261008/resume-latest.log",
+      "main .github/workflows/r125-hourly-candidate-resume.yml"
+    ],
+    "actions": {
+      "latest100Fetched": true,
+      "latest100ActiveCount": 0,
+      "latest100R125ActiveCount": 0,
+      "latestRepositoryRun": {
+        "id": 43779906354,
+        "number": 1571,
+        "path": "dynamic/pages/pages-build-deployment",
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-11-16T00:21:44Z",
+        "updatedAt": "2026-11-16T00:22:20Z",
+        "headBranch": "main",
+        "headSha": "0d1bdf328ce27929003aaaee13b13fb27fbe48ea"
+      },
+      "latestR125": {
+        "run": 150,
+        "id": 38971104197,
+        "status": "completed",
+        "conclusion": "success",
+        "resume": "skipped",
+        "audit": "success",
+        "active": false
+      }
+    },
+    "workflowRepair": {
+      "commit": "298d8ab8c82e234094db2edaf3c71408344042a0",
+      "validatedByPagesRun": 1570,
+      "validationConclusion": "success",
+      "auditOnlyBranchWrites": false,
+      "localMetadataFilesStillProduced": [
+        "resume-exit-code.txt",
+        "scheduled-mode.json"
+      ],
+      "localMetadataPersistedToCandidateBranch": false
+    },
+    "candidateState": {
+      "structural": 98,
+      "total": 98,
+      "keysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "qualityCandidates": 97,
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "full98QualityAudit": false,
+      "published": false,
+      "linguisticCertification": false
+    },
+    "ai": {
+      "chat": "unknown-not-probed",
+      "translation": "unknown-not-probed",
+      "quotaUsed": 0,
+      "translationRequests": 0,
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable"
+      ]
+    },
+    "production": {
+      "pagesRun": 1571,
+      "pagesConclusion": "success",
+      "siteHealthRun": 324,
+      "siteHealthConclusion": "success",
+      "r105Run": 81,
+      "r105Conclusion": "success",
+      "countryChangeIceland": "passed",
+      "prohibitedWeapon": "blocked",
+      "liveEnglishArabicChatProbes": "skipped by policy",
+      "audioAuthorityRun": 64,
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "liveASR": "skipped",
+      "physicalAudio": "pending",
+      "checkout": "inactive until merchant configuration"
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataBranchWrites": 1,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "checkpointUpdated": true,
+      "summaryUpdated": true
+    },
+    "decision": "NO-GO; structural pass does not equal linguistic quality or launch readiness."
   }
 }
