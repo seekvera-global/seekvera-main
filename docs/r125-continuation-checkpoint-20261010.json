@@ -8015,18 +8015,56 @@
         "runtime": "1b466e0cd0dad3f7b893d429da3c77c8c91fecd7",
         "regressionTest": "572521d8e58ebc29c8eda32bf59f8dc70157b53a"
       },
-      "file": "i18n-ui.js",
       "labels": {
         "Back": "Kembali",
         "Page navigation": "Navigasi halaman",
         "Voice reply": "Balasan suara",
         "Voice": "Suara"
       },
-      "reason": "R125 #41 intercepted a single Indonesian dynamic-translation fallback for four common controls; add local quick labels and a regression asserting zero provider calls.",
-      "status": "committed; post-change R125 verification not yet observed",
+      "purpose": "Prevent the Indonesian dynamic fallback attempt observed in R125 #41.",
+      "status": "committed; post-change CI not yet observed",
       "nativeReviewRequired": true,
       "candidatePackWrites": 0,
-      "translationRequestsSent": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "filipino": {
+      "commits": {
+        "runtime": "503f9d69611a565337c15a3460f717f4fca86346",
+        "regressionTest": "23731b5bf8739a61c0aea721bdedb2dfe798eec6"
+      },
+      "labelCount": 9,
+      "purpose": "Resolve nine Filipino homepage/feature exact-leak combinations from R125 #41 with local quick labels.",
+      "status": "committed; post-change CI not yet observed",
+      "nativeReviewRequired": true,
+      "candidatePackWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "additionalLocales": {
+      "commits": {
+        "runtime": "4f3a937d6f662785985afe1fe7a0bed28ce29904",
+        "regressionTest": "6321216b90cb38710f1b221a95bc05aa875f2761"
+      },
+      "locales": [
+        "da",
+        "st",
+        "ro",
+        "hu",
+        "mt",
+        "el",
+        "cs",
+        "sk",
+        "sv",
+        "no",
+        "af"
+      ],
+      "labelCount": 19,
+      "purpose": "Resolve additional R125 #41 exact UI findings in 11 locales using provisional local quick labels.",
+      "status": "committed; post-change CI not yet observed",
+      "nativeReviewRequired": true,
+      "candidatePackWrites": 0,
+      "translationRequests": 0,
       "aiQuotaUsed": 0
     }
   },
@@ -9081,10 +9119,22 @@
     },
     "checkout": "inactive pending merchant configuration and end-to-end merchant verification",
     "codeRepairs": {
-      "runtimeCommit": "1b466e0cd0dad3f7b893d429da3c77c8c91fecd7",
-      "testCommit": "572521d8e58ebc29c8eda32bf59f8dc70157b53a",
-      "changed": "Added provisional Indonesian quick UI labels and a regression test requiring zero provider calls.",
-      "postChangeCi": "not yet observed"
+      "runtimeBlobSha": "dff4ee40aaac3db62cd0ee83ff49c2e78b042dd7",
+      "regressionTestBlobSha": "877c30c4ce2e0b81e6a834d620e5ef90d75df9b1",
+      "commits": [
+        "1b466e0cd0dad3f7b893d429da3c77c8c91fecd7",
+        "572521d8e58ebc29c8eda32bf59f8dc70157b53a",
+        "503f9d69611a565337c15a3460f717f4fca86346",
+        "23731b5bf8739a61c0aea721bdedb2dfe798eec6",
+        "4f3a937d6f662785985afe1fe7a0bed28ce29904",
+        "6321216b90cb38710f1b221a95bc05aa875f2761"
+      ],
+      "changes": "Added Indonesian common UI labels, nine Filipino homepage/feature labels, and 19 provisional labels across Danish, Sesotho, Romanian, Hungarian, Maltese, Greek, Czech, Slovak, Swedish, Norwegian and Afrikaans; regression cases assert no provider calls.",
+      "postChangeCi": "not yet observed; the static audit workflow is configured for pushes to i18n-ui.js and its regression test.",
+      "nativeReviewRequired": true,
+      "candidatePackWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
     },
     "candidatePackWrites": 0,
     "translationRequests": 0,
