@@ -3227,7 +3227,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-17T09:46:43Z",
+  "updatedAt": "2026-11-17T09:53:12Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -6832,5 +6832,67 @@
       "published": false,
       "linguisticCertification": false
     }
+  },
+  "latestAuditorSourceFormatRepair": {
+    "checkedAt": "2026-11-17T09:53:12Z",
+    "finding": "The current build_current_locale_delta.py emits source.json with strings as an ordered array of 1,118 strings. The current audit_locale_candidates.py rejected source['strings'] unless it was a dict, so the next current-revision R125 audit would fail before auditing candidate packs.",
+    "repair": "Added source_string_keys() to accept current ordered arrays and legacy maps; rejects non-string, blank, and duplicate source entries. Extended test-audit-locale-candidates.py to cover current and legacy formats plus invalid source lists.",
+    "commits": {
+      "auditor": "10cb622694c18c134b916ec53ba624b8faba752e",
+      "test": "8445d40cbc3dc957e3204098f76c53dbbecaa78b"
+    },
+    "verification": {
+      "sourceFormat": "ordered array",
+      "sourceKeys": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "localAssertions": "7/7 source-format assertions passed",
+      "independentReadback": {
+        "packs": 98,
+        "keysPerPack": 1118,
+        "sourceHashMatches": 98,
+        "qualityPolicyMatches": 98,
+        "exactKeySets": 98,
+        "missingKeys": 0,
+        "extraKeys": 0,
+        "emptyOrNonStringValues": 0,
+        "duplicateJsonKeys": "none detected in all 98 raw candidate files"
+      },
+      "currentR125CopiesUpdatedAuditorAndTest": true,
+      "currentRevisionR125Ci": "pending manual audit-only dispatch"
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 1,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "published": false,
+      "linguisticCertification": false
+    }
+  },
+  "latestR125CurrentActionsObservation": {
+    "checkedAt": "2026-11-17T09:53:12Z",
+    "latest100MainRunsChecked": true,
+    "latestRepositoryRun": {
+      "id": 44060973325,
+      "number": 1646,
+      "name": "pages build and deployment",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-17T10:01:42Z"
+    },
+    "r125CurrentWorkflowInLatest100": false,
+    "activeR125Runs": 0,
+    "latestKnownMatchingR125": {
+      "number": 150,
+      "id": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-10-16T21:41:54Z",
+      "revision": "legacy, not current Main workflow"
+    },
+    "currentRevisionCi": "pending manual audit-only dispatch",
+    "candidatePackWritesThisPass": 0,
+    "translationRequestsThisPass": 0,
+    "aiQuotaUsedThisPass": 0
   }
 }
