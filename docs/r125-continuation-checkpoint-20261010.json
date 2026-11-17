@@ -6903,7 +6903,7 @@
     "aiQuotaUsedThisPass": 0
   },
   "latestAutomationVerification20261117": {
-    "checkedAt": "2026-11-17T10:26:37Z",
+    "checkedAt": "2026-11-17T10:27:36Z",
     "mainHead": "d79b977eb4d43acca54c98bd803a555c8112c07e",
     "r125CandidateResume": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
@@ -6978,14 +6978,95 @@
       "latestQueuedRun": {
         "number": 6,
         "id": 44064682059,
-        "status": "queued",
+        "status": "in_progress",
         "headSha": "d79b977eb4d43acca54c98bd803a555c8112c07e"
       },
       "knownHarnessCorrections": [
         "Removed an incorrect assumption that published static packs include candidate-only qualityPolicy metadata.",
         "Corrected leak detection so unchanged source phrases are counted rather than excluded.",
         "Expanded coverage from distributed language sampling to all 98 languages across every discovered section."
-      ]
+      ],
+      "latestCompletedDiagnosticRun": {
+        "number": 5,
+        "id": 44064547923,
+        "headSha": "3fb07e23aa229e49bc1e3e4fb37b478a432c22ed",
+        "conclusion": "failure",
+        "checkedAt": "2026-11-17T10:27:36Z",
+        "findingCombinations": 265,
+        "phraseOccurrences": 295,
+        "uniquePhrases": 41,
+        "uniqueLanguages": 97,
+        "uniqueSectionsWithFindings": 26,
+        "sectionLanguageApplications": 2646,
+        "phraseCounts": {
+          "Neon Highway": 97,
+          "Country / Region": 70,
+          "YouTube Music": 23,
+          "← Travel Hub": 12,
+          "← Back to search": 10,
+          "AI Voice Agent": 10,
+          "Auto Recharge": 9,
+          "United Kingdom": 8,
+          "GLOBAL AI MARKETPLACE": 4,
+          "United States": 4,
+          "AI Deal Agent": 4,
+          "🏙️ City break": 3,
+          "Business Monthly": 3,
+          "OPEN MARKETPLACE →": 2,
+          "Import & Export": 2,
+          "Fashion & Beauty": 2,
+          "GLOBAL AUTO SEARCH": 2,
+          "Import, Export & Sourcing": 2,
+          "Business Software": 2,
+          "RFQ / supplier sourcing": 2,
+          "Email/Gmail background autopilot:": 2,
+          "VERIFY + PAUSE": 2,
+          "Home Services": 2,
+          "Find Wi-Fi →": 1,
+          "Safety & etiquette": 1,
+          "Free / Public Wi-Fi Finder": 1,
+          "Shopping & Electronics": 1,
+          "Find catering": 1,
+          "CROSS-BORDER LOGISTICS": 1,
+          "Courier & last mile": 1,
+          "Solar & Energy": 1,
+          "ENTERTAINMENT · WORLDWIDE": 1,
+          "Privacy first": 1,
+          "No stranger chat": 1,
+          "Venue / hotel Wi‑Fi QR": 1,
+          "Check My Phone": 1,
+          "Zero‑Cost Mode": 1,
+          "Master controls": 1,
+          "Utilities & Bills": 1,
+          "Delivery & Courier": 1,
+          "Hotels & Marketplace": 1
+        },
+        "provisionalClassification": {
+          "likelyBrandOrProperNameExceptions": {
+            "phrases": [
+              "Neon Highway",
+              "YouTube Music",
+              "United Kingdom",
+              "United States"
+            ],
+            "occurrences": 132,
+            "status": "provisional; verify element context before allowlisting"
+          },
+          "remainingPotentialUIStrings": {
+            "occurrences": 163,
+            "uniquePhrases": 37,
+            "status": "requires targeted language/DOM review; not all automatically confirmed defects"
+          }
+        },
+        "blockedFallbackRequests": {
+          "ai": 0,
+          "uiTranslate": 34,
+          "pollinations": 0,
+          "providerRequestsSent": 0,
+          "quotaUsed": 0
+        },
+        "note": "The 34 /api/ui-translate attempts were intercepted by the read-only audit and answered locally with 503; no request reached the translation provider. This indicates production UI may attempt dynamic fallback for strings not resolved by static packs and requires payload-level diagnosis."
+      }
     },
     "candidateBranchReadback": {
       "head": "1b2ae3fa9cae6a261fa51d0df2958016770a18fc",
@@ -7025,7 +7106,8 @@
         "39858998e57ea3371d05c5638e7c523ff92d1eb5",
         "07ef4752bcf92d398e41a826cffdbf75c2586125",
         "3fb07e23aa229e49bc1e3e4fb37b478a432c22ed",
-        "d79b977eb4d43acca54c98bd803a555c8112c07e"
+        "d79b977eb4d43acca54c98bd803a555c8112c07e",
+        "cff22f0b71ce29f341b251797097ab13dce1f101"
       ],
       "candidatePackWrites": 0,
       "candidateMetadataWrites": 0,
