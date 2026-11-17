@@ -8452,12 +8452,20 @@
           "tools/test-ui-translation-quota-session-guard.cjs"
         ],
         "summary": "Added provisional Japanese navigation, Thai business-plan and Zulu marketplace/logistics quick labels; regression tests assert local resolution with zero provider calls."
+      },
+      {
+        "commit": "523ac7e054829bf15f9330123570b94ad8f363c9",
+        "files": [
+          "i18n-ui.js",
+          "tools/test-ui-translation-quota-session-guard.cjs"
+        ],
+        "summary": "Added provisional Korean Back, Page navigation, Voice reply and Voice quick labels; extended local no-provider regression coverage."
       }
     ],
     "localeAudit": {
       "latestCompleted": {
-        "run": 39,
-        "id": 44173813786,
+        "run": 40,
+        "id": 44174917288,
         "status": "completed",
         "conclusion": "failure",
         "languages": 98,
@@ -8486,17 +8494,13 @@
           "sv",
           "tn"
         ],
-        "partialFindingCombinations": 2,
-        "partialLanguages": [
-          "zu"
-        ],
-        "unresolvedFindingCombinations": 1,
-        "unresolvedLanguages": [
-          "th"
-        ],
+        "partialFindingCombinations": 0,
+        "partialLanguages": [],
+        "unresolvedFindingCombinations": 0,
+        "unresolvedLanguages": [],
         "explicitlyExcludedOnlyCombinations": 4,
         "dynamicFallback": {
-          "language": "Japanese",
+          "language": "Korean",
           "interceptedRequests": 1,
           "strings": [
             "Back",
@@ -8508,35 +8512,33 @@
         "aiRequests": 0,
         "providerTranslationRequests": 0,
         "pollinationsRequests": 0,
-        "reason": "66 exact UI leaks, 2 partial Zulu findings, 1 unresolved Thai finding and one intercepted Japanese fallback attempt."
+        "reason": "66 exact visible UI leaks remain; Thai and Zulu partial/unresolved findings were resolved by provisional quick labels; 4 explicitly marked no-translate occurrences are reported as excluded; Korean fallback attempt remains."
       },
       "nextRun": {
-        "run": 40,
-        "id": 44174917288,
+        "run": 41,
+        "id": 44175688321,
         "status": "in_progress",
-        "purpose": "Verify Japanese/Thai/Zulu quota-neutral quick labels and rerun 98-language x 27-section matrix",
+        "purpose": "Verify Korean quota-neutral quick labels and rerun the 98-language x 27-section matrix",
         "completedPrechecks": [
           "Playwright install",
           "Chromium install",
           "Pages asset readiness",
-          "Node syntax check",
-          "German/Japanese/Thai/Zulu quick-label quota guard",
-          "explicit no-translate exclusion triage"
+          "Node syntax check"
         ],
-        "currentStep": "Verify all locale packs, countries and sections without AI requests"
+        "currentStep": "Verify quota guard and local German/Japanese/Thai/Zulu/Korean quick labels"
       },
       "candidatePackWrites": 0
     },
     "productionVerification": {
       "pages": {
-        "run": 1719,
-        "id": 44174915859,
+        "run": 1721,
+        "id": 44175686971,
         "status": "completed",
         "conclusion": "success"
       },
       "r105": {
-        "run": 133,
-        "id": 44174917216,
+        "run": 134,
+        "id": 44175688241,
         "status": "completed",
         "conclusion": "success",
         "productionHealth": "pass",
@@ -8546,21 +8548,34 @@
         "liveAiProbes": "skipped-by-policy"
       },
       "r123": {
-        "run": 94,
-        "id": 44174917214,
+        "run": 95,
+        "id": 44175688536,
         "status": "completed",
         "conclusion": "success",
         "voiceAcknowledgement": "pass",
         "dynamicVoicePlaceholders": "pass for fr/ar",
-        "programmaticTts": "server audio decoded and tts-start/tts-end observed in Android browser profile",
+        "programmaticTts": "pass in Android browser profile; server tts-start/tts-end observed",
         "productionMultilingualAudioStep": "skipped",
         "liveAsr": "skipped",
         "physicalMicrophoneSpeakerCertified": false
       },
       "r9e": {
-        "run": 57,
-        "id": 44174917212,
-        "status": "in_progress"
+        "run": 58,
+        "id": 44175688211,
+        "status": "in_progress",
+        "latestCompleted": {
+          "run": 57,
+          "id": 44174917212,
+          "conclusion": "success",
+          "countryProfiles": "248/248",
+          "localizedPages": "44/44",
+          "manualMoroccoPriority": "pass",
+          "worldwidePriority": "pass",
+          "currency": "pass",
+          "safety": "pass",
+          "voicePwaCache": "pass",
+          "liveAiProbes": "skipped-by-policy"
+        }
       },
       "latestCompletedCountryMatrix": {
         "run": 56,
