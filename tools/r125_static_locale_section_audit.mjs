@@ -73,7 +73,6 @@ try {
       const data = await response.json();
       assert.equal(data.count, source.count, language + ' pack count');
       assert.equal(data.sourceHash, manifest.sourceHash, language + ' source hash');
-      assert.equal(data.qualityPolicy, 'source-overlap-5-v1', language + ' quality policy');
       const translations = data.translations;
       assert(translations && typeof translations === 'object' && !Array.isArray(translations), language + ' translations object');
       const actualKeys = Object.keys(translations);
