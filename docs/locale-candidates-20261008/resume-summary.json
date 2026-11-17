@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-17T02:10:00.450Z",
+  "checkedAt": "2026-11-17T02:57:08Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -334,13 +334,13 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-17T02:10:00.450Z",
+    "checkedAt": "2026-11-17T02:57:08Z",
     "latestPages": {
-      "run": 1609,
-      "id": 44000362278,
+      "run": 1615,
+      "id": 44006311797,
       "status": "completed",
       "conclusion": "success",
-      "headSha": "6c66a50a28d9fb9b3a97e7b2e7302aad85de54f4"
+      "headSha": "1aef1f59fa5c57075dc08bc2c7d0f0b7633a29c2"
     },
     "siteHealth": {
       "run": 329,
@@ -349,8 +349,8 @@
       "scope": "Official domain API health, robots/sitemap and 18 named public pages returned HTTP 200"
     },
     "actions": {
-      "totalCount": 5487,
-      "returnedRuns": 50,
+      "totalCount": 5525,
+      "returnedRuns": 100,
       "activeOrQueuedAtLastCheck": 0,
       "latestR125InLatest50": false,
       "currentR125Run": null,
@@ -412,7 +412,8 @@
         "aiQuotaUsed": 0,
         "active": false
       },
-      "activeR125Runs": 0
+      "activeR125Runs": 0,
+      "latestR125InLatest100": false
     },
     "latestR125": {
       "run": 150,
@@ -423,17 +424,9 @@
       "resume": "skipped",
       "audit": "success",
       "candidatePackChanges": 0,
-      "createdAt": "2026-10-16T21:41:54Z",
-      "preserveLiveAiCapacity": "success",
-      "artifactUpload": "success",
-      "saveProgress": "success",
-      "savedCommit": "cae69709e12739b6d9f9a1532850e479432ebf0e",
-      "savedFiles": [
-        "resume-summary.json",
-        "scheduled-mode.json"
-      ],
       "translationRequests": 0,
-      "aiQuotaUsed": 0
+      "aiQuotaUsed": 0,
+      "active": false
     },
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
@@ -448,7 +441,9 @@
       "auditOnlyPersistentCandidatePackWrites": false,
       "repairModeMayWriteCandidatePacks": true,
       "exactCandidateKeySetTestAdded": true,
-      "exactCandidateKeySetTestRun": "pending-next-manual-R125"
+      "exactCandidateKeySetTestRun": "pending-next-manual-R125",
+      "quotaStopTestAdded": true,
+      "quotaStopTestRun": "pending next manual R125"
     },
     "candidateState": {
       "structural": 98,
@@ -506,7 +501,11 @@
       "published": false,
       "linguisticCertification": false,
       "decision": "NO-GO",
-      "freshFull98ExactKeySetReadback": "PASS 98/98"
+      "freshFull98ExactKeySetReadback": "PASS 98/98",
+      "checkedAt": "2026-11-17T02:57:08Z",
+      "builderQuotaStopRepairCommitted": true,
+      "builderQuotaStopLocalTests": "PASS 10 classifications + 3 mocked terminal no-split cases",
+      "r125Ci": "pending next manual R125"
     },
     "latestR105": {
       "run": 85,
@@ -587,7 +586,8 @@
       "liveASR": "skipped",
       "physicalAudio": "pending",
       "checkout": "inactive"
-    }
+    },
+    "activeR125Runs": 0
   },
   "latestContinuationVerification": {
     "checkedAt": "2026-11-16T11:06:00Z",
@@ -2853,7 +2853,8 @@
     "translationRequestsSent": 0,
     "aiQuotaUsed": 0,
     "published": false,
-    "linguisticCertification": false
+    "linguisticCertification": false,
+    "linguisticAccuracyCertified": false
   },
   "scriptWarningInterpretation": "Zero in the reconciled partial warning map is not a full 98-pack script/quality audit; global audit remains pending.",
   "run21AutomationAudit": {
@@ -4350,5 +4351,36 @@
     "localUnitTest": "PASS",
     "r125Ci": "pending next manual run",
     "candidatePacksChanged": 0
+  },
+  "updatedAt": "2026-11-17T02:57:08Z",
+  "latestBuilderQuotaStopRepair": {
+    "checkedAt": "2026-11-17T02:57:08Z",
+    "finding": "The locale builder stopped the entire language loop only when the error text contained the literal daily_free_ai_limit. Google HTTP429/provider_rate_limited and all_translation_backends_unavailable were terminal inside translate_small, but the outer loop could continue to the next language; the 503 backend-unavailable response could also fall through to recursive batch splitting.",
+    "commit": "1aef1f59fa5c57075dc08bc2c7d0f0b7633a29c2",
+    "files": [
+      "tools/build_current_locale_delta.py",
+      "tools/test-locale-quota-stop.py",
+      ".github/workflows/r125-hourly-candidate-resume.yml"
+    ],
+    "changes": {
+      "classifier": "translation_stop_reason classifies quota/rate-limit and all_translation_backends_unavailable as terminal for the current translation run.",
+      "batch": "translate_small raises before SPLIT_RETRY or recursive splitting for terminal blockers.",
+      "run": "The outer language loop stops immediately after the first terminal quota/rate-limit/backend-unavailable error."
+    },
+    "tests": {
+      "local": "PASS",
+      "classificationCases": 10,
+      "mockedTerminalHttpErrorCases": 3,
+      "noSplitVerified": true,
+      "networkRequests": 0,
+      "r125WorkflowTestAdded": true,
+      "r125Ci": "pending next manual R125 run"
+    },
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "aiAvailability": "unknown-not-probed"
   }
 }
