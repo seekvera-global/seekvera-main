@@ -202,6 +202,24 @@ try {
     console.log('R125_STATIC_SECTION_PROGRESS', pathIndex + 1, '/', paths.length, path, 'languages', testLanguages.length);
   }
 
+  const leakCounts = new Map();
+  for (const finding of leakFindings) {
+    for (const phrase of finding.leaks) {
+      leakCounts.set(phrase, (leakCounts.get(phrase) || 0) + 1);
+    }
+  }
+  console.log('R125_STATIC_LEAK_SUMMARY', JSON.stringify({
+    findingCombinations: leakFindings.length,
+    uniqueLanguages: [...new Set(leakFindings.map(item => item.language))].sort(),
+    uniqueSections: [...new Set(leakFindings.map(item => item.path))].sort(),
+    phraseCounts: Object.fromEntries([...leakCounts.entries()].sort((a, b) => b[1] - a[1])),
+    sectionLanguageApplications
+  }));
+  console.log('R125_STATIC_BLOCKED_REQUESTS', JSON.stringify({
+    ai: blocked.ai.length,
+    translation: blocked.translation.length,
+    pollinations: blocked.pollinations.length
+  }));
   assert.equal(leakFindings.length, 0, 'English UI leaks: ' + JSON.stringify(leakFindings.slice(0, 10)));
   assert.equal(blocked.translation.length, 0, 'unexpected dynamic translation calls: ' + JSON.stringify(blocked.translation.slice(0, 5)));
   assert.equal(blocked.ai.length, 0, 'unexpected AI calls: ' + JSON.stringify(blocked.ai.slice(0, 5)));
