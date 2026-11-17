@@ -67,6 +67,28 @@ async function main(){
  assert.equal(reverse.context.alreadyLocalizedValue('ar',arabicLocalized),true);
  const reverseChanged=await reverse.context.runTranslate('ar',[arabicLocalized,'Hello']);
  assert.equal(reverseChanged,true);assert.deepEqual(reversePayload.strings,['Hello']);assert.equal(reverse.calls(),1);
+ // Embedded feature labels reuse existing production-pack translations without another provider call.
+ const getBlock=extract(i18n,"const EMBEDDED_TRANSLATION_TERMS=","function put(l,s,v)","embedded locale-term helper");
+ const embeddedContext={QUICK:{hi:{'Back':'वापस','Page navigation':'पृष्ठ नेविगेशन','Voice reply':'आवाज़ में जवाब','Voice':'आवाज़'}},MEM:new Map(),localStorage:storage(),canonical:s=>String(s).replace(/\\s+/g,' ').trim(),plainKey:s=>String(s),k:(l,s)=>'sv_'+l+'_'+s};
+ vm.createContext(embeddedContext);vm.runInContext(getBlock+'\\nthis.get=get;',embeddedContext);
+ const msSource='paid calls, paid APIs, paid verification, ads, subscriptions or company payments require an owner notice first. Auto Recharge remains OFF.';
+ const msValue='betelle oproppen, betelle APIs, betelle ferifikaasje. Auto Recharge bliuwt OFF.';
+ embeddedContext.MEM.set('fy\\u0000Auto Recharge','Automatysk opladen');
+ embeddedContext.MEM.set('fy\\u0000'+msSource,msValue);
+ assert.equal(embeddedContext.get('fy',msSource),msValue.replace('Auto Recharge','Automatysk opladen'));
+ const klSource='Live marketplace-imi allattorsimaffiit akuerineqarsimasut maannakkut pissarsiarineqarsinnaanngillat.';
+ embeddedContext.MEM.set('kl\\u0000Live marketplace','Live-mik pisiniarfik');
+ embeddedContext.MEM.set('kl\\u0000'+klSource,klSource);
+ assert.equal(embeddedContext.get('kl',klSource),klSource.replace('Live marketplace','Live-mik pisiniarfik'));
+ const tnSource='Games are self-contained SEEKVERA mini games. No stranger chat, gambling, paid loot boxes or external ad network is used.';
+ const tnValue='Metshameko ya SEEKVERA e ikemetse. No stranger chat, gambling, paid loot boxes or external ad network is used.';
+ embeddedContext.MEM.set('tn\\u0000No stranger chat','Ga go na motlotlo ope o o sa tlwaelegang');
+ embeddedContext.MEM.set('tn\\u0000'+tnSource,tnValue);
+ assert.equal(embeddedContext.get('tn',tnSource),tnValue.replace('No stranger chat','Ga go na motlotlo ope o o sa tlwaelegang'));
+ assert.equal(embeddedContext.get('hi','Back'),'वापस');
+ assert.equal(embeddedContext.get('hi','Page navigation'),'पृष्ठ नेविगेशन');
+ assert.equal(embeddedContext.get('hi','Voice reply'),'आवाज़ में जवाब');
+ assert.equal(embeddedContext.get('hi','Voice'),'आवाज़');
  // Both navigation fallbacks must use the shared guarded helper, never fetch the endpoint directly.
  const staticFn=extract(navigation,'async function translateStaticAI()','async function translateResidualUI()','static AI fallback');
  const residualFn=extract(navigation,'async function translateResidualUI()','function runLocaleEngines()','residual UI fallback');
