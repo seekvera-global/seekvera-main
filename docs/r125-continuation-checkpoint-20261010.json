@@ -3250,7 +3250,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-17T20:05:43Z",
+  "updatedAt": "2026-11-17T21:42:09+01:00",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -8388,5 +8388,447 @@
       },
       "activeResumeRuns": 0
     }
+  },
+  "latestAutomationPass20261117Turn11": {
+    "checkedAt": "2026-11-17T21:42:09+01:00",
+    "sourceReadback": {
+      "mainCheckpointSha": "215b231b4e49c9593015ddf3016bdc223028920c",
+      "candidateSummarySha": "4744e1f423ce2b5278588fede2419df6d637315f",
+      "candidateSummaryCheckedAt": "2026-11-17T09:53:12Z",
+      "resumeLatestLogSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
+      "candidateBranch": "work/r125-locale-candidates-20261008"
+    },
+    "candidateState": {
+      "structuralCompleteness": "98/98",
+      "qualityCompleteness": "97/98",
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "published": 0,
+      "linguisticallyCertified": 0,
+      "candidatePackWritesThisPass": 0
+    },
+    "resumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "trigger": "workflow_dispatch only; no schedule trigger in current YAML",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestMatchingRun": {
+        "number": 150,
+        "id": 38971104197,
+        "event": "push",
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "resume": "skipped",
+        "audit": "success",
+        "metadataFilesWritten": 2,
+        "candidatePackWrites": 0,
+        "translationRequests": 0,
+        "aiQuotaUsed": 0
+      },
+      "currentRevisionRun": "no workflow_dispatch run found",
+      "activeRuns": 0,
+      "candidateWritesDeferred": true
+    },
+    "mainChanges": [
+      {
+        "commit": "9d7bc4b4c57c6d8239e008d4fefaa21a3d550737",
+        "files": [
+          "i18n-ui.js",
+          "tools/r125_static_locale_section_audit.mjs",
+          "tools/test-ui-translation-quota-session-guard.cjs",
+          "tools/test-r125-static-locale-audit-exclusions.cjs",
+          ".github/workflows/r125-static-locale-section-audit.yml"
+        ],
+        "summary": "Added provisional German quick labels; corrected audit classification for text explicitly marked data-no-translate/data-user-content; added quota and exclusion regression tests."
+      },
+      {
+        "commit": "b025963467083fdd1e64694df72250d505c59777",
+        "files": [
+          "i18n-ui.js",
+          "tools/test-ui-translation-quota-session-guard.cjs"
+        ],
+        "summary": "Added provisional Japanese navigation, Thai business-plan and Zulu marketplace/logistics quick labels; regression tests assert local resolution with zero provider calls."
+      }
+    ],
+    "localeAudit": {
+      "latestCompleted": {
+        "run": 39,
+        "id": 44173813786,
+        "status": "completed",
+        "conclusion": "failure",
+        "languages": 98,
+        "sections": 27,
+        "languageSectionApplications": 2646,
+        "countryProfiles": 248,
+        "exactFindingCombinations": 66,
+        "exactLanguages": [
+          "af",
+          "cs",
+          "da",
+          "el",
+          "fil",
+          "fy",
+          "hu",
+          "lb",
+          "lo",
+          "mg",
+          "mt",
+          "no",
+          "rm",
+          "ro",
+          "rw",
+          "sk",
+          "st",
+          "sv",
+          "tn"
+        ],
+        "partialFindingCombinations": 2,
+        "partialLanguages": [
+          "zu"
+        ],
+        "unresolvedFindingCombinations": 1,
+        "unresolvedLanguages": [
+          "th"
+        ],
+        "explicitlyExcludedOnlyCombinations": 4,
+        "dynamicFallback": {
+          "language": "Japanese",
+          "interceptedRequests": 1,
+          "strings": [
+            "Back",
+            "Page navigation",
+            "Voice reply",
+            "Voice"
+          ]
+        },
+        "aiRequests": 0,
+        "providerTranslationRequests": 0,
+        "pollinationsRequests": 0,
+        "reason": "66 exact UI leaks, 2 partial Zulu findings, 1 unresolved Thai finding and one intercepted Japanese fallback attempt."
+      },
+      "nextRun": {
+        "run": 40,
+        "id": 44174917288,
+        "status": "in_progress",
+        "purpose": "Verify Japanese/Thai/Zulu quota-neutral quick labels and rerun 98-language x 27-section matrix",
+        "completedPrechecks": [
+          "Playwright install",
+          "Chromium install",
+          "Pages asset readiness",
+          "Node syntax check",
+          "German/Japanese/Thai/Zulu quick-label quota guard",
+          "explicit no-translate exclusion triage"
+        ],
+        "currentStep": "Verify all locale packs, countries and sections without AI requests"
+      },
+      "candidatePackWrites": 0
+    },
+    "productionVerification": {
+      "pages": {
+        "run": 1719,
+        "id": 44174915859,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "r105": {
+        "run": 133,
+        "id": 44174917216,
+        "status": "completed",
+        "conclusion": "success",
+        "productionHealth": "pass",
+        "countryAction": "IS",
+        "safety": "prohibited weapon request blocked",
+        "aiBinding": "present",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r123": {
+        "run": 94,
+        "id": 44174917214,
+        "status": "completed",
+        "conclusion": "success",
+        "voiceAcknowledgement": "pass",
+        "dynamicVoicePlaceholders": "pass for fr/ar",
+        "programmaticTts": "server audio decoded and tts-start/tts-end observed in Android browser profile",
+        "productionMultilingualAudioStep": "skipped",
+        "liveAsr": "skipped",
+        "physicalMicrophoneSpeakerCertified": false
+      },
+      "r9e": {
+        "run": 57,
+        "id": 44174917212,
+        "status": "in_progress"
+      },
+      "latestCompletedCountryMatrix": {
+        "run": 56,
+        "id": 44173813685,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "manualMoroccoPriority": "pass",
+        "worldwidePriority": "pass",
+        "currency": "pass",
+        "safety": "pass",
+        "voicePwaCache": "pass",
+        "liveAiProbes": "skipped-by-policy"
+      }
+    },
+    "ai": {
+      "binding": "present",
+      "currentLiveGenerationAvailability": "unknown-not-probed",
+      "currentTranslationAvailability": "unknown-not-probed",
+      "lastResumeLog": "HTTP 503 all_translation_backends_unavailable; backend errors included unparseable Workers AI responses",
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429"
+      ],
+      "liveGenerationProbe": "skipped-by-policy",
+      "translationRequestsThisPass": 0,
+      "aiQuotaUsedThisPass": 0
+    },
+    "voice": {
+      "programmaticServerTts": "pass in Android browser profile; not physical hardware",
+      "voiceAcknowledgement": "pass",
+      "dynamicVoicePlaceholders": "pass for Arabic and French",
+      "liveAsr": "skipped",
+      "physicalMicrophoneSpeakerCertification": false
+    },
+    "checkout": "inactive pending merchant configuration and end-to-end merchant verification",
+    "finalApproval": false,
+    "packsPublished": false,
+    "linguisticAccuracyCertified": false,
+    "decision": "NO-GO"
+  },
+  "previousAutomationPass20261117Turn10": {
+    "checkedAt": "2026-11-16T19:58:09Z",
+    "baselineReconciliation": {
+      "userSuppliedBaseline": "63/98 structurally complete; 35 remaining",
+      "actualCheckpoint": {
+        "structural": 98,
+        "total": 98,
+        "qualityCandidates": 97,
+        "remaining": [
+          "dv"
+        ]
+      },
+      "conclusion": "63/98 is stale. Current checkpoint reports 98/98 structurally aligned and 97/98 candidate-quality passes; this is not linguistic certification."
+    },
+    "latestPages": {
+      "run": 1586,
+      "id": 43942841499,
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-16T19:46:35Z",
+      "updatedAt": "2026-11-16T19:47:16Z",
+      "headSha": "771c0485eb2757e14fbe10f103092279fc580726",
+      "jobs": {
+        "build": "success",
+        "deploy": "success",
+        "reportBuildStatus": "success"
+      }
+    },
+    "actionsObservation": {
+      "latest100Returned": 100,
+      "totalCount": 5464,
+      "activeOrQueued": 0,
+      "r125RunsInLatest100": 0,
+      "limitation": "Repository-wide latest-100 observation, not an exhaustive workflow-filtered run listing."
+    },
+    "latestKnownR125": {
+      "run": 150,
+      "id": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-10-16T21:41:54Z",
+      "event": "push on legacy workflow revision",
+      "resume": "skipped",
+      "audit": "success",
+      "candidatePackChanges": 0,
+      "metadataFilesCommitted": [
+        "resume-summary.json",
+        "scheduled-mode.json"
+      ],
+      "note": "The legacy run committed two metadata files even though it changed no candidate packs. Current Main workflow guards persistent Save progress behind explicit translation or repair opt-in."
+    },
+    "currentWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "blob": "44f7d9a451b339834d2b91c992f51b60c03eca68",
+      "triggers": [
+        "workflow_dispatch"
+      ],
+      "scheduleTriggerPresent": false,
+      "pushTriggerPresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "translationRequiresExplicitOptIn": true,
+      "currentAuditOnlyPersistentBranchWrites": false,
+      "repairModeMayWriteCandidatePacks": true
+    },
+    "latestResumeLog": {
+      "blob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
+      "lineCount": 8,
+      "lastKnownDate": "2026-10-30",
+      "currentSourceCount": 1118,
+      "deltaCount": 73,
+      "verifiedPublicUiOnly": 69,
+      "finalStatus": "STAGED_ONLY 0 FAILED 1",
+      "lastFailure": "HTTP 503 all_translation_backends_unavailable; Qwen/Gemma/Llama outputs unparseable; split batches also timed out/503",
+      "historicalSuccessfulDivehiRepairs": 48
+    },
+    "readOnly98PackScreen": {
+      "checkedAt": "2026-11-16T19:58:09Z",
+      "languagesFetched": 98,
+      "sourceCount": 1118,
+      "totalTranslationEntries": 109564,
+      "sourceHash": "6a1126e6a2ce5629",
+      "packsWith1118Keys": 98,
+      "sourceHashMatches": 98,
+      "qualityPolicyMatches": 98,
+      "missingKeys": 0,
+      "extraKeys": 0,
+      "emptyOrNonStringValues": 0,
+      "cssInvariantMismatches": 0,
+      "reservedIdentifierMismatches": 0,
+      "englishOverlapTotal": 58,
+      "englishOverlapLanguages": [
+        {
+          "language": "dv",
+          "count": 58
+        }
+      ],
+      "duplicateOutputThreshold": 4,
+      "duplicateOutputGroups": 28,
+      "duplicateKeysAffected": 261,
+      "duplicateLanguages": [
+        {
+          "language": "tk",
+          "groups": 1,
+          "keys": 6,
+          "note": "Six distinct CTA source strings collapse to the same target output 'SEEKVERA'; likely missing action meaning, native review required."
+        },
+        {
+          "language": "dz",
+          "groups": 1,
+          "keys": 14
+        },
+        {
+          "language": "ti",
+          "groups": 2,
+          "keys": 14
+        },
+        {
+          "language": "kl",
+          "groups": 5,
+          "keys": 44
+        },
+        {
+          "language": "rw",
+          "groups": 3,
+          "keys": 35
+        },
+        {
+          "language": "to",
+          "groups": 3,
+          "keys": 26
+        },
+        {
+          "language": "dv",
+          "groups": 2,
+          "keys": 20
+        },
+        {
+          "language": "ku",
+          "groups": 2,
+          "keys": 15
+        },
+        {
+          "language": "xh",
+          "groups": 3,
+          "keys": 30
+        },
+        {
+          "language": "st",
+          "groups": 4,
+          "keys": 37
+        },
+        {
+          "language": "tn",
+          "groups": 2,
+          "keys": 20
+        }
+      ],
+      "interpretation": "Read-only structural/invariant/overlap/duplicate screen. Duplicate grouping is a heuristic, not native linguistic judgment. It does not run the official script-warning/reviewed-label audit and is not linguistic certification.",
+      "structuralResult": "PASS",
+      "officialFullQualityAudit": false,
+      "nativeLanguageReview": false,
+      "candidatePackWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "published": false,
+      "linguisticCertification": false
+    },
+    "aiAvailability": {
+      "chat": "unknown-not-probed",
+      "translation": "unknown-not-probed",
+      "healthEndpoint": "/api/health exposes AI binding presence and model names only; no generation test",
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable"
+      ],
+      "probeSent": false,
+      "quotaRequests": 0,
+      "quotaUsed": 0
+    },
+    "production": {
+      "siteHealthRun": 325,
+      "id": 43821298704,
+      "conclusion": "success",
+      "scope": "live official domain, API health, robots/sitemap and 18 named pages only",
+      "allLanguageAllSectionE2E": false
+    },
+    "safety": {
+      "run": 81,
+      "id": 43517683421,
+      "conclusion": "success",
+      "prohibitedListing": "blocked; reviewRequired=true; route=null",
+      "benignHotel": "allowed in prior browser audit",
+      "databaseRls": "17/17 public tables enabled; zero error/warning advisories; two informational advisories",
+      "fullThreatModelCertification": false
+    },
+    "countryCurrency": {
+      "countryChangeIceland": "passed in R105 #81",
+      "currencyAndFallbackUnitTests": "passed in R105 #81",
+      "countryProfilesPreviouslyAudited": 248,
+      "localizedPagesPreviouslyAudited": 44,
+      "fullCountryCurrencyMatrix": false
+    },
+    "voice": {
+      "authorityRun": 43219069259,
+      "programmaticAudioTests": "passed",
+      "syntheticLanguages": [
+        "ar",
+        "fr",
+        "en"
+      ],
+      "liveTtsAsrLatest": "skipped by opt-in gate",
+      "physicalMicrophoneSpeakerCertified": false
+    },
+    "checkout": "inactive pending merchant-account configuration and end-to-end merchant verification",
+    "branchSummaryCommit": "8ffed52daf1403603bb8c750dfdc3a66bd871a2b",
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataPackWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "mainCheckpointUpdated": true,
+      "branchSummaryMetadataUpdated": true,
+      "published": false,
+      "linguisticCertification": false
+    },
+    "decision": "NO-GO"
   }
 }
