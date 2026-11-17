@@ -1,6 +1,7 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const i18n=fs.readFileSync('i18n-ui.js','utf8');
 const navigation=fs.readFileSync('navigation.js','utf8');
+const r32=fs.readFileSync('r32-i18n.js','utf8');
 const BLOCK='sv_ui_translate_blocked_r19',LOCK='sv_ui_translate_lock_r19';
 function storage(seed={}){const map=new Map(Object.entries(seed));return{getItem:k=>map.has(k)?map.get(k):null,setItem:(k,v)=>map.set(k,String(v)),removeItem:k=>map.delete(k),map};}
 function harness(code,store,responses,options={}){
@@ -12,7 +13,7 @@ function harness(code,store,responses,options={}){
 function extract(source,start,end,label){const a=source.indexOf(start),b=source.indexOf(end,a);assert(a>=0&&b>a,label+' source block not found');return source.slice(a,b);}
 const i18nBlock=extract(i18n,"const UI_TRANSLATE_BLOCK_KEY='sv_ui_translate_blocked_r19'","async function translate(l,arr)","i18n quota helper");
 const navBlock=extract(navigation,"let localeTimer=0,translateSeq=0,uiTranslationBlocked=false","const localeControl=","navigation quota helper");
-const i18nCode=i18nBlock+"\nthis.cloudTranslate=cloudTranslate;this.blocked=()=>CLOUD_TRANSLATE_BLOCKED;";
+const i18nCode=i18nBlock+"\nthis.cloudTranslate=cloudTranslate;this.blocked=()=>CLOUD_TRANSLATE_BLOCKED;this.alreadyLocalizedValue=alreadyLocalizedValue;";
 const navCode=navBlock+"\nthis.requestUiTranslation=requestUiTranslation;this.blocked=()=>uiTranslationBlocked;";
 async function main(){
  // A single 503 blocks subsequent language batches in the same tab session.
@@ -50,10 +51,22 @@ async function main(){
  assert(!loop.includes('Promise.all'),'translation batches must not run in parallel');
  assert(loop.includes('for(const batch of groups)'),'translation batches must run sequentially');
  const full=harness(i18nCode,storage(),[{status:503,body:{reason:'all_translation_backends_unavailable'}}]);
- full.context.loadPack=async()=>true;full.context.get=()=>'';full.context.worth=()=>true;full.context.put=()=>{};full.context.MEM=new Map();
+ full.context.loadPack=async()=>true;full.context.get=()=>'';full.context.worth=()=>true;full.context.put=()=>{};full.context.MEM=new Map();full.context.PACK_VALUES=new Map();full.context.QUICK={};full.context.norm=s=>String(s).toLowerCase();full.context.canonical=s=>String(s).replace(/\\s+/g,' ').trim();
  vm.runInContext(loop+'\nthis.runTranslate=translate;',full.context);
  const changed=await full.context.runTranslate('French',Array.from({length:29},(_,i)=>'source '+i));
  assert.equal(changed,false);assert.equal(full.calls(),1);
+ // Reverse pack-value lookup must not re-submit text already localized by the loaded pack.
+ const arabicLocalized='لا توجد حالياً إعلانات سوق مباشرة معتمدة. لا تنشئ SEEKVERA إعلانات وهمية.';
+ let reversePayload=null;
+ const reverse=harness(i18nCode,storage(),[],{fetch:async(_url,init)=>{reversePayload=JSON.parse(init.body);return{status:200,ok:true,json:async()=>({translations:['Hello translated']})};}});
+ reverse.context.loadPack=async()=>true;reverse.context.get=()=>'';reverse.context.worth=()=>true;reverse.context.put=()=>{};
+ reverse.context.PACK_VALUES=new Map([['ar',new Set([arabicLocalized])]]);
+ reverse.context.QUICK={ar:{'No approved live marketplace listings are available right now. SEEKVERA does not generate fake listings.':arabicLocalized}};
+ reverse.context.norm=s=>String(s).toLowerCase();reverse.context.canonical=s=>String(s).replace(/\\s+/g,' ').trim();
+ vm.runInContext(loop+'\\nthis.runTranslate=translate;',reverse.context);
+ assert.equal(reverse.context.alreadyLocalizedValue('ar',arabicLocalized),true);
+ const reverseChanged=await reverse.context.runTranslate('ar',[arabicLocalized,'Hello']);
+ assert.equal(reverseChanged,true);assert.deepEqual(reversePayload.strings,['Hello']);assert.equal(reverse.calls(),1);
  // Both navigation fallbacks must use the shared guarded helper, never fetch the endpoint directly.
  const staticFn=extract(navigation,'async function translateStaticAI()','async function translateResidualUI()','static AI fallback');
  const residualFn=extract(navigation,'async function translateResidualUI()','function runLocaleEngines()','residual UI fallback');
@@ -61,7 +74,9 @@ async function main(){
  assert(staticFn.includes('loadPack')&&staticFn.includes('isLocalizedValue'),'static AI fallback must reuse local pack translations and skip already-localized values');
  assert(residualFn.includes('loadPack')&&residualFn.includes('isLocalizedValue'),'residual UI fallback must reuse local pack translations and skip already-localized values');
  assert(i18n.includes('PACK_VALUES.set(l,localizedValues)'),'locale runtime must index translated pack values for reverse lookup');
+ assert(i18n.includes('alreadyLocalizedValue(l,s)'),'locale runtime must skip already-localized pack values');
+ assert(r32.includes('PACK_VALUES.set(l,localizedValues)')&&r32.includes('alreadyLocalizedValue(l,s)'),'source runtime must match the deployed reverse-value guard');
  assert(!staticFn.includes("fetch('/api/ui-translate'"));assert(!residualFn.includes("fetch('/api/ui-translate'"));
- console.log('PASS: session quota circuit breaker, shared in-flight lock, sequential batches and navigation fallback guard');
+ console.log('PASS: session quota circuit breaker, shared in-flight lock, sequential batches, navigation fallback and reverse pack-value guard');
 }
 main().catch(e=>{console.error(e);process.exitCode=1;});

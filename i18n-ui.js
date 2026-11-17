@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261008-runtime-source-coverage';
+const VERSION='20261117-r125-reverse-localized-value-guard';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),PACK_VALUES=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -49,6 +49,7 @@ function capture(root=document){
 }
 function k(l,s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return'sv_r32_'+VERSION+'_'+l+'_'+(h>>>0).toString(36)}
 function get(l,s){s=canonical(s);const q=QUICK[l]?.[s];if(q)return q;const m=MEM.get(l+'\u0000'+s);if(m){const ps=plainKey(s);if(ps!==s&&plainKey(m)===ps){const translated=MEM.get(l+'\u0000'+ps);if(translated&&translated!==ps)return s.replace(ps,translated)}return m;}try{return localStorage.getItem(k(l,s))||''}catch{return''}}
+function alreadyLocalizedValue(l,s){const language=norm(l),value=canonical(s);if(PACK_VALUES.get(language)?.has(value))return true;return Object.values(QUICK[language]||{}).some(v=>canonical(v)===value)}
 function put(l,s,v){s=canonical(s);v=String(v||'').trim();if(!v)return;MEM.set(l+'\u0000'+s,v);try{localStorage.setItem(k(l,s),v)}catch{}}
 async function loadPack(l){
  l=norm(l);if(l==='en')return true;if(PACKS.has(l))return true;if(PACKING.has(l))return PACKING.get(l);
@@ -88,7 +89,7 @@ async function cloudTranslate(l,batch){
  CLOUD_TRANSLATE_QUEUE=task.then(()=>null,()=>null);
  return task;
 }
-async function translate(l,arr){await loadPack(l);const unique=[...new Set(arr.filter(s=>worth(s)&&!get(l,s)))];if(!unique.length)return false;let changed=false;const groups=[];for(let i=0;i<unique.length;i+=14)groups.push(unique.slice(i,i+14));for(const batch of groups){if(CLOUD_TRANSLATE_BLOCKED)break;const vals=await cloudTranslate(l,batch);if(CLOUD_TRANSLATE_BLOCKED)break;if(vals)batch.forEach((s,j)=>{if(valid(vals[j],s)){put(l,s,vals[j]);changed=true}})}return changed}
+async function translate(l,arr){await loadPack(l);const unique=[...new Set(arr.filter(s=>worth(s)&&!get(l,s)&&!alreadyLocalizedValue(l,s)))];if(!unique.length)return false;let changed=false;const groups=[];for(let i=0;i<unique.length;i+=14)groups.push(unique.slice(i,i+14));for(const batch of groups){if(CLOUD_TRANSLATE_BLOCKED)break;const vals=await cloudTranslate(l,batch);if(CLOUD_TRANSLATE_BLOCKED)break;if(vals)batch.forEach((s,j)=>{if(valid(vals[j],s)){put(l,s,vals[j]);changed=true}})}return changed}
 function setText(n,src,l){const v=l==='en'?src:(get(l,src)||src);const raw=n.nodeValue||'',t=raw.trim(),next=t?raw.replace(t,v):v;RENDERED_TEXT.set(n,String(next).trim());if(next!==raw)n.nodeValue=next;return l==='en'||!!get(l,src)}
 function setAttr(el,a,src,l){const v=l==='en'?src:(get(l,src)||src);markAttr(el,a,v);if(el.getAttribute(a)!==v)el.setAttribute(a,v);return l==='en'||!!get(l,src)}
 let seq=0,timer=0,applying=false;const BG_TRANSLATING=new Set();
@@ -104,5 +105,5 @@ function entriesAttr(){const out=[];for(const el of document.querySelectorAll('[
 function schedule(ms=80){clearTimeout(timer);timer=setTimeout(()=>apply().catch(()=>{}),ms)}
 function boot(){capture(document);window.addEventListener('seekvera:locale-change',()=>{schedule(0);setTimeout(()=>schedule(0),250);setTimeout(()=>schedule(0),1000)});document.addEventListener('change',e=>{if(e.target?.id==='country'||e.target?.id==='lang'||e.target?.id==='currency')schedule(20)},true);new MutationObserver(ms=>{if(applying)return;let dirty=false;for(const m of ms){if(m.type==='characterData'){const n=m.target;if(!skipped(n)){const now=String(n.nodeValue||'').trim(),rendered=RENDERED_TEXT.get(n);if(rendered!==undefined&&now===rendered)continue;if(SRC.has(n)){dirty=true;continue}RENDERED_TEXT.delete(n);const src=canonicalText(n);if(worth(src)){SRC.set(n,src);dirty=true}}}else if(m.type==='attributes'){const el=m.target,a=m.attributeName;if(el&&a&&ATTRS.includes(a)&&!el.closest?.(SKIP)){const now=String(el.getAttribute(a)||'').trim(),rendered=RENDERED_ATTR.get(el)?.[a];if(rendered!==undefined&&now===rendered)continue;const known=ATTRSRC.get(el);if(known&&known[a]){dirty=true;continue}const rm=RENDERED_ATTR.get(el);if(rm)delete rm[a];if(worth(now)){let mm=ATTRSRC.get(el);if(!mm){mm={};ATTRSRC.set(el,mm)}mm[a]=now;dirty=true}}}for(const n of m.addedNodes||[]){if(n.nodeType===1){capture(n);dirty=true}else if(n.nodeType===3&&!skipped(n)){const src=canonicalText(n);if(worth(src)){SRC.set(n,src);dirty=true}}}}if(dirty)schedule(PACKS.has(lang())?0:30)}).observe(document.documentElement,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:ATTRS});loadPack(lang()).then(()=>schedule(0));schedule(0);setTimeout(()=>schedule(0),400);setTimeout(()=>schedule(0),1600);setTimeout(()=>schedule(0),4200)}
 capture(document);if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-window.SEEKVERA_I18N={lang,apply,schedule,setAttributeSource,t:s=>get(lang(),String(s))||String(s),version:VERSION};window.SEEKVERA_LOCALE_GUARD_R9={apply,schedule,version:VERSION};window.SEEKVERA_I18N_R32={version:VERSION,apply,schedule,lang,loadPack,packReady:l=>PACKS.has(norm(l)),packCount:()=>PACKS.size,isLocalizedValue:s=>PACK_VALUES.get(lang())?.has(canonical(s))||false};
+window.SEEKVERA_I18N={lang,apply,schedule,setAttributeSource,t:s=>get(lang(),String(s))||String(s),version:VERSION};window.SEEKVERA_LOCALE_GUARD_R9={apply,schedule,version:VERSION};window.SEEKVERA_I18N_R32={version:VERSION,apply,schedule,lang,loadPack,packReady:l=>PACKS.has(norm(l)),packCount:()=>PACKS.size,isLocalizedValue:s=>alreadyLocalizedValue(lang(),s)};
 })();
