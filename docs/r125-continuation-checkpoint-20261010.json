@@ -198,8 +198,8 @@
       "reason": "R105 #115 production health, safety and country probes passed, but live generation probes were skipped by policy; binding presence is not live AI availability."
     },
     "voiceTranscription": {
-      "run": 43219069259,
-      "checkedAt": "2026-11-17T02:05:41Z",
+      "run": 44108312975,
+      "checkedAt": "2026-11-17T14:55:41Z",
       "status": "programmatic-and-headless-browser-passed",
       "languages": [
         "ar",
@@ -208,9 +208,10 @@
       ],
       "programmaticAudioOnly": true,
       "physicalDeviceCertified": false,
-      "latestAuthorityRun": 44000336356,
+      "latestAuthorityRun": 44108312975,
       "programmaticTests": "passed",
-      "liveASR": "skipped"
+      "liveASR": "skipped",
+      "scope": "R123 #80 deployed and passed unit, voice-sequence, Arabic home/category and placeholder checks in headless browser; live TTS/ASR probes were not enabled and physical hardware was not tested."
     },
     "publicSite": {
       "run": 44000337747,
@@ -3227,7 +3228,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-17T14:55:30Z",
+  "updatedAt": "2026-11-17T14:56:00Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -7419,7 +7420,9 @@
       "id": 44108313004,
       "status": "in_progress",
       "conclusion": null,
-      "htmlUrl": "https://github.com/seekvera-global/seekvera-main/actions/runs/44108313004"
+      "htmlUrl": "https://github.com/seekvera-global/seekvera-main/actions/runs/44108313004",
+      "lastObservedAt": "2026-11-17T14:56:00Z",
+      "note": "The full 98-language/27-section browser audit is still executing; no conclusion or zero-fallback result yet."
     },
     "candidatePackWrites": 0,
     "translationRequestsSent": 0,
@@ -7457,5 +7460,23 @@
     "candidatePackWritesThisPass": 0,
     "translationRequestsThisPass": 0,
     "aiQuotaUsedThisPass": 0
+  },
+  "latestAudioAuthorityRun20261117": {
+    "run": 80,
+    "id": 44108312975,
+    "status": "completed",
+    "conclusion": "success",
+    "htmlUrl": "https://github.com/seekvera-global/seekvera-main/actions/runs/44108312975",
+    "deployment": "PASS",
+    "checks": {
+      "audioAuthorityUnitAndEnvelope": "PASS",
+      "multilingualScriptCoverage": "PASS",
+      "voiceIntentAndLanguageRouting": "PASS",
+      "liveArabicHomeAnd31Descriptions": "PASS in headless browser",
+      "completeVoiceAcknowledgementBeforeNavigation": "PASS in headless browser",
+      "dynamicVoicePlaceholderLocalization": "PASS in headless browser"
+    },
+    "liveTtsAsrChatProbes": "not run; run_live_audio_probes default false",
+    "physicalMicrophoneSpeakerCertification": false
   }
 }
