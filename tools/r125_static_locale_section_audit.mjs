@@ -134,7 +134,8 @@ try {
   const paths = [...new Set(hrefs.map(href => new URL(href, BASE).pathname))];
   assert(paths.length >= 25, 'unique section paths below expected minimum: ' + paths.length);
 
-  const approvedProperNouns = new Set(['YouTube Music', 'United Kingdom', 'United States']);
+  // Neon Highway is a named game title; its dedicated game-title assertion below still verifies any supplied localized title.
+  const approvedProperNouns = new Set(['YouTube Music', 'United Kingdom', 'United States', 'Neon Highway']);
   const candidateEnglish = sourceKeys.filter(value =>
     value.length >= 12 &&
     (value.match(/[A-Za-z][A-Za-z'’+-]{2,}/g) || []).length >= 2 &&
@@ -143,6 +144,44 @@ try {
     !/https?:\/\/|@/.test(value)
   );
   const leakFindings = [];
+  async function inspectLeakState(phrases) {
+    return page.evaluate(targets => {
+      const nodes = [];
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      let node;
+      while ((node = walker.nextNode())) {
+        const el = node.parentElement;
+        if (!el || !el.getClientRects().length) continue;
+        const raw = String(node.nodeValue || '').replace(/\\s+/g, ' ').trim();
+        if (!raw) continue;
+        for (const phrase of targets) {
+          if (!raw.includes(phrase)) continue;
+          const chain = [];
+          let current = el;
+          for (let depth = 0; current && depth < 4; depth++, current = current.parentElement) {
+            chain.push({
+              tag: current.tagName.toLowerCase(),
+              id: current.id || '',
+              className: typeof current.className === 'string' ? current.className : '',
+              noTranslate: current.hasAttribute('data-no-translate'),
+              userContent: current.hasAttribute('data-user-content'),
+              text: String(current.innerText || current.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, 160)
+            });
+          }
+          nodes.push({ phrase, text: raw.slice(0, 240), chain });
+        }
+      }
+      return {
+        runtime: {
+          language: document.documentElement.lang,
+          readyLanguage: document.documentElement.dataset.seekveraI18nReady || '',
+          runtimeVersion: document.documentElement.dataset.seekveraI18nVersion || '',
+          packReady: !!window.SEEKVERA_I18N_R32?.packReady?.(document.documentElement.lang)
+        },
+        nodes: nodes.slice(0, 40)
+      };
+    }, phrases);
+  }
   let languageApplications = 0;
   let sectionLanguageApplications = 0;
 
@@ -192,7 +231,7 @@ try {
         typeof packs[language]?.[value] === 'string' &&
         body.includes(value)
       ).slice(0, 6);
-      if (leaks.length) leakFindings.push({ path: '/', language, leaks });
+      if (leaks.length) leakFindings.push({ path: '/', language, leaks, ...(await inspectLeakState(leaks)) });
     }
     if ((index + 1) % 14 === 0 || index === manifest.languages.length - 1) {
       console.log('R125_STATIC_HOME_LANGUAGE_PROGRESS', index + 1, '/ 98');
@@ -239,7 +278,7 @@ try {
         typeof packs[language]?.[value] === 'string' &&
         body.includes(value)
       ).slice(0, 6);
-      if (leaks.length) leakFindings.push({ path, language, leaks });
+      if (leaks.length) leakFindings.push({ path, language, leaks, ...(await inspectLeakState(leaks)) });
     }
     console.log('R125_STATIC_SECTION_PROGRESS', pathIndex + 1, '/', paths.length, path, 'languages', testLanguages.length);
   }
@@ -269,6 +308,7 @@ try {
     language,
     { requests: value.requests, uniqueStrings: value.strings.size, samples: [...value.strings].slice(0, 20) }
   ]));
+  console.log('R125_STATIC_LEAK_DETAILS', JSON.stringify(leakFindings));
   console.log('R125_STATIC_TRANSLATION_FALLBACK_DETAILS', JSON.stringify(fallbackSummary));
   console.log('R125_STATIC_BLOCKED_REQUESTS', JSON.stringify({
     ai: blocked.ai.length,
