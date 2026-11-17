@@ -5,7 +5,34 @@ const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const WORLD_LANGS=['en','ar','fr','zh','es','hi','pt','de','ja','ko','id','tr','ru','ur','bn','vi','it','sw','th','fa','pl','nl','ms','fil','ha','yo','ig','am','he','el','uk','ro','cs','sk','hu','sv','no','da','fi','bg','hr','sr','sl','lt','lv','et','ca','eu','gl','is','sq','mk','ka','hy','az','kk','uz','ky','tg','tk','ne','si','ta','te','ml','mr','gu','pa','km','lo','my','mn','zu','af','be','bs','dz','ti','fo','kl','rw','sm','to','so','ps','dv','mt','mg','ga','cy','mi','fy','lb','rm','ku','xh','st','tn'];
 const CMD_LOCALES=WORLD_LANGS;
 const STATIC_AI_SOURCE="I’m the SEEKVERA AI assistant. Tell me what you need and I’ll help you find the right section, compare options or search worldwide.";
-let localeTimer=0,translateSeq=0;
+let localeTimer=0,translateSeq=0,uiTranslationBlocked=false,uiTranslationQueue=Promise.resolve();
+const UI_TRANSLATION_BLOCK_KEY='sv_ui_translate_blocked_r19',UI_TRANSLATION_LOCK_KEY='sv_ui_translate_lock_r19';
+try{uiTranslationBlocked=sessionStorage.getItem(UI_TRANSLATION_BLOCK_KEY)==='1'}catch{}
+function blockUiTranslation(){uiTranslationBlocked=true;try{sessionStorage.setItem(UI_TRANSLATION_BLOCK_KEY,'1')}catch{}}
+function requestUiTranslation(language,strings){
+ const run=async()=>{
+  if(uiTranslationBlocked)return null;
+  let lockToken='';
+  try{
+   if(sessionStorage.getItem(UI_TRANSLATION_BLOCK_KEY)==='1'){uiTranslationBlocked=true;return null}
+   const held=Number(sessionStorage.getItem(UI_TRANSLATION_LOCK_KEY)||0);
+   if(held&&Date.now()-held<20000)return null;
+   lockToken=String(Date.now());
+   sessionStorage.setItem(UI_TRANSLATION_LOCK_KEY,lockToken);
+  }catch{}
+  try{
+   const r=await fetch('/api/ui-translate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language,strings})});
+   const d=await r.json().catch(()=>null),reason=[d?.reason,d?.error].filter(Boolean).join(' ');
+   if(r.status===429||r.status===503||/(daily_free_ai_limit|provider_rate_limited|all_translation_backends_unavailable|\b429\b|rate.?limit|too many requests)/i.test(reason)){blockUiTranslation();return null}
+   if(!r.ok||!Array.isArray(d?.translations)||d.translations.length!==strings.length)return null;
+   return d.translations;
+  }catch{return null}
+  finally{if(lockToken)try{if(sessionStorage.getItem(UI_TRANSLATION_LOCK_KEY)===lockToken)sessionStorage.removeItem(UI_TRANSLATION_LOCK_KEY)}catch{}}
+ };
+ const task=uiTranslationQueue.then(run,run);
+ uiTranslationQueue=task.then(()=>null,()=>null);
+ return task;
+}
 const localeControl=id=>document.querySelector(`.sv-controls select#${id},select#${id}.sv-select`);
 
 const sameOriginReferrer=()=>{try{return document.referrer&&new URL(document.referrer).origin===location.origin}catch{return false}};
@@ -89,8 +116,8 @@ async function translateStaticAI(){
   const mine=++translateSeq;
   try{
     const language=displayLanguage(l,'en');
-    const r=await fetch('/api/ui-translate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language,strings:[source]})});
-    const d=await r.json().catch(()=>null);const t=String(d?.translations?.[0]||'').trim();
+    const translations=await requestUiTranslation(language,[source]);
+    const t=String(translations?.[0]||'').trim();
     if(r.ok&&t&&mine===translateSeq){try{localStorage.setItem(key,t)}catch{}box.textContent=t;box.dataset.svLang=l;}
   }catch{}
 }
@@ -105,7 +132,9 @@ async function translateResidualUI(){
   const sources=[],targets=[];
   for(const e of els){const t=(e.dataset.svResidualSource||e.textContent||'').trim().replace(/\s+/g,' ');if(!t)continue;e.dataset.svResidualSource=t;if(e.dataset.svResidualLang===l)continue;let fixed=CORE[l]?.[t]||'';if(!fixed)try{fixed=window.SEEKVERA_I18N?.t?.(t)||window.SEEKVERA_LOCALE_R14?.t?.(t)||''}catch{}if(fixed&&fixed!==t){e.textContent=fixed;e.dataset.svResidualLang=l;continue}sources.push(t);targets.push(e)}
   if(!sources.length)return;
-  try{const language=displayLanguage(l,'en'),r=await fetch('/api/ui-translate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language,strings:sources})}),d=await r.json();if(!r.ok||!Array.isArray(d.translations))return;targets.forEach((e,i)=>{const t=String(d.translations[i]||'').trim();if(t&&t!==sources[i]){e.textContent=t;e.dataset.svResidualLang=l}})}catch{}
+  const language=displayLanguage(l,'en'),translations=await requestUiTranslation(language,sources);
+  if(!translations)return;
+  targets.forEach((e,i)=>{const t=String(translations[i]||'').trim();if(t&&t!==sources[i]){e.textContent=t;e.dataset.svResidualLang=l}});
 }
 function runLocaleEngines(){
   try{window.SEEKVERA_I18N?.apply?.()}catch{}
