@@ -157,6 +157,88 @@ vm.runInContext(baseAi + '\n' + baseSafety + '\nthis.ai = ai; this.safety = safe
   assert.equal(nonQuotaFallback.model, 'pollinations-private-backup');
   assert.equal(externalCalls, 1, 'non-quota availability fallback should remain available');
 
+
+  const structured = extractFunction(worker, 'async function runStructured(');
+  function makeR76Context() {
+    let nextTimer = 1;
+    const timers = new Map();
+    const context = {
+      FAST: 'fast',
+      PRIMARY: 'primary',
+      FALLBACK: 'fallback',
+      ROUTES: { marketplace: 'marketplace.html' },
+      CATS: ['general'],
+      clean: (v, n = 3500) => String(v ?? '').replace(/[\u0000-\u001F\u007F]/g, ' ').trim().slice(0, n),
+      modelText: value => typeof value === 'string' ? value : String(value?.response ?? value?.text ?? ''),
+      parseJSON: value => { try { return JSON.parse(value); } catch { return null; } },
+      messageLanguage: () => 'en',
+      languageSafeHistory: () => '',
+      metaConversation: () => false,
+      conversationOnly: () => false,
+      directCategoryIntent: () => 'general',
+      category: () => 'general',
+      actionState: () => ({ isAction: false, cc: null, ll: null }),
+      arabicDialect: () => '',
+      routeReplyFor: () => null,
+      guardedReply: value => String(value ?? ''),
+      translationRequest: () => false,
+      languageCode: () => 'en',
+      replyMatchesLanguage: () => true,
+      speechLocaleFor: () => 'en',
+      AbortController,
+      fetch: async () => ({
+        ok: true,
+        text: async () => JSON.stringify({ reply: 'External fallback response', languageCode: 'en', category: 'general' })
+      }),
+      setTimeout: (fn, ms) => {
+        const id = nextTimer++;
+        const delay = ms >= 3300 ? 15 : ms >= 3000 ? 10 : 20;
+        timers.set(id, global.setTimeout(fn, delay));
+        return id;
+      },
+      clearTimeout: id => {
+        const timer = timers.get(id);
+        if (timer) global.clearTimeout(timer);
+        timers.delete(id);
+      }
+    };
+    vm.createContext(context);
+    vm.runInContext(structured + '\nthis.runStructured = runStructured;', context);
+    return context;
+  }
+
+  let lateQuotaFallbackCalls = 0;
+  const lateQuotaContext = makeR76Context();
+  lateQuotaContext.fetch = async () => {
+    lateQuotaFallbackCalls++;
+    return { ok: true, text: async () => JSON.stringify({ reply: 'Should not be used', languageCode: 'en', category: 'general' }) };
+  };
+  const lateQuotaResult = await lateQuotaContext.runStructured(
+    { url: 'https://seekveraglobal.com' },
+    { AI: { run: () => new Promise((_, reject) => global.setTimeout(() => reject(new Error('HTTP 429 Too Many Requests')), 25)) } },
+    null,
+    { message: 'hello', language: 'en', history: [] },
+    'hello'
+  );
+  assert.equal(lateQuotaResult, null, 'a timed-out AI request must fail closed');
+  assert.equal(lateQuotaFallbackCalls, 0, 'external fallback must not start while a late 429 is still possible');
+
+  let capacityFallbackCalls = 0;
+  const capacityContext = makeR76Context();
+  capacityContext.fetch = async () => {
+    capacityFallbackCalls++;
+    return { ok: true, text: async () => JSON.stringify({ reply: 'External fallback response', languageCode: 'en', category: 'general' }) };
+  };
+  const capacityResult = await capacityContext.runStructured(
+    { url: 'https://seekveraglobal.com' },
+    { AI: { run: async () => { throw new Error('capacity temporarily exceeded'); } } },
+    null,
+    { message: 'hello', language: 'en', history: [] },
+    'hello'
+  );
+  assert.equal(capacityFallbackCalls, 1, 'ordinary capacity failures should retain the existing non-quota fallback');
+  assert.equal(capacityResult?.model, 'pollinations-private-conversation-fallback');
+
   console.log('R76_AND_BASE_SAFETY_QUOTA_BOUNDARY_PASS');
 })().catch(error => {
   console.error(error);
