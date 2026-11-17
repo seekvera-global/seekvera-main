@@ -10,7 +10,7 @@ workflow = workflow_path.read_text(encoding="utf-8")
 
 
 def step_block(name: str) -> str:
-    marker = re.compile(r"(?m)^      - name: " + re.escape(name) + r"\\s*$")
+    marker = re.compile(r"(?m)^      - name: " + re.escape(name) + r"\s*$")
     match = marker.search(workflow)
     assert match, f"Missing workflow step: {name}"
     next_step = re.search(r"(?m)^      - (?:name|uses):", workflow[match.end():])
@@ -18,10 +18,10 @@ def step_block(name: str) -> str:
     return workflow[match.start():end]
 
 
-assert re.search(r"(?m)^  workflow_dispatch:\\s*$", workflow), "R125 must remain manually dispatched"
+assert re.search(r"(?m)^  workflow_dispatch:\s*$", workflow), "R125 must remain manually dispatched"
 assert "schedule:" not in workflow, "Unexpected scheduled R125 execution"
 assert workflow.count("default: false") >= 2, "Translation and repair inputs must default to false"
-assert re.search(r"(?m)^  cancel-in-progress: false\\s*$", workflow), "Do not cancel an active R125 run"
+assert re.search(r"(?m)^  cancel-in-progress: false\s*$", workflow), "Do not cancel an active R125 run"
 
 translation = step_block("Resume public UI candidates")
 assert "if: github.event_name == 'workflow_dispatch' && inputs.run_translations" in translation
