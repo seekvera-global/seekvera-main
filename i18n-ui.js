@@ -19,6 +19,7 @@ const QUICK={ar:{
 'Voice recognition is not supported in this browser.':'التعرّف على الصوت غير مدعوم في هذا المتصفّح.',
 [INITIAL_AI]:'أنا مساعد SEEKVERA بالذكاء الاصطناعي. أخبرني بما تحتاج إليه وسأساعدك في الوصول إلى القسم المناسب ومقارنة الخيارات أو البحث حول العالم.'
 },fr:{
+'Back':'Retour','Page navigation':'Navigation des pages','Voice reply':'Réponse vocale','Voice':'Voix',
 'Audio could not play. Tap the speaker to retry.':'Impossible de lire le son. Appuyez sur le haut-parleur pour réessayer.',
 'I could not understand that audio yet — tap the microphone and try again.':'Je n’ai pas compris cet enregistrement — appuyez sur le microphone et réessayez.',
 'Understanding your speech…':'Analyse de vos paroles…',
