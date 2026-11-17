@@ -129,6 +129,15 @@ async function main(){
  assert(i18n.includes('alreadyLocalizedValue(l,s)'),'locale runtime must skip already-localized pack values');
  assert(r32.includes('PACK_VALUES.set(l,localizedValues)')&&r32.includes('alreadyLocalizedValue(l,s)'),'source runtime must match the deployed reverse-value guard');
  assert(!staticFn.includes("fetch('/api/ui-translate'"));assert(!residualFn.includes("fetch('/api/ui-translate'"));
+
+ // Indonesian quick UI labels must resolve locally with zero provider calls.
+ const indonesianLabels={'Back':'Kembali','Page navigation':'Navigasi halaman','Voice reply':'Balasan suara','Voice':'Suara'};
+ for(const value of Object.values(indonesianLabels))assert(i18n.includes(value),'Missing Indonesian quick label: '+value);
+ let indonesianFetchCalls=0;
+ const indonesianNav={sessionStorage:storage(),AbortController,setTimeout,clearTimeout,fetch:async()=>{indonesianFetchCalls++;return{status:503,ok:false,json:async()=>({reason:'all_translation_backends_unavailable'})}},langCode:()=> 'id',window:{SEEKVERA_I18N_R32:{tFor:(code,source)=>code==='id'?(indonesianLabels[source]||source):source}},console};
+ vm.createContext(indonesianNav);vm.runInContext(navBlock,indonesianNav);
+ const indonesianResult=await indonesianNav.requestUiTranslation('Indonesian',['Back','Page navigation','Voice reply','Voice']);
+ assert.deepEqual(indonesianResult,['Kembali','Navigasi halaman','Balasan suara','Suara']);assert.equal(indonesianFetchCalls,0);
  console.log('PASS: session quota circuit breaker, shared in-flight lock, sequential batches, navigation fallback and reverse pack-value guard');
 }
 main().catch(e=>{console.error(e);process.exitCode=1;});
