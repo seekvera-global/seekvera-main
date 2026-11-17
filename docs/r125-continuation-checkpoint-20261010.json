@@ -701,7 +701,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-17T02:10:00.450Z",
+  "checkedAt": "2026-11-17T02:57:08Z",
   "latestR125Run": {
     "run": 150,
     "status": "completed",
@@ -3187,7 +3187,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-17T02:10:00.450Z",
+  "updatedAt": "2026-11-17T02:57:08Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -6327,5 +6327,65 @@
     "missingFiles": 0,
     "extraFiles": 0,
     "sourceHash": "6a1126e6a2ce5629"
+  },
+  "latestBuilderQuotaStopRepair": {
+    "checkedAt": "2026-11-17T02:57:08Z",
+    "finding": "The locale builder stopped the entire language loop only when the error text contained the literal daily_free_ai_limit. Google HTTP429/provider_rate_limited and all_translation_backends_unavailable were terminal inside translate_small, but the outer loop could continue to the next language; the 503 backend-unavailable response could also fall through to recursive batch splitting.",
+    "commit": "1aef1f59fa5c57075dc08bc2c7d0f0b7633a29c2",
+    "files": [
+      "tools/build_current_locale_delta.py",
+      "tools/test-locale-quota-stop.py",
+      ".github/workflows/r125-hourly-candidate-resume.yml"
+    ],
+    "changes": {
+      "classifier": "translation_stop_reason classifies quota/rate-limit and all_translation_backends_unavailable as terminal for the current translation run.",
+      "batch": "translate_small raises before SPLIT_RETRY or recursive splitting for terminal blockers.",
+      "run": "The outer language loop stops immediately after the first terminal quota/rate-limit/backend-unavailable error."
+    },
+    "tests": {
+      "local": "PASS",
+      "classificationCases": 10,
+      "mockedTerminalHttpErrorCases": 3,
+      "noSplitVerified": true,
+      "networkRequests": 0,
+      "r125WorkflowTestAdded": true,
+      "r125Ci": "pending next manual R125 run"
+    },
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "aiAvailability": "unknown-not-probed"
+  },
+  "latestWorkflowRunInspection20261117": {
+    "checkedAt": "2026-11-17T02:57:08Z",
+    "mainHead": "1aef1f59fa5c57075dc08bc2c7d0f0b7633a29c2",
+    "candidateBranchHead": "36d0a5f4e390af8d4246dd13be8a81e2167b7710",
+    "latestR125Run": {
+      "number": 150,
+      "id": 38971104197,
+      "createdAt": "2026-10-16T21:41:54Z",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push on legacy workflow revision",
+      "resumeStep": "skipped",
+      "auditStep": "success",
+      "candidatePackChanges": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "currentR125Run": null,
+    "newerR125WorkflowDispatchRunFound": false,
+    "activeOrQueuedR125Runs": 0,
+    "activeOrQueuedRepositoryRuns": 0,
+    "latestPagesRun": {
+      "number": 1615,
+      "id": 44006311797,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "1aef1f59fa5c57075dc08bc2c7d0f0b7633a29c2"
+    },
+    "candidateWritesDeferred": true
   }
 }
