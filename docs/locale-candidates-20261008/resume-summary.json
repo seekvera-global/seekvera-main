@@ -4309,39 +4309,50 @@
     "aiAvailability": "unknown-not-probed"
   },
   "latestR125RunInspection": {
-    "checkedAt": "2026-11-16T23:02:38Z",
-    "run": 150,
-    "id": 38971104197,
-    "status": "completed",
-    "conclusion": "success",
-    "createdAt": "2026-10-16T21:41:54Z",
-    "event": "push",
-    "headSha": "0911d8f826e7347f3b5dbf9aacccc7893ee85dd8",
-    "workflowRevision": "legacy revision; current Main workflow is workflow_dispatch-only",
-    "steps": {
-      "resumePublicUiCandidates": "skipped",
-      "preserveLiveAiCapacity": "success",
-      "auditAllSavedCandidates": "success",
-      "artifactUpload": "success",
-      "saveProgressWithoutPublishing": "success"
+    "checkedAt": "2026-11-17T07:55:17.931Z",
+    "latestRun": {
+      "number": 150,
+      "id": 38971104197,
+      "createdAt": "2026-10-16T21:41:54Z",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push",
+      "workflowRevision": "legacy; not current Main workflow"
     },
-    "savedCommit": "cae69709e12739b6d9f9a1532850e479432ebf0e",
-    "savedFiles": [
-      "docs/locale-candidates-20261008/resume-summary.json",
-      "docs/locale-candidates-20261008/scheduled-mode.json"
-    ],
-    "candidatePackChanges": 0,
-    "translationRequests": 0,
-    "aiQuotaUsed": 0,
-    "interpretation": "Historical audit-only run; it did not resume candidate translation. It preserved live AI capacity after daily free AI allocation exhaustion."
+    "currentWorkflow": {
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "sha": "bedfffbaedf94fea2052159041df976fc9fb3a43"
+    },
+    "historyScan": {
+      "actionsRunsScanned": 1000,
+      "latest100HadR125Resume": false,
+      "latestMatchingR125Resume": 150,
+      "activeR125ResumeRuns": 0
+    },
+    "latestRunSteps": {
+      "resume": "skipped",
+      "audit": "success",
+      "candidatePackWrites": 0,
+      "metadataFilesWritten": 2,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "currentRevisionCi": "pending manual dispatch",
+    "candidatePackWritesThisPass": 0,
+    "translationRequestsThisPass": 0,
+    "aiQuotaUsedThisPass": 0
   },
   "latestMetadataInspection": {
-    "checkedAt": "2026-11-17T02:06:47Z",
+    "checkedAt": "2026-11-17T07:55:17.931Z",
     "mainCheckpointCommit": "1d7757efd95c59f53b38223f4de533fa65226069",
     "mainHead": "1d7757efd95c59f53b38223f4de533fa65226069",
     "candidateBranchHead": "4ccd061a4eab4bad2707fe2e0ef491869704223b",
     "summaryUpdated": true,
-    "resumeLatestLogPreserved": true
+    "resumeLatestLogPreserved": true,
+    "mainCheckpointCommitPending": true,
+    "resumeLatestLogSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b"
   },
   "latestQuotaRaceRepair": {
     "commit": "7f61e65493e798921ac8111f3a8613c33ca0c5bc",
@@ -4380,7 +4391,7 @@
     "r125Ci": "pending next manual run",
     "candidatePacksChanged": 0
   },
-  "updatedAt": "2026-11-17T03:01:26Z",
+  "updatedAt": "2026-11-17T07:55:17.931Z",
   "latestBuilderQuotaStopRepair": {
     "checkedAt": "2026-11-17T02:57:08Z",
     "finding": "The locale builder stopped the entire language loop only when the error text contained the literal daily_free_ai_limit. Google HTTP429/provider_rate_limited and all_translation_backends_unavailable were terminal inside translate_small, but the outer loop could continue to the next language; the 503 backend-unavailable response could also fall through to recursive batch splitting.",
@@ -4462,5 +4473,36 @@
     "translationRequests": 0,
     "aiQuotaUsed": 0,
     "r125CiVerification": "pending next manual R125 run"
+  },
+  "latestAuditIntegrityGuard": {
+    "checkedAt": "2026-11-17T07:55:17.931Z",
+    "finding": "The candidate auditor used json.loads, which silently overwrites duplicate JSON object keys; exact set comparison alone cannot detect repeated raw keys.",
+    "commits": {
+      "audit": "cf32139950f1e5fb1e71ecf30f253c31a0bfed03",
+      "test": "b32bb62ad9ba71b763e2326c2941d286cb9456a9",
+      "workflow": "3e4324280090cb4325383b4cded5da5a05d41496"
+    },
+    "behavior": "Reject duplicate keys at every JSON nesting depth; mark duplicate-key packs as duplicate_json_keys, malformed JSON or invalid UTF-8 as invalid_json.",
+    "localVerification": {
+      "validJsonAccepted": true,
+      "duplicateTopLevelRejected": true,
+      "duplicateNestedRejected": true,
+      "duplicateTranslationMapRejected": true,
+      "malformedJsonRejected": true,
+      "invalidUtf8Rejected": true,
+      "scenarios": 6
+    },
+    "workflowReadback": {
+      "testCopiedFromMain": true,
+      "testStepPresent": true,
+      "auditOnlyDefaultsPreserved": true,
+      "candidateWritesRequireExplicitOptIn": true
+    },
+    "r125Ci": "pending; current workflow has not yet run under the updated revision",
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false
   }
 }
