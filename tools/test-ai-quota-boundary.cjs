@@ -96,11 +96,12 @@ assert.ok(translationHandler.includes('quotaReason=translationQuotaReason(e)'), 
 assert.ok(translationHandler.includes('if(quotaReason)return j('), 'UI translation must stop before trying the next model on quota/rate-limit errors');
 
 const translationBuilder = fs.readFileSync('tools/build_current_locale_delta.py', 'utf8');
-assert.ok(translationBuilder.includes('def quota_or_rate_limit(detail):'), 'translation builder must classify quota/rate-limit responses');
-assert.ok(translationBuilder.includes('if quota_or_rate_limit(detail):raise RuntimeError(detail) from e'), 'translation builder must stop immediately on quota/rate-limit errors');
-const stopIndex = translationBuilder.indexOf('if quota_or_rate_limit(detail):raise RuntimeError(detail) from e');
+assert.ok(translationBuilder.includes('def translation_stop_reason(detail):'), 'translation builder must classify quota, rate-limit and unavailable-backend responses');
+assert.ok(translationBuilder.includes('if translation_stop_reason(detail):raise RuntimeError(detail) from e'), 'translation builder must stop immediately on terminal translation blockers');
+const stopIndex = translationBuilder.indexOf('if translation_stop_reason(detail):raise RuntimeError(detail) from e');
 const splitIndex = translationBuilder.indexOf("print('SPLIT_RETRY'");
-assert.ok(stopIndex >= 0 && splitIndex > stopIndex, 'translation builder must stop before splitting/retrying a quota/rate-limit failure');
+assert.ok(stopIndex >= 0 && splitIndex > stopIndex, 'translation builder must stop before splitting/retrying a terminal quota/rate-limit/backend failure');
+assert.ok(translationBuilder.includes("if stop_reason:\n    print('STOP_TRANSLATION_RUN'"), 'the outer language loop must stop after a terminal provider blocker');
 
 const baseAi = extractFunction(baseWorker, 'async function ai(');
 const baseSafety = extractFunction(baseWorker, 'async function safety(');
