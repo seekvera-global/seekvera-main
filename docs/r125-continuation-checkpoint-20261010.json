@@ -132,8 +132,8 @@
     "UI translation now stops immediately on daily_free_ai_limit and provider HTTP429/rate limits before trying another model; locale delta builder stops before split/retry on quota/rate-limit responses. No translation request or quota was consumed.",
     "Exclude internal docs, developer tools and Python caches from Cloudflare static assets; production R105 #87 confirmed four representative internal paths return HTTP 404."
   ],
-  "runtimeCommit": "ce6e189e21b927b50d07ac96466a3ea4bdc69e47",
-  "runtimeDeployRun": 38093026947,
+  "runtimeCommit": "6c66a50a28d9fb9b3a97e7b2e7302aad85de54f4",
+  "runtimeDeployRun": 44000363183,
   "runtimeDeployConclusion": "success",
   "browserCandidateCheck": {
     "run": 38082490180,
@@ -186,21 +186,21 @@
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-16T23:00:51Z",
+    "checkedAt": "2026-11-17T02:06:05Z",
     "aiChat": {
       "lastConfirmedLiveRun": 43213407211,
-      "checkedAt": "2026-11-12T11:57:45Z",
+      "checkedAt": "2026-11-17T02:06:05Z",
       "english": "passed",
       "arabic": "passed",
       "countryChange": "passed",
       "prohibitedWeapon": "blocked",
       "currentAvailability": "unknown-not-probed",
-      "reason": "R105 #85 live AI probes were skipped by policy; no quota-safe generation probe was available."
+      "reason": "R105 #97 health and binding checks passed, but live English/Arabic generation probes were skipped by policy to avoid quota use."
     },
     "voiceTranscription": {
       "run": 43219069259,
-      "checkedAt": "2026-11-13T15:52:20Z",
-      "status": "passed",
+      "checkedAt": "2026-11-17T02:05:41Z",
+      "status": "programmatic-and-headless-browser-passed",
       "languages": [
         "ar",
         "fr",
@@ -208,30 +208,36 @@
       ],
       "programmaticAudioOnly": true,
       "physicalDeviceCertified": false,
-      "latestAuthorityRun": 43456938311,
+      "latestAuthorityRun": 44000336356,
       "programmaticTests": "passed",
       "liveASR": "skipped"
     },
     "publicSite": {
-      "run": 38099895807,
-      "checkedAt": "2026-10-11T00:52:30Z",
+      "run": 44000337747,
+      "checkedAt": "2026-11-17T02:05:13Z",
       "health": "passed",
       "robots": "passed",
       "sitemap": "passed",
       "pagesChecked": 18,
-      "scope": "Live HTTP availability and SEO-file assertions only; not full interaction, all-language, audio, or physical-device certification."
+      "scope": "Live official-domain health, robots/sitemap and 18 named pages; not full interaction or all-language/all-section certification."
     },
     "translation": {
       "currentAvailability": "unknown-not-probed",
-      "reason": "No translation request sent. Code now stops on daily_free_ai_limit and provider HTTP429; actual provider availability remains unknown."
+      "reason": "No translation request was sent; daily_free_ai_limit, Google HTTP429 and historical HTTP503 all_translation_backends_unavailable remain blockers.",
+      "checkedAt": "2026-11-17T02:06:05Z"
     },
     "quotaBoundary": {
-      "regression": "passed in R105 #84",
+      "regression": "passed in R105 #97",
       "productionWorkerDeployed": true,
       "externalFallbackSuppressedForQuotaErrors": true,
-      "r76Guard": "passed and deployed in R105 #84",
-      "translationStopGuard": "passed and deployed in R105 #85",
-      "noQuotaBypassRequestsSent": true
+      "r76Guard": "sequential model attempts; fail closed on quota, timeout and rate limit; passed and deployed in R105 #97",
+      "translationStopGuard": "passed and deployed in R105 #97",
+      "noQuotaBypassRequestsSent": true,
+      "baseWorkerNestedQuotaClassifier": "translationQuotaReason now classifies nested AggregateError quota/rate-limit causes; passed and deployed in R105 #97",
+      "parallelModelRaceRemoved": true,
+      "lateQuotaAfterTimeoutRegression": "passed",
+      "crossModel429Regression": "passed",
+      "nestedAggregateErrorRegression": "passed"
     }
   },
   "voiceScriptCoverage": {
@@ -695,14 +701,21 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-16T21:29:42Z",
+  "checkedAt": "2026-11-17T02:06:47Z",
   "latestR125Run": {
-    "run": 38971104197,
+    "run": 150,
     "status": "completed",
     "conclusion": "success",
     "createdAt": "2026-10-16T21:41:54Z",
     "activeRunFound": false,
-    "candidateWritesDeferred": false
+    "candidateWritesDeferred": false,
+    "id": 38971104197,
+    "resume": "skipped",
+    "audit": "success",
+    "active": false,
+    "candidatePackChanges": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0
   },
   "ciActionRuntimeRepair": {
     "issue": "Current production release and audio authority workflows still used actions/checkout@v4, which emitted the Node 20 forced-to-Node-24 compatibility warning.",
@@ -2910,23 +2923,64 @@
     "validation": "Read-back verified; provisional manual Hausa UI terms; native review required."
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-16T15:56:00Z",
+    "checkedAt": "2026-11-17T02:06:47Z",
     "filesRead": [
       "main docs/r125-continuation-checkpoint-20261010.json",
       "candidate docs/locale-candidates-20261008/resume-summary.json",
       "candidate docs/locale-candidates-20261008/resume-latest.log",
       "main .github/workflows/r125-hourly-candidate-resume.yml",
-      "candidate docs/locale-candidates-20261008/dv-english-overlap-review-20261115.json",
-      "candidate docs/locale-candidates-20261008/full-structural-readback-20261115-224200Z.json"
+      "main worker-r76.js",
+      "main worker.js",
+      "main tools/test-ai-quota-boundary.cjs",
+      "main tools/audit_locale_candidates.py",
+      "main tools/test-audit-locale-candidates.py"
     ],
     "actions": {
-      "latestPagesRun": {
-        "run": 1582,
-        "id": 43887482410,
+      "latestR105": {
+        "run": 97,
+        "id": 44000363183,
         "status": "completed",
         "conclusion": "success",
-        "updatedAt": "2026-11-16T14:37:14Z",
-        "headSha": "86879375d733eb56c4a1298ca6232945ee866063"
+        "sourceValidation": "success",
+        "all98LanguageNames": "success",
+        "quotaBoundaryTests": "success",
+        "workerDeploy": "success",
+        "productionHealth": "success",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "latestR123": {
+        "run": 70,
+        "id": 44000336356,
+        "status": "completed",
+        "conclusion": "success",
+        "audioValidation": "success",
+        "workerDeploy": "success",
+        "categoryTranslations": "success",
+        "voiceAcknowledgement": "success",
+        "dynamicVoicePlaceholders": "success",
+        "liveASR": "skipped",
+        "physicalAudio": "not-certified"
+      },
+      "latestSiteHealth": {
+        "run": 329,
+        "id": 44000337747,
+        "status": "completed",
+        "conclusion": "success",
+        "pagesChecked": 18
+      },
+      "latestSafetySmoke": {
+        "run": 31,
+        "id": 44000336570,
+        "status": "completed",
+        "conclusion": "success",
+        "blockedCases": 4,
+        "legalLand": "allowed_pending_human_review"
+      },
+      "latestPages": {
+        "run": 1609,
+        "id": 44000362278,
+        "status": "completed",
+        "conclusion": "success"
       },
       "latestR125": {
         "run": 150,
@@ -2935,22 +2989,23 @@
         "conclusion": "success",
         "resume": "skipped",
         "audit": "success",
-        "active": false,
-        "createdAt": "2026-10-16T21:41:54Z"
+        "candidatePackChanges": 0,
+        "active": false
       },
-      "repositoryInProgress": 0,
-      "repositoryQueued": 0,
-      "checkedBy": "GitHub Actions API status filters"
+      "currentR125Run": null,
+      "activeR125Runs": 0
     },
     "workflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
       "trigger": "workflow_dispatch only",
+      "scheduleTriggerPresent": false,
+      "pushTriggerPresent": false,
       "runTranslationsDefault": false,
       "repairCandidatesDefault": false,
       "explicitTranslationOptInRequired": true,
-      "auditOnlyBranchWrites": false,
-      "deterministicRepairStepsMayWriteCandidates": true,
-      "publication": false
+      "candidateWritesDeferredWhileRunning": true,
+      "exactCandidateKeySetTestAdded": true,
+      "exactCandidateKeySetTestRun": "pending-next-manual-R125"
     },
     "candidateState": {
       "structural": 98,
@@ -2965,7 +3020,8 @@
       "divehiEnglishOverlap": 58,
       "full98QualityAudit": false,
       "published": false,
-      "linguisticCertification": false
+      "linguisticCertification": false,
+      "nativeCertification": 0
     },
     "ai": {
       "chat": "unknown-not-probed",
@@ -2975,25 +3031,24 @@
       "knownBlockers": [
         "daily_free_ai_limit",
         "Google HTTP429",
-        "HTTP503 all_translation_backends_unavailable"
+        "historical HTTP503 all_translation_backends_unavailable"
       ]
     },
     "production": {
-      "pagesRun": 1582,
+      "pagesRun": 1609,
       "pagesConclusion": "success",
-      "pagesJobs": {
-        "build": "success",
-        "reportBuildStatus": "success",
-        "deploy": "success"
-      },
-      "siteHealthRun": 325,
+      "siteHealthRun": 329,
       "siteHealthConclusion": "success",
-      "countryChangeIceland": "passed historically",
+      "siteHealthPages": 18,
+      "safetySmokeRun": 31,
+      "safetySmokeConclusion": "success",
+      "blockedCases": 4,
+      "legalLand": "allowed_pending_human_review",
+      "countryChangeIceland": "passed in R105 #97",
+      "currencyFallback": "passed in R123 #70",
       "fullCountryCurrencyMatrix": "not certified",
-      "prohibitedWeapon": "blocked",
-      "liveEnglishArabicChatProbes": "not probed this pass",
-      "programmaticTTS": "passed historically",
-      "voiceAcknowledgement": "passed historically",
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
       "liveASR": "skipped",
       "physicalAudio": "pending",
       "checkout": "inactive"
@@ -3003,8 +3058,14 @@
       "candidateMetadataWrites": 0,
       "translationRequests": 0,
       "aiQuotaUsed": 0,
+      "quotaRaceRepairCommitted": true,
+      "baseNestedQuotaClassifierCommitted": true,
+      "exactKeySetAuditGuardCommitted": true,
+      "exactKeySetAuditLocalUnit": "passed",
+      "exactKeySetAuditR125Run": "pending",
       "published": false,
-      "linguisticCertification": false
+      "linguisticCertification": false,
+      "decision": "NO-GO"
     },
     "decision": "NO-GO; Pages #1582 and build/report/deploy passed. 98/98 packs structurally aligned; Divehi has 58 English-overlap quality failures. Full quality/native review, all-language/all-section coverage, current AI availability, full country/currency matrix, physical audio and merchant checkout remain incomplete."
   },
@@ -3114,7 +3175,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-16T21:29:42Z",
+  "updatedAt": "2026-11-17T02:06:47Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -5986,18 +6047,11 @@
     "linguisticCertification": false
   },
   "latestPagesAfterMainCheckpoint": {
-    "run": 1587,
-    "id": 43945705356,
+    "run": 1609,
+    "id": 44000362278,
     "status": "completed",
     "conclusion": "success",
-    "headSha": "cd6224e08ba4e69ba8aa5c1cc267b085cd1fec66",
-    "checkedAt": "2026-11-16T21:29:42Z",
-    "jobs": {
-      "build": "success",
-      "deploy": "success",
-      "reportBuildStatus": "success"
-    },
-    "scope": "Pages documentation deployment only; not product certification."
+    "headSha": "6c66a50a28d9fb9b3a97e7b2e7302aad85de54f4"
   },
   "latestQuotaGuardRepair": {
     "checkedAt": "2026-11-16T22:56:09Z",
@@ -6227,5 +6281,26 @@
     "candidatePackWrites": 0,
     "published": false,
     "linguisticCertification": false
+  },
+  "run29QuotaRaceRepair": {
+    "commit": "7f61e65493e798921ac8111f3a8613c33ca0c5bc",
+    "description": "Replaced parallel Promise.any model fan-out with a sequential model attempt order; any daily_free_ai_limit, HTTP429, or timeout stops later model/external fallback attempts.",
+    "regressionTests": "passed in R105 #95 and R105 #97",
+    "productionDeploy": "R105 #97 success"
+  },
+  "run30NestedQuotaClassifierRepair": {
+    "commit": "43492bb8a65038428410e00f70297113d9c56768",
+    "description": "Base worker AI helper now uses translationQuotaReason(e), including nested AggregateError causes, before external fallback.",
+    "regressionTests": "passed in R105 #97",
+    "productionDeploy": "R105 #97 success"
+  },
+  "run31ExactKeySetAuditRepair": {
+    "commit": "7eea50df870d0433c5ca57f88af69bd677e9488a",
+    "testCommit": "f7184554b5f5e9a5d7e4030d936e5ad4fa80077c",
+    "workflowCommit": "ec905fa7c6bbf6fb25c1084513000d6b426f1a72",
+    "description": "Candidate audit now detects extra translation keys as well as missing keys; R125 copies and runs a quota-neutral regression test before candidate resume.",
+    "localUnitTest": "passed",
+    "r125Ci": "pending next manual run",
+    "candidatePacksChanged": 0
   }
 }
