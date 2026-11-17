@@ -47,7 +47,7 @@ def audit(stage, exit_code="not-run"):
     stage = Path(stage)
     try:
         source = read_json_unique(stage / "source.json")
-    except (DuplicateJSONKeyError, json.JSONDecodeError) as exc:
+    except (DuplicateJSONKeyError, json.JSONDecodeError, UnicodeDecodeError) as exc:
         raise RuntimeError(f"Candidate source JSON is invalid: {exc}") from exc
     if not isinstance(source, dict) or not isinstance(source.get("strings"), dict):
         raise RuntimeError("Candidate source JSON must contain a strings object")
@@ -68,7 +68,7 @@ def audit(stage, exit_code="not-run"):
         except DuplicateJSONKeyError:
             failures[code] = ["duplicate_json_keys"]
             continue
-        except json.JSONDecodeError:
+        except (json.JSONDecodeError, UnicodeDecodeError):
             failures[code] = ["invalid_json"]
             continue
         if not isinstance(data, dict):
