@@ -4391,7 +4391,7 @@
     "r125Ci": "pending next manual run",
     "candidatePacksChanged": 0
   },
-  "updatedAt": "2026-11-17T17:52:55Z",
+  "updatedAt": "2026-11-17T18:31:40Z",
   "latestBuilderQuotaStopRepair": {
     "checkedAt": "2026-11-17T02:57:08Z",
     "finding": "The locale builder stopped the entire language loop only when the error text contained the literal daily_free_ai_limit. Google HTTP429/provider_rate_limited and all_translation_backends_unavailable were terminal inside translate_small, but the outer loop could continue to the next language; the 503 backend-unavailable response could also fall through to recursive batch splitting.",
@@ -4590,5 +4590,133 @@
       "published": false,
       "linguisticCertification": false
     }
+  },
+  "latestRuntimeVerification20261117": {
+    "checkedAt": "2026-11-17T18:31:40Z",
+    "mainCheckpointCommit": "3ebf2ce44543171a697aae692efc9519471934cb",
+    "productionRepair": {
+      "commit": "e242e5df09c3e79e01b3570fc8054209828e46ac",
+      "file": "i18n-ui.js",
+      "change": "Added quota-neutral Spanish quick labels for Back, Page navigation, Voice reply and Voice.",
+      "readback": "PASS"
+    },
+    "r125StaticAudit": {
+      "run": 31,
+      "id": 44148220343,
+      "status": "completed",
+      "conclusion": "failure",
+      "languages": 98,
+      "sectionPaths": 27,
+      "sectionLanguageApplications": 2646,
+      "countryProfiles": 248,
+      "missingKeys": 0,
+      "extraKeys": 0,
+      "emptyValues": 0,
+      "exactFindingCombinations": 66,
+      "partialFindingCombinations": 47,
+      "unresolvedFindingCombinations": 0,
+      "dynamicFallback": {
+        "requests": 1,
+        "language": "Tswana",
+        "strings": [
+          "Voice reply",
+          "Voice"
+        ]
+      },
+      "previousSpanishFallbackResolved": true
+    },
+    "productionChecks": {
+      "pages": {
+        "run": 1704,
+        "id": 44148219877,
+        "conclusion": "success"
+      },
+      "r105": {
+        "run": 124,
+        "id": 44148220307,
+        "conclusion": "success",
+        "aiBinding": true,
+        "safetyGate": "enabled",
+        "failClosed": true,
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r123": {
+        "run": 86,
+        "id": 44148220333,
+        "conclusion": "success",
+        "programmaticAudio": "passed",
+        "voiceAcknowledgement": "passed",
+        "liveASR": "skipped",
+        "physicalDeviceCertified": false
+      },
+      "r9e": {
+        "run": 50,
+        "id": 44148220472,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "manualMoroccoPriority": "pass",
+        "manualWorldwidePriority": "pass",
+        "prohibitedWeapon": "blocked",
+        "liveAiProbes": "skipped-by-policy",
+        "liveASR": "skipped-by-policy"
+      }
+    },
+    "candidateState": {
+      "structural": 98,
+      "total": 98,
+      "quality": 97,
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "published": 0,
+      "linguisticCertification": 0
+    },
+    "resumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "trigger": "workflow_dispatch only",
+      "scheduleTriggerPresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestObservedRun": {
+        "number": 150,
+        "id": 38971104197,
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "resume": "skipped",
+        "audit": "success"
+      },
+      "currentRevisionRunObserved": false,
+      "activeRuns": 0
+    },
+    "ai": {
+      "binding": true,
+      "chatAvailability": "unknown-not-probed",
+      "liveGeneration": "skipped-by-policy",
+      "translationAvailability": "unknown-not-probed",
+      "lastResumeLogError": "HTTP 503 all_translation_backends_unavailable",
+      "historicalBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429"
+      ],
+      "translationRequests": 0,
+      "quotaUsed": 0
+    },
+    "voice": {
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "liveASR": "skipped",
+      "physicalMicrophoneSpeakerCertification": false
+    },
+    "checkout": "inactive pending merchant configuration and end-to-end merchant verification",
+    "candidatePackWrites": 0,
+    "candidateMetadataWrites": 1,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "decision": "NO-GO"
   }
 }
