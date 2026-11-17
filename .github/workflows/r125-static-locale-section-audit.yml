@@ -49,6 +49,29 @@ jobs:
       - name: Install Chromium and system dependencies
         run: npx playwright install --with-deps chromium
 
+      - name: Wait for Pages to serve the audited locale assets
+        env:
+          SEEKVERA_BASE_URL: https://seekveraglobal.com
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 36); do
+            if curl -fsS --max-time 10 "$SEEKVERA_BASE_URL/index.html?locale_audit=20261117" -o /tmp/r125-index.html \
+              && curl -fsS --max-time 10 "$SEEKVERA_BASE_URL/games.html?locale_audit=20261117" -o /tmp/r125-games.html \
+              && curl -fsS --max-time 10 "$SEEKVERA_BASE_URL/global-ui.js?v=20261117-r125-source-caption-i18n" -o /tmp/r125-global-ui.js \
+              && curl -fsS --max-time 10 "$SEEKVERA_BASE_URL/games.js?v=20261117-r125-game-title-i18n" -o /tmp/r125-games.js \
+              && grep -Fq 'global-ui.js?v=20261117-r125-source-caption-i18n' /tmp/r125-index.html \
+              && grep -Fq 'games.js?v=20261117-r125-game-title-i18n' /tmp/r125-games.html \
+              && grep -Fq 'sv-control-caption-label' /tmp/r125-global-ui.js \
+              && grep -Fq '<b>${g.name}</b>' /tmp/r125-games.js \
+              && ! grep -Fq 'data-no-translate>${g.name}' /tmp/r125-games.js; then
+              echo R125_LATEST_PAGES_ASSETS_READY
+              exit 0
+            fi
+            sleep 5
+          done
+          echo R125_LATEST_PAGES_ASSETS_TIMEOUT >&2
+          exit 1
+
       - name: Syntax check quota-neutral audit
         run: node --check tools/r125_static_locale_section_audit.mjs
 
