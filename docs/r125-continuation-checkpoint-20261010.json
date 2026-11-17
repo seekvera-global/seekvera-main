@@ -181,31 +181,38 @@
     "Perform physical microphone and audible-speaker tests on Android, iPhone/iPad and desktop; headless/programmatic TTS-ASR is not hardware certification.",
     "Checkout remains inactive pending merchant-account configuration and end-to-end merchant verification.",
     "Re-run full candidate quality/script audit after 18 provisional Hausa game-description edits; no native Hausa review yet.",
-    "Resolve 58 Dhivehi English-overlap entries with qualified native translation/review; review artifact created 2026-11-15."
+    "Resolve 58 Dhivehi English-overlap entries with qualified native translation/review; review artifact created 2026-11-15.",
+    "Re-run the full 98-language × 27-section static audit after the superapp.js dynamic-locale runtime fix; the latest pre-fix run found 66 exact and 13 partial English UI matches.",
+    "Review and localize the 66 exact and 13 partial UI findings with qualified language review; do not use unreviewed Candidate values as production translations.",
+    "Recheck that the French dynamic empty-state uses the French R32 pack value and makes zero dynamic translation requests.",
+    "Verify current AI chat availability only when a quota-safe authorized live probe is available."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-17T14:55:30Z",
+    "checkedAt": "2026-11-17T16:43:14Z",
     "aiChat": {
-      "checkedAt": "2026-11-17T13:45:40Z",
+      "checkedAt": "2026-11-17T16:19:19Z",
+      "currentAvailability": "unknown-not-probed",
       "lastConfirmedLiveRun": 44095755996,
       "english": "passed",
-      "englishLatencyMs": 675,
       "arabic": "passed",
       "countryChange": "passed",
       "prohibitedWeapon": "blocked",
-      "currentAvailability": "unknown-not-probed",
-      "reason": "Latest live R9e browser run passed English and Arabic chat, 248 country profiles and prohibited-weapon blocking; no new live chat probe was sent in this pass."
+      "latestBrowserRun": 44124063175,
+      "latestBrowserRunLiveAi": "skipped-by-policy",
+      "latestProductionHealthRun": 44124231703,
+      "aiBinding": "true",
+      "liveGenerationProbe": "skipped-by-policy"
     },
     "voiceTranscription": {
-      "checkedAt": "2026-11-17T14:55:41Z",
-      "run": 44108312975,
+      "checkedAt": "2026-11-17T16:16:54Z",
+      "run": 44123761163,
       "status": "programmatic-and-headless-browser-passed",
       "programmaticTests": "passed",
       "liveASR": "skipped",
       "physicalDeviceCertified": false,
-      "scope": "R123 #80 passed audio-envelope, language detection, voice sequencing, Arabic descriptions and placeholder checks; no physical microphone/speaker certification."
+      "scope": "R123 #82 passed TTS envelope, language/dialect, voice sequencing, Arabic descriptions and placeholder tests; no physical microphone/speaker certification."
     },
     "publicSite": {
       "run": 44000337747,
@@ -217,9 +224,19 @@
       "scope": "Live official-domain health, robots/sitemap and 18 named pages; not full interaction or all-language/all-section certification."
     },
     "translation": {
-      "checkedAt": "2026-11-17T16:02:07.822Z",
+      "checkedAt": "2026-11-17T16:24:50Z",
       "currentAvailability": "unknown-not-probed",
-      "reason": "No translation request was sent. Candidate resume log still records HTTP 503 all_translation_backends_unavailable with Qwen/Gemma/Llama backend output unparseable; historical daily_free_ai_limit and Google HTTP429 remain blockers."
+      "lastObservedResumeLog": "HTTP 503 all_translation_backends_unavailable",
+      "knownHistoricalBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429"
+      ],
+      "latestStaticAuditBlockedRequest": {
+        "run": 44124062616,
+        "count": 1,
+        "providerRequestsSent": 0
+      },
+      "quotaRequestsThisPass": 0
     },
     "quotaBoundary": {
       "regression": "passed in R105 #97",
@@ -3232,7 +3249,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-17T16:07:02.387Z",
+  "updatedAt": "2026-11-17T16:43:14Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -7638,5 +7655,125 @@
         "ed7491048b84c8e528dfa3aede3dc3be9bdc8091"
       ]
     }
+  },
+  "latestR125StaticAudit20261117": {
+    "run": 25,
+    "id": 44124062616,
+    "workflow": ".github/workflows/r125-static-locale-section-audit.yml",
+    "checkedAt": "2026-11-17T16:17:29Z",
+    "completedAt": "2026-11-17T16:24:54Z",
+    "status": "completed",
+    "conclusion": "failure",
+    "verified": {
+      "publishedLocalePacks": 98,
+      "sourceStrings": 1045,
+      "countryProfiles": 248,
+      "sectionPaths": 27,
+      "homepageLanguageApplications": 98,
+      "sectionLanguageApplications": 2646,
+      "missingKeys": 0,
+      "extraKeys": 0,
+      "emptyValues": 0,
+      "unresolvedFindingCombinations": 0
+    },
+    "findings": {
+      "exactEnglishFindingCombinations": 66,
+      "exactLanguages": [
+        "af",
+        "cs",
+        "da",
+        "el",
+        "fil",
+        "fy",
+        "hu",
+        "lb",
+        "lo",
+        "mg",
+        "mt",
+        "no",
+        "rm",
+        "ro",
+        "rw",
+        "sk",
+        "st",
+        "sv",
+        "tn"
+      ],
+      "exactSections": 24,
+      "partialFindingCombinations": 13,
+      "partialLanguages": [
+        "eu",
+        "fy",
+        "kl",
+        "lb",
+        "mg",
+        "ms",
+        "mt",
+        "rm",
+        "rw",
+        "tn",
+        "to",
+        "zu"
+      ]
+    },
+    "blockedRequests": {
+      "ai": 0,
+      "uiTranslation": 1,
+      "pollinations": 0
+    },
+    "unexpectedUiTranslation": {
+      "language": "French",
+      "sourceText": "لا توجد حالياً إعلانات سوق مباشرة معتمدة. لا تنشئ SEEKVERA إعلانات وهمية.",
+      "evidence": "The dynamic home empty-state translator returned an Arabic string while the R32 runtime locale was French."
+    },
+    "failureReason": "Visible exact and partial English strings remained in localized UI; the static audit also intercepted one unexpected dynamic translation request."
+  },
+  "latestDynamicLocaleRuntimeFix20261117": {
+    "commit": "8e632ca4227e41aa262bf3c0f3ed1ca28372fa27",
+    "file": "superapp.js",
+    "finding": "localizedDynamic loaded the active locale pack through SEEKVERA_I18N_R32 but then read text through the separate global SEEKVERA_I18N translator, allowing a cross-runtime language mismatch.",
+    "repair": "localizedDynamic now reads through the same SEEKVERA_I18N_R32 runtime that loaded the active locale pack.",
+    "quotaNeutral": true,
+    "candidatePackWrites": 0,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "pagesDeployment": {
+      "run": 1696,
+      "id": 44128834885,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "r125StaticRecheck": "pending; no current-revision run observed after this commit"
+  },
+  "latestR125HourlyWorkflowInspection20261117": {
+    "file": ".github/workflows/r125-hourly-candidate-resume.yml",
+    "blobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
+    "trigger": "workflow_dispatch only",
+    "runTranslationsDefault": false,
+    "repairCandidatesDefault": false,
+    "latestRun": {
+      "number": 150,
+      "id": 38971104197,
+      "createdAt": "2026-10-16T21:41:54Z",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push",
+      "workflowRevision": "legacy"
+    },
+    "latestRunSteps": {
+      "resume": "skipped",
+      "audit": "success",
+      "artifactUpload": "success",
+      "saveProgress": "success"
+    },
+    "latestRunWrites": {
+      "candidatePackWrites": 0,
+      "metadataFilesWritten": 2,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "currentRevisionRun": "not found",
+    "activeRuns": 0,
+    "note": "The current file can resume only when explicitly dispatched with run_translations=true; the most recent observed run is the historical legacy run #150, not verification of the current Main revision."
   }
 }
