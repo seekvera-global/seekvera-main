@@ -21,7 +21,10 @@ function requestUiTranslation(language,strings){
    sessionStorage.setItem(UI_TRANSLATION_LOCK_KEY,lockToken);
   }catch{}
   try{
-   const r=await fetch('/api/ui-translate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language,strings})});
+   const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),15000);
+   let r;
+   try{r=await fetch('/api/ui-translate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language,strings}),signal:ctl.signal})}
+   finally{clearTimeout(to)}
    const d=await r.json().catch(()=>null),reason=[d?.reason,d?.error].filter(Boolean).join(' ');
    if(r.status===429||r.status===503||/(daily_free_ai_limit|provider_rate_limited|all_translation_backends_unavailable|\b429\b|rate.?limit|too many requests)/i.test(reason)){blockUiTranslation();return null}
    if(!r.ok||!Array.isArray(d?.translations)||d.translations.length!==strings.length)return null;
