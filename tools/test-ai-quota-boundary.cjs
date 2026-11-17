@@ -33,6 +33,8 @@ const quotaGuard = worker.indexOf('if(quotaBlocked||uncertainFailure||aiRaceTime
 const pollinationsFallback = worker.indexOf('https://text.pollinations.ai/');
 assert.ok(quotaGuard >= 0 && pollinationsFallback > quotaGuard,
   'quota/rate-limit failures must stop before the external conversational fallback');
+assert.ok(worker.includes('for(const model of [FAST,PRIMARY,FALLBACK])'), 'model fallback must be sequential');
+assert.ok(!worker.includes('Promise.any([FAST,PRIMARY,FALLBACK]'), 'parallel model attempts can bypass a shared quota and are forbidden');
 assert.ok(worker.includes('if(quotaLimited(e))quotaBlocked=true;'),
   'individual model quota errors must be recorded');
 
@@ -226,6 +228,29 @@ vm.runInContext(baseAi + '\n' + baseSafety + '\nthis.ai = ai; this.safety = safe
   );
   assert.equal(lateQuotaResult, null, 'a timed-out AI request must fail closed');
   assert.equal(lateQuotaFallbackCalls, 0, 'external fallback must not start while a late 429 is still possible');
+
+  let crossModelFallbackCalls = 0;
+  const sequentialContext = makeR76Context();
+  sequentialContext.fetch = async () => {
+    crossModelFallbackCalls++;
+    return { ok: true, text: async () => JSON.stringify({ reply: 'Must not be used', languageCode: 'en', category: 'general' }) };
+  };
+  const attemptedModels = [];
+  const sequentialResult = await sequentialContext.runStructured(
+    { url: 'https://seekveraglobal.com' },
+    { AI: { run: async model => {
+      attemptedModels.push(model);
+      if (model === 'fast') throw new Error('capacity temporarily exceeded');
+      if (model === 'primary') throw new Error('HTTP 429 Too Many Requests');
+      return JSON.stringify({ reply: 'Third model must not run', languageCode: 'en', category: 'general' });
+    } } },
+    null,
+    { message: 'hello', language: 'en', history: [] },
+    'hello'
+  );
+  assert.deepEqual(attemptedModels, ['fast', 'primary'], 'a rate-limited model must stop the fallback sequence immediately');
+  assert.equal(sequentialResult, null, 'a rate limit must fail closed even if another model could succeed');
+  assert.equal(crossModelFallbackCalls, 0, 'neither another model nor an external provider may bypass HTTP429');
 
   console.log('R76_AND_BASE_SAFETY_QUOTA_BOUNDARY_PASS');
 })().catch(error => {
