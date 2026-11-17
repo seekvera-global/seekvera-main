@@ -9232,7 +9232,8 @@
     "checkedAt": "2026-11-17T21:09:19Z",
     "sourceReadback": {
       "mainCheckpointBlobSha": "2a9b589d87fa72613f0ca1f37c41968bb9e64999",
-      "candidateSummaryBlobSha": "4744e1f423ce2b5278588fede2419df6d637315f",
+      "candidateSummaryBlobSha": "551a1cad78540f437e67d1d0a88ae1e844478022",
+      "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
       "candidateSummaryCheckedAt": "2026-11-17T09:53:12Z",
       "resumeLatestLogBlobSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
       "candidateBranch": "work/r125-locale-candidates-20261008"
