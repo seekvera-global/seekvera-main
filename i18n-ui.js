@@ -31,6 +31,11 @@ const QUICK={ar:{
 'Back':'返回','Page navigation':'页面导航','Voice reply':'语音回复','Voice':'语音'
 },fil:{
 'Country / Region':'Bansa / Rehiyon','Language':'Wika','Currency':'Pera'
+},
+// Minimal Setswana UI labels reuse existing production vocabulary; native review is still required.
+tn:{
+'Voice reply':'Karabo ya lentswe',
+'Voice':'Lentswe'
 }};
 function api(p){const h=location.hostname;return(h==='seekveraglobal.com'||h==='www.seekveraglobal.com'||h.endsWith('workers.dev'))?p:'https://seekvera-main.seekvera-global.workers.dev'+p}
 function norm(v){v=String(v||'').trim().toLowerCase().replace('_','-');if(!v||v==='auto')v=String(navigator.language||'en').toLowerCase();return v.split('-')[0]||'en'}
