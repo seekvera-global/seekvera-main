@@ -1782,21 +1782,24 @@
     "noPhysicalAudioClaim": true
   },
   "latestR125RunInspection": {
-    "checkedAt": "2026-11-17T04:50:05.935Z",
+    "checkedAt": "2026-11-17T07:46:43Z",
     "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
-    "workflowSha": "9f4a7dab0fc36c3234a4252bcd75572453eca654",
+    "workflowSha": "bedfffbaedf94fea2052159041df976fc9fb3a43",
     "actualTrigger": "workflow_dispatch only",
     "latestRun": {
       "number": 150,
       "id": 38971104197,
       "createdAt": "2026-10-16T21:41:54Z",
-      "event": "push",
       "status": "completed",
       "conclusion": "success",
-      "workflowRevision": "legacy scheduled/push revision",
+      "event": "push",
+      "workflowRevision": "legacy revision; not the current Main workflow",
       "translationStep": "skipped",
       "auditStep": "success",
-      "candidatePackWrites": false
+      "candidatePackWrites": 0,
+      "metadataFilesWritten": 2,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
     },
     "previousRun": {
       "number": 149,
@@ -1825,7 +1828,15 @@
     "currentRun": null,
     "activeR125Runs": 0,
     "currentWorkflowRunAfterFix": "pending manual dispatch",
-    "note": "No current R125 run was found in the latest 100 Actions runs; date-filtered history confirms #150 remains the latest run for this workflow. The current Main workflow has not yet been exercised by R125 CI."
+    "note": "No current R125 run was found in the latest 100 Actions runs; date-filtered history confirms #150 remains the latest run for this workflow. The current Main workflow has not yet been exercised by R125 CI.",
+    "historyScan": {
+      "checkedActionsRuns": 1000,
+      "latest100HadR125Resume": false,
+      "latestMatchingR125Resume": 150,
+      "latestMatchingRunCreatedAt": "2026-10-16T21:41:54Z",
+      "activeR125ResumeRuns": 0,
+      "currentWorkflowHasNotBeenExercisedByR125CI": true
+    }
   },
   "latestR105Verification": {
     "run": 43517683421,
@@ -3218,7 +3229,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-17T05:54:19.719Z",
+  "updatedAt": "2026-11-17T07:46:43Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -6630,5 +6641,40 @@
       "linguisticCertification": false
     },
     "decision": "NO-GO; this guard hardening does not change locale quality, AI availability, physical audio or checkout blockers."
+  },
+  "latestDuplicateJsonKeyGuard": {
+    "checkedAt": "2026-11-17T07:46:43Z",
+    "finding": "Python json.loads silently overwrote duplicate object keys; set comparison could not detect repeated keys in raw locale JSON.",
+    "commits": {
+      "audit": "db1d38b39ef20428a9e46f0f09387b0af78ff70a",
+      "test": "6b3ff0d6d91109ba101bd5ef7efb3ec5c84998ad",
+      "workflow": "3e4324280090cb4325383b4cded5da5a05d41496"
+    },
+    "files": [
+      "tools/audit_locale_candidates.py",
+      "tools/test-audit-json-duplicates.py",
+      ".github/workflows/r125-hourly-candidate-resume.yml"
+    ],
+    "repair": "Added duplicate-key rejection at every JSON object depth; malformed candidate packs are reported as invalid_json and duplicate-key packs as duplicate_json_keys.",
+    "localVerification": {
+      "validJsonAccepted": true,
+      "duplicateTopLevelRejected": true,
+      "duplicateNestedRejected": true,
+      "duplicateTranslationMapRejected": true,
+      "malformedJsonRejected": true,
+      "cases": 4
+    },
+    "workflowReadback": {
+      "duplicateTestCopiedFromMain": true,
+      "duplicateTestStepPresent": true,
+      "auditOnlyDefaultsPreserved": true,
+      "candidateWritesStillRequireExplicitOptIn": true
+    },
+    "r125Ci": "pending manual dispatch; no dispatch action available in this execution",
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false
   }
 }
