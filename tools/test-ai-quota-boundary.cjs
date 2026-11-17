@@ -168,6 +168,10 @@ vm.runInContext(baseAi + '\n' + baseSafety + '\nthis.ai = ai; this.safety = safe
       FALLBACK: 'fallback',
       ROUTES: { marketplace: 'marketplace.html' },
       CATS: ['general'],
+      quotaLimited: error => {
+        const nested = Array.isArray(error?.errors) ? error.errors.map(item => item?.message || item) : [];
+        return /3036|daily[_\\s-]*free[_\\s-]*(?:ai[_\\s-]*)?(?:limit|allocation)|\\b429\\b|rate.?limit|too many requests/i.test([String(error?.message ?? error ?? ''), ...nested].join(' '));
+      },
       clean: (v, n = 3500) => String(v ?? '').replace(/[\u0000-\u001F\u007F]/g, ' ').trim().slice(0, n),
       modelText: value => typeof value === 'string' ? value : String(value?.response ?? value?.text ?? ''),
       parseJSON: value => { try { return JSON.parse(value); } catch { return null; } },
@@ -192,7 +196,7 @@ vm.runInContext(baseAi + '\n' + baseSafety + '\nthis.ai = ai; this.safety = safe
       }),
       setTimeout: (fn, ms) => {
         const id = nextTimer++;
-        const delay = ms >= 3300 ? 15 : ms >= 3000 ? 10 : 20;
+        const delay = ms >= 3300 ? 100 : ms >= 3000 ? 10 : 20;
         timers.set(id, global.setTimeout(fn, delay));
         return id;
       },
