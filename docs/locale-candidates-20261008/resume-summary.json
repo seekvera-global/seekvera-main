@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-17T02:58:47Z",
+  "checkedAt": "2026-11-17T03:01:26Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -334,13 +334,13 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-17T02:58:47Z",
+    "checkedAt": "2026-11-17T03:01:26Z",
     "latestPages": {
-      "run": 1616,
-      "id": 44006738650,
+      "run": 1618,
+      "id": 44007089721,
       "status": "completed",
       "conclusion": "success",
-      "headSha": "e29d1ce9b42477d8c1fb2bae29a626fc9ee437db"
+      "headSha": "23fcf9c7c1822281ba7ef4288c981e174d0dc19a"
     },
     "siteHealth": {
       "run": 329,
@@ -443,7 +443,9 @@
       "exactCandidateKeySetTestAdded": true,
       "exactCandidateKeySetTestRun": "pending-next-manual-R125",
       "quotaStopTestAdded": true,
-      "quotaStopTestRun": "pending next manual R125"
+      "quotaStopTestRun": "pending next manual R125",
+      "quotaStopTestCopiedFromMain": true,
+      "quotaStopTestCommand": "PYTHONPATH=. python tools/test-locale-quota-stop.py"
     },
     "candidateState": {
       "structural": 98,
@@ -502,12 +504,13 @@
       "linguisticCertification": false,
       "decision": "NO-GO",
       "freshFull98ExactKeySetReadback": "PASS 98/98",
-      "checkedAt": "2026-11-17T02:58:47Z",
+      "checkedAt": "2026-11-17T03:01:26Z",
       "builderQuotaStopRepairCommitted": true,
       "builderQuotaStopLocalTests": "PASS 10 classifications + 3 mocked terminal no-split cases",
       "r125Ci": "pending next manual R125",
-      "latestPagesRun": 1616,
-      "latestPagesConclusion": "success"
+      "latestPagesRun": 1618,
+      "latestPagesConclusion": "success",
+      "workflowTestCopyFix": true
     },
     "latestR105": {
       "run": 85,
@@ -4354,7 +4357,7 @@
     "r125Ci": "pending next manual run",
     "candidatePacksChanged": 0
   },
-  "updatedAt": "2026-11-17T02:58:47Z",
+  "updatedAt": "2026-11-17T03:01:26Z",
   "latestBuilderQuotaStopRepair": {
     "checkedAt": "2026-11-17T02:57:08Z",
     "finding": "The locale builder stopped the entire language loop only when the error text contained the literal daily_free_ai_limit. Google HTTP429/provider_rate_limited and all_translation_backends_unavailable were terminal inside translate_small, but the outer loop could continue to the next language; the 503 backend-unavailable response could also fall through to recursive batch splitting.",
@@ -4383,6 +4386,20 @@
     "aiQuotaUsed": 0,
     "published": false,
     "linguisticCertification": false,
-    "aiAvailability": "unknown-not-probed"
+    "aiAvailability": "unknown-not-probed",
+    "workflowCopyFix": {
+      "commit": "3358d2acddebc60ee67af19acfcabe37b6529339",
+      "pathFixCommit": "23fcf9c7c1822281ba7ef4288c981e174d0dc19a",
+      "finding": "The R125 workflow checks out the candidate branch; the new quota-stop test was on main only, so it was initially missing from the checkout. Its plain python command also lacked PYTHONPATH=., which would prevent importing the tools package.",
+      "repair": "Added the test file to the main-to-candidate tool-copy loop and changed the command to PYTHONPATH=. python tools/test-locale-quota-stop.py.",
+      "readback": "PASS; copied file entry and PYTHONPATH command confirmed by GitHub read-back.",
+      "pagesRun": {
+        "number": 1618,
+        "id": 44007089721,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "r125Ci": "pending next manual R125 run"
+    }
   }
 }
