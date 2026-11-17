@@ -222,7 +222,7 @@ function capture(root=document){
 }
 function k(l,s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return'sv_r32_'+VERSION+'_'+l+'_'+(h>>>0).toString(36)}
 const EMBEDDED_TRANSLATION_TERMS=['Auto Recharge','Live marketplace','No stranger chat'];
-function rawGet(l,s){s=canonical(s);const q=QUICK[l]?.[s]||R125_PROVISIONAL[l]?.[s];if(q)return q;const m=MEM.get(l+'\u0000'+s);if(m){const ps=plainKey(s);if(ps!==s&&plainKey(m)===ps){const translated=MEM.get(l+'\u0000'+ps);if(translated&&translated!==ps)return s.replace(ps,translated)}return m;}try{return localStorage.getItem(k(l,s))||''}catch{return''}}
+function rawGet(l,s){s=canonical(s);const q=QUICK[l]?.[s]||(typeof R125_PROVISIONAL!=='undefined'?R125_PROVISIONAL[l]?.[s]:'');if(q)return q;const m=MEM.get(l+'\u0000'+s);if(m){const ps=plainKey(s);if(ps!==s&&plainKey(m)===ps){const translated=MEM.get(l+'\u0000'+ps);if(translated&&translated!==ps)return s.replace(ps,translated)}return m;}try{return localStorage.getItem(k(l,s))||''}catch{return''}}
 function get(l,s){s=canonical(s);let value=rawGet(l,s);if(!value)return'';for(const term of EMBEDDED_TRANSLATION_TERMS){if(s!==term&&value.includes(term)){const localized=rawGet(l,term);if(localized&&localized!==term)value=value.split(term).join(localized)}}return value}
 function put(l,s,v){s=canonical(s);v=String(v||'').trim();if(!v)return;MEM.set(l+'\u0000'+s,v);try{localStorage.setItem(k(l,s),v)}catch{}}
 async function loadPack(l){
