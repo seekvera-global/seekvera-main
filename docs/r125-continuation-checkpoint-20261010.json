@@ -6903,7 +6903,7 @@
     "aiQuotaUsedThisPass": 0
   },
   "latestAutomationVerification20261117": {
-    "checkedAt": "2026-11-17T10:27:36Z",
+    "checkedAt": "2026-11-17T10:29:52Z",
     "mainHead": "d79b977eb4d43acca54c98bd803a555c8112c07e",
     "r125CandidateResume": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
@@ -7050,12 +7050,12 @@
               "United States"
             ],
             "occurrences": 132,
-            "status": "provisional; verify element context before allowlisting"
+            "status": "provisional; element context still required"
           },
           "remainingPotentialUIStrings": {
             "occurrences": 163,
             "uniquePhrases": 37,
-            "status": "requires targeted language/DOM review; not all automatically confirmed defects"
+            "status": "requires language/DOM review"
           }
         },
         "blockedFallbackRequests": {
@@ -7066,7 +7066,9 @@
           "quotaUsed": 0
         },
         "note": "The 34 /api/ui-translate attempts were intercepted by the read-only audit and answered locally with 503; no request reached the translation provider. This indicates production UI may attempt dynamic fallback for strings not resolved by static packs and requires payload-level diagnosis."
-      }
+      },
+      "latestScriptDiagnosticCommit": "ea97ef0a58bb0d57090cfb93cdd5f157fe925245",
+      "latestScriptDiagnosticChange": "Capture blocked /api/ui-translate request language and strings payloads; provider remains blocked."
     },
     "candidateBranchReadback": {
       "head": "1b2ae3fa9cae6a261fa51d0df2958016770a18fc",
@@ -7107,7 +7109,8 @@
         "07ef4752bcf92d398e41a826cffdbf75c2586125",
         "3fb07e23aa229e49bc1e3e4fb37b478a432c22ed",
         "d79b977eb4d43acca54c98bd803a555c8112c07e",
-        "cff22f0b71ce29f341b251797097ab13dce1f101"
+        "cff22f0b71ce29f341b251797097ab13dce1f101",
+        "ea97ef0a58bb0d57090cfb93cdd5f157fe925245"
       ],
       "candidatePackWrites": 0,
       "candidateMetadataWrites": 0,
@@ -7116,6 +7119,13 @@
       "published": false,
       "linguisticCertification": false,
       "decision": "NO-GO"
+    },
+    "latestRepositoryRun": {
+      "id": 44065350469,
+      "number": 1659,
+      "name": "pages build and deployment",
+      "status": "in_progress",
+      "createdAt": "2026-11-17T10:29:52Z"
     }
   }
 }
