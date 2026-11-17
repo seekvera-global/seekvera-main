@@ -3250,7 +3250,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-17T21:42:09+01:00",
+  "updatedAt": "2026-11-17T22:09:19+01:00",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -7805,6 +7805,100 @@
       "headSha": "96555768aaa882636d4fc3544116887e32c99f32",
       "purpose": "re-run after bounded transient-fetch retries and reduced concurrency",
       "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44141774892"
+    },
+    "run41": {
+      "id": 44175688321,
+      "number": 41,
+      "status": "completed",
+      "conclusion": "failure",
+      "checkedAt": "2026-11-17T21:06:22Z",
+      "verified": {
+        "languagePacks": 98,
+        "countryProfiles": 248,
+        "sectionPaths": 27,
+        "sectionLanguageApplications": 2646,
+        "missingKeys": 0,
+        "extraKeys": 0,
+        "emptyValues": 0,
+        "partialFindingCombinations": 0,
+        "unresolvedFindingCombinations": 0
+      },
+      "findings": {
+        "exactFindingCombinations": 66,
+        "exactLanguages": [
+          "af",
+          "cs",
+          "da",
+          "el",
+          "fil",
+          "fy",
+          "hu",
+          "lb",
+          "lo",
+          "mg",
+          "mt",
+          "no",
+          "rm",
+          "ro",
+          "rw",
+          "sk",
+          "st",
+          "sv",
+          "tn"
+        ],
+        "exactPhraseCounts": {
+          "← Travel Hub": 12,
+          "← Back to search": 10,
+          "AI Voice Agent": 10,
+          "GLOBAL AI MARKETPLACE": 3,
+          "🏙️ City break": 3,
+          "Business Monthly": 3,
+          "OPEN MARKETPLACE →": 2,
+          "Fashion & Beauty": 2,
+          "GLOBAL AUTO SEARCH": 2,
+          "Import, Export & Sourcing": 2,
+          "Business Software": 2,
+          "RFQ / supplier sourcing": 2,
+          "Email/Gmail background autopilot:": 2,
+          "VERIFY + PAUSE": 2,
+          "Home Services": 2,
+          "Import & Export": 1,
+          "Find Wi-Fi →": 1,
+          "Safety & etiquette": 1,
+          "Free / Public Wi-Fi Finder": 1,
+          "Shopping & Electronics": 1,
+          "Find catering": 1,
+          "CROSS-BORDER LOGISTICS": 1,
+          "Solar & Energy": 1,
+          "ENTERTAINMENT · WORLDWIDE": 1,
+          "Privacy first": 1,
+          "Venue / hotel Wi‑Fi QR": 1,
+          "Check My Phone": 1,
+          "Auto Recharge": 1,
+          "Zero‑Cost Mode": 1,
+          "Master controls": 1,
+          "Utilities & Bills": 1,
+          "Delivery & Courier": 1,
+          "Hotels & Marketplace": 1
+        }
+      },
+      "dynamicFallback": {
+        "language": "Indonesian",
+        "requests": 1,
+        "strings": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ],
+        "aiRequests": 0,
+        "pollinationsRequests": 0,
+        "providerRequestsSent": 0
+      },
+      "candidatePackWrites": 0,
+      "translationRequestsSent": 0,
+      "aiQuotaUsed": 0,
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44175688321"
     }
   },
   "latestDynamicLocaleRuntimeFix20261117": {
@@ -7915,7 +8009,26 @@
     },
     "reason": "R125 fallback probe moved from Arabic to French to Chinese as each locale gained local labels; the next quota-neutral full matrix is run #30.",
     "quotaNeutral": true,
-    "candidatePackWrites": 0
+    "candidatePackWrites": 0,
+    "indonesian": {
+      "commits": {
+        "runtime": "1b466e0cd0dad3f7b893d429da3c77c8c91fecd7",
+        "regressionTest": "572521d8e58ebc29c8eda32bf59f8dc70157b53a"
+      },
+      "file": "i18n-ui.js",
+      "labels": {
+        "Back": "Kembali",
+        "Page navigation": "Navigasi halaman",
+        "Voice reply": "Balasan suara",
+        "Voice": "Suara"
+      },
+      "reason": "R125 #41 intercepted a single Indonesian dynamic-translation fallback for four common controls; add local quick labels and a regression asserting zero provider calls.",
+      "status": "committed; post-change R125 verification not yet observed",
+      "nativeReviewRequired": true,
+      "candidatePackWrites": 0,
+      "translationRequestsSent": 0,
+      "aiQuotaUsed": 0
+    }
   },
   "run12CurrentContinuationAudit": {
     "checkedAt": "2026-11-17T17:52:55Z",
@@ -8850,6 +8963,134 @@
       "published": false,
       "linguisticCertification": false
     },
+    "decision": "NO-GO"
+  },
+  "latestAutomationPass20261117Turn12": {
+    "checkedAt": "2026-11-17T21:09:19Z",
+    "sourceReadback": {
+      "mainCheckpointBlobSha": "2a9b589d87fa72613f0ca1f37c41968bb9e64999",
+      "candidateSummaryBlobSha": "4744e1f423ce2b5278588fede2419df6d637315f",
+      "candidateSummaryCheckedAt": "2026-11-17T09:53:12Z",
+      "resumeLatestLogBlobSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
+      "candidateBranch": "work/r125-locale-candidates-20261008"
+    },
+    "resumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "blobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
+      "trigger": "workflow_dispatch only; no schedule trigger",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestObservedRun": {
+        "number": 150,
+        "id": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "resumeStep": "skipped",
+        "auditStep": "success",
+        "artifactUpload": "success",
+        "saveProgress": "success",
+        "candidatePackWrites": 0,
+        "metadataFilesWritten": 2,
+        "translationRequests": 0,
+        "aiQuotaUsed": 0
+      },
+      "currentRevisionRunObserved": false,
+      "activeRuns": 0,
+      "candidateWritesDeferred": true,
+      "note": "Inspected the latest known matching run's job steps and logs. No current-revision workflow_dispatch run was found; no candidate pack writes were made."
+    },
+    "candidateState": {
+      "structuralCompleteness": "98/98",
+      "qualityCompleteness": "97/98",
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "published": 0,
+      "linguisticallyCertified": 0,
+      "candidatePackWritesThisPass": 0
+    },
+    "localeAudit": {
+      "run": 41,
+      "id": 44175688321,
+      "conclusion": "failure",
+      "verified": "98 language packs, 248 country profiles, 27 sections, 2,646 language-section applications; zero missing/extra/empty keys",
+      "findings": "66 exact visible English combinations across 19 languages; zero partial and zero unresolved findings",
+      "dynamicFallback": "one Indonesian fallback attempt for Back/Page navigation/Voice reply/Voice was intercepted; no AI, provider translation or Pollinations requests sent",
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44175688321"
+    },
+    "production": {
+      "pages": {
+        "run": 1721,
+        "id": 44175686971,
+        "conclusion": "success"
+      },
+      "r105": {
+        "run": 134,
+        "id": 44175688241,
+        "conclusion": "success",
+        "aiBinding": true,
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "liveAiProbe": "skipped-by-policy"
+      },
+      "r123": {
+        "run": 95,
+        "id": 44175688536,
+        "conclusion": "success",
+        "programmaticTts": "passed in Android browser profile",
+        "voiceAcknowledgement": "passed",
+        "dynamicVoicePlaceholders": "passed for Arabic/French",
+        "liveAsr": "skipped",
+        "physicalMicrophoneSpeakerCertified": false
+      },
+      "r9e": {
+        "run": 58,
+        "id": 44175688211,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "MoroccoManualPriority": "passed",
+        "WorldwideManualPriority": "passed",
+        "currency": "passed",
+        "prohibitedWeaponSale": "blocked",
+        "voicePwaCache": "passed",
+        "liveAiAndAsr": "skipped-by-policy"
+      }
+    },
+    "ai": {
+      "binding": "present",
+      "liveChatAvailability": "unknown-not-probed",
+      "translationAvailability": "unknown-not-probed",
+      "historicalTranslationError": "HTTP 503 all_translation_backends_unavailable",
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429"
+      ],
+      "liveGenerationProbe": "skipped-by-policy",
+      "translationRequestsThisPass": 0,
+      "aiQuotaUsedThisPass": 0
+    },
+    "voice": {
+      "programmaticTts": "passed",
+      "voiceAcknowledgement": "passed",
+      "liveAsr": "skipped",
+      "physicalMicrophoneSpeakerCertification": false
+    },
+    "checkout": "inactive pending merchant configuration and end-to-end merchant verification",
+    "codeRepairs": {
+      "runtimeCommit": "1b466e0cd0dad3f7b893d429da3c77c8c91fecd7",
+      "testCommit": "572521d8e58ebc29c8eda32bf59f8dc70157b53a",
+      "changed": "Added provisional Indonesian quick UI labels and a regression test requiring zero provider calls.",
+      "postChangeCi": "not yet observed"
+    },
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
     "decision": "NO-GO"
   }
 }
