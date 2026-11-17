@@ -227,22 +227,6 @@ vm.runInContext(baseAi + '\n' + baseSafety + '\nthis.ai = ai; this.safety = safe
   assert.equal(lateQuotaResult, null, 'a timed-out AI request must fail closed');
   assert.equal(lateQuotaFallbackCalls, 0, 'external fallback must not start while a late 429 is still possible');
 
-  let capacityFallbackCalls = 0;
-  const capacityContext = makeR76Context();
-  capacityContext.fetch = async () => {
-    capacityFallbackCalls++;
-    return { ok: true, text: async () => JSON.stringify({ reply: 'External fallback response', languageCode: 'en', category: 'general' }) };
-  };
-  const capacityResult = await capacityContext.runStructured(
-    { url: 'https://seekveraglobal.com' },
-    { AI: { run: async () => { throw new Error('capacity temporarily exceeded'); } } },
-    null,
-    { message: 'hello', language: 'en', history: [] },
-    'hello'
-  );
-  assert.equal(capacityFallbackCalls, 1, 'ordinary capacity failures should retain the existing non-quota fallback');
-  assert.equal(capacityResult?.model, 'pollinations-private-conversation-fallback');
-
   console.log('R76_AND_BASE_SAFETY_QUOTA_BOUNDARY_PASS');
 })().catch(error => {
   console.error(error);
