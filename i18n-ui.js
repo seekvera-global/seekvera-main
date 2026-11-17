@@ -65,7 +65,15 @@ ko:{
 'Page navigation':'Navegação de páginas',
 'Voice reply':'Resposta por voz',
 'Voice':'Voz'
-},fil:{
+},
+// Provisional Indonesian quick UI labels; native review remains required.
+id:{
+'Back':'Kembali',
+'Page navigation':'Navigasi halaman',
+'Voice reply':'Balasan suara',
+'Voice':'Suara'
+},
+fil:{
 'Country / Region':'Bansa / Rehiyon','Language':'Wika','Currency':'Pera'
 },
 // Provisional Setswana UI labels; not linguistically certified. Native review remains required.
