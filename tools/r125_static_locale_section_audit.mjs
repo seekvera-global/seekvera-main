@@ -134,10 +134,12 @@ try {
   const paths = [...new Set(hrefs.map(href => new URL(href, BASE).pathname))];
   assert(paths.length >= 25, 'unique section paths below expected minimum: ' + paths.length);
 
+  const approvedProperNouns = new Set(['YouTube Music', 'United Kingdom', 'United States']);
   const candidateEnglish = sourceKeys.filter(value =>
     value.length >= 12 &&
     (value.match(/[A-Za-z][A-Za-z'’+-]{2,}/g) || []).length >= 2 &&
     !value.includes('SEEKVERA') &&
+    !approvedProperNouns.has(value) &&
     !/https?:\/\/|@/.test(value)
   );
   const leakFindings = [];
@@ -165,6 +167,15 @@ try {
     assert.equal(state.language, language, 'homepage language application: ' + language);
     languageApplications++;
     if (language !== 'en') {
+      const controlLabels = await page.evaluate(() => ({
+        country: document.querySelector('.sv-control-field[data-kind="country"] .sv-control-caption-label')?.textContent?.trim() || '',
+        language: document.querySelector('.sv-control-field[data-kind="language"] .sv-control-caption-label')?.textContent?.trim() || '',
+        currency: document.querySelector('.sv-control-field[data-kind="currency"] .sv-control-caption-label')?.textContent?.trim() || ''
+      }));
+      for (const [kind, source] of [['country', 'Country / Region'], ['language', 'Language'], ['currency', 'Currency']]) {
+        const expected = String(packs[language]?.[source] || source).trim();
+        assert.equal(controlLabels[kind], expected, 'localized ' + kind + ' control caption: ' + language);
+      }
       const body = await page.locator('body').innerText();
       const leaks = homePresent.filter(value =>
         typeof packs[language]?.[value] === 'string' &&
@@ -202,6 +213,17 @@ try {
       sectionLanguageApplications++;
       if (language === 'en') continue;
       const body = await page.locator('body').innerText();
+      if (path.endsWith('/games.html')) {
+        const expectedGameTitle = String(packs[language]?.['Neon Highway'] || 'Neon Highway').trim();
+        if (expectedGameTitle !== 'Neon Highway') {
+          const renderedTitles = await page.evaluate(() => ({
+            selected: document.querySelector('#gameTitle')?.textContent?.trim() || '',
+            firstCard: document.querySelector('#gameGrid .game b')?.textContent?.trim() || ''
+          }));
+          assert.equal(renderedTitles.selected, expectedGameTitle, 'localized selected game title: ' + language);
+          assert.equal(renderedTitles.firstCard, expectedGameTitle, 'localized game card title: ' + language);
+        }
+      }
       const leaks = visibleEnglish.filter(value =>
         typeof packs[language]?.[value] === 'string' &&
         body.includes(value)
@@ -265,7 +287,8 @@ try {
     aiRequests: blocked.ai.length,
     translationRequests: blocked.translation.length,
     externalTranslationRequests: blocked.pollinations.length,
-    pageErrors: pageErrors.length
+    pageErrors: pageErrors.length,
+    approvedProperNouns: [...approvedProperNouns]
   }));
   await context.close();
 } finally {

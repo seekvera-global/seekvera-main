@@ -11,6 +11,7 @@ on:
       - 'locale-r15.js'
       - 'r32-i18n.js'
       - 'global-ui.js'
+      - 'games.js'
       - 'superapp.js'
       - 'i18n-ui.js'
       - 'r85-visible-i18n.js'
