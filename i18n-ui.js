@@ -24,6 +24,8 @@ const QUICK={ar:{
 'Understanding your speech…':'Analyse de vos paroles…',
 'Please check the words, then tap Send.':'Vérifiez le texte, puis appuyez sur Envoyer.',
 'Voice recognition is not supported in this browser.':'La reconnaissance vocale n’est pas prise en charge par ce navigateur.'
+},fil:{
+'Country / Region':'Bansa / Rehiyon','Language':'Wika','Currency':'Pera'
 }};
 function api(p){const h=location.hostname;return(h==='seekveraglobal.com'||h==='www.seekveraglobal.com'||h.endsWith('workers.dev'))?p:'https://seekvera-main.seekvera-global.workers.dev'+p}
 function norm(v){v=String(v||'').trim().toLowerCase().replace('_','-');if(!v||v==='auto')v=String(navigator.language||'en').toLowerCase();return v.split('-')[0]||'en'}
