@@ -3,12 +3,21 @@ import argparse,datetime,json,subprocess
 from pathlib import Path
 from tools.build_current_locale_delta import ROOT,reviewed_labels,suspicious_overlap,source_invariant_keys
 
+def key_set_mismatch(values,expected_keys):
+ expected=set(expected_keys)
+ if not isinstance(values,dict):return sorted(expected),[]
+ actual=set(values)
+ return sorted(expected-actual),sorted(actual-expected)
+
 def audit(stage,exit_code='not-run'):
  source=json.loads((stage/'source.json').read_text());languages=json.loads((ROOT/'i18n-r32/manifest.json').read_text())['languages'];reviewed=reviewed_labels();completed=[];failures={};packs={}
  for code in languages:
   path=stage/(code+'.json')
   if not path.exists():failures[code]=['missing_pack'];continue
   data=json.loads(path.read_text());values=data.get('translations',{});reasons=[]
+  if not isinstance(values,dict):reasons.append('translations_not_object');values={}
+  missing_keys,extra_keys=key_set_mismatch(values,source['strings'])
+  if missing_keys or extra_keys:reasons.append('key_set_mismatch:missing='+str(len(missing_keys))+':extra='+str(len(extra_keys)))
   if data.get('sourceHash')!=source['sourceHash']:reasons.append('source_hash_mismatch')
   if data.get('qualityPolicy')!='source-overlap-5-v1':reasons.append('quality_policy_mismatch')
   if not all(isinstance(values.get(k),str) and values[k].strip() for k in source['strings']):reasons.append('missing_strings')
