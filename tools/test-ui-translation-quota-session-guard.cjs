@@ -3,11 +3,11 @@ const i18n=fs.readFileSync('i18n-ui.js','utf8');
 const navigation=fs.readFileSync('navigation.js','utf8');
 const BLOCK='sv_ui_translate_blocked_r19',LOCK='sv_ui_translate_lock_r19';
 function storage(seed={}){const map=new Map(Object.entries(seed));return{getItem:k=>map.has(k)?map.get(k):null,setItem:(k,v)=>map.set(k,String(v)),removeItem:k=>map.delete(k),map};}
-function harness(code,store,responses){
+function harness(code,store,responses,options={}){
  let calls=0;
- const context={sessionStorage:store,AbortController,setTimeout,clearTimeout,api:p=>p,langName:l=>l,valid:v=>typeof v==='string'&&!!v.trim(),fetch:async()=>{calls++;const x=responses.shift()||{status:503,body:{reason:'all_translation_backends_unavailable'}};return{status:x.status,ok:x.status>=200&&x.status<300,json:async()=>x.body};},console};
+ const context={sessionStorage:store,AbortController,setTimeout:options.setTimeout||setTimeout,clearTimeout,api:p=>p,langName:l=>l,valid:v=>typeof v==='string'&&!!v.trim(),fetch:async(...args)=>{calls++;if(options.fetch)return options.fetch(...args);const x=responses.shift()||{status:503,body:{reason:'all_translation_backends_unavailable'}};return{status:x.status,ok:x.status>=200&&x.status<300,json:async()=>x.body};},console};
  vm.createContext(context);vm.runInContext(code,context);
- return{context,calls:()=>calls};
+ return{context,calls:()=>calls,store};
 }
 function extract(source,start,end,label){const a=source.indexOf(start),b=source.indexOf(end,a);assert(a>=0&&b>a,label+' source block not found');return source.slice(a,b);}
 const i18nBlock=extract(i18n,"const UI_TRANSLATE_BLOCK_KEY='sv_ui_translate_blocked_r19'","async function translate(l,arr)","i18n quota helper");
@@ -38,6 +38,11 @@ async function main(){
  // A pre-existing lock prevents a second component from racing an in-flight request.
  const locked=storage({[LOCK]:String(Date.now())}),nLocked=harness(navCode,locked,[{status:200,body:{translations:['x']}}]);
  assert.equal(await nLocked.context.requestUiTranslation('French',['Hello']),null);assert.equal(nLocked.calls(),0);
+ // A hung navigation request is aborted and releases the shared lock without setting a quota block.
+ const timeoutStore=storage();
+ const timed=harness(navCode,timeoutStore,[],{setTimeout:(fn)=>setTimeout(fn,1),fetch:async(_url,init)=>new Promise((resolve,reject)=>{init.signal.addEventListener('abort',()=>reject(new Error('aborted')),{once:true});})});
+ assert.equal(await timed.context.requestUiTranslation('French',['Hello']),null);
+ assert.equal(timed.calls(),1);assert.equal(timeoutStore.getItem(LOCK),null);assert.equal(timeoutStore.getItem(BLOCK),null);
  // The main UI translation loop is serial and stops after the first terminal response.
  const translateStart=i18n.indexOf('async function translate(l,arr){'),translateEnd=i18n.indexOf('function setText(',translateStart);
  assert(translateStart>=0&&translateEnd>translateStart,'translation loop source not found');
