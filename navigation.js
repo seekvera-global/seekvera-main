@@ -114,6 +114,11 @@ async function translateStaticAI(){
   const source=box.dataset.svSource||STATIC_AI_SOURCE;
   if(l==='en'){box.textContent=source;box.dataset.svLang='en';return;}
   if(box.dataset.svLang===l)return;
+  try{await window.SEEKVERA_I18N_R32?.loadPack?.(l)}catch{}
+  let local='';
+  try{local=window.SEEKVERA_I18N?.t?.(source)||''}catch{}
+  if(local&&local!==source){box.textContent=local;box.dataset.svLang=l;return;}
+  if(window.SEEKVERA_I18N_R32?.isLocalizedValue?.(source)){box.dataset.svLang=l;return;}
   const key='sv_static_ai_'+l+'_'+source;
   let cached='';try{cached=localStorage.getItem(key)||sessionStorage.getItem(key)||''}catch{}if(cached){box.textContent=cached;box.dataset.svLang=l;return;}
   const mine=++translateSeq;
@@ -126,6 +131,7 @@ async function translateStaticAI(){
 }
 async function translateResidualUI(){
   const l=langCode();if(l==='en')return;
+  try{await window.SEEKVERA_I18N_R32?.loadPack?.(l)}catch{}
   const selectors=['.r5-hero p','.sv-global-tip'];
   const els=[...document.querySelectorAll(selectors.join(','))].filter(e=>!e.closest('#aiMessages')&&(e.textContent||'').trim());
   const CORE={
@@ -133,7 +139,7 @@ async function translateResidualUI(){
     ar:{'Hotels, homes, cars, jobs, products, suppliers, media and services — from one global marketplace.':'فنادق ومنازل وسيارات ووظائف ومنتجات وموردون وإعلام وخدمات — من سوق عالمي واحد.','Categories':'الأقسام','AI Chat':'محادثة AI','Safety':'الأمان'}
   };
   const sources=[],targets=[];
-  for(const e of els){const t=(e.dataset.svResidualSource||e.textContent||'').trim().replace(/\s+/g,' ');if(!t)continue;e.dataset.svResidualSource=t;if(e.dataset.svResidualLang===l)continue;let fixed=CORE[l]?.[t]||'';if(!fixed)try{fixed=window.SEEKVERA_I18N?.t?.(t)||window.SEEKVERA_LOCALE_R14?.t?.(t)||''}catch{}if(fixed&&fixed!==t){e.textContent=fixed;e.dataset.svResidualLang=l;continue}sources.push(t);targets.push(e)}
+  for(const e of els){const t=(e.dataset.svResidualSource||e.textContent||'').trim().replace(/\s+/g,' ');if(!t)continue;e.dataset.svResidualSource=t;if(e.dataset.svResidualLang===l)continue;let fixed=CORE[l]?.[t]||'';if(!fixed)try{fixed=window.SEEKVERA_I18N?.t?.(t)||window.SEEKVERA_LOCALE_R14?.t?.(t)||''}catch{}if(fixed&&fixed!==t){e.textContent=fixed;e.dataset.svResidualLang=l;continue}if(window.SEEKVERA_I18N_R32?.isLocalizedValue?.(t)){e.dataset.svResidualLang=l;continue}sources.push(t);targets.push(e)}
   if(!sources.length)return;
   const language=displayLanguage(l,'en'),translations=await requestUiTranslation(language,sources);
   if(!translations)return;
