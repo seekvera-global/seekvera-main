@@ -58,9 +58,10 @@ for name in (
     )
 
 save = step_block("Save progress without publishing")
-assert "if: always() && (inputs.run_translations || inputs.repair_candidates)" in save, (
+assert "if: success() && (inputs.run_translations || inputs.repair_candidates)" in save, (
     "Candidate-branch persistence must require explicit translation or repair opt-in"
 )
+assert "if: always()" not in save, "Persistence must not run after a failed validation step"
 for command in (
     "git add docs/locale-candidates-20261008/",
     "git commit -m 'Checkpoint resumed locale candidates [skip ci]'",
