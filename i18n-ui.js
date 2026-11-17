@@ -55,8 +55,38 @@ async function loadPack(l){
 }
 function markAttr(el,a,v){let m=RENDERED_ATTR.get(el);if(!m){m={};RENDERED_ATTR.set(el,m)}m[a]=String(v||'').trim()}
 function valid(v,src){v=String(v||'').trim();return !!v&&!/^undefined|null$/i.test(v)&&!/^\[object Object\]$/i.test(v)}
-let CLOUD_TRANSLATE_BLOCKED_UNTIL=0;async function cloudTranslate(l,batch){if(Date.now()<CLOUD_TRANSLATE_BLOCKED_UNTIL)return null;try{const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),15000);const r=await fetch(api('/api/ui-translate'),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language:langName(l),strings:batch}),signal:ctl.signal,cache:'no-store'});clearTimeout(to);if(r.status===429||r.status===503){CLOUD_TRANSLATE_BLOCKED_UNTIL=Date.now()+30000;return null}const d=await r.json().catch(()=>null);if(r.ok&&Array.isArray(d?.translations)&&d.translations.length===batch.length){const vals=d.translations.map((v,i)=>valid(v,batch[i])?String(v).trim():'');if(vals.some(Boolean))return vals}}catch{}return null}
-async function translate(l,arr){await loadPack(l);const unique=[...new Set(arr.filter(s=>worth(s)&&!get(l,s)))];if(!unique.length)return false;let changed=false;const groups=[];for(let i=0;i<unique.length;i+=14)groups.push(unique.slice(i,i+14));for(let i=0;i<groups.length;i+=3){await Promise.all(groups.slice(i,i+3).map(async batch=>{const vals=await cloudTranslate(l,batch);if(vals)batch.forEach((s,j)=>{if(valid(vals[j],s)){put(l,s,vals[j]);changed=true}})}))}return changed}
+const UI_TRANSLATE_BLOCK_KEY='sv_ui_translate_blocked_r19',UI_TRANSLATE_LOCK_KEY='sv_ui_translate_lock_r19';
+let CLOUD_TRANSLATE_BLOCKED=false,CLOUD_TRANSLATE_QUEUE=Promise.resolve();
+try{CLOUD_TRANSLATE_BLOCKED=sessionStorage.getItem(UI_TRANSLATE_BLOCK_KEY)==='1'}catch{}
+function blockCloudTranslate(){CLOUD_TRANSLATE_BLOCKED=true;try{sessionStorage.setItem(UI_TRANSLATE_BLOCK_KEY,'1')}catch{}}
+async function cloudTranslate(l,batch){
+ const run=async()=>{
+  if(CLOUD_TRANSLATE_BLOCKED)return null;
+  let lockToken='';
+  try{
+   if(sessionStorage.getItem(UI_TRANSLATE_BLOCK_KEY)==='1'){CLOUD_TRANSLATE_BLOCKED=true;return null}
+   const held=Number(sessionStorage.getItem(UI_TRANSLATE_LOCK_KEY)||0);
+   if(held&&Date.now()-held<20000)return null;
+   lockToken=String(Date.now());
+   sessionStorage.setItem(UI_TRANSLATE_LOCK_KEY,lockToken);
+  }catch{}
+  try{
+   const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),15000);
+   let r;
+   try{r=await fetch(api('/api/ui-translate'),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language:langName(l),strings:batch}),signal:ctl.signal,cache:'no-store'})}
+   finally{clearTimeout(to)}
+   const d=await r.json().catch(()=>null),reason=[d?.reason,d?.error].filter(Boolean).join(' ');
+   if(r.status===429||r.status===503||/(daily_free_ai_limit|provider_rate_limited|all_translation_backends_unavailable|\b429\b|rate.?limit|too many requests)/i.test(reason)){blockCloudTranslate();return null}
+   if(r.ok&&Array.isArray(d?.translations)&&d.translations.length===batch.length){const vals=d.translations.map((v,i)=>valid(v,batch[i])?String(v).trim():'');if(vals.some(Boolean))return vals}
+  }catch{}
+  finally{if(lockToken)try{if(sessionStorage.getItem(UI_TRANSLATE_LOCK_KEY)===lockToken)sessionStorage.removeItem(UI_TRANSLATE_LOCK_KEY)}catch{}}
+  return null;
+ };
+ const task=CLOUD_TRANSLATE_QUEUE.then(run,run);
+ CLOUD_TRANSLATE_QUEUE=task.then(()=>null,()=>null);
+ return task;
+}
+async function translate(l,arr){await loadPack(l);const unique=[...new Set(arr.filter(s=>worth(s)&&!get(l,s)))];if(!unique.length)return false;let changed=false;const groups=[];for(let i=0;i<unique.length;i+=14)groups.push(unique.slice(i,i+14));for(const batch of groups){if(CLOUD_TRANSLATE_BLOCKED)break;const vals=await cloudTranslate(l,batch);if(CLOUD_TRANSLATE_BLOCKED)break;if(vals)batch.forEach((s,j)=>{if(valid(vals[j],s)){put(l,s,vals[j]);changed=true}})}return changed}
 function setText(n,src,l){const v=l==='en'?src:(get(l,src)||src);const raw=n.nodeValue||'',t=raw.trim(),next=t?raw.replace(t,v):v;RENDERED_TEXT.set(n,String(next).trim());if(next!==raw)n.nodeValue=next;return l==='en'||!!get(l,src)}
 function setAttr(el,a,src,l){const v=l==='en'?src:(get(l,src)||src);markAttr(el,a,v);if(el.getAttribute(a)!==v)el.setAttribute(a,v);return l==='en'||!!get(l,src)}
 let seq=0,timer=0,applying=false;const BG_TRANSLATING=new Set();
