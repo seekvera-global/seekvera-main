@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-16T20:03:51.207Z",
+  "checkedAt": "2026-11-17T02:06:47Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -334,32 +334,85 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-16T23:00:51Z",
+    "checkedAt": "2026-11-17T02:06:47Z",
     "latestPages": {
-      "run": 1594,
-      "id": 43975275499,
+      "run": 1609,
+      "id": 44000362278,
       "status": "completed",
       "conclusion": "success",
-      "headSha": "4f299ac397c8b0e8c03a26a400f7b2702efc3473",
-      "jobs": {
-        "build": "success",
-        "reportBuildStatus": "success",
-        "deploy": "success"
-      }
+      "headSha": "6c66a50a28d9fb9b3a97e7b2e7302aad85de54f4"
     },
     "siteHealth": {
-      "run": 325,
-      "id": 43821298704,
-      "createdAt": "2026-11-16T07:05:16Z",
+      "run": 329,
+      "id": 44000337747,
       "conclusion": "success",
-      "scope": "live official domain; API health ok; robots/sitemap checks passed; 18 named pages returned HTTP 200"
+      "scope": "Official domain API health, robots/sitemap and 18 named public pages returned HTTP 200"
     },
     "actions": {
       "totalCount": 5487,
       "returnedRuns": 50,
       "activeOrQueuedAtLastCheck": 0,
       "latestR125InLatest50": false,
-      "currentR125Run": null
+      "currentR125Run": null,
+      "latestR105": {
+        "run": 97,
+        "id": 44000363183,
+        "status": "completed",
+        "conclusion": "success",
+        "sourceValidation": "success",
+        "all98LanguageNames": "success",
+        "quotaBoundaryTests": "success",
+        "workerDeploy": "success",
+        "productionHealth": "success",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "latestR123": {
+        "run": 70,
+        "id": 44000336356,
+        "status": "completed",
+        "conclusion": "success",
+        "audioValidation": "success",
+        "workerDeploy": "success",
+        "categoryTranslations": "success",
+        "voiceAcknowledgement": "success",
+        "dynamicVoicePlaceholders": "success",
+        "liveASR": "skipped",
+        "physicalAudio": "not-certified"
+      },
+      "latestSafetySmoke": {
+        "run": 31,
+        "id": 44000336570,
+        "status": "completed",
+        "conclusion": "success",
+        "blockedCases": 4,
+        "legalLand": "allowed_pending_human_review"
+      },
+      "latestSiteHealth": {
+        "run": 329,
+        "id": 44000337747,
+        "status": "completed",
+        "conclusion": "success",
+        "pagesChecked": 18
+      },
+      "latestPages": {
+        "run": 1609,
+        "id": 44000362278,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "latestR125": {
+        "run": 150,
+        "id": 38971104197,
+        "status": "completed",
+        "conclusion": "success",
+        "resume": "skipped",
+        "audit": "success",
+        "candidatePackChanges": 0,
+        "translationRequests": 0,
+        "aiQuotaUsed": 0,
+        "active": false
+      },
+      "activeR125Runs": 0
     },
     "latestR125": {
       "run": 150,
@@ -393,7 +446,9 @@
       "repairCandidatesDefault": false,
       "translationRequiresExplicitOptIn": true,
       "auditOnlyPersistentCandidatePackWrites": false,
-      "repairModeMayWriteCandidatePacks": true
+      "repairModeMayWriteCandidatePacks": true,
+      "exactCandidateKeySetTestAdded": true,
+      "exactCandidateKeySetTestRun": "pending-next-manual-R125"
     },
     "candidateState": {
       "structural": 98,
@@ -407,7 +462,8 @@
       "divehiEnglishOverlap": 58,
       "full98QualityAudit": false,
       "nativeCertification": 0,
-      "published": false
+      "published": false,
+      "linguisticCertification": false
     },
     "ai": {
       "chat": "unknown-not-probed",
@@ -415,8 +471,11 @@
       "quotaRequests": 0,
       "quotaUsed": 0,
       "probeSent": false,
-      "quotaBoundaryRegression": "pass",
-      "translationQuotaStopRegression": "pass",
+      "quotaBoundaryRegression": "pass R105 #97",
+      "sequentialModelFallbackRegression": "pass R105 #95/#97",
+      "lateQuotaAfterTimeoutRegression": "pass R105 #95/#97",
+      "crossModel429Regression": "pass R105 #95/#97",
+      "nestedAggregateErrorRegression": "pass R105 #97",
       "blockers": [
         "daily_free_ai_limit remains a real provider quota blocker",
         "Google HTTP429 remains a real provider rate-limit blocker",
@@ -428,14 +487,14 @@
       "candidateMetadataPackWrites": 0,
       "translationRequests": 0,
       "aiQuotaUsed": 0,
-      "quotaGuardRepairCommitted": true,
-      "translationQuotaStopRepairCommitted": true,
-      "productionWorkerDeploy": "success",
+      "quotaRaceRepairCommitted": true,
+      "baseNestedQuotaClassifierCommitted": true,
+      "exactKeySetAuditGuardCommitted": true,
+      "exactKeySetAuditLocalUnit": "passed",
+      "exactKeySetAuditR125Run": "pending",
       "published": false,
       "linguisticCertification": false,
-      "mainCheckpointUpdated": true,
-      "mainCheckpointCommit": "5152a5265d5a6c440d27148bed485d9674a79b94",
-      "pagesAfterCheckpoint": "1595 success"
+      "decision": "NO-GO"
     },
     "latestR105": {
       "run": 85,
@@ -497,7 +556,26 @@
       "status": "completed",
       "conclusion": "success"
     },
-    "currentR125Run": null
+    "currentR125Run": null,
+    "production": {
+      "pagesRun": 1609,
+      "pagesConclusion": "success",
+      "siteHealthRun": 329,
+      "siteHealthConclusion": "success",
+      "siteHealthPages": 18,
+      "safetySmokeRun": 31,
+      "safetySmokeConclusion": "success",
+      "blockedCases": 4,
+      "legalLand": "allowed_pending_human_review",
+      "countryChangeIceland": "passed in R105 #97",
+      "currencyFallback": "passed in R123 #70",
+      "fullCountryCurrencyMatrix": "not certified",
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "liveASR": "skipped",
+      "physicalAudio": "pending",
+      "checkout": "inactive"
+    }
   },
   "latestContinuationVerification": {
     "checkedAt": "2026-11-16T11:06:00Z",
@@ -4217,46 +4295,32 @@
     "interpretation": "Historical audit-only run; it did not resume candidate translation. It preserved live AI capacity after daily free AI allocation exhaustion."
   },
   "latestMetadataInspection": {
-    "checkedAt": "2026-11-17T00:14:10Z",
-    "filesRead": [
-      "main:docs/r125-continuation-checkpoint-20261010.json",
-      "branch:docs/locale-candidates-20261008/resume-summary.json",
-      "branch:docs/locale-candidates-20261008/resume-latest.log",
-      "main:.github/workflows/r125-hourly-candidate-resume.yml"
-    ],
-    "r125RunInspection": {
-      "currentWorkflowTriggers": [
-        "workflow_dispatch"
-      ],
-      "scheduleTriggerPresent": false,
-      "runTranslationsDefault": false,
-      "repairCandidatesDefault": false,
-      "latestKnownRun": 150,
-      "latestKnownRunId": 38971104197,
-      "latestKnownRunStatus": "completed",
-      "latestKnownRunConclusion": "success",
-      "resumeStep": "skipped",
-      "auditStep": "success",
-      "priorRun149Failure": "audit-candidate-scripts.cjs uiScriptPattern extraction SyntaxError; corrected validator source allowed run #150 to pass",
-      "currentR125RunsActive": 0
-    },
-    "currentCandidateCounts": {
-      "structuralPacksComplete": 98,
-      "qualityPassingCandidates": 97,
-      "qualityBlockedLanguages": [
-        "dv"
-      ],
-      "divehiEnglishOverlap": 58,
-      "published": 0,
-      "linguisticCertification": 0
-    },
-    "thisPass": {
-      "candidatePackWrites": 0,
-      "metadataFilesUpdated": 1,
-      "translationRequests": 0,
-      "aiQuotaUsed": 0,
-      "metadataCommit": "05119a5f76aa31be2688e0d722e324ae0c9faff7"
-    },
-    "note": "Metadata-only inspection. No locale candidate JSON pack was modified. Existing checkedAt and full audit timestamps are preserved; this entry does not claim a new full 98-pack audit."
+    "checkedAt": "2026-11-17T02:06:47Z",
+    "mainCheckpointCommit": "1d7757efd95c59f53b38223f4de533fa65226069",
+    "mainHead": "1d7757efd95c59f53b38223f4de533fa65226069",
+    "candidateBranchHead": "4ccd061a4eab4bad2707fe2e0ef491869704223b",
+    "summaryUpdated": true,
+    "resumeLatestLogPreserved": true
+  },
+  "latestQuotaRaceRepair": {
+    "commit": "7f61e65493e798921ac8111f3a8613c33ca0c5bc",
+    "status": "deployed in R105 #97",
+    "regressions": [
+      "late HTTP429 after timeout",
+      "cross-model HTTP429 stops subsequent model attempts",
+      "external fallback not called after quota/timeout"
+    ]
+  },
+  "latestNestedQuotaClassifierRepair": {
+    "commit": "43492bb8a65038428410e00f70297113d9c56768",
+    "status": "deployed in R105 #97",
+    "regression": "nested AggregateError daily_free_ai_limit and HTTP429 fail closed"
+  },
+  "latestExactKeySetAuditRepair": {
+    "commit": "7eea50df870d0433c5ca57f88af69bd677e9488a",
+    "testCommit": "f7184554b5f5e9a5d7e4030d936e5ad4fa80077c",
+    "workflowCommit": "ec905fa7c6bbf6fb25c1084513000d6b426f1a72",
+    "status": "committed; helper unit checks passed locally; next R125 audit run pending",
+    "candidatePackWrites": 0
   }
 }
