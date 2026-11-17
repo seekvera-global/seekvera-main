@@ -25,6 +25,8 @@ const QUICK={ar:{
 'Understanding your speech…':'Analyse de vos paroles…',
 'Please check the words, then tap Send.':'Vérifiez le texte, puis appuyez sur Envoyer.',
 'Voice recognition is not supported in this browser.':'La reconnaissance vocale n’est pas prise en charge par ce navigateur.'
+},zh:{
+'Back':'返回','Page navigation':'页面导航','Voice reply':'语音回复','Voice':'语音'
 },fil:{
 'Country / Region':'Bansa / Rehiyon','Language':'Wika','Currency':'Pera'
 }};
