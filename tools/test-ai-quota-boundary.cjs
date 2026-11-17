@@ -104,12 +104,8 @@ assert.ok(stopIndex >= 0 && splitIndex > stopIndex, 'translation builder must st
 
 const baseAi = extractFunction(baseWorker, 'async function ai(');
 const baseSafety = extractFunction(baseWorker, 'async function safety(');
-assert.ok(
-  baseAi.includes('daily[_\\s-]*free[_\\s-]*(?:ai[_\\s-]*)?(?:limit|allocation)') &&
-  baseAi.includes('\\b429\\b') &&
-  baseAi.includes('rate.?limit'),
-  'base-worker AI helper must identify daily quota and rate-limit errors'
-);
+assert.ok(baseAi.includes('translationQuotaReason(e)'),
+  'base-worker AI helper must classify direct and nested daily quota/rate-limit errors');
 assert.ok(baseAi.indexOf('AI quota/rate limit reached') < baseAi.indexOf('https://text.pollinations.ai/'),
   'base-worker moderation must stop before external fallback on quota/rate-limit errors');
 
@@ -119,6 +115,7 @@ const baseContext = {
   FALLBACK: '@cf/zai-org/glm-4.7-flash',
   LIGHT: '@cf/qwen/qwen3-30b-a3b-fp8',
   FASTCHAT: '@cf/meta/llama-3.1-8b-instruct-fast',
+  translationQuotaReason: translationContext.translationQuotaReason,
   clean: (v, n = 400) => String(v ?? '').replace(/[\u0000-\u001F\u007F]/g, ' ').trim().slice(0, n),
   out: x => typeof x === 'string' ? x.trim() : '',
   rules: () => ({ d: 'CLEAR', reason: 'safe' }),
@@ -149,6 +146,22 @@ vm.runInContext(baseAi + '\n' + baseSafety + '\nthis.ai = ai; this.safety = safe
     assert.equal(result.reviewRequired, true, message);
     assert.equal(result.reason, 'moderation_unavailable_hold', message);
     assert.equal(externalCalls, 0, 'external provider must not run after ' + message);
+  }
+
+  for (const error of [
+    new AggregateError([new Error('capacity busy'), new Error('daily_free_ai_limit')], 'all models failed'),
+    new AggregateError([new Error('capacity busy'), new Error('HTTP 429 Too Many Requests')], 'all models failed')
+  ]) {
+    externalCalls = 0;
+    const result = await baseContext.safety(
+      { AI: { run: async () => { throw error; } } },
+      'ordinary lawful hotel request',
+      'request'
+    );
+    assert.equal(result.allowed, false);
+    assert.equal(result.reviewRequired, true);
+    assert.equal(result.reason, 'moderation_unavailable_hold');
+    assert.equal(externalCalls, 0, 'nested quota/rate-limit errors must not reach external fallback');
   }
 
   externalCalls = 0;
