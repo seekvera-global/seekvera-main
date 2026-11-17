@@ -220,11 +220,8 @@ vm.runInContext(baseAi + '\n' + baseSafety + '\nthis.ai = ai; this.safety = safe
     return { ok: true, text: async () => JSON.stringify({ reply: 'Should not be used', languageCode: 'en', category: 'general' }) };
   };
   const lateQuotaResult = await lateQuotaContext.runStructured(
-    { url: 'https://seekveraglobal.com' },
     { AI: { run: () => new Promise((_, reject) => global.setTimeout(() => reject(new Error('HTTP 429 Too Many Requests')), 25)) } },
-    null,
-    { message: 'hello', language: 'en', history: [] },
-    'hello'
+    { message: 'hello', language: 'en', history: [] }
   );
   assert.equal(lateQuotaResult, null, 'a timed-out AI request must fail closed');
   assert.equal(lateQuotaFallbackCalls, 0, 'external fallback must not start while a late 429 is still possible');
@@ -237,16 +234,13 @@ vm.runInContext(baseAi + '\n' + baseSafety + '\nthis.ai = ai; this.safety = safe
   };
   const attemptedModels = [];
   const sequentialResult = await sequentialContext.runStructured(
-    { url: 'https://seekveraglobal.com' },
     { AI: { run: async model => {
       attemptedModels.push(model);
       if (model === 'fast') throw new Error('capacity temporarily exceeded');
       if (model === 'primary') throw new Error('HTTP 429 Too Many Requests');
       return JSON.stringify({ reply: 'Third model must not run', languageCode: 'en', category: 'general' });
     } } },
-    null,
-    { message: 'hello', language: 'en', history: [] },
-    'hello'
+    { message: 'hello', language: 'en', history: [] }
   );
   assert.deepEqual(attemptedModels, ['fast', 'primary'], 'a rate-limited model must stop the fallback sequence immediately');
   assert.equal(sequentialResult, null, 'a rate limit must fail closed even if another model could succeed');
