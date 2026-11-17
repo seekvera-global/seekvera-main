@@ -989,7 +989,7 @@
     const rt = window.SEEKVERA_I18N_R32,
       l = rt?.lang?.() || lang();
     if (l !== "en" && rt?.loadPack) await rt.loadPack(l);
-    return window.SEEKVERA_I18N?.t?.(src) || src;
+    return rt?.t?.(src) || src;
   }
   function refreshDynamicI18n() {
     window.SEEKVERA_I18N_R32?.schedule?.(0);
