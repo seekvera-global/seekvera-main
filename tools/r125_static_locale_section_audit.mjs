@@ -196,7 +196,7 @@ try {
       let node;
       while ((node = walker.nextNode())) {
         const el = node.parentElement;
-        if (!el || !el.getClientRects().length) continue;
+        if (!el || !el.getClientRects().length || el.closest('[data-no-translate],[data-user-content]')) continue;
         const raw = norm(node.nodeValue);
         if (!raw) continue;
         for (const phrase of targets) {
@@ -219,6 +219,7 @@ try {
       for (const select of document.querySelectorAll('select')) {
         if (!select.getClientRects().length) continue;
         for (const option of [...select.options]) {
+          if (option.closest('[data-no-translate],[data-user-content]')) continue;
           const raw = norm(option.textContent);
           if (!raw) continue;
           for (const phrase of targets) {
@@ -235,7 +236,7 @@ try {
         const hasOption = options.some(item => item.phrase === phrase);
         if (hasNode || hasOption) continue;
         const candidates = [...document.body.querySelectorAll('*')].filter(el =>
-          el.getClientRects().length && norm(el.innerText).includes(phrase)
+          el.getClientRects().length && !el.closest('[data-no-translate],[data-user-content]') && norm(el.innerText).includes(phrase)
         );
         const leaves = candidates.filter(el =>
           ![...el.children].some(child => child.getClientRects().length && norm(child.innerText).includes(phrase))
