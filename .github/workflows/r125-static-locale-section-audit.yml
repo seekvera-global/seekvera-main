@@ -1,0 +1,47 @@
+name: R125 quota-neutral locale section audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r125-static-locale-section-audit.yml'
+      - 'tools/r125_static_locale_section_audit.mjs'
+      - 'i18n-r32/**'
+      - 'i18n-r32-source.json'
+      - 'locale-r15.js'
+      - 'r32-i18n.js'
+      - 'global-ui.js'
+      - '*.html'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seekvera-r125-static-locale-audit
+  cancel-in-progress: false
+
+jobs:
+  static-locale-section-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install pinned Playwright
+        run: npm install --no-save --package-lock=false playwright@1.56.1
+
+      - name: Install Chromium and system dependencies
+        run: npx playwright install --with-deps chromium
+
+      - name: Syntax check quota-neutral audit
+        run: node --check tools/r125_static_locale_section_audit.mjs
+
+      - name: Verify all locale packs, countries and sections without AI requests
+        env:
+          SEEKVERA_BASE_URL: https://seekveraglobal.com
+        run: node tools/r125_static_locale_section_audit.mjs
