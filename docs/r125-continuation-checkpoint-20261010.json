@@ -186,16 +186,16 @@
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-17T02:06:05Z",
+    "checkedAt": "2026-11-17T14:55:30Z",
     "aiChat": {
       "lastConfirmedLiveRun": 43213407211,
-      "checkedAt": "2026-11-17T02:06:05Z",
+      "checkedAt": "2026-11-17T14:55:30Z",
       "english": "passed",
       "arabic": "passed",
       "countryChange": "passed",
       "prohibitedWeapon": "blocked",
       "currentAvailability": "unknown-not-probed",
-      "reason": "R105 #97 health and binding checks passed, but live English/Arabic generation probes were skipped by policy to avoid quota use."
+      "reason": "R105 #115 production health, safety and country probes passed, but live generation probes were skipped by policy; binding presence is not live AI availability."
     },
     "voiceTranscription": {
       "run": 43219069259,
@@ -223,8 +223,8 @@
     },
     "translation": {
       "currentAvailability": "unknown-not-probed",
-      "reason": "No translation request was sent; daily_free_ai_limit, Google HTTP429 and historical HTTP503 all_translation_backends_unavailable remain blockers.",
-      "checkedAt": "2026-11-17T02:06:05Z"
+      "reason": "No translation request was sent this pass. resume-latest.log still records HTTP 503 all_translation_backends_unavailable; historical daily_free_ai_limit and Google HTTP429 remain blockers.",
+      "checkedAt": "2026-11-17T14:55:30Z"
     },
     "quotaBoundary": {
       "regression": "passed in R105 #97",
@@ -3227,7 +3227,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-17T11:15:49Z",
+  "updatedAt": "2026-11-17T14:55:30Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -7369,5 +7369,93 @@
     "published": false,
     "finalApproval": false,
     "decision": "NO-GO"
+  },
+  "latestGlobalDockAccessibilityRepair": {
+    "checkedAt": "2026-11-17T14:54:45Z",
+    "finding": "R125 Static Audit #19 observed one quota-neutral /api/ui-translate attempt in Dutch for the global dock aria-label 'SEEKVERA quick tools'. The published locale source inventory does not contain this phrase; the candidate Dutch pack has a provisional rendering but is not published or linguistically certified.",
+    "repair": "Changed only the global dock nav aria-label to the brand-only value 'SEEKVERA', avoiding a dynamic translation request for a non-essential accessibility label. No locale pack was changed.",
+    "commit": "f7adaf48d06ffc54d2809323ae2ab67d59d730e4",
+    "verification": "R105 #115 deployed successfully; production health and safety/country checks passed; live AI probes were skipped by policy. R125 Static Audit #20 was queued/in progress at checkpoint update, so the zero-fallback result remains unverified.",
+    "candidatePackWrites": 0,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0
+  },
+  "latestStaticLocaleAudit20261117": {
+    "previousRun": {
+      "number": 19,
+      "id": 44095755571,
+      "status": "completed",
+      "conclusion": "failure",
+      "createdAt": "2026-11-17T13:44:30Z"
+    },
+    "results": {
+      "languagePacks": 98,
+      "homeLanguageApplications": 98,
+      "sectionPaths": 27,
+      "sectionLanguageApplications": 2646,
+      "countryProfiles": 248,
+      "keyErrors": 0,
+      "countryMatrix": "PASS",
+      "englishLeakCombinations": 86,
+      "uniqueLanguages": 30,
+      "uniqueSections": 25,
+      "translationFallbacks": {
+        "nl": {
+          "requests": 1,
+          "strings": [
+            "SEEKVERA quick tools"
+          ]
+        }
+      },
+      "blockedRequests": {
+        "ai": 0,
+        "translation": 1,
+        "pollinations": 0
+      }
+    },
+    "failure": "English UI leak assertion: 86 combinations. Examples include OPEN MARKETPLACE, AI Deal Agent, AI Voice Agent, Auto Recharge, Import & Export, Travel Hub, and feature/section headings. Some terms may be intentional names; do not auto-whitelist or translate without context.",
+    "currentRun": {
+      "number": 20,
+      "id": 44108313004,
+      "status": "in_progress",
+      "conclusion": null,
+      "htmlUrl": "https://github.com/seekvera-global/seekvera-main/actions/runs/44108313004"
+    },
+    "candidatePackWrites": 0,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0
+  },
+  "latestR105Deployment20261117": {
+    "run": 115,
+    "id": 44108312982,
+    "status": "completed",
+    "conclusion": "success",
+    "htmlUrl": "https://github.com/seekvera-global/seekvera-main/actions/runs/44108312982",
+    "productionHealth": "PASS",
+    "safetyProbe": "prohibited weapon request blocked",
+    "countryChangeProbe": "Iceland country action passed",
+    "liveAiProbes": "skipped by policy",
+    "aiAvailability": "unknown-not-probed",
+    "translationAvailability": "unknown-not-probed"
+  },
+  "latestR125ResumeInspection20261117": {
+    "workflow": ".github/workflows/r125-hourly-candidate-resume.yml",
+    "currentTrigger": "workflow_dispatch only",
+    "runTranslationsDefault": false,
+    "repairCandidatesDefault": false,
+    "latestKnownRun": {
+      "number": 150,
+      "id": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "workflowRevision": "legacy",
+      "resume": "skipped",
+      "audit": "success"
+    },
+    "activeRuns": "0 in latest 1,000-run scan; no current-revision dispatch found",
+    "currentRevisionCi": "not run; manual dispatch unavailable through current GitHub connector actions",
+    "candidatePackWritesThisPass": 0,
+    "translationRequestsThisPass": 0,
+    "aiQuotaUsedThisPass": 0
   }
 }
