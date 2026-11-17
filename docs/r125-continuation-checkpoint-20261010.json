@@ -6903,9 +6903,9 @@
     "aiQuotaUsedThisPass": 0
   },
   "latestAutomationVerification20261117": {
-    "checkedAt": "2026-11-17T10:12:33Z",
-    "mainHead": "d5d6c9d7f4d962cb1cce25f5aeb2ef63c66b9950",
-    "workflow": {
+    "checkedAt": "2026-11-17T10:26:37Z",
+    "mainHead": "d79b977eb4d43acca54c98bd803a555c8112c07e",
+    "r125CandidateResume": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
       "blobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
       "triggers": [
@@ -6914,68 +6914,119 @@
       "scheduleTriggerPresent": false,
       "runTranslationsDefault": false,
       "repairCandidatesDefault": false,
-      "auditOnlyBranchPersistence": false,
-      "candidatePersistenceRequiresExplicitTranslationOrRepairOptIn": true
-    },
-    "actionsObservation": {
-      "totalRepositoryRuns": 5559,
-      "latest100Fetched": true,
-      "activeOrQueuedRunsInLatest100": 0,
-      "activeOrQueuedRunNames": [],
-      "latestRepositoryRun": {
-        "id": 44062253675,
-        "number": 1648,
-        "name": "pages build and deployment",
-        "status": "completed",
+      "latestKnownRun": {
+        "number": 150,
+        "id": 38971104197,
+        "createdAt": "2026-10-16T21:41:57Z",
         "conclusion": "success",
-        "createdAt": "2026-11-17T10:09:56Z",
-        "updatedAt": "2026-11-17T10:10:39Z",
-        "headSha": "d5d6c9d7f4d962cb1cce25f5aeb2ef63c66b9950"
+        "revision": "legacy"
       },
-      "r125InLatest100": [],
-      "interpretation": "No R125 run appears in the latest 100 repository runs; latest matching R125 remains legacy run #150 from 2026-10-16 per the prior 1,000-run scan. No current R125 run is active."
+      "latestRunSteps": {
+        "resume": "skipped",
+        "candidateAudit": "success",
+        "saveProgress": "success"
+      },
+      "legacyRunPersistedMetadataFiles": 2,
+      "legacyRunCandidatePackWrites": 0,
+      "activeR125Runs": 0,
+      "candidatePersistenceRequiresExplicitOptIn": true,
+      "auditOnlyBranchPersistence": false
     },
-    "latestCandidateBranchReadback": {
-      "head": "1b2ae3fa9cae6a261fa51d0df2958016770a18fc",
-      "headCommitAt": "2026-11-17T10:06:54Z",
-      "headCommitChangedFiles": [
-        "docs/locale-candidates-20261008/resume-summary.json"
+    "staticLocaleSectionAudit": {
+      "workflowPath": ".github/workflows/r125-static-locale-section-audit.yml",
+      "workflowReadOnly": true,
+      "aiAndTranslationEndpointsBlocked": true,
+      "noAIProbeOrTranslationGeneration": true,
+      "fullMatrixRun": {
+        "number": 4,
+        "id": 44063778472,
+        "headSha": "07ef4752bcf92d398e41a826cffdbf75c2586125",
+        "conclusion": "failure",
+        "checkedAt": "2026-11-17T10:23:48Z"
+      },
+      "verifiedBeforeLeakFailure": {
+        "publishedPacks": 98,
+        "keysPerPack": 1118,
+        "totalPackKeys": 109564,
+        "missingKeys": 0,
+        "extraKeys": 0,
+        "emptyValues": 0,
+        "sourceHashAndCount": "98/98 pass",
+        "countryProfiles": 248,
+        "homepageLanguages": 98,
+        "sectionPaths": 27,
+        "sectionLanguageApplications": 2646
+      },
+      "englishLeakFindingCombinations": 274,
+      "examples": [
+        "No approved live marketplace listings are available right now. (es, pt, de, ko, ru, vi, sw, th)",
+        "United Kingdom (ms, fil; likely country-name rendering, needs element-level review)",
+        "OPEN MARKETPLACE → (fil)",
+        "GLOBAL AI MARKETPLACE (fil)"
       ],
-      "candidatePackFilesChangedByHeadCommit": 0,
-      "resumeLatestLogBlobSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
-      "resumeLatestLogPreserved": true,
-      "candidateSummaryBlobSha": "516fb476a0928c97f7484a1e079f4d5d85aa79b8",
-      "summaryCheckedAt": "2026-11-17T09:53:12Z"
-    },
-    "dhivehiReviewReadback": {
-      "artifact": "docs/locale-candidates-20261008/dv-english-overlap-review-20261115.json",
-      "overlapCount": 58,
-      "status": "BLOCKED_FOR_NATIVE_REVIEW",
-      "sampledFinding": "Multiple complete user-facing sentences remain English in addition to technical brand/product terms; not safely repairable by deterministic normalization.",
-      "translationRequests": 0,
-      "aiQuotaUsed": 0,
-      "candidatePackChanged": false
-    },
-    "latestProductionChecks": {
-      "siteHealth": {
-        "run": 330,
-        "id": 44045610251,
-        "conclusion": "success",
-        "checkedAt": "2026-11-17T08:18:29Z",
-        "scope": "API health, robots/sitemap and 18 named public pages"
+      "candidateVsPublishedComparison": {
+        "combinedDynamicMarketplaceSentence": "Candidate branch already contains fully translated values for es, pt, de, ko, ru, vi, sw, th and ms; currently published i18n-r32 packs still contain the first sentence in English for these languages.",
+        "fil": "Candidate pack still retains OPEN MARKETPLACE → and GLOBAL AI MARKETPLACE in English; needs native Filipino review.",
+        "noCandidatePackChangesMade": true
       },
-      "aiChat": "unknown-not-probed",
-      "translation": "unknown-not-probed",
-      "quotaBoundaryRegression": "passed in R105 #97",
-      "safety": "passed in Safety Smoke #31; four prohibited cases blocked",
-      "countryChange": "Iceland selected test passed in R105 #97",
-      "currencyFallback": "selected test passed in R123 #70; full country/currency matrix not certified",
-      "programmaticTTS": "passed in R123 #70",
-      "liveASR": "skipped",
-      "physicalAudio": "not certified",
+      "diagnosticRun": {
+        "number": 5,
+        "id": 44064547923,
+        "status": "in_progress",
+        "headSha": "3fb07e23aa229e49bc1e3e4fb37b478a432c22ed"
+      },
+      "latestQueuedRun": {
+        "number": 6,
+        "id": 44064682059,
+        "status": "queued",
+        "headSha": "d79b977eb4d43acca54c98bd803a555c8112c07e"
+      },
+      "knownHarnessCorrections": [
+        "Removed an incorrect assumption that published static packs include candidate-only qualityPolicy metadata.",
+        "Corrected leak detection so unchanged source phrases are counted rather than excluded.",
+        "Expanded coverage from distributed language sampling to all 98 languages across every discovered section."
+      ]
+    },
+    "candidateBranchReadback": {
+      "head": "1b2ae3fa9cae6a261fa51d0df2958016770a18fc",
+      "headCommitMessage": "docs(r125): record candidate source format auditor repair",
+      "summaryBlobSha": "516fb476a0928c97f7484a1e079f4d5d85aa79b8",
+      "summaryCheckedAt": "2026-11-17T09:53:12Z",
+      "completedCandidates": 97,
+      "remaining": [
+        "dv"
+      ],
+      "remainingFailure": "dv: english_overlap:58",
+      "structurallyComplete": 98,
+      "published": 0,
+      "linguisticallyCertified": 0,
+      "resumeLatestLogBlobSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
+      "resumeLatestLogTail": "DELTA_FAILURE dv HTTP 503 all_translation_backends_unavailable; workers-ai model responses unparseable",
+      "candidatePackWritesThisPass": 0,
+      "candidateMetadataWritesThisPass": 0
+    },
+    "latestProductionVerification": {
+      "siteHealthRun": 330,
+      "siteHealthRunId": 44045610251,
+      "siteHealthConclusion": "success",
+      "siteHealthCheckedAt": "2026-11-17T08:18:29Z",
+      "safety": "last recorded Safety Smoke #31 passed; four prohibited classes blocked; RLS 17/17",
+      "countryCurrency": "full 248-country profile matrix passed in new static audit; broader live transaction/checkout currency matrix not certified",
+      "AI": "unknown-not-probed; AI binding exists but latest R105 #97 skipped live probes",
+      "translation": "unknown-not-probed; latest log contains HTTP 503 all_translation_backends_unavailable; historical daily_free_ai_limit and Google HTTP429 remain blockers",
+      "voice": "programmatic TTS last passed in R123 #70; live ASR skipped; physical microphone/speaker not certified",
       "checkout": "inactive pending merchant configuration"
     },
     "thisPass": {
+      "mainCodeAndWorkflowCommits": [
+        "5989ecfa9efab24b7c48d02dc718a3c623b76e57",
+        "2deecdcce8ce82069b5682b35c17390e9e2e89d1",
+        "68b2ec87db8991ac7d9fadae5c1fe92ca647434c",
+        "39858998e57ea3371d05c5638e7c523ff92d1eb5",
+        "07ef4752bcf92d398e41a826cffdbf75c2586125",
+        "3fb07e23aa229e49bc1e3e4fb37b478a432c22ed",
+        "d79b977eb4d43acca54c98bd803a555c8112c07e"
+      ],
       "candidatePackWrites": 0,
       "candidateMetadataWrites": 0,
       "translationRequests": 0,
