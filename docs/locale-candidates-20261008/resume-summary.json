@@ -4252,9 +4252,10 @@
     },
     "thisPass": {
       "candidatePackWrites": 0,
-      "metadataFilesUpdated": 0,
+      "metadataFilesUpdated": 1,
       "translationRequests": 0,
-      "aiQuotaUsed": 0
+      "aiQuotaUsed": 0,
+      "metadataCommit": "05119a5f76aa31be2688e0d722e324ae0c9faff7"
     },
     "note": "Metadata-only inspection. No locale candidate JSON pack was modified. Existing checkedAt and full audit timestamps are preserved; this entry does not claim a new full 98-pack audit."
   }
