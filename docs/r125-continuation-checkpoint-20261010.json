@@ -9381,7 +9381,8 @@
     "checkedAt": "2026-11-18",
     "sourceReadback": {
       "mainCheckpointBeforeBlobSha": "495e09edefe6eb23871887302f73495181aca0bb",
-      "candidateSummaryBlobSha": "4744e1f423ce2b5278588fede2419df6d637315f",
+      "candidateSummaryBlobSha": "551a1cad78540f437e67d1d0a88ae1e844478022",
+      "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
       "resumeLatestLogBlobSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
       "candidateBranch": "work/r125-locale-candidates-20261008"
     },
@@ -9502,24 +9503,32 @@
       "r125Current": {
         "run": 51,
         "id": 44199237336,
-        "status": "in_progress",
-        "prechecks": [
-          "Pages asset readiness",
-          "audit syntax",
-          "quota guard and local labels",
-          "explicit no-translate triage"
-        ],
-        "currentStep": "full 98-language x 27-section matrix",
-        "aiRequests": 0,
-        "providerTranslationRequests": 0
+        "status": "completed",
+        "conclusion": "failure",
+        "exactFindingCombinations": 0,
+        "partialFindingCombinations": 2,
+        "partialLanguage": "lb",
+        "remainingPhrase": "Business Software",
+        "remainingPages": ["/business-software.html", "/software.html"],
+        "interceptedTranslationFallbackRequests": 1,
+        "providerTranslationRequests": 0,
+        "aiRequests": 0
       },
       "r9e": {
         "run": 63,
         "id": 44199239620,
-        "status": "in_progress",
-        "currentStep": "Chromium installation",
-        "liveAiProbes": "disabled on push",
-        "liveAsrProbe": "manual dispatch only"
+        "status": "completed",
+        "conclusion": "success",
+        "countryProfiles": "248/248 selected and verified one-by-one",
+        "manualMoroccoPriority": "PASS against delayed US auto-detect",
+        "manualWorldwidePriority": "PASS",
+        "visibleLocales": ["MA/ar", "FR/fr", "IN/hi", "CN/zh"],
+        "localizedPages": "44/44",
+        "prohibitedWeaponSale": "blocked",
+        "voiceAndPwaCache": "PASS",
+        "liveAiProbes": "skipped-by-policy",
+        "liveAsrProbe": "skipped; manual dispatch only",
+        "physicalHardwareCertified": false
       }
     },
     "aiAndTranslation": {
@@ -9537,7 +9546,7 @@
     "countryCurrency": {
       "currencyValuesStableAcrossLanguages": "pass in R123 #100",
       "countryPackFallback": "pass in R123 #100",
-      "latestFull248ProfileBrowserAudit": "R9e #63 in progress"
+      "latestFull248ProfileBrowserAudit": "R9e #63 PASS: 248/248 profiles; Morocco and Worldwide manual priority; 44/44 pages; safety and voice/PWA checks passed"
     },
     "voice": {
       "programmaticVoiceTests": "pass",
@@ -9548,8 +9557,7 @@
     "checkout": "inactive pending merchant configuration and end-to-end payment verification",
     "decision": "NO-GO",
     "nextSteps": [
-      "Complete R125 #51 and inspect exact remaining findings across 98 languages x 27 sections.",
-      "Complete R9e #63 country/currency and race audit.",
+      "Replace the embedded Business Software term in two Luxembourgish paragraphs and add local Turkish common UI labels.",
       "Extend alreadyLocalizedValue to recognize R125 provisional values before future dynamic fallback paths; add regression coverage.",
       "Complete Divehi native review for 58 English-overlap items.",
       "Obtain qualified native review for provisional low-resource UI labels and all 98 packs.",
@@ -9613,5 +9621,29 @@
       "Add local Turkish common UI labels to prevent the intercepted fallback request.",
       "Extend reverse localized-value detection to include provisional overrides."
     ]
+  }
+,
+  "latestR9eAuditResult20261118": {
+    "checkedAt": "2026-11-18",
+    "run": 63,
+    "runId": 44199239620,
+    "status": "completed",
+    "conclusion": "success",
+    "countryProfiles": "248/248 selected and verified one-by-one, including language, currency, document direction and stored manual choice",
+    "manualMoroccoPriority": "PASS; Morocco MA/ar/MAD survived delayed mocked US auto-detect",
+    "manualWorldwidePriority": "PASS; WW remained selected after delayed mocked US auto-detect",
+    "visibleLocales": [
+      "MA/ar",
+      "FR/fr",
+      "IN/hi",
+      "CN/zh"
+    ],
+    "localizedPages": "44/44 HTTP and runtime checks passed",
+    "safety": "prohibited weapon sale blocked",
+    "voiceAndPwaCache": "PASS in headless Android-profile browser test",
+    "liveAiProbes": "skipped-by-policy",
+    "liveAsr": "skipped; manual dispatch only",
+    "physicalMicrophoneSpeakerCertified": false,
+    "interpretation": "Country/currency mapping and manual-selection race passed. Browser checks do not certify physical audio hardware or live AI generation."
   }
 }
