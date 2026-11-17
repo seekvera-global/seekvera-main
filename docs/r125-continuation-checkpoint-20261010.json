@@ -3250,7 +3250,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-17T17:52:55Z",
+  "updatedAt": "2026-11-17T20:05:43Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -7234,163 +7234,166 @@
     }
   },
   "latestAutomationPass20261117": {
-    "checkedOn": "2026-11-17",
-    "mainHead": "6c359731f9a45bb704902c6eb0b2d291f56e7a6f",
-    "sourceFilesRead": {
-      "mainCheckpointBlob": "1abee3a2b9aae9b2fd1c455200e1cb1a25e50f36",
-      "candidateSummaryBlob": "516fb476a0928c97f7484a1e079f4d5d85aa79b8",
-      "resumeLatestLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b"
+    "checkedAt": "2026-11-17T20:05:43Z",
+    "sourceReadback": {
+      "checkpointSha": "363079830b4d8e3a428690f5e3fffef7e8904823",
+      "candidateSummaryUpdatedAt": "2026-11-17T18:31:40Z",
+      "resumeLatestLogSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
+      "candidateBranch": "work/r125-locale-candidates-20261008"
     },
     "candidateState": {
-      "structurallyComplete": 98,
-      "structuralTotal": 98,
-      "qualityComplete": 97,
+      "structuralPackReadback": "98/98 packs; 1,118 keys each; matching sourceHash; zero missing/extra/empty values",
+      "qualityGate": "97/98",
       "remaining": [
         "dv"
       ],
       "divehiEnglishOverlap": 58,
-      "published": false,
-      "linguisticallyCertified": false
+      "published": 0,
+      "linguisticallyCertified": 0
     },
-    "hourlyResumeWorkflow": {
+    "resumeWorkflow": {
       "path": ".github/workflows/r125-hourly-candidate-resume.yml",
-      "currentTrigger": "workflow_dispatch only",
-      "currentRunTranslationsDefault": false,
-      "currentRepairCandidatesDefault": false,
-      "latestRun": {
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestMatchingRun": {
         "number": 150,
         "id": 38971104197,
         "status": "completed",
         "conclusion": "success",
-        "event": "push",
-        "createdAt": "2026-10-16T21:41:54Z",
-        "workflowRevision": "legacy"
-      },
-      "latestRunSteps": {
         "resume": "skipped",
         "audit": "success",
-        "candidateQuality": "97/98",
         "candidatePackWrites": 0,
-        "metadataFilesWritten": 2
+        "metadataFilesWritten": 2,
+        "translationRequests": 0,
+        "aiQuotaUsed": 0,
+        "revision": "legacy"
       },
-      "historyScan": {
-        "actionsRunsScanned": 1000,
-        "latestMatchingRun": 150,
-        "activeHourlyResumeRuns": 0
-      },
-      "currentRevisionCi": "not yet run"
+      "currentMainRevisionRun": "not observed",
+      "activeRuns": 0,
+      "candidateWritesDeferred": true
     },
-    "staticSectionAudit": {
-      "workflow": ".github/workflows/r125-static-locale-section-audit.yml",
-      "run10": {
-        "id": 44082281662,
-        "number": 10,
-        "status": "completed",
-        "conclusion": "failure",
-        "headSha": "13a88d0616e01e174f76ae448bd4fb316c7bfa6b",
-        "languageSectionApplications": 2646,
-        "englishLeakCombinations": 265,
-        "uniqueEnglishPhrases": 39,
-        "dynamicTranslationAttempts": 3,
-        "aiRequests": 0,
-        "externalTranslationRequests": 0
-      },
-      "run11": {
-        "id": 44082934661,
-        "number": 11,
-        "status": "in_progress",
-        "headSha": "2f93d3b3bfa036efc8f66f78ed93f17e2b49a38d"
-      },
-      "run13": {
-        "id": 44082996436,
-        "number": 13,
-        "status": "pending",
-        "headSha": "1037a0120c3f0a5b239b0c71b6ec17dd6b30378c"
-      },
-      "candidateWrites": "deferred; no candidate branch writes while the section audit queue is active"
-    },
-    "r105": {
-      "successfulRun": {
-        "number": 103,
-        "id": 44082430087,
-        "headSha": "1dffd635d562ca4187bce95e5758a42923645ab3",
-        "conclusion": "success"
-      },
-      "checks": {
-        "sourceValidation": "pass",
-        "localeNames": "98/98 pass",
-        "voiceAndQuotaRegressionTests": "pass",
-        "currencyRegression": "pass",
-        "workerDeploy": "success",
-        "productionHealth": "success",
-        "safetyCountryProbes": "pass",
-        "internalAssetExclusion": "pass",
-        "liveAiGeneration": "skipped by policy"
-      },
-      "newerRun": {
-        "number": 107,
-        "id": 44082996340,
-        "status": "completed",
-        "conclusion": "success",
-        "headSha": "1037a0120c3f0a5b239b0c71b6ec17dd6b30378c"
-      },
-      "latestSuccessfulRun": {
-        "number": 107,
-        "id": 44082996340,
-        "headSha": "1037a0120c3f0a5b239b0c71b6ec17dd6b30378c",
-        "sourceValidation": "pass",
-        "localeNames": "98/98 pass",
-        "quotaAndVoiceRegressionTests": "pass",
-        "currencyRegression": "pass",
-        "workerDeploy": "success",
-        "productionHealth": "success",
-        "safetyCountryProbes": "pass",
-        "internalAssetExclusion": "pass",
-        "liveAiGeneration": "skipped by policy"
-      }
-    },
-    "fixesThisPass": [
+    "changes": [
       {
-        "commit": "13a88d0616e01e174f76ae448bd4fb316c7bfa6b",
-        "change": "Navigation UI translation fallback now aborts after 15 seconds and releases its session lock."
+        "commit": "fed72946f5fa5dcc50831a2fbfc9efa381272563",
+        "file": "i18n-ui.js",
+        "repair": "Added quota-neutral Portuguese quick labels for Back, Page navigation, Voice reply and Voice."
       },
       {
-        "commit": "1dffd635d562ca4187bce95e5758a42923645ab3",
-        "change": "Updated stale quota-boundary assertion to use translation_stop_reason; R105 #103 passed."
-      },
-      {
-        "commit": "2f93d3b3bfa036efc8f66f78ed93f17e2b49a38d",
-        "change": "Locale runtime indexes translated pack values; navigation fallback skips strings already present as localized values."
-      },
-      {
-        "commit": "f69d728b3c2f4557b3383fddd26de7fb72230915",
-        "change": "Navigation static/residual fallback loads the active locale pack before dynamic translation."
-      },
-      {
-        "commit": "1037a0120c3f0a5b239b0c71b6ec17dd6b30378c",
-        "change": "Added Arabic local label for SEEKVERA quick tools."
+        "commit": "2bbdf0cee5af14544ca5a265d3e2d1ca275f0271",
+        "file": "tools/r125_static_locale_section_audit.mjs",
+        "repair": "Exclude explicitly marked data-no-translate and data-user-content nodes/options from UI leak findings; unmarked visible text remains audited."
       }
     ],
-    "quotaAndAvailability": {
-      "translationRequestsThisPass": 0,
-      "aiQuotaUsedThisPass": 0,
-      "liveAiChat": "unknown-not-probed",
-      "translationService": "unknown-not-probed",
-      "blockers": [
+    "productionVerification": {
+      "pages": {
+        "run": 1715,
+        "id": 44165152189,
+        "conclusion": "success"
+      },
+      "latestPagesAfterAuditToolChange": {
+        "run": 1716,
+        "id": 44165593752,
+        "status": "in_progress"
+      },
+      "r105": {
+        "run": 131,
+        "id": 44165153624,
+        "conclusion": "success",
+        "aiBinding": true,
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r123": {
+        "run": 92,
+        "id": 44165153747,
+        "conclusion": "success",
+        "programmaticAudio": "passed",
+        "voiceAcknowledgement": "passed",
+        "dynamicVoicePlaceholders": "passed",
+        "liveASR": "skipped",
+        "physicalMicrophoneSpeakerCertified": false
+      },
+      "countryAndCurrency": {
+        "latestCountryMatrixRun": 50,
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "countryPriorityTests": "passed",
+        "currencyRegression": "passed"
+      },
+      "safety": {
+        "prohibitedWeapon": "blocked",
+        "centralSafetyGate": "enabled",
+        "failClosed": true
+      }
+    },
+    "localeAudit": {
+      "latestCompleted": {
+        "run": 36,
+        "id": 44164261092,
+        "conclusion": "failure",
+        "languages": 98,
+        "sections": 27,
+        "languageSectionApplications": 2646,
+        "countryProfiles": 248,
+        "exactFindings": 66,
+        "partialFindings": 4,
+        "unresolvedFindings": 0,
+        "dynamicFallback": {
+          "language": "Portuguese",
+          "requests": 1,
+          "strings": [
+            "Back",
+            "Page navigation",
+            "Voice reply",
+            "Voice"
+          ]
+        },
+        "aiRequests": 0,
+        "translationRequests": 1,
+        "pollinationsRequests": 0
+      },
+      "nextRun": {
+        "run": 37,
+        "id": 44165153705,
+        "status": "in_progress",
+        "headSha": "fed72946f5fa5dcc50831a2fbfc9efa381272563",
+        "purpose": "Verify Portuguese local quick labels and re-audit 98 languages/27 sections"
+      },
+      "followingRun": {
+        "run": 38,
+        "id": 44165595825,
+        "status": "queued",
+        "headSha": "2bbdf0cee5af14544ca5a265d3e2d1ca275f0271",
+        "purpose": "Re-run audit with explicit noTranslate/userContent exclusions"
+      },
+      "candidatePackWrites": 0
+    },
+    "ai": {
+      "binding": "present",
+      "currentChatAvailability": "unknown-not-probed",
+      "currentTranslationAvailability": "unknown-not-probed",
+      "latestTranslationLog": "HTTP 503 all_translation_backends_unavailable",
+      "knownBlockers": [
         "daily_free_ai_limit",
-        "Google HTTP429",
-        "historical HTTP503 all_translation_backends_unavailable"
-      ]
+        "Google HTTP429"
+      ],
+      "liveGenerationProbe": "skipped-by-policy",
+      "translationRequestsThisPass": 0,
+      "aiQuotaUsedThisPass": 0
     },
-    "verificationLimits": {
-      "countryCurrency": "selected production and unit tests pass; full 248-profile browser matrix pending static audit",
-      "safety": "R105 #103 prohibited-weapon probe blocked and country change to Iceland returned IS",
-      "voice": "programmatic tests pass; live ASR skipped; physical microphone/speaker certification pending",
-      "checkout": "inactive pending merchant configuration"
+    "voice": {
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "dynamicPlaceholders": "passed",
+      "liveASR": "skipped",
+      "physicalMicrophoneSpeakerCertification": false
     },
-    "candidateWritesThisPass": 0,
-    "published": false,
+    "checkout": "inactive pending merchant configuration and end-to-end merchant verification",
     "finalApproval": false,
+    "packsPublished": false,
+    "linguisticAccuracyCertified": false,
     "decision": "NO-GO"
   },
   "latestGlobalDockAccessibilityRepair": {
