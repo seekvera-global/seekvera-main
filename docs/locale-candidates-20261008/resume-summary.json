@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-17T04:49:35.764Z",
+  "checkedAt": "2026-11-17T04:51:39.845Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -334,13 +334,21 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-17T04:49:35.764Z",
+    "checkedAt": "2026-11-17T04:51:39.845Z",
     "latestPages": {
-      "run": 1618,
-      "id": 44007089721,
+      "run": 1620,
+      "id": 44019889958,
       "status": "completed",
       "conclusion": "success",
-      "headSha": "23fcf9c7c1822281ba7ef4288c981e174d0dc19a"
+      "createdAt": "2026-11-17T04:50:09Z",
+      "updatedAt": "2026-11-17T04:51:05Z",
+      "headSha": "e885f0c58757037a0b53f6c9342bf60cf1cf6d8d",
+      "jobs": {
+        "build": "success",
+        "reportBuildStatus": "success",
+        "deploy": "success"
+      },
+      "scope": "GitHub Pages documentation/checkpoint deployment; not product E2E certification"
     },
     "siteHealth": {
       "run": 329,
