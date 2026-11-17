@@ -188,30 +188,24 @@
   "runtimeAvailability": {
     "checkedAt": "2026-11-17T14:55:30Z",
     "aiChat": {
-      "lastConfirmedLiveRun": 43213407211,
-      "checkedAt": "2026-11-17T14:55:30Z",
+      "checkedAt": "2026-11-17T13:45:40Z",
+      "lastConfirmedLiveRun": 44095755996,
       "english": "passed",
+      "englishLatencyMs": 675,
       "arabic": "passed",
       "countryChange": "passed",
       "prohibitedWeapon": "blocked",
       "currentAvailability": "unknown-not-probed",
-      "reason": "R105 #115 production health, safety and country probes passed, but live generation probes were skipped by policy; binding presence is not live AI availability."
+      "reason": "Latest live R9e browser run passed English and Arabic chat, 248 country profiles and prohibited-weapon blocking; no new live chat probe was sent in this pass."
     },
     "voiceTranscription": {
-      "run": 44108312975,
       "checkedAt": "2026-11-17T14:55:41Z",
+      "run": 44108312975,
       "status": "programmatic-and-headless-browser-passed",
-      "languages": [
-        "ar",
-        "fr",
-        "en"
-      ],
-      "programmaticAudioOnly": true,
-      "physicalDeviceCertified": false,
-      "latestAuthorityRun": 44108312975,
       "programmaticTests": "passed",
       "liveASR": "skipped",
-      "scope": "R123 #80 deployed and passed unit, voice-sequence, Arabic home/category and placeholder checks in headless browser; live TTS/ASR probes were not enabled and physical hardware was not tested."
+      "physicalDeviceCertified": false,
+      "scope": "R123 #80 passed audio-envelope, language detection, voice sequencing, Arabic descriptions and placeholder checks; no physical microphone/speaker certification."
     },
     "publicSite": {
       "run": 44000337747,
@@ -223,9 +217,9 @@
       "scope": "Live official-domain health, robots/sitemap and 18 named pages; not full interaction or all-language/all-section certification."
     },
     "translation": {
+      "checkedAt": "2026-11-17T16:02:07.822Z",
       "currentAvailability": "unknown-not-probed",
-      "reason": "No translation request was sent this pass. resume-latest.log still records HTTP 503 all_translation_backends_unavailable; historical daily_free_ai_limit and Google HTTP429 remain blockers.",
-      "checkedAt": "2026-11-17T14:55:30Z"
+      "reason": "No translation request was sent. Candidate resume log still records HTTP 503 all_translation_backends_unavailable with Qwen/Gemma/Llama backend output unparseable; historical daily_free_ai_limit and Google HTTP429 remain blockers."
     },
     "quotaBoundary": {
       "regression": "passed in R105 #97",
@@ -3228,7 +3222,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-17T14:56:00Z",
+  "updatedAt": "2026-11-17T16:02:07.822Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -7478,5 +7472,144 @@
     },
     "liveTtsAsrChatProbes": "not run; run_live_audio_probes default false",
     "physicalMicrophoneSpeakerCertification": false
+  },
+  "latestR125ResumeWorkflowInspection": {
+    "checkedAt": "2026-11-17T16:02:07.822Z",
+    "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
+    "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
+    "triggers": [
+      "workflow_dispatch"
+    ],
+    "scheduleTriggerPresent": false,
+    "runTranslationsDefault": false,
+    "repairCandidatesDefault": false,
+    "latestRun": {
+      "run": 150,
+      "id": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push",
+      "createdAt": "2026-10-16T21:41:54Z",
+      "updatedAt": "2026-10-16T21:42:10Z",
+      "workflowRevision": "legacy",
+      "resumeStep": "skipped",
+      "auditStep": "success",
+      "artifactUpload": "success",
+      "saveProgress": "success",
+      "metadataFilesWritten": 2,
+      "candidatePackWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "currentRevisionRunObserved": false,
+    "activeRunsObserved": 0,
+    "interpretation": "The current workflow does perform the candidate-resume job when manually dispatched with run_translations=true; the latest observed run is a legacy revision and skipped translation. No current-revision R125 resume is running. Candidate packs were not written this pass."
+  },
+  "latestStaticLocaleSectionAudit": {
+    "checkedAt": "2026-11-17T16:02:07.822Z",
+    "lastCompletedRun": {
+      "run": 20,
+      "id": 44108313004,
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44108313004",
+      "checkedAt": "2026-11-17T14:59:36Z",
+      "languagePacks": 98,
+      "homeLanguageApplications": 98,
+      "sectionPaths": 27,
+      "sectionLanguageApplications": 2646,
+      "countryProfiles": 248,
+      "countryCurrencyMatrix": "PASS 248/248",
+      "missingKeys": 0,
+      "extraKeys": 0,
+      "emptyValues": 0,
+      "findingCombinations": 86,
+      "uniqueLanguages": 30,
+      "uniqueSections": 25,
+      "uniquePhrases": 37,
+      "blockedRequests": {
+        "ai": 0,
+        "translation": 1,
+        "pollinations": 0
+      },
+      "failure": "English UI leaks assertion: 86 finding combinations"
+    },
+    "latestRun": {
+      "run": 21,
+      "id": 44120376016,
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44120376016",
+      "headSha": "8398151e5c17d28755e8b33a975af4e5f443e05c",
+      "syntaxCheck": "success",
+      "browserAudit": "in_progress",
+      "candidatePackWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "diagnosticRepair": {
+      "commit": "8398151e5c17d28755e8b33a975af4e5f443e05c",
+      "file": "tools/r125_static_locale_section_audit.mjs",
+      "changes": [
+        "Added exact visible text-node and ancestor DOM diagnostics for each locale leak finding.",
+        "Added runtime language/pack-ready state to leak details.",
+        "Classified Neon Highway as a named game title; the dedicated game-title localization assertion remains active."
+      ],
+      "readback": "PASS; file re-fetched and confirmed."
+    }
+  },
+  "targetedUntranslatedUiComparison": {
+    "checkedAt": "2026-11-17T16:02:07.822Z",
+    "scope": "36 non-proper-noun UI phrases from the R125 #20 leak summary, across all 30 languages reported by that audit; read-only comparison of published i18n-r32 packs and Candidate packs.",
+    "productionUntranslatedPhraseLanguagePairs": 69,
+    "candidateUntranslatedPhraseLanguagePairs": 68,
+    "candidatePacksRead": 30,
+    "candidatePackKeysPerPack": 1118,
+    "difference": "Filipino Candidate translates 'Venue / hotel Wi‑Fi QR' while the published pack still equals the English source. This candidate value is not natively reviewed and must not be published.",
+    "certification": "none; targeted source-equality comparison only, not a linguistic review or full quality audit"
+  },
+  "currentVerificationSnapshot": {
+    "checkedAt": "2026-11-17T16:02:07.822Z",
+    "candidateStructural": {
+      "complete": 98,
+      "total": 98,
+      "qualityComplete": 97,
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58
+    },
+    "publication": {
+      "published": false,
+      "linguisticallyCertified": 0,
+      "total": 98,
+      "finalApproval": false
+    },
+    "countryCurrency": {
+      "profiles": 248,
+      "staticMatrix": "PASS 248/248 in R125 #20",
+      "fullBusinessTransactionCurrencyCertification": false
+    },
+    "safety": {
+      "r9eLiveProhibitedWeapon": "blocked",
+      "safetySmokeRun": 44000336570,
+      "blockedCases": 4,
+      "benignLand": "allowed_pending_human_review"
+    },
+    "voice": {
+      "programmaticTTS": "passed",
+      "liveASR": "skipped",
+      "physicalMicrophoneSpeaker": "pending"
+    },
+    "checkout": {
+      "status": "inactive",
+      "blocker": "merchant-account configuration and end-to-end merchant verification pending"
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    }
   }
 }
