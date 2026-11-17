@@ -48,6 +48,8 @@ jobs:
         run: node tools/test-candidate-script-triage.cjs
       - name: Verify exact candidate key sets without translation requests
         run: PYTHONPATH=. python tools/test-audit-locale-candidates.py
+      - name: Verify translation quota and backend stop boundaries without requests
+        run: python tools/test-locale-quota-stop.py
       - name: Resume public UI candidates
         if: github.event_name == 'workflow_dispatch' && inputs.run_translations
         shell: bash

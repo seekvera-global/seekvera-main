@@ -105,6 +105,11 @@ def translate(language,strings):
 def quota_or_rate_limit(detail):
  return bool(re.search(r'(?:3036|daily[_\s-]*free[_\s-]*(?:ai[_\s-]*)?(?:limit|allocation)|\b429\b|rate.?limit|too many requests)',str(detail),re.I))
 
+def translation_stop_reason(detail):
+ if quota_or_rate_limit(detail):return 'quota_or_rate_limit'
+ if re.search(r'all[_\s-]*translation[_\s-]*backends?[_\s-]*unavailable',str(detail),re.I):return 'all_translation_backends_unavailable'
+ return None
+
 def translate_small(language,strings):
  try:
   for attempt in range(3):
@@ -115,7 +120,7 @@ def translate_small(language,strings):
  except Exception as e:
   detail=str(e)
   if isinstance(e,urllib.error.HTTPError):detail+=' '+e.read().decode()[:900]
-  if quota_or_rate_limit(detail):raise RuntimeError(detail) from e
+  if translation_stop_reason(detail):raise RuntimeError(detail) from e
   if len(strings)<=1:raise RuntimeError(detail) from e
   print('SPLIT_RETRY',language,len(strings),detail[:180],flush=True)
   mid=len(strings)//2
@@ -184,7 +189,10 @@ def main():
    detail=str(e)
    if isinstance(e,urllib.error.HTTPError):detail+=' '+e.read().decode()[:900]
    failures.append({'language':code,'error':detail});print('DELTA_FAILURE',code,detail,flush=True)
-   if 'daily_free_ai_limit' in detail:break
+   stop_reason=translation_stop_reason(detail)
+   if stop_reason:
+    print('STOP_TRANSLATION_RUN',code,stop_reason,flush=True)
+    break
   progress.write_text(json.dumps({'sourceHash':source_hash,'completed':completed,'failures':failures,'finalApproval':False},ensure_ascii=False,indent=2))
  progress.write_text(json.dumps({'sourceHash':source_hash,'completed':completed,'failures':failures,'finalApproval':False},ensure_ascii=False,indent=2))
  if set(completed)==set(manifest['languages']) and not failures:
