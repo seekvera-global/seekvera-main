@@ -54,6 +54,7 @@ jobs:
           node --check worker-r76.js
           node --check worker.js
           node --check global-ui.js
+          node --check games.js
           node --check superapp.js
           node --check voice-ai.js
           node --check r31-ui-polish.js
@@ -110,7 +111,8 @@ jobs:
               && curl -fsSL --max-time 25 -H 'cache-control: no-cache' "$BASE/i18n-ui.js?r105=$stamp" -o /tmp/i18n-ui.js; then
               if grep -q '20261001-r125-dialect-voice-quality' /tmp/health.json \
                 && jq -e '.ok==true and .aiBinding==true and .centralSafetyGate=="enabled" and .failClosed==true' /tmp/health.json >/dev/null \
-                && grep -q 'global-ui.js?v=20260927-r106-final-conversation-locale' /tmp/home.html \
+                && grep -q 'global-ui.js?v=20261117-r125-source-caption-i18n' /tmp/home.html \
+                && grep -q 'sv-control-caption-label' /tmp/global-ui.js \
                 && grep -q 'Worldwide is the neutral first-run market' /tmp/global-ui.js \
                 && grep -q '20261008-runtime-source-coverage' /tmp/i18n-ui.js; then
                 health_ok=true
