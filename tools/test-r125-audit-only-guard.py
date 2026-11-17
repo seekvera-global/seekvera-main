@@ -10,7 +10,7 @@ workflow = workflow_path.read_text(encoding="utf-8")
 
 
 def step_block(name: str) -> str:
-    marker = re.compile(r"(?m)^      - name: " + re.escape(name) + r"\\s*$")
+    marker = re.compile(r"(?m)^      - name: " + re.escape(name) + r"\s*$")
     matches = list(marker.finditer(workflow))
     assert len(matches) == 1, f"Expected exactly one workflow step: {name}"
     match = matches[0]
@@ -21,24 +21,24 @@ def step_block(name: str) -> str:
 
 def input_block(name: str) -> str:
     marker = re.compile(
-        r"(?ms)^      " + re.escape(name) + r":\\s*\\n"
-        r"(.*?)(?=^      [a-z_]+:\\s*$|^  [a-z_]+:\\s*$|\\Z)"
+        r"(?ms)^      " + re.escape(name) + r":\s*\n"
+        r"(.*?)(?=^      [a-z_]+:\s*$|^  [a-z_]+:\s*$|\Z)"
     )
     match = marker.search(workflow)
     assert match, f"Missing workflow_dispatch input: {name}"
     return match.group(1)
 
 
-assert re.search(r"(?m)^  workflow_dispatch:\\s*$", workflow), "R125 must remain manually dispatched"
+assert re.search(r"(?m)^  workflow_dispatch:\s*$", workflow), "R125 must remain manually dispatched"
 assert "schedule:" not in workflow, "Unexpected scheduled R125 execution"
-assert not re.search(r"(?m)^  push:\\s*$", workflow), "R125 must not resume automatically on push"
-assert re.search(r"(?m)^  cancel-in-progress: false\\s*$", workflow), "Do not cancel an active R125 run"
+assert not re.search(r"(?m)^  push:\s*$", workflow), "R125 must not resume automatically on push"
+assert re.search(r"(?m)^  cancel-in-progress: false\s*$", workflow), "Do not cancel an active R125 run"
 
 for name in ("run_translations", "repair_candidates"):
     block = input_block(name)
-    assert re.search(r"(?m)^        type: boolean\\s*$", block), f"{name} must be a boolean input"
-    assert re.search(r"(?m)^        required: false\\s*$", block), f"{name} must remain optional"
-    assert re.search(r"(?m)^        default: false\\s*$", block), f"{name} must default to false"
+    assert re.search(r"(?m)^        type: boolean\s*$", block), f"{name} must be a boolean input"
+    assert re.search(r"(?m)^        required: false\s*$", block), f"{name} must remain optional"
+    assert re.search(r"(?m)^        default: false\s*$", block), f"{name} must default to false"
 
 translation = step_block("Resume public UI candidates")
 assert "if: github.event_name == 'workflow_dispatch' && inputs.run_translations" in translation
