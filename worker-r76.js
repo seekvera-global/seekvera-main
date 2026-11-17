@@ -420,10 +420,16 @@ Latest user message: ${message}`;
    throw e;
   }
  };
- let raceTimer;
- const raceTimeout=new Promise(resolve=>{raceTimer=setTimeout(()=>{aiRaceTimedOut=true;resolve(null)},3300)});
- try{const winner=await Promise.race([Promise.any([FAST,PRIMARY,FALLBACK].map(modelAttempt)),raceTimeout]);if(winner)return winner}catch(e){if(quotaLimited(e))quotaBlocked=true}finally{clearTimeout(raceTimer)}
- // A timed-out or unresolved Workers AI request may still return HTTP429/daily_free_ai_limit late. Fail closed instead of starting an external provider while that result is unknown.
+ const deadline=Date.now()+3300;
+ for(const model of [FAST,PRIMARY,FALLBACK]){
+  const remaining=deadline-Date.now();
+  if(remaining<=0){aiRaceTimedOut=true;break}
+  let attemptTimer;
+  const attemptTimeout=new Promise(resolve=>{attemptTimer=setTimeout(()=>{aiRaceTimedOut=true;resolve(null)},remaining)});
+  try{const winner=await Promise.race([modelAttempt(model),attemptTimeout]);if(winner)return winner}catch(e){if(quotaLimited(e))quotaBlocked=true;if(/model timeout/i.test(String(e?.message||e)))uncertainFailure=true}finally{clearTimeout(attemptTimer)}
+  if(quotaBlocked||uncertainFailure||aiRaceTimedOut)break;
+ }
+ // A timed-out or quota-limited model must stop the sequence before any other model or external provider is attempted.
  if(quotaBlocked||uncertainFailure||aiRaceTimedOut)return null;
  // Keep a real conversational AI fallback, but never let it stall the UI.
  try{
