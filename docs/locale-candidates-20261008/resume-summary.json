@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-17T04:51:39.845Z",
+  "checkedAt": "2026-11-17T09:53:12Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -4560,5 +4560,32 @@
     "published": false,
     "linguisticAccuracyCertified": false,
     "note": "Historical R125 #150 used a legacy workflow that persisted two audit metadata files despite translation being skipped. The current Main workflow now gates branch persistence behind explicit translation/repair opt-in. Do not treat #150 as CI verification of the current workflow."
+  },
+  "latestAuditorSourceFormatRepair": {
+    "checkedAt": "2026-11-17T09:53:12Z",
+    "finding": "The current locale builder writes source.json.strings as an ordered array of 1,118 strings, while audit_locale_candidates.py rejected anything except a dict. The next current-revision R125 audit would fail before evaluating the candidate packs.",
+    "repair": "Added source_string_keys() to accept both the current ordered array and legacy map formats, while rejecting non-string, blank, and duplicate source entries. Updated the exact-keyset regression test to cover both formats and invalid inputs.",
+    "commits": {
+      "auditor": "10cb622694c18c134b916ec53ba624b8faba752e",
+      "test": "8445d40cbc3dc957e3204098f76c53dbbecaa78b"
+    },
+    "verification": {
+      "currentSourceFormat": "array",
+      "sourceKeys": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "localSourceFormatAssertions": "7/7 passed",
+      "independentCandidateReadback": "98/98 packs parsed with duplicate-key rejection; 1,118 keys each; matching sourceHash and qualityPolicy; zero missing, extra, or empty values",
+      "candidatePacksModified": false,
+      "r125WorkflowCopiesUpdatedAuditorAndTest": true,
+      "currentRevisionR125Ci": "pending manual audit-only dispatch"
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 1,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "published": false,
+      "linguisticCertification": false
+    }
   }
 }
