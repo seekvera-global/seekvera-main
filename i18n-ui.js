@@ -29,6 +29,11 @@ const QUICK={ar:{
 'Back':'Volver','Page navigation':'Navegación de páginas','Voice reply':'Respuesta de voz','Voice':'Voz'
 },zh:{
 'Back':'返回','Page navigation':'页面导航','Voice reply':'语音回复','Voice':'语音'
+},pt:{
+'Back':'Voltar',
+'Page navigation':'Navegação de páginas',
+'Voice reply':'Resposta por voz',
+'Voice':'Voz'
 },fil:{
 'Country / Region':'Bansa / Rehiyon','Language':'Wika','Currency':'Pera'
 },
