@@ -35,6 +35,24 @@ def read_json_unique(path):
     return parse_json_unique(Path(path).read_text(encoding="utf-8"))
 
 
+def source_string_keys(source):
+    """Accept both legacy source maps and the current builder's ordered string list."""
+    if not isinstance(source, dict):
+        raise RuntimeError("Candidate source JSON must be an object")
+    raw = source.get("strings")
+    if isinstance(raw, dict):
+        keys = list(raw)
+    elif isinstance(raw, list):
+        keys = raw
+    else:
+        raise RuntimeError("Candidate source JSON strings must be an object or array")
+    if any(not isinstance(key, str) or not key.strip() for key in keys):
+        raise RuntimeError("Candidate source strings must be non-empty strings")
+    if len(set(keys)) != len(keys):
+        raise RuntimeError("Candidate source strings contain duplicate entries")
+    return keys
+
+
 def key_set_mismatch(values, expected_keys):
     expected = set(expected_keys)
     if not isinstance(values, dict):
@@ -49,8 +67,7 @@ def audit(stage, exit_code="not-run"):
         source = read_json_unique(stage / "source.json")
     except (DuplicateJSONKeyError, json.JSONDecodeError, UnicodeDecodeError) as exc:
         raise RuntimeError(f"Candidate source JSON is invalid: {exc}") from exc
-    if not isinstance(source, dict) or not isinstance(source.get("strings"), dict):
-        raise RuntimeError("Candidate source JSON must contain a strings object")
+    source_keys = source_string_keys(source)
 
     languages = json.loads((ROOT / "i18n-r32/manifest.json").read_text(encoding="utf-8"))["languages"]
     reviewed = reviewed_labels()
@@ -81,7 +98,7 @@ def audit(stage, exit_code="not-run"):
             reasons.append("translations_not_object")
             values = {}
 
-        missing_keys, extra_keys = key_set_mismatch(values, source["strings"])
+        missing_keys, extra_keys = key_set_mismatch(values, source_keys)
         if missing_keys or extra_keys:
             reasons.append(
                 "key_set_mismatch:missing=" + str(len(missing_keys))
@@ -93,23 +110,23 @@ def audit(stage, exit_code="not-run"):
             reasons.append("quality_policy_mismatch")
         if not all(
             isinstance(values.get(key), str) and values[key].strip()
-            for key in source["strings"]
+            for key in source_keys
         ):
             reasons.append("missing_strings")
         if not all(
             values.get(key) == value
             for key, value in reviewed.get(code, {}).items()
-            if key in source["strings"]
+            if key in source_keys
         ):
             reasons.append("reviewed_label_mismatch")
 
-        invariants = source_invariant_keys(source["strings"])
+        invariants = source_invariant_keys(source_keys)
         invariant_mismatches = [key for key in invariants if values.get(key) != key]
         if invariant_mismatches:
             reasons.append("source_invariant_mismatch:" + str(len(invariant_mismatches)))
 
         overlap = [
-            key for key in source["strings"]
+            key for key in source_keys
             if code != "en" and suspicious_overlap(key, values.get(key, ""))
         ]
         if overlap:
