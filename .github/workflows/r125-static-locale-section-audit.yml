@@ -55,10 +55,10 @@ jobs:
         run: |
           set -euo pipefail
           for attempt in $(seq 1 36); do
-            if curl -fsS --max-time 10 "$SEEKVERA_BASE_URL/index.html?locale_audit=20261117" -o /tmp/r125-index.html \
-              && curl -fsS --max-time 10 "$SEEKVERA_BASE_URL/games.html?locale_audit=20261117" -o /tmp/r125-games.html \
-              && curl -fsS --max-time 10 "$SEEKVERA_BASE_URL/global-ui.js?v=20261117-r125-source-caption-i18n" -o /tmp/r125-global-ui.js \
-              && curl -fsS --max-time 10 "$SEEKVERA_BASE_URL/games.js?v=20261117-r125-game-title-i18n" -o /tmp/r125-games.js \
+            if curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/index.html?locale_audit=20261117" -o /tmp/r125-index.html \
+              && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/games.html?locale_audit=20261117" -o /tmp/r125-games.html \
+              && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/global-ui.js?v=20261117-r125-source-caption-i18n" -o /tmp/r125-global-ui.js \
+              && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/games.js?v=20261117-r125-game-title-i18n" -o /tmp/r125-games.js \
               && grep -Fq 'global-ui.js?v=20261117-r125-source-caption-i18n' /tmp/r125-index.html \
               && grep -Fq 'games.js?v=20261117-r125-game-title-i18n' /tmp/r125-games.html \
               && grep -Fq 'sv-control-caption-label' /tmp/r125-global-ui.js \
