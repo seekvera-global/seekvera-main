@@ -7987,5 +7987,175 @@
     "reason": "R125 #29 stopped before content assertions after ECONNRESET on id.json.",
     "quotaNeutral": true,
     "candidatePackWrites": 0
+  },
+  "latestAutomationPass20261117_1828": {
+    "checkedAt": "2026-11-17T18:29:50Z",
+    "sourceMainCommit": "e242e5df09c3e79e01b3570fc8054209828e46ac",
+    "productionFix": {
+      "file": "i18n-ui.js",
+      "finding": "R125 static audit #30 intercepted one Spanish dynamic-translation fallback for Back, Page navigation, Voice reply and Voice.",
+      "repair": "Added four quota-neutral Spanish quick dictionary entries: Volver, Navegación de páginas, Respuesta de voz, Voz.",
+      "commit": "e242e5df09c3e79e01b3570fc8054209828e46ac",
+      "readback": "PASS",
+      "candidatePackWrites": 0
+    },
+    "latestR125StaticAudit": {
+      "run": 30,
+      "id": 44141774892,
+      "status": "completed",
+      "conclusion": "failure",
+      "verified": {
+        "languagePacks": 98,
+        "homepageLanguages": 98,
+        "sectionPaths": 27,
+        "sectionLanguageApplications": 2646,
+        "countryProfiles": 248,
+        "missingKeys": 0,
+        "extraKeys": 0,
+        "emptyValues": 0,
+        "unresolvedFindingCombinations": 0
+      },
+      "findings": {
+        "exactFindingCombinations": 66,
+        "exactLanguages": 19,
+        "partialFindingCombinations": 13,
+        "partialLanguages": 12
+      },
+      "dynamicTranslationFallback": {
+        "requests": 1,
+        "language": "Spanish",
+        "strings": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ]
+      },
+      "blockedRequests": {
+        "ai": 0,
+        "translation": 1,
+        "pollinations": 0
+      },
+      "candidatePackWrites": 0,
+      "translationRequestsSent": 0,
+      "aiQuotaUsed": 0
+    },
+    "currentR125StaticAudit": {
+      "run": 31,
+      "id": 44148220343,
+      "status": "in_progress",
+      "conclusion": null,
+      "triggeredByCommit": "e242e5df09c3e79e01b3570fc8054209828e46ac",
+      "purpose": "Verify Spanish fallback repair across the 98-language × 27-section matrix",
+      "candidatePackWrites": 0,
+      "translationRequestsSent": 0,
+      "aiQuotaUsed": 0
+    },
+    "productionRuns": {
+      "pages": {
+        "run": 1704,
+        "id": 44148219877,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "r105": {
+        "run": 124,
+        "id": 44148220307,
+        "status": "completed",
+        "conclusion": "success",
+        "aiBinding": true,
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "liveAiProbes": "skipped-by-policy",
+        "countryChangeIceland": "passed",
+        "prohibitedWeapon": "blocked"
+      },
+      "r123": {
+        "run": 86,
+        "id": 44148220333,
+        "status": "completed",
+        "conclusion": "success",
+        "programmaticAudio": "passed",
+        "voiceAcknowledgement": "passed",
+        "dynamicVoicePlaceholders": "passed",
+        "liveAsr": "skipped",
+        "physicalMicrophoneSpeakerCertification": false
+      },
+      "r9e": {
+        "run": 50,
+        "id": 44148220472,
+        "status": "in_progress",
+        "conclusion": null
+      }
+    },
+    "candidateState": {
+      "structuralComplete": 98,
+      "total": 98,
+      "qualityComplete": 97,
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "published": 0,
+      "linguisticallyCertified": 0
+    },
+    "candidateResumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "blobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
+      "trigger": "workflow_dispatch only",
+      "scheduleTriggerPresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestObservedRun": {
+        "number": 150,
+        "id": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "resume": "skipped",
+        "audit": "success"
+      },
+      "currentRevisionRunObserved": false,
+      "activeRunsObserved": 0,
+      "candidatePackWritesThisPass": 0
+    },
+    "aiAndTranslation": {
+      "aiBinding": "true",
+      "aiChatAvailability": "unknown-not-probed",
+      "liveGenerationProbes": "skipped-by-policy",
+      "translationAvailability": "unknown-not-probed",
+      "lastResumeLogError": "HTTP 503 all_translation_backends_unavailable",
+      "historicalBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429"
+      ],
+      "translationRequestsThisPass": 0,
+      "aiQuotaUsedThisPass": 0
+    },
+    "voice": {
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "liveASR": "skipped",
+      "physicalMicrophoneSpeakerCertification": false
+    },
+    "countryCurrency": {
+      "countryProfiles": 248,
+      "staticCountryLanguageCurrencyMatrix": "PASS 248/248 in R125 #30",
+      "latestLiveBrowserAudit": "R9e #50 in progress",
+      "merchantSettlementCertification": false
+    },
+    "safety": {
+      "prohibitedWeaponListing": "blocked",
+      "benignLand": "allowed_pending_human_review",
+      "centralSafetyGate": "enabled",
+      "failClosed": true
+    },
+    "checkout": "inactive pending merchant-account configuration and end-to-end merchant verification",
+    "decision": "NO-GO",
+    "candidatePackWrites": 0,
+    "candidateMetadataWrites": 0,
+    "published": false,
+    "linguisticCertification": false
   }
 }
