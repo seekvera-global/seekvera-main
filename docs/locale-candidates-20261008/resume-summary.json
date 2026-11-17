@@ -4388,7 +4388,7 @@
     "r125Ci": "pending next manual run",
     "candidatePacksChanged": 0
   },
-  "updatedAt": "2026-11-17T07:59:06.634Z",
+  "updatedAt": "2026-11-17T08:50:00Z",
   "latestBuilderQuotaStopRepair": {
     "checkedAt": "2026-11-17T02:57:08Z",
     "finding": "The locale builder stopped the entire language loop only when the error text contained the literal daily_free_ai_limit. Google HTTP429/provider_rate_limited and all_translation_backends_unavailable were terminal inside translate_small, but the outer loop could continue to the next language; the 503 backend-unavailable response could also fall through to recursive batch splitting.",
@@ -4501,5 +4501,64 @@
     "aiQuotaUsed": 0,
     "published": false,
     "linguisticCertification": false
+  },
+  "latestR125JobInspection20261117": {
+    "checkedAt": "2026-11-17T08:50:00Z",
+    "run": {
+      "number": 150,
+      "id": 38971104197,
+      "createdAt": "2026-10-16T21:41:54Z",
+      "status": "completed",
+      "conclusion": "success",
+      "workflowRevision": "legacy; not current Main workflow"
+    },
+    "job": {
+      "id": 117209410195,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "auditOutput": {
+      "completedCount": 97,
+      "remaining": [
+        "dv"
+      ],
+      "resumeSucceeded": false,
+      "readyForLinguisticReview": false,
+      "exitCode": "not-run"
+    },
+    "steps": {
+      "resume": "skipped",
+      "audit": "success",
+      "artifactUpload": "success",
+      "saveProgress": "success"
+    },
+    "artifact": {
+      "id": 12077720489,
+      "name": "r125-resumable-candidates"
+    },
+    "persistence": {
+      "candidatePackWrites": 0,
+      "metadataFilesWritten": 2,
+      "metadataCommit": "cae6970",
+      "candidateBranchPush": true,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "currentMainWorkflow": {
+      "sha": "bedfffbaedf94fea2052159041df976fc9fb3a43",
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "currentRevisionCi": "pending manual dispatch"
+    },
+    "historyScan": {
+      "actionsRunsScanned": 1000,
+      "latestMatchingR125Run": 150,
+      "activeR125Runs": 0
+    },
+    "candidatePacksChanged": false,
+    "published": false,
+    "linguisticAccuracyCertified": false,
+    "note": "Historical R125 #150 used a legacy workflow that persisted two audit metadata files despite translation being skipped. The current Main workflow now gates branch persistence behind explicit translation/repair opt-in. Do not treat #150 as CI verification of the current workflow."
   }
 }
