@@ -7364,6 +7364,25 @@
         "published": false,
         "linguisticCertification": false,
         "decision": "NO-GO"
+      },
+      "productionPackState": {
+        "checkedAt": "2026-11-17T22:31:44Z",
+        "productionManifest": {
+          "version": "20260926-r76-complete-global-final",
+          "sourceHash": "b371f2422f8b5416",
+          "sourceCount": 1045,
+          "languageCount": 98,
+          "englishPackCount": 1045
+        },
+        "candidateSource": {
+          "sourceHash": "6a1126e6a2ce5629",
+          "sourceCount": 1118,
+          "languageCount": 98,
+          "structurallyCompletePacks": 98
+        },
+        "unpublishedKeyDelta": 73,
+        "published": false,
+        "note": "The live production i18n-r32 manifest remains at 1,045 source keys; the candidate source is 1,118 keys. Candidate packs are not published. Do not promote unreviewed packs to close this 73-key gap."
       }
     },
     "lastUpdatedAt": "2026-11-17T22:31:44Z"
