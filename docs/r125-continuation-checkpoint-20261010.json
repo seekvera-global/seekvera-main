@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-17",
+  "date": "2026-11-18",
   "finalApproval": false,
   "sourceHash": "6a1126e6a2ce5629",
   "sourceCount": 1118,
@@ -9374,5 +9374,186 @@
     "published": false,
     "linguisticCertification": false,
     "decision": "NO-GO"
+  }
+,
+  "latestAutomationPass20261118": {
+    "checkedAt": "2026-11-18",
+    "sourceReadback": {
+      "mainCheckpointBeforeBlobSha": "495e09edefe6eb23871887302f73495181aca0bb",
+      "candidateSummaryBlobSha": "4744e1f423ce2b5278588fede2419df6d637315f",
+      "resumeLatestLogBlobSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
+      "candidateBranch": "work/r125-locale-candidates-20261008"
+    },
+    "candidateState": {
+      "structuralCompleteness": "98/98",
+      "qualityCompleteness": "97/98",
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "published": 0,
+      "linguisticallyCertified": 0,
+      "candidatePackWritesThisPass": 0
+    },
+    "divehiReview": {
+      "artifact": "docs/locale-candidates-20261008/dv-english-overlap-review-20261115.json",
+      "blobSha": "564ebed31fdd8ffa4c31fbacd40a45da8ff14834",
+      "status": "BLOCKED_FOR_NATIVE_REVIEW",
+      "overlapCount": 58,
+      "longestEnglishRuns": {
+        "12+ words": 31,
+        "8-11 words": 15,
+        "5-7 words": 12
+      },
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "resumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "trigger": "workflow_dispatch only; no schedule trigger",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestMatchingRun": {
+        "number": 150,
+        "id": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "resume": "skipped",
+        "audit": "success",
+        "metadataFilesWritten": 2,
+        "candidatePackWrites": 0,
+        "translationRequests": 0,
+        "aiQuotaUsed": 0
+      },
+      "currentRevisionRunObserved": false,
+      "activeResumeRuns": 0,
+      "candidateWritesDeferred": true
+    },
+    "mainRepairs": {
+      "commits": [
+        "1d0c6f109f1bae93902c1ad821bbaecca1241fff",
+        "7a1cae5aca93dcd35527e662ecf46be44c8adc01"
+      ],
+      "runtimeFile": "i18n-ui.js",
+      "regressionTest": "tools/test-ui-translation-quota-session-guard.cjs",
+      "provisionalMappings": 32,
+      "affectedLanguages": [
+        "fy",
+        "lb",
+        "lo",
+        "mg",
+        "rm",
+        "rw",
+        "tn"
+      ],
+      "scope": "Exact visible UI leaks only; provisional local overrides; no candidate pack changes; native review required",
+      "quotaBoundary": "No translation or AI requests"
+    },
+    "ci": {
+      "r105Previous": {
+        "run": 141,
+        "id": 44199084781,
+        "conclusion": "failure",
+        "cause": "isolated locale-cognate test extracted rawGet without the newly added map; corrected with typeof guard"
+      },
+      "r105Current": {
+        "run": 142,
+        "id": 44199236944,
+        "conclusion": "success",
+        "sourceValidation": "pass",
+        "workerDeployment": "success",
+        "productionHealth": "pass",
+        "aiBinding": true,
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "prohibitedWeaponRequest": "blocked",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r123": {
+        "run": 100,
+        "id": 44199237248,
+        "conclusion": "success",
+        "validation": "pass",
+        "deployment": "success",
+        "arabicHomeAnd31Descriptions": "pass",
+        "voiceAcknowledgement": "pass",
+        "dynamicPlaceholders": [
+          "fr",
+          "ar"
+        ],
+        "browserAudio": "synthetic delayed WAV completed before navigation in Android browser profile",
+        "liveTtsAsrProbes": "skipped",
+        "physicalHardwareCertified": false
+      },
+      "pages": {
+        "run": 1739,
+        "id": 44199235918,
+        "conclusion": "success"
+      },
+      "r125Previous": {
+        "run": 50,
+        "id": 44199084963,
+        "conclusion": "failure",
+        "cause": "initial regression-test extraction compatibility issue; no candidate writes"
+      },
+      "r125Current": {
+        "run": 51,
+        "id": 44199237336,
+        "status": "in_progress",
+        "prechecks": [
+          "Pages asset readiness",
+          "audit syntax",
+          "quota guard and local labels",
+          "explicit no-translate triage"
+        ],
+        "currentStep": "full 98-language x 27-section matrix",
+        "aiRequests": 0,
+        "providerTranslationRequests": 0
+      },
+      "r9e": {
+        "run": 63,
+        "id": 44199239620,
+        "status": "in_progress",
+        "currentStep": "Chromium installation",
+        "liveAiProbes": "disabled on push",
+        "liveAsrProbe": "manual dispatch only"
+      }
+    },
+    "aiAndTranslation": {
+      "aiBinding": "present",
+      "liveChatAvailability": "unknown-not-probed",
+      "translationAvailability": "unknown-not-probed",
+      "lastResumeLogError": "HTTP 503 all_translation_backends_unavailable",
+      "historicalBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429"
+      ],
+      "translationRequestsThisPass": 0,
+      "aiQuotaUsedThisPass": 0
+    },
+    "countryCurrency": {
+      "currencyValuesStableAcrossLanguages": "pass in R123 #100",
+      "countryPackFallback": "pass in R123 #100",
+      "latestFull248ProfileBrowserAudit": "R9e #63 in progress"
+    },
+    "voice": {
+      "programmaticVoiceTests": "pass",
+      "syntheticBrowserAudio": "pass",
+      "liveTtsAsrProbes": "skipped",
+      "physicalMicrophoneSpeakerCertified": false
+    },
+    "checkout": "inactive pending merchant configuration and end-to-end payment verification",
+    "decision": "NO-GO",
+    "nextSteps": [
+      "Complete R125 #51 and inspect exact remaining findings across 98 languages x 27 sections.",
+      "Complete R9e #63 country/currency and race audit.",
+      "Extend alreadyLocalizedValue to recognize R125 provisional values before future dynamic fallback paths; add regression coverage.",
+      "Complete Divehi native review for 58 English-overlap items.",
+      "Obtain qualified native review for provisional low-resource UI labels and all 98 packs.",
+      "Probe live AI only when quota-safe and explicitly authorized.",
+      "Test physical microphones/speakers and configure merchant checkout before release."
+    ]
   }
 }
