@@ -21,7 +21,16 @@ try {
     await route.fulfill({ status: 503, contentType: 'application/json', body: '{"ok":false,"audit":"quota-neutral-static-only"}' });
   });
   await context.route('**/api/ui-translate**', async route => {
-    blocked.translation.push({ url: route.request().url(), method: route.request().method() });
+    const raw = route.request().postData() || '';
+    let payload = {};
+    try { payload = JSON.parse(raw); } catch { payload = { raw: raw.slice(0, 500) }; }
+    blocked.translation.push({
+      url: route.request().url(),
+      method: route.request().method(),
+      language: payload.language || payload.lang || 'unknown',
+      strings: Array.isArray(payload.strings) ? payload.strings.slice(0, 20) : [],
+      stringCount: Array.isArray(payload.strings) ? payload.strings.length : 0
+    });
     await route.fulfill({ status: 503, contentType: 'application/json', body: '{"ok":false,"audit":"static-pack-only"}' });
   });
   await context.route('https://text.pollinations.ai/**', async route => {
@@ -215,6 +224,19 @@ try {
     phraseCounts: Object.fromEntries([...leakCounts.entries()].sort((a, b) => b[1] - a[1])),
     sectionLanguageApplications
   }));
+  const fallbackByLanguage = {};
+  for (const request of blocked.translation) {
+    const language = request.language || 'unknown';
+    const entry = fallbackByLanguage[language] || { requests: 0, strings: new Set() };
+    entry.requests++;
+    for (const value of request.strings || []) entry.strings.add(value);
+    fallbackByLanguage[language] = entry;
+  }
+  const fallbackSummary = Object.fromEntries(Object.entries(fallbackByLanguage).map(([language, value]) => [
+    language,
+    { requests: value.requests, uniqueStrings: value.strings.size, samples: [...value.strings].slice(0, 20) }
+  ]));
+  console.log('R125_STATIC_TRANSLATION_FALLBACK_DETAILS', JSON.stringify(fallbackSummary));
   console.log('R125_STATIC_BLOCKED_REQUESTS', JSON.stringify({
     ai: blocked.ai.length,
     translation: blocked.translation.length,
