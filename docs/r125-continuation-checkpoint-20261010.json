@@ -701,7 +701,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-17T02:06:47Z",
+  "checkedAt": "2026-11-17T02:10:00.450Z",
   "latestR125Run": {
     "run": 150,
     "status": "completed",
@@ -2923,7 +2923,7 @@
     "validation": "Read-back verified; provisional manual Hausa UI terms; native review required."
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-17T02:06:47Z",
+    "checkedAt": "2026-11-17T02:10:00.450Z",
     "filesRead": [
       "main docs/r125-continuation-checkpoint-20261010.json",
       "candidate docs/locale-candidates-20261008/resume-summary.json",
@@ -3021,7 +3021,18 @@
       "full98QualityAudit": false,
       "published": false,
       "linguisticCertification": false,
-      "nativeCertification": 0
+      "nativeCertification": 0,
+      "freshPackReadback": {
+        "packsRead": 98,
+        "missingFiles": 0,
+        "extraFiles": 0,
+        "sourceHashMatches": 98,
+        "qualityPolicyMatches": 98,
+        "exactKeySets": 98,
+        "missingKeys": 0,
+        "extraKeys": 0,
+        "emptyValues": 0
+      }
     },
     "ai": {
       "chat": "unknown-not-probed",
@@ -3065,7 +3076,8 @@
       "exactKeySetAuditR125Run": "pending",
       "published": false,
       "linguisticCertification": false,
-      "decision": "NO-GO"
+      "decision": "NO-GO",
+      "freshFull98ExactKeySetReadback": "PASS 98/98"
     },
     "decision": "NO-GO; Pages #1582 and build/report/deploy passed. 98/98 packs structurally aligned; Divehi has 58 English-overlap quality failures. Full quality/native review, all-language/all-section coverage, current AI availability, full country/currency matrix, physical audio and merchant checkout remain incomplete."
   },
@@ -3175,7 +3187,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-17T02:06:47Z",
+  "updatedAt": "2026-11-17T02:10:00.450Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -6299,8 +6311,21 @@
     "testCommit": "f7184554b5f5e9a5d7e4030d936e5ad4fa80077c",
     "workflowCommit": "ec905fa7c6bbf6fb25c1084513000d6b426f1a72",
     "description": "Candidate audit now detects extra translation keys as well as missing keys; R125 copies and runs a quota-neutral regression test before candidate resume.",
-    "localUnitTest": "passed",
+    "localUnitTest": "PASS",
     "r125Ci": "pending next manual run",
-    "candidatePacksChanged": 0
+    "candidatePacksChanged": 0,
+    "manualFull98Readback": "PASS",
+    "packsRead": 98,
+    "keysPerPack": 1118,
+    "sourceHashMatches": 98,
+    "qualityPolicyMatches": 98,
+    "missingKeys": 0,
+    "extraKeys": 0,
+    "emptyValues": 0,
+    "manifestLanguageCount": 98,
+    "candidateFileCount": 98,
+    "missingFiles": 0,
+    "extraFiles": 0,
+    "sourceHash": "6a1126e6a2ce5629"
   }
 }
