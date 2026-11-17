@@ -9726,8 +9726,18 @@
       "r9e": {
         "run": 64,
         "id": 44200329797,
-        "status": "in_progress",
-        "purpose": "recheck 248 country profiles, 44 pages, manual selection race, safety, voice and PWA"
+        "status": "completed",
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "manualMoroccoPriority": "PASS",
+        "manualWorldwidePriority": "PASS",
+        "visibleLocales": ["MA/ar", "FR/fr", "IN/hi", "CN/zh"],
+        "localizedPages": "44/44",
+        "safety": "prohibited weapon sale blocked",
+        "voiceAndPwaCache": "PASS",
+        "liveAiProbes": "skipped-by-policy",
+        "liveAsr": "skipped",
+        "physicalHardwareCertified": false
       }
     },
     "candidateBranch": {
@@ -9750,5 +9760,28 @@
       "Probe live AI only when quota-safe and explicitly authorized.",
       "Test physical microphones/speakers and configure merchant checkout."
     ]
+  }
+,
+  "latestR9eAuditResult20261118Run64": {
+    "checkedAt": "2026-11-18",
+    "run": 64,
+    "runId": 44200329797,
+    "status": "completed",
+    "conclusion": "success",
+    "countryProfiles": "248/248 selected and verified one-by-one",
+    "manualMoroccoPriority": "PASS against delayed US auto-detect",
+    "manualWorldwidePriority": "PASS",
+    "visibleLocales": [
+      "MA/ar",
+      "FR/fr",
+      "IN/hi",
+      "CN/zh"
+    ],
+    "localizedPages": "44/44",
+    "safety": "prohibited weapon sale blocked",
+    "voiceAndPwaCache": "PASS",
+    "liveAiProbes": "skipped-by-policy",
+    "liveAsr": "skipped",
+    "physicalMicrophoneSpeakerCertified": false
   }
 }
