@@ -3227,7 +3227,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-17T09:53:12Z",
+  "updatedAt": "2026-11-17T11:15:49Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -7137,6 +7137,77 @@
       "name": "pages build and deployment",
       "status": "in_progress",
       "createdAt": "2026-11-17T10:29:52Z"
+    }
+  },
+  "latestUiTranslationSessionGuardRepair": {
+    "checkedAt": "2026-11-17T11:15:49Z",
+    "finding": {
+      "staticAuditRun": 44064682059,
+      "staticAuditRunNumber": 6,
+      "conclusion": "failure",
+      "sectionLanguageApplications": 2646,
+      "findingCombinations": 265,
+      "interceptedUiTranslateRequests": 45,
+      "aiRequests": 0,
+      "pollinationsRequests": 0,
+      "providerRequestsSent": 0,
+      "quotaUsed": 0,
+      "rootCause": "i18n-ui.js used only a 30-second cooldown and launched up to three translation batches concurrently; navigation.js had two direct /api/ui-translate callers that bypassed that cooldown and could repeat on locale/page events."
+    },
+    "repair": {
+      "i18n": "Session-scoped circuit breaker on HTTP 429/503 and daily_free_ai_limit/provider_rate_limited/all_translation_backends_unavailable; serialized UI translation batches stop after the first terminal response.",
+      "navigation": "Both static-AI and residual-UI fallback callers now use one guarded helper with the same session block key and a shared in-flight lock.",
+      "files": [
+        "i18n-ui.js",
+        "navigation.js",
+        "tools/test-ui-translation-quota-session-guard.cjs",
+        ".github/workflows/r105-final-release.yml"
+      ],
+      "commits": {
+        "i18n": "aa32f75fa8128da2848698e590c3630c10f27188",
+        "navigation": "5b130aaf7cf09e82dc373326bd4689b40d981bdb",
+        "test": "9c24e798694c797e66850f10656bd29bbf2fb9dc",
+        "workflow": "00a92c8a11ad50462cef90c84bf1b87716d1a265"
+      },
+      "validation": "Read-back confirmed both runtime files share the r19 session block and in-flight lock; R105 now runs node --check navigation.js and the new regression test. CI execution remains pending; no successful CI claim."
+    },
+    "latestR125RunInspected": {
+      "run": 150,
+      "id": 38971104197,
+      "createdAt": "2026-10-16T21:41:54Z",
+      "status": "completed",
+      "conclusion": "success",
+      "revision": "legacy; not current Main workflow",
+      "steps": {
+        "resume": "skipped",
+        "preserveLiveAiCapacity": "success",
+        "audit": "success",
+        "artifactUpload": "success",
+        "saveProgress": "success"
+      },
+      "auditResult": {
+        "completedCount": 97,
+        "remaining": [
+          "dv"
+        ],
+        "resumeSucceeded": false,
+        "readyForLinguisticReview": false,
+        "exitCode": "not-run"
+      },
+      "candidatePackWrites": 0,
+      "metadataFilesWritten": 2,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "currentWorkflowTrigger": "workflow_dispatch only",
+      "currentRevisionCi": "pending manual audit-only dispatch"
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "published": false,
+      "linguisticCertification": false
     }
   }
 }
