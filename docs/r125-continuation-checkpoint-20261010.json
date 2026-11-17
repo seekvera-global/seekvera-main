@@ -3227,7 +3227,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-17T08:50:00Z",
+  "updatedAt": "2026-11-17T08:55:00Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -6748,5 +6748,46 @@
     "candidatePacksChanged": false,
     "published": false,
     "linguisticAccuracyCertified": false
+  },
+  "latestProductionSiteHealth20261117": {
+    "checkedAt": "2026-11-17T08:18:29Z",
+    "run": {
+      "number": 330,
+      "id": 44045610251,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44045610251"
+    },
+    "job": {
+      "id": 133910414238,
+      "name": "health-check",
+      "conclusion": "success"
+    },
+    "checks": {
+      "apiHealthOk": true,
+      "robotsSitemapOfficialDomain": true,
+      "publicPagesHttp200": 18,
+      "pages": [
+        "marketplace.html",
+        "travel.html",
+        "tourism.html",
+        "property.html",
+        "cars-auto.html",
+        "jobs.html",
+        "shopping.html",
+        "restaurants-food.html",
+        "local-services.html",
+        "import-export.html",
+        "shipping-logistics.html",
+        "health.html",
+        "games.html",
+        "connectivity.html",
+        "wifi.html",
+        "deal-agent.html",
+        "privacy.html",
+        "terms.html"
+      ]
+    },
+    "scope": "Fresh official production availability check only; does not certify page interactions, all 98 locales, AI, physical audio or checkout."
   }
 }
