@@ -111,7 +111,7 @@ jobs:
               && curl -fsSL --max-time 25 -H 'cache-control: no-cache' "$BASE/i18n-ui.js?r105=$stamp" -o /tmp/i18n-ui.js; then
               if grep -q '20261001-r125-dialect-voice-quality' /tmp/health.json \
                 && jq -e '.ok==true and .aiBinding==true and .centralSafetyGate=="enabled" and .failClosed==true' /tmp/health.json >/dev/null \
-                && grep -q 'global-ui.js?v=20261117-r125-source-caption-i18n' /tmp/home.html \
+                && grep -q 'global-ui.js?v=20261117-r125-source-caption-i18n-v2' /tmp/home.html \
                 && grep -q 'sv-control-caption-label' /tmp/global-ui.js \
                 && grep -q 'Worldwide is the neutral first-run market' /tmp/global-ui.js \
                 && grep -q '20261008-runtime-source-coverage' /tmp/i18n-ui.js; then
