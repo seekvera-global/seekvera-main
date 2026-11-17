@@ -186,19 +186,33 @@ try {
   const leakFindings = [];
   const partialFindings = [];
   const unresolvedFindings = [];
+  const excludedOnlyFindings = [];
   async function inspectLeakState(phrases) {
     return page.evaluate(targets => {
       const norm = value => String(value || '').replace(/\\s+/g, ' ').trim();
       const nodes = [];
       const options = [];
       const elements = [];
+      const excluded = [];
+      const exclusionReason = root =>
+        root?.hasAttribute('data-no-translate') ? 'data-no-translate' :
+        root?.hasAttribute('data-user-content') ? 'data-user-content' : '';
       const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
       let node;
       while ((node = walker.nextNode())) {
         const el = node.parentElement;
-        if (!el || !el.getClientRects().length || el.closest('[data-no-translate],[data-user-content]')) continue;
+        if (!el || !el.getClientRects().length) continue;
         const raw = norm(node.nodeValue);
         if (!raw) continue;
+        const excludedRoot = el.closest('[data-no-translate],[data-user-content]');
+        if (excludedRoot) {
+          for (const phrase of targets) {
+            if (raw.includes(phrase)) excluded.push({
+              phrase, text: raw.slice(0, 240), reason: exclusionReason(excludedRoot)
+            });
+          }
+          continue;
+        }
         for (const phrase of targets) {
           if (!raw.includes(phrase)) continue;
           const chain = [];
@@ -219,9 +233,17 @@ try {
       for (const select of document.querySelectorAll('select')) {
         if (!select.getClientRects().length) continue;
         for (const option of [...select.options]) {
-          if (option.closest('[data-no-translate],[data-user-content]')) continue;
           const raw = norm(option.textContent);
           if (!raw) continue;
+          const excludedRoot = option.closest('[data-no-translate],[data-user-content]');
+          if (excludedRoot) {
+            for (const phrase of targets) {
+              if (raw.includes(phrase)) excluded.push({
+                phrase, text: raw, reason: exclusionReason(excludedRoot)
+              });
+            }
+            continue;
+          }
           for (const phrase of targets) {
             if (raw.includes(phrase)) options.push({
               phrase, text: raw, selectId: select.id || '',
@@ -259,25 +281,28 @@ try {
         },
         nodes: nodes.slice(0, 40),
         options: options.slice(0, 20),
-        elements: elements.slice(0, 20)
+        elements: elements.slice(0, 20),
+        excluded: excluded.slice(0, 40)
       };
     }, phrases);
   }
   function classifyLeakEvidence(phrases, evidence) {
-    const exact = [], partial = [], unresolved = [], details = {};
+    const exact = [], partial = [], unresolved = [], excludedOnly = [], details = {};
     for (const phrase of phrases) {
       const nodes = evidence.nodes.filter(item => item.phrase === phrase);
       const options = evidence.options.filter(item => item.phrase === phrase);
       const elements = evidence.elements.filter(item => item.phrase === phrase);
-      details[phrase] = { nodes, options, elements };
+      const excluded = (evidence.excluded || []).filter(item => item.phrase === phrase);
+      details[phrase] = { nodes, options, elements, excluded };
       const exactMatch = nodes.some(item => item.text === phrase) ||
         options.some(item => item.text === phrase) ||
         elements.some(item => item.text === phrase || item.exact);
       if (exactMatch) exact.push(phrase);
       else if (nodes.length || options.length || elements.length) partial.push(phrase);
+      else if (excluded.length) excludedOnly.push(phrase);
       else unresolved.push(phrase);
     }
-    return { exact, partial, unresolved, details };
+    return { exact, partial, unresolved, excludedOnly, details };
   }
   let languageApplications = 0;
   let sectionLanguageApplications = 0;
@@ -344,6 +369,7 @@ try {
         if (classified.exact.length) leakFindings.push({ path: '/', language, leaks: classified.exact, runtime: evidence.runtime, evidence: classified.details });
         if (classified.partial.length) partialFindings.push({ path: '/', language, leaks: classified.partial, runtime: evidence.runtime, evidence: classified.details });
         if (classified.unresolved.length) unresolvedFindings.push({ path: '/', language, leaks: classified.unresolved, runtime: evidence.runtime, evidence: classified.details });
+        if (classified.excludedOnly.length) excludedOnlyFindings.push({ path: '/', language, phrases: classified.excludedOnly, runtime: evidence.runtime, evidence: classified.details });
       }
     }
     if ((index + 1) % 14 === 0 || index === manifest.languages.length - 1) {
@@ -397,6 +423,7 @@ try {
           if (classified.exact.length) leakFindings.push({ path, language, leaks: classified.exact, runtime: evidence.runtime, evidence: classified.details });
           if (classified.partial.length) partialFindings.push({ path, language, leaks: classified.partial, runtime: evidence.runtime, evidence: classified.details });
           if (classified.unresolved.length) unresolvedFindings.push({ path, language, leaks: classified.unresolved, runtime: evidence.runtime, evidence: classified.details });
+      if (classified.excludedOnly.length) excludedOnlyFindings.push({ path, language, phrases: classified.excludedOnly, runtime: evidence.runtime, evidence: classified.details });
         }
     }
     console.log('R125_STATIC_SECTION_PROGRESS', pathIndex + 1, '/', paths.length, path, 'languages', testLanguages.length);
@@ -434,6 +461,7 @@ try {
   console.log('R125_STATIC_LEAK_DETAILS', JSON.stringify(leakFindings));
   console.log('R125_STATIC_PARTIAL_MATCH_DETAILS', JSON.stringify(partialFindings));
   console.log('R125_STATIC_UNRESOLVED_MATCH_DETAILS', JSON.stringify(unresolvedFindings));
+  console.log('R125_STATIC_EXCLUDED_ONLY_DETAILS', JSON.stringify(excludedOnlyFindings));
   console.log('R125_STATIC_TRANSLATION_FALLBACK_DETAILS', JSON.stringify(fallbackSummary));
   console.log('R125_STATIC_BLOCKED_REQUESTS', JSON.stringify({
     ai: blocked.ai.length,
@@ -469,7 +497,8 @@ try {
     externalTranslationRequests: blocked.pollinations.length,
     marketplaceEmptyStateRequests,
     pageErrors: pageErrors.length,
-    approvedProperNouns: [...approvedProperNouns]
+    approvedProperNouns: [...approvedProperNouns],
+    excludedOnlyFindingCombinations: excludedOnlyFindings.length
   }));
   await context.close();
 } finally {

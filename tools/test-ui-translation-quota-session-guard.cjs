@@ -30,6 +30,14 @@ async function main(){
  vm.createContext(localNav);vm.runInContext(navBlock,localNav);
  const localResult=await localNav.requestUiTranslation('Hindi',['Back','Page navigation','Voice reply','Voice']);
  assert.deepEqual(localResult,['वापस','पृष्ठ नेविगेशन','आवाज़ में जवाब','आवाज़']);assert.equal(localFetchCalls,0);
+ // German quick labels must also resolve locally instead of probing the quota-limited provider.
+ const germanLabels={'Back':'Zurück','Page navigation':'Seitennavigation','Voice reply':'Sprachantwort','Voice':'Stimme'};
+ assert(i18n.includes("'Sprachantwort'") && i18n.includes("'Seitennavigation'"),'German quick labels missing from i18n-ui.js');
+ let germanFetchCalls=0;
+ const germanNav={sessionStorage:storage(),AbortController,setTimeout,clearTimeout,fetch:async()=>{germanFetchCalls++;return{status:503,ok:false,json:async()=>({reason:'all_translation_backends_unavailable'})}},langCode:()=> 'de',window:{SEEKVERA_I18N_R32:{tFor:(code,source)=>code==='de'?(germanLabels[source]||source):source}},console};
+ vm.createContext(germanNav);vm.runInContext(navBlock,germanNav);
+ const germanResult=await germanNav.requestUiTranslation('German',['Back','Page navigation','Voice reply','Voice']);
+ assert.deepEqual(germanResult,['Zurück','Seitennavigation','Sprachantwort','Stimme']);assert.equal(germanFetchCalls,0);
  // Google/provider 429 is also terminal for this browser session.
  const s429=storage(),c429=harness(i18nCode,s429,[{status:429,body:{reason:'provider_rate_limited'}}]);
  await Promise.all([c429.context.cloudTranslate('French',['one']),c429.context.cloudTranslate('Arabic',['two'])]);

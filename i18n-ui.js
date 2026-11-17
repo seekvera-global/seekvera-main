@@ -25,6 +25,13 @@ const QUICK={ar:{
 'Understanding your speech…':'Analyse de vos paroles…',
 'Please check the words, then tap Send.':'Vérifiez le texte, puis appuyez sur Envoyer.',
 'Voice recognition is not supported in this browser.':'La reconnaissance vocale n’est pas prise en charge par ce navigateur.'
+},
+// Provisional German quick UI labels; native review remains required.
+de:{
+'Back':'Zurück',
+'Page navigation':'Seitennavigation',
+'Voice reply':'Sprachantwort',
+'Voice':'Stimme'
 },es:{
 'Back':'Volver','Page navigation':'Navegación de páginas','Voice reply':'Respuesta de voz','Voice':'Voz'
 },zh:{
