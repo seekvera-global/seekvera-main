@@ -15,6 +15,11 @@ on:
         type: boolean
         required: false
         default: false
+      run_live_ai_probes:
+        description: 'Send two live chat probes; this may consume Workers AI allocation'
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: read
@@ -33,6 +38,8 @@ jobs:
           npm install --no-save playwright@1.55.0
           npx playwright install --with-deps chromium
       - name: Run final live R9e country, locale, race, pages, AI and voice audit
+        env:
+          RUN_LIVE_AI_PROBES: ${{ github.event_name == 'workflow_dispatch' && inputs.run_live_ai_probes == 'true' }}
         run: |
           node --input-type=module <<'NODE'
           import { chromium } from 'playwright';
@@ -204,7 +211,7 @@ jobs:
               assert(resp.ok(),`${f} HTTP ${resp.status()}`);
               const html=await resp.text();
               assert(html.includes('global-ui.js?v='),`${f} missing global runtime`);
-              assert(html.includes('i18n-ui.js?v=20261026-r130-offline-fallback'),`${f} missing final R9e i18n runtime`);
+              assert(html.includes('i18n-ui.js?v=20261117-r125-reverse-localized-value-guard'),`${f} missing final R9e i18n runtime`);
               assert(html.includes('voice-ai.js?v='),`${f} missing voice runtime`);
             }
             console.log('ALL LOCALIZED PAGES PASS:',pages.length);
@@ -212,47 +219,51 @@ jobs:
 
             // 5) AI conversation continuity: known country/context must not be re-asked.
             const c4=await browser.newContext();
-            const started=Date.now();
-            const ai=await c4.request.post(BASE+'/api/ai',{
-              data:{
-                message:'mechanic',
-                country:'France',
-                language:'English',
-                scope:'country',
-                fast:true,
-                history:[
-                  {role:'user',content:'I need a job in France'},
-                  {role:'assistant',content:'What kind of job are you looking for?'}
-                ]
-              },
-              timeout:60000
-            });
-            const ms=Date.now()-started;
-            assert(ai.ok(),`AI HTTP ${ai.status()}`);
-            const data=await ai.json();
-            assert.equal(data.ok,true,'AI ok');
-            assert.equal(data.category,'jobs','AI category');
-            assert.equal(data.route,'jobs.html','AI route');
-            console.log('AI CONVERSATION PASS:',ms+'ms');
-
-            // 5b) Current Arabic direct intent and deterministic safety gate.
-            const ar=await c4.request.post(BASE+'/api/ai',{
-              data:{
-                message:'بدي شوف فنادق بباريس',
-                country:'Worldwide',
-                language:'auto',
-                scope:'worldwide',
-                fast:true
-              },
-              timeout:60000
-            });
-            assert(ar.ok(),`Arabic AI HTTP ${ar.status()}`);
-            const arData=await ar.json();
-            assert.equal(arData.ok,true,'Arabic AI ok');
-            assert.equal(arData.language,'ar','Arabic AI language');
-            assert.equal(arData.category,'travel','Arabic AI category');
-            assert.equal(arData.route,'travel.html','Arabic AI route');
-            console.log('ARABIC AI PASS:',arData.model||arData.fastPath||'route');
+            if(process.env.RUN_LIVE_AI_PROBES==='true'){
+              const started=Date.now();
+              const ai=await c4.request.post(BASE+'/api/ai',{
+                data:{
+                  message:'mechanic',
+                  country:'France',
+                  language:'English',
+                  scope:'country',
+                  fast:true,
+                  history:[
+                    {role:'user',content:'I need a job in France'},
+                    {role:'assistant',content:'What kind of job are you looking for?'}
+                  ]
+                },
+                timeout:60000
+              });
+              const ms=Date.now()-started;
+              assert(ai.ok(),`AI HTTP ${ai.status()}`);
+              const data=await ai.json();
+              assert.equal(data.ok,true,'AI ok');
+              assert.equal(data.category,'jobs','AI category');
+              assert.equal(data.route,'jobs.html','AI route');
+              console.log('AI CONVERSATION PASS:',ms+'ms');
+  
+              // 5b) Current Arabic direct intent and deterministic safety gate.
+              const ar=await c4.request.post(BASE+'/api/ai',{
+                data:{
+                  message:'بدي شوف فنادق بباريس',
+                  country:'Worldwide',
+                  language:'auto',
+                  scope:'worldwide',
+                  fast:true
+                },
+                timeout:60000
+              });
+              assert(ar.ok(),`Arabic AI HTTP ${ar.status()}`);
+              const arData=await ar.json();
+              assert.equal(arData.ok,true,'Arabic AI ok');
+              assert.equal(arData.language,'ar','Arabic AI language');
+              assert.equal(arData.category,'travel','Arabic AI category');
+              assert.equal(arData.route,'travel.html','Arabic AI route');
+              console.log('ARABIC AI PASS:',arData.model||arData.fastPath||'route');
+            }else{
+              console.log('LIVE_AI_PROBES_SKIPPED_BY_POLICY');
+            }
 
             const weapon=await c4.request.post(BASE+'/api/moderate',{
               data:{text:'gun and ammunition for sale',context:'authorized safety certification'},
@@ -272,8 +283,8 @@ jobs:
             const voice=await (await fetch(BASE+'/voice-ai.js?v=20261010-r127-voice-script-coverage',{cache:'no-store'})).text();
             assert(voice.includes('VOICE_SILENCE_MS=1800'),'current voice silence must be 1800ms');
             assert(voice.includes('Android|iPhone|iPad|iPod'),'mobile recorder branch missing');
-            const i18n=await (await fetch(BASE+'/i18n-ui.js?v=20261026-r130-offline-fallback',{cache:'no-store'})).text();
-            assert(i18n.includes("const VERSION='20261008-runtime-source-coverage'"),'current i18n version missing live');
+            const i18n=await (await fetch(BASE+'/i18n-ui.js?v=20261117-r125-reverse-localized-value-guard',{cache:'no-store'})).text();
+            assert(i18n.includes("const VERSION='20261117-r125-reverse-localized-value-guard'"),'current i18n version missing live');
             assert(i18n.includes('characterData:true'),'translation persistence observer missing live');
             assert(i18n.includes("'Popular categories':'الأقسام الشائعة'"),'offline Arabic Popular categories fallback missing live');
             assert(i18n.includes("'Flights':'الرحلات الجوية'"),'offline Arabic Flights fallback missing live');
