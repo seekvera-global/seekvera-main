@@ -177,10 +177,19 @@ async function main(){
  const provisionalContext={};vm.createContext(provisionalContext);
  vm.runInContext(provisionalBlock+';this.labels=R125_PROVISIONAL;',provisionalContext);
  const r125Labels=provisionalContext.labels;
- assert.deepEqual(Object.keys(r125Labels).sort(),['fy','lb','lo','mg','rm','rw','tn'].sort());
+ assert.deepEqual(Object.keys(r125Labels).sort(),['fy','lb','lo','mg','rm','rw','tn','tr'].sort());
  const rawGetBlock=extract(i18n,'function rawGet(l,s){','function get(l,s){','R125 provisional raw lookup');
  const rawContext={canonical:s=>String(s||'').trim(),QUICK:{},R125_PROVISIONAL:r125Labels,MEM:new Map(),plainKey:s=>String(s||''),localStorage:storage(),k:()=>''};
  vm.createContext(rawContext);vm.runInContext(rawGetBlock+';this.rawGet=rawGet;',rawContext);
+ const localizedValueBlock=extract(i18n,'function alreadyLocalizedValue(l,s){','async function translate(l,arr){','R125 provisional reverse-value lookup');
+ const localizedValueContext={norm:s=>String(s||'').toLowerCase(),canonical:s=>String(s||'').trim(),PACK_VALUES:new Map(),QUICK:{},R125_PROVISIONAL:r125Labels};
+ vm.createContext(localizedValueContext);vm.runInContext(localizedValueBlock+';this.isLocalized=alreadyLocalizedValue;',localizedValueContext);
+ for(const [code,labels] of Object.entries(r125Labels)){
+  for(const [source,value] of Object.entries(labels)){
+   assert.equal(localizedValueContext.isLocalized(code,value),true,code+' provisional value must be recognized as already localized');
+   assert.equal(localizedValueContext.isLocalized(code,source),false,code+' English source must not be mistaken for a localized value');
+  }
+ }
  let r125LabelCount=0;
  for(const [code,labels] of Object.entries(r125Labels)){
   assert(Object.keys(labels).length>0,code+' provisional labels missing');
@@ -196,7 +205,7 @@ async function main(){
   assert.deepEqual(result,Object.values(labels),code+' provisional labels should resolve locally');
   assert.equal(calls,0,code+' provisional labels must not call translation provider');
  }
- assert.equal(r125LabelCount,32,'unexpected R125 provisional mapping count');
+ assert.equal(r125LabelCount,36,'unexpected R125 provisional mapping count');
  assert(i18n.includes("typeof R125_PROVISIONAL!=='undefined'"),'rawGet must remain compatible with isolated legacy tests');
 
  console.log('PASS: session quota circuit breaker, shared in-flight lock, sequential batches, navigation fallback and reverse pack-value guard');

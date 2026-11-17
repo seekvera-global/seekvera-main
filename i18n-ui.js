@@ -197,6 +197,12 @@ rw:{
 },
 tn:{
 'Solar & Energy':'Matla a letsatsi le eneji'
+},
+tr:{
+'Back':'Geri',
+'Page navigation':'Sayfa gezintisi',
+'Voice reply':'Sesli yanıt',
+'Voice':'Ses'
 }
 };
 
@@ -221,7 +227,7 @@ function capture(root=document){
  for(const el of els){if(el.closest?.(SKIP))continue;let m=ATTRSRC.get(el);if(!m){m={};ATTRSRC.set(el,m)}for(const a of ATTRS){const s=el.getAttribute?.(a)?.trim();if(worth(s)&&!(a in m))m[a]=s}}
 }
 function k(l,s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return'sv_r32_'+VERSION+'_'+l+'_'+(h>>>0).toString(36)}
-const EMBEDDED_TRANSLATION_TERMS=['Auto Recharge','Live marketplace','No stranger chat'];
+const EMBEDDED_TRANSLATION_TERMS=['Auto Recharge','Live marketplace','No stranger chat','Business Software'];
 function rawGet(l,s){s=canonical(s);const q=QUICK[l]?.[s]||(typeof R125_PROVISIONAL!=='undefined'?R125_PROVISIONAL[l]?.[s]:'');if(q)return q;const m=MEM.get(l+'\u0000'+s);if(m){const ps=plainKey(s);if(ps!==s&&plainKey(m)===ps){const translated=MEM.get(l+'\u0000'+ps);if(translated&&translated!==ps)return s.replace(ps,translated)}return m;}try{return localStorage.getItem(k(l,s))||''}catch{return''}}
 function get(l,s){s=canonical(s);let value=rawGet(l,s);if(!value)return'';for(const term of EMBEDDED_TRANSLATION_TERMS){if(s!==term&&value.includes(term)){const localized=rawGet(l,term);if(localized&&localized!==term)value=value.split(term).join(localized)}}return value}
 function put(l,s,v){s=canonical(s);v=String(v||'').trim();if(!v)return;MEM.set(l+'\u0000'+s,v);try{localStorage.setItem(k(l,s),v)}catch{}}
@@ -263,7 +269,7 @@ async function cloudTranslate(l,batch){
  CLOUD_TRANSLATE_QUEUE=task.then(()=>null,()=>null);
  return task;
 }
-function alreadyLocalizedValue(l,s){const language=norm(l),value=canonical(s);if(PACK_VALUES.get(language)?.has(value))return true;return Object.values(QUICK[language]||{}).some(v=>canonical(v)===value)}
+function alreadyLocalizedValue(l,s){const language=norm(l),value=canonical(s);if(PACK_VALUES.get(language)?.has(value))return true;if(Object.values(QUICK[language]||{}).some(v=>canonical(v)===value))return true;const provisional=typeof R125_PROVISIONAL!=='undefined'?R125_PROVISIONAL[language]:null;return Object.values(provisional||{}).some(v=>canonical(v)===value)}
 async function translate(l,arr){await loadPack(l);const unique=[...new Set(arr.filter(s=>worth(s)&&!get(l,s)&&!alreadyLocalizedValue(l,s)))];if(!unique.length)return false;let changed=false;const groups=[];for(let i=0;i<unique.length;i+=14)groups.push(unique.slice(i,i+14));for(const batch of groups){if(CLOUD_TRANSLATE_BLOCKED)break;const vals=await cloudTranslate(l,batch);if(CLOUD_TRANSLATE_BLOCKED)break;if(vals)batch.forEach((s,j)=>{if(valid(vals[j],s)){put(l,s,vals[j]);changed=true}})}return changed}
 function setText(n,src,l){const v=l==='en'?src:(get(l,src)||src);const raw=n.nodeValue||'',t=raw.trim(),next=t?raw.replace(t,v):v;RENDERED_TEXT.set(n,String(next).trim());if(next!==raw)n.nodeValue=next;return l==='en'||!!get(l,src)}
 function setAttr(el,a,src,l){const v=l==='en'?src:(get(l,src)||src);markAttr(el,a,v);if(el.getAttribute(a)!==v)el.setAttribute(a,v);return l==='en'||!!get(l,src)}
