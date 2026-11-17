@@ -987,24 +987,27 @@
   const LIVE_EMPTY_SECOND = "SEEKVERA does not generate fake listings.";
   const LIVE_EMPTY_COMBINED = LIVE_EMPTY_FIRST + " " + LIVE_EMPTY_SECOND;
   let liveEmptyRenderSeq = 0;
-  async function localizedDynamic(src) {
+  function activeLocaleCode() {
+    return String(
+      document.documentElement.lang ||
+      window.SEEKVERA_LOCALE_STATE?.language ||
+      window.SEEKVERA_I18N_R32?.lang?.() ||
+      "en"
+    ).trim().toLowerCase().replace("_", "-").split("-")[0] || "en";
+  }
+  async function localizedDynamic(src, languageOverride) {
     for (
       let i = 0;
       i < 24 &&
-      (!window.SEEKVERA_I18N_R32 || !window.SEEKVERA_I18N?.t);
+      (!window.SEEKVERA_I18N_R32 || !window.SEEKVERA_I18N_R32.tFor);
       i++
     )
       await new Promise((r) => setTimeout(r, 10));
     const rt = window.SEEKVERA_I18N_R32;
-    const ui = window.SEEKVERA_I18N;
-    const l = ui?.lang?.() || rt?.lang?.() || lang();
-    if (l !== "en" && rt?.loadPack) await rt.loadPack(l);
-    const translate = (value) => {
-      const direct = ui?.t?.(value);
-      if (direct && direct !== value) return direct;
-      const legacy = rt?.t?.(value);
-      return legacy && legacy !== value ? legacy : value;
-    };
+    const language = String(languageOverride || activeLocaleCode())
+      .trim().toLowerCase().replace("_", "-").split("-")[0] || "en";
+    if (language !== "en" && rt?.loadPack) await rt.loadPack(language);
+    const translate = (value) => rt?.tFor?.(language, value) || value;
     if (src === LIVE_EMPTY_COMBINED) {
       const first = translate(LIVE_EMPTY_FIRST);
       const second = translate(LIVE_EMPTY_SECOND);
@@ -1020,22 +1023,20 @@
   async function renderLiveListingsEmpty(box) {
     if (!box) return;
     box.dataset.svEmptyState = "1";
+    box.dataset.svEmptyLang = "";
     const sequence = ++liveEmptyRenderSeq;
-    const language =
-      window.SEEKVERA_I18N?.lang?.() ||
-      window.SEEKVERA_I18N_R32?.lang?.() ||
-      lang();
-    const text = await localizedDynamic(LIVE_EMPTY_COMBINED);
-    const currentLanguage =
-      window.SEEKVERA_I18N?.lang?.() ||
-      window.SEEKVERA_I18N_R32?.lang?.() ||
-      lang();
+    const language = activeLocaleCode();
+    // Remove the previous locale before awaiting the next pack, preventing stale text from
+    // entering the translation observer and consuming a quota-limited fallback.
+    box.innerHTML = '<div class="sv-empty" data-no-translate="true">…</div>';
+    const text = await localizedDynamic(LIVE_EMPTY_COMBINED, language);
+    const currentLanguage = activeLocaleCode();
     if (
       sequence !== liveEmptyRenderSeq ||
       box.dataset.svEmptyState !== "1" ||
       currentLanguage !== language
     ) return;
-    box.innerHTML = `<div class="sv-empty">${esc(text)}</div>`;
+    box.innerHTML = `<div class="sv-empty" data-no-translate="true">${esc(text)}</div>`;
     box.dataset.svEmptyLang = language;
     refreshDynamicI18n();
   }
