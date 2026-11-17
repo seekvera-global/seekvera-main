@@ -68,6 +68,10 @@ jobs:
               && grep -Fq 'sv-control-caption-label' /tmp/r125-global-ui.js \
               && grep -Fq 'alreadyLocalizedValue' /tmp/r125-i18n-ui.js \
               && grep -Fq "'Sprachantwort'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Kembali'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Pandaigdigang Marketplace na pinapagana ng AI'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'AI-stemmeassistent'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Sesebelisoa sa ho fumana Wi-Fi ea mahala kapa ea sechaba'" /tmp/r125-i18n-ui.js \
               && grep -Fq '<b>${g.name}</b>' /tmp/r125-games.js \
               && ! grep -Fq 'data-no-translate>${g.name}' /tmp/r125-games.js; then
               echo R125_LATEST_PAGES_ASSETS_READY
