@@ -4345,13 +4345,13 @@
     "aiQuotaUsedThisPass": 0
   },
   "latestMetadataInspection": {
-    "checkedAt": "2026-11-17T07:55:17.931Z",
-    "mainCheckpointCommit": "1d7757efd95c59f53b38223f4de533fa65226069",
-    "mainHead": "1d7757efd95c59f53b38223f4de533fa65226069",
+    "checkedAt": "2026-11-17T07:58:22.604Z",
+    "mainCheckpointCommit": "99df315ce632dbe02f6c94fa0f0659c5785a130c",
+    "mainHead": "99df315ce632dbe02f6c94fa0f0659c5785a130c",
     "candidateBranchHead": "4ccd061a4eab4bad2707fe2e0ef491869704223b",
     "summaryUpdated": true,
     "resumeLatestLogPreserved": true,
-    "mainCheckpointCommitPending": true,
+    "mainCheckpointCommitPending": false,
     "resumeLatestLogSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b"
   },
   "latestQuotaRaceRepair": {
@@ -4391,7 +4391,7 @@
     "r125Ci": "pending next manual run",
     "candidatePacksChanged": 0
   },
-  "updatedAt": "2026-11-17T07:55:17.931Z",
+  "updatedAt": "2026-11-17T07:58:22.604Z",
   "latestBuilderQuotaStopRepair": {
     "checkedAt": "2026-11-17T02:57:08Z",
     "finding": "The locale builder stopped the entire language loop only when the error text contained the literal daily_free_ai_limit. Google HTTP429/provider_rate_limited and all_translation_backends_unavailable were terminal inside translate_small, but the outer loop could continue to the next language; the 503 backend-unavailable response could also fall through to recursive batch splitting.",
