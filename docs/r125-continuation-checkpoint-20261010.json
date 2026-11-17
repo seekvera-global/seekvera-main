@@ -3227,7 +3227,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-17T07:58:22.604Z",
+  "updatedAt": "2026-11-17T07:59:06.634Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -6674,8 +6674,8 @@
     "linguisticCertification": false
   },
   "latestCandidateMetadata": {
-    "checkedAt": "2026-11-17T07:58:22.604Z",
-    "summaryCommit": "8764d6a069b3d5c97e03d84c1b712733dc32a846",
+    "checkedAt": "2026-11-17T07:59:06.634Z",
+    "summaryCommit": "bfbf3fbe4977f2a3ed9167de3c04a7325ada859e",
     "summaryShaBeforeWrite": "fb29d864eeee3fa88263ce95a268f9cadc9d9194",
     "resumeLatestLogSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
     "resumeLatestLogPreserved": true,
