@@ -150,6 +150,56 @@ hi:{
 'Voice reply':'आवाज़ में जवाब',
 'Voice':'आवाज़'
 }};
+// Provisional quota-neutral overrides for the exact R125 UI leaks. Native review remains required.
+const R125_PROVISIONAL={
+fy:{
+'GLOBAL AI MARKETPLACE':'WRÂLDWIDE AI-MERKPLAK',
+'ENTERTAINMENT · WORLDWIDE':'FERDIVEDAASJE · WRÂLDWIID',
+'AI Voice Agent':'AI-stimassistint',
+'Business Monthly':'Moanliks bedriuwsplan'
+},
+lb:{
+'OPEN MARKETPLACE →':'MAARTPLAZ OPMAACHEN →',
+'GLOBAL AI MARKETPLACE':'WELTWÄITE KI-MAARTPLAZ',
+'Import & Export':'Import an Export',
+'← Travel Hub':'← Rees-Hub',
+'GLOBAL AUTO SEARCH':'WELTWÄIT AUTOSSICH',
+'Import, Export & Sourcing':'Import, Export & Beschaffung',
+'Business Software':'Geschäftssoftware',
+'Home Services':'Hausdéngschter'
+},
+lo:{
+'AI Voice Agent':'ຜູ້ຊ່ວຍສຽງ AI',
+'Email/Gmail background autopilot:':'ລະບົບອັດຕະໂນມັດສຳລັບອີເມວ/Gmail ໃນເບື້ອງຫຼັງ:'
+},
+mg:{
+'← Travel Hub':"← Foiben'ny dia",
+'Import, Export & Sourcing':'Fanafarana, fanondranana ary fitadiavana mpamatsy',
+'AI Voice Agent':'Mpanampy feo AI',
+'VERIFY + PAUSE':'Hamarino + Atsaharo',
+'Email/Gmail background autopilot:':"Fampandehanana mandeha ho azy any ambadika ho an'ny mailaka/Gmail:"
+},
+rm:{
+'Fashion & Beauty':'Moda e bellezza',
+'Safety & etiquette':'Segirezza e cumportament',
+'← Travel Hub':'← Center da viadi',
+'← Back to search':'← Enavos a la tschertga',
+'Shopping & Electronics':'Acquist ed electronica',
+'Privacy first':'Protecziun da datas avant tut',
+'Check My Phone':'Controllar mes telefon',
+'Master controls':'Controlls principals',
+'Home Services':'Servetschs per la chasa',
+'Utilities & Bills':'Servetschs publics e quintanzas',
+'Hotels & Marketplace':'Hotels e martgà'
+},
+rw:{
+'VERIFY + PAUSE':'GENZURA + HAGARIKA'
+},
+tn:{
+'Solar & Energy':'Matla a letsatsi le eneji'
+}
+};
+
 function api(p){const h=location.hostname;return(h==='seekveraglobal.com'||h==='www.seekveraglobal.com'||h.endsWith('workers.dev'))?p:'https://seekvera-main.seekvera-global.workers.dev'+p}
 function norm(v){v=String(v||'').trim().toLowerCase().replace('_','-');if(!v||v==='auto')v=String(navigator.language||'en').toLowerCase();return v.split('-')[0]||'en'}
 function lang(){return norm(document.querySelector('#lang')?.value||window.SEEKVERA_LOCALE_STATE?.language||document.documentElement.lang||'en')}
@@ -172,7 +222,7 @@ function capture(root=document){
 }
 function k(l,s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return'sv_r32_'+VERSION+'_'+l+'_'+(h>>>0).toString(36)}
 const EMBEDDED_TRANSLATION_TERMS=['Auto Recharge','Live marketplace','No stranger chat'];
-function rawGet(l,s){s=canonical(s);const q=QUICK[l]?.[s];if(q)return q;const m=MEM.get(l+'\u0000'+s);if(m){const ps=plainKey(s);if(ps!==s&&plainKey(m)===ps){const translated=MEM.get(l+'\u0000'+ps);if(translated&&translated!==ps)return s.replace(ps,translated)}return m;}try{return localStorage.getItem(k(l,s))||''}catch{return''}}
+function rawGet(l,s){s=canonical(s);const q=QUICK[l]?.[s]||R125_PROVISIONAL[l]?.[s];if(q)return q;const m=MEM.get(l+'\u0000'+s);if(m){const ps=plainKey(s);if(ps!==s&&plainKey(m)===ps){const translated=MEM.get(l+'\u0000'+ps);if(translated&&translated!==ps)return s.replace(ps,translated)}return m;}try{return localStorage.getItem(k(l,s))||''}catch{return''}}
 function get(l,s){s=canonical(s);let value=rawGet(l,s);if(!value)return'';for(const term of EMBEDDED_TRANSLATION_TERMS){if(s!==term&&value.includes(term)){const localized=rawGet(l,term);if(localized&&localized!==term)value=value.split(term).join(localized)}}return value}
 function put(l,s,v){s=canonical(s);v=String(v||'').trim();if(!v)return;MEM.set(l+'\u0000'+s,v);try{localStorage.setItem(k(l,s),v)}catch{}}
 async function loadPack(l){
