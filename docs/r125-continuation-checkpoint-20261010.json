@@ -9646,4 +9646,109 @@
     "physicalMicrophoneSpeakerCertified": false,
     "interpretation": "Country/currency mapping and manual-selection race passed. Browser checks do not certify physical audio hardware or live AI generation."
   }
+,
+  "latestQuotaNeutralUIRepair20261118": {
+    "checkedAt": "2026-11-18",
+    "commits": [
+      "ea5291003a70463a58f339a8540d89e0a72d6a30",
+      "92c43b73edbac151877046dbc39661b1ceb53589"
+    ],
+    "files": [
+      "i18n-ui.js",
+      "tools/test-ui-translation-quota-session-guard.cjs",
+      "tools/test-locale-cognates.cjs",
+      ".github/workflows/r125-static-locale-section-audit.yml"
+    ],
+    "runtimeChanges": {
+      "provisionalMappings": 36,
+      "languages": [
+        "fy",
+        "lb",
+        "lo",
+        "mg",
+        "rm",
+        "rw",
+        "tn",
+        "tr"
+      ],
+      "newTurkishLabels": [
+        "Back",
+        "Page navigation",
+        "Voice reply",
+        "Voice"
+      ],
+      "embeddedTermReplacement": "Business Software",
+      "reverseLocalizedValueGuard": "R125_PROVISIONAL values are recognized as already localized and are not sent back to translation providers",
+      "readinessGuard": "R125 waits for Turkish and Luxembourgish markers before auditing the live asset"
+    },
+    "regressionCoverage": {
+      "quotaGuard": "36 provisional mappings resolve locally with zero provider calls",
+      "reverseValueGuard": "all provisional target values are recognized; English source strings are not",
+      "localeCognates": "Luxembourgish Business Software phrase replacement tested",
+      "testFixtureCorrection": "String.fromCharCode(0) used for the locale-cache key separator"
+    },
+    "ci": {
+      "r105": {
+        "run": 144,
+        "id": 44200387789,
+        "status": "completed",
+        "conclusion": "success",
+        "workerDeployment": "success",
+        "productionHealth": "pass",
+        "aiBinding": true,
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "prohibitedWeaponRequest": "blocked",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r123": {
+        "run": 102,
+        "id": 44200387701,
+        "status": "completed",
+        "conclusion": "success",
+        "currencyStability": "pass",
+        "voiceAcknowledgement": "pass",
+        "dynamicPlaceholders": [
+          "fr",
+          "ar"
+        ],
+        "arabicHomeAnd31Descriptions": "pass",
+        "browserAudio": "synthetic delayed WAV completed before navigation in Android browser profile",
+        "liveTtsAsrProbes": "skipped",
+        "physicalHardwareCertified": false
+      },
+      "r125": {
+        "run": 52,
+        "id": 44200329752,
+        "status": "in_progress",
+        "purpose": "verify 98 languages x 27 sections after Luxembourgish and Turkish repairs"
+      },
+      "r9e": {
+        "run": 64,
+        "id": 44200329797,
+        "status": "in_progress",
+        "purpose": "recheck 248 country profiles, 44 pages, manual selection race, safety, voice and PWA"
+      }
+    },
+    "candidateBranch": {
+      "head": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
+      "summaryBlobSha": "551a1cad78540f437e67d1d0a88ae1e844478022",
+      "resumeLogBlobSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
+      "candidatePackWrites": 0
+    },
+    "quotaBoundary": {
+      "translationRequests": 0,
+      "providerRequests": 0,
+      "aiQuotaUsed": 0,
+      "pollinationsRequests": 0
+    },
+    "decision": "NO-GO",
+    "nextSteps": [
+      "Complete R125 #52 and R9e #64, inspect exact findings and update the checkpoint.",
+      "Complete Divehi native review for 58 English-overlap items.",
+      "Obtain qualified native review for provisional low-resource labels and all 98 packs.",
+      "Probe live AI only when quota-safe and explicitly authorized.",
+      "Test physical microphones/speakers and configure merchant checkout."
+    ]
+  }
 }
