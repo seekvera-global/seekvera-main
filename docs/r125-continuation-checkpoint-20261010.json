@@ -1878,7 +1878,17 @@
     "workflowInsertionVerified": true,
     "testBlob": "6da0ccbf27a050cbd4f06e09ba1fc1f9f8696aaf",
     "r105WorkflowBlob": "3410c52b2165b167f7ff24e774cf9fb6a0ca7e3b",
-    "r105Run": 43513062247
+    "r105Run": 43513062247,
+    "reverseLookupBug": {
+      "discoveredInRun": 44120376016,
+      "language": "Arabic",
+      "requestCount": 1,
+      "requestedString": "لا توجد حالياً إعلانات سوق مباشرة معتمدة. لا تنشئ SEEKVERA إعلانات وهمية.",
+      "confirmedInPack": true,
+      "sourceKey": "No approved live marketplace listings are available right now. SEEKVERA does not generate fake listings.",
+      "interpretation": "Runtime translate() checks source keys but not reverse pack values; already-localized text can be re-queued.",
+      "repairStatus": "identified; code/test change not yet committed"
+    }
   },
   "run11IndependentVerification": {
     "checkedAt": "2026-11-13T21:43:10Z",
@@ -3222,7 +3232,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-17T16:02:07.822Z",
+  "updatedAt": "2026-11-17T16:07:02.387Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -7508,12 +7518,12 @@
   "latestStaticLocaleSectionAudit": {
     "checkedAt": "2026-11-17T16:02:07.822Z",
     "lastCompletedRun": {
-      "run": 20,
-      "id": 44108313004,
+      "run": 21,
+      "id": 44120376016,
       "status": "completed",
       "conclusion": "failure",
-      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44108313004",
-      "checkedAt": "2026-11-17T14:59:36Z",
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44120376016",
+      "headSha": "8398151e5c17d28755e8b33a975af4e5f443e05c",
       "languagePacks": 98,
       "homeLanguageApplications": 98,
       "sectionPaths": 27,
@@ -7523,26 +7533,39 @@
       "missingKeys": 0,
       "extraKeys": 0,
       "emptyValues": 0,
-      "findingCombinations": 86,
-      "uniqueLanguages": 30,
+      "findingCombinations": 75,
+      "uniqueLanguages": 24,
       "uniqueSections": 25,
-      "uniquePhrases": 37,
+      "phraseLanguageSectionMatches": 93,
+      "exactVisibleTextNodeMatches": 75,
+      "substringOnlyMatches": 14,
+      "unresolvedDirectTextNodeMatches": 4,
+      "properNounFalsePositiveRemoved": "Neon Highway; 11 previous findings across 6 languages were removed while dedicated game-title checks remain active.",
       "blockedRequests": {
         "ai": 0,
         "translation": 1,
         "pollinations": 0
       },
-      "failure": "English UI leaks assertion: 86 finding combinations"
+      "dynamicTranslationFallback": {
+        "language": "Arabic",
+        "requests": 1,
+        "strings": [
+          "لا توجد حالياً إعلانات سوق مباشرة معتمدة. لا تنشئ SEEKVERA إعلانات وهمية."
+        ],
+        "cause": "Already-localized Arabic pack value was re-queued as a translation source."
+      },
+      "failure": "Exact, partial and unresolved English UI evidence remains; no linguistic certification implied."
     },
     "latestRun": {
-      "run": 21,
-      "id": 44120376016,
+      "run": 22,
+      "id": 44121651816,
       "status": "in_progress",
       "conclusion": null,
-      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44120376016",
-      "headSha": "8398151e5c17d28755e8b33a975af4e5f443e05c",
-      "syntaxCheck": "success",
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44121651816",
+      "headSha": "ed7491048b84c8e528dfa3aede3dc3be9bdc8091",
+      "syntaxCheck": "pending_or_running",
       "browserAudit": "in_progress",
+      "purpose": "Classify exact standalone text, partial English segments, visible select options and split/composite DOM text without changing release thresholds.",
       "candidatePackWrites": 0,
       "translationRequests": 0,
       "aiQuotaUsed": 0
@@ -7569,7 +7592,7 @@
     "certification": "none; targeted source-equality comparison only, not a linguistic review or full quality audit"
   },
   "currentVerificationSnapshot": {
-    "checkedAt": "2026-11-17T16:02:07.822Z",
+    "checkedAt": "2026-11-17T16:07:02.387Z",
     "candidateStructural": {
       "complete": 98,
       "total": 98,
@@ -7587,7 +7610,7 @@
     },
     "countryCurrency": {
       "profiles": 248,
-      "staticMatrix": "PASS 248/248 in R125 #20",
+      "staticMatrix": "PASS 248/248 in R125 #21",
       "fullBusinessTransactionCurrencyCertification": false
     },
     "safety": {
@@ -7609,7 +7632,11 @@
       "candidatePackWrites": 0,
       "candidateMetadataWrites": 0,
       "translationRequests": 0,
-      "aiQuotaUsed": 0
+      "aiQuotaUsed": 0,
+      "mainAuditDiagnosticCommits": [
+        "8398151e5c17d28755e8b33a975af4e5f443e05c",
+        "ed7491048b84c8e528dfa3aede3dc3be9bdc8091"
+      ]
     }
   }
 }
