@@ -63,7 +63,7 @@ async function main(){
  reverse.context.PACK_VALUES=new Map([['ar',new Set([arabicLocalized])]]);
  reverse.context.QUICK={ar:{'No approved live marketplace listings are available right now. SEEKVERA does not generate fake listings.':arabicLocalized}};
  reverse.context.norm=s=>String(s).toLowerCase();reverse.context.canonical=s=>String(s).replace(/\\s+/g,' ').trim();
- vm.runInContext(loop+'\\nthis.runTranslate=translate;',reverse.context);
+ vm.runInContext(loop+'\nthis.runTranslate=translate;',reverse.context);
  assert.equal(reverse.context.alreadyLocalizedValue('ar',arabicLocalized),true);
  const reverseChanged=await reverse.context.runTranslate('ar',[arabicLocalized,'Hello']);
  assert.equal(reverseChanged,true);assert.deepEqual(reversePayload.strings,['Hello']);assert.equal(reverse.calls(),1);
