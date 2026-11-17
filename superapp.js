@@ -983,17 +983,68 @@
       }
     });
   }
+  const LIVE_EMPTY_FIRST = "No approved live marketplace listings are available right now.";
+  const LIVE_EMPTY_SECOND = "SEEKVERA does not generate fake listings.";
+  const LIVE_EMPTY_COMBINED = LIVE_EMPTY_FIRST + " " + LIVE_EMPTY_SECOND;
+  let liveEmptyRenderSeq = 0;
   async function localizedDynamic(src) {
-    for (let i = 0; i < 24 && !window.SEEKVERA_I18N_R32; i++)
+    for (
+      let i = 0;
+      i < 24 &&
+      (!window.SEEKVERA_I18N_R32 || !window.SEEKVERA_I18N?.t);
+      i++
+    )
       await new Promise((r) => setTimeout(r, 10));
-    const rt = window.SEEKVERA_I18N_R32,
-      l = rt?.lang?.() || lang();
+    const rt = window.SEEKVERA_I18N_R32;
+    const ui = window.SEEKVERA_I18N;
+    const l = ui?.lang?.() || rt?.lang?.() || lang();
     if (l !== "en" && rt?.loadPack) await rt.loadPack(l);
-    return rt?.t?.(src) || src;
+    const translate = (value) => {
+      const direct = ui?.t?.(value);
+      if (direct && direct !== value) return direct;
+      const legacy = rt?.t?.(value);
+      return legacy && legacy !== value ? legacy : value;
+    };
+    if (src === LIVE_EMPTY_COMBINED) {
+      const first = translate(LIVE_EMPTY_FIRST);
+      const second = translate(LIVE_EMPTY_SECOND);
+      if (first !== LIVE_EMPTY_FIRST && second !== LIVE_EMPTY_SECOND) {
+        return first + " " + second;
+      }
+    }
+    return translate(src);
   }
   function refreshDynamicI18n() {
     window.SEEKVERA_I18N_R32?.schedule?.(0);
   }
+  async function renderLiveListingsEmpty(box) {
+    if (!box) return;
+    box.dataset.svEmptyState = "1";
+    const sequence = ++liveEmptyRenderSeq;
+    const language =
+      window.SEEKVERA_I18N?.lang?.() ||
+      window.SEEKVERA_I18N_R32?.lang?.() ||
+      lang();
+    const text = await localizedDynamic(LIVE_EMPTY_COMBINED);
+    const currentLanguage =
+      window.SEEKVERA_I18N?.lang?.() ||
+      window.SEEKVERA_I18N_R32?.lang?.() ||
+      lang();
+    if (
+      sequence !== liveEmptyRenderSeq ||
+      box.dataset.svEmptyState !== "1" ||
+      currentLanguage !== language
+    ) return;
+    box.innerHTML = `<div class="sv-empty">${esc(text)}</div>`;
+    box.dataset.svEmptyLang = language;
+    refreshDynamicI18n();
+  }
+  window.addEventListener("seekvera:locale-change", () => {
+    const box = $("#liveListings");
+    if (box?.dataset.svEmptyState === "1") {
+      renderLiveListingsEmpty(box).catch(() => {});
+    }
+  });
   async function loadLiveListings() {
     const box = $("#liveListings");
     if (!box) return;
@@ -1005,13 +1056,12 @@
       if (!r.ok) throw new Error();
       const rows = await r.json();
       if (!rows.length) {
-        const text = await localizedDynamic(
-          "No approved live marketplace listings are available right now. SEEKVERA does not generate fake listings.",
-        );
-        box.innerHTML = `<div class="sv-empty">${esc(text)}</div>`;
-        refreshDynamicI18n();
+        await renderLiveListingsEmpty(box);
         return;
       }
+      delete box.dataset.svEmptyState;
+      delete box.dataset.svEmptyLang;
+      liveEmptyRenderSeq++;
       const noPrice = await localizedDynamic("Price not supplied");
       box.innerHTML = rows
         .map(

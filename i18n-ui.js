@@ -32,8 +32,10 @@ const QUICK={ar:{
 },fil:{
 'Country / Region':'Bansa / Rehiyon','Language':'Wika','Currency':'Pera'
 },
-// Minimal Setswana UI labels reuse existing production vocabulary; native review is still required.
+// Provisional Setswana UI labels; not linguistically certified. Native review remains required.
 tn:{
+'Back':'Boela kwa morago',
+'Page navigation':'Tsamaiso ya ditsebe',
 'Voice reply':'Karabo ya lentswe',
 'Voice':'Lentswe'
 }};

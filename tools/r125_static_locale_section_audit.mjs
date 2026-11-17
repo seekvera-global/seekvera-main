@@ -40,6 +40,7 @@ try {
   }
 
   const blocked = { ai: [], translation: [], pollinations: [] };
+  let marketplaceEmptyStateRequests = 0;
   await context.route('**/api/ai**', async route => {
     blocked.ai.push({ url: route.request().url(), method: route.request().method() });
     await route.fulfill({ status: 503, contentType: 'application/json', body: '{"ok":false,"audit":"quota-neutral-static-only"}' });
@@ -60,6 +61,21 @@ try {
   await context.route('https://text.pollinations.ai/**', async route => {
     blocked.pollinations.push(route.request().url());
     await route.fulfill({ status: 503, contentType: 'text/plain', body: 'quota-neutral static audit' });
+  });
+  // Deterministic empty-listing state; this mock never reads or changes production data.
+  await context.route('**/rest/v1/marketplace_listings**', async route => {
+    marketplaceEmptyStateRequests++;
+    const cors = {
+      'access-control-allow-origin': '*',
+      'access-control-allow-methods': 'GET,OPTIONS',
+      'access-control-allow-headers': 'authorization, apikey, content-type, x-client-info',
+      'content-type': 'application/json'
+    };
+    if (route.request().method() === 'OPTIONS') {
+      await route.fulfill({ status: 204, headers: cors, body: '' });
+    } else {
+      await route.fulfill({ status: 200, headers: cors, body: '[]' });
+    }
   });
 
   const page = await context.newPage();
@@ -267,7 +283,12 @@ try {
 
   await page.goto(BASE + '/?r125static-home=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 60000 });
   await page.waitForFunction(() => window.SEEKVERA_LOCALE_R15 && window.SEEKVERA_I18N_R32, { timeout: 30000 });
+  await page.waitForFunction(() => {
+    const box = document.querySelector('#liveListings');
+    return box?.dataset.svEmptyState === '1' && !!box.querySelector('.sv-empty');
+  }, { timeout: 15000 });
   await page.evaluate(() => window.SEEKVERA_LOCALE_R15.setLanguage('en'));
+  await page.waitForFunction(() => document.querySelector('#liveListings')?.dataset.svEmptyLang === 'en', { timeout: 10000 });
   await pause(50);
   const homeEnglish = await page.locator('body').innerText();
   const homePresent = candidateEnglish.filter(value => homeEnglish.includes(value));
@@ -279,6 +300,11 @@ try {
       await window.SEEKVERA_I18N_R32.loadPack(code);
       await window.SEEKVERA_I18N_R32.apply();
     }, language);
+    await page.waitForFunction(code =>
+      document.querySelector('#liveListings')?.dataset.svEmptyLang === code,
+      language,
+      { timeout: 10000 }
+    );
     const state = await page.evaluate(() => ({
       language: document.documentElement.lang,
       direction: document.documentElement.dir
@@ -413,6 +439,8 @@ try {
     translation: blocked.translation.length,
     pollinations: blocked.pollinations.length
   }));
+  console.log('R125_STATIC_EMPTY_MARKETPLACE_STATE_MOCK_PASS', marketplaceEmptyStateRequests);
+  assert(marketplaceEmptyStateRequests > 0, 'homepage empty-listing state was not exercised');
   assert.equal(leakFindings.length, 0, 'English UI leaks: ' + JSON.stringify(leakFindings.slice(0, 10)));
   assert.equal(partialFindings.length, 0, 'English segments inside localized UI require review: ' + JSON.stringify(partialFindings.slice(0, 10)));
   assert.equal(unresolvedFindings.length, 0, 'Unresolved visible English matches require DOM review: ' + JSON.stringify(unresolvedFindings.slice(0, 10)));
@@ -438,6 +466,7 @@ try {
     aiRequests: blocked.ai.length,
     translationRequests: blocked.translation.length,
     externalTranslationRequests: blocked.pollinations.length,
+    marketplaceEmptyStateRequests,
     pageErrors: pageErrors.length,
     approvedProperNouns: [...approvedProperNouns]
   }));
