@@ -159,8 +159,7 @@ try {
     if (language !== 'en') {
       const body = await page.locator('body').innerText();
       const leaks = homePresent.filter(value =>
-        packs[language]?.[value] &&
-        packs[language][value] !== value &&
+        typeof packs[language]?.[value] === 'string' &&
         body.includes(value)
       ).slice(0, 6);
       if (leaks.length) leakFindings.push({ path: '/', language, leaks });
@@ -198,8 +197,7 @@ try {
       if (language === 'en') continue;
       const body = await page.locator('body').innerText();
       const leaks = visibleEnglish.filter(value =>
-        packs[language]?.[value] &&
-        packs[language][value] !== value &&
+        typeof packs[language]?.[value] === 'string' &&
         body.includes(value)
       ).slice(0, 6);
       if (leaks.length) leakFindings.push({ path, language, leaks });
