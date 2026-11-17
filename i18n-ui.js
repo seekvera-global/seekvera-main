@@ -49,6 +49,13 @@ th:{
 zu:{
 'GLOBAL AI MARKETPLACE':'Imakethe ye-AI yomhlaba wonke',
 'Courier & last mile':'Ukuthumela nokuletha impahla esigabeni sokugcina'
+},
+// Provisional Korean quick UI labels; native review remains required.
+ko:{
+'Back':'뒤로',
+'Page navigation':'페이지 탐색',
+'Voice reply':'음성 답변',
+'Voice':'음성'
 },es:{
 'Back':'Volver','Page navigation':'Navegación de páginas','Voice reply':'Respuesta de voz','Voice':'Voz'
 },zh:{
