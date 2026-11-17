@@ -8043,10 +8043,193 @@
     "currentR125StaticAudit": {
       "run": 31,
       "id": 44148220343,
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44148220343",
       "triggeredByCommit": "e242e5df09c3e79e01b3570fc8054209828e46ac",
-      "purpose": "Verify Spanish fallback repair across the 98-language × 27-section matrix",
+      "verified": {
+        "languagePacks": 98,
+        "homepageLanguages": 98,
+        "sectionPaths": 27,
+        "sectionLanguageApplications": 2646,
+        "countryProfiles": 248,
+        "missingKeys": 0,
+        "extraKeys": 0,
+        "emptyValues": 0,
+        "unresolvedFindingCombinations": 0
+      },
+      "findings": {
+        "exactFindingCombinations": 66,
+        "exactLanguages": [
+          "af",
+          "cs",
+          "da",
+          "el",
+          "fil",
+          "fy",
+          "hu",
+          "lb",
+          "lo",
+          "mg",
+          "mt",
+          "no",
+          "rm",
+          "ro",
+          "rw",
+          "sk",
+          "st",
+          "sv",
+          "tn"
+        ],
+        "partialFindingCombinations": 47,
+        "partialLanguages": [
+          "cs",
+          "de",
+          "dv",
+          "el",
+          "es",
+          "eu",
+          "fi",
+          "fy",
+          "gu",
+          "ha",
+          "he",
+          "kl",
+          "km",
+          "ko",
+          "ku",
+          "lb",
+          "lt",
+          "lv",
+          "mg",
+          "mk",
+          "ms",
+          "mt",
+          "ne",
+          "no",
+          "pa",
+          "pt",
+          "rm",
+          "ru",
+          "rw",
+          "si",
+          "sk",
+          "sl",
+          "sm",
+          "so",
+          "sq",
+          "st",
+          "sw",
+          "ta",
+          "te",
+          "th",
+          "ti",
+          "tn",
+          "to",
+          "vi",
+          "zu"
+        ],
+        "unresolvedFindingCombinations": 0,
+        "partialGroups": [
+          {
+            "path": "/",
+            "phrase": "No approved live marketplace listings are available right now.",
+            "languageCount": 35,
+            "languages": [
+              "cs",
+              "de",
+              "dv",
+              "el",
+              "es",
+              "fi",
+              "gu",
+              "ha",
+              "he",
+              "km",
+              "ko",
+              "ku",
+              "lt",
+              "lv",
+              "mk",
+              "ms",
+              "ne",
+              "no",
+              "pa",
+              "pt",
+              "ru",
+              "si",
+              "sk",
+              "sl",
+              "sm",
+              "so",
+              "sq",
+              "st",
+              "sw",
+              "ta",
+              "te",
+              "th",
+              "ti",
+              "vi",
+              "zu"
+            ]
+          },
+          {
+            "path": "/",
+            "phrase": "AI Deal Agent",
+            "languages": [
+              "eu",
+              "kl",
+              "zu"
+            ]
+          },
+          {
+            "path": "/",
+            "phrase": "GLOBAL AI MARKETPLACE",
+            "languages": [
+              "zu"
+            ]
+          },
+          {
+            "path": "/shipping-logistics.html",
+            "phrase": "Courier & last mile",
+            "languages": [
+              "zu"
+            ]
+          },
+          {
+            "path": "/games.html",
+            "phrase": "No stranger chat",
+            "languages": [
+              "tn"
+            ]
+          },
+          {
+            "path": "/deal-agent.html",
+            "phrase": "Auto Recharge",
+            "languages": [
+              "fy",
+              "lb",
+              "mg",
+              "ms",
+              "mt",
+              "rm",
+              "rw",
+              "to"
+            ]
+          }
+        ]
+      },
+      "dynamicTranslationFallback": {
+        "requests": 1,
+        "language": "Tswana",
+        "strings": [
+          "Voice reply",
+          "Voice"
+        ],
+        "previousSpanishFallbackResolved": true,
+        "aiRequests": 0,
+        "pollinationsRequests": 0
+      },
       "candidatePackWrites": 0,
       "translationRequestsSent": 0,
       "aiQuotaUsed": 0
@@ -8173,6 +8356,13 @@
     "candidatePackWrites": 0,
     "candidateMetadataWrites": 0,
     "published": false,
-    "linguisticCertification": false
+    "linguisticCertification": false,
+    "nextSteps": [
+      "Review the 66 exact and 47 partial visible English findings; do not suppress the audit or publish unreviewed candidate values.",
+      "Resolve the 35-language mixed empty-state sentence with qualified language review.",
+      "Resolve Tswana Voice and Voice reply labels only with verified Setswana wording; no translation quota probe.",
+      "Complete Divehi's 58 English-overlap entries with qualified native review.",
+      "Re-run the full 98-language × 27-section audit after approved repairs."
+    ]
   }
 }
