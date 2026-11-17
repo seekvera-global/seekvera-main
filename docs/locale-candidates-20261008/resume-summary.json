@@ -4215,5 +4215,47 @@
     "translationRequests": 0,
     "aiQuotaUsed": 0,
     "interpretation": "Historical audit-only run; it did not resume candidate translation. It preserved live AI capacity after daily free AI allocation exhaustion."
+  },
+  "latestMetadataInspection": {
+    "checkedAt": "2026-11-17T00:14:10Z",
+    "filesRead": [
+      "main:docs/r125-continuation-checkpoint-20261010.json",
+      "branch:docs/locale-candidates-20261008/resume-summary.json",
+      "branch:docs/locale-candidates-20261008/resume-latest.log",
+      "main:.github/workflows/r125-hourly-candidate-resume.yml"
+    ],
+    "r125RunInspection": {
+      "currentWorkflowTriggers": [
+        "workflow_dispatch"
+      ],
+      "scheduleTriggerPresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestKnownRun": 150,
+      "latestKnownRunId": 38971104197,
+      "latestKnownRunStatus": "completed",
+      "latestKnownRunConclusion": "success",
+      "resumeStep": "skipped",
+      "auditStep": "success",
+      "priorRun149Failure": "audit-candidate-scripts.cjs uiScriptPattern extraction SyntaxError; corrected validator source allowed run #150 to pass",
+      "currentR125RunsActive": 0
+    },
+    "currentCandidateCounts": {
+      "structuralPacksComplete": 98,
+      "qualityPassingCandidates": 97,
+      "qualityBlockedLanguages": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "published": 0,
+      "linguisticCertification": 0
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "metadataFilesUpdated": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "note": "Metadata-only inspection. No locale candidate JSON pack was modified. Existing checkedAt and full audit timestamps are preserved; this entry does not claim a new full 98-pack audit."
   }
 }
