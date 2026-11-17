@@ -3950,153 +3950,19 @@
     "linguisticCertification": false
   },
   "latestAutomationPass": {
-    "checkedAt": "2026-11-16T23:00:51Z",
-    "filesRead": [
-      "main: docs/r125-continuation-checkpoint-20261010.json",
-      "branch: docs/locale-candidates-20261008/resume-summary.json",
-      "branch: docs/locale-candidates-20261008/resume-latest.log",
-      "main: .github/workflows/r125-hourly-candidate-resume.yml",
-      "main: worker-r76.js",
-      "main: worker.js",
-      "main: tools/build_current_locale_delta.py",
-      "main: tools/test-ai-quota-boundary.cjs"
-    ],
-    "latestR76QuotaRepair": {
-      "commit": "4580be6565005b7f36892f78036b92bc3213f7b1",
-      "r105Run": 84,
-      "conclusion": "success"
-    },
-    "latestTranslationQuotaStopRepair": {
-      "checkedAt": "2026-11-16T23:00:51Z",
-      "finding": "The /api/ui-translate handler recognized 3036 and 'daily free allocation' but did not recognize the exact daily_free_ai_limit token or HTTP 429/rate-limit errors. It could continue to the next Workers AI model. The delta builder also split a failed batch and retried unless the response contained the exact daily_free_ai_limit text. This could issue additional requests after a provider rate limit.",
-      "commit": "4f299ac397c8b0e8c03a26a400f7b2702efc3473",
-      "files": [
-        "worker.js",
-        "tools/build_current_locale_delta.py",
-        "tools/test-ai-quota-boundary.cjs"
-      ],
-      "changes": {
-        "api": "translationQuotaReason now classifies daily quota as daily_free_ai_limit and HTTP429/rate-limit/too-many-requests as provider_rate_limited; /api/ui-translate returns immediately before trying another model.",
-        "builder": "quota_or_rate_limit stops translation processing before SPLIT_RETRY or recursive batch splitting.",
-        "tests": [
-          "daily_free_ai_limit",
-          "daily free AI limit",
-          "3036 daily free allocation",
-          "Google HTTP 429",
-          "provider rate limit",
-          "nested AggregateError",
-          "non-quota capacity remains distinct"
-        ]
-      },
-      "verification": {
-        "r105": {
-          "run": 85,
-          "id": 43975276337,
-          "conclusion": "success",
-          "sourceValidation": "success",
-          "quotaBoundaryTests": "success",
-          "all98LanguageNames": "success",
-          "workerDeploy": "success",
-          "productionHealth": "success",
-          "liveAiProbes": "skipped-by-policy"
-        },
-        "r123": {
-          "run": 67,
-          "id": 43975276258,
-          "conclusion": "success",
-          "audioValidation": "success",
-          "workerDeploy": "success",
-          "liveAudioTtsAsr": "skipped-by-opt-in",
-          "categoryTranslations": "success",
-          "voiceAcknowledgement": "success",
-          "dynamicVoicePlaceholders": "success"
-        },
-        "safety": {
-          "run": 30,
-          "id": 43975276247,
-          "conclusion": "success",
-          "blockedCases": 4,
-          "benignLand": "allowed_pending_human_review",
-          "marketplaceFailClosed": "success"
-        },
-        "siteHealth": {
-          "run": 328,
-          "id": 43975276221,
-          "conclusion": "success",
-          "officialProductionHealth": "success"
-        },
-        "pages": {
-          "run": 1594,
-          "id": 43975275499,
-          "conclusion": "success",
-          "build": "success",
-          "deploy": "success"
-        },
-        "aiFallback": {
-          "run": 57,
-          "id": 43975276177,
-          "conclusion": "success"
-        }
-      },
-      "quotaUse": {
-        "translationRequests": 0,
-        "aiQuotaUsed": 0
-      },
-      "candidatePackWrites": 0,
-      "published": false,
-      "linguisticCertification": false,
-      "aiAvailability": "unknown-not-probed"
-    },
-    "latestR105": {
-      "run": 85,
-      "id": 43975276337,
-      "conclusion": "success"
-    },
-    "latestR123": {
-      "run": 67,
-      "id": 43975276258,
-      "conclusion": "success",
-      "liveAudioTtsAsr": "skipped-by-opt-in"
-    },
-    "latestSafety": {
-      "run": 30,
-      "id": 43975276247,
-      "conclusion": "success"
-    },
-    "latestSiteHealth": {
-      "run": 328,
-      "id": 43975276221,
-      "conclusion": "success"
-    },
-    "latestPages": {
-      "run": 1594,
-      "id": 43975275499,
-      "conclusion": "success"
-    },
-    "latestR125": {
-      "run": 150,
-      "id": 38971104197,
-      "conclusion": "success",
-      "resume": "skipped",
-      "audit": "success",
-      "historicalOldWorkflowRevision": true
-    },
-    "currentR125Run": null,
+    "checkedAt": "2026-11-17T22:31:44Z",
     "candidatePackWrites": 0,
+    "candidateMetadataFilesWritten": 1,
     "translationRequests": 0,
     "aiQuotaUsed": 0,
     "published": false,
-    "linguisticCertification": false,
+    "linguisticAccuracyCertified": false,
     "decision": "NO-GO",
-    "mainCheckpointCommit": "5152a5265d5a6c440d27148bed485d9674a79b94",
-    "mainCheckpointReadBack": "pass",
-    "pagesAfterCheckpoint": {
-      "run": 1595,
-      "id": 43975599293,
-      "status": "completed",
-      "conclusion": "success"
-    },
-    "activeOrQueuedAtLastCheck": 0
+    "notes": [
+      "R125 static audit #49 passed Pages readiness and completed 98-language x 27-section matrix; failed on 41 exact English UI findings across fy/lb/lo/mg/rm/rw/tn.",
+      "R125 resume workflow latest matching run remains legacy #150; no current-revision run and no active resume run.",
+      "R105 #140, R123 #95, R9e #61, Pages #1734 and Site Health #331 succeeded; live AI and ASR probes were skipped by policy."
+    ]
   },
   "latestManualTkRepair": {
     "checkedAt": "2026-11-16T20:03:51.207Z",
@@ -4391,7 +4257,7 @@
     "r125Ci": "pending next manual run",
     "candidatePacksChanged": 0
   },
-  "updatedAt": "2026-11-17T18:31:40Z",
+  "updatedAt": "2026-11-17T22:31:44Z",
   "latestBuilderQuotaStopRepair": {
     "checkedAt": "2026-11-17T02:57:08Z",
     "finding": "The locale builder stopped the entire language loop only when the error text contained the literal daily_free_ai_limit. Google HTTP429/provider_rate_limited and all_translation_backends_unavailable were terminal inside translate_small, but the outer loop could continue to the next language; the 503 backend-unavailable response could also fall through to recursive batch splitting.",
@@ -4718,5 +4584,162 @@
     "published": false,
     "linguisticCertification": false,
     "decision": "NO-GO"
+  },
+  "latestProductionSectionAudit": {
+    "run": 49,
+    "runId": 44179700484,
+    "workflow": ".github/workflows/r125-static-locale-section-audit.yml",
+    "createdAt": "2026-11-17T21:25:42Z",
+    "status": "completed",
+    "conclusion": "failure",
+    "headSha": "e865614e6d89c1f237175d5cf6039ddbea939654",
+    "readinessMarker": "passed",
+    "languages": 98,
+    "sections": 27,
+    "sectionLanguageApplications": 2646,
+    "countryProfiles": 248,
+    "missingKeys": 0,
+    "extraKeys": 0,
+    "emptyValues": 0,
+    "exactFindingCombinations": 41,
+    "exactLanguages": [
+      "fy",
+      "lb",
+      "lo",
+      "mg",
+      "rm",
+      "rw",
+      "tn"
+    ],
+    "exactSections": [
+      "/",
+      "/business-software.html",
+      "/cars-auto.html",
+      "/connectivity.html",
+      "/deal-agent.html",
+      "/education.html",
+      "/entertainment.html",
+      "/everyday.html",
+      "/health.html",
+      "/import-export.html",
+      "/jobs.html",
+      "/marketplace.html",
+      "/property.html",
+      "/scan.html",
+      "/seller-plans.html",
+      "/shopping.html",
+      "/software.html",
+      "/solar.html",
+      "/tourism.html",
+      "/travel.html",
+      "/web-hosting.html",
+      "/wifi.html"
+    ],
+    "partialFindingCombinations": 0,
+    "unresolvedFindingCombinations": 0,
+    "exactPhraseCounts": {
+      "← Back to search": 10,
+      "← Travel Hub": 9,
+      "AI Voice Agent": 3,
+      "GLOBAL AI MARKETPLACE": 2,
+      "Fashion & Beauty": 2,
+      "Import, Export & Sourcing": 2,
+      "Business Software": 2,
+      "Email/Gmail background autopilot:": 2,
+      "VERIFY + PAUSE": 2,
+      "Home Services": 2,
+      "OPEN MARKETPLACE →": 1,
+      "Import & Export": 1,
+      "Safety & etiquette": 1,
+      "GLOBAL AUTO SEARCH": 1,
+      "Shopping & Electronics": 1,
+      "Solar & Energy": 1,
+      "ENTERTAINMENT · WORLDWIDE": 1,
+      "Privacy first": 1,
+      "Check My Phone": 1,
+      "Master controls": 1,
+      "Utilities & Bills": 1,
+      "Hotels & Marketplace": 1,
+      "Business Monthly": 1
+    },
+    "finding": "41 exact English UI finding combinations remain across seven languages; this is a real localization failure, not a pack-structure failure."
+  },
+  "latestResumeWorkflowInspection": {
+    "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+    "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
+    "trigger": "workflow_dispatch only",
+    "scheduleTriggerPresent": false,
+    "runTranslationsDefault": false,
+    "repairCandidatesDefault": false,
+    "auditOnlyPushGuard": "Save progress step runs only when run_translations or repair_candidates is explicitly true",
+    "latestMatchingRun": {
+      "number": 150,
+      "runId": 38971104197,
+      "createdAt": "2026-10-16T21:41:54Z",
+      "status": "completed",
+      "conclusion": "success",
+      "revision": "legacy",
+      "resume": "skipped",
+      "audit": "success"
+    },
+    "latestRunAuditOutput": {
+      "completedCount": 97,
+      "remaining": [
+        "dv"
+      ],
+      "resumeSucceeded": false,
+      "readyForLinguisticReview": false,
+      "exitCode": "not-run"
+    },
+    "currentRevisionRunObserved": false,
+    "activeRuns": 0,
+    "candidatePackWritesInLatestRun": 0,
+    "note": "The only matching historical run is legacy; current Main workflow has not yet been verified by a run."
+  },
+  "latestProductionRuntimeChecks": {
+    "r105": {
+      "run": 140,
+      "runId": 44178359048,
+      "conclusion": "success",
+      "aiBinding": true,
+      "centralSafetyGate": "enabled",
+      "failClosed": true,
+      "liveAiProbes": "skipped-by-policy"
+    },
+    "r123": {
+      "run": 95,
+      "runId": 44178353835,
+      "conclusion": "success",
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "dynamicVoicePlaceholders": "passed",
+      "liveASR": "skipped",
+      "physicalMicrophoneSpeakerCertified": false
+    },
+    "r9e": {
+      "run": 61,
+      "runId": 44178353888,
+      "conclusion": "success",
+      "countryProfiles": "248/248",
+      "localizedPages": "44/44",
+      "manualMoroccoPriority": "passed",
+      "manualWorldwidePriority": "passed",
+      "prohibitedWeapon": "blocked",
+      "voiceAndPwaCache": "passed",
+      "liveAiProbes": "skipped-by-policy"
+    },
+    "pages": {
+      "run": 1734,
+      "runId": 44179698787,
+      "conclusion": "success",
+      "build": "success",
+      "deploy": "success"
+    },
+    "siteHealth": {
+      "run": 331,
+      "runId": 44177541078,
+      "conclusion": "success",
+      "scope": "API health, robots/sitemap and 18 named public pages"
+    }
   }
 }
