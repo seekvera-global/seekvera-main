@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-17T02:06:47Z",
+  "checkedAt": "2026-11-17T02:10:00.450Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -334,7 +334,7 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-17T02:06:47Z",
+    "checkedAt": "2026-11-17T02:10:00.450Z",
     "latestPages": {
       "run": 1609,
       "id": 44000362278,
@@ -463,7 +463,18 @@
       "full98QualityAudit": false,
       "nativeCertification": 0,
       "published": false,
-      "linguisticCertification": false
+      "linguisticCertification": false,
+      "freshPackReadback": {
+        "packsRead": 98,
+        "missingFiles": 0,
+        "extraFiles": 0,
+        "sourceHashMatches": 98,
+        "qualityPolicyMatches": 98,
+        "exactKeySets": 98,
+        "missingKeys": 0,
+        "extraKeys": 0,
+        "emptyValues": 0
+      }
     },
     "ai": {
       "chat": "unknown-not-probed",
@@ -494,7 +505,8 @@
       "exactKeySetAuditR125Run": "pending",
       "published": false,
       "linguisticCertification": false,
-      "decision": "NO-GO"
+      "decision": "NO-GO",
+      "freshFull98ExactKeySetReadback": "PASS 98/98"
     },
     "latestR105": {
       "run": 85,
@@ -4321,6 +4333,22 @@
     "testCommit": "f7184554b5f5e9a5d7e4030d936e5ad4fa80077c",
     "workflowCommit": "ec905fa7c6bbf6fb25c1084513000d6b426f1a72",
     "status": "committed; helper unit checks passed locally; next R125 audit run pending",
-    "candidatePackWrites": 0
+    "candidatePackWrites": 0,
+    "manualFull98Readback": "PASS",
+    "packsRead": 98,
+    "keysPerPack": 1118,
+    "sourceHashMatches": 98,
+    "qualityPolicyMatches": 98,
+    "exactKeySets": 98,
+    "missingKeys": 0,
+    "extraKeys": 0,
+    "emptyValues": 0,
+    "manifestLanguageCount": 98,
+    "candidateFileCount": 98,
+    "missingFiles": 0,
+    "extraFiles": 0,
+    "localUnitTest": "PASS",
+    "r125Ci": "pending next manual run",
+    "candidatePacksChanged": 0
   }
 }
