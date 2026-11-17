@@ -6901,5 +6901,88 @@
     "candidatePackWritesThisPass": 0,
     "translationRequestsThisPass": 0,
     "aiQuotaUsedThisPass": 0
+  },
+  "latestAutomationVerification20261117": {
+    "checkedAt": "2026-11-17T10:12:33Z",
+    "mainHead": "d5d6c9d7f4d962cb1cce25f5aeb2ef63c66b9950",
+    "workflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "blobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
+      "triggers": [
+        "workflow_dispatch"
+      ],
+      "scheduleTriggerPresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "auditOnlyBranchPersistence": false,
+      "candidatePersistenceRequiresExplicitTranslationOrRepairOptIn": true
+    },
+    "actionsObservation": {
+      "totalRepositoryRuns": 5559,
+      "latest100Fetched": true,
+      "activeOrQueuedRunsInLatest100": 0,
+      "activeOrQueuedRunNames": [],
+      "latestRepositoryRun": {
+        "id": 44062253675,
+        "number": 1648,
+        "name": "pages build and deployment",
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-11-17T10:09:56Z",
+        "updatedAt": "2026-11-17T10:10:39Z",
+        "headSha": "d5d6c9d7f4d962cb1cce25f5aeb2ef63c66b9950"
+      },
+      "r125InLatest100": [],
+      "interpretation": "No R125 run appears in the latest 100 repository runs; latest matching R125 remains legacy run #150 from 2026-10-16 per the prior 1,000-run scan. No current R125 run is active."
+    },
+    "latestCandidateBranchReadback": {
+      "head": "1b2ae3fa9cae6a261fa51d0df2958016770a18fc",
+      "headCommitAt": "2026-11-17T10:06:54Z",
+      "headCommitChangedFiles": [
+        "docs/locale-candidates-20261008/resume-summary.json"
+      ],
+      "candidatePackFilesChangedByHeadCommit": 0,
+      "resumeLatestLogBlobSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
+      "resumeLatestLogPreserved": true,
+      "candidateSummaryBlobSha": "516fb476a0928c97f7484a1e079f4d5d85aa79b8",
+      "summaryCheckedAt": "2026-11-17T09:53:12Z"
+    },
+    "dhivehiReviewReadback": {
+      "artifact": "docs/locale-candidates-20261008/dv-english-overlap-review-20261115.json",
+      "overlapCount": 58,
+      "status": "BLOCKED_FOR_NATIVE_REVIEW",
+      "sampledFinding": "Multiple complete user-facing sentences remain English in addition to technical brand/product terms; not safely repairable by deterministic normalization.",
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "candidatePackChanged": false
+    },
+    "latestProductionChecks": {
+      "siteHealth": {
+        "run": 330,
+        "id": 44045610251,
+        "conclusion": "success",
+        "checkedAt": "2026-11-17T08:18:29Z",
+        "scope": "API health, robots/sitemap and 18 named public pages"
+      },
+      "aiChat": "unknown-not-probed",
+      "translation": "unknown-not-probed",
+      "quotaBoundaryRegression": "passed in R105 #97",
+      "safety": "passed in Safety Smoke #31; four prohibited cases blocked",
+      "countryChange": "Iceland selected test passed in R105 #97",
+      "currencyFallback": "selected test passed in R123 #70; full country/currency matrix not certified",
+      "programmaticTTS": "passed in R123 #70",
+      "liveASR": "skipped",
+      "physicalAudio": "not certified",
+      "checkout": "inactive pending merchant configuration"
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "published": false,
+      "linguisticCertification": false,
+      "decision": "NO-GO"
+    }
   }
 }
