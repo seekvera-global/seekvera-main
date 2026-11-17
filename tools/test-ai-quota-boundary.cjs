@@ -29,7 +29,7 @@ const cases = [
 ];
 for (const [error, expected] of cases) assert.equal(context.quotaLimited(error), expected);
 
-const quotaGuard = worker.indexOf('if(quotaBlocked)return null;');
+const quotaGuard = worker.indexOf('if(quotaBlocked||uncertainFailure||aiRaceTimedOut)return null;');
 const pollinationsFallback = worker.indexOf('https://text.pollinations.ai/');
 assert.ok(quotaGuard >= 0 && pollinationsFallback > quotaGuard,
   'quota/rate-limit failures must stop before the external conversational fallback');
