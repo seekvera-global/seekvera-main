@@ -25,3 +25,11 @@ package-lock.json
 # R19 deployment trigger
 # R20C 98-locale deployment trigger
 # R20C final deployment trigger
+# Internal build, audit and candidate data must never be served as public assets
+docs/
+tools/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
