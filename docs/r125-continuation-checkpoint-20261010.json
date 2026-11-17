@@ -8363,6 +8363,27 @@
       "Resolve Tswana Voice and Voice reply labels only with verified Setswana wording; no translation quota probe.",
       "Complete Divehi's 58 English-overlap entries with qualified native review.",
       "Re-run the full 98-language × 27-section audit after approved repairs."
-    ]
+    ],
+    "candidateMetadataReadback": {
+      "branch": "work/r125-locale-candidates-20261008",
+      "branchHead": "bde8eec7ea4ac865224f334e897ae507dfb6b826",
+      "summaryCommit": "bde8eec7ea4ac865224f334e897ae507dfb6b826",
+      "summaryBlobSha": "4744e1f423ce2b5278588fede2419df6d637315f",
+      "resumeLatestLogBlobSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
+      "resumeLatestLogPreserved": true,
+      "candidatePackWrites": 0,
+      "candidatePackFilesModified": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "latestResumeRun": {
+        "number": 150,
+        "id": 38971104197,
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "resume": "skipped"
+      },
+      "activeResumeRuns": 0
+    }
   }
 }
