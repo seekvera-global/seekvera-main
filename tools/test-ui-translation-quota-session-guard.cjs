@@ -147,6 +147,29 @@ async function main(){
  vm.createContext(filipinoNav);vm.runInContext(navBlock,filipinoNav);
  const filipinoResult=await filipinoNav.requestUiTranslation('Filipino',Object.keys(filipinoLabels));
  assert.deepEqual(filipinoResult,Object.values(filipinoLabels));assert.equal(filipinoFetchCalls,0);
+
+ // Additional quota-neutral locale labels for the R125 exact-leak findings.
+ const provisionalQuickCases=[
+  {code:'da',language:'Danish',labels:{'Find Wi-Fi →':'Søg efter Wi-Fi →','Find catering':'Søg efter catering','AI Voice Agent':'AI-stemmeassistent'}},
+  {code:'st',language:'Sesotho',labels:{'Free / Public Wi-Fi Finder':'Sesebelisoa sa ho fumana Wi-Fi ea mahala kapa ea sechaba','RFQ / supplier sourcing':'Kopo ea theko / ho fumana barekisi','Delivery & Courier':'Phano le litšebeletso tsa ba tsamaisang thepa'}},
+  {code:'ro',language:'Romanian',labels:{'🏙️ City break':'🏙️ Escapadă urbană','Business Monthly':'Plan de afaceri lunar'}},
+  {code:'hu',language:'Hungarian',labels:{'← Travel Hub':'← Utazási központ'}},
+  {code:'mt',language:'Maltese',labels:{'🏙️ City break':'🏙️ Vjaġġ qasir fil-belt'}},
+  {code:'el',language:'Greek',labels:{'AI Voice Agent':'Φωνητικός βοηθός AI'}},
+  {code:'cs',language:'Czech',labels:{'AI Voice Agent':'Hlasový asistent AI'}},
+  {code:'sk',language:'Slovak',labels:{'AI Voice Agent':'Hlasový asistent AI'}},
+  {code:'sv',language:'Swedish',labels:{'AI Voice Agent':'AI-röstassistent'}},
+  {code:'no',language:'Norwegian',labels:{'AI Voice Agent':'AI-stemmeassistent','Business Monthly':'Månedlig bedriftsplan'}},
+  {code:'af',language:'Afrikaans',labels:{'AI Voice Agent':'KI-stemassistent'}}
+ ];
+ for(const item of provisionalQuickCases){
+  for(const value of Object.values(item.labels))assert(i18n.includes(value),'Missing '+item.code+' provisional quick label: '+value);
+  let calls=0;
+  const nav={sessionStorage:storage(),AbortController,setTimeout,clearTimeout,fetch:async()=>{calls++;return{status:503,ok:false,json:async()=>({reason:'all_translation_backends_unavailable'})}},langCode:()=>item.code,window:{SEEKVERA_I18N_R32:{tFor:(code,source)=>code===item.code?(item.labels[source]||source):source}},console};
+  vm.createContext(nav);vm.runInContext(navBlock,nav);
+  const result=await nav.requestUiTranslation(item.language,Object.keys(item.labels));
+  assert.deepEqual(result,Object.values(item.labels));assert.equal(calls,0,item.code+' must not call the translation provider');
+ }
  console.log('PASS: session quota circuit breaker, shared in-flight lock, sequential batches, navigation fallback and reverse pack-value guard');
 }
 main().catch(e=>{console.error(e);process.exitCode=1;});
