@@ -16,6 +16,7 @@ on:
       - '*.html'
       - 'i18n-r32/**'
       - 'wrangler.jsonc'
+      - '.assetsignore'
       - 'tools/test-*.cjs'
       - '.github/workflows/r105-final-release.yml'
   workflow_dispatch:
@@ -45,6 +46,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          grep -Fxq 'docs/' .assetsignore
+          grep -Fxq 'tools/' .assetsignore
+          grep -Fxq '**/__pycache__/' .assetsignore
+          grep -Fxq '*.py[cod]' .assetsignore
           node --check worker-r76.js
           node --check worker.js
           node --check global-ui.js
