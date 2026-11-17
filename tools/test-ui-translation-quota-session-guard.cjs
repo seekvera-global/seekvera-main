@@ -58,6 +58,9 @@ async function main(){
  const staticFn=extract(navigation,'async function translateStaticAI()','async function translateResidualUI()','static AI fallback');
  const residualFn=extract(navigation,'async function translateResidualUI()','function runLocaleEngines()','residual UI fallback');
  assert(staticFn.includes('requestUiTranslation'));assert(residualFn.includes('requestUiTranslation'));
+ assert(staticFn.includes('loadPack')&&staticFn.includes('isLocalizedValue'),'static AI fallback must reuse local pack translations and skip already-localized values');
+ assert(residualFn.includes('loadPack')&&residualFn.includes('isLocalizedValue'),'residual UI fallback must reuse local pack translations and skip already-localized values');
+ assert(i18n.includes('PACK_VALUES.set(l,localizedValues)'),'locale runtime must index translated pack values for reverse lookup');
  assert(!staticFn.includes("fetch('/api/ui-translate'"));assert(!residualFn.includes("fetch('/api/ui-translate'"));
  console.log('PASS: session quota circuit breaker, shared in-flight lock, sequential batches and navigation fallback guard');
 }
