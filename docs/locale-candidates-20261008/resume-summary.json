@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-17T03:01:26Z",
+  "checkedAt": "2026-11-17T04:49:35.764Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -334,7 +334,7 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-17T03:01:26Z",
+    "checkedAt": "2026-11-17T04:49:35.764Z",
     "latestPages": {
       "run": 1618,
       "id": 44007089721,
@@ -445,7 +445,9 @@
       "quotaStopTestAdded": true,
       "quotaStopTestRun": "pending next manual R125",
       "quotaStopTestCopiedFromMain": true,
-      "quotaStopTestCommand": "PYTHONPATH=. python tools/test-locale-quota-stop.py"
+      "quotaStopTestCommand": "PYTHONPATH=. python tools/test-locale-quota-stop.py",
+      "languageNameTestCopyFix": true,
+      "languageNameTestCopyFixCommit": "3260aac056299e07bd684ab6f85e35bc5e75a082"
     },
     "candidateState": {
       "structural": 98,
@@ -491,7 +493,7 @@
       ]
     },
     "thisPass": {
-      "candidatePackWrites": 0,
+      "candidatePackWrites": 1,
       "candidateMetadataPackWrites": 0,
       "translationRequests": 0,
       "aiQuotaUsed": 0,
@@ -510,7 +512,11 @@
       "r125Ci": "pending next manual R125",
       "latestPagesRun": 1618,
       "latestPagesConclusion": "success",
-      "workflowTestCopyFix": true
+      "workflowTestCopyFix": true,
+      "hindiFooterRepairCommitted": true,
+      "r125LanguageNameTestCopyFixCommitted": true,
+      "freshReadOnly98PackScreen": "98/98 structural; 58 English-overlap in dv; 27 duplicate groups in 10 languages; 0 script-pattern mismatches after Hindi footer repair",
+      "officialR125AuditRun": "pending"
     },
     "latestR105": {
       "run": 85,
@@ -3831,8 +3837,8 @@
     "aiQuotaUsed": 0
   },
   "latestReadOnly98PackScreen": {
-    "checkedAt": "2026-11-16T19:58:09Z",
-    "method": "Direct read-only fetch of all 98 locale packs; checked exact source-key coverage, sourceHash, qualityPolicy, nonempty string values, three executable CSS source invariants, immutable ID placeholder, suspicious English overlap using the repository's five-word contiguous-run rule, and exact target-output groups of 4+ distinct source strings.",
+    "checkedAt": "2026-11-17T04:49:35.764Z",
+    "method": "Fresh direct read-only fetch of all 98 candidate packs. Recomputed exact source-key coverage, sourceHash, qualityPolicy, nonempty values, three executable CSS source invariants, reserved identifier, five-word contiguous English overlap, production uiScriptPattern script screening, and normalized exact-output duplicate groups of 4+.",
     "languagesFetched": 98,
     "sourceCount": 1118,
     "totalTranslationEntries": 109564,
@@ -3853,39 +3859,13 @@
       }
     ],
     "duplicateOutputThreshold": 4,
-    "duplicateOutputGroups": 28,
-    "duplicateKeysAffected": 261,
+    "duplicateOutputGroups": 27,
+    "duplicateKeysAffected": 255,
     "duplicateLanguages": [
-      {
-        "language": "tk",
-        "groups": 1,
-        "keys": 6,
-        "note": "Six distinct CTA source strings (Return/Play/Search/Scan/Prohibited/Share) collapse to the same target output 'SEEKVERA'; likely missing action meaning, native review required."
-      },
       {
         "language": "dz",
         "groups": 1,
         "keys": 14
-      },
-      {
-        "language": "ti",
-        "groups": 2,
-        "keys": 14
-      },
-      {
-        "language": "kl",
-        "groups": 5,
-        "keys": 44
-      },
-      {
-        "language": "rw",
-        "groups": 3,
-        "keys": 35
-      },
-      {
-        "language": "to",
-        "groups": 3,
-        "keys": 26
       },
       {
         "language": "dv",
@@ -3893,14 +3873,19 @@
         "keys": 20
       },
       {
+        "language": "kl",
+        "groups": 5,
+        "keys": 44
+      },
+      {
         "language": "ku",
         "groups": 2,
         "keys": 15
       },
       {
-        "language": "xh",
+        "language": "rw",
         "groups": 3,
-        "keys": 30
+        "keys": 35
       },
       {
         "language": "st",
@@ -3908,16 +3893,46 @@
         "keys": 37
       },
       {
+        "language": "ti",
+        "groups": 2,
+        "keys": 14
+      },
+      {
         "language": "tn",
         "groups": 2,
         "keys": 20
+      },
+      {
+        "language": "to",
+        "groups": 3,
+        "keys": 26
+      },
+      {
+        "language": "xh",
+        "groups": 3,
+        "keys": 30
       }
     ],
-    "interpretation": "Structural and deterministic invariant checks pass. Duplicate grouping is a quality heuristic, not a native-language verdict. English overlap remains concentrated in Divehi. This screen does not run the official script-warning/reviewed-label audit and does not certify linguistic accuracy.",
+    "scriptPatternScreen": {
+      "validator": "main worker.js uiScriptPattern",
+      "languagesWithMappedPatterns": 38,
+      "mismatchesBeforeRepair": [
+        {
+          "language": "hi",
+          "count": 1,
+          "source": "© SEEKVERA ·",
+          "oldValue": "© SEEKVERA·",
+          "reason": "brand/footer string differed only by a missing space and failed the target-script screen"
+        }
+      ],
+      "mismatchesAfterRepair": 0,
+      "officialR125ScriptAuditRun": false
+    },
+    "interpretation": "Structural/invariant checks pass. English overlap is confined to Divehi. Duplicate groups are a deterministic heuristic and require native review. Script-pattern screen is not the official R125 reviewed-label/script audit and does not certify linguistic accuracy.",
     "structuralResult": "PASS",
     "officialFullQualityAudit": false,
     "nativeLanguageReview": false,
-    "candidatePackWrites": 0,
+    "candidatePackWrites": 1,
     "translationRequests": 0,
     "aiQuotaUsed": 0,
     "published": false,
@@ -4401,5 +4416,43 @@
       },
       "r125Ci": "pending next manual R125 run"
     }
+  },
+  "latestHindiFooterRepair": {
+    "checkedAt": "2026-11-17T04:49:35.764Z",
+    "language": "hi",
+    "file": "docs/locale-candidates-20261008/hi.json",
+    "commit": "86af813ea323177db28487476a9c8a3df0681f38",
+    "exactEdits": 1,
+    "sourceKey": "© SEEKVERA ·",
+    "oldValue": "© SEEKVERA·",
+    "newValue": "© SEEKVERA ·",
+    "sourceUnchanged": true,
+    "readback": {
+      "keys": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "qualityPolicy": "source-overlap-5-v1",
+      "exactValue": true
+    },
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "note": "Quota-neutral deterministic restoration of the exact source footer; not native-language certification."
+  },
+  "latestR125WorkflowFix": {
+    "checkedAt": "2026-11-17T04:49:35.764Z",
+    "workflow": ".github/workflows/r125-hourly-candidate-resume.yml",
+    "finding": "The workflow invoked tools/test-locale-language-names.py from the candidate checkout, but that file was absent on work/r125-locale-candidates-20261008 and was not in the Main-to-candidate copy loop. The next R125 run would fail before candidate audit.",
+    "commit": "3260aac056299e07bd684ab6f85e35bc5e75a082",
+    "fix": "Added tools/test-locale-language-names.py to the current audited tools copied from origin/main before tests execute.",
+    "readbackSha": "9f4a7dab0fc36c3234a4252bcd75572453eca654",
+    "candidateManifest": {
+      "languages": 98,
+      "uniqueLanguages": 98
+    },
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "r125CiVerification": "pending next manual R125 run"
   }
 }
