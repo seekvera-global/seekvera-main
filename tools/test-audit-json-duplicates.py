@@ -1,9 +1,12 @@
 """Regression tests for strict JSON parsing in locale candidate audits."""
 import json
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from tools.audit_locale_candidates import (
     DuplicateJSONKeyError,
     parse_json_unique,
+    read_json_unique,
 )
 
 assert parse_json_unique('{"a": 1, "nested": {"b": 2}}') == {
@@ -30,4 +33,14 @@ except json.JSONDecodeError:
 else:
     raise AssertionError("Malformed JSON must remain a parse error")
 
-print("LOCALE_JSON_DUPLICATE_KEY_GUARD_PASS: top-level, nested and translation-map duplicates rejected")
+with TemporaryDirectory() as directory:
+    invalid_utf8 = Path(directory) / "invalid.json"
+    invalid_utf8.write_bytes(b"\\xff")
+    try:
+        read_json_unique(invalid_utf8)
+    except UnicodeDecodeError:
+        pass
+    else:
+        raise AssertionError("Invalid UTF-8 must be rejected")
+
+print("LOCALE_JSON_DUPLICATE_KEY_GUARD_PASS: duplicate keys, malformed JSON and invalid UTF-8 rejected")
