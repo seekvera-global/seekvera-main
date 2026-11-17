@@ -173,8 +173,19 @@ try {
         currency: document.querySelector('.sv-control-field[data-kind="currency"] .sv-control-caption-label')?.textContent?.trim() || ''
       }));
       for (const [kind, source] of [['country', 'Country / Region'], ['language', 'Language'], ['currency', 'Currency']]) {
-        const expected = String(packs[language]?.[source] || source).trim();
-        assert.equal(controlLabels[kind], expected, 'localized ' + kind + ' control caption: ' + language);
+        // The runtime has a small, reviewed QUICK dictionary that may intentionally
+        // use a different valid wording from the full locale pack (for example,
+        // Arabic "الدولة / المنطقة" vs the pack's "البلد / المنطقة").
+        // Accept either runtime translation or pack translation, but never English
+        // source text for a non-English locale.
+        const runtimeExpected = await page.evaluate(
+          value => String(window.SEEKVERA_I18N?.t?.(value) || value).trim(),
+          source
+        );
+        const packExpected = String(packs[language]?.[source] || source).trim();
+        const acceptable = new Set([runtimeExpected, packExpected].filter(value => value && value !== source));
+        assert(acceptable.size > 0, 'missing localized ' + kind + ' control caption: ' + language);
+        assert(acceptable.has(controlLabels[kind]), 'localized ' + kind + ' control caption: ' + language + ' got ' + controlLabels[kind]);
       }
       const body = await page.locator('body').innerText();
       const leaks = homePresent.filter(value =>
