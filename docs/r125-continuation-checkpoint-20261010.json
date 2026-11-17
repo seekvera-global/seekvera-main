@@ -9130,11 +9130,18 @@
         "6321216b90cb38710f1b221a95bc05aa875f2761"
       ],
       "changes": "Added Indonesian common UI labels, nine Filipino homepage/feature labels, and 19 provisional labels across Danish, Sesotho, Romanian, Hungarian, Maltese, Greek, Czech, Slovak, Swedish, Norwegian and Afrikaans; regression cases assert no provider calls.",
-      "postChangeCi": "not yet observed; the static audit workflow is configured for pushes to i18n-ui.js and its regression test.",
+      "postChangeCi": "pending; workflow now waits for the exact deployed markers",
       "nativeReviewRequired": true,
       "candidatePackWrites": 0,
       "translationRequests": 0,
-      "aiQuotaUsed": 0
+      "aiQuotaUsed": 0,
+      "workflowReadinessGuard": {
+        "commit": "68e9a61716bfc950ab77b0865d34a7fc8b15c85a",
+        "file": ".github/workflows/r125-static-locale-section-audit.yml",
+        "change": "Pages readiness now waits for the new Indonesian, Filipino, Sesotho and Norwegian quick-label markers before running the browser audit, preventing a stale cached i18n-ui.js asset from being audited.",
+        "readback": "PASS",
+        "ciStatus": "not yet observed"
+      }
     },
     "candidatePackWrites": 0,
     "translationRequests": 0,
