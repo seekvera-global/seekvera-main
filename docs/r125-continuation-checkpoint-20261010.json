@@ -1782,9 +1782,9 @@
     "noPhysicalAudioClaim": true
   },
   "latestR125RunInspection": {
-    "checkedAt": "2026-11-15T01:40:00Z",
+    "checkedAt": "2026-11-17T04:50:05.935Z",
     "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
-    "workflowSha": "c1482fc1ae88ac522e91a759985c9fe49e8092fc",
+    "workflowSha": "9f4a7dab0fc36c3234a4252bcd75572453eca654",
     "actualTrigger": "workflow_dispatch only",
     "latestRun": {
       "number": 150,
@@ -1793,9 +1793,10 @@
       "event": "push",
       "status": "completed",
       "conclusion": "success",
+      "workflowRevision": "legacy scheduled/push revision",
       "translationStep": "skipped",
       "auditStep": "success",
-      "candidateWrites": false
+      "candidatePackWrites": false
     },
     "previousRun": {
       "number": 149,
@@ -1818,7 +1819,13 @@
     "summaryChecked": "97/98; dv english_overlap:58; full quality audit pending; Hausa large duplicate groups repaired",
     "logChecked": "STAGED_ONLY 0 FAILED 1; dv HTTP503 all_translation_backends_unavailable; split batches timeout/503; 48 prior successful repair translations",
     "candidateFilesModifiedThisRun": true,
-    "translationRequestsThisRun": 0
+    "translationRequestsThisRun": 0,
+    "runTranslationsDefault": false,
+    "repairCandidatesDefault": false,
+    "currentRun": null,
+    "activeR125Runs": 0,
+    "currentWorkflowRunAfterFix": "pending manual dispatch",
+    "note": "No current R125 run was found in the latest 100 Actions runs; date-filtered history confirms #150 remains the latest run for this workflow. The current Main workflow has not yet been exercised by R125 CI."
   },
   "latestR105Verification": {
     "run": 43517683421,
@@ -2923,7 +2930,7 @@
     "validation": "Read-back verified; provisional manual Hausa UI terms; native review required."
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-17T02:10:00.450Z",
+    "checkedAt": "2026-11-17T04:50:05.935Z",
     "filesRead": [
       "main docs/r125-continuation-checkpoint-20261010.json",
       "candidate docs/locale-candidates-20261008/resume-summary.json",
@@ -3005,7 +3012,12 @@
       "explicitTranslationOptInRequired": true,
       "candidateWritesDeferredWhileRunning": true,
       "exactCandidateKeySetTestAdded": true,
-      "exactCandidateKeySetTestRun": "pending-next-manual-R125"
+      "exactCandidateKeySetTestRun": "pending-next-manual-R125",
+      "workflowSha": "9f4a7dab0fc36c3234a4252bcd75572453eca654",
+      "languageNameTestCopiedFromMain": true,
+      "languageNameTestCopyFixCommit": "3260aac056299e07bd684ab6f85e35bc5e75a082",
+      "currentRun": null,
+      "activeR125Runs": 0
     },
     "candidateState": {
       "structural": 98,
@@ -3065,7 +3077,7 @@
       "checkout": "inactive"
     },
     "thisPass": {
-      "candidatePackWrites": 0,
+      "candidatePackWrites": 1,
       "candidateMetadataWrites": 0,
       "translationRequests": 0,
       "aiQuotaUsed": 0,
@@ -3077,9 +3089,26 @@
       "published": false,
       "linguisticCertification": false,
       "decision": "NO-GO",
-      "freshFull98ExactKeySetReadback": "PASS 98/98"
+      "freshFull98ExactKeySetReadback": "PASS 98/98",
+      "hindiFooterRepairCommitted": true,
+      "r125LanguageNameTestCopyFixCommitted": true,
+      "freshReadOnly98PackScreen": "98/98 structural; 58 English-overlap in dv; 27 duplicate groups across 10 languages; zero production-script pattern mismatches after Hindi footer repair",
+      "officialR125AuditRun": "pending next manual run"
     },
-    "decision": "NO-GO; Pages #1582 and build/report/deploy passed. 98/98 packs structurally aligned; Divehi has 58 English-overlap quality failures. Full quality/native review, all-language/all-section coverage, current AI availability, full country/currency matrix, physical audio and merchant checkout remain incomplete."
+    "decision": "NO-GO; Pages #1582 and build/report/deploy passed. 98/98 packs structurally aligned; Divehi has 58 English-overlap quality failures. Full quality/native review, all-language/all-section coverage, current AI availability, full country/currency matrix, physical audio and merchant checkout remain incomplete.",
+    "latestPages": {
+      "run": 1619,
+      "id": 44018909900,
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-11-17T04:41:27Z",
+      "headSha": "3260aac056299e07bd684ab6f85e35bc5e75a082",
+      "jobs": {
+        "build": "success",
+        "reportBuildStatus": "success",
+        "deploy": "success"
+      }
+    }
   },
   "latestQuotaNeutralManualBatch": {
     "checkedAt": "2026-11-14T20:20:00Z",
@@ -3187,7 +3216,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-17T02:57:08Z",
+  "updatedAt": "2026-11-17T04:50:05.935Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -6387,5 +6416,140 @@
       "headSha": "1aef1f59fa5c57075dc08bc2c7d0f0b7633a29c2"
     },
     "candidateWritesDeferred": true
+  },
+  "run33ReadOnly98PackScreen": {
+    "checkedAt": "2026-11-17T04:50:05.935Z",
+    "branch": "work/r125-locale-candidates-20261008",
+    "languagesFetched": 98,
+    "sourceCount": 1118,
+    "totalTranslationEntries": 109564,
+    "sourceHash": "6a1126e6a2ce5629",
+    "structural": {
+      "packsWith1118Keys": 98,
+      "sourceHashMatches": 98,
+      "qualityPolicyMatches": 98,
+      "missingKeys": 0,
+      "extraKeys": 0,
+      "emptyOrNonStringValues": 0,
+      "cssInvariantMismatches": 0,
+      "reservedIdentifierMismatches": 0,
+      "result": "PASS"
+    },
+    "qualityScreens": {
+      "englishOverlapTotal": 58,
+      "englishOverlapLanguages": [
+        {
+          "language": "dv",
+          "count": 58
+        }
+      ],
+      "duplicateThreshold": 4,
+      "duplicateOutputGroups": 27,
+      "duplicateKeysAffected": 255,
+      "duplicateLanguages": [
+        {
+          "language": "dz",
+          "groups": 1,
+          "keys": 14
+        },
+        {
+          "language": "dv",
+          "groups": 2,
+          "keys": 20
+        },
+        {
+          "language": "kl",
+          "groups": 5,
+          "keys": 44
+        },
+        {
+          "language": "ku",
+          "groups": 2,
+          "keys": 15
+        },
+        {
+          "language": "rw",
+          "groups": 3,
+          "keys": 35
+        },
+        {
+          "language": "st",
+          "groups": 4,
+          "keys": 37
+        },
+        {
+          "language": "ti",
+          "groups": 2,
+          "keys": 14
+        },
+        {
+          "language": "tn",
+          "groups": 2,
+          "keys": 20
+        },
+        {
+          "language": "to",
+          "groups": 3,
+          "keys": 26
+        },
+        {
+          "language": "xh",
+          "groups": 3,
+          "keys": 30
+        }
+      ],
+      "productionScriptPatternScreen": {
+        "languagesWithMappedPatterns": 38,
+        "beforeRepair": [
+          {
+            "language": "hi",
+            "count": 1,
+            "source": "© SEEKVERA ·",
+            "oldValue": "© SEEKVERA·"
+          }
+        ],
+        "afterRepairMismatches": 0,
+        "officialR125ScriptAudit": "pending"
+      }
+    },
+    "interpretation": "Read-only structural/invariant/overlap/duplicate/script-pattern screening. Duplicate groups are heuristic and require qualified native review. This is not the official full reviewed-label/script audit and not linguistic certification.",
+    "candidatePackWrites": 1,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false
+  },
+  "run33HindiFooterRepair": {
+    "checkedAt": "2026-11-17T04:50:05.935Z",
+    "language": "hi",
+    "commit": "86af813ea323177db28487476a9c8a3df0681f38",
+    "exactEdits": 1,
+    "sourceKey": "© SEEKVERA ·",
+    "oldValue": "© SEEKVERA·",
+    "newValue": "© SEEKVERA ·",
+    "readback": {
+      "keys": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "exactValue": true
+    },
+    "sourceUnchanged": true,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false
+  },
+  "run33R125WorkflowTestCopyFix": {
+    "checkedAt": "2026-11-17T04:50:05.935Z",
+    "commit": "3260aac056299e07bd684ab6f85e35bc5e75a082",
+    "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
+    "workflowReadbackSha": "9f4a7dab0fc36c3234a4252bcd75572453eca654",
+    "finding": "R125 invoked tools/test-locale-language-names.py in candidate checkout, but the file was absent from that branch and omitted from the Main-to-candidate tool-copy loop. The next R125 run would fail before audit.",
+    "fix": "Added tools/test-locale-language-names.py to the loop that copies audited tools from origin/main.",
+    "candidateManifestLanguages": 98,
+    "candidateManifestUniqueLanguages": 98,
+    "r125CiVerification": "pending next manual run",
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0
   }
 }
