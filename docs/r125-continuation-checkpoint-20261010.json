@@ -6867,6 +6867,13 @@
       "aiQuotaUsed": 0,
       "published": false,
       "linguisticCertification": false
+    },
+    "candidateBranchReadback": {
+      "head": "1b2ae3fa9cae6a261fa51d0df2958016770a18fc",
+      "summaryBlob": "516fb476a0928c97f7484a1e079f4d5d85aa79b8",
+      "resumeLatestLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
+      "resumeLatestLogPreserved": true,
+      "candidatePackFilesModified": false
     }
   },
   "latestR125CurrentActionsObservation": {
