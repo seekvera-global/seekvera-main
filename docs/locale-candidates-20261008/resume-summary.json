@@ -2142,113 +2142,106 @@
     }
   },
   "run12AutomationAudit": {
-    "checkedAt": "2026-11-15T20:42:06Z",
-    "filesRead": [
-      "main docs/r125-continuation-checkpoint-20261010.json",
-      "candidate docs/locale-candidates-20261008/resume-summary.json",
-      "candidate docs/locale-candidates-20261008/resume-latest.log",
-      "main .github/workflows/r125-hourly-candidate-resume.yml"
-    ],
-    "actions": {
-      "checkedAt": "2026-11-15T20:42:06Z",
-      "latest100RunsFetched": true,
-      "latest100QueuedOrInProgress": 0,
-      "latestRun": {
-        "id": 43752697851,
-        "number": 1566,
-        "path": "dynamic/pages/pages-build-deployment",
-        "status": "completed",
-        "conclusion": "success",
-        "createdAt": "2026-11-15T19:29:28Z"
-      },
-      "latestProductionHealth": {
-        "id": 43750027183,
-        "number": 324,
-        "status": "completed",
-        "conclusion": "success",
-        "createdAt": "2026-11-15T19:01:23Z",
-        "pagesHTTP200": 18,
-        "apiHealth": "pass",
-        "robots": "pass",
-        "sitemap": "pass"
-      },
-      "latestR125": {
-        "id": 38971104197,
-        "number": 150,
-        "status": "completed",
-        "conclusion": "success",
-        "resume": "skipped",
-        "audit": "success",
-        "active": false
-      },
-      "r125Active": false
-    },
-    "candidateBranchLatestCommit": {
-      "sha": "65466023766160e66c177eda361649ad813d5bdb",
-      "createdAt": "2026-11-15T18:49:37Z",
-      "message": "docs(r125): record full 98-pack structural readback",
-      "note": "No candidate-pack edits after the 18:47:35Z full structural audit were observed; latest branch commits were audit metadata."
-    },
+    "checkedAt": "2026-11-17T17:46:22Z",
+    "mainHead": "ff9f176116b0a189ad5deb2a46ed5e28812e36c1",
+    "candidateBranchHead": "1b2ae3fa9cae6a261fa51d0df2958016770a18fc",
     "candidateState": {
       "structural": 98,
       "total": 98,
-      "sourceKeysPerPack": 1118,
-      "sourceHash": "6a1126e6a2ce5629",
-      "structuralResult": "PASS",
-      "qualityCandidates": 97,
-      "qualityRemaining": [
+      "quality": 97,
+      "remaining": [
         "dv"
       ],
       "divehiEnglishOverlap": 58,
-      "duplicateSpotAudit": {
-        "groups": 27,
-        "languages": 10,
-        "keysAffected": 255,
-        "checkedAt": "2026-11-15T16:12:00Z"
-      },
-      "full98QualityAudit": false,
-      "published": false,
-      "linguisticCertification": false
+      "published": 0,
+      "linguisticCertification": 0
     },
-    "r125Workflow": {
-      "trigger": "workflow_dispatch only",
+    "latestR125StaticAudit": {
+      "run27": {
+        "id": 44139192674,
+        "number": 27,
+        "conclusion": "failure",
+        "exactFindingCombinations": 66,
+        "partialFindingCombinations": 13,
+        "blockedRequests": {
+          "ai": 0,
+          "translation": 1,
+          "pollinations": 0
+        },
+        "fallbackLanguage": "French"
+      },
+      "run28": {
+        "id": 44139996278,
+        "number": 28,
+        "status": "in_progress"
+      }
+    },
+    "production": {
+      "pages": {
+        "run": 1699,
+        "id": 44139993382,
+        "conclusion": "success"
+      },
+      "r105": {
+        "run": 122,
+        "id": 44139996281,
+        "conclusion": "success",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r123": {
+        "run": 84,
+        "id": 44139996401,
+        "conclusion": "success",
+        "liveAsr": "skipped-by-policy"
+      },
+      "r9e": {
+        "run": 48,
+        "id": 44139996323,
+        "conclusion": "success",
+        "countryProfiles": 248,
+        "localizedPages": 44,
+        "manualCountryPriority": "pass",
+        "manualWorldwidePriority": "pass",
+        "liveAiProbes": "skipped-by-policy"
+      }
+    },
+    "resumeWorkflow": {
+      "latestRun": 150,
+      "id": 38971104197,
+      "revision": "legacy",
+      "resume": "skipped",
+      "candidatePackWrites": 0,
+      "metadataFilesWritten": 2,
+      "currentTrigger": "workflow_dispatch only",
       "runTranslationsDefault": false,
       "repairCandidatesDefault": false,
-      "translationOptInRequired": true,
-      "saveProgressMayWriteMetadata": true
+      "activeRuns": 0
     },
     "ai": {
-      "chat": "unknown-not-probed",
-      "translationBackend": "unknown-not-probed",
-      "quotaUsed": 0,
-      "translationRequests": 0,
+      "binding": true,
+      "liveGeneration": "unknown-not-probed",
+      "translation": "blocked/unknown",
       "knownBlockers": [
         "daily_free_ai_limit",
         "Google HTTP429",
-        "latest translation log HTTP503 all_translation_backends_unavailable"
+        "HTTP 503 all_translation_backends_unavailable"
       ]
     },
-    "production": {
-      "r105Run": 81,
-      "r105Conclusion": "success",
-      "countryChangeIceland": "passed",
-      "prohibitedWeapon": "blocked",
-      "liveEnglishArabicChatProbes": "skipped by policy",
-      "audioAuthorityRun": 64,
-      "programmaticTTS": "passed",
-      "voiceAcknowledgement": "passed",
-      "liveASR": "skipped",
-      "physicalAudio": "pending",
-      "checkout": "inactive until merchant configuration"
-    },
-    "thisPass": {
+    "changes": {
+      "mainCommits": [
+        "c26f12aa41c3f9d2fbe3c0f518f486c0fb61f2b4",
+        "ff9f176116b0a189ad5deb2a46ed5e28812e36c1"
+      ],
+      "arabicAndFrenchVoiceNavigationFallbacks": "locally translated",
       "candidatePackWrites": 0,
-      "candidateMetadataWrites": 0,
-      "translationRequests": 0,
-      "aiQuotaUsed": 0,
-      "sourceOrCandidateFilesModified": false
+      "translationJobsStarted": 0
     },
-    "decision": "NO-GO; structural verification is complete, but quality/native review, all-language/all-section UI tests, live AI availability, physical audio, and merchant checkout remain unverified."
+    "limits": {
+      "physicalMicrophoneSpeakerCertification": false,
+      "checkout": "inactive pending merchant configuration",
+      "linguisticCertification": false
+    },
+    "decision": "NO-GO"
   },
   "latestReadOnlyFull98StructuralReadback": {
     "checkedAt": "2026-11-15T22:42:00Z",
@@ -4388,7 +4381,7 @@
     "r125Ci": "pending next manual run",
     "candidatePacksChanged": 0
   },
-  "updatedAt": "2026-11-17T08:50:00Z",
+  "updatedAt": "2026-11-17T17:46:22Z",
   "latestBuilderQuotaStopRepair": {
     "checkedAt": "2026-11-17T02:57:08Z",
     "finding": "The locale builder stopped the entire language loop only when the error text contained the literal daily_free_ai_limit. Google HTTP429/provider_rate_limited and all_translation_backends_unavailable were terminal inside translate_small, but the outer loop could continue to the next language; the 503 backend-unavailable response could also fall through to recursive batch splitting.",
