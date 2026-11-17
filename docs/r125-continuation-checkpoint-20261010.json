@@ -8084,8 +8084,23 @@
       "r9e": {
         "run": 50,
         "id": 44148220472,
-        "status": "in_progress",
-        "conclusion": null
+        "status": "completed",
+        "conclusion": "success",
+        "countryProfiles": "248/248 selected and verified one-by-one",
+        "manualMoroccoPriority": "PASS against delayed US auto-detect",
+        "manualWorldwidePriority": "PASS",
+        "visibleLocales": [
+          "MA/ar",
+          "FR/fr",
+          "IN/hi",
+          "CN/zh"
+        ],
+        "localizedPages": "44/44",
+        "safetyProhibitedWeapon": "blocked",
+        "voiceAndPwaCache": "PASS",
+        "liveAiProbes": "skipped-by-policy",
+        "liveAsr": "skipped-by-policy",
+        "physicalMicrophoneSpeakerCertification": false
       }
     },
     "candidateState": {
@@ -8131,18 +8146,20 @@
         "Google HTTP429"
       ],
       "translationRequestsThisPass": 0,
-      "aiQuotaUsedThisPass": 0
+      "aiQuotaUsedThisPass": 0,
+      "latestHealth": "R105 #124 PASS: AI binding true, central safety gate enabled, fail-closed true; live generation skipped by policy"
     },
     "voice": {
       "programmaticTTS": "passed",
       "voiceAcknowledgement": "passed",
       "liveASR": "skipped",
-      "physicalMicrophoneSpeakerCertification": false
+      "physicalMicrophoneSpeakerCertification": false,
+      "latestBrowserVoice": "R9e #50 voice + PWA cache PASS; live ASR skipped; physical hardware not certified"
     },
     "countryCurrency": {
       "countryProfiles": 248,
       "staticCountryLanguageCurrencyMatrix": "PASS 248/248 in R125 #30",
-      "latestLiveBrowserAudit": "R9e #50 in progress",
+      "latestLiveBrowserAudit": "R9e #50 PASS: 248 profiles, Morocco manual priority, Worldwide manual priority, 44/44 localized pages; merchant settlement not tested",
       "merchantSettlementCertification": false
     },
     "safety": {
