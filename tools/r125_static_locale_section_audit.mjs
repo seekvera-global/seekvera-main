@@ -168,7 +168,6 @@ try {
     }
   }
 
-  const anchorLanguages = ['en', 'ar', 'fr', 'tr', 'hi', 'zh', 'de'];
   for (let pathIndex = 0; pathIndex < paths.length; pathIndex++) {
     const path = paths[pathIndex];
     const response = await page.goto(BASE + path + '?r125static-section=' + Date.now(), {
@@ -181,8 +180,7 @@ try {
     await pause(30);
     const englishBody = await page.locator('body').innerText();
     const visibleEnglish = candidateEnglish.filter(value => englishBody.includes(value));
-    const assignedLanguages = manifest.languages.filter((_, languageIndex) => languageIndex % paths.length === pathIndex);
-    const testLanguages = [...new Set([...anchorLanguages, ...assignedLanguages])];
+    const testLanguages = manifest.languages;
 
     for (const language of testLanguages) {
       await page.evaluate(async code => {
@@ -219,7 +217,7 @@ try {
     sectionPaths: paths.length,
     homepageLanguageApplications: languageApplications,
     sectionLanguageApplications,
-    coverage: 'all 98 languages on homepage; every section on seven major-script anchors plus distributed languages; every language assigned to at least one section',
+    coverage: 'all 98 languages on homepage and all 98 languages on every discovered section path (full language-by-section matrix)',
     missingKeys: 0,
     extraKeys: 0,
     emptyValues: 0,
