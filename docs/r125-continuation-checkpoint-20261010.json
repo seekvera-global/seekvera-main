@@ -9557,4 +9557,61 @@
       "Test physical microphones/speakers and configure merchant checkout before release."
     ]
   }
+,
+  "latestR125AuditResult20261118": {
+    "checkedAt": "2026-11-18",
+    "run": 51,
+    "runId": 44199237336,
+    "status": "completed",
+    "conclusion": "failure",
+    "scope": {
+      "languages": 98,
+      "sections": 27,
+      "languageSectionApplications": 2646,
+      "countryProfiles": 248
+    },
+    "results": {
+      "missingKeys": 0,
+      "extraKeys": 0,
+      "emptyKeys": 0,
+      "exactFindingCombinations": 0,
+      "partialFindingCombinations": 2,
+      "partialLanguages": [
+        "lb"
+      ],
+      "unresolvedFindingCombinations": 0,
+      "excludedOnlyOccurrences": 4
+    },
+    "remainingFindings": [
+      {
+        "language": "lb",
+        "phrase": "Business Software",
+        "pages": [
+          "/business-software.html",
+          "/software.html"
+        ],
+        "context": "The page paragraph begins with the English term while the rest of the paragraph is localized; heading is already rendered as Geschäftssoftware."
+      }
+    ],
+    "quotaBoundary": {
+      "aiRequests": 0,
+      "providerTranslationRequests": 0,
+      "interceptedUiTranslationRequests": 1,
+      "interceptedFallbackLanguage": "tr",
+      "interceptedStrings": [
+        "Back",
+        "Page navigation",
+        "Voice reply",
+        "Voice"
+      ],
+      "pollinationsRequests": 0
+    },
+    "emptyMarketplaceStateMocks": 3,
+    "interpretation": "All 41 exact visible English UI findings from R125 #49 were eliminated. Two partial Luxembourgish paragraph occurrences remain. One Turkish fallback attempt was intercepted before reaching a provider.",
+    "nextRepairs": [
+      "Add Business Software to embedded locale term replacement for Luxembourgish paragraphs.",
+      "Add local Turkish common UI labels to prevent the intercepted fallback request.",
+      "Extend reverse localized-value detection to include provisional overrides."
+    ]
+  }
 }
