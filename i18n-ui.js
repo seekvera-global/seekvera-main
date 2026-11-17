@@ -86,6 +86,56 @@ fil:{
 'Zero‑Cost Mode':'Mode na walang gastos',
 'RFQ / supplier sourcing':'Kahilingan sa presyo / paghahanap ng tagapagtustos'
 },
+// Provisional Danish labels for remaining exact R125 UI findings; native review remains required.
+da:{
+'Find Wi-Fi →':'Søg efter Wi-Fi →',
+'Find catering':'Søg efter catering',
+'AI Voice Agent':'AI-stemmeassistent'
+},
+// Provisional Sesotho marketplace/logistics labels; native review remains required.
+st:{
+'Free / Public Wi-Fi Finder':'Sesebelisoa sa ho fumana Wi-Fi ea mahala kapa ea sechaba',
+'RFQ / supplier sourcing':'Kopo ea theko / ho fumana barekisi',
+'Delivery & Courier':'Phano le litšebeletso tsa ba tsamaisang thepa'
+},
+// Provisional Romanian travel/business labels; native review remains required.
+ro:{
+'🏙️ City break':'🏙️ Escapadă urbană',
+'Business Monthly':'Plan de afaceri lunar'
+},
+// Provisional Hungarian navigation label; native review remains required.
+hu:{
+'← Travel Hub':'← Utazási központ'
+},
+// Provisional Maltese travel label; native review remains required.
+mt:{
+'🏙️ City break':'🏙️ Vjaġġ qasir fil-belt'
+},
+// Provisional Greek AI label; native review remains required.
+el:{
+'AI Voice Agent':'Φωνητικός βοηθός AI'
+},
+// Provisional Czech AI label; native review remains required.
+cs:{
+'AI Voice Agent':'Hlasový asistent AI'
+},
+// Provisional Slovak AI label; native review remains required.
+sk:{
+'AI Voice Agent':'Hlasový asistent AI'
+},
+// Provisional Swedish AI label; native review remains required.
+sv:{
+'AI Voice Agent':'AI-röstassistent'
+},
+// Provisional Norwegian AI/business labels; native review remains required.
+no:{
+'AI Voice Agent':'AI-stemmeassistent',
+'Business Monthly':'Månedlig bedriftsplan'
+},
+// Provisional Afrikaans AI label; native review remains required.
+af:{
+'AI Voice Agent':'KI-stemassistent'
+},
 // Provisional Setswana UI labels; not linguistically certified. Native review remains required.
 tn:{
 'Back':'Boela kwa morago',
