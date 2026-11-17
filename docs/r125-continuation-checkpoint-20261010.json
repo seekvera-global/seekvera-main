@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-16",
+  "date": "2026-11-17",
   "finalApproval": false,
   "sourceHash": "6a1126e6a2ce5629",
   "sourceCount": 1118,
@@ -129,7 +129,8 @@
     "Use existing primary model after light-model validation failure",
     "Cover 12 previously unmapped non-Latin script families in voice language detection, scoring and TTS locale selection",
     "R76 production quota classifier now recognizes exact daily_free_ai_limit and spaced/hyphenated variants; nested AggregateError regression added; quota/rate-limit errors suppress external fallback.",
-    "UI translation now stops immediately on daily_free_ai_limit and provider HTTP429/rate limits before trying another model; locale delta builder stops before split/retry on quota/rate-limit responses. No translation request or quota was consumed."
+    "UI translation now stops immediately on daily_free_ai_limit and provider HTTP429/rate limits before trying another model; locale delta builder stops before split/retry on quota/rate-limit responses. No translation request or quota was consumed.",
+    "Exclude internal docs, developer tools and Python caches from Cloudflare static assets; production R105 #87 confirmed four representative internal paths return HTTP 404."
   ],
   "runtimeCommit": "ce6e189e21b927b50d07ac96466a3ea4bdc69e47",
   "runtimeDeployRun": 38093026947,
@@ -6122,5 +6123,109 @@
     "published": false,
     "linguisticCertification": false,
     "aiAvailability": "unknown-not-probed"
+  },
+  "metadataReviewedAt": "2026-11-17T00:13:35Z",
+  "candidateCountSemantics": {
+    "structuralPacksComplete": 98,
+    "qualityPassingCandidates": 97,
+    "qualityBlockedLanguages": [
+      "dv"
+    ],
+    "divehiQualityBlocker": "english_overlap:58",
+    "publishedPacks": 0,
+    "linguisticallyCertifiedPacks": 0,
+    "note": "completeCandidates=97 is the quality-passing count; structuralVerification confirms 98/98 packs. The user-provided 63/98 + 35 remaining figure is stale."
+  },
+  "latestR125RunDeepInspection": {
+    "checkedAt": "2026-11-17T00:13:35Z",
+    "currentWorkflowSha": "44f7d9a451b339834d2b91c992f51b60c03eca68",
+    "currentWorkflowTriggers": [
+      "workflow_dispatch"
+    ],
+    "scheduleTriggerPresent": false,
+    "pushTriggerPresent": false,
+    "runTranslationsDefault": false,
+    "repairCandidatesDefault": false,
+    "latestKnownRun": {
+      "number": 150,
+      "id": 38971104197,
+      "createdAt": "2026-10-16T21:41:54Z",
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push",
+      "historicalWorkflowRevision": true,
+      "resumeStep": "skipped",
+      "auditStep": "success",
+      "candidatePackChanges": 0,
+      "metadataFilesChanged": [
+        "docs/locale-candidates-20261008/resume-summary.json",
+        "docs/locale-candidates-20261008/scheduled-mode.json"
+      ],
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "priorFailure": {
+      "number": 149,
+      "id": 38970873888,
+      "createdAt": "2026-10-16T21:39:49Z",
+      "conclusion": "failure",
+      "cause": "audit-candidate-scripts.cjs could not extract uiScriptPattern from worker source; Node SyntaxError: Unexpected end of input. The next run #150 passed after the validator source changed."
+    },
+    "activeR125RunsAtInspection": 0,
+    "candidatePackWritesThisPass": 0,
+    "translationRequestsThisPass": 0,
+    "aiQuotaUsedThisPass": 0
+  },
+  "latestAssetExclusionRepair": {
+    "checkedAt": "2026-11-17T00:13:16Z",
+    "finding": "R105 #85 deployed generated Python bytecode at /tools/__pycache__/build_current_locale_delta.cpython-314.pyc because the root asset directory was not excluding internal docs/tools and cache files.",
+    "repair": {
+      "assetsIgnoreCommit": "3c2a09722c51543cf5273874b00a6d1be7356f9c",
+      "r105WorkflowPathFilterCommit": "52f5fc3b2541c53d52d5518ef30f0af864b87407",
+      "production404AssertionsCommit": "642b8752088d3f17506b2bdd39c4308d2168a6d5",
+      "exclusions": [
+        "docs/",
+        "tools/",
+        "**/__pycache__/",
+        "*.py[cod]",
+        ".pytest_cache/",
+        ".mypy_cache/",
+        ".ruff_cache/"
+      ]
+    },
+    "verification": {
+      "r105Run86": {
+        "id": 43985675413,
+        "conclusion": "success",
+        "deploy": "success",
+        "productionHealth": "success"
+      },
+      "r105Run87": {
+        "id": 43985790602,
+        "conclusion": "success",
+        "deploy": "success",
+        "productionHealth": "success",
+        "internalAssetExclusion": "pass"
+      },
+      "pagesRun1598": {
+        "id": 43985788838,
+        "conclusion": "success"
+      },
+      "productionPathsChecked": [
+        "/docs/r125-continuation-checkpoint-20261010.json",
+        "/docs/r76-investigation-20261008.md",
+        "/tools/audit_locale_candidates.py",
+        "/tools/__pycache__/build_current_locale_delta.cpython-314.pyc"
+      ],
+      "expectedStatus": 404,
+      "observed": "all four paths returned HTTP 404; INTERNAL_ASSET_EXCLUSION_PASS"
+    },
+    "quotaUse": {
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "candidatePackWrites": 0,
+    "published": false,
+    "linguisticCertification": false
   }
 }
