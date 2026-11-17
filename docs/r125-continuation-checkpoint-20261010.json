@@ -1571,18 +1571,12 @@
     "effect": "Improves diagnosis only; does not make any pack ready for linguistic review or publication."
   },
   "latestPagesDeployment": {
-    "checkedAt": "2026-11-14T09:30:00Z",
-    "run": 1522,
-    "runNumber": 1522,
-    "runId": 43573884184,
+    "run": 1699,
+    "id": 44139993382,
+    "status": "completed",
     "conclusion": "success",
-    "headCommit": "8b5ab19dce7cd776752870741934ef9dec41e061",
-    "verifiedJobs": [
-      "build",
-      "report-build-status",
-      "deploy"
-    ],
-    "scope": "GitHub Pages deploy of checkpoint/docs; product certification not implied."
+    "headSha": "ff9f176116b0a189ad5deb2a46ed5e28812e36c1",
+    "createdAt": "2026-11-17T17:42:53Z"
   },
   "run16CandidateHistoryReconciliation": {
     "checkedAt": "2026-11-13T16:34:23Z",
@@ -3249,7 +3243,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-17T16:43:14Z",
+  "updatedAt": "2026-11-17T17:46:22Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -7450,17 +7444,32 @@
     "aiQuotaUsed": 0
   },
   "latestR105Deployment20261117": {
-    "run": 115,
-    "id": 44108312982,
-    "status": "completed",
-    "conclusion": "success",
-    "htmlUrl": "https://github.com/seekvera-global/seekvera-main/actions/runs/44108312982",
-    "productionHealth": "PASS",
-    "safetyProbe": "prohibited weapon request blocked",
-    "countryChangeProbe": "Iceland country action passed",
-    "liveAiProbes": "skipped by policy",
-    "aiAvailability": "unknown-not-probed",
-    "translationAvailability": "unknown-not-probed"
+    "latest": {
+      "run": 122,
+      "id": 44139996281,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44139996281"
+    },
+    "previous": {
+      "run": 121,
+      "id": 44139192206,
+      "conclusion": "success"
+    },
+    "checks": {
+      "languageTargetNames": "98/98; no translation requests",
+      "quotaBoundaryAndVoiceRegression": "PASS",
+      "countryChangeIceland": "PASS",
+      "currencyStability": "PASS",
+      "safetyProhibitedWeapon": "BLOCKED",
+      "productionHealth": {
+        "aiBinding": true,
+        "centralSafetyGate": "enabled",
+        "failClosed": true
+      },
+      "liveAiGeneration": "skipped-by-policy"
+    },
+    "note": "Health proves binding and safety configuration, not live generation capacity."
   },
   "latestR125ResumeInspection20261117": {
     "workflow": ".github/workflows/r125-hourly-candidate-resume.yml",
@@ -7483,22 +7492,32 @@
     "aiQuotaUsedThisPass": 0
   },
   "latestAudioAuthorityRun20261117": {
-    "run": 80,
-    "id": 44108312975,
-    "status": "completed",
-    "conclusion": "success",
-    "htmlUrl": "https://github.com/seekvera-global/seekvera-main/actions/runs/44108312975",
-    "deployment": "PASS",
+    "latest": {
+      "run": 84,
+      "id": 44139996401,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44139996401"
+    },
+    "previous": {
+      "run": 83,
+      "id": 44139192205,
+      "conclusion": "success"
+    },
     "checks": {
-      "audioAuthorityUnitAndEnvelope": "PASS",
+      "audioAuthority": "PASS",
+      "ttsEnvelopeAndBinaryAudio": "PASS",
       "multilingualScriptCoverage": "PASS",
       "voiceIntentAndLanguageRouting": "PASS",
-      "liveArabicHomeAnd31Descriptions": "PASS in headless browser",
-      "completeVoiceAcknowledgementBeforeNavigation": "PASS in headless browser",
-      "dynamicVoicePlaceholderLocalization": "PASS in headless browser"
-    },
-    "liveTtsAsrChatProbes": "not run; run_live_audio_probes default false",
-    "physicalMicrophoneSpeakerCertification": false
+      "voiceAcknowledgementBeforeNavigation": "PASS",
+      "dynamicVoicePlaceholders": [
+        "ar",
+        "fr"
+      ],
+      "headlessAndroidServerAudio": "PASS",
+      "liveAsr": "skipped-by-policy",
+      "physicalMicrophoneSpeakerCertification": false
+    }
   },
   "latestR125ResumeWorkflowInspection": {
     "checkedAt": "2026-11-17T16:02:07.822Z",
@@ -7657,76 +7676,90 @@
     }
   },
   "latestR125StaticAudit20261117": {
-    "run": 25,
-    "id": 44124062616,
-    "workflow": ".github/workflows/r125-static-locale-section-audit.yml",
-    "checkedAt": "2026-11-17T16:17:29Z",
-    "completedAt": "2026-11-17T16:24:54Z",
-    "status": "completed",
-    "conclusion": "failure",
-    "verified": {
-      "publishedLocalePacks": 98,
-      "sourceStrings": 1045,
-      "countryProfiles": 248,
-      "sectionPaths": 27,
-      "homepageLanguageApplications": 98,
-      "sectionLanguageApplications": 2646,
-      "missingKeys": 0,
-      "extraKeys": 0,
-      "emptyValues": 0,
-      "unresolvedFindingCombinations": 0
+    "run27": {
+      "id": 44139192674,
+      "number": 27,
+      "createdAt": "2026-11-17T17:38:22Z",
+      "status": "completed",
+      "conclusion": "failure",
+      "headSha": "c26f12aa41c3f9d2fbe3c0f518f486c0fb61f2b4",
+      "verified": {
+        "languagePacks": 98,
+        "countryProfiles": 248,
+        "homepageLanguages": 98,
+        "sectionPaths": 27,
+        "sectionLanguageApplications": 2646,
+        "missingKeys": 0,
+        "extraKeys": 0,
+        "emptyValues": 0,
+        "unresolvedFindingCombinations": 0
+      },
+      "findings": {
+        "exactEnglishFindingCombinations": 66,
+        "exactLanguages": [
+          "af",
+          "cs",
+          "da",
+          "el",
+          "fil",
+          "fy",
+          "hu",
+          "lb",
+          "lo",
+          "mg",
+          "mt",
+          "no",
+          "rm",
+          "ro",
+          "rw",
+          "sk",
+          "st",
+          "sv",
+          "tn"
+        ],
+        "partialFindingCombinations": 13,
+        "partialLanguages": [
+          "eu",
+          "fy",
+          "kl",
+          "lb",
+          "mg",
+          "ms",
+          "mt",
+          "rm",
+          "rw",
+          "tn",
+          "to",
+          "zu"
+        ]
+      },
+      "blockedRequests": {
+        "ai": 0,
+        "translation": 1,
+        "pollinations": 0
+      },
+      "unexpectedFallback": {
+        "language": "French",
+        "strings": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ],
+        "result": "blocked; all_translation_backends_unavailable"
+      },
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44139192674"
     },
-    "findings": {
-      "exactEnglishFindingCombinations": 66,
-      "exactLanguages": [
-        "af",
-        "cs",
-        "da",
-        "el",
-        "fil",
-        "fy",
-        "hu",
-        "lb",
-        "lo",
-        "mg",
-        "mt",
-        "no",
-        "rm",
-        "ro",
-        "rw",
-        "sk",
-        "st",
-        "sv",
-        "tn"
-      ],
-      "exactSections": 24,
-      "partialFindingCombinations": 13,
-      "partialLanguages": [
-        "eu",
-        "fy",
-        "kl",
-        "lb",
-        "mg",
-        "ms",
-        "mt",
-        "rm",
-        "rw",
-        "tn",
-        "to",
-        "zu"
-      ]
-    },
-    "blockedRequests": {
-      "ai": 0,
-      "uiTranslation": 1,
-      "pollinations": 0
-    },
-    "unexpectedUiTranslation": {
-      "language": "French",
-      "sourceText": "لا توجد حالياً إعلانات سوق مباشرة معتمدة. لا تنشئ SEEKVERA إعلانات وهمية.",
-      "evidence": "The dynamic home empty-state translator returned an Arabic string while the R32 runtime locale was French."
-    },
-    "failureReason": "Visible exact and partial English strings remained in localized UI; the static audit also intercepted one unexpected dynamic translation request."
+    "run28": {
+      "id": 44139996278,
+      "number": 28,
+      "createdAt": "2026-11-17T17:42:54Z",
+      "status": "in_progress",
+      "conclusion": null,
+      "headSha": "ff9f176116b0a189ad5deb2a46ed5e28812e36c1",
+      "scope": "same 98-language x 27-section matrix after French local fallback repair",
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44139996278"
+    }
   },
   "latestDynamicLocaleRuntimeFix20261117": {
     "commit": "8e632ca4227e41aa262bf3c0f3ed1ca28372fa27",
@@ -7775,5 +7808,121 @@
     "currentRevisionRun": "not found",
     "activeRuns": 0,
     "note": "The current file can resume only when explicitly dispatched with run_translations=true; the most recent observed run is the historical legacy run #150, not verification of the current Main revision."
+  },
+  "latestR9eCountryCurrencyAudit20261117": {
+    "latest": {
+      "run": 48,
+      "id": 44139996323,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44139996323"
+    },
+    "previous": {
+      "run": 47,
+      "id": 44139191966,
+      "conclusion": "success"
+    },
+    "checks": {
+      "countryProfiles": "248/248; language/currency/direction and stored currency verified",
+      "manualMoroccoPriority": "PASS against delayed US auto-detect",
+      "manualWorldwidePriority": "PASS",
+      "visibleLocales": [
+        "MA/ar",
+        "FR/fr",
+        "IN/hi",
+        "CN/zh"
+      ],
+      "localizedPages": "44/44 HTTP 200 and current runtimes",
+      "safetyProhibitedWeapon": "BLOCKED",
+      "voicePwaCache": "PASS",
+      "liveAiGeneration": "skipped-by-policy",
+      "liveAsr": "skipped-by-policy"
+    },
+    "scopeLimit": "Country/profile currency mapping and persistence passed; merchant checkout and live FX/payment settlement are not certified."
+  },
+  "latestQuotaNeutralQuickLabelRepair20261117": {
+    "commits": [
+      "c26f12aa41c3f9d2fbe3c0f518f486c0fb61f2b4",
+      "ff9f176116b0a189ad5deb2a46ed5e28812e36c1"
+    ],
+    "file": "i18n-ui.js",
+    "changes": {
+      "Arabic": {
+        "Back": "رجوع",
+        "Page navigation": "التنقل بين الصفحات",
+        "Voice reply": "الرد الصوتي",
+        "Voice": "الصوت"
+      },
+      "French": {
+        "Back": "Retour",
+        "Page navigation": "Navigation des pages",
+        "Voice reply": "Réponse vocale",
+        "Voice": "Voix"
+      }
+    },
+    "reason": "R125 #26 observed Arabic fallback; after local Arabic repair R125 #27 exposed same four strings in French; French local repair is now deployed and R125 #28 is rechecking.",
+    "quotaNeutral": true,
+    "candidatePackWrites": 0
+  },
+  "run12CurrentContinuationAudit": {
+    "checkedAt": "2026-11-17T17:46:22Z",
+    "mainHead": "ff9f176116b0a189ad5deb2a46ed5e28812e36c1",
+    "candidateBranchHead": "1b2ae3fa9cae6a261fa51d0df2958016770a18fc",
+    "filesRead": [
+      "docs/r125-continuation-checkpoint-20261010.json on main",
+      "docs/locale-candidates-20261008/resume-summary.json on work/r125-locale-candidates-20261008",
+      "docs/locale-candidates-20261008/resume-latest.log on work/r125-locale-candidates-20261008",
+      ".github/workflows/r125-hourly-candidate-resume.yml on main"
+    ],
+    "candidateState": {
+      "structural": 98,
+      "total": 98,
+      "quality": 97,
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "published": 0,
+      "linguisticCertification": 0
+    },
+    "resumeWorkflow": {
+      "latestRun": 150,
+      "latestRunId": 38971104197,
+      "createdAt": "2026-10-16T21:41:54Z",
+      "status": "completed",
+      "conclusion": "success",
+      "revision": "legacy",
+      "resume": "skipped",
+      "candidatePackWrites": 0,
+      "metadataFilesWritten": 2,
+      "currentTrigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "activeRuns": 0,
+      "currentRevisionCi": "not run"
+    },
+    "ai": {
+      "binding": true,
+      "liveGeneration": "unknown-not-probed",
+      "liveProbeSkippedInR105AndR9e": true,
+      "lastKnownLivePass": "2026-11-17T13:45:40Z",
+      "translation": "blocked/unknown",
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP 503 all_translation_backends_unavailable"
+      ]
+    },
+    "translationAudit": {
+      "resumeLogStatus": "STAGED_ONLY 0 FAILED 1",
+      "latestError": "all_translation_backends_unavailable",
+      "auditFallbackAttempt": 1,
+      "providerAvailability": "not probed; do not retry until quota/service recovers"
+    },
+    "checkout": "inactive pending merchant configuration",
+    "decision": "NO-GO",
+    "candidatePackWrites": 0,
+    "published": false,
+    "linguisticCertification": false
   }
 }
