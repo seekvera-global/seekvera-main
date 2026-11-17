@@ -73,8 +73,18 @@ id:{
 'Voice reply':'Balasan suara',
 'Voice':'Suara'
 },
+// Provisional Filipino quick UI labels; native review remains required.
 fil:{
-'Country / Region':'Bansa / Rehiyon','Language':'Wika','Currency':'Pera'
+'Country / Region':'Bansa / Rehiyon','Language':'Wika','Currency':'Pera',
+'OPEN MARKETPLACE →':'Buksan ang pamilihan →',
+'GLOBAL AI MARKETPLACE':'Pamilihang pandaigdig na pinapagana ng AI',
+'🏙️ City break':'🏙️ Maikling bakasyon sa lungsod',
+'GLOBAL AUTO SEARCH':'Pandaigdigang paghahanap ng sasakyan',
+'CROSS-BORDER LOGISTICS':'Logistikang tumatawid sa mga hangganan',
+'Venue / hotel Wi‑Fi QR':'QR para sa Wi‑Fi ng lugar o hotel',
+'Auto Recharge':'Awtomatikong pag-recharge',
+'Zero‑Cost Mode':'Mode na walang gastos',
+'RFQ / supplier sourcing':'Kahilingan sa presyo / paghahanap ng tagapagtustos'
 },
 // Provisional Setswana UI labels; not linguistically certified. Native review remains required.
 tn:{
