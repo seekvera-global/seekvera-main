@@ -138,6 +138,15 @@ async function main(){
  vm.createContext(indonesianNav);vm.runInContext(navBlock,indonesianNav);
  const indonesianResult=await indonesianNav.requestUiTranslation('Indonesian',['Back','Page navigation','Voice reply','Voice']);
  assert.deepEqual(indonesianResult,['Kembali','Navigasi halaman','Balasan suara','Suara']);assert.equal(indonesianFetchCalls,0);
+
+ // Provisional Filipino labels for the exact R125 homepage leaks must resolve locally.
+ const filipinoLabels={'OPEN MARKETPLACE →':'Buksan ang pamilihan →','GLOBAL AI MARKETPLACE':'Pamilihang pandaigdig na pinapagana ng AI','🏙️ City break':'🏙️ Maikling bakasyon sa lungsod','GLOBAL AUTO SEARCH':'Pandaigdigang paghahanap ng sasakyan','CROSS-BORDER LOGISTICS':'Logistikang tumatawid sa mga hangganan','Venue / hotel Wi‑Fi QR':'QR para sa Wi‑Fi ng lugar o hotel','Auto Recharge':'Awtomatikong pag-recharge','Zero‑Cost Mode':'Mode na walang gastos','RFQ / supplier sourcing':'Kahilingan sa presyo / paghahanap ng tagapagtustos'};
+ for(const value of Object.values(filipinoLabels))assert(i18n.includes(value),'Missing Filipino quick label: '+value);
+ let filipinoFetchCalls=0;
+ const filipinoNav={sessionStorage:storage(),AbortController,setTimeout,clearTimeout,fetch:async()=>{filipinoFetchCalls++;return{status:503,ok:false,json:async()=>({reason:'all_translation_backends_unavailable'})}},langCode:()=> 'fil',window:{SEEKVERA_I18N_R32:{tFor:(code,source)=>code==='fil'?(filipinoLabels[source]||source):source}},console};
+ vm.createContext(filipinoNav);vm.runInContext(navBlock,filipinoNav);
+ const filipinoResult=await filipinoNav.requestUiTranslation('Filipino',Object.keys(filipinoLabels));
+ assert.deepEqual(filipinoResult,Object.values(filipinoLabels));assert.equal(filipinoFetchCalls,0);
  console.log('PASS: session quota circuit breaker, shared in-flight lock, sequential batches, navigation fallback and reverse pack-value guard');
 }
 main().catch(e=>{console.error(e);process.exitCode=1;});
