@@ -144,15 +144,20 @@ try {
     !/https?:\/\/|@/.test(value)
   );
   const leakFindings = [];
+  const partialFindings = [];
+  const unresolvedFindings = [];
   async function inspectLeakState(phrases) {
     return page.evaluate(targets => {
+      const norm = value => String(value || '').replace(/\\s+/g, ' ').trim();
       const nodes = [];
+      const options = [];
+      const elements = [];
       const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
       let node;
       while ((node = walker.nextNode())) {
         const el = node.parentElement;
         if (!el || !el.getClientRects().length) continue;
-        const raw = String(node.nodeValue || '').replace(/\\s+/g, ' ').trim();
+        const raw = norm(node.nodeValue);
         if (!raw) continue;
         for (const phrase of targets) {
           if (!raw.includes(phrase)) continue;
@@ -165,10 +170,43 @@ try {
               className: typeof current.className === 'string' ? current.className : '',
               noTranslate: current.hasAttribute('data-no-translate'),
               userContent: current.hasAttribute('data-user-content'),
-              text: String(current.innerText || current.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, 160)
+              text: norm(current.innerText || current.textContent).slice(0, 160)
             });
           }
           nodes.push({ phrase, text: raw.slice(0, 240), chain });
+        }
+      }
+      for (const select of document.querySelectorAll('select')) {
+        if (!select.getClientRects().length) continue;
+        for (const option of [...select.options]) {
+          const raw = norm(option.textContent);
+          if (!raw) continue;
+          for (const phrase of targets) {
+            if (raw.includes(phrase)) options.push({
+              phrase, text: raw, selectId: select.id || '',
+              selectName: select.name || '', selected: option.selected,
+              value: option.value || ''
+            });
+          }
+        }
+      }
+      for (const phrase of targets) {
+        const hasNode = nodes.some(item => item.phrase === phrase);
+        const hasOption = options.some(item => item.phrase === phrase);
+        if (hasNode || hasOption) continue;
+        const candidates = [...document.body.querySelectorAll('*')].filter(el =>
+          el.getClientRects().length && norm(el.innerText).includes(phrase)
+        );
+        const leaves = candidates.filter(el =>
+          ![...el.children].some(child => child.getClientRects().length && norm(child.innerText).includes(phrase))
+        );
+        for (const el of leaves.slice(0, 4)) {
+          const text = norm(el.innerText || el.textContent);
+          elements.push({
+            phrase, text: text.slice(0, 240), exact: text === phrase,
+            tag: el.tagName.toLowerCase(), id: el.id || '',
+            className: typeof el.className === 'string' ? el.className : ''
+          });
         }
       }
       return {
@@ -178,9 +216,27 @@ try {
           runtimeVersion: document.documentElement.dataset.seekveraI18nVersion || '',
           packReady: !!window.SEEKVERA_I18N_R32?.packReady?.(document.documentElement.lang)
         },
-        nodes: nodes.slice(0, 40)
+        nodes: nodes.slice(0, 40),
+        options: options.slice(0, 20),
+        elements: elements.slice(0, 20)
       };
     }, phrases);
+  }
+  function classifyLeakEvidence(phrases, evidence) {
+    const exact = [], partial = [], unresolved = [], details = {};
+    for (const phrase of phrases) {
+      const nodes = evidence.nodes.filter(item => item.phrase === phrase);
+      const options = evidence.options.filter(item => item.phrase === phrase);
+      const elements = evidence.elements.filter(item => item.phrase === phrase);
+      details[phrase] = { nodes, options, elements };
+      const exactMatch = nodes.some(item => item.text === phrase) ||
+        options.some(item => item.text === phrase) ||
+        elements.some(item => item.text === phrase || item.exact);
+      if (exactMatch) exact.push(phrase);
+      else if (nodes.length || options.length || elements.length) partial.push(phrase);
+      else unresolved.push(phrase);
+    }
+    return { exact, partial, unresolved, details };
   }
   let languageApplications = 0;
   let sectionLanguageApplications = 0;
@@ -231,7 +287,13 @@ try {
         typeof packs[language]?.[value] === 'string' &&
         body.includes(value)
       ).slice(0, 6);
-      if (leaks.length) leakFindings.push({ path: '/', language, leaks, ...(await inspectLeakState(leaks)) });
+      if (leaks.length) {
+        const evidence = await inspectLeakState(leaks);
+        const classified = classifyLeakEvidence(leaks, evidence);
+        if (classified.exact.length) leakFindings.push({ path: '/', language, leaks: classified.exact, runtime: evidence.runtime, evidence: classified.details });
+        if (classified.partial.length) partialFindings.push({ path: '/', language, leaks: classified.partial, runtime: evidence.runtime, evidence: classified.details });
+        if (classified.unresolved.length) unresolvedFindings.push({ path: '/', language, leaks: classified.unresolved, runtime: evidence.runtime, evidence: classified.details });
+      }
     }
     if ((index + 1) % 14 === 0 || index === manifest.languages.length - 1) {
       console.log('R125_STATIC_HOME_LANGUAGE_PROGRESS', index + 1, '/ 98');
@@ -278,7 +340,13 @@ try {
         typeof packs[language]?.[value] === 'string' &&
         body.includes(value)
       ).slice(0, 6);
-      if (leaks.length) leakFindings.push({ path, language, leaks, ...(await inspectLeakState(leaks)) });
+      if (leaks.length) {
+          const evidence = await inspectLeakState(leaks);
+          const classified = classifyLeakEvidence(leaks, evidence);
+          if (classified.exact.length) leakFindings.push({ path, language, leaks: classified.exact, runtime: evidence.runtime, evidence: classified.details });
+          if (classified.partial.length) partialFindings.push({ path, language, leaks: classified.partial, runtime: evidence.runtime, evidence: classified.details });
+          if (classified.unresolved.length) unresolvedFindings.push({ path, language, leaks: classified.unresolved, runtime: evidence.runtime, evidence: classified.details });
+        }
     }
     console.log('R125_STATIC_SECTION_PROGRESS', pathIndex + 1, '/', paths.length, path, 'languages', testLanguages.length);
   }
@@ -290,10 +358,14 @@ try {
     }
   }
   console.log('R125_STATIC_LEAK_SUMMARY', JSON.stringify({
-    findingCombinations: leakFindings.length,
-    uniqueLanguages: [...new Set(leakFindings.map(item => item.language))].sort(),
-    uniqueSections: [...new Set(leakFindings.map(item => item.path))].sort(),
-    phraseCounts: Object.fromEntries([...leakCounts.entries()].sort((a, b) => b[1] - a[1])),
+    exactFindingCombinations: leakFindings.length,
+    exactLanguages: [...new Set(leakFindings.map(item => item.language))].sort(),
+    exactSections: [...new Set(leakFindings.map(item => item.path))].sort(),
+    exactPhraseCounts: Object.fromEntries([...leakCounts.entries()].sort((a, b) => b[1] - a[1])),
+    partialFindingCombinations: partialFindings.length,
+    partialLanguages: [...new Set(partialFindings.map(item => item.language))].sort(),
+    unresolvedFindingCombinations: unresolvedFindings.length,
+    unresolvedLanguages: [...new Set(unresolvedFindings.map(item => item.language))].sort(),
     sectionLanguageApplications
   }));
   const fallbackByLanguage = {};
@@ -309,6 +381,8 @@ try {
     { requests: value.requests, uniqueStrings: value.strings.size, samples: [...value.strings].slice(0, 20) }
   ]));
   console.log('R125_STATIC_LEAK_DETAILS', JSON.stringify(leakFindings));
+  console.log('R125_STATIC_PARTIAL_MATCH_DETAILS', JSON.stringify(partialFindings));
+  console.log('R125_STATIC_UNRESOLVED_MATCH_DETAILS', JSON.stringify(unresolvedFindings));
   console.log('R125_STATIC_TRANSLATION_FALLBACK_DETAILS', JSON.stringify(fallbackSummary));
   console.log('R125_STATIC_BLOCKED_REQUESTS', JSON.stringify({
     ai: blocked.ai.length,
@@ -316,6 +390,8 @@ try {
     pollinations: blocked.pollinations.length
   }));
   assert.equal(leakFindings.length, 0, 'English UI leaks: ' + JSON.stringify(leakFindings.slice(0, 10)));
+  assert.equal(partialFindings.length, 0, 'English segments inside localized UI require review: ' + JSON.stringify(partialFindings.slice(0, 10)));
+  assert.equal(unresolvedFindings.length, 0, 'Unresolved visible English matches require DOM review: ' + JSON.stringify(unresolvedFindings.slice(0, 10)));
   assert.equal(blocked.translation.length, 0, 'unexpected dynamic translation calls: ' + JSON.stringify(blocked.translation.slice(0, 5)));
   assert.equal(blocked.ai.length, 0, 'unexpected AI calls: ' + JSON.stringify(blocked.ai.slice(0, 5)));
   assert.equal(blocked.pollinations.length, 0, 'unexpected external translation calls: ' + JSON.stringify(blocked.pollinations.slice(0, 5)));
