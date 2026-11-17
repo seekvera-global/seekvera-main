@@ -3227,7 +3227,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-17T08:55:00Z",
+  "updatedAt": "2026-11-17T09:46:43Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -6789,5 +6789,48 @@
       ]
     },
     "scope": "Fresh official production availability check only; does not certify page interactions, all 98 locales, AI, physical audio or checkout."
+  },
+  "latestSaveOnFailureGuard": {
+    "checkedAt": "2026-11-17T09:46:43Z",
+    "finding": "The save step used always() with explicit opt-in. If a deterministic repair or its post-repair validation failed, the final step could still commit partially modified candidate files.",
+    "repair": "Changed the persistence condition to success() && (inputs.run_translations || inputs.repair_candidates); extended the regression test to reject always() for the save step.",
+    "commits": {
+      "workflow": "abc4cbe5b444eee72f286fd900b6676cb352b9f0",
+      "test": "993a066d39282e8e01781ea366fcfd07664284ad"
+    },
+    "readback": {
+      "workflowCondition": true,
+      "testRequiresSuccess": true,
+      "testRejectsAlways": true,
+      "writeCommandsRemainInsideSave": true
+    },
+    "currentWorkflowCI": "pending manual audit-only dispatch; no dispatch was initiated in this pass",
+    "latestKnownR125": {
+      "run": 150,
+      "id": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-10-16T21:41:54Z",
+      "revision": "legacy, not current Main workflow"
+    },
+    "currentActionsObservation": {
+      "latest100MainRunsChecked": true,
+      "r125InLatest100": false,
+      "activeR125Runs": 0,
+      "checkedAt": "2026-11-17T09:46:43Z"
+    },
+    "candidateBranch": {
+      "head": "4ccd061a4eab4bad2707fe2e0ef491869704223b",
+      "summaryBlob": "ee0b4c88a4d3cbd852bbef2f6a2d6ead3bc956d8",
+      "resumeLatestLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b"
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "published": false,
+      "linguisticCertification": false
+    }
   }
 }
