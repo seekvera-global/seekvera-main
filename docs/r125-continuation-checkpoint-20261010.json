@@ -9754,7 +9754,7 @@
     },
     "decision": "NO-GO",
     "nextSteps": [
-      "Complete R125 #52 and R9e #64, inspect exact findings and update the checkpoint.",
+      "Complete R125 #52 and inspect exact findings; R9e #64 passed.",
       "Complete Divehi native review for 58 English-overlap items.",
       "Obtain qualified native review for provisional low-resource labels and all 98 packs.",
       "Probe live AI only when quota-safe and explicitly authorized.",
