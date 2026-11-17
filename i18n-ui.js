@@ -32,6 +32,23 @@ de:{
 'Page navigation':'Seitennavigation',
 'Voice reply':'Sprachantwort',
 'Voice':'Stimme'
+},
+// Provisional Japanese quick UI labels; native review remains required.
+ja:{
+'Back':'戻る',
+'Page navigation':'ページナビゲーション',
+'Voice reply':'音声で返信',
+'Voice':'音声'
+},
+// Provisional Thai subscription labels; native review remains required.
+th:{
+'Business Yearly':'แพ็กเกจธุรกิจรายปี',
+'Business Monthly':'แพ็กเกจธุรกิจรายเดือน'
+},
+// Provisional Zulu marketplace and logistics labels; native review remains required.
+zu:{
+'GLOBAL AI MARKETPLACE':'Imakethe ye-AI yomhlaba wonke',
+'Courier & last mile':'Ukuthumela nokuletha impahla esigabeni sokugcina'
 },es:{
 'Back':'Volver','Page navigation':'Navegación de páginas','Voice reply':'Respuesta de voz','Voice':'Voz'
 },zh:{

@@ -38,6 +38,20 @@ async function main(){
  vm.createContext(germanNav);vm.runInContext(navBlock,germanNav);
  const germanResult=await germanNav.requestUiTranslation('German',['Back','Page navigation','Voice reply','Voice']);
  assert.deepEqual(germanResult,['Zurück','Seitennavigation','Sprachantwort','Stimme']);assert.equal(germanFetchCalls,0);
+ // Quota-neutral quick labels for Japanese navigation, Thai plan names and Zulu section headings.
+ const quickCases=[
+  {code:'ja',language:'Japanese',labels:{'Back':'戻る','Page navigation':'ページナビゲーション','Voice reply':'音声で返信','Voice':'音声'}},
+  {code:'th',language:'Thai',labels:{'Business Yearly':'แพ็กเกจธุรกิจรายปี','Business Monthly':'แพ็กเกจธุรกิจรายเดือน'}},
+  {code:'zu',language:'Zulu',labels:{'GLOBAL AI MARKETPLACE':'Imakethe ye-AI yomhlaba wonke','Courier & last mile':'Ukuthumela nokuletha impahla esigabeni sokugcina'}}
+ ];
+ for(const item of quickCases){
+  for(const value of Object.values(item.labels))assert(i18n.includes(value),'Missing '+item.code+' quick label: '+value);
+  let calls=0;
+  const nav={sessionStorage:storage(),AbortController,setTimeout,clearTimeout,fetch:async()=>{calls++;return{status:503,ok:false,json:async()=>({reason:'all_translation_backends_unavailable'})}},langCode:()=>item.code,window:{SEEKVERA_I18N_R32:{tFor:(code,source)=>code===item.code?(item.labels[source]||source):source}},console};
+  vm.createContext(nav);vm.runInContext(navBlock,nav);
+  const result=await nav.requestUiTranslation(item.language,Object.keys(item.labels));
+  assert.deepEqual(result,Object.values(item.labels));assert.equal(calls,0);
+ }
  // Google/provider 429 is also terminal for this browser session.
  const s429=storage(),c429=harness(i18nCode,s429,[{status:429,body:{reason:'provider_rate_limited'}}]);
  await Promise.all([c429.context.cloudTranslate('French',['one']),c429.context.cloudTranslate('Arabic',['two'])]);
