@@ -7212,7 +7212,7 @@
   },
   "latestAutomationPass20261117": {
     "checkedOn": "2026-11-17",
-    "mainHead": "1037a0120c3f0a5b239b0c71b6ec17dd6b30378c",
+    "mainHead": "6c359731f9a45bb704902c6eb0b2d291f56e7a6f",
     "sourceFilesRead": {
       "mainCheckpointBlob": "1abee3a2b9aae9b2fd1c455200e1cb1a25e50f36",
       "candidateSummaryBlob": "516fb476a0928c97f7484a1e079f4d5d85aa79b8",
@@ -7284,7 +7284,7 @@
         "status": "pending",
         "headSha": "1037a0120c3f0a5b239b0c71b6ec17dd6b30378c"
       },
-      "candidateWrites": "deferred while static audit is running"
+      "candidateWrites": "deferred; no candidate branch writes while the section audit queue is active"
     },
     "r105": {
       "successfulRun": {
@@ -7307,8 +7307,23 @@
       "newerRun": {
         "number": 107,
         "id": 44082996340,
-        "status": "in_progress",
+        "status": "completed",
+        "conclusion": "success",
         "headSha": "1037a0120c3f0a5b239b0c71b6ec17dd6b30378c"
+      },
+      "latestSuccessfulRun": {
+        "number": 107,
+        "id": 44082996340,
+        "headSha": "1037a0120c3f0a5b239b0c71b6ec17dd6b30378c",
+        "sourceValidation": "pass",
+        "localeNames": "98/98 pass",
+        "quotaAndVoiceRegressionTests": "pass",
+        "currencyRegression": "pass",
+        "workerDeploy": "success",
+        "productionHealth": "success",
+        "safetyCountryProbes": "pass",
+        "internalAssetExclusion": "pass",
+        "liveAiGeneration": "skipped by policy"
       }
     },
     "fixesThisPass": [
