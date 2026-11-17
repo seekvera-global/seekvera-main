@@ -8460,6 +8460,14 @@
           "tools/test-ui-translation-quota-session-guard.cjs"
         ],
         "summary": "Added provisional Korean Back, Page navigation, Voice reply and Voice quick labels; extended local no-provider regression coverage."
+      },
+      {
+        "commit": "523ac7e054829bf15f9330123570b94ad8f363c9",
+        "files": [
+          "i18n-ui.js",
+          "tools/test-ui-translation-quota-session-guard.cjs"
+        ],
+        "summary": "Added provisional Korean quick UI labels for Back, Page navigation, Voice reply and Voice, with a zero-provider-call regression case."
       }
     ],
     "localeAudit": {
@@ -8518,14 +8526,16 @@
         "run": 41,
         "id": 44175688321,
         "status": "in_progress",
-        "purpose": "Verify Korean quota-neutral quick labels and rerun the 98-language x 27-section matrix",
+        "purpose": "Verify Korean quick labels and rerun the 98-language x 27-section matrix",
         "completedPrechecks": [
           "Playwright install",
           "Chromium install",
           "Pages asset readiness",
-          "Node syntax check"
+          "Node syntax check",
+          "German/Japanese/Thai/Zulu/Korean quota guard",
+          "explicit no-translate exclusion triage"
         ],
-        "currentStep": "Verify quota guard and local German/Japanese/Thai/Zulu/Korean quick labels"
+        "currentStep": "Verify all locale packs, countries and sections without AI requests"
       },
       "candidatePackWrites": 0
     },
@@ -8562,20 +8572,16 @@
       "r9e": {
         "run": 58,
         "id": 44175688211,
-        "status": "in_progress",
-        "latestCompleted": {
-          "run": 57,
-          "id": 44174917212,
-          "conclusion": "success",
-          "countryProfiles": "248/248",
-          "localizedPages": "44/44",
-          "manualMoroccoPriority": "pass",
-          "worldwidePriority": "pass",
-          "currency": "pass",
-          "safety": "pass",
-          "voicePwaCache": "pass",
-          "liveAiProbes": "skipped-by-policy"
-        }
+        "status": "completed",
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "manualMoroccoPriority": "pass",
+        "worldwidePriority": "pass",
+        "currency": "pass",
+        "safety": "prohibited weapon sale blocked",
+        "voicePwaCache": "pass",
+        "liveAiProbes": "skipped-by-policy"
       },
       "latestCompletedCountryMatrix": {
         "run": 56,
