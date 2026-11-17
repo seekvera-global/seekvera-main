@@ -1571,12 +1571,19 @@
     "effect": "Improves diagnosis only; does not make any pack ready for linguistic review or publication."
   },
   "latestPagesDeployment": {
-    "run": 1699,
-    "id": 44139993382,
-    "status": "completed",
-    "conclusion": "success",
-    "headSha": "ff9f176116b0a189ad5deb2a46ed5e28812e36c1",
-    "createdAt": "2026-11-17T17:42:53Z"
+    "latestSuccessful": {
+      "run": 1701,
+      "id": 44141433462,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "eef5fec3bc8a469232b63b3e0e706cfd516c260e"
+    },
+    "current": {
+      "run": 1702,
+      "id": 44141771824,
+      "status": "in_progress",
+      "headSha": "96555768aaa882636d4fc3544116887e32c99f32"
+    }
   },
   "run16CandidateHistoryReconciliation": {
     "checkedAt": "2026-11-13T16:34:23Z",
@@ -3243,7 +3250,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-17T17:46:22Z",
+  "updatedAt": "2026-11-17T17:52:55Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -7445,15 +7452,15 @@
   },
   "latestR105Deployment20261117": {
     "latest": {
-      "run": 122,
-      "id": 44139996281,
+      "run": 123,
+      "id": 44141434814,
       "status": "completed",
       "conclusion": "success",
-      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44139996281"
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44141434814"
     },
     "previous": {
-      "run": 121,
-      "id": 44139192206,
+      "run": 122,
+      "id": 44139996281,
       "conclusion": "success"
     },
     "checks": {
@@ -7468,8 +7475,7 @@
         "failClosed": true
       },
       "liveAiGeneration": "skipped-by-policy"
-    },
-    "note": "Health proves binding and safety configuration, not live generation capacity."
+    }
   },
   "latestR125ResumeInspection20261117": {
     "workflow": ".github/workflows/r125-hourly-candidate-resume.yml",
@@ -7493,15 +7499,15 @@
   },
   "latestAudioAuthorityRun20261117": {
     "latest": {
-      "run": 84,
-      "id": 44139996401,
+      "run": 85,
+      "id": 44141434805,
       "status": "completed",
       "conclusion": "success",
-      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44139996401"
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44141434805"
     },
     "previous": {
-      "run": 83,
-      "id": 44139192205,
+      "run": 84,
+      "id": 44139996401,
       "conclusion": "success"
     },
     "checks": {
@@ -7679,10 +7685,8 @@
     "run27": {
       "id": 44139192674,
       "number": 27,
-      "createdAt": "2026-11-17T17:38:22Z",
       "status": "completed",
       "conclusion": "failure",
-      "headSha": "c26f12aa41c3f9d2fbe3c0f518f486c0fb61f2b4",
       "verified": {
         "languagePacks": 98,
         "countryProfiles": 248,
@@ -7738,27 +7742,66 @@
         "translation": 1,
         "pollinations": 0
       },
-      "unexpectedFallback": {
-        "language": "French",
-        "strings": [
-          "Back",
-          "Page navigation",
-          "Voice reply",
-          "Voice"
-        ],
-        "result": "blocked; all_translation_backends_unavailable"
-      },
-      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44139192674"
+      "fallbackLanguage": "French",
+      "fallbackStrings": [
+        "Back",
+        "Page navigation",
+        "Voice reply",
+        "Voice"
+      ]
     },
     "run28": {
       "id": 44139996278,
       "number": 28,
-      "createdAt": "2026-11-17T17:42:54Z",
+      "status": "completed",
+      "conclusion": "failure",
+      "verified": {
+        "languagePacks": 98,
+        "countryProfiles": 248,
+        "homepageLanguages": 98,
+        "sectionPaths": 27,
+        "sectionLanguageApplications": 2646,
+        "missingKeys": 0,
+        "extraKeys": 0,
+        "emptyValues": 0,
+        "unresolvedFindingCombinations": 0
+      },
+      "findings": {
+        "exactEnglishFindingCombinations": 66,
+        "partialFindingCombinations": 13
+      },
+      "blockedRequests": {
+        "ai": 0,
+        "translation": 1,
+        "pollinations": 0
+      },
+      "fallbackLanguage": "Chinese",
+      "fallbackStrings": [
+        "Back",
+        "Page navigation",
+        "Voice reply",
+        "Voice"
+      ],
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44139996278"
+    },
+    "run29": {
+      "id": 44141434921,
+      "number": 29,
+      "status": "completed",
+      "conclusion": "failure",
+      "failureClass": "transient production static-pack fetch reset",
+      "evidence": "apiRequestContext.get: read ECONNRESET while GET /i18n-r32/id.json?v=b371f2422f8b5416",
+      "contentAuditReached": false,
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44141434921"
+    },
+    "run30": {
+      "id": 44141774892,
+      "number": 30,
       "status": "in_progress",
       "conclusion": null,
-      "headSha": "ff9f176116b0a189ad5deb2a46ed5e28812e36c1",
-      "scope": "same 98-language x 27-section matrix after French local fallback repair",
-      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44139996278"
+      "headSha": "96555768aaa882636d4fc3544116887e32c99f32",
+      "purpose": "re-run after bounded transient-fetch retries and reduced concurrency",
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44141774892"
     }
   },
   "latestDynamicLocaleRuntimeFix20261117": {
@@ -7811,15 +7854,15 @@
   },
   "latestR9eCountryCurrencyAudit20261117": {
     "latest": {
-      "run": 48,
-      "id": 44139996323,
+      "run": 49,
+      "id": 44141434912,
       "status": "completed",
       "conclusion": "success",
-      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44139996323"
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44141434912"
     },
     "previous": {
-      "run": 47,
-      "id": 44139191966,
+      "run": 48,
+      "id": 44139996323,
       "conclusion": "success"
     },
     "checks": {
@@ -7832,7 +7875,7 @@
         "IN/hi",
         "CN/zh"
       ],
-      "localizedPages": "44/44 HTTP 200 and current runtimes",
+      "localizedPages": "44/44",
       "safetyProhibitedWeapon": "BLOCKED",
       "voicePwaCache": "PASS",
       "liveAiGeneration": "skipped-by-policy",
@@ -7843,7 +7886,8 @@
   "latestQuotaNeutralQuickLabelRepair20261117": {
     "commits": [
       "c26f12aa41c3f9d2fbe3c0f518f486c0fb61f2b4",
-      "ff9f176116b0a189ad5deb2a46ed5e28812e36c1"
+      "ff9f176116b0a189ad5deb2a46ed5e28812e36c1",
+      "eef5fec3bc8a469232b63b3e0e706cfd516c260e"
     ],
     "file": "i18n-ui.js",
     "changes": {
@@ -7858,21 +7902,27 @@
         "Page navigation": "Navigation des pages",
         "Voice reply": "Réponse vocale",
         "Voice": "Voix"
+      },
+      "ChineseSimplified": {
+        "Back": "返回",
+        "Page navigation": "页面导航",
+        "Voice reply": "语音回复",
+        "Voice": "语音"
       }
     },
-    "reason": "R125 #26 observed Arabic fallback; after local Arabic repair R125 #27 exposed same four strings in French; French local repair is now deployed and R125 #28 is rechecking.",
+    "reason": "R125 fallback probe moved from Arabic to French to Chinese as each locale gained local labels; the next quota-neutral full matrix is run #30.",
     "quotaNeutral": true,
     "candidatePackWrites": 0
   },
   "run12CurrentContinuationAudit": {
-    "checkedAt": "2026-11-17T17:46:22Z",
-    "mainHead": "ff9f176116b0a189ad5deb2a46ed5e28812e36c1",
-    "candidateBranchHead": "1b2ae3fa9cae6a261fa51d0df2958016770a18fc",
+    "checkedAt": "2026-11-17T17:52:55Z",
+    "mainHead": "96555768aaa882636d4fc3544116887e32c99f32",
+    "candidateBranchHead": "803cf1b05eb5f9c0e81781f79eb2166872185403",
     "filesRead": [
-      "docs/r125-continuation-checkpoint-20261010.json on main",
-      "docs/locale-candidates-20261008/resume-summary.json on work/r125-locale-candidates-20261008",
-      "docs/locale-candidates-20261008/resume-latest.log on work/r125-locale-candidates-20261008",
-      ".github/workflows/r125-hourly-candidate-resume.yml on main"
+      "main continuation checkpoint",
+      "candidate resume summary on work/r125-locale-candidates-20261008",
+      "candidate resume-latest.log on work/r125-locale-candidates-20261008",
+      "main R125 hourly candidate resume workflow"
     ],
     "candidateState": {
       "structural": 98,
@@ -7916,13 +7966,26 @@
     "translationAudit": {
       "resumeLogStatus": "STAGED_ONLY 0 FAILED 1",
       "latestError": "all_translation_backends_unavailable",
-      "auditFallbackAttempt": 1,
-      "providerAvailability": "not probed; do not retry until quota/service recovers"
+      "auditFallbacksObserved": [
+        "French",
+        "Chinese"
+      ],
+      "externalProviderStatus": "not probed; do not retry until quota/service recovers"
     },
+    "countryCurrency": "248/248 profile-to-language/currency UI matrix passed in R9e #49; payment settlement not tested",
+    "voice": "headless programmatic TTS and voice sequencing pass; live ASR skipped; physical microphone/speaker certification pending",
     "checkout": "inactive pending merchant configuration",
     "decision": "NO-GO",
     "candidatePackWrites": 0,
     "published": false,
     "linguisticCertification": false
+  },
+  "latestR125AuditRetryRepair20261117": {
+    "commit": "96555768aaa882636d4fc3544116887e32c99f32",
+    "file": "tools/r125_static_locale_section_audit.mjs",
+    "change": "Bounded 4-attempt retry for transient network/HTTP 5xx static JSON reads; reduce locale pack fetch concurrency 14→8; AI and translation routes remain blocked and are never retried.",
+    "reason": "R125 #29 stopped before content assertions after ECONNRESET on id.json.",
+    "quotaNeutral": true,
+    "candidatePackWrites": 0
   }
 }
