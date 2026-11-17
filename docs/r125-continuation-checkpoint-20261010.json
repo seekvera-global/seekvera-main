@@ -6926,240 +6926,208 @@
     "aiQuotaUsedThisPass": 0
   },
   "latestAutomationVerification20261117": {
-    "checkedAt": "2026-11-17T10:30:42Z",
-    "mainHead": "d79b977eb4d43acca54c98bd803a555c8112c07e",
-    "r125CandidateResume": {
-      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
-      "blobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
-      "triggers": [
-        "workflow_dispatch"
-      ],
-      "scheduleTriggerPresent": false,
-      "runTranslationsDefault": false,
-      "repairCandidatesDefault": false,
-      "latestKnownRun": {
-        "number": 150,
-        "id": 38971104197,
-        "createdAt": "2026-10-16T21:41:57Z",
-        "conclusion": "success",
-        "revision": "legacy"
-      },
-      "latestRunSteps": {
-        "resume": "skipped",
-        "candidateAudit": "success",
-        "saveProgress": "success"
-      },
-      "legacyRunPersistedMetadataFiles": 2,
-      "legacyRunCandidatePackWrites": 0,
-      "activeR125Runs": 0,
-      "candidatePersistenceRequiresExplicitOptIn": true,
-      "auditOnlyBranchPersistence": false
+    "checkedAt": "2026-11-17T22:31:44Z",
+    "repositoryHeads": {
+      "main": "e865614e6d89c1f237175d5cf6039ddbea939654",
+      "candidate": "bde8eec7ea4ac865224f334e897ae507dfb6b826"
     },
-    "staticLocaleSectionAudit": {
-      "workflowPath": ".github/workflows/r125-static-locale-section-audit.yml",
-      "workflowReadOnly": true,
-      "aiAndTranslationEndpointsBlocked": true,
-      "noAIProbeOrTranslationGeneration": true,
-      "fullMatrixRun": {
-        "number": 4,
-        "id": 44063778472,
-        "headSha": "07ef4752bcf92d398e41a826cffdbf75c2586125",
-        "conclusion": "failure",
-        "checkedAt": "2026-11-17T10:23:48Z"
-      },
-      "verifiedBeforeLeakFailure": {
-        "publishedPacks": 98,
-        "keysPerPack": 1118,
-        "totalPackKeys": 109564,
-        "missingKeys": 0,
-        "extraKeys": 0,
-        "emptyValues": 0,
-        "sourceHashAndCount": "98/98 pass",
-        "countryProfiles": 248,
-        "homepageLanguages": 98,
-        "sectionPaths": 27,
-        "sectionLanguageApplications": 2646
-      },
-      "englishLeakFindingCombinations": 274,
-      "examples": [
-        "No approved live marketplace listings are available right now. (es, pt, de, ko, ru, vi, sw, th)",
-        "United Kingdom (ms, fil; likely country-name rendering, needs element-level review)",
-        "OPEN MARKETPLACE → (fil)",
-        "GLOBAL AI MARKETPLACE (fil)"
-      ],
-      "candidateVsPublishedComparison": {
-        "combinedDynamicMarketplaceSentence": "Candidate branch already contains fully translated values for es, pt, de, ko, ru, vi, sw, th and ms; currently published i18n-r32 packs still contain the first sentence in English for these languages.",
-        "fil": "Candidate pack still retains OPEN MARKETPLACE → and GLOBAL AI MARKETPLACE in English; needs native Filipino review.",
-        "noCandidatePackChangesMade": true
-      },
-      "diagnosticRun": {
-        "number": 5,
-        "id": 44064547923,
-        "status": "in_progress",
-        "headSha": "3fb07e23aa229e49bc1e3e4fb37b478a432c22ed"
-      },
-      "latestQueuedRun": {
-        "number": 6,
-        "id": 44064682059,
-        "status": "completed",
-        "conclusion": "failure",
-        "headSha": "d79b977eb4d43acca54c98bd803a555c8112c07e",
-        "findingCombinations": 265,
-        "sectionLanguageApplications": 2646,
-        "blockedFallbackRequests": {
-          "ai": 0,
-          "uiTranslate": 45,
-          "pollinations": 0,
-          "providerRequestsSent": 0,
-          "quotaUsed": 0
-        }
-      },
-      "knownHarnessCorrections": [
-        "Removed an incorrect assumption that published static packs include candidate-only qualityPolicy metadata.",
-        "Corrected leak detection so unchanged source phrases are counted rather than excluded.",
-        "Expanded coverage from distributed language sampling to all 98 languages across every discovered section."
-      ],
-      "latestCompletedDiagnosticRun": {
-        "number": 5,
-        "id": 44064547923,
-        "headSha": "3fb07e23aa229e49bc1e3e4fb37b478a432c22ed",
-        "conclusion": "failure",
-        "checkedAt": "2026-11-17T10:27:36Z",
-        "findingCombinations": 265,
-        "phraseOccurrences": 295,
-        "uniquePhrases": 41,
-        "uniqueLanguages": 97,
-        "uniqueSectionsWithFindings": 26,
-        "sectionLanguageApplications": 2646,
-        "phraseCounts": {
-          "Neon Highway": 97,
-          "Country / Region": 70,
-          "YouTube Music": 23,
-          "← Travel Hub": 12,
-          "← Back to search": 10,
-          "AI Voice Agent": 10,
-          "Auto Recharge": 9,
-          "United Kingdom": 8,
-          "GLOBAL AI MARKETPLACE": 4,
-          "United States": 4,
-          "AI Deal Agent": 4,
-          "🏙️ City break": 3,
-          "Business Monthly": 3,
-          "OPEN MARKETPLACE →": 2,
-          "Import & Export": 2,
-          "Fashion & Beauty": 2,
-          "GLOBAL AUTO SEARCH": 2,
-          "Import, Export & Sourcing": 2,
-          "Business Software": 2,
-          "RFQ / supplier sourcing": 2,
-          "Email/Gmail background autopilot:": 2,
-          "VERIFY + PAUSE": 2,
-          "Home Services": 2,
-          "Find Wi-Fi →": 1,
-          "Safety & etiquette": 1,
-          "Free / Public Wi-Fi Finder": 1,
-          "Shopping & Electronics": 1,
-          "Find catering": 1,
-          "CROSS-BORDER LOGISTICS": 1,
-          "Courier & last mile": 1,
-          "Solar & Energy": 1,
-          "ENTERTAINMENT · WORLDWIDE": 1,
-          "Privacy first": 1,
-          "No stranger chat": 1,
-          "Venue / hotel Wi‑Fi QR": 1,
-          "Check My Phone": 1,
-          "Zero‑Cost Mode": 1,
-          "Master controls": 1,
-          "Utilities & Bills": 1,
-          "Delivery & Courier": 1,
-          "Hotels & Marketplace": 1
-        },
-        "provisionalClassification": {
-          "likelyBrandOrProperNameExceptions": {
-            "phrases": [
-              "Neon Highway",
-              "YouTube Music",
-              "United Kingdom",
-              "United States"
-            ],
-            "occurrences": 132,
-            "status": "provisional; element context still required"
-          },
-          "remainingPotentialUIStrings": {
-            "occurrences": 163,
-            "uniquePhrases": 37,
-            "status": "requires language/DOM review"
-          }
-        },
-        "blockedFallbackRequests": {
-          "ai": 0,
-          "uiTranslate": 34,
-          "pollinations": 0,
-          "providerRequestsSent": 0,
-          "quotaUsed": 0
-        },
-        "note": "The 34 /api/ui-translate attempts were intercepted by the read-only audit and answered locally with 503; no request reached the translation provider. This indicates production UI may attempt dynamic fallback for strings not resolved by static packs and requires payload-level diagnosis."
-      },
-      "latestScriptDiagnosticCommit": "ea97ef0a58bb0d57090cfb93cdd5f157fe925245",
-      "latestScriptDiagnosticChange": "Captures language and strings for blocked /api/ui-translate requests; not yet observed in a completed run."
-    },
-    "candidateBranchReadback": {
-      "head": "1b2ae3fa9cae6a261fa51d0df2958016770a18fc",
-      "headCommitMessage": "docs(r125): record candidate source format auditor repair",
-      "summaryBlobSha": "516fb476a0928c97f7484a1e079f4d5d85aa79b8",
-      "summaryCheckedAt": "2026-11-17T09:53:12Z",
-      "completedCandidates": 97,
+    "candidateState": {
+      "structurallyComplete": 98,
+      "total": 98,
+      "qualityCandidates": 97,
       "remaining": [
         "dv"
       ],
-      "remainingFailure": "dv: english_overlap:58",
-      "structurallyComplete": 98,
+      "divehiEnglishOverlap": 58,
+      "keysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
       "published": 0,
-      "linguisticallyCertified": 0,
-      "resumeLatestLogBlobSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
-      "resumeLatestLogTail": "DELTA_FAILURE dv HTTP 503 all_translation_backends_unavailable; workers-ai model responses unparseable",
-      "candidatePackWritesThisPass": 0,
-      "candidateMetadataWritesThisPass": 0
+      "linguisticallyCertified": 0
     },
-    "latestProductionVerification": {
-      "siteHealthRun": 330,
-      "siteHealthRunId": 44045610251,
-      "siteHealthConclusion": "success",
-      "siteHealthCheckedAt": "2026-11-17T08:18:29Z",
-      "safety": "last recorded Safety Smoke #31 passed; four prohibited classes blocked; RLS 17/17",
-      "countryCurrency": "full 248-country profile matrix passed in new static audit; broader live transaction/checkout currency matrix not certified",
-      "AI": "unknown-not-probed; AI binding exists but latest R105 #97 skipped live probes",
-      "translation": "unknown-not-probed; latest log contains HTTP 503 all_translation_backends_unavailable; historical daily_free_ai_limit and Google HTTP429 remain blockers",
-      "voice": "programmatic TTS last passed in R123 #70; live ASR skipped; physical microphone/speaker not certified",
-      "checkout": "inactive pending merchant configuration"
-    },
-    "thisPass": {
-      "mainCodeAndWorkflowCommits": [
-        "5989ecfa9efab24b7c48d02dc718a3c623b76e57",
-        "2deecdcce8ce82069b5682b35c17390e9e2e89d1",
-        "68b2ec87db8991ac7d9fadae5c1fe92ca647434c",
-        "39858998e57ea3371d05c5638e7c523ff92d1eb5",
-        "07ef4752bcf92d398e41a826cffdbf75c2586125",
-        "3fb07e23aa229e49bc1e3e4fb37b478a432c22ed",
-        "d79b977eb4d43acca54c98bd803a555c8112c07e",
-        "cff22f0b71ce29f341b251797097ab13dce1f101",
-        "ea97ef0a58bb0d57090cfb93cdd5f157fe925245",
-        "199f7408fdf386ed448ca65a0d0292aef60c5c47"
+    "latestProductionSectionAudit": {
+      "run": 49,
+      "runId": 44179700484,
+      "workflow": ".github/workflows/r125-static-locale-section-audit.yml",
+      "createdAt": "2026-11-17T21:25:42Z",
+      "status": "completed",
+      "conclusion": "failure",
+      "headSha": "e865614e6d89c1f237175d5cf6039ddbea939654",
+      "readinessMarker": "passed",
+      "languages": 98,
+      "sections": 27,
+      "sectionLanguageApplications": 2646,
+      "countryProfiles": 248,
+      "missingKeys": 0,
+      "extraKeys": 0,
+      "emptyValues": 0,
+      "exactFindingCombinations": 41,
+      "exactLanguages": [
+        "fy",
+        "lb",
+        "lo",
+        "mg",
+        "rm",
+        "rw",
+        "tn"
       ],
+      "exactSections": [
+        "/",
+        "/business-software.html",
+        "/cars-auto.html",
+        "/connectivity.html",
+        "/deal-agent.html",
+        "/education.html",
+        "/entertainment.html",
+        "/everyday.html",
+        "/health.html",
+        "/import-export.html",
+        "/jobs.html",
+        "/marketplace.html",
+        "/property.html",
+        "/scan.html",
+        "/seller-plans.html",
+        "/shopping.html",
+        "/software.html",
+        "/solar.html",
+        "/tourism.html",
+        "/travel.html",
+        "/web-hosting.html",
+        "/wifi.html"
+      ],
+      "partialFindingCombinations": 0,
+      "unresolvedFindingCombinations": 0,
+      "exactPhraseCounts": {
+        "← Back to search": 10,
+        "← Travel Hub": 9,
+        "AI Voice Agent": 3,
+        "GLOBAL AI MARKETPLACE": 2,
+        "Fashion & Beauty": 2,
+        "Import, Export & Sourcing": 2,
+        "Business Software": 2,
+        "Email/Gmail background autopilot:": 2,
+        "VERIFY + PAUSE": 2,
+        "Home Services": 2,
+        "OPEN MARKETPLACE →": 1,
+        "Import & Export": 1,
+        "Safety & etiquette": 1,
+        "GLOBAL AUTO SEARCH": 1,
+        "Shopping & Electronics": 1,
+        "Solar & Energy": 1,
+        "ENTERTAINMENT · WORLDWIDE": 1,
+        "Privacy first": 1,
+        "Check My Phone": 1,
+        "Master controls": 1,
+        "Utilities & Bills": 1,
+        "Hotels & Marketplace": 1,
+        "Business Monthly": 1
+      },
+      "finding": "41 exact English UI finding combinations remain across seven languages; this is a real localization failure, not a pack-structure failure."
+    },
+    "priorReadinessFailure": {
+      "run": 48,
+      "runId": 44178613377,
+      "conclusion": "failure",
+      "finding": "Filipino Pages readiness marker did not match the actual deployed i18n-ui.js wording; fixed before run 49."
+    },
+    "latestResumeWorkflowInspection": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
+      "trigger": "workflow_dispatch only",
+      "scheduleTriggerPresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "auditOnlyPushGuard": "Save progress step runs only when run_translations or repair_candidates is explicitly true",
+      "latestMatchingRun": {
+        "number": 150,
+        "runId": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "resume": "skipped",
+        "audit": "success"
+      },
+      "latestRunAuditOutput": {
+        "completedCount": 97,
+        "remaining": [
+          "dv"
+        ],
+        "resumeSucceeded": false,
+        "readyForLinguisticReview": false,
+        "exitCode": "not-run"
+      },
+      "currentRevisionRunObserved": false,
+      "activeRuns": 0,
+      "candidatePackWritesInLatestRun": 0,
+      "note": "The only matching historical run is legacy; current Main workflow has not yet been verified by a run."
+    },
+    "productionChecks": {
+      "r105": {
+        "run": 140,
+        "runId": 44178359048,
+        "conclusion": "success",
+        "aiBinding": true,
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r123": {
+        "run": 95,
+        "runId": 44178353835,
+        "conclusion": "success",
+        "programmaticTTS": "passed",
+        "voiceAcknowledgement": "passed",
+        "dynamicVoicePlaceholders": "passed",
+        "liveASR": "skipped",
+        "physicalMicrophoneSpeakerCertified": false
+      },
+      "r9e": {
+        "run": 61,
+        "runId": 44178353888,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "manualMoroccoPriority": "passed",
+        "manualWorldwidePriority": "passed",
+        "prohibitedWeapon": "blocked",
+        "voiceAndPwaCache": "passed",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "pages": {
+        "run": 1734,
+        "runId": 44179698787,
+        "conclusion": "success",
+        "build": "success",
+        "deploy": "success"
+      },
+      "siteHealth": {
+        "run": 331,
+        "runId": 44177541078,
+        "conclusion": "success",
+        "scope": "API health, robots/sitemap and 18 named public pages"
+      }
+    },
+    "aiAvailability": {
+      "chat": "unknown-not-probed",
+      "translation": "unknown-not-probed",
+      "aiBinding": "present",
+      "latestLiveAiProbe": "skipped-by-policy",
+      "lastObservedResumeLogError": "HTTP 503 all_translation_backends_unavailable",
+      "knownHistoricalBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429"
+      ],
+      "quotaRequestsThisPass": 0
+    },
+    "checkout": "inactive pending merchant configuration and end-to-end merchant verification",
+    "thisPass": {
       "candidatePackWrites": 0,
-      "candidateMetadataWrites": 0,
+      "candidateMetadataFilesWritten": 1,
       "translationRequests": 0,
       "aiQuotaUsed": 0,
       "published": false,
       "linguisticCertification": false,
       "decision": "NO-GO"
-    },
-    "latestRepositoryRun": {
-      "id": 44065350469,
-      "number": 1659,
-      "name": "pages build and deployment",
-      "status": "in_progress",
-      "createdAt": "2026-11-17T10:29:52Z"
     }
   },
   "latestUiTranslationSessionGuardRepair": {
