@@ -406,7 +406,7 @@ Conversation history:\
 ${history||'(none)'}\
 Latest user message: ${message}`;
  const messages=[{role:'system',content:system},{role:'user',content:message}];
- let quotaBlocked=false;
+ let quotaBlocked=false,uncertainFailure=false,aiRaceTimedOut=false;
  const modelAttempt=async model=>{
   try{
    const r=await Promise.race([env.AI.run(model,{messages,temperature:.18,max_tokens:420}),new Promise((_,reject)=>setTimeout(()=>reject(Error('model timeout')),3000))]),text=modelText(r),obj=parseJSON(text);if(!obj||!clean(obj.reply,5000))throw Error('invalid structured response');
@@ -416,11 +416,15 @@ Latest user message: ${message}`;
    return{ok:true,response:reply,language,speechLocale:speechLocaleFor(language,message,body?.history),category:cat,route:cat==='general'?null:(ROUTES[cat]||ROUTES.marketplace),countryAction:act.cc?{type:'set-country',code:act.cc}:null,languageAction:act.ll?{type:'set-language',code:act.ll}:null,model,fastPath:act.isAction?'r114-verified-action-first':meta?'r114-meta-conversation-guard':'r114-fast-model-race',liveData:false}
   }catch(e){
    if(quotaLimited(e))quotaBlocked=true;
+   if(/model timeout/i.test(String(e?.message||e)))uncertainFailure=true;
    throw e;
   }
  };
- try{const winner=await Promise.race([Promise.any([FAST,PRIMARY,FALLBACK].map(modelAttempt)),new Promise(resolve=>setTimeout(()=>resolve(null),3300))]);if(winner)return winner}catch(e){if(quotaLimited(e))quotaBlocked=true}
- if(quotaBlocked)return null;
+ let raceTimer;
+ const raceTimeout=new Promise(resolve=>{raceTimer=setTimeout(()=>{aiRaceTimedOut=true;resolve(null)},3300)});
+ try{const winner=await Promise.race([Promise.any([FAST,PRIMARY,FALLBACK].map(modelAttempt)),raceTimeout]);if(winner)return winner}catch(e){if(quotaLimited(e))quotaBlocked=true}finally{clearTimeout(raceTimer)}
+ // A timed-out or unresolved Workers AI request may still return HTTP429/daily_free_ai_limit late. Fail closed instead of starting an external provider while that result is unknown.
+ if(quotaBlocked||uncertainFailure||aiRaceTimedOut)return null;
  // Keep a real conversational AI fallback, but never let it stall the UI.
  try{
    const backupPrompt=messages.map(x=>String(x?.role||'user').toUpperCase()+': '+String(x?.content||'')).join('\n').slice(-14000);
