@@ -6584,5 +6584,51 @@
       "linguisticCertification": false
     },
     "note": "This regression protects the audit-only no-write boundary. It does not execute R125, test translation provider availability, publish candidate packs, or certify language quality."
+  },
+  "latestR125GuardHardening": {
+    "checkedAt": "2026-11-17T06:58:44Z",
+    "commit": "7509f87bc83f35e8e56c0add9fa3cb5039366d49",
+    "file": "tools/test-r125-audit-only-guard.py",
+    "change": "Strengthened the audit-only regression guard: assert run_translations and repair_candidates are individually optional boolean inputs defaulting false; assert the manual audit-only bookkeeping step has no git persistence commands; assert git add, git commit and git push each occur exactly once inside the explicit opt-in save step.",
+    "localVerification": {
+      "currentWorkflow": "passed",
+      "mutationRunTranslationsDefaultToTrue": "correctly rejected",
+      "mutationSaveGateRemoved": "correctly rejected",
+      "githubActionsR125": "pending next manual R125 dispatch"
+    },
+    "currentWorkflow": {
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "activeR125Runs": 0,
+      "latestR125": {
+        "run": 150,
+        "id": 38971104197,
+        "status": "completed",
+        "conclusion": "success",
+        "event": "push on legacy workflow revision",
+        "resume": "skipped",
+        "audit": "success",
+        "remaining": [
+          "dv"
+        ]
+      }
+    },
+    "latestPages": {
+      "run": 1629,
+      "id": 44035175557,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "7509f87bc83f35e8e56c0add9fa3cb5039366d49"
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "published": false,
+      "linguisticCertification": false
+    },
+    "decision": "NO-GO; this guard hardening does not change locale quality, AI availability, physical audio or checkout blockers."
   }
 }
