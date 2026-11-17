@@ -6,6 +6,7 @@ on:
     paths:
       - 'worker*.js'
       - 'global-ui.js'
+      - 'navigation.js'
       - 'i18n-ui.js'
       - 'r32-i18n.js'
       - 'games.js'
@@ -62,8 +63,10 @@ jobs:
           node tools/test-audio-authority.cjs
           node tools/test-voice-sequence.cjs
           node --check i18n-ui.js
+          node --check navigation.js
           node tools/test-locale-cognates.cjs
           node tools/test-ui-translation.cjs
+          node tools/test-ui-translation-quota-session-guard.cjs
           node tools/test-ai-quota-boundary.cjs
           node tools/test-candidate-script-triage.cjs
           python tools/test-repair-candidate-reserved-identifiers.py
