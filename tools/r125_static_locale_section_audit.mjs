@@ -15,6 +15,30 @@ try {
   });
   context.setDefaultTimeout(20000);
 
+  // Static locale assets can be reset transiently when many packs are fetched together.
+  // Retry only network/transient 5xx failures; never retry translation or AI endpoints.
+  async function getStaticResponse(url, label) {
+    const maxAttempts = 4;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        const response = await context.request.get(url, { timeout: 30000 });
+        if (response.status() >= 500 && response.status() <= 599 && attempt < maxAttempts) {
+          console.warn('R125_STATIC_FETCH_RETRY', label, 'HTTP', response.status(), 'attempt', attempt);
+          await pause(350 * (2 ** (attempt - 1)));
+          continue;
+        }
+        return response;
+      } catch (error) {
+        const message = String(error);
+        const transient = /ECONNRESET|ETIMEDOUT|ECONNREFUSED|EAI_AGAIN|socket hang up|network/i.test(message);
+        if (!transient || attempt === maxAttempts) throw error;
+        console.warn('R125_STATIC_FETCH_RETRY', label, message.slice(0, 180), 'attempt', attempt);
+        await pause(350 * (2 ** (attempt - 1)));
+      }
+    }
+    throw new Error('R125_STATIC_FETCH_EXHAUSTED ' + label);
+  }
+
   const blocked = { ai: [], translation: [], pollinations: [] };
   await context.route('**/api/ai**', async route => {
     blocked.ai.push({ url: route.request().url(), method: route.request().method() });
@@ -52,8 +76,8 @@ try {
     { timeout: 30000 }
   );
 
-  const manifestResponse = await context.request.get(BASE + '/i18n-r32/manifest.json?v=' + Date.now());
-  const sourceResponse = await context.request.get(BASE + '/i18n-r32-source.json?v=' + Date.now());
+  const manifestResponse = await getStaticResponse(BASE + '/i18n-r32/manifest.json?v=' + Date.now(), 'manifest');
+  const sourceResponse = await getStaticResponse(BASE + '/i18n-r32-source.json?v=' + Date.now(), 'source');
   assert.equal(manifestResponse.status(), 200, 'locale manifest HTTP status');
   assert.equal(sourceResponse.status(), 200, 'locale source HTTP status');
   const manifest = await manifestResponse.json();
@@ -71,12 +95,12 @@ try {
   const sourceKeys = source.strings;
   const sourceSet = new Set(sourceKeys);
   const packs = {};
-  for (let i = 0; i < manifest.languages.length; i += 14) {
-    const batch = manifest.languages.slice(i, i + 14);
+  for (let i = 0; i < manifest.languages.length; i += 8) {
+    const batch = manifest.languages.slice(i, i + 8);
     await Promise.all(batch.map(async language => {
-      const response = await context.request.get(
+      const response = await getStaticResponse(
         BASE + '/i18n-r32/' + language + '.json?v=' + manifest.sourceHash,
-        { timeout: 30000 }
+        language + ' pack'
       );
       assert.equal(response.status(), 200, language + ' pack HTTP status');
       const data = await response.json();
@@ -94,7 +118,7 @@ try {
       assert.equal(empty.length, 0, language + ' empty/non-string values');
       packs[language] = translations;
     }));
-    console.log('R125_STATIC_PACK_PROGRESS', Math.min(i + 14, 98), '/ 98');
+    console.log('R125_STATIC_PACK_PROGRESS', Math.min(i + 8, 98), '/ 98');
   }
 
   const countryMatrix = await page.evaluate(async () => {
