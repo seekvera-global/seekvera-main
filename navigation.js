@@ -10,6 +10,20 @@ const UI_TRANSLATION_BLOCK_KEY='sv_ui_translate_blocked_r19',UI_TRANSLATION_LOCK
 try{uiTranslationBlocked=sessionStorage.getItem(UI_TRANSLATION_BLOCK_KEY)==='1'}catch{}
 function blockUiTranslation(){uiTranslationBlocked=true;try{sessionStorage.setItem(UI_TRANSLATION_BLOCK_KEY,'1')}catch{}}
 function requestUiTranslation(language,strings){
+ const sourceList=Array.isArray(strings)?strings:[];
+ if(!sourceList.length)return Promise.resolve([]);
+ const r32=typeof window!=='undefined'?window.SEEKVERA_I18N_R32:null;
+ const code=r32?.tFor?langCode():'';
+ const localValues=sourceList.map(source=>{
+  try{
+   const value=r32?.tFor?.(code,source);
+   return value&&value!==source?value:'';
+  }catch{return''}
+ });
+ const missingIndices=localValues.map((value,i)=>value?-1:i).filter(i=>i>=0);
+ if(!missingIndices.length)return Promise.resolve(localValues);
+ const hasLocal=localValues.some(Boolean);
+ const pendingStrings=missingIndices.map(i=>sourceList[i]);
  const run=async()=>{
   if(uiTranslationBlocked)return null;
   let lockToken='';
@@ -23,18 +37,23 @@ function requestUiTranslation(language,strings){
   try{
    const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),15000);
    let r;
-   try{r=await fetch('/api/ui-translate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language,strings}),signal:ctl.signal})}
+   try{r=await fetch('/api/ui-translate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({language,strings:pendingStrings}),signal:ctl.signal})}
    finally{clearTimeout(to)}
    const d=await r.json().catch(()=>null),reason=[d?.reason,d?.error].filter(Boolean).join(' ');
    if(r.status===429||r.status===503||/(daily_free_ai_limit|provider_rate_limited|all_translation_backends_unavailable|\b429\b|rate.?limit|too many requests)/i.test(reason)){blockUiTranslation();return null}
-   if(!r.ok||!Array.isArray(d?.translations)||d.translations.length!==strings.length)return null;
+   if(!r.ok||!Array.isArray(d?.translations)||d.translations.length!==pendingStrings.length)return null;
    return d.translations;
   }catch{return null}
   finally{if(lockToken)try{if(sessionStorage.getItem(UI_TRANSLATION_LOCK_KEY)===lockToken)sessionStorage.removeItem(UI_TRANSLATION_LOCK_KEY)}catch{}}
  };
  const task=uiTranslationQueue.then(run,run);
  uiTranslationQueue=task.then(()=>null,()=>null);
- return task;
+ return task.then(translations=>{
+  if(!translations)return hasLocal?localValues:null;
+  const merged=[...localValues];
+  missingIndices.forEach((index,i)=>{merged[index]=String(translations[i]||'').trim()});
+  return merged;
+ });
 }
 const localeControl=id=>document.querySelector(`.sv-controls select#${id},select#${id}.sv-select`);
 

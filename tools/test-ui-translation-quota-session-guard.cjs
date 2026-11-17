@@ -23,6 +23,13 @@ async function main(){
  // The navigation fallback shares the same session block and cannot issue another request.
  const n=harness(navCode,shared,[{status:200,body:{translations:['مرحبا']}}]);
  assert.equal(await n.context.requestUiTranslation('Arabic',['Hello']),null);assert.equal(n.calls(),0);
+ // Locally reviewed pack/quick labels must bypass the provider entirely.
+ const localLabels={'Back':'वापस','Page navigation':'पृष्ठ नेविगेशन','Voice reply':'आवाज़ में जवाब','Voice':'आवाज़'};
+ let localFetchCalls=0;
+ const localNav={sessionStorage:storage(),AbortController,setTimeout,clearTimeout,fetch:async()=>{localFetchCalls++;return{status:503,ok:false,json:async()=>({reason:'all_translation_backends_unavailable'})}},langCode:()=> 'hi',window:{SEEKVERA_I18N_R32:{tFor:(code,source)=>code==='hi'?(localLabels[source]||source):source}},console};
+ vm.createContext(localNav);vm.runInContext(navBlock,localNav);
+ const localResult=await localNav.requestUiTranslation('Hindi',['Back','Page navigation','Voice reply','Voice']);
+ assert.deepEqual(localResult,['वापस','पृष्ठ नेविगेशन','आवाज़ में जवाब','आवाज़']);assert.equal(localFetchCalls,0);
  // Google/provider 429 is also terminal for this browser session.
  const s429=storage(),c429=harness(i18nCode,s429,[{status:429,body:{reason:'provider_rate_limited'}}]);
  await Promise.all([c429.context.cloudTranslate('French',['one']),c429.context.cloudTranslate('Arabic',['two'])]);
