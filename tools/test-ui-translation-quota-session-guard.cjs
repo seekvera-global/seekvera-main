@@ -44,6 +44,7 @@ async function main(){
   {code:'bn',language:'Bangla',labels:{'Back':'পেছনে','Page navigation':'পৃষ্ঠা নেভিগেশন','Voice reply':'কণ্ঠে উত্তর','Voice':'ভয়েস'}},
   {code:'bg',language:'Bulgarian',labels:{'Back':'Назад','Page navigation':'Навигация по страниците','Voice reply':'Гласов отговор','Voice':'Глас'}},
   {code:'hr',language:'Croatian',labels:{'Back':'Natrag','Page navigation':'Navigacija po stranicama','Voice reply':'Glasovni odgovor','Voice':'Glas'}},
+  {code:'sr',language:'Serbian',labels:{'Back':'Назад','Page navigation':'Навигација по страницама','Voice reply':'Гласовни одговор','Voice':'Глас'}},
   {code:'ru',language:'Russian',labels:{'Back':'Назад','Page navigation':'Навигация по страницам','Voice reply':'Голосовой ответ','Voice':'Голос'}},
   {code:'ur',language:'Urdu',labels:{'Back':'واپس','Page navigation':'صفحات پر نیویگیشن','Voice reply':'صوتی جواب','Voice':'آواز','Business Yearly':'سالانہ کاروباری منصوبہ','Business Monthly':'ماہانہ کاروباری منصوبہ'}},
   {code:'ja',language:'Japanese',labels:{'Back':'戻る','Page navigation':'ページナビゲーション','Voice reply':'音声で返信','Voice':'音声'}},
