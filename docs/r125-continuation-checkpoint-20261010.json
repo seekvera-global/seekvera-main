@@ -3338,7 +3338,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-17T22:09:19+01:00",
+  "updatedAt": "2026-11-18T06:31:36+01:00",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -9683,5 +9683,249 @@
     "liveAsr": "skipped",
     "physicalMicrophoneSpeakerCertified": false
   },
-  "latestMainCommit": "9c3256ccc3179f19b6f45105576c711dc38cda26"
+  "latestMainCommit": "fd8172e95495e23ae0c8d40aaead0af08a3f5116",
+  "latestAutomationPass20261118Turn11": {
+    "checkedAt": "2026-11-18T05:31:36Z",
+    "sourceReadback": {
+      "checkpointBlobSha": "8a64fab4b83e6546d6f8dbf83f25b4beb4b4d9d3",
+      "candidateSummaryUpdatedAt": "2026-11-17T22:31:44Z",
+      "candidateBranch": "work/r125-locale-candidates-20261008",
+      "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
+      "resumeLatestLogSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b"
+    },
+    "candidateState": {
+      "structuralPacks": "98/98",
+      "keysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "qualityGate": "97/98",
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "publishedPacks": 0,
+      "linguisticCertifications": 0
+    },
+    "resumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "trigger": "workflow_dispatch only",
+      "schedulePresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestMatchingRun": {
+        "number": 150,
+        "id": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "resume": "skipped",
+        "audit": "success",
+        "candidatePackWrites": 0,
+        "metadataFilesWritten": 2,
+        "translationRequests": 0,
+        "aiQuotaUsed": 0
+      },
+      "currentRevisionRunObserved": false,
+      "activeResumeRuns": 0,
+      "candidateWritesDeferred": true
+    },
+    "mainRepairs": [
+      {
+        "commit": "437a7ce5c74ef2e2528acb6fe71c23c247b34a51",
+        "filesChanged": 49,
+        "version": "20261118-r125-filipino-quick-v5",
+        "repair": "Added provisional Filipino Back/Page navigation/Voice reply/Voice labels to the real QUICK map; added a regression case that reads QUICK and asserts zero provider calls; refreshed the runtime cache version in all 44 HTML pages; updated R125, R105 and R9e live readiness assertions."
+      },
+      {
+        "commit": "fd8172e95495e23ae0c8d40aaead0af08a3f5116",
+        "file": ".github/workflows/r105-final-release.yml",
+        "repair": "R105 #156 exposed a shell syntax error after the Filipino grep lines were inserted outside the if-chain. Moved all four checks inside the chain; R105 #157 then passed."
+      }
+    ],
+    "latestR125StaticAudit": {
+      "precedingRun": {
+        "number": 64,
+        "id": 44242568302,
+        "conclusion": "failure",
+        "languages": 98,
+        "sections": 27,
+        "sectionLanguageApplications": 2646,
+        "countryProfiles": 248,
+        "exactEnglishFindings": 0,
+        "partialFindings": 0,
+        "unresolvedFindings": 0,
+        "translationFallback": {
+          "language": "Filipino",
+          "strings": [
+            "Back",
+            "Page navigation",
+            "Voice reply",
+            "Voice"
+          ]
+        },
+        "aiRequests": 0,
+        "providerTranslationRequests": 0,
+        "pollinationsRequests": 0
+      },
+      "repairCommit": "437a7ce5c74ef2e2528acb6fe71c23c247b34a51",
+      "currentRun": {
+        "number": 65,
+        "id": 44244503712,
+        "status": "in_progress",
+        "conclusion": null,
+        "headSha": "437a7ce5c74ef2e2528acb6fe71c23c247b34a51",
+        "readiness": "passed",
+        "syntax": "passed",
+        "quotaGuard": "passed",
+        "noTranslateExclusionGuard": "passed",
+        "fullMatrix": "in_progress",
+        "lastUpdatedAt": "2026-11-18T05:28:35Z",
+        "logsAvailable": false
+      }
+    },
+    "productionVerification": {
+      "r105": {
+        "run": 157,
+        "id": 44244622563,
+        "conclusion": "success",
+        "workerDeployment": "success",
+        "productionHealth": "R107_DEPLOY_HEALTH_PASS",
+        "aiBinding": true,
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "countryChangeToIceland": "passed",
+        "prohibitedWeapon": "blocked",
+        "internalAssetExclusion": "passed",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r105FailedPredecessor": {
+        "run": 156,
+        "id": 44244503696,
+        "conclusion": "failure",
+        "cause": "shell syntax near unexpected token && in the health-gate script",
+        "fixedBy": "fd8172e95495e23ae0c8d40aaead0af08a3f5116"
+      },
+      "r9e": {
+        "run": 72,
+        "id": 44242568318,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "manualMoroccoPriority": "passed",
+        "manualWorldwidePriority": "passed",
+        "visibleLocales": [
+          "MA/ar",
+          "FR/fr",
+          "IN/hi",
+          "CN/zh"
+        ],
+        "prohibitedWeapon": "blocked",
+        "voiceAndPwaCache": "passed",
+        "liveAiProbes": "skipped-by-policy",
+        "liveASR": "skipped",
+        "physicalAudioHardwareCertified": false
+      },
+      "r9eNext": {
+        "run": 73,
+        "id": 44244503754,
+        "status": "in_progress",
+        "conclusion": null,
+        "headSha": "437a7ce5c74ef2e2528acb6fe71c23c247b34a51",
+        "currentStep": "Install Chromium browser test runtime",
+        "lastUpdatedAt": "2026-11-18T05:28:35Z",
+        "logsAvailable": false
+      },
+      "safety": {
+        "run": 39,
+        "id": 44244503674,
+        "conclusion": "success",
+        "blockedCases": [
+          "weapons_or_explosives",
+          "explicit_sexual_content",
+          "stolen_counterfeit_or_fake_documents",
+          "ownership_or_consent_problem"
+        ],
+        "benignLand": "allowed_pending_human_review",
+        "liveSafetyUi": "passed",
+        "failClosed": "passed"
+      },
+      "aiFallback": {
+        "run": 68,
+        "id": 44244503645,
+        "conclusion": "success"
+      },
+      "audio": {
+        "run": 111,
+        "id": 44244503642,
+        "conclusion": "success",
+        "audioAuthorityUnitTests": "passed",
+        "categoryTranslations": "passed",
+        "voiceAcknowledgement": "passed",
+        "dynamicVoicePlaceholders": "passed",
+        "arabicHomeAnd31Descriptions": "passed",
+        "delayedSyntheticWavHeadlessAndroid": "passed",
+        "productionAssetStep": "skipped",
+        "liveASR": "skipped",
+        "physicalMicrophoneSpeakerCertified": false
+      },
+      "pages": [
+        {
+          "run": 1767,
+          "id": 44244501787,
+          "conclusion": "success"
+        },
+        {
+          "run": 1768,
+          "id": 44244621197,
+          "conclusion": "success"
+        }
+      ]
+    },
+    "productionPackState": {
+      "manifest": {
+        "version": "20260926-r76-complete-global-final",
+        "sourceHash": "b371f2422f8b5416",
+        "sourceCount": 1045,
+        "languageCount": 98
+      },
+      "candidate": {
+        "sourceHash": "6a1126e6a2ce5629",
+        "sourceCount": 1118,
+        "languageCount": 98
+      },
+      "unpublishedKeyDelta": 73,
+      "published": false
+    },
+    "ai": {
+      "binding": true,
+      "chatAvailability": "unknown-not-probed",
+      "translationAvailability": "unknown-not-probed",
+      "liveGenerationProbes": "skipped-by-policy",
+      "latestResumeLogError": "HTTP 503 all_translation_backends_unavailable",
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429"
+      ],
+      "translationRequestsThisPass": 0,
+      "aiQuotaUsedThisPass": 0
+    },
+    "voice": {
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "dynamicPlaceholders": "passed",
+      "headlessAndroidAudio": "passed",
+      "liveASR": "skipped",
+      "physicalMicrophoneSpeakerCertification": false
+    },
+    "checkout": "inactive_pending_merchant_configuration_and_end_to_end_merchant_verification",
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "publishedPacks": 0,
+      "linguisticCertifications": 0,
+      "decision": "NO-GO"
+    }
+  }
 }
