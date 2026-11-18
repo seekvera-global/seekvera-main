@@ -156,6 +156,13 @@ ru:{
 'Page navigation':'Навигация по страницам',
 'Voice reply':'Голосовой ответ',
 'Voice':'Голос'
+},
+// Provisional Urdu quick UI labels; native review remains required.
+ur:{
+'Back':'واپس',
+'Page navigation':'صفحات پر نیویگیشن',
+'Voice reply':'صوتی جواب',
+'Voice':'آواز'
 }};
 // Provisional quota-neutral overrides for the exact R125 UI leaks. Native review remains required.
 const R125_PROVISIONAL={
