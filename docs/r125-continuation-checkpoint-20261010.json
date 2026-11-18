@@ -115,7 +115,7 @@
     "Production locale manifest has 1,045 keys versus 1,118 candidate-source keys; 73 keys remain unpublished and unreviewed. Do not promote candidate packs to close this gap.",
     "The current resume log reports Dhivehi retries timing out and HTTP 503 all_translation_backends_unavailable from three Workers AI backends. Historical daily_free_ai_limit and Google HTTP429 remain blockers; no quota probes or bypasses were attempted.",
     "All 98 candidate packs still require qualified linguistic review; none is published or linguistically certified.",
-    "R125 #85 on v22 completed with zero static findings across 98 languages × 27 sections and 248 country profiles, but detected one Armenian dynamic fallback for Back/Page navigation/Voice reply/Voice. Main v23 adds local Armenian quick labels and zero-provider-call regression coverage; R125 #86 is running the full matrix.",
+    "R125 #85 on v22 completed with zero static findings but detected one Armenian dynamic fallback. The v23 repair added Armenian QUICK labels. R125 #86 on v23 then completed all 98 languages × 27 sections and 248 country profiles with zero exact/partial/unresolved findings, but detected one Azerbaijani dynamic fallback for Back/Page navigation/Voice reply/Voice. Main v24 now adds Azerbaijani local QUICK labels and zero-provider-call regression coverage; R125 #87 is running the full matrix.",
     "R125 #86 was still installing Chromium at the latest read; the 98 × 27 matrix has not started yet. Do not claim v23 locale audit success until it completes.",
     "Physical microphone/speaker certification and live ASR remain incomplete; browser/headless playback is not hardware certification.",
     "Checkout remains inactive until merchant-account configuration and end-to-end payment/settlement verification.",
@@ -177,7 +177,7 @@
     }
   },
   "remainingChecks": [
-    "Complete R125 #86 on v23: verify all 98 languages × 27 sections and 248 country profiles with zero exact, partial, unresolved or dynamic fallback findings.",
+    "Complete R125 #87 on v24: verify all 98 languages × 27 sections and 248 country profiles with zero exact, partial, unresolved or dynamic fallback findings.",
     "Resolve Divehi's 58 English-overlap findings with qualified native Dhivehi translation/review; do not synthesize or certify unreviewed wording.",
     "Run the full candidate quality/script/duplicate audit after quota-neutral repairs; structural PASS alone is not quality certification.",
     "Obtain qualified native review for all 98 candidate packs; publish no partial or unreviewed packs.",
@@ -278,7 +278,7 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-11-18T14:58:22.353Z",
+    "checkedAt": "2026-11-18T15:06:52Z",
     "candidateCommit": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
     "completedCount": 97,
     "remainingCount": 1,
@@ -289,7 +289,7 @@
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false,
-    "note": "Candidate summary and resume log were read from the branch and remain unchanged; no candidate pack writes were made. Latest known Main resume run #150 is legacy and completed; no current R125 resume run is queued or in progress.",
+    "note": "Candidate summary and resume-latest.log were read from work/r125-locale-candidates-20261008 and left unchanged. Latest matching Main resume run #150 is legacy and completed with Resume skipped; no active/queued resume run was observed. No candidate pack writes or translation requests were made in this pass.",
     "quotaStatusCurrent": "unknown-not-probed",
     "knownDailyFreeAiLimitBlocker": true,
     "repairBatch20261114": {
@@ -503,11 +503,14 @@
     "latestKnownRunConclusion": "success",
     "latestKnownResume": "skipped",
     "latestKnownAudit": "success",
-    "candidatePackWritesThisPass": 0,
+    "candidatePackWritesThisPass": false,
     "translationRequestsThisPass": 0,
     "aiQuotaUsedThisPass": 0,
     "resumeLogBlobSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9",
-    "candidateBranch": "work/r125-locale-candidates-20261008"
+    "candidateBranch": "work/r125-locale-candidates-20261008",
+    "activeRunObserved": false,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0
   },
   "builderRepair": {
     "commit": "634a0d31cb571300d658bb24580bdad3cbaeb75b",
@@ -9213,45 +9216,21 @@
     "decision": "NO-GO"
   },
   "latestAutomationPass20261118": {
-    "checkedAt": "2026-11-18T11:03:32Z",
-    "mainCommit": "995f9b7548a3dbf19442da402b7b917a3bd3d0f3",
-    "runtimeVersion": "20261118-r125-global-quick-v16",
-    "quotaNeutralRepair": {
-      "language": "lv",
-      "labels": {
-        "Back": "Atpakaļ",
-        "Page navigation": "Lapu navigācija",
-        "Voice reply": "Balss atbilde",
-        "Voice": "Balss"
-      },
-      "commit": "995f9b7548a3dbf19442da402b7b917a3bd3d0f3",
-      "changedFiles": 48,
-      "htmlCacheBusted": 44,
-      "regressionTest": "tools/test-ui-translation-quota-session-guard.cjs",
-      "liveAssertions": [
-        "R125",
-        "R105",
-        "R9e"
-      ]
+    "checkedAt": "2026-11-18T15:06:52Z",
+    "sourceReadback": {
+      "checkpointBlob": "2a9689b7e27a6147ffde0dcefd2e74a26a58adb7",
+      "candidateSummaryBlob": "551a1cad78540f437e67d1d0a88ae1e844478022",
+      "resumeLatestLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9"
     },
-    "previousR125": {
-      "run": 77,
-      "runId": 44278969551,
-      "status": "completed",
+    "priorR125": {
+      "run": 86,
+      "runId": 44329277204,
       "conclusion": "failure",
-      "matrix": {
-        "languages": 98,
-        "sections": 27,
-        "sectionLanguageApplications": 2646,
-        "countryProfiles": 248
-      },
-      "staticFindings": {
-        "exact": 0,
-        "partial": 0,
-        "unresolved": 0
-      },
+      "staticFindings": 0,
+      "partialFindings": 0,
+      "unresolvedFindings": 0,
       "dynamicFallback": {
-        "language": "Latvian",
+        "language": "Azerbaijani",
         "requests": 1,
         "strings": [
           "Back",
@@ -9259,137 +9238,42 @@
           "Voice reply",
           "Voice"
         ]
-      },
-      "providerQuotaImpact": "unknown"
-    },
-    "currentRuns": {
-      "r125": {
-        "run": 78,
-        "runId": 44290870408,
-        "status": "in_progress",
-        "conclusion": null
-      },
-      "r9e": {
-        "run": 85,
-        "runId": 44290870373,
-        "status": "in_progress",
-        "conclusion": null
-      },
-      "r105": {
-        "run": 169,
-        "runId": 44290870274,
-        "status": "completed",
-        "conclusion": "success"
-      },
-      "r123": {
-        "run": 122,
-        "runId": 44290870399,
-        "status": "completed",
-        "conclusion": "success"
-      },
-      "safety": {
-        "run": 49,
-        "runId": 44290870293,
-        "status": "completed",
-        "conclusion": "success"
-      },
-      "pages": {
-        "run": 1844,
-        "runId": 44290867752,
-        "status": "completed",
-        "conclusion": "success"
       }
     },
-    "latestResumeWorkflow": {
-      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
-      "triggers": [
-        "workflow_dispatch"
-      ],
-      "runTranslationsDefault": false,
-      "repairCandidatesDefault": false,
-      "scheduleTriggerPresent": false,
-      "latestKnownRun": 150,
-      "latestKnownRunId": 38971104197,
-      "latestKnownStatus": "completed",
-      "latestKnownConclusion": "success",
-      "resumeStep": "skipped",
-      "auditStep": "success",
-      "candidatePackWrites": 0,
-      "metadataFilesWritten": 2,
-      "activeResumeRuns": 0,
-      "note": "Run #150 was on a legacy workflow revision; current Main workflow contains the actual resume build step behind explicit run_translations=true.",
-      "candidateWritesDeferredWhileActive": false
+    "repair": {
+      "commit": "b546944bae1bb8d8f8836eaab4be219cacb8591d",
+      "version": "20261118-r125-global-quick-v24",
+      "htmlPagesUpdated": 44,
+      "workflowsUpdated": 3,
+      "quickLabelsAdded": 4,
+      "quotaNeutral": true
     },
-    "candidateState": {
-      "structuralPacks": 98,
-      "keysPerPack": 1118,
-      "sourceHash": "6a1126e6a2ce5629",
-      "qualityCandidates": 97,
-      "remainingLanguages": [
-        "dv"
-      ],
-      "divehiEnglishOverlap": 58,
-      "duplicateOutputGroups": 27,
-      "duplicateKeysAffected": 255,
-      "duplicateLanguages": [
-        "dv",
-        "dz",
-        "kl",
-        "ku",
-        "rw",
-        "st",
-        "ti",
-        "tn",
-        "to",
-        "xh"
-      ],
-      "nativeLanguageReviewRequired": true,
-      "published": false,
-      "linguisticCertification": false,
-      "candidatePackWritesThisPass": 0
+    "readback": {
+      "i18nVersion": "20261118-r125-global-quick-v24",
+      "azQuickMap": true,
+      "guardAzRegression": true,
+      "workflowAssertionsUpdated": true,
+      "indexHtmlCacheRefUpdated": true
     },
-    "aiAndTranslation": {
-      "aiBinding": true,
-      "productionHealth": "passed in R105 #169",
-      "aiChatAvailability": "unknown-not-probed",
-      "liveAiProbe": "skipped-by-policy",
-      "translationAvailability": "unknown-not-probed",
-      "lastResumeLogError": "HTTP 503 all_translation_backends_unavailable",
-      "knownBlockers": [
-        "daily_free_ai_limit",
-        "Google HTTP429"
-      ],
-      "directProbesThisPass": 0,
-      "quotaBypassAttempts": 0,
-      "automaticFallbackProviderQuotaUsage": "unknown"
+    "currentRuns": {
+      "r125": 44331808281,
+      "r105": 44331808155,
+      "r123": 44331808257,
+      "r9e": 44331808129,
+      "safety": 44331808036,
+      "pages": 44331807292
     },
-    "voice": {
-      "r123Run": 122,
-      "programmaticTests": "passed",
-      "headlessAndroidPlayback": "passed",
-      "productionAudioAsset": "skipped",
-      "liveASR": "skipped",
-      "physicalMicrophoneSpeakerCertification": false
-    },
-    "countryCurrency": {
-      "lastConfirmedRun": 83,
-      "countryProfiles": "248/248",
-      "localizedPages": "44/44",
-      "currentV16Run": 85,
-      "currentV16Status": "in_progress",
-      "full98LocaleCurrencyE2E": "not_certified"
-    },
-    "safety": {
-      "run": 49,
-      "conclusion": "success",
-      "failClosed": true
-    },
-    "checkout": "inactive pending merchant configuration and end-to-end payment/settlement verification",
-    "productionCandidateKeyDelta": 73,
-    "decision": "NO-GO",
-    "candidateWritesDeferredWhileResumeWorkflowActive": false,
-    "candidateWritesThisPass": 0,
-    "note": "No candidate packs were changed. The latest matching resume run #150 is completed, and no active resume run was observed; candidate pack edits remain withheld because Divehi requires qualified native review and the translation backend/quota blockers are unresolved."
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "aiChatAvailability": "unknown-not-probed",
+    "translationAvailability": "unknown-not-probed",
+    "physicalAudioCertified": false,
+    "checkout": "inactive",
+    "published": false,
+    "linguisticCertification": false,
+    "finalApproval": false,
+    "decision": "NO-GO"
   },
   "latestR125AuditResult20261118": {
     "checkedAt": "2026-11-18",
@@ -10391,25 +10275,74 @@
       "run": 86,
       "runId": 44329277204,
       "workflow": ".github/workflows/r125-static-locale-section-audit.yml",
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "failure",
       "headSha": "fc912d815a78f7cb98813ece0d480640d44bc565",
       "runtimeVersion": "20261118-r125-global-quick-v23",
       "preAuditSteps": {
         "checkout": "success",
         "nodeSetup": "success",
         "playwright": "success",
-        "chromium": "in_progress",
-        "pagesReadiness": "pending",
-        "syntaxCheck": "pending",
-        "quotaGuardAndQuickLabels": "pending",
-        "noTranslateTriage": "pending",
-        "fullMatrix": "pending"
+        "chromium": "success",
+        "pagesReadiness": "success",
+        "syntaxCheck": "success",
+        "quotaGuardAndQuickLabels": "success",
+        "noTranslateTriage": "success"
       },
-      "matrixStarted": false,
+      "matrixStarted": true,
+      "matrixResult": {
+        "languages": 98,
+        "sections": 27,
+        "sectionLanguageApplications": 2646,
+        "countryProfiles": 248,
+        "missingKeys": 0,
+        "extraKeys": 0,
+        "emptyValues": 0,
+        "exactFindingCombinations": 0,
+        "partialFindingCombinations": 0,
+        "unresolvedFindingCombinations": 0,
+        "dynamicFallback": {
+          "requests": 1,
+          "language": "Azerbaijani",
+          "strings": [
+            "Back",
+            "Page navigation",
+            "Voice reply",
+            "Voice"
+          ]
+        }
+      },
+      "blockedRequests": {
+        "ai": 0,
+        "translation": 1,
+        "pollinations": 0
+      },
+      "conclusionReason": "All static leak checks passed; one unexpected dynamic /api/ui-translate POST was recorded for Azerbaijani Back/Page navigation/Voice reply/Voice.",
       "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44329277204"
     },
-    "scope": "No AI or translation requests; no candidate pack writes."
+    "scope": "No AI or translation requests; no candidate pack writes.",
+    "nextRepair": {
+      "version": "20261118-r125-global-quick-v24",
+      "commit": "b546944bae1bb8d8f8836eaab4be219cacb8591d",
+      "labels": {
+        "Back": "Geri",
+        "PageNavigation": "Səhifə naviqasiyası",
+        "VoiceReply": "Səsli cavab",
+        "Voice": "Səs"
+      },
+      "source": "Existing az.json candidate values; two labels normalized to Azerbaijani orthography. Provisional runtime labels only; native review remains required.",
+      "htmlPagesUpdated": 44,
+      "codeFilesUpdated": [
+        "i18n-ui.js",
+        "tools/test-ui-translation-quota-session-guard.cjs"
+      ],
+      "workflowsUpdated": [
+        ".github/workflows/r125-static-locale-section-audit.yml",
+        ".github/workflows/r105-final-release.yml",
+        ".github/workflows/final-browser-audit-r9.yml"
+      ],
+      "regression": "QUICK.az exact-map assertion plus Azerbaijani zero-provider-call navigation case."
+    }
   },
   "latestProductionRuntimeChecks": {
     "r105": {
@@ -10468,15 +10401,48 @@
       "benignHotelRequest": "allowed_pending_human_review"
     },
     "pages": {
-      "run": 1860,
-      "runId": 44329275690,
+      "run": 1861,
+      "runId": 44330204266,
       "status": "completed",
       "conclusion": "success",
-      "headSha": "fc912d815a78f7cb98813ece0d480640d44bc565"
+      "headSha": "9c6e7fe56ba1ebe55c08c11ae2b6304a114b4f39"
+    },
+    "pendingV24Runs": {
+      "r125": {
+        "run": 87,
+        "runId": 44331808281,
+        "status": "in_progress",
+        "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44331808281"
+      },
+      "r105": {
+        "run": 179,
+        "runId": 44331808155,
+        "status": "in_progress"
+      },
+      "r123": {
+        "run": 131,
+        "runId": 44331808257,
+        "status": "in_progress"
+      },
+      "r9e": {
+        "run": 94,
+        "runId": 44331808129,
+        "status": "in_progress"
+      },
+      "safety": {
+        "run": 57,
+        "runId": 44331808036,
+        "status": "in_progress"
+      },
+      "pages": {
+        "run": 1862,
+        "runId": 44331807292,
+        "status": "in_progress"
+      }
     }
   },
   "latestResumeWorkflowInspection": {
-    "checkedAt": "2026-11-18T14:58:22.353Z",
+    "checkedAt": "2026-11-18T15:06:52Z",
     "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
     "path": ".github/workflows/r125-hourly-candidate-resume.yml",
     "trigger": "workflow_dispatch only",
@@ -10494,7 +10460,11 @@
       "resume": "skipped",
       "audit": "success",
       "candidatePackWrites": 0,
-      "metadataFilesWritten": 2
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "job": "resume completed successfully",
+      "auditStep": "success",
+      "saveProgressStep": "success"
     },
     "currentRevisionRunObserved": false,
     "activeRuns": 0,
@@ -10502,7 +10472,21 @@
     "candidateWritesDeferred": true,
     "candidatePackWritesInLatestRun": 0,
     "translationRequestsInLatestRun": 0,
-    "note": "Verified current workflow is manual-only with translation and repair opt-ins false by default. Latest known matching run #150 is legacy, completed; no current-revision R125 resume run is present in the latest dispatch scan. Repository-wide Actions scan showed zero queued and zero in-progress runs before v23 push; no candidate packs were written."
+    "note": "Main resume workflow remains workflow_dispatch-only with translation/repair opt-ins false. Latest matching run #150 is a legacy revision, completed successfully with resume skipped and audit passed. Repository-wide latest Actions scan showed no queued/in-progress runs before v24; no current-revision resume run was found. No candidate packs were written.",
+    "latestRunJobSteps": [
+      {
+        "name": "Resume public UI candidates",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Audit all saved candidates",
+        "conclusion": "success"
+      },
+      {
+        "name": "Save progress without publishing",
+        "conclusion": "success"
+      }
+    ]
   },
   "latestQuickFallbackRepair": {
     "checkedAt": "2026-11-18T09:45:51Z",
