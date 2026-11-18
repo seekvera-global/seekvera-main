@@ -199,7 +199,7 @@
       "aiBinding": true,
       "liveGenerationProbe": "skipped-by-policy",
       "currentV15Run": 168,
-      "currentV15Status": "in_progress"
+      "currentV15Status": "completed-health-pass-live-chat-skipped"
     },
     "voiceTranscription": {
       "status": "programmatic TTS, voice acknowledgement, dynamic placeholders and headless Android playback passed on v14; v15 audio certification pending; production audio asset and live ASR not verified; physical hardware not certified",
@@ -207,7 +207,7 @@
       "liveASR": "not-verified",
       "physicalDeviceCertified": false,
       "currentV15Run": 121,
-      "currentV15Status": "in_progress"
+      "currentV15Status": "programmatic-pass-production-asset-skipped"
     },
     "translation": {
       "currentAvailability": "unknown-not-probed",
@@ -257,7 +257,7 @@
       ],
       "benignHotelRequest": "allowed_pending_human_review",
       "currentV15Run": 48,
-      "currentV15Status": "in_progress"
+      "currentV15Status": "passed"
     },
     "checkout": "inactive pending merchant configuration and end-to-end merchant verification",
     "quotaBoundary": {
@@ -10360,28 +10360,42 @@
       "failureReason": "one Lithuanian dynamic translation fallback; full static locale/country/section matrix had zero findings"
     },
     "preAuditSteps": {
-      "pagesReady": "pending",
-      "syntaxCheck": "pending",
-      "quotaGuardAndLocalQuickLabels": "pending",
-      "noTranslateTriage": "pending",
-      "fullMatrix": "pending"
+      "pagesReady": "success",
+      "syntaxCheck": "success",
+      "quotaGuardAndLocalQuickLabels": "success",
+      "noTranslateTriage": "success",
+      "fullMatrix": "in_progress"
     },
-    "note": "R125 #77 is the first v15 post-fix audit. Require zero dynamic fallback requests."
+    "note": "R125 #77 has passed asset readiness, syntax, quota/local quick-label regression and no-translate triage on v15. The full 98-language × 27-section and 248-country matrix is running.",
+    "currentStep": "Verify all locale packs, countries and sections without AI requests"
   },
   "latestProductionRuntimeChecks": {
     "r105": {
       "run": 168,
       "runId": 44278969714,
-      "status": "in_progress",
-      "conclusion": null,
-      "headSha": "6e314e697d820822557baa67d09912d6f25a9499"
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "6e314e697d820822557baa67d09912d6f25a9499",
+      "aiBinding": true,
+      "centralSafetyGate": "enabled",
+      "failClosed": true,
+      "liveAiProbes": "skipped-by-policy",
+      "health": "passed",
+      "lithuanianV15Assets": "passed"
     },
     "r123": {
       "run": 121,
       "runId": 44278969552,
-      "status": "in_progress",
-      "conclusion": null,
-      "headSha": "6e314e697d820822557baa67d09912d6f25a9499"
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "6e314e697d820822557baa67d09912d6f25a9499",
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "dynamicVoicePlaceholders": "passed",
+      "headlessAndroidPlayback": "passed",
+      "productionAudioAsset": "skipped",
+      "liveASR": "not-verified",
+      "physicalMicrophoneSpeakerCertified": false
     },
     "r9e": {
       "run": 84,
@@ -10393,16 +10407,25 @@
     "safety": {
       "run": 48,
       "runId": 44278969442,
-      "status": "in_progress",
-      "conclusion": null,
-      "headSha": "6e314e697d820822557baa67d09912d6f25a9499"
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "6e314e697d820822557baa67d09912d6f25a9499",
+      "blockedCategories": [
+        "weapons_or_explosives",
+        "explicit_sexual_content",
+        "stolen_counterfeit_or_fake_documents",
+        "ownership_or_consent_problem"
+      ],
+      "benignHotelRequest": "allowed_pending_human_review"
     },
     "pages": {
       "run": 1840,
       "runId": 44278966087,
-      "status": "in_progress",
-      "conclusion": null,
-      "headSha": "6e314e697d820822557baa67d09912d6f25a9499"
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "6e314e697d820822557baa67d09912d6f25a9499",
+      "build": "success",
+      "deploy": "success"
     },
     "aiFallback": {
       "run": 77,
@@ -10665,7 +10688,7 @@
     }
   ],
   "latestAutomationPass20261118Turn15": {
-    "checkedAt": "2026-11-18T09:45:51Z",
+    "checkedAt": "2026-11-18T09:46:35Z",
     "commit": "6e314e697d820822557baa67d09912d6f25a9499",
     "runtimeVersion": "20261118-r125-global-quick-v15",
     "filesChanged": 49,
@@ -10697,7 +10720,8 @@
       "r105": {
         "run": 168,
         "runId": 44278969714,
-        "status": "in_progress"
+        "status": "completed",
+        "conclusion": "success"
       },
       "r123": {
         "run": 121,
@@ -10734,7 +10758,31 @@
       "R125 #76 completed the 98 × 27 and 248-country matrix with zero exact/partial/unresolved static findings, but detected one Lithuanian dynamic fallback; the earlier Slovenian fallback was absent.",
       "v15 adds Lithuanian quick labels and cache-busts 44 HTML pages; R125 #77, R105 #168, R9e #84, R123 #121, Safety #48 and Pages #1840 are running.",
       "R9e #83 passed 248/248 country profiles, 44/44 pages, Morocco/Worldwide priority, visible locale samples, safety gate and voice/PWA cache; live AI and ASR probes were skipped.",
-      "Candidate branch writes were deferred; latest matching resume run #150 is legacy, completed with Resume skipped, audit passed and two metadata files written."
-    ]
+      "Candidate branch writes were deferred; latest matching resume run #150 is legacy, completed with Resume skipped, audit passed and two metadata files written.",
+      "R105 #168, Safety #48 and Pages #1840 passed on v15; R123 #121 passed programmatic voice checks and headless Android playback while production audio asset verification remained skipped. R9e #84 is still installing its browser runtime; R125 #77 is running the full matrix."
+    ],
+    "r123": {
+      "run": 121,
+      "runId": 44278969552,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "r9e": {
+      "run": 84,
+      "runId": 44278969266,
+      "status": "in_progress"
+    },
+    "safety": {
+      "run": 48,
+      "runId": 44278969442,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "pages": {
+      "run": 1840,
+      "runId": 44278966087,
+      "status": "completed",
+      "conclusion": "success"
+    }
   }
 }
