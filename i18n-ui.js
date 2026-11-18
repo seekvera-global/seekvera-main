@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261118-r125-multilang-quick-v2';
+const VERSION='20261118-r125-multilang-quick-v3';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),PACK_VALUES=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -63,6 +63,7 @@ it:{
 'Page navigation':'Navigazione tra le pagine',
 'Voice reply':'Risposta vocale',
 'Voice':'Voce'
+},
 // Provisional Swahili quick UI labels; native review remains required.
 sw:{'Back':'Rudi nyuma','Page navigation':'Urambazaji wa kurasa','Voice reply':'Jibu la sauti','Voice':'Sauti'},
 // Provisional Persian quick UI labels; native review remains required.
@@ -85,7 +86,6 @@ am:{'Back':'ተመለስ','Page navigation':'የገጽ አሰሳ','Voice reply':
 he:{'Back':'חזרה','Page navigation':'ניווט בעמודים','Voice reply':'תשובה קולית','Voice':'קול'},
 // Provisional Ukrainian quick UI labels; native review remains required.
 uk:{'Back':'Назад','Page navigation':'Навігація сторінками','Voice reply':'Голосова відповідь','Voice':'Голос'},
-},
 es:{
 'Back':'Volver','Page navigation':'Navegación de páginas','Voice reply':'Respuesta de voz','Voice':'Voz'
 },zh:{
