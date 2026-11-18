@@ -115,7 +115,7 @@
     "Production locale manifest has 1,045 keys versus 1,118 candidate-source keys; 73 keys remain unpublished and unreviewed. Do not promote candidate packs to close this gap.",
     "The current resume log reports Dhivehi retries timing out and HTTP 503 all_translation_backends_unavailable from three Workers AI backends. Historical daily_free_ai_limit and Google HTTP429 remain blockers; no quota probes or bypasses were attempted.",
     "All 98 candidate packs still require qualified linguistic review; none is published or linguistically certified.",
-    "R125 #86 on v23 failed only on one Azerbaijani dynamic fallback; v24 fixed it. R125 #87 on v24 then passed all static checks across 98 languages × 27 sections and 248 country profiles, but found one Kazakh dynamic fallback for Back/Page navigation/Voice reply/Voice. Main v25 now adds Kazakh local QUICK labels and zero-provider-call regression coverage; R125 #88 is queued.",
+    "R125 #86 on v23 found Azerbaijani fallback and v24 fixed it. R125 #87 on v24 found one Kazakh fallback after all static checks passed. Main v25 adds Kazakh local QUICK labels; R125 #88 and R9e #95 are now running. No candidate packs were written.",
     "R125 #86 was still installing Chromium at the latest read; the 98 × 27 matrix has not started yet. Do not claim v23 locale audit success until it completes.",
     "Physical microphone/speaker certification and live ASR remain incomplete; browser/headless playback is not hardware certification.",
     "Checkout remains inactive until merchant-account configuration and end-to-end payment/settlement verification.",
@@ -177,7 +177,7 @@
     }
   },
   "remainingChecks": [
-    "Complete R125 #88 on v25: verify all 98 languages × 27 sections and 248 country profiles with zero exact, partial, unresolved or dynamic fallback findings.",
+    "Complete R125 #88 on v25 and R9e #95; confirm all 98 languages × 27 sections, 248 country profiles, and country/currency behavior with no dynamic translation fallback.",
     "Resolve Divehi's 58 English-overlap findings with qualified native Dhivehi translation/review; do not synthesize or certify unreviewed wording.",
     "Run the full candidate quality/script/duplicate audit after quota-neutral repairs; structural PASS alone is not quality certification.",
     "Obtain qualified native review for all 98 candidate packs; publish no partial or unreviewed packs.",
@@ -9218,7 +9218,7 @@
     "decision": "NO-GO"
   },
   "latestAutomationPass20261118": {
-    "checkedAt": "2026-11-18T15:12:37Z",
+    "checkedAt": "2026-11-18T15:13:25Z",
     "sourceReadback": {
       "checkpointBlob": "2a9689b7e27a6147ffde0dcefd2e74a26a58adb7",
       "candidateSummaryBlob": "551a1cad78540f437e67d1d0a88ae1e844478022",
@@ -9265,47 +9265,56 @@
       "quotaNeutral": true
     },
     "readback": {
-      "i18nVersion": "20261118-r125-global-quick-v24",
-      "azQuickMap": true,
-      "guardAzRegression": true,
+      "i18nVersion": "20261118-r125-global-quick-v25",
+      "kkQuick": true,
+      "guardKazakhRegression": true,
       "workflowAssertionsUpdated": true,
-      "indexHtmlCacheRefUpdated": true
+      "htmlPagesUpdated": 44,
+      "mainHead": "c3148351687d6d03cae93bab7bf8ef55004997dd"
     },
     "currentRuns": {
       "r125": {
         "run": 88,
         "runId": 44332952014,
-        "status": "queued"
+        "status": "in_progress",
+        "step": "Install Chromium and system dependencies"
       },
       "r105": {
         "run": 180,
         "runId": 44332952421,
-        "status": "queued"
+        "status": "completed",
+        "conclusion": "success"
       },
       "r123": {
         "run": 132,
         "runId": 44332951985,
-        "status": "queued"
+        "status": "completed",
+        "conclusion": "success",
+        "productionAudioAsset": "skipped"
       },
       "r9e": {
         "run": 95,
         "runId": 44332952073,
-        "status": "queued"
+        "status": "in_progress",
+        "step": "Install Chromium browser test runtime"
       },
       "r9ePrior": {
         "run": 94,
         "runId": 44331808129,
-        "status": "in_progress"
+        "status": "in_progress",
+        "step": "Install Chromium browser test runtime"
       },
       "safety": {
         "run": 58,
         "runId": 44332952177,
-        "status": "queued"
+        "status": "completed",
+        "conclusion": "success"
       },
       "pages": {
-        "run": 1865,
-        "runId": 44332950827,
-        "status": "queued"
+        "run": 1866,
+        "runId": 44333074264,
+        "status": "completed",
+        "conclusion": "success"
       }
     },
     "candidatePackWrites": 0,
@@ -10438,22 +10447,22 @@
   },
   "latestProductionRuntimeChecks": {
     "r105": {
-      "run": 179,
-      "runId": 44331808155,
+      "run": 180,
+      "runId": 44332952421,
       "status": "completed",
       "conclusion": "success",
       "aiBinding": true,
       "centralSafetyGate": "enabled",
       "failClosed": true,
       "productionHealth": "passed",
-      "countryControlIntentProbe": "passed once (change country to Iceland); provider/model identity not captured",
-      "safetyIntentProbe": "blocked by deterministic safety rules before AI generation",
+      "countryControlIntentProbe": "passed once; provider/model identity not captured",
+      "safetyIntentProbe": "deterministic rules blocked prohibited request before AI generation",
       "liveGeneralChatProbes": "skipped-by-policy",
-      "runtimeVersion": "20261118-r125-global-quick-v24"
+      "runtimeVersion": "20261118-r125-global-quick-v25"
     },
     "r123": {
-      "run": 131,
-      "runId": 44331808257,
+      "run": 132,
+      "runId": 44332951985,
       "status": "completed",
       "conclusion": "success",
       "programmaticVoiceValidation": "passed",
@@ -10466,25 +10475,30 @@
       "physicalMicrophoneSpeakerCertified": false
     },
     "r9e": {
-      "run": 94,
-      "runId": 44331808129,
+      "run": 95,
+      "runId": 44332952073,
       "status": "in_progress",
-      "conclusion": null
+      "conclusion": null,
+      "previousRun94": {
+        "runId": 44331808129,
+        "status": "in_progress",
+        "step": "Install Chromium browser test runtime"
+      }
     },
     "safety": {
-      "run": 57,
-      "runId": 44331808036,
+      "run": 58,
+      "runId": 44332952177,
       "status": "completed",
       "conclusion": "success",
       "blockedCases": 4,
       "benignLand": "allowed_pending_human_review"
     },
     "pages": {
-      "run": 1864,
-      "runId": 44332513794,
+      "run": 1866,
+      "runId": 44333074264,
       "status": "completed",
       "conclusion": "success",
-      "headSha": "5a3674465c148837ceb6aae5fad49bdea2efd248"
+      "headSha": "c3148351687d6d03cae93bab7bf8ef55004997dd"
     },
     "pendingV24Runs": {
       "r125": {
@@ -10534,37 +10548,45 @@
       "r125": {
         "run": 88,
         "runId": 44332952014,
-        "status": "queued",
-        "priorRun87": "failed-one-Kazakh-fallback"
+        "status": "in_progress",
+        "step": "Install Chromium and system dependencies"
       },
       "r105": {
         "run": 180,
         "runId": 44332952421,
-        "status": "queued",
-        "priorRun179": "success"
+        "status": "completed",
+        "conclusion": "success"
       },
       "r123": {
         "run": 132,
         "runId": 44332951985,
-        "status": "queued",
-        "priorRun131": "success"
+        "status": "completed",
+        "conclusion": "success",
+        "productionAudioAsset": "skipped"
       },
       "r9e": {
         "run": 95,
         "runId": 44332952073,
-        "status": "queued",
-        "priorRun94": "in_progress"
+        "status": "in_progress",
+        "step": "Install Chromium browser test runtime"
+      },
+      "r9ePrior": {
+        "run": 94,
+        "runId": 44331808129,
+        "status": "in_progress",
+        "step": "Install Chromium browser test runtime"
       },
       "safety": {
         "run": 58,
         "runId": 44332952177,
-        "status": "queued",
-        "priorRun57": "success"
+        "status": "completed",
+        "conclusion": "success"
       },
       "pages": {
-        "run": 1865,
-        "runId": 44332950827,
-        "status": "queued"
+        "run": 1866,
+        "runId": 44333074264,
+        "status": "completed",
+        "conclusion": "success"
       }
     }
   },
