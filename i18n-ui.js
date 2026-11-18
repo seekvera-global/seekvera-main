@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261118-r125-global-quick-v31';
+const VERSION='20261118-r125-global-quick-v32';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),PACK_VALUES=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -413,6 +413,13 @@ si:{
 'Page navigation':'පිටු සංචාලනය',
 'Voice reply':'හඬ පිළිතුර',
 'Voice':'හඬ'
+},
+// Provisional Tamil quick UI labels; native review remains required.
+ta:{
+'Back':'திரும்பு',
+'Page navigation':'பக்க வழிசெலுத்தல்',
+'Voice reply':'குரல் பதில்',
+'Voice':'குரல்'
 }
 };
 // Provisional quota-neutral overrides for the exact R125 UI leaks. Native review remains required.
