@@ -77,6 +77,10 @@ jobs:
               && grep -Fq "'Навигация по страницам'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Голосовой ответ'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Голос'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'واپس'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'صفحات پر نیویگیشن'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'صوتی جواب'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'آواز'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Geschäftssoftware'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Business Software'" /tmp/r125-i18n-ui.js \
               && grep -Fq '<b>${g.name}</b>' /tmp/r125-games.js \
@@ -92,7 +96,7 @@ jobs:
       - name: Syntax check quota-neutral audit
         run: node --check tools/r125_static_locale_section_audit.mjs
 
-      - name: Verify quota guard and local German quick labels
+      - name: Verify quota guard and local quick labels
         run: node tools/test-ui-translation-quota-session-guard.cjs
 
       - name: Verify explicit no-translate audit triage
