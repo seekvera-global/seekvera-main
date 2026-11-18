@@ -11,6 +11,11 @@ function harness(code,store,responses,options={}){
  return{context,calls:()=>calls,store};
 }
 function extract(source,start,end,label){const a=source.indexOf(start),b=source.indexOf(end,a);assert(a>=0&&b>a,label+' source block not found');return source.slice(a,b);}
+const quickBlock=extract(i18n,'const QUICK={','};\n// Provisional quota-neutral overrides','QUICK locale map');
+const quickContext={INITIAL_AI:'test seed'};
+vm.createContext(quickContext);
+vm.runInContext(quickBlock+'};this.quick=QUICK;',quickContext);
+assert.equal(JSON.stringify(quickContext.quick.az),JSON.stringify({'Back':'Geri','Page navigation':'Səhifə naviqasiyası','Voice reply':'Səsli cavab','Voice':'Səs'}),'Azerbaijani QUICK map must contain the exact local labels');
 const i18nBlock=extract(i18n,"const UI_TRANSLATE_BLOCK_KEY='sv_ui_translate_blocked_r19'","async function translate(l,arr)","i18n quota helper");
 const navBlock=extract(navigation,"let localeTimer=0,translateSeq=0,uiTranslationBlocked=false","const localeControl=","navigation quota helper");
 const i18nCode=i18nBlock+"\nthis.cloudTranslate=cloudTranslate;this.blocked=()=>CLOUD_TRANSLATE_BLOCKED;this.alreadyLocalizedValue=alreadyLocalizedValue;";
@@ -193,6 +198,7 @@ async function main(){
 
  // Additional quota-neutral locale labels for the R125 exact-leak findings.
  const provisionalQuickCases=[
+  {code:'az',language:'Azerbaijani',labels:{'Back':'Geri','Page navigation':'Səhifə naviqasiyası','Voice reply':'Səsli cavab','Voice':'Səs'}},
   {code:'da',language:'Danish',labels:{'Find Wi-Fi →':'Søg efter Wi-Fi →','Find catering':'Søg efter catering','AI Voice Agent':'AI-stemmeassistent'}},
   {code:'st',language:'Sesotho',labels:{'Free / Public Wi-Fi Finder':'Sesebelisoa sa ho fumana Wi-Fi ea mahala kapa ea sechaba','RFQ / supplier sourcing':'Kopo ea theko / ho fumana barekisi','Delivery & Courier':'Phano le litšebeletso tsa ba tsamaisang thepa'}},
   {code:'ro',language:'Romanian',labels:{'🏙️ City break':'🏙️ Escapadă urbană','Business Monthly':'Plan de afaceri lunar'}},

@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261118-r125-global-quick-v23';
+const VERSION='20261118-r125-global-quick-v24';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),PACK_VALUES=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -357,6 +357,13 @@ hy:{
 'Page navigation':'Էջի նավիգացիա',
 'Voice reply':'Ձայնային պատասխան',
 'Voice':'Ձայն'
+},
+// Provisional Azerbaijani quick UI labels normalized to Azerbaijani orthography from the existing candidate pack; native review remains required.
+az:{
+'Back':'Geri',
+'Page navigation':'Səhifə naviqasiyası',
+'Voice reply':'Səsli cavab',
+'Voice':'Səs'
 }
 };
 // Provisional quota-neutral overrides for the exact R125 UI leaks. Native review remains required.
