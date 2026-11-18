@@ -3323,7 +3323,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-18T08:03:30Z",
+  "updatedAt": "2026-11-18T11:03:32Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -9215,161 +9215,180 @@
     "decision": "NO-GO"
   },
   "latestAutomationPass20261118": {
-    "checkedAt": "2026-11-18T08:55:45Z",
-    "sourceReadback": {
-      "checkpoint": "main",
-      "candidateSummary": "work/r125-locale-candidates-20261008",
-      "resumeLog": "work/r125-locale-candidates-20261008",
-      "resumeWorkflow": "main"
-    },
-    "candidateState": {
-      "languagePackFiles": 98,
-      "qualityGate": "97/98",
-      "remaining": [
-        "dv"
-      ],
-      "divehiEnglishOverlap": 58,
-      "published": 0,
-      "linguisticallyCertified": 0
-    },
-    "changes": [
-      {
-        "commit": "f5b4271809733841e721ebd3ccbb025b1a9a2011",
-        "files": 49,
-        "summary": "Added provisional Serbian QUICK labels for Back/Page navigation/Voice reply/Voice; added quota-neutral regression case; bumped i18n runtime cache version to v13 across 44 HTML pages and aligned R105/R9e/R125 workflow version checks."
+    "checkedAt": "2026-11-18T11:03:32Z",
+    "mainCommit": "995f9b7548a3dbf19442da402b7b917a3bd3d0f3",
+    "runtimeVersion": "20261118-r125-global-quick-v16",
+    "quotaNeutralRepair": {
+      "language": "lv",
+      "labels": {
+        "Back": "Atpakaļ",
+        "Page navigation": "Lapu navigācija",
+        "Voice reply": "Balss atbilde",
+        "Voice": "Balss"
       },
-      {
-        "commit": "d09f5095bb7bdd4a2a6c036d85be9574641f5402",
-        "files": 1,
-        "summary": "Corrected a doubled shell line-continuation in the R125 Serbian grep check after #74 failed before the audit."
-      }
-    ],
-    "verification": {
+      "commit": "995f9b7548a3dbf19442da402b7b917a3bd3d0f3",
+      "changedFiles": 48,
+      "htmlCacheBusted": 44,
+      "regressionTest": "tools/test-ui-translation-quota-session-guard.cjs",
+      "liveAssertions": [
+        "R125",
+        "R105",
+        "R9e"
+      ]
+    },
+    "previousR125": {
+      "run": 77,
+      "runId": 44278969551,
+      "status": "completed",
+      "conclusion": "failure",
+      "matrix": {
+        "languages": 98,
+        "sections": 27,
+        "sectionLanguageApplications": 2646,
+        "countryProfiles": 248
+      },
+      "staticFindings": {
+        "exact": 0,
+        "partial": 0,
+        "unresolved": 0
+      },
+      "dynamicFallback": {
+        "language": "Latvian",
+        "requests": 1,
+        "strings": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ]
+      },
+      "providerQuotaImpact": "unknown"
+    },
+    "currentRuns": {
       "r125": {
-        "run73": {
-          "conclusion": "failure",
-          "languages": 98,
-          "sections": 27,
-          "applications": 2646,
-          "countryProfiles": 248,
-          "exact": 0,
-          "partial": 0,
-          "unresolved": 0,
-          "dynamicFallback": {
-            "language": "Serbian",
-            "requests": 1,
-            "strings": [
-              "Back",
-              "Page navigation",
-              "Voice reply",
-              "Voice"
-            ]
-          }
-        },
-        "run74": {
-          "conclusion": "failure",
-          "reason": "workflow shell syntax error before locale matrix"
-        },
-        "run75": {
-          "status": "in_progress",
-          "step": "Install Chromium and system dependencies"
-        }
-      },
-      "r105": {
-        "run": 166,
-        "conclusion": "success",
-        "aiBinding": true,
-        "productionHealth": "passed",
-        "liveAi": "skipped-by-policy"
+        "run": 78,
+        "runId": 44290870408,
+        "status": "in_progress",
+        "conclusion": null
       },
       "r9e": {
-        "run": 82,
-        "conclusion": "success",
-        "countryProfiles": "248/248",
-        "localizedPages": "44/44",
-        "manualMoroccoPriority": "passed",
-        "manualWorldwidePriority": "passed",
-        "liveAi": "skipped-by-policy"
+        "run": 85,
+        "runId": 44290870373,
+        "status": "in_progress",
+        "conclusion": null
+      },
+      "r105": {
+        "run": 169,
+        "runId": 44290870274,
+        "status": "completed",
+        "conclusion": "success"
       },
       "r123": {
-        "run": 119,
-        "conclusion": "success",
-        "programmaticTTS": "passed",
-        "voiceAcknowledgement": "passed",
-        "dynamicVoicePlaceholders": "passed",
-        "liveASR": "skipped",
-        "physicalDeviceCertified": false
+        "run": 122,
+        "runId": 44290870399,
+        "status": "completed",
+        "conclusion": "success"
       },
       "safety": {
-        "run": 46,
-        "conclusion": "success",
-        "blockedCases": 4,
-        "benignHotel": "allowed_pending_human_review"
+        "run": 49,
+        "runId": 44290870293,
+        "status": "completed",
+        "conclusion": "success"
       },
       "pages": {
-        "run": 1833,
+        "run": 1844,
+        "runId": 44290867752,
+        "status": "completed",
         "conclusion": "success"
       }
     },
-    "resumeWorkflow": {
-      "latestRun": 150,
-      "runId": 38971104197,
-      "status": "completed",
-      "conclusion": "success",
-      "resume": "skipped",
+    "latestResumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "triggers": [
+        "workflow_dispatch"
+      ],
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "scheduleTriggerPresent": false,
+      "latestKnownRun": 150,
+      "latestKnownRunId": 38971104197,
+      "latestKnownStatus": "completed",
+      "latestKnownConclusion": "success",
+      "resumeStep": "skipped",
+      "auditStep": "success",
       "candidatePackWrites": 0,
       "metadataFilesWritten": 2,
-      "activeRuns": 0,
-      "candidateWritesThisPass": 0
+      "activeResumeRuns": 0,
+      "note": "Run #150 was on a legacy workflow revision; current Main workflow contains the actual resume build step behind explicit run_translations=true."
     },
-    "ai": {
-      "binding": true,
-      "chatAvailability": "unknown-not-probed",
+    "candidateState": {
+      "structuralPacks": 98,
+      "keysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "qualityCandidates": 97,
+      "remainingLanguages": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "duplicateOutputGroups": 27,
+      "duplicateKeysAffected": 255,
+      "duplicateLanguages": [
+        "dv",
+        "dz",
+        "kl",
+        "ku",
+        "rw",
+        "st",
+        "ti",
+        "tn",
+        "to",
+        "xh"
+      ],
+      "nativeLanguageReviewRequired": true,
+      "published": false,
+      "linguisticCertification": false,
+      "candidatePackWritesThisPass": 0
+    },
+    "aiAndTranslation": {
+      "aiBinding": true,
+      "productionHealth": "passed in R105 #169",
+      "aiChatAvailability": "unknown-not-probed",
+      "liveAiProbe": "skipped-by-policy",
       "translationAvailability": "unknown-not-probed",
-      "liveGeneration": "skipped-by-policy",
-      "lastTranslationError": "HTTP 503 all_translation_backends_unavailable",
+      "lastResumeLogError": "HTTP 503 all_translation_backends_unavailable",
       "knownBlockers": [
         "daily_free_ai_limit",
         "Google HTTP429"
       ],
-      "manualTranslationProbes": 0,
-      "manualAiProbes": 0,
-      "automaticClientFallbackRequests": 1,
-      "automaticFallbackLanguage": "Serbian",
-      "automaticFallbackStrings": [
-        "Back",
-        "Page navigation",
-        "Voice reply",
-        "Voice"
-      ],
-      "providerQuotaImpactOfAutomaticFallback": "unknown",
-      "noQuotaBypassAttempts": true
+      "directProbesThisPass": 0,
+      "quotaBypassAttempts": 0,
+      "automaticFallbackProviderQuotaUsage": "unknown"
     },
     "voice": {
-      "programmaticTTS": "passed",
-      "voiceAcknowledgement": "passed",
-      "dynamicPlaceholders": "passed",
+      "r123Run": 122,
+      "programmaticTests": "passed",
+      "headlessAndroidPlayback": "passed",
+      "productionAudioAsset": "skipped",
       "liveASR": "skipped",
-      "physicalMicrophoneSpeakerCertified": false
+      "physicalMicrophoneSpeakerCertification": false
     },
-    "checkout": "inactive pending merchant configuration and end-to-end merchant verification",
-    "candidatePackWrites": 0,
-    "translationRequests": 0,
-    "aiQuotaUsed": 0,
-    "published": false,
-    "linguisticAccuracyCertified": false,
+    "countryCurrency": {
+      "lastConfirmedRun": 83,
+      "countryProfiles": "248/248",
+      "localizedPages": "44/44",
+      "currentV16Run": 85,
+      "currentV16Status": "in_progress",
+      "full98LocaleCurrencyE2E": "not_certified"
+    },
+    "safety": {
+      "run": 49,
+      "conclusion": "success",
+      "failClosed": true
+    },
+    "checkout": "inactive pending merchant configuration and end-to-end payment/settlement verification",
+    "productionCandidateKeyDelta": 73,
     "decision": "NO-GO",
-    "translationAccounting": {
-      "candidatePackWrites": 0,
-      "candidateMetadataWrites": 0,
-      "manualTranslationRequests": 0,
-      "automaticClientFallbackRequests": 1,
-      "aiQuotaUsage": "unknown-provider-impact",
-      "directAiRequests": 0,
-      "published": false,
-      "linguisticCertification": false
-    },
-    "note": "R125 #73 recorded one automatic same-origin Serbian UI-translation fallback request; provider quota impact is unknown. No manual AI/translation probe or quota bypass was performed. R125 #74 failed on the workflow shell continuation, corrected in d09f5095; R125 #75 remains in progress during Chromium installation."
+    "candidateWritesDeferredWhileResumeWorkflowActive": true
   },
   "latestR125AuditResult20261118": {
     "checkedAt": "2026-11-18",
