@@ -115,7 +115,7 @@
     "Production locale manifest has 1,045 keys versus 1,118 candidate-source keys; 73 keys remain unpublished and unreviewed. Do not promote candidate packs to close this gap.",
     "The current resume log reports Dhivehi retries timing out and HTTP 503 all_translation_backends_unavailable from three Workers AI backends. Historical daily_free_ai_limit and Google HTTP429 remain blockers; no quota probes or bypasses were attempted.",
     "All 98 candidate packs still require qualified linguistic review; none is published or linguistically certified.",
-    "R125 #85 on v22 completed with zero static findings but detected one Armenian dynamic fallback. The v23 repair added Armenian QUICK labels. R125 #86 on v23 then completed all 98 languages × 27 sections and 248 country profiles with zero exact/partial/unresolved findings, but detected one Azerbaijani dynamic fallback for Back/Page navigation/Voice reply/Voice. Main v24 now adds Azerbaijani local QUICK labels and zero-provider-call regression coverage; R125 #87 is running the full matrix.",
+    "R125 #86 on v23 failed only on one Azerbaijani dynamic fallback; v24 fixed it. R125 #87 on v24 then passed all static checks across 98 languages × 27 sections and 248 country profiles, but found one Kazakh dynamic fallback for Back/Page navigation/Voice reply/Voice. Main v25 now adds Kazakh local QUICK labels and zero-provider-call regression coverage; R125 #88 is queued.",
     "R125 #86 was still installing Chromium at the latest read; the 98 × 27 matrix has not started yet. Do not claim v23 locale audit success until it completes.",
     "Physical microphone/speaker certification and live ASR remain incomplete; browser/headless playback is not hardware certification.",
     "Checkout remains inactive until merchant-account configuration and end-to-end payment/settlement verification.",
@@ -177,7 +177,7 @@
     }
   },
   "remainingChecks": [
-    "Complete R125 #87 on v24: verify all 98 languages × 27 sections and 248 country profiles with zero exact, partial, unresolved or dynamic fallback findings.",
+    "Complete R125 #88 on v25: verify all 98 languages × 27 sections and 248 country profiles with zero exact, partial, unresolved or dynamic fallback findings.",
     "Resolve Divehi's 58 English-overlap findings with qualified native Dhivehi translation/review; do not synthesize or certify unreviewed wording.",
     "Run the full candidate quality/script/duplicate audit after quota-neutral repairs; structural PASS alone is not quality certification.",
     "Obtain qualified native review for all 98 candidate packs; publish no partial or unreviewed packs.",
@@ -9218,11 +9218,23 @@
     "decision": "NO-GO"
   },
   "latestAutomationPass20261118": {
-    "checkedAt": "2026-11-18T15:09:34Z",
+    "checkedAt": "2026-11-18T15:12:37Z",
     "sourceReadback": {
       "checkpointBlob": "2a9689b7e27a6147ffde0dcefd2e74a26a58adb7",
       "candidateSummaryBlob": "551a1cad78540f437e67d1d0a88ae1e844478022",
-      "resumeLatestLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9"
+      "resumeLatestLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9",
+      "candidateSummaryCheckedAt": "2026-11-17T09:53:12Z",
+      "candidateSummaryState": {
+        "structuralPacks": 98,
+        "qualityCandidates": 97,
+        "remaining": [
+          "dv"
+        ],
+        "divehiEnglishOverlap": 58,
+        "sourceDelta": 73,
+        "verifiedPublicUiOnly": 69
+      },
+      "resumeLogLastFailure": "HTTP 503 all_translation_backends_unavailable; Dhivehi split retries/timeouts; STAGED_ONLY 0 FAILED 1"
     },
     "priorR125": {
       "run": 86,
@@ -9243,11 +9255,13 @@
       }
     },
     "repair": {
-      "commit": "b546944bae1bb8d8f8836eaab4be219cacb8591d",
-      "version": "20261118-r125-global-quick-v24",
+      "commit": "a73377b185a8ada5e43ff385d21c54e608d737c4",
+      "version": "20261118-r125-global-quick-v25",
+      "language": "Kazakh",
       "htmlPagesUpdated": 44,
       "workflowsUpdated": 3,
       "quickLabelsAdded": 4,
+      "sourceCandidatePack": "kk.json",
       "quotaNeutral": true
     },
     "readback": {
@@ -9259,46 +9273,39 @@
     },
     "currentRuns": {
       "r125": {
-        "run": 87,
-        "runId": 44331808281,
-        "status": "in_progress",
-        "preflight": "passed",
-        "matrix": "running"
+        "run": 88,
+        "runId": 44332952014,
+        "status": "queued"
+      },
+      "r105": {
+        "run": 180,
+        "runId": 44332952421,
+        "status": "queued"
+      },
+      "r123": {
+        "run": 132,
+        "runId": 44332951985,
+        "status": "queued"
       },
       "r9e": {
+        "run": 95,
+        "runId": 44332952073,
+        "status": "queued"
+      },
+      "r9ePrior": {
         "run": 94,
         "runId": 44331808129,
         "status": "in_progress"
       },
-      "r105": {
-        "run": 179,
-        "runId": 44331808155,
-        "status": "completed",
-        "conclusion": "success"
-      },
-      "r123": {
-        "run": 131,
-        "runId": 44331808257,
-        "status": "completed",
-        "conclusion": "success"
-      },
       "safety": {
-        "run": 57,
-        "runId": 44331808036,
-        "status": "completed",
-        "conclusion": "success"
+        "run": 58,
+        "runId": 44332952177,
+        "status": "queued"
       },
-      "pagesV24": {
-        "run": 1862,
-        "runId": 44331807292,
-        "status": "completed",
-        "conclusion": "success"
-      },
-      "pagesCheckpoint": {
-        "run": 1863,
-        "runId": 44332017716,
-        "status": "completed",
-        "conclusion": "success"
+      "pages": {
+        "run": 1865,
+        "runId": 44332950827,
+        "status": "queued"
       }
     },
     "candidatePackWrites": 0,
@@ -9312,7 +9319,28 @@
     "linguisticCertification": false,
     "finalApproval": false,
     "decision": "NO-GO",
-    "aiQuotaUsage": "unknown-not-measured: R105 country-control request reached /api/ai; general live probes skipped; no direct translation request"
+    "aiQuotaUsage": "unknown-not-measured: R105 #179 passed one country-control /api/ai intent request; provider/model identity not captured; general live probes skipped. No direct translation request or quota bypass.",
+    "priorR125Runs": [
+      {
+        "run": 86,
+        "runId": 44329277204,
+        "version": "v23",
+        "conclusion": "failure",
+        "fallbackLanguage": "Azerbaijani",
+        "fallbackRequests": 1
+      },
+      {
+        "run": 87,
+        "runId": 44331808281,
+        "version": "v24",
+        "conclusion": "failure",
+        "fallbackLanguage": "Kazakh",
+        "fallbackRequests": 1,
+        "staticFindings": 0,
+        "partialFindings": 0,
+        "unresolvedFindings": 0
+      }
+    ]
   },
   "latestR125AuditResult20261118": {
     "checkedAt": "2026-11-18",
@@ -10266,21 +10294,23 @@
   },
   "latestProductionSectionAudit": {
     "previousRun": {
-      "run": 85,
-      "runId": 44318102553,
+      "run": 86,
+      "runId": 44329277204,
       "status": "completed",
       "conclusion": "failure",
-      "runtimeVersion": "20261118-r125-global-quick-v22",
-      "languages": 98,
-      "sections": 27,
-      "sectionLanguageApplications": 2646,
-      "countryProfiles": 248,
-      "exactFindingCombinations": 0,
-      "partialFindingCombinations": 0,
-      "unresolvedFindingCombinations": 0,
+      "runtimeVersion": "20261118-r125-global-quick-v23",
+      "matrix": {
+        "languages": 98,
+        "sections": 27,
+        "applications": 2646,
+        "countryProfiles": 248,
+        "exact": 0,
+        "partial": 0,
+        "unresolved": 0
+      },
       "dynamicFallback": {
+        "language": "Azerbaijani",
         "requests": 1,
-        "language": "Armenian",
         "strings": [
           "Back",
           "Page navigation",
@@ -10311,13 +10341,13 @@
       "regression": "Armenian QUICK-map and zero-provider-call case added to quota-session guard."
     },
     "currentRun": {
-      "run": 86,
-      "runId": 44329277204,
+      "run": 87,
+      "runId": 44331808281,
       "workflow": ".github/workflows/r125-static-locale-section-audit.yml",
       "status": "completed",
       "conclusion": "failure",
-      "headSha": "fc912d815a78f7cb98813ece0d480640d44bc565",
-      "runtimeVersion": "20261118-r125-global-quick-v23",
+      "headSha": "b546944bae1bb8d8f8836eaab4be219cacb8591d",
+      "runtimeVersion": "20261118-r125-global-quick-v24",
       "preAuditSteps": {
         "checkout": "success",
         "nodeSetup": "success",
@@ -10334,6 +10364,7 @@
         "sections": 27,
         "sectionLanguageApplications": 2646,
         "countryProfiles": 248,
+        "packsRead": 98,
         "missingKeys": 0,
         "extraKeys": 0,
         "emptyValues": 0,
@@ -10342,7 +10373,7 @@
         "unresolvedFindingCombinations": 0,
         "dynamicFallback": {
           "requests": 1,
-          "language": "Azerbaijani",
+          "language": "Kazakh",
           "strings": [
             "Back",
             "Page navigation",
@@ -10356,20 +10387,42 @@
         "translation": 1,
         "pollinations": 0
       },
-      "conclusionReason": "All static leak checks passed; one unexpected dynamic /api/ui-translate POST was recorded for Azerbaijani Back/Page navigation/Voice reply/Voice.",
-      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44329277204"
+      "excludedOnlyExamples": [
+        {
+          "language": "Zulu",
+          "phrase": "AI Deal Agent",
+          "reason": "data-no-translate"
+        },
+        {
+          "language": "Kalaallisut",
+          "phrase": "AI Deal Agent",
+          "reason": "data-no-translate"
+        },
+        {
+          "language": "Basque",
+          "phrase": "AI Deal Agent",
+          "reason": "data-no-translate"
+        },
+        {
+          "language": "Luxembourgish",
+          "phrase": "AI Deal Agent",
+          "reason": "data-no-translate"
+        }
+      ],
+      "conclusionReason": "All 98 packs, 248 country profiles, homepage and all 27 sections passed static checks; one intercepted dynamic /api/ui-translate request remained for Kazakh Back/Page navigation/Voice reply/Voice.",
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44331808281"
     },
     "scope": "No AI or translation requests; no candidate pack writes.",
     "nextRepair": {
-      "version": "20261118-r125-global-quick-v24",
-      "commit": "b546944bae1bb8d8f8836eaab4be219cacb8591d",
+      "version": "20261118-r125-global-quick-v25",
+      "commit": "a73377b185a8ada5e43ff385d21c54e608d737c4",
       "labels": {
-        "Back": "Geri",
-        "PageNavigation": "Səhifə naviqasiyası",
-        "VoiceReply": "Səsli cavab",
-        "Voice": "Səs"
+        "Back": "Артқа",
+        "PageNavigation": "Бет навигациясы",
+        "VoiceReply": "Дыбыстық жауап",
+        "Voice": "Дыбыс"
       },
-      "source": "Existing az.json candidate values; two labels normalized to Azerbaijani orthography. Provisional runtime labels only; native review remains required.",
+      "source": "Existing kk.json candidate pack; provisional runtime QUICK labels only; native review remains required.",
       "htmlPagesUpdated": 44,
       "codeFilesUpdated": [
         "i18n-ui.js",
@@ -10380,7 +10433,7 @@
         ".github/workflows/r105-final-release.yml",
         ".github/workflows/final-browser-audit-r9.yml"
       ],
-      "regression": "QUICK.az exact-map assertion plus Azerbaijani zero-provider-call navigation case."
+      "regression": "QUICK.kk exact-map assertion plus Kazakh zero-provider-call navigation case."
     }
   },
   "latestProductionRuntimeChecks": {
@@ -10427,12 +10480,11 @@
       "benignLand": "allowed_pending_human_review"
     },
     "pages": {
-      "run": 1863,
-      "runId": 44332017716,
+      "run": 1864,
+      "runId": 44332513794,
       "status": "completed",
       "conclusion": "success",
-      "headSha": "766ef8718f3d2b0c091d7d468f8f6630401c45de",
-      "scope": "Checkpoint/documentation deployment; v24 product assets were deployed in Pages #1862."
+      "headSha": "5a3674465c148837ceb6aae5fad49bdea2efd248"
     },
     "pendingV24Runs": {
       "r125": {
@@ -10476,6 +10528,43 @@
         "runId": 44332017716,
         "status": "completed",
         "conclusion": "success"
+      }
+    },
+    "pendingV25Runs": {
+      "r125": {
+        "run": 88,
+        "runId": 44332952014,
+        "status": "queued",
+        "priorRun87": "failed-one-Kazakh-fallback"
+      },
+      "r105": {
+        "run": 180,
+        "runId": 44332952421,
+        "status": "queued",
+        "priorRun179": "success"
+      },
+      "r123": {
+        "run": 132,
+        "runId": 44332951985,
+        "status": "queued",
+        "priorRun131": "success"
+      },
+      "r9e": {
+        "run": 95,
+        "runId": 44332952073,
+        "status": "queued",
+        "priorRun94": "in_progress"
+      },
+      "safety": {
+        "run": 58,
+        "runId": 44332952177,
+        "status": "queued",
+        "priorRun57": "success"
+      },
+      "pages": {
+        "run": 1865,
+        "runId": 44332950827,
+        "status": "queued"
       }
     }
   },
