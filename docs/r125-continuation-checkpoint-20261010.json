@@ -112,11 +112,11 @@
   "linguisticAccuracyCertified": false,
   "blockedBy": [
     "98/98 candidate packs remain structurally aligned at 1,118 keys with sourceHash 6a1126e6a2ce5629; quality remains 97/98. Divehi (dv) is blocked by 58 English-overlap entries and requires qualified native review.",
-    "R125 #67 completed the 98-language × 27-section matrix and 248-country matrix with zero visible English leaks, but detected one dynamic Czech fallback call for Back/Page navigation/Voice reply/Voice. The call was captured by the browser audit; no translation-provider or AI request was sent. Czech QUICK labels, a regression case, and cache-busted references were committed as 0ff6b8c799129688d812c8c9f227a3f0efc6774e. R125 #68 is still running the full post-fix matrix.",
-    "R125 #59 exposed a separate stale R105 version assertion after the i18n cache-version bump. R105 workflow assertion was updated; R105 #151 now passes production validation, Worker/assets deployment and health checks.",
-    "The saved resume log still records HTTP 503 all_translation_backends_unavailable after provider timeouts/unparseable outputs. Historical daily_free_ai_limit and Google HTTP429 remain real blockers; no quota probe or translation request was sent this pass.",
+    "R125 #69 completed 98 languages × 27 sections and 248 country profiles with zero visible English findings, but captured one Finnish dynamic QUICK fallback. Finnish local QUICK labels, regression coverage and v10 cache references were committed; R125 #71 is pending the full post-fix matrix.",
+    "R105 #162 failed only because workflow checks still expected the previous v9 asset version after the v10 runtime bump; the R105/R125/R9e workflow gates were aligned to v10, and R105 #163 now passes.",
+    "The saved resume log records HTTP 503 all_translation_backends_unavailable after provider timeouts/unparseable outputs. Historical daily_free_ai_limit and Google HTTP429 remain real blockers; no quota probe or translation request was sent this pass.",
     "All 98 candidate packs still require qualified linguistic review; none is certified or published.",
-    "AI Binding and production health pass, but live AI generation probes were skipped by policy in the latest R105/R9e runs; current AI Chat availability remains unknown.",
+    "AI Binding and production health pass, but live AI generation probes were skipped by policy; current AI Chat availability remains unknown.",
     "Physical microphone, audible-speaker and live ASR tests remain pending; browser/headless tests are not hardware certification.",
     "Payment checkout remains inactive pending merchant-account configuration and end-to-end merchant verification."
   ],
@@ -176,32 +176,31 @@
     }
   },
   "remainingChecks": [
-    "Complete R125 static locale audit #68 on commit 0ff6b8c799129688d812c8c9f227a3f0efc6774e; verify 98 languages × 27 sections, 248 country profiles and zero dynamic translation fallback calls after the Czech QUICK repair.",
+    "Complete R125 #71 static locale audit on v10; verify 98 languages × 27 sections, 248 country profiles and zero dynamic translation fallback calls.",
     "Resolve Divehi's 58 English-overlap entries with qualified native Dhivehi translation/review; do not synthesize or certify unreviewed wording.",
     "Run the full candidate quality/script/duplicate audit after quota-neutral repairs; structural PASS alone is not quality certification.",
     "Obtain qualified native review for all 98 candidate packs; publish no partial or unreviewed packs.",
-    "Re-probe AI Chat only through an explicitly authorized quota-safe live probe; latest R105 #151 and R9e #68 skipped live generation probes, so current availability is unknown.",
+    "Re-probe AI Chat only through an explicitly authorized quota-safe live probe; current availability is unknown because live generation was skipped.",
     "Re-probe translation availability only when quota-safe; current availability is unknown, last saved result is HTTP 503, and daily_free_ai_limit/Google HTTP429 must not be bypassed.",
-    "Complete end-to-end country and currency checks across all 98 locales; R9e #68 covers 248 country profiles and 44 localized pages, not linguistic certification.",
+    "Complete end-to-end country and currency checks across all 98 locales; current browser audit covers 248 country profiles and 44 localized pages, not linguistic certification.",
     "Perform physical microphone and audible-speaker tests on Android, iPhone/iPad and desktop; browser/headless TTS is not hardware certification.",
     "Configure a merchant account and verify checkout, payment confirmation, forged-reference rejection and settlement end-to-end."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-18T06:30:33Z",
+    "checkedAt": "2026-11-18T06:56:53Z",
     "aiChat": {
-      "checkedAt": "2026-11-18T06:30:17Z",
+      "checkedAt": "2026-11-18T06:56:53Z",
       "currentAvailability": "unknown-not-probed",
-      "latestProductionRun": 44251748304,
+      "latestProductionRun": 44255047338,
       "latestProductionConclusion": "success",
       "aiBinding": "true",
       "liveGenerationProbe": "skipped-by-policy"
     },
     "voiceTranscription": {
-      "checkedAt": "2026-11-18T06:30:33Z",
-      "run": 44251748263,
-      "status": "programmatic voice tests passed; production audio asset step skipped",
+      "checkedAt": "2026-11-18T06:56:53Z",
+      "status": "programmatic TTS and acknowledgement passed; live ASR and production audio asset step skipped",
       "programmaticTests": "passed",
       "liveASR": "skipped",
       "physicalDeviceCertified": false
@@ -216,7 +215,7 @@
       "scope": "Live official-domain health, robots/sitemap and 18 named pages; not full interaction or all-language/all-section certification."
     },
     "translation": {
-      "checkedAt": "2026-11-18T06:30:33Z",
+      "checkedAt": "2026-11-18T06:56:53Z",
       "currentAvailability": "unknown-not-probed",
       "lastObservedResumeLog": "HTTP 503 all_translation_backends_unavailable",
       "knownHistoricalBlockers": [
@@ -253,7 +252,7 @@
       "run": 44234500575,
       "prohibitedWeapon": "blocked",
       "liveAiProbes": "skipped-by-policy",
-      "scope": "R9e #67 live browser safety smoke probe; not full threat-model certification."
+      "scope": "browser safety smoke; not full threat-model certification"
     }
   },
   "voiceScriptCoverage": {
@@ -10244,13 +10243,13 @@
     ]
   },
   "latestProductionSectionAudit": {
-    "run": 67,
-    "runId": 44247285168,
+    "run": 69,
+    "runId": 44253612992,
     "workflow": ".github/workflows/r125-static-locale-section-audit.yml",
-    "createdAt": "2026-11-18T05:52:45Z",
+    "createdAt": "2026-11-18T06:44:50Z",
     "status": "completed",
     "conclusion": "failure",
-    "headSha": "6a898a9531221842da92f6f10f797a5e29a3adbd",
+    "headSha": "cb32a3067d71a6015598366274a88a9f0308bc79",
     "languages": 98,
     "sections": 27,
     "sectionLanguageApplications": 2646,
@@ -10263,7 +10262,7 @@
     "unresolvedFindingCombinations": 0,
     "dynamicFallback": {
       "requests": 1,
-      "language": "Czech",
+      "language": "Finnish",
       "strings": [
         "Back",
         "Page navigation",
@@ -10272,12 +10271,29 @@
       ],
       "providerRequestsSent": 0
     },
-    "finding": "No visible English leaks remained; the sole failure was one captured Czech dynamic QUICK fallback call."
+    "repairCommit": "ef16670d67d551c9bd79dda495cc64a3bad76a4e",
+    "correctedWorkflowCommit": "26411cbc6e4fd8d293222f1909e48d2c7454f3aa",
+    "nextRuns": [
+      {
+        "run": 70,
+        "runId": 44254925204,
+        "status": "in_progress",
+        "headSha": "ef16670d67d551c9bd79dda495cc64a3bad76a4e",
+        "note": "Started before workflow version gates were bumped to v10"
+      },
+      {
+        "run": 71,
+        "runId": 44255047349,
+        "status": "pending",
+        "headSha": "26411cbc6e4fd8d293222f1909e48d2c7454f3aa",
+        "note": "Uses corrected v10 readiness assertions"
+      }
+    ]
   },
   "latestProductionRuntimeChecks": {
     "r105": {
-      "run": 160,
-      "runId": 44251748304,
+      "run": 163,
+      "runId": 44255047338,
       "conclusion": "success",
       "aiBinding": true,
       "centralSafetyGate": "enabled",
@@ -10298,13 +10314,12 @@
     "r9e": {
       "run": 76,
       "runId": 44251748213,
-      "status": "in_progress",
-      "conclusion": null,
-      "countryProfilesPreviousRun": "248/248",
-      "localizedPagesPreviousRun": "44/44",
-      "manualMoroccoPriorityPreviousRun": "passed",
-      "manualWorldwidePriorityPreviousRun": "passed",
-      "prohibitedWeaponPreviousRun": "blocked",
+      "conclusion": "success",
+      "countryProfiles": "248/248",
+      "localizedPages": "44/44",
+      "manualMoroccoPriority": "passed",
+      "manualWorldwidePriority": "passed",
+      "prohibitedWeapon": "blocked",
       "liveAiProbes": "skipped-by-policy"
     },
     "safety": {
@@ -10322,9 +10337,7 @@
     "pages": {
       "run": 1822,
       "runId": 44251747516,
-      "conclusion": "success",
-      "build": "success",
-      "deploy": "success"
+      "conclusion": "success"
     }
   },
   "latestResumeWorkflowInspection": {
@@ -10349,6 +10362,110 @@
     "currentRevisionRunObserved": false,
     "activeRuns": 0,
     "candidateWritesDeferred": true,
-    "note": "Current Main workflow is manual-only and has not run on its current revision. The latest matching run is legacy #150; Resume was skipped. No candidate files were written this pass."
+    "note": "Current Main workflow is manual-only; the only matching run is legacy #150 and Resume was skipped. No active candidate-resume run exists. Candidate pack files were not written in this pass."
+  },
+  "latestQuickFallbackRepair": {
+    "checkedAt": "2026-11-18T06:56:53Z",
+    "findingsFromLatestCompletedAudit": {
+      "run": 69,
+      "runId": 44253612992,
+      "headSha": "cb32a3067d71a6015598366274a88a9f0308bc79",
+      "conclusion": "failure",
+      "languages": 98,
+      "sections": 27,
+      "sectionLanguageApplications": 2646,
+      "exactFindingCombinations": 0,
+      "partialFindingCombinations": 0,
+      "unresolvedFindingCombinations": 0,
+      "dynamicFallback": {
+        "requests": 1,
+        "language": "Finnish",
+        "strings": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ],
+        "providerRequestsSent": 0
+      }
+    },
+    "repair": {
+      "commit": "ef16670d67d551c9bd79dda495cc64a3bad76a4e",
+      "workflowGateAlignmentCommit": "26411cbc6e4fd8d293222f1909e48d2c7454f3aa",
+      "language": "fi",
+      "labels": {
+        "Back": "Takaisin",
+        "Page navigation": "Sivunavigointi",
+        "Voice reply": "Äänivastaus",
+        "Voice": "Ääni"
+      },
+      "i18nVersion": "20261118-r125-global-quick-v10",
+      "filesChanged": 49,
+      "htmlCacheReferencesUpdated": 44,
+      "quotaNeutral": true,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "nativeLinguisticCertification": false
+    },
+    "verification": {
+      "r105": {
+        "run": 163,
+        "runId": 44255047338,
+        "conclusion": "success",
+        "aiBinding": true,
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r9e": {
+        "run": 76,
+        "runId": 44251748213,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "moroccoPriority": "passed",
+        "worldwidePriority": "passed",
+        "prohibitedWeapon": "blocked"
+      },
+      "r123": {
+        "run": 114,
+        "runId": 44251748263,
+        "conclusion": "success",
+        "programmaticTTS": "passed",
+        "voiceAcknowledgement": "passed",
+        "dynamicPlaceholders": "passed",
+        "liveASR": "skipped",
+        "physicalDeviceCertified": false
+      },
+      "safety": {
+        "run": 41,
+        "runId": 44251748493,
+        "conclusion": "success"
+      },
+      "r125": {
+        "latestCompleted": {
+          "run": 69,
+          "runId": 44253612992,
+          "conclusion": "failure",
+          "reason": "one captured Finnish QUICK fallback; zero visible English leaks; zero provider requests"
+        },
+        "oldRevisionRun": {
+          "run": 70,
+          "runId": 44254925204,
+          "status": "in_progress",
+          "headSha": "ef16670d67d551c9bd79dda495cc64a3bad76a4e"
+        },
+        "correctedWorkflowRun": {
+          "run": 71,
+          "runId": 44255047349,
+          "status": "pending",
+          "headSha": "26411cbc6e4fd8d293222f1909e48d2c7454f3aa"
+        }
+      }
+    },
+    "candidatePacksChanged": false,
+    "published": false,
+    "linguisticCertification": false,
+    "decision": "NO-GO"
   }
 }
