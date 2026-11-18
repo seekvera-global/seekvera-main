@@ -97,7 +97,7 @@ async function main(){
    {code:'ta',language:'Tamil',labels:{'Back':'திரும்பு','Page navigation':'பக்க வழிசெலுத்தல்','Voice reply':'குரல் பதில்','Voice':'குரல்'}},
   {code:'ne',language:'Nepali',labels:{'Back':'पछाडि','Page navigation':'पृष्ठ नेभिगेसन','Voice reply':'आवाजमा जवाफ','Voice':'आवाज'}},
   {code:'si',language:'Sinhala',labels:{'Back':'ආපසු','Page navigation':'පිටු සංචාලනය','Voice reply':'හඬ පිළිතුර','Voice':'හඬ'}},
-   {code:'ta',language:'Tamil',labels:{'Back':'திரும்பு','Page navigation':'பக்க வழிசெலுத்தல்','Voice reply':'குரல் பதில்','Voice':'குரல்'}}
+   {code:'km',language:'Khmer',labels:{'Back':'ត្រឡប់ក្រោយ','Page navigation':'ការរុករកទំព័រ','Voice reply':'ការឆ្លើយតបជាសំឡេង','Voice':'សំឡេង'}}
  ];
  const quickContext={INITIAL_AI:'__TEST_INITIAL_AI__'};vm.createContext(quickContext);
  vm.runInContext(extract(i18n,'const QUICK={','// Provisional quota-neutral overrides','QUICK map')+';this.quick=QUICK;',quickContext);
@@ -223,7 +223,9 @@ async function main(){
   {code:'lt',language:'Lithuanian',labels:{'Back':'Atgal','Page navigation':'Puslapių naršymas','Voice reply':'Atsakymas balsu','Voice':'Balsas'}},
   {code:'lv',language:'Latvian',labels:{'Back':'Atpakaļ','Page navigation':'Lapu navigācija','Voice reply':'Balss atbilde','Voice':'Balss'}},
   {code:'af',language:'Afrikaans',labels:{'AI Voice Agent':'KI-stemassistent'}},
-  {code:'tk',language:'Turkmen',labels:{'Back':'Yza','Page navigation':'Sahypa navigasiýasy','Voice reply':'Sesli jogap','Voice':'Ses'}}
+  {code:'tk',language:'Turkmen',labels:{'Back':'Yza','Page navigation':'Sahypa navigasiýasy','Voice reply':'Sesli jogap','Voice':'Ses'}},
+   {code:'ta',language:'Tamil',labels:{'Back':'திரும்பு','Page navigation':'பக்க வழிசெலுத்தல்','Voice reply':'குரல் பதில்','Voice':'குரல்'}},
+   {code:'km',language:'Khmer',labels:{'Back':'ត្រឡប់ក្រោយ','Page navigation':'ការរុករកទំព័រ','Voice reply':'ការឆ្លើយតបជាសំឡេង','Voice':'សំឡេង'}}
  ];
  for(const item of provisionalQuickCases){
   for(const value of Object.values(item.labels))assert(i18n.includes(value),'Missing '+item.code+' provisional quick label: '+value);
