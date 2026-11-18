@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261118-r125-italian-quick-labels';
+const VERSION='20261118-r125-multilang-quick-v2';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),PACK_VALUES=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -63,6 +63,28 @@ it:{
 'Page navigation':'Navigazione tra le pagine',
 'Voice reply':'Risposta vocale',
 'Voice':'Voce'
+// Provisional Swahili quick UI labels; native review remains required.
+sw:{'Back':'Rudi nyuma','Page navigation':'Urambazaji wa kurasa','Voice reply':'Jibu la sauti','Voice':'Sauti'},
+// Provisional Persian quick UI labels; native review remains required.
+fa:{'Back':'بازگشت','Page navigation':'پیمایش صفحات','Voice reply':'پاسخ صوتی','Voice':'صدا'},
+// Provisional Polish quick UI labels; native review remains required.
+pl:{'Back':'Wstecz','Page navigation':'Nawigacja stron','Voice reply':'Odpowiedź głosowa','Voice':'Głos'},
+// Provisional Dutch quick UI labels; native review remains required.
+nl:{'Back':'Terug','Page navigation':'Paginanavigatie','Voice reply':'Spraakantwoord','Voice':'Stem'},
+// Provisional Malay quick UI labels; native review remains required.
+ms:{'Back':'Kembali','Page navigation':'Navigasi halaman','Voice reply':'Balasan suara','Voice':'Suara'},
+// Provisional Hausa quick UI labels; native review remains required.
+ha:{'Back':'Komawa baya','Page navigation':'Kewayawa shafuka','Voice reply':'Amsar murya','Voice':'Murya'},
+// Provisional Yoruba quick UI labels; native review remains required.
+yo:{'Back':'Pada sẹhin','Page navigation':'Lilọ kiri oju-iwe','Voice reply':'Idahun ohun','Voice':'Ohùn'},
+// Provisional Igbo quick UI labels; native review remains required.
+ig:{'Back':'Laghachi azụ','Page navigation':'Ịgagharị peeji','Voice reply':'Nzaghachi olu','Voice':'Olu'},
+// Provisional Amharic quick UI labels; native review remains required.
+am:{'Back':'ተመለስ','Page navigation':'የገጽ አሰሳ','Voice reply':'የድምፅ መልስ','Voice':'ድምፅ'},
+// Provisional Hebrew quick UI labels; native review remains required.
+he:{'Back':'חזרה','Page navigation':'ניווט בעמודים','Voice reply':'תשובה קולית','Voice':'קול'},
+// Provisional Ukrainian quick UI labels; native review remains required.
+uk:{'Back':'Назад','Page navigation':'Навігація сторінками','Voice reply':'Голосова відповідь','Voice':'Голос'},
 },
 es:{
 'Back':'Volver','Page navigation':'Navegación de páginas','Voice reply':'Respuesta de voz','Voice':'Voz'

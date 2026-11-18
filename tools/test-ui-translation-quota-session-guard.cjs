@@ -48,7 +48,18 @@ async function main(){
   {code:'th',language:'Thai',labels:{'Business Yearly':'แพ็กเกจธุรกิจรายปี','Business Monthly':'แพ็กเกจธุรกิจรายเดือน'}},
   {code:'zu',language:'Zulu',labels:{'GLOBAL AI MARKETPLACE':'Imakethe ye-AI yomhlaba wonke','Courier & last mile':'Ukuthumela nokuletha impahla esigabeni sokugcina'}},
   {code:'ko',language:'Korean',labels:{'Back':'뒤로','Page navigation':'페이지 탐색','Voice reply':'음성 답변','Voice':'음성'}},
-  {code:'it',language:'Italian',labels:{'Back':'Indietro','Page navigation':'Navigazione tra le pagine','Voice reply':'Risposta vocale','Voice':'Voce'}}
+  {code:'it',language:'Italian',labels:{'Back':'Indietro','Page navigation':'Navigazione tra le pagine','Voice reply':'Risposta vocale','Voice':'Voce'}},
+  {code:'sw',language:'Swahili',labels:{'Back':'Rudi nyuma','Page navigation':'Urambazaji wa kurasa','Voice reply':'Jibu la sauti','Voice':'Sauti'}},
+  {code:'fa',language:'Persian',labels:{'Back':'بازگشت','Page navigation':'پیمایش صفحات','Voice reply':'پاسخ صوتی','Voice':'صدا'}},
+  {code:'pl',language:'Polish',labels:{'Back':'Wstecz','Page navigation':'Nawigacja stron','Voice reply':'Odpowiedź głosowa','Voice':'Głos'}},
+  {code:'nl',language:'Dutch',labels:{'Back':'Terug','Page navigation':'Paginanavigatie','Voice reply':'Spraakantwoord','Voice':'Stem'}},
+  {code:'ms',language:'Malay',labels:{'Back':'Kembali','Page navigation':'Navigasi halaman','Voice reply':'Balasan suara','Voice':'Suara'}},
+  {code:'ha',language:'Hausa',labels:{'Back':'Komawa baya','Page navigation':'Kewayawa shafuka','Voice reply':'Amsar murya','Voice':'Murya'}},
+  {code:'yo',language:'Yoruba',labels:{'Back':'Pada sẹhin','Page navigation':'Lilọ kiri oju-iwe','Voice reply':'Idahun ohun','Voice':'Ohùn'}},
+  {code:'ig',language:'Igbo',labels:{'Back':'Laghachi azụ','Page navigation':'Ịgagharị peeji','Voice reply':'Nzaghachi olu','Voice':'Olu'}},
+  {code:'am',language:'Amharic',labels:{'Back':'ተመለስ','Page navigation':'የገጽ አሰሳ','Voice reply':'የድምፅ መልስ','Voice':'ድምፅ'}},
+  {code:'he',language:'Hebrew',labels:{'Back':'חזרה','Page navigation':'ניווט בעמודים','Voice reply':'תשובה קולית','Voice':'קול'}},
+  {code:'uk',language:'Ukrainian',labels:{'Back':'Назад','Page navigation':'Навігація сторінками','Voice reply':'Голосова відповідь','Voice':'Голос'}}
  ];
  const quickContext={INITIAL_AI:'__TEST_INITIAL_AI__'};vm.createContext(quickContext);
  vm.runInContext(extract(i18n,'const QUICK={','// Provisional quota-neutral overrides','QUICK map')+';this.quick=QUICK;',quickContext);
