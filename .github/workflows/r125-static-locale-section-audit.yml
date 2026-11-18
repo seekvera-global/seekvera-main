@@ -73,6 +73,10 @@ jobs:
               && grep -Fq "'AI-stemmeassistent'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Sesebelisoa sa ho fumana Wi-Fi ea mahala kapa ea sechaba'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Sayfa gezintisi'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Назад'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Навигация по страницам'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Голосовой ответ'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Голос'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Geschäftssoftware'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Business Software'" /tmp/r125-i18n-ui.js \
               && grep -Fq '<b>${g.name}</b>' /tmp/r125-games.js \
