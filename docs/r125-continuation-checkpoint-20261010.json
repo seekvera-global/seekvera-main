@@ -111,15 +111,18 @@
   "packsPublished": false,
   "linguisticAccuracyCertified": false,
   "blockedBy": [
-    "Candidate branch still has 98 structurally complete packs with 1,118 keys and matching sourceHash; 97/98 pass the saved quality gate. Divehi (dv) remains blocked by 58 English-overlap findings requiring qualified native Dhivehi review.",
+    "Candidate branch contains 98 structurally complete packs with 1,118 keys and matching sourceHash; 97/98 pass the saved quality gate. Divehi (dv) remains blocked by 58 English-overlap findings requiring qualified native Dhivehi review.",
     "Production locale manifest has 1,045 keys versus 1,118 candidate-source keys; 73 keys remain unpublished and unreviewed. Do not promote candidate packs to close this gap.",
     "The current resume log reports Dhivehi retries timing out and HTTP 503 all_translation_backends_unavailable from three Workers AI backends. Historical daily_free_ai_limit and Google HTTP429 remain blockers; no quota probes or bypasses were attempted.",
     "All 98 candidate packs still require qualified linguistic review; none is published or linguistically certified.",
-    "R125 #86 on v23 found Azerbaijani fallback and v24 fixed it. R125 #87 on v24 found one Kazakh fallback after all static checks passed. Main v25 adds Kazakh local QUICK labels; R125 #88 and R9e #95 are now running. No candidate packs were written.",
-    "R125 #86 was still installing Chromium at the latest read; the 98 × 27 matrix has not started yet. Do not claim v23 locale audit success until it completes.",
-    "Physical microphone/speaker certification and live ASR remain incomplete; browser/headless playback is not hardware certification.",
-    "Checkout remains inactive until merchant-account configuration and end-to-end payment/settlement verification.",
-    "AI Binding and production health passed in R105 #178, but live AI generation probes were skipped by policy; current AI Chat availability remains unknown."
+    "R125 #88 on v25 completed with failure after checking 98 languages × 27 sections (2,646 applications) and 248 country profiles: exact/partial static findings were zero, but one intercepted Uzbek dynamic fallback request remained and one Urdu seller-plan DOM match was unresolved. No external translation request was sent.",
+    "Main v26 repair adds deterministic Uzbek QUICK labels and adds Urdu seller-plan select/option diagnostics to R125; native review remains required for provisional labels. R125 #89 must verify the result.",
+    "R9e #95 passed 248/248 country profiles, 44/44 localized pages, Morocco and Worldwide manual priority, four visible locale samples, currency stability, safety and voice/PWA cache checks. Live AI probes and live ASR were skipped by policy.",
+    "R105 #180 passed production health, AI binding, central safety gate and fail-closed checks. One country-change intent probe passed, but provider/model identity was not captured; general English/Arabic chat probes were skipped, so live AI Chat availability remains unknown.",
+    "R123 #132 passed programmatic voice validation, category translations, voice acknowledgement, dynamic placeholders, Arabic homepage/31 descriptions and headless Android playback. Production audio asset was skipped, live ASR was not verified, and physical microphone/speaker hardware is not certified.",
+    "Safety Smoke #58 passed four prohibited-category blocks and allowed a benign land request only pending human review.",
+    "Checkout remains inactive until merchant-account configuration and end-to-end payment, forged-reference rejection and settlement verification.",
+    "The resume workflow is manual workflow_dispatch only, with translation and repair inputs default false. Latest matching run #150 is legacy and completed; no active or queued Actions runs were observed. No candidate files were written in this pass."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -177,38 +180,38 @@
     }
   },
   "remainingChecks": [
-    "Complete R125 #88 on v25 and R9e #95; confirm all 98 languages × 27 sections, 248 country profiles, and country/currency behavior with no dynamic translation fallback.",
+    "Complete R125 #89 on v26 and confirm zero dynamic translation fallbacks plus resolve the Urdu seller-plan DOM diagnostic; do not suppress unresolved visible text without evidence.",
     "Resolve Divehi's 58 English-overlap findings with qualified native Dhivehi translation/review; do not synthesize or certify unreviewed wording.",
     "Run the full candidate quality/script/duplicate audit after quota-neutral repairs; structural PASS alone is not quality certification.",
     "Obtain qualified native review for all 98 candidate packs; publish no partial or unreviewed packs.",
     "Re-probe AI Chat and translation only through explicitly authorized quota-safe probes; current availability remains unknown and daily_free_ai_limit/Google HTTP429 must not be bypassed.",
-    "Keep the v23 country/currency audit green: R9e #93 passed 248 country profiles, stored currency, 44 localized pages, Morocco/Worldwide priority.",
+    "Keep country/currency behavior green: R9e #95 passed 248 country profiles, 44 localized pages, stored currency, Morocco/Worldwide priority.",
     "Perform physical microphone and audible-speaker tests on Android, iPhone/iPad and desktop; browser/headless TTS is not hardware certification.",
     "Configure a merchant account and verify checkout, payment confirmation, forged-reference rejection and settlement end-to-end."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-18T15:09:34Z",
+    "checkedAt": "2026-11-18T15:18:40Z",
     "aiChat": {
       "currentAvailability": "partial-evidence-only-not-certified",
-      "latestConfirmedProductionRun": 178,
+      "latestConfirmedProductionRun": 180,
       "latestConfirmedConclusion": "success",
       "aiBinding": true,
       "productionHealth": "passed",
       "centralSafetyGate": "enabled",
       "failClosed": true,
       "liveGenerationProbe": "general English/Arabic chat probes skipped by policy; no full live-chat certification",
-      "countryControlIntentProbe": "R105 #179 passed one 'change country to Iceland' app-control request; provider/model identity not captured",
-      "safetyIntentProbe": "R105 #179 gun request was blocked by deterministic safety rules before AI generation"
+      "countryControlIntentProbe": "R105 #180 passed one change-country-to-Iceland app-control request; provider/model identity not captured",
+      "safetyIntentProbe": "R105 #180 blocked prohibited request before AI generation"
     },
     "voiceTranscription": {
-      "status": "programmatic voice checks passed in R123 #130: validation, category translations, voice acknowledgement, dynamic placeholders and headless Android playback; production audio asset skipped, live ASR not verified, physical hardware not certified",
+      "status": "programmatic voice checks passed in R123 #132: validation, category translations, voice acknowledgement, dynamic placeholders, Arabic homepage/31 descriptions and headless Android playback; production audio asset skipped, live ASR not verified, physical hardware not certified",
       "programmaticTests": "passed",
       "liveASR": "not-verified",
       "physicalDeviceCertified": false,
-      "currentV23Run": 130,
-      "currentV23Status": "programmatic-pass-production-asset-skipped"
+      "currentRun": 132,
+      "currentStatus": "programmatic-pass-production-asset-skipped"
     },
     "translation": {
       "currentAvailability": "unknown-not-probed",
@@ -221,7 +224,7 @@
       "quotaBypassAttempts": 0
     },
     "countryCurrency": {
-      "latestConfirmedRun": 93,
+      "latestConfirmedRun": 95,
       "latestConfirmedStatus": "passed",
       "countryProfiles": "248/248",
       "localizedPages": "44/44",
@@ -234,11 +237,10 @@
         "CN/zh"
       ],
       "currencyPerCountryAndStoredValue": "passed",
-      "currentV23Run": 93,
-      "currentV23Status": "passed"
+      "liveAiProbes": "skipped-by-policy"
     },
     "safety": {
-      "latestRun": 56,
+      "latestRun": 58,
       "status": "success",
       "blockedCategories": [
         "weapons_or_explosives",
@@ -246,7 +248,7 @@
         "stolen_counterfeit_or_fake_documents",
         "ownership_or_consent_problem"
       ],
-      "benignHotelRequest": "allowed_pending_human_review"
+      "benignLand": "allowed_pending_human_review"
     },
     "checkout": "inactive pending merchant configuration and end-to-end merchant verification",
     "quotaBoundary": {
@@ -280,7 +282,7 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-11-18T15:06:52Z",
+    "checkedAt": "2026-11-18T15:18:40Z",
     "candidateCommit": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
     "completedCount": 97,
     "remainingCount": 1,
@@ -291,7 +293,7 @@
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false,
-    "note": "Candidate summary and resume-latest.log were read from work/r125-locale-candidates-20261008 and left unchanged. Latest matching Main resume run #150 is legacy and completed with Resume skipped; no active/queued resume run was observed. No candidate pack writes or translation requests were made in this pass.",
+    "note": "Candidate summary and resume-latest.log were read from work/r125-locale-candidates-20261008 and left unchanged. Branch head remains f7cdbba. Main resume workflow latest matching run #150 is legacy; no active or queued runs. No candidate pack writes, translation requests, quota use, publication or linguistic certification in this pass.",
     "quotaStatusCurrent": "unknown-not-probed",
     "knownDailyFreeAiLimitBlocker": true,
     "repairBatch20261114": {
@@ -505,14 +507,24 @@
     "latestKnownRunConclusion": "success",
     "latestKnownResume": "skipped",
     "latestKnownAudit": "success",
-    "candidatePackWritesThisPass": false,
+    "candidatePackWritesThisPass": 0,
     "translationRequestsThisPass": 0,
     "aiQuotaUsedThisPass": 0,
     "resumeLogBlobSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9",
     "candidateBranch": "work/r125-locale-candidates-20261008",
     "activeRunObserved": false,
     "translationRequestsSent": 0,
-    "aiQuotaUsed": 0
+    "aiQuotaUsed": 0,
+    "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
+    "latestResumeWorkflowRun": {
+      "number": 150,
+      "id": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "resume": "skipped",
+      "activeRuns": 0,
+      "queuedRuns": 0
+    }
   },
   "builderRepair": {
     "commit": "634a0d31cb571300d658bb24580bdad3cbaeb75b",
@@ -9218,138 +9230,51 @@
     "decision": "NO-GO"
   },
   "latestAutomationPass20261118": {
-    "checkedAt": "2026-11-18T15:13:25Z",
-    "sourceReadback": {
-      "checkpointBlob": "2a9689b7e27a6147ffde0dcefd2e74a26a58adb7",
-      "candidateSummaryBlob": "551a1cad78540f437e67d1d0a88ae1e844478022",
-      "resumeLatestLogBlob": "1ca195f7a528e7b073ecff1166cd1e4142b55e9",
-      "candidateSummaryCheckedAt": "2026-11-17T09:53:12Z",
-      "candidateSummaryState": {
-        "structuralPacks": 98,
-        "qualityCandidates": 97,
-        "remaining": [
-          "dv"
-        ],
-        "divehiEnglishOverlap": 58,
-        "sourceDelta": 73,
-        "verifiedPublicUiOnly": 69
-      },
-      "resumeLogLastFailure": "HTTP 503 all_translation_backends_unavailable; Dhivehi split retries/timeouts; STAGED_ONLY 0 FAILED 1"
-    },
-    "priorR125": {
-      "run": 86,
-      "runId": 44329277204,
-      "conclusion": "failure",
-      "staticFindings": 0,
-      "partialFindings": 0,
-      "unresolvedFindings": 0,
-      "dynamicFallback": {
-        "language": "Azerbaijani",
-        "requests": 1,
-        "strings": [
-          "Back",
-          "Page navigation",
-          "Voice reply",
-          "Voice"
-        ]
-      }
-    },
-    "repair": {
-      "commit": "a73377b185a8ada5e43ff385d21c54e608d737c4",
-      "version": "20261118-r125-global-quick-v25",
-      "language": "Kazakh",
-      "htmlPagesUpdated": 44,
-      "workflowsUpdated": 3,
-      "quickLabelsAdded": 4,
-      "sourceCandidatePack": "kk.json",
-      "quotaNeutral": true
-    },
-    "readback": {
-      "i18nVersion": "20261118-r125-global-quick-v25",
-      "kkQuick": true,
-      "guardKazakhRegression": true,
-      "workflowAssertionsUpdated": true,
-      "htmlPagesUpdated": 44,
-      "mainHead": "c3148351687d6d03cae93bab7bf8ef55004997dd"
-    },
-    "currentRuns": {
+    "checkedAt": "2026-11-18T15:18:40Z",
+    "mainHeadBeforeRepair": "0749c6ea283b45b2bd784700889e74a9667e7569",
+    "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
+    "candidatePackWrites": 0,
+    "candidateMetadataWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticAccuracyCertified": false,
+    "productionChecks": {
       "r125": {
         "run": 88,
-        "runId": 44332952014,
-        "status": "in_progress",
-        "step": "Install Chromium and system dependencies"
+        "id": 44332952014,
+        "conclusion": "failure",
+        "dynamicFallback": "Uzbek",
+        "unresolvedDom": "Urdu seller-plans Business Monthly/Yearly"
+      },
+      "r9e": {
+        "run": 95,
+        "id": 44332952073,
+        "conclusion": "success"
       },
       "r105": {
         "run": 180,
-        "runId": 44332952421,
-        "status": "completed",
+        "id": 44332952421,
         "conclusion": "success"
       },
       "r123": {
         "run": 132,
-        "runId": 44332951985,
-        "status": "completed",
-        "conclusion": "success",
-        "productionAudioAsset": "skipped"
-      },
-      "r9e": {
-        "run": 95,
-        "runId": 44332952073,
-        "status": "in_progress",
-        "step": "Install Chromium browser test runtime"
-      },
-      "r9ePrior": {
-        "run": 94,
-        "runId": 44331808129,
-        "status": "in_progress",
-        "step": "Install Chromium browser test runtime"
+        "id": 44332951985,
+        "conclusion": "success"
       },
       "safety": {
         "run": 58,
-        "runId": 44332952177,
-        "status": "completed",
+        "id": 44332952177,
         "conclusion": "success"
       },
       "pages": {
-        "run": 1866,
-        "runId": 44333074264,
-        "status": "completed",
+        "run": 1867,
+        "id": 44333444948,
         "conclusion": "success"
       }
     },
-    "candidatePackWrites": 0,
-    "translationRequests": 0,
-    "aiQuotaUsed": "unknown-not-measured",
-    "aiChatAvailability": "partial-evidence-only; one country-control intent probe passed, general live chat not certified",
-    "translationAvailability": "unknown-not-probed",
-    "physicalAudioCertified": false,
-    "checkout": "inactive",
-    "published": false,
-    "linguisticCertification": false,
-    "finalApproval": false,
-    "decision": "NO-GO",
-    "aiQuotaUsage": "unknown-not-measured: R105 #179 passed one country-control /api/ai intent request; provider/model identity not captured; general live probes skipped. No direct translation request or quota bypass.",
-    "priorR125Runs": [
-      {
-        "run": 86,
-        "runId": 44329277204,
-        "version": "v23",
-        "conclusion": "failure",
-        "fallbackLanguage": "Azerbaijani",
-        "fallbackRequests": 1
-      },
-      {
-        "run": 87,
-        "runId": 44331808281,
-        "version": "v24",
-        "conclusion": "failure",
-        "fallbackLanguage": "Kazakh",
-        "fallbackRequests": 1,
-        "staticFindings": 0,
-        "partialFindings": 0,
-        "unresolvedFindings": 0
-      }
-    ]
+    "repair": "Prepared v26 Uzbek QUICK labels, quota-neutral regression, cache-busted 44 localized HTML pages and Urdu seller-plan DOM diagnostics. Candidate branch untouched.",
+    "decision": "NO-GO"
   },
   "latestR125AuditResult20261118": {
     "checkedAt": "2026-11-18",
@@ -10303,11 +10228,11 @@
   },
   "latestProductionSectionAudit": {
     "previousRun": {
-      "run": 86,
-      "runId": 44329277204,
+      "run": 87,
+      "runId": 44331808281,
       "status": "completed",
       "conclusion": "failure",
-      "runtimeVersion": "20261118-r125-global-quick-v23",
+      "runtimeVersion": "20261118-r125-global-quick-v24",
       "matrix": {
         "languages": 98,
         "sections": 27,
@@ -10318,7 +10243,7 @@
         "unresolved": 0
       },
       "dynamicFallback": {
-        "language": "Azerbaijani",
+        "language": "Kazakh",
         "requests": 1,
         "strings": [
           "Back",
@@ -10329,34 +10254,26 @@
       }
     },
     "repair": {
-      "version": "20261118-r125-global-quick-v23",
-      "commit": "fc912d815a78f7cb98813ece0d480640d44bc565",
-      "runtimeCommit": "fc912d815a78f7cb98813ece0d480640d44bc565",
+      "version": "20261118-r125-global-quick-v25",
+      "commit": "a73377b185a8ada5e43ff385d21c54e608d737c4",
+      "runtimeCommit": "a73377b185a8ada5e43ff385d21c54e608d737c4",
       "htmlPagesUpdated": 44,
-      "codeFilesUpdated": [
-        "i18n-ui.js",
-        "tools/test-ui-translation-quota-session-guard.cjs",
-        ".github/workflows/r125-static-locale-section-audit.yml",
-        ".github/workflows/r105-final-release.yml",
-        ".github/workflows/final-browser-audit-r9.yml"
-      ],
       "labels": {
-        "Back": "Վերադարձ",
-        "PageNavigation": "Էջի նավիգացիա",
-        "VoiceReply": "Ձայնային պատասխան",
-        "Voice": "Ձայն"
+        "Back": "Артқа",
+        "PageNavigation": "Бет навигациясы",
+        "VoiceReply": "Дыбыстық жауап",
+        "Voice": "Дыбыс"
       },
-      "source": "Existing hy.json candidate values; provisional UI runtime labels only; native Armenian review remains required.",
-      "regression": "Armenian QUICK-map and zero-provider-call case added to quota-session guard."
+      "source": "Existing kk.json candidate values; provisional UI runtime labels only; native Kazakh review remains required."
     },
     "currentRun": {
-      "run": 87,
-      "runId": 44331808281,
+      "run": 88,
+      "runId": 44332952014,
       "workflow": ".github/workflows/r125-static-locale-section-audit.yml",
       "status": "completed",
       "conclusion": "failure",
-      "headSha": "b546944bae1bb8d8f8836eaab4be219cacb8591d",
-      "runtimeVersion": "20261118-r125-global-quick-v24",
+      "headSha": "a73377b185a8ada5e43ff385d21c54e608d737c4",
+      "runtimeVersion": "20261118-r125-global-quick-v25",
       "preAuditSteps": {
         "checkout": "success",
         "nodeSetup": "success",
@@ -10379,71 +10296,74 @@
         "emptyValues": 0,
         "exactFindingCombinations": 0,
         "partialFindingCombinations": 0,
-        "unresolvedFindingCombinations": 0,
-        "dynamicFallback": {
-          "requests": 1,
-          "language": "Kazakh",
-          "strings": [
-            "Back",
-            "Page navigation",
-            "Voice reply",
-            "Voice"
-          ]
+        "unresolvedFindingCombinations": 1,
+        "unresolvedLanguages": [
+          "ur"
+        ]
+      },
+      "unresolvedDetails": [
+        {
+          "path": "/seller-plans.html",
+          "language": "ur",
+          "leaks": [
+            "Business Yearly",
+            "Business Monthly"
+          ],
+          "runtime": {
+            "language": "ur",
+            "readyLanguage": "ur",
+            "runtimeVersion": "20261118-r125-global-quick-v25",
+            "packReady": true
+          },
+          "evidence": {
+            "nodes": [],
+            "options": [],
+            "elements": [],
+            "excluded": []
+          }
         }
+      ],
+      "dynamicFallback": {
+        "requests": 1,
+        "language": "Uzbek",
+        "strings": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ]
       },
       "blockedRequests": {
         "ai": 0,
         "translation": 1,
         "pollinations": 0
       },
-      "excludedOnlyExamples": [
-        {
-          "language": "Zulu",
-          "phrase": "AI Deal Agent",
-          "reason": "data-no-translate"
-        },
-        {
-          "language": "Kalaallisut",
-          "phrase": "AI Deal Agent",
-          "reason": "data-no-translate"
-        },
-        {
-          "language": "Basque",
-          "phrase": "AI Deal Agent",
-          "reason": "data-no-translate"
-        },
-        {
-          "language": "Luxembourgish",
-          "phrase": "AI Deal Agent",
-          "reason": "data-no-translate"
-        }
-      ],
-      "conclusionReason": "All 98 packs, 248 country profiles, homepage and all 27 sections passed static checks; one intercepted dynamic /api/ui-translate request remained for Kazakh Back/Page navigation/Voice reply/Voice.",
-      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44331808281"
+      "conclusionReason": "All 98 packs, 248 country profiles, homepage and 27 sections passed static key/structure checks; one intercepted Uzbek dynamic fallback and one unresolved Urdu seller-plan DOM match remain. No AI or translation provider requests were sent.",
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44332952014"
     },
-    "scope": "No AI or translation requests; no candidate pack writes.",
     "nextRepair": {
-      "version": "20261118-r125-global-quick-v25",
-      "commit": "a73377b185a8ada5e43ff385d21c54e608d737c4",
+      "version": "20261118-r125-global-quick-v26",
       "labels": {
-        "Back": "Артқа",
-        "PageNavigation": "Бет навигациясы",
-        "VoiceReply": "Дыбыстық жауап",
-        "Voice": "Дыбыс"
+        "Back": "Orqaga",
+        "PageNavigation": "Sahifa navigatsiyasi",
+        "VoiceReply": "Ovoz javobi",
+        "Voice": "Ovoz"
       },
-      "source": "Existing kk.json candidate pack; provisional runtime QUICK labels only; native review remains required.",
+      "source": "Existing uz.json candidate values; provisional runtime QUICK labels only; native Uzbek review remains required.",
       "htmlPagesUpdated": 44,
       "codeFilesUpdated": [
         "i18n-ui.js",
-        "tools/test-ui-translation-quota-session-guard.cjs"
+        "tools/test-ui-translation-quota-session-guard.cjs",
+        "tools/r125_static_locale_section_audit.mjs"
       ],
       "workflowsUpdated": [
         ".github/workflows/r125-static-locale-section-audit.yml",
         ".github/workflows/r105-final-release.yml",
         ".github/workflows/final-browser-audit-r9.yml"
       ],
-      "regression": "QUICK.kk exact-map assertion plus Kazakh zero-provider-call navigation case."
-    }
+      "regression": "QUICK.uz exact-map and zero-provider-call case; Urdu seller-plan select diagnostics added without weakening visible-text assertions."
+    },
+    "scope": "No AI or translation provider requests; no candidate pack writes."
   },
   "latestProductionRuntimeChecks": {
     "r105": {
@@ -10455,7 +10375,7 @@
       "centralSafetyGate": "enabled",
       "failClosed": true,
       "productionHealth": "passed",
-      "countryControlIntentProbe": "passed once; provider/model identity not captured",
+      "countryControlIntentProbe": "passed once: change country to Iceland; provider/model identity not captured",
       "safetyIntentProbe": "deterministic rules blocked prohibited request before AI generation",
       "liveGeneralChatProbes": "skipped-by-policy",
       "runtimeVersion": "20261118-r125-global-quick-v25"
@@ -10470,6 +10390,7 @@
       "voiceAcknowledgement": "passed",
       "dynamicVoicePlaceholders": "passed",
       "headlessAndroidPlayback": "passed",
+      "arabicHomepageAnd31Descriptions": "passed",
       "productionAudioAsset": "skipped",
       "liveASR": "not-verified",
       "physicalMicrophoneSpeakerCertified": false
@@ -10477,121 +10398,47 @@
     "r9e": {
       "run": 95,
       "runId": 44332952073,
-      "status": "in_progress",
-      "conclusion": null,
-      "previousRun94": {
-        "runId": 44331808129,
-        "status": "in_progress",
-        "step": "Install Chromium browser test runtime"
-      }
+      "status": "completed",
+      "conclusion": "success",
+      "countryProfiles": "248/248",
+      "localizedPages": "44/44",
+      "manualMoroccoPriority": "passed",
+      "manualWorldwidePriority": "passed",
+      "visibleLocales": [
+        "MA/ar",
+        "FR/fr",
+        "IN/hi",
+        "CN/zh"
+      ],
+      "currencyPerCountryAndStoredValue": "passed",
+      "prohibitedWeapon": "blocked",
+      "voiceAndPwaCache": "passed",
+      "liveAiProbes": "skipped-by-policy",
+      "liveASR": "skipped-by-policy"
     },
     "safety": {
       "run": 58,
       "runId": 44332952177,
       "status": "completed",
       "conclusion": "success",
-      "blockedCases": 4,
+      "blockedCategories": [
+        "weapons_or_explosives",
+        "explicit_sexual_content",
+        "stolen_counterfeit_or_fake_documents",
+        "ownership_or_consent_problem"
+      ],
       "benignLand": "allowed_pending_human_review"
     },
     "pages": {
-      "run": 1866,
-      "runId": 44333074264,
+      "run": 1867,
+      "runId": 44333444948,
       "status": "completed",
       "conclusion": "success",
-      "headSha": "c3148351687d6d03cae93bab7bf8ef55004997dd"
-    },
-    "pendingV24Runs": {
-      "r125": {
-        "run": 87,
-        "runId": 44331808281,
-        "status": "in_progress",
-        "matrixStep": "in_progress",
-        "preflight": "passed"
-      },
-      "r9e": {
-        "run": 94,
-        "runId": 44331808129,
-        "status": "in_progress"
-      },
-      "r105": {
-        "run": 179,
-        "runId": 44331808155,
-        "status": "completed",
-        "conclusion": "success"
-      },
-      "r123": {
-        "run": 131,
-        "runId": 44331808257,
-        "status": "completed",
-        "conclusion": "success"
-      },
-      "safety": {
-        "run": 57,
-        "runId": 44331808036,
-        "status": "completed",
-        "conclusion": "success"
-      },
-      "pagesV24": {
-        "run": 1862,
-        "runId": 44331807292,
-        "status": "completed",
-        "conclusion": "success"
-      },
-      "pagesCheckpoint": {
-        "run": 1863,
-        "runId": 44332017716,
-        "status": "completed",
-        "conclusion": "success"
-      }
-    },
-    "pendingV25Runs": {
-      "r125": {
-        "run": 88,
-        "runId": 44332952014,
-        "status": "in_progress",
-        "step": "Install Chromium and system dependencies"
-      },
-      "r105": {
-        "run": 180,
-        "runId": 44332952421,
-        "status": "completed",
-        "conclusion": "success"
-      },
-      "r123": {
-        "run": 132,
-        "runId": 44332951985,
-        "status": "completed",
-        "conclusion": "success",
-        "productionAudioAsset": "skipped"
-      },
-      "r9e": {
-        "run": 95,
-        "runId": 44332952073,
-        "status": "in_progress",
-        "step": "Install Chromium browser test runtime"
-      },
-      "r9ePrior": {
-        "run": 94,
-        "runId": 44331808129,
-        "status": "in_progress",
-        "step": "Install Chromium browser test runtime"
-      },
-      "safety": {
-        "run": 58,
-        "runId": 44332952177,
-        "status": "completed",
-        "conclusion": "success"
-      },
-      "pages": {
-        "run": 1866,
-        "runId": 44333074264,
-        "status": "completed",
-        "conclusion": "success"
-      }
+      "headSha": "0749c6ea283b45b2bd784700889e74a9667e7569"
     }
   },
   "latestResumeWorkflowInspection": {
-    "checkedAt": "2026-11-18T15:06:52Z",
+    "checkedAt": "2026-11-18T15:18:40Z",
     "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
     "path": ".github/workflows/r125-hourly-candidate-resume.yml",
     "trigger": "workflow_dispatch only",
@@ -10606,22 +10453,13 @@
       "conclusion": "success",
       "revision": "legacy",
       "event": "push",
+      "branch": "main",
       "resume": "skipped",
       "audit": "success",
       "candidatePackWrites": 0,
       "translationRequests": 0,
-      "aiQuotaUsed": 0,
-      "job": "resume completed successfully",
-      "auditStep": "success",
-      "saveProgressStep": "success"
+      "aiQuotaUsed": 0
     },
-    "currentRevisionRunObserved": false,
-    "activeRuns": 0,
-    "queuedRuns": 0,
-    "candidateWritesDeferred": true,
-    "candidatePackWritesInLatestRun": 0,
-    "translationRequestsInLatestRun": 0,
-    "note": "Main resume workflow remains workflow_dispatch-only with translation/repair opt-ins false. Latest matching run #150 is a legacy revision, completed successfully with resume skipped and audit passed. Repository-wide latest Actions scan showed no queued/in-progress runs before v24; no current-revision resume run was found. No candidate packs were written.",
     "latestRunJobSteps": [
       {
         "name": "Resume public UI candidates",
@@ -10635,7 +10473,14 @@
         "name": "Save progress without publishing",
         "conclusion": "success"
       }
-    ]
+    ],
+    "currentRevisionRunObserved": false,
+    "activeRuns": 0,
+    "queuedRuns": 0,
+    "candidateWritesDeferred": true,
+    "candidatePackWritesInLatestRun": 0,
+    "translationRequestsInLatestRun": 0,
+    "note": "Main resume workflow was read directly. The latest matching run is legacy #150, completed with Resume skipped and audit passed. A fresh repository-wide Actions query returned zero in-progress and zero queued runs. No current-revision resume run was found; candidate writes remain deferred."
   },
   "latestQuickFallbackRepair": {
     "checkedAt": "2026-11-18T09:45:51Z",
@@ -11811,5 +11656,6 @@
       "No candidate branch files were changed; resume workflow was not running and no queued run existed.",
       "No AI or translation quota was consumed; no bypass attempted."
     ]
-  }
+  },
+  "decision": "NO-GO"
 }

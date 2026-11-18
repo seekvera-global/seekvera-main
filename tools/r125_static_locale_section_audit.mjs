@@ -194,6 +194,7 @@ try {
       const options = [];
       const elements = [];
       const excluded = [];
+      const selectDiagnostics = [];
       const exclusionReason = root =>
         root?.hasAttribute('data-no-translate') ? 'data-no-translate' :
         root?.hasAttribute('data-user-content') ? 'data-user-content' : '';
@@ -231,7 +232,23 @@ try {
         }
       }
       for (const select of document.querySelectorAll('select')) {
-        if (!select.getClientRects().length) continue;
+        const rectCount = select.getClientRects().length;
+        const style = getComputedStyle(select);
+        const matchingOptions = [...select.options].map(option => ({
+          phrase: targets.find(phrase => norm(option.textContent).includes(phrase)) || '',
+          text: norm(option.textContent),
+          value: option.value || '',
+          selected: option.selected
+        })).filter(item => item.phrase);
+        if (matchingOptions.length) selectDiagnostics.push({
+          id: select.id || '',
+          name: select.name || '',
+          visible: rectCount > 0,
+          display: style.display,
+          visibility: style.visibility,
+          options: matchingOptions
+        });
+        if (!rectCount) continue;
         for (const option of [...select.options]) {
           const raw = norm(option.textContent);
           if (!raw) continue;
@@ -282,7 +299,8 @@ try {
         nodes: nodes.slice(0, 40),
         options: options.slice(0, 20),
         elements: elements.slice(0, 20),
-        excluded: excluded.slice(0, 40)
+        excluded: excluded.slice(0, 40),
+        selectDiagnostics: selectDiagnostics.slice(0, 40)
       };
     }, phrases);
   }
@@ -293,7 +311,10 @@ try {
       const options = evidence.options.filter(item => item.phrase === phrase);
       const elements = evidence.elements.filter(item => item.phrase === phrase);
       const excluded = (evidence.excluded || []).filter(item => item.phrase === phrase);
-      details[phrase] = { nodes, options, elements, excluded };
+      const selectDiagnostics = (evidence.selectDiagnostics || []).filter(select =>
+        select.options.some(option => option.phrase === phrase)
+      );
+      details[phrase] = { nodes, options, elements, excluded, selectDiagnostics };
       const exactMatch = nodes.some(item => item.text === phrase) ||
         options.some(item => item.text === phrase) ||
         elements.some(item => item.text === phrase || item.exact);
@@ -402,6 +423,30 @@ try {
       sectionLanguageApplications++;
       if (language === 'en') continue;
       const body = await page.locator('body').innerText();
+      if (path.endsWith('/seller-plans.html') && language === 'ur') {
+        const diagnostic = await page.evaluate(() => {
+          const select = document.querySelector('#bizPlan');
+          const style = select ? getComputedStyle(select) : null;
+          const i18n = window.SEEKVERA_I18N_R32;
+          return {
+            language: document.documentElement.lang,
+            readyLanguage: document.documentElement.dataset.seekveraI18nReady || '',
+            runtimeVersion: document.documentElement.dataset.seekveraI18nVersion || '',
+            packReady: !!i18n?.packReady?.('ur'),
+            expectedMonthly: i18n?.tFor?.('ur', 'Business Monthly') || '',
+            expectedYearly: i18n?.tFor?.('ur', 'Business Yearly') || '',
+            selectExists: !!select,
+            selectRectCount: select?.getClientRects().length || 0,
+            selectDisplay: style?.display || '',
+            options: select ? [...select.options].map(option => ({
+              text: option.textContent.trim(),
+              value: option.value,
+              selected: option.selected
+            })) : []
+          };
+        });
+        console.log('R125_URDU_SELLER_PLAN_DIAGNOSTIC', JSON.stringify(diagnostic));
+      }
       if (path.endsWith('/games.html')) {
         const expectedGameTitle = String(packs[language]?.['Neon Highway'] || 'Neon Highway').trim();
         if (expectedGameTitle !== 'Neon Highway') {
