@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261118-r125-czech-quick-v8';
+const VERSION='20261118-r125-global-quick-v9';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),PACK_VALUES=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -49,8 +49,12 @@ th:{
 'Business Yearly':'แพ็กเกจธุรกิจรายปี',
 'Business Monthly':'แพ็กเกจธุรกิจรายเดือน'
 },
-// Provisional Zulu marketplace and logistics labels; native review remains required.
+// Provisional Zulu quick UI, marketplace and logistics labels; native review remains required.
 zu:{
+'Back':'Emuva',
+'Page navigation':'Ukuzulazula kwamakhasi',
+'Voice reply':'Impendulo yezwi',
+'Voice':'Izwi',
 'GLOBAL AI MARKETPLACE':'Imakethe ye-AI yomhlaba wonke',
 'Courier & last mile':'Ukuthumela nokuletha impahla esigabeni sokugcina'
 },
@@ -121,14 +125,22 @@ fil:{
 'Zero‑Cost Mode':'Mode na walang gastos',
 'RFQ / supplier sourcing':'Kahilingan sa presyo / paghahanap ng tagapagtustos'
 },
-// Provisional Danish labels for remaining exact R125 UI findings; native review remains required.
+// Provisional Danish quick UI and feature labels; native review remains required.
 da:{
+'Back':'Tilbage',
+'Page navigation':'Sidenavigation',
+'Voice reply':'Stemmesvar',
+'Voice':'Stemme',
 'Find Wi-Fi →':'Søg efter Wi-Fi →',
 'Find catering':'Søg efter catering',
 'AI Voice Agent':'AI-stemmeassistent'
 },
-// Provisional Sesotho marketplace/logistics labels; native review remains required.
+// Provisional Sesotho quick UI, marketplace and logistics labels; native review remains required.
 st:{
+'Back':'Khutlela morao',
+'Page navigation':'Tsamaiso ea maqephe',
+'Voice reply':'Karabo ea lentsoe',
+'Voice':'Lentsoe',
 'Free / Public Wi-Fi Finder':'Sesebelisoa sa ho fumana Wi-Fi ea mahala kapa ea sechaba',
 'RFQ / supplier sourcing':'Kopo ea theko / ho fumana barekisi',
 'Delivery & Courier':'Phano le litšebeletso tsa ba tsamaisang thepa'
@@ -142,12 +154,20 @@ ro:{
 '🏙️ City break':'🏙️ Escapadă urbană',
 'Business Monthly':'Plan de afaceri lunar'
 },
-// Provisional Hungarian navigation label; native review remains required.
+// Provisional Hungarian quick UI and travel labels; native review remains required.
 hu:{
+'Back':'Vissza',
+'Page navigation':'Oldalnavigáció',
+'Voice reply':'Hangos válasz',
+'Voice':'Hang',
 '← Travel Hub':'← Utazási központ'
 },
-// Provisional Maltese travel label; native review remains required.
+// Provisional Maltese quick UI and travel labels; native review remains required.
 mt:{
+'Back':'Lura',
+'Page navigation':'Navigazzjoni tal-paġni',
+'Voice reply':'Tweġiba bil-vuċi',
+'Voice':'Vuċi',
 '🏙️ City break':'🏙️ Vjaġġ qasir fil-belt'
 },
 // Provisional Greek AI label; native review remains required.
@@ -163,21 +183,37 @@ cs:{
 'Voice':'Hlas',
 'AI Voice Agent':'Hlasový asistent AI'
 },
-// Provisional Slovak AI label; native review remains required.
+// Provisional Slovak quick UI and AI labels; native review remains required.
 sk:{
+'Back':'Späť',
+'Page navigation':'Navigácia stránok',
+'Voice reply':'Hlasová odpoveď',
+'Voice':'Hlas',
 'AI Voice Agent':'Hlasový asistent AI'
 },
-// Provisional Swedish AI label; native review remains required.
+// Provisional Swedish quick UI and AI labels; native review remains required.
 sv:{
+'Back':'Tillbaka',
+'Page navigation':'Sidnavigering',
+'Voice reply':'Röstsvar',
+'Voice':'Röst',
 'AI Voice Agent':'AI-röstassistent'
 },
-// Provisional Norwegian AI/business labels; native review remains required.
+// Provisional Norwegian quick UI, AI and business labels; native review remains required.
 no:{
+'Back':'Tilbake',
+'Page navigation':'Sidenavigasjon',
+'Voice reply':'Talesvar',
+'Voice':'Stemme',
 'AI Voice Agent':'AI-stemmeassistent',
 'Business Monthly':'Månedlig bedriftsplan'
 },
-// Provisional Afrikaans AI label; native review remains required.
+// Provisional Afrikaans quick UI and AI labels; native review remains required.
 af:{
+'Back':'Terug',
+'Page navigation':'Bladsynavigasie',
+'Voice reply':'Stemantwoord',
+'Voice':'Stem',
 'AI Voice Agent':'KI-stemassistent'
 },
 // Provisional Setswana UI labels; not linguistically certified. Native review remains required.

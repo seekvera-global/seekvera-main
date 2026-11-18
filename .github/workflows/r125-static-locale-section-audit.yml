@@ -61,10 +61,10 @@ jobs:
               && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/games.html?locale_audit=20261117" -o /tmp/r125-games.html \
               && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/global-ui.js?v=20261117-r125-source-caption-i18n-v2" -o /tmp/r125-global-ui.js \
               && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/games.js?v=20261117-r125-game-title-i18n" -o /tmp/r125-games.js \
-              && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/i18n-ui.js?v=20261118-r125-czech-quick-v8" -o /tmp/r125-i18n-ui.js \
+              && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/i18n-ui.js?v=20261118-r125-global-quick-v9" -o /tmp/r125-i18n-ui.js \
               && grep -Fq 'global-ui.js?v=20261117-r125-source-caption-i18n' /tmp/r125-index.html \
               && grep -Fq 'games.js?v=20261117-r125-game-title-i18n' /tmp/r125-games.html \
-              && grep -Fq 'i18n-ui.js?v=20261118-r125-czech-quick-v8' /tmp/r125-index.html \
+              && grep -Fq 'i18n-ui.js?v=20261118-r125-global-quick-v9' /tmp/r125-index.html \
               && grep -Fq 'sv-control-caption-label' /tmp/r125-global-ui.js \
               && grep -Fq 'alreadyLocalizedValue' /tmp/r125-i18n-ui.js \
               && grep -Fq "'Sprachantwort'" /tmp/r125-i18n-ui.js \
@@ -124,6 +124,42 @@ jobs:
               && grep -Fq "'Navigace stránek'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Hlasová odpověď'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Hlas'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Emuva'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Ukuzulazula kwamakhasi'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Impendulo yezwi'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Izwi'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Tilbage'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Sidenavigation'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Stemmesvar'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Stemme'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Khutlela morao'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Tsamaiso ea maqephe'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Karabo ea lentsoe'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Lentsoe'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Vissza'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Oldalnavigáció'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Hangos válasz'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Hang'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Lura'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Navigazzjoni tal-paġni'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Tweġiba bil-vuċi'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Vuċi'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Späť'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Navigácia stránok'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Hlasová odpoveď'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Hlas'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Tillbaka'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Sidnavigering'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Röstsvar'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Röst'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Tilbake'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Sidenavigasjon'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Talesvar'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Stemme'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Terug'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Bladsynavigasie'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Stemantwoord'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Stem'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Geschäftssoftware'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Business Software'" /tmp/r125-i18n-ui.js \
               && grep -Fq '<b>${g.name}</b>' /tmp/r125-games.js \
