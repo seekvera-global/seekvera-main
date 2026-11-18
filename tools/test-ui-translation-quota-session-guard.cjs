@@ -227,7 +227,8 @@ async function main(){
   {code:'af',language:'Afrikaans',labels:{'AI Voice Agent':'KI-stemassistent'}},
   {code:'tk',language:'Turkmen',labels:{'Back':'Yza','Page navigation':'Sahypa navigasiýasy','Voice reply':'Sesli jogap','Voice':'Ses'}},
    {code:'ta',language:'Tamil',labels:{'Back':'திரும்பு','Page navigation':'பக்க வழிசெலுத்தல்','Voice reply':'குரல் பதில்','Voice':'குரல்'}},
-   {code:'km',language:'Khmer',labels:{'Back':'ត្រឡប់ក្រោយ','Page navigation':'ការរុករកទំព័រ','Voice reply':'ការឆ្លើយតបជាសំឡេង','Voice':'សំឡេង'}}
+   {code:'km',language:'Khmer',labels:{'Back':'ត្រឡប់ក្រោយ','Page navigation':'ការរុករកទំព័រ','Voice reply':'ការឆ្លើយតបជាសំឡេង','Voice':'សំឡេង'}},
+  {code:'my',language:'Burmese',labels:{'Back':'နောက်သို့','Page navigation':'စာမျက်နှာ လမ်းညွှန်','Voice reply':'အသံဖြင့် ပြန်ကြားချက်','Voice':'အသံ'}}
  ];
  for(const item of provisionalQuickCases){
   for(const value of Object.values(item.labels))assert(i18n.includes(value),'Missing '+item.code+' provisional quick label: '+value);
