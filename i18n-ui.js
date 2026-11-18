@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261117-r125-reverse-localized-value-guard';
+const VERSION='20261118-r125-bangla-quick-labels';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),PACK_VALUES=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -163,6 +163,13 @@ ur:{
 'Page navigation':'صفحات پر نیویگیشن',
 'Voice reply':'صوتی جواب',
 'Voice':'آواز'
+},
+// Provisional Bangla quick UI labels; native review remains required.
+bn:{
+'Back':'পেছনে',
+'Page navigation':'পৃষ্ঠা নেভিগেশন',
+'Voice reply':'কণ্ঠে উত্তর',
+'Voice':'ভয়েস'
 }};
 // Provisional quota-neutral overrides for the exact R125 UI leaks. Native review remains required.
 const R125_PROVISIONAL={
