@@ -222,11 +222,11 @@
       "quotaBypassAttempts": 0
     },
     "countryCurrency": {
-      "latestConfirmedRun": 104,
-      "latestConfirmedStatus": "passed on v34",
+      "latestConfirmedRun": 105,
+      "latestConfirmedStatus": "passed on v35",
       "countryProfiles": "248/248",
       "localizedPages": "44/44",
-      "storedCurrencyAndFallback": "passed in R9e #104",
+      "storedCurrencyAndFallback": "passed in R9e #105",
       "manualMoroccoPriority": "passed",
       "manualWorldwidePriority": "passed",
       "visibleLocales": [
@@ -235,7 +235,7 @@
         "IN/hi",
         "CN/zh"
       ],
-      "v35Verification": "R9e #105 in progress",
+      "v35Verification": "passed in R9e #105",
       "liveAiProbes": "skipped-by-policy",
       "liveASR": "not-verified"
     },
@@ -8965,7 +8965,7 @@
     "decision": "NO-GO"
   },
   "latestAutomationPass20261118": {
-    "checkedAt": "2026-11-18T22:40:47Z",
+    "checkedAt": "2026-11-18T22:43:22Z",
     "mainHead": "86f055faf4d4520564e76fc2b2b1b59366e699ab",
     "repair": "Burmese quick labels v35",
     "candidatePackWrites": 0,
@@ -8981,7 +8981,9 @@
       "R9e #105 and R125 #98 remain in progress; v35 country/currency and full locale-matrix certification are pending.",
       "The first Safety Smoke #68 attempt received a Cloudflare 530 on the benign moderation request; Supabase logs showed no Edge Function execution for that response, and the retry passed.",
       "AI chat/translation remain unknown because live AI probes are disabled; historical daily_free_ai_limit and Google HTTP429 remain blockers.",
-      "Candidate branch unchanged; no candidate packs published or linguistically certified."
+      "Candidate branch unchanged; no candidate packs published or linguistically certified.",
+      "R9e #105 passed on v35: 248 country profiles, 44 localized pages, Morocco manual priority, Worldwide manual priority, MA/ar FR/fr IN/hi CN/zh, prohibited weapon blocked, voice/PWA cache passed; live AI probes remained skipped.",
+      "Pages #1889 succeeded for the checkpoint documentation commit; Pages #1888 had already deployed the v35 code commit."
     ]
   },
   "latestR125AuditResult20261118": {
@@ -12135,8 +12137,21 @@
     "r9e": {
       "run": 105,
       "id": 44413607358,
-      "status": "in_progress",
-      "headSha": "86f055faf4d4520564e76fc2b2b1b59366e699ab"
+      "status": "completed",
+      "conclusion": "success",
+      "countryProfiles": "248/248",
+      "localizedPages": "44/44",
+      "manualMoroccoPriority": "passed",
+      "manualWorldwidePriority": "passed",
+      "visibleLocales": [
+        "MA/ar",
+        "FR/fr",
+        "IN/hi",
+        "CN/zh"
+      ],
+      "safetyWeaponSale": "blocked",
+      "voiceAndPwaCache": "passed",
+      "liveAiProbes": "skipped-by-policy"
     },
     "safety": {
       "run": 68,
@@ -12152,5 +12167,13 @@
       "status": "completed",
       "conclusion": "success"
     }
+  },
+  "latestPagesCheckpointDeployment": {
+    "run": 1889,
+    "id": 44414133824,
+    "status": "completed",
+    "conclusion": "success",
+    "headSha": "6d4e058c37f8674540d43f18503ba1b76a3432c1",
+    "scope": "checkpoint documentation deployment only; product assets were deployed by Pages #1888"
   }
 }
