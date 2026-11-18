@@ -9213,7 +9213,7 @@
     "decision": "NO-GO"
   },
   "latestAutomationPass20261118": {
-    "checkedAt": "2026-11-18T08:55:00Z",
+    "checkedAt": "2026-11-18T08:55:45Z",
     "sourceReadback": {
       "checkpoint": "main",
       "candidateSummary": "work/r125-locale-candidates-20261008",
@@ -9330,9 +9330,18 @@
         "daily_free_ai_limit",
         "Google HTTP429"
       ],
-      "translationRequestsThisPass": 0,
-      "aiQuotaUsedThisPass": 0,
-      "providerQuotaImpactOfR125Run73Fallback": "unknown"
+      "manualTranslationProbes": 0,
+      "manualAiProbes": 0,
+      "automaticClientFallbackRequests": 1,
+      "automaticFallbackLanguage": "Serbian",
+      "automaticFallbackStrings": [
+        "Back",
+        "Page navigation",
+        "Voice reply",
+        "Voice"
+      ],
+      "providerQuotaImpactOfAutomaticFallback": "unknown",
+      "noQuotaBypassAttempts": true
     },
     "voice": {
       "programmaticTTS": "passed",
@@ -9347,7 +9356,18 @@
     "aiQuotaUsed": 0,
     "published": false,
     "linguisticAccuracyCertified": false,
-    "decision": "NO-GO"
+    "decision": "NO-GO",
+    "translationAccounting": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "manualTranslationRequests": 0,
+      "automaticClientFallbackRequests": 1,
+      "aiQuotaUsage": "unknown-provider-impact",
+      "directAiRequests": 0,
+      "published": false,
+      "linguisticCertification": false
+    },
+    "note": "R125 #73 recorded one automatic same-origin Serbian UI-translation fallback request; provider quota impact is unknown. No manual AI/translation probe or quota bypass was performed. R125 #74 failed on the workflow shell continuation, corrected in d09f5095; R125 #75 remains in progress during Chromium installation."
   },
   "latestR125AuditResult20261118": {
     "checkedAt": "2026-11-18",
@@ -10397,7 +10417,7 @@
       "run": 1833,
       "runId": 44270939254,
       "conclusion": "success",
-      "headSha": "f5b4271809733841e721ebd3ccbb025b1a9a2011",
+      "headSha": "d09f5095bb7bdd4a2a6c036d85be9574641f5402",
       "build": "success",
       "deploy": "success"
     }
