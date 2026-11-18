@@ -41,6 +41,7 @@ async function main(){
  // Quota-neutral quick labels for Japanese navigation, Thai plan names and Zulu section headings.
  const quickCases=[
   {code:'ru',language:'Russian',labels:{'Back':'Назад','Page navigation':'Навигация по страницам','Voice reply':'Голосовой ответ','Voice':'Голос'}},
+  {code:'ur',language:'Urdu',labels:{'Back':'واپس','Page navigation':'صفحات پر نیویگیشن','Voice reply':'صوتی جواب','Voice':'آواز'}},
   {code:'ja',language:'Japanese',labels:{'Back':'戻る','Page navigation':'ページナビゲーション','Voice reply':'音声で返信','Voice':'音声'}},
   {code:'th',language:'Thai',labels:{'Business Yearly':'แพ็กเกจธุรกิจรายปี','Business Monthly':'แพ็กเกจธุรกิจรายเดือน'}},
   {code:'zu',language:'Zulu',labels:{'GLOBAL AI MARKETPLACE':'Imakethe ye-AI yomhlaba wonke','Courier & last mile':'Ukuthumela nokuletha impahla esigabeni sokugcina'}},
