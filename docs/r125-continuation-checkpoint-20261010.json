@@ -238,21 +238,28 @@
       "nestedAggregateErrorRegression": "passed"
     },
     "countryCurrency": {
-      "checkedAt": "2026-11-18T05:57:26Z",
-      "run": 44247285119,
+      "checkedAt": "2026-11-18T06:33:25Z",
+      "run": 44251748213,
       "status": "browser-audit-passed",
       "countryProfiles": "248/248",
       "localizedPages": "44/44",
       "racePriority": "Morocco MA/ar/MAD survives delayed US auto-detect",
       "worldwidePriority": "passed",
+      "prohibitedWeapon": "blocked",
       "liveAiProbes": "skipped-by-policy"
     },
     "safety": {
-      "checkedAt": "2026-11-18T04:03:54Z",
-      "run": 44234500575,
-      "prohibitedWeapon": "blocked",
-      "liveAiProbes": "skipped-by-policy",
-      "scope": "browser safety smoke; not full threat-model certification"
+      "checkedAt": "2026-11-18T06:30:24Z",
+      "run": 44251748493,
+      "status": "success",
+      "blockedCategories": [
+        "weapons_or_explosives",
+        "explicit_sexual_content",
+        "stolen_counterfeit_or_fake_documents",
+        "ownership_or_consent_problem"
+      ],
+      "benignHotelRequest": "allowed_pending_human_review",
+      "scope": "safety smoke only; not full threat-model certification"
     }
   },
   "voiceScriptCoverage": {
@@ -10335,9 +10342,10 @@
       "benignHotelRequest": "allowed_pending_human_review"
     },
     "pages": {
-      "run": 1822,
-      "runId": 44251747516,
-      "conclusion": "success"
+      "run": 1827,
+      "runId": 44255235296,
+      "conclusion": "success",
+      "headSha": "0a711ab588ce1e0f917ce76c0bdc156de5c93f86"
     }
   },
   "latestResumeWorkflowInspection": {
@@ -10461,6 +10469,12 @@
           "status": "pending",
           "headSha": "26411cbc6e4fd8d293222f1909e48d2c7454f3aa"
         }
+      },
+      "pages": {
+        "run": 1827,
+        "runId": 44255235296,
+        "conclusion": "success",
+        "headSha": "0a711ab588ce1e0f917ce76c0bdc156de5c93f86"
       }
     },
     "candidatePacksChanged": false,
