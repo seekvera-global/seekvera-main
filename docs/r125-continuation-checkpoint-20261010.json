@@ -3338,7 +3338,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-18T06:39:17+01:00",
+  "updatedAt": "2026-11-18T05:53:37.706Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -9683,7 +9683,7 @@
     "liveAsr": "skipped",
     "physicalMicrophoneSpeakerCertified": false
   },
-  "latestMainCommit": "6e96972854ecee8b95ca7fbee9f6ebfcb59cc7eb",
+  "latestMainCommit": "6a898a9531221842da92f6f10f797a5e29a3adbd",
   "latestAutomationPass20261118Turn11": {
     "checkedAt": "2026-11-18T05:31:36Z",
     "sourceReadback": {
@@ -10179,5 +10179,231 @@
       "linguisticCertifications": 0,
       "decision": "NO-GO"
     }
+  },
+  "latestR125AuditResult20261118Turn12": {
+    "checkedAt": "2026-11-18T05:53:37.706Z",
+    "run": 66,
+    "runId": 44245419112,
+    "status": "completed",
+    "conclusion": "failure",
+    "scope": {
+      "languages": 98,
+      "sections": 27,
+      "languageSectionApplications": 2646,
+      "countryProfiles": 248
+    },
+    "results": {
+      "missingKeys": 0,
+      "extraKeys": 0,
+      "emptyValues": 0,
+      "exactEnglishFindings": 0,
+      "partialEnglishFindings": 0,
+      "unresolvedFindingCombinations": 0
+    },
+    "dynamicFallback": {
+      "language": "Romanian",
+      "requests": 1,
+      "strings": [
+        "Back",
+        "Page navigation",
+        "Voice reply",
+        "Voice"
+      ]
+    },
+    "blockedRequests": {
+      "ai": 0,
+      "providerTranslation": 0,
+      "pollinations": 0
+    },
+    "cause": "Romanian quick labels were absent from QUICK; the browser intercepted one fallback before any provider request."
+  },
+  "latestAutomationPass20261118Turn12": {
+    "checkedAt": "2026-11-18T05:53:37.706Z",
+    "sourceReadback": {
+      "checkpointRead": "main",
+      "candidateSummaryRead": "work/r125-locale-candidates-20261008",
+      "resumeLogRead": "work/r125-locale-candidates-20261008",
+      "resumeWorkflowRead": "main",
+      "candidateSummaryUpdatedAt": "2026-11-17T22:31:44Z",
+      "resumeLogBlobSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b"
+    },
+    "candidateState": {
+      "structural": "98/98",
+      "keysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "quality": "97/98",
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "published": 0,
+      "linguisticCertifications": 0
+    },
+    "resumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "triggers": [
+        "workflow_dispatch"
+      ],
+      "schedulePresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestKnownRun": {
+        "number": 150,
+        "id": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "resume": "skipped",
+        "audit": "success",
+        "candidatePackWrites": 0,
+        "metadataFilesWritten": 2,
+        "translationRequests": 0,
+        "aiQuotaUsed": 0
+      },
+      "currentRevisionRunObserved": false,
+      "activeRunsObserved": 0,
+      "candidateWritesDeferred": true
+    },
+    "r125": {
+      "previousRun": {
+        "number": 66,
+        "id": 44245419112,
+        "conclusion": "failure",
+        "dynamicFallbackLanguage": "Romanian",
+        "dynamicFallbackRequests": 1,
+        "providerRequests": 0,
+        "aiRequests": 0,
+        "fullMatrix": "98x27",
+        "applications": 2646
+      },
+      "repair": {
+        "commit": "6a898a9531221842da92f6f10f797a5e29a3adbd",
+        "version": "20261118-r125-romanian-quick-v7",
+        "filesChanged": 49,
+        "htmlPagesCacheBusted": 44,
+        "workflowsUpdated": [
+          "r125-static-locale-section-audit.yml",
+          "r105-final-release.yml",
+          "final-browser-audit-r9.yml"
+        ],
+        "regressionTestUpdated": true,
+        "readback": "PASS"
+      },
+      "postRepairAudit": "pending-result-not-yet-observed"
+    },
+    "productionChecks": {
+      "previousR105": {
+        "run": 158,
+        "id": 44245419110,
+        "conclusion": "success",
+        "workerDeployment": "success",
+        "health": "R107_DEPLOY_HEALTH_PASS",
+        "aiBinding": true,
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "previousR9e": {
+        "run": 74,
+        "id": 44245419256,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "moroccoPriority": "passed",
+        "worldwidePriority": "passed",
+        "prohibitedWeapon": "blocked",
+        "liveAiProbes": "skipped-by-policy",
+        "liveASR": "skipped",
+        "physicalAudioCertified": false
+      },
+      "previousSafety": {
+        "run": 40,
+        "id": 44245419255,
+        "conclusion": "success",
+        "blockedCases": [
+          "weapons_or_explosives",
+          "explicit_sexual_content",
+          "stolen_counterfeit_or_fake_documents",
+          "ownership_or_consent_problem"
+        ],
+        "benignLand": "allowed_pending_human_review",
+        "failClosed": "passed"
+      },
+      "previousAudio": {
+        "run": 112,
+        "id": 44245419087,
+        "conclusion": "success",
+        "audioAuthority": "passed",
+        "voiceAcknowledgement": "passed",
+        "dynamicPlaceholders": "passed",
+        "headlessAndroidSyntheticAudio": "passed",
+        "productionAssetStep": "skipped",
+        "liveASR": "skipped",
+        "physicalMicrophoneSpeakerCertified": false
+      },
+      "postRepairChecks": "pending"
+    },
+    "ai": {
+      "binding": true,
+      "chatAvailability": "unknown-not-probed",
+      "translationAvailability": "unknown-not-probed",
+      "liveGeneration": "skipped-by-policy",
+      "lastResumeLogError": "HTTP 503 all_translation_backends_unavailable",
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429"
+      ],
+      "translationRequestsThisPass": 0,
+      "aiQuotaUsedThisPass": 0
+    },
+    "voice": {
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "dynamicPlaceholders": "passed",
+      "headlessAndroidTTS": "passed",
+      "liveASR": "skipped",
+      "physicalMicrophoneSpeakerCertified": false
+    },
+    "countryCurrency": {
+      "countryProfiles": "248/248",
+      "localizedPages": "44/44",
+      "selectedStoredCurrencyMatch": "passed",
+      "moroccoManualPriority": "passed",
+      "worldwideManualPriority": "passed"
+    },
+    "checkout": "inactive_pending_merchant_configuration_and_end_to_end_merchant_verification",
+    "productionPackState": {
+      "productionManifest": {
+        "sourceHash": "b371f2422f8b5416",
+        "sourceCount": 1045,
+        "languageCount": 98
+      },
+      "candidateSource": {
+        "sourceHash": "6a1126e6a2ce5629",
+        "sourceCount": 1118,
+        "languageCount": 98
+      },
+      "unpublishedKeyDelta": 73,
+      "published": false
+    },
+    "thisPass": {
+      "mainFilesChanged": 49,
+      "htmlPagesUpdated": 44,
+      "workflowFilesUpdated": 3,
+      "regressionTestsUpdated": 1,
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "publishedPacks": 0,
+      "linguisticCertifications": 0,
+      "decision": "NO-GO"
+    },
+    "notes": [
+      "Romanian candidate pack uses 'Vocă' for Voice; provisional runtime QUICK uses standard 'Voce' instead. This is a deterministic UI repair, not native certification.",
+      "The latest matching candidate-resume run is legacy #150; its resume step was skipped and it committed two metadata files, but no candidate pack writes. No current-revision or active resume run is recorded.",
+      "The current Main resume workflow is manual-only; no hourly schedule is present. Candidate repair/translation inputs default false."
+    ]
   }
 }
