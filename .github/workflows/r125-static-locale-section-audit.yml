@@ -61,10 +61,10 @@ jobs:
               && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/games.html?locale_audit=20261117" -o /tmp/r125-games.html \
               && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/global-ui.js?v=20261117-r125-source-caption-i18n-v2" -o /tmp/r125-global-ui.js \
               && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/games.js?v=20261117-r125-game-title-i18n" -o /tmp/r125-games.js \
-              && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/i18n-ui.js?v=20261118-r125-global-quick-v11" -o /tmp/r125-i18n-ui.js \
+              && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/i18n-ui.js?v=20261118-r125-global-quick-v12" -o /tmp/r125-i18n-ui.js \
               && grep -Fq 'global-ui.js?v=20261117-r125-source-caption-i18n' /tmp/r125-index.html \
               && grep -Fq 'games.js?v=20261117-r125-game-title-i18n' /tmp/r125-games.html \
-              && grep -Fq 'i18n-ui.js?v=20261118-r125-global-quick-v11' /tmp/r125-index.html \
+              && grep -Fq 'i18n-ui.js?v=20261118-r125-global-quick-v12' /tmp/r125-index.html \
               && grep -Fq 'sv-control-caption-label' /tmp/r125-global-ui.js \
               && grep -Fq 'alreadyLocalizedValue' /tmp/r125-i18n-ui.js \
               && grep -Fq "'Sprachantwort'" /tmp/r125-i18n-ui.js \
@@ -81,6 +81,8 @@ jobs:
               && grep -Fq "'صفحات پر نیویگیشن'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'صوتی جواب'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'آواز'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'سالانہ کاروباری منصوبہ'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'ماہانہ کاروباری منصوبہ'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'পেছনে'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'পৃষ্ঠা নেভিগেশন'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'কণ্ঠে উত্তর'" /tmp/r125-i18n-ui.js \
@@ -132,6 +134,10 @@ jobs:
               && grep -Fq "'Навигация по страниците'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Гласов отговор'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Глас'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Natrag'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Navigacija po stranicama'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Glasovni odgovor'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Glas'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Emuva'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Ukuzulazula kwamakhasi'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Impendulo yezwi'" /tmp/r125-i18n-ui.js \
