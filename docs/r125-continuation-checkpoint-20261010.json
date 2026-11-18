@@ -111,16 +111,15 @@
   "packsPublished": false,
   "linguisticAccuracyCertified": false,
   "blockedBy": [
-    "Candidate branch contains 98 structurally complete packs with 1,118 keys and matching sourceHash; 97/98 pass the saved quality gate. Divehi (dv) remains blocked by 58 English-overlap findings requiring qualified native Dhivehi review.",
+    "Candidate branch still has 98 structurally complete packs with 1,118 keys and matching sourceHash; 97/98 pass the saved quality gate. Divehi (dv) remains blocked by 58 English-overlap findings requiring qualified native Dhivehi review.",
     "Production locale manifest has 1,045 keys versus 1,118 candidate-source keys; 73 keys remain unpublished and unreviewed. Do not promote candidate packs to close this gap.",
-    "The current resume log reports Dhivehi retries timing out and HTTP 503 all_translation_backends_unavailable from three Workers AI backends. Historical daily_free_ai_limit and Google HTTP429 remain real blockers; no quota probes or bypasses were attempted.",
+    "The current resume log reports Dhivehi retries timing out and HTTP 503 all_translation_backends_unavailable from three Workers AI backends. Historical daily_free_ai_limit and Google HTTP429 remain blockers; no quota probes or bypasses were attempted.",
     "All 98 candidate packs still require qualified linguistic review; none is published or linguistically certified.",
+    "R125 #85 on v22 completed with zero static findings across 98 languages × 27 sections and 248 country profiles, but detected one Armenian dynamic fallback for Back/Page navigation/Voice reply/Voice. Main v23 adds local Armenian quick labels and zero-provider-call regression coverage; R125 #86 is running the full matrix.",
+    "R125 #86 was still installing Chromium at the latest read; the 98 × 27 matrix has not started yet. Do not claim v23 locale audit success until it completes.",
     "Physical microphone/speaker certification and live ASR remain incomplete; browser/headless playback is not hardware certification.",
     "Checkout remains inactive until merchant-account configuration and end-to-end payment/settlement verification.",
-    "R125 #81 completed on v19 with zero exact/partial/unresolved static findings across 98 languages × 27 sections and 248 country profiles, but it detected one dynamic Albanian fallback for Back/Page navigation/Voice reply/Voice. Main v20 adds local Albanian quick labels; R125 #82 is running the full matrix and #83 is queued.",
-    "Candidate quality remains 97/98: Divehi (dv) still has 58 English-overlap findings requiring qualified native review. All 98 packs are structurally complete, but none is published or linguistically certified.",
-    "R105 #174 passed on v20 with AI Binding present and production health/safety gate/fail-closed checks passing; live AI generation probes were skipped by policy, so current AI Chat availability remains unknown.",
-    "Country/currency behavior passed on v20 in R9e #89: 248/248 country profiles, 44/44 localized pages, Morocco and Worldwide priority, four visible locale samples; R9e #90 is rerunning on the latest commit."
+    "AI Binding and production health passed in R105 #178, but live AI generation probes were skipped by policy; current AI Chat availability remains unknown."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -178,22 +177,22 @@
     }
   },
   "remainingChecks": [
-    "Complete R125 #82 and queued #83 on v20: verify all 98 languages × 27 sections and 248 country profiles with zero exact, partial, unresolved or dynamic fallback findings.",
+    "Complete R125 #86 on v23: verify all 98 languages × 27 sections and 248 country profiles with zero exact, partial, unresolved or dynamic fallback findings.",
     "Resolve Divehi's 58 English-overlap findings with qualified native Dhivehi translation/review; do not synthesize or certify unreviewed wording.",
     "Run the full candidate quality/script/duplicate audit after quota-neutral repairs; structural PASS alone is not quality certification.",
     "Obtain qualified native review for all 98 candidate packs; publish no partial or unreviewed packs.",
     "Re-probe AI Chat and translation only through explicitly authorized quota-safe probes; current availability remains unknown and daily_free_ai_limit/Google HTTP429 must not be bypassed.",
-    "Keep the v20 country/currency audit green on R9e #90: 248 country profiles, stored currency, 44 localized pages, Morocco/Worldwide priority.",
+    "Keep the v23 country/currency audit green: R9e #93 passed 248 country profiles, stored currency, 44 localized pages, Morocco/Worldwide priority.",
     "Perform physical microphone and audible-speaker tests on Android, iPhone/iPad and desktop; browser/headless TTS is not hardware certification.",
     "Configure a merchant account and verify checkout, payment confirmation, forged-reference rejection and settlement end-to-end."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-18T13:30:35.482Z",
+    "checkedAt": "2026-11-18T14:58:22.353Z",
     "aiChat": {
       "currentAvailability": "unknown-not-probed",
-      "latestConfirmedProductionRun": 174,
+      "latestConfirmedProductionRun": 178,
       "latestConfirmedConclusion": "success",
       "aiBinding": true,
       "productionHealth": "passed",
@@ -202,12 +201,12 @@
       "liveGenerationProbe": "skipped-by-policy"
     },
     "voiceTranscription": {
-      "status": "programmatic voice checks passed in R123 #127: validation, category translations, voice acknowledgement and dynamic placeholders; production audio asset skipped, live ASR not verified, physical hardware not certified",
+      "status": "programmatic voice checks passed in R123 #130: validation, category translations, voice acknowledgement, dynamic placeholders and headless Android playback; production audio asset skipped, live ASR not verified, physical hardware not certified",
       "programmaticTests": "passed",
       "liveASR": "not-verified",
       "physicalDeviceCertified": false,
-      "currentV20Run": 127,
-      "currentV20Status": "programmatic-pass-production-asset-skipped"
+      "currentV23Run": 130,
+      "currentV23Status": "programmatic-pass-production-asset-skipped"
     },
     "translation": {
       "currentAvailability": "unknown-not-probed",
@@ -220,7 +219,7 @@
       "quotaBypassAttempts": 0
     },
     "countryCurrency": {
-      "latestConfirmedRun": 89,
+      "latestConfirmedRun": 93,
       "latestConfirmedStatus": "passed",
       "countryProfiles": "248/248",
       "localizedPages": "44/44",
@@ -233,11 +232,11 @@
         "CN/zh"
       ],
       "currencyPerCountryAndStoredValue": "passed",
-      "currentV20Run": 89,
-      "currentV20Status": "passed; R9e #90 rerun in progress"
+      "currentV23Run": 93,
+      "currentV23Status": "passed"
     },
     "safety": {
-      "latestRun": 53,
+      "latestRun": 56,
       "status": "success",
       "blockedCategories": [
         "weapons_or_explosives",
@@ -279,7 +278,7 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-11-18T12:54:10Z",
+    "checkedAt": "2026-11-18T14:58:22.353Z",
     "candidateCommit": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
     "completedCount": 97,
     "remainingCount": 1,
@@ -290,7 +289,7 @@
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false,
-    "note": "Main resume workflow was inspected; it is workflow_dispatch-only with run_translations=false and repair_candidates=false by default. Latest known run #150 completed with Resume skipped. No candidate pack files were written in this pass.",
+    "note": "Candidate summary and resume log were read from the branch and remain unchanged; no candidate pack writes were made. Latest known Main resume run #150 is legacy and completed; no current R125 resume run is queued or in progress.",
     "quotaStatusCurrent": "unknown-not-probed",
     "knownDailyFreeAiLimitBlocker": true,
     "repairBatch20261114": {
@@ -507,7 +506,8 @@
     "candidatePackWritesThisPass": 0,
     "translationRequestsThisPass": 0,
     "aiQuotaUsedThisPass": 0,
-    "resumeLogBlobSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9"
+    "resumeLogBlobSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9",
+    "candidateBranch": "work/r125-locale-candidates-20261008"
   },
   "builderRepair": {
     "commit": "634a0d31cb571300d658bb24580bdad3cbaeb75b",
@@ -10343,11 +10343,11 @@
   },
   "latestProductionSectionAudit": {
     "previousRun": {
-      "run": 80,
-      "runId": 44306734676,
+      "run": 85,
+      "runId": 44318102553,
       "status": "completed",
       "conclusion": "failure",
-      "runtimeVersion": "20261118-r125-global-quick-v18",
+      "runtimeVersion": "20261118-r125-global-quick-v22",
       "languages": 98,
       "sections": 27,
       "sectionLanguageApplications": 2646,
@@ -10357,7 +10357,7 @@
       "unresolvedFindingCombinations": 0,
       "dynamicFallback": {
         "requests": 1,
-        "language": "Icelandic",
+        "language": "Armenian",
         "strings": [
           "Back",
           "Page navigation",
@@ -10366,61 +10366,86 @@
         ]
       }
     },
-    "run": 81,
-    "runId": 44308206522,
-    "workflow": ".github/workflows/r125-static-locale-section-audit.yml",
-    "status": "in_progress",
-    "conclusion": null,
-    "headSha": "a1a7352871fc0cb9e2c1afb1aab45e739bb898f0",
-    "runtimeVersion": "20261118-r125-global-quick-v19",
-    "preAuditSteps": {
-      "checkout": "success",
-      "nodeSetup": "success",
-      "playwright": "success",
-      "chromium": "in_progress",
-      "pagesReadiness": "pending",
-      "syntaxCheck": "pending",
-      "quotaGuardAndQuickLabels": "pending",
-      "noTranslateTriage": "pending",
-      "fullMatrix": "pending"
+    "repair": {
+      "version": "20261118-r125-global-quick-v23",
+      "commit": "fc912d815a78f7cb98813ece0d480640d44bc565",
+      "runtimeCommit": "fc912d815a78f7cb98813ece0d480640d44bc565",
+      "htmlPagesUpdated": 44,
+      "codeFilesUpdated": [
+        "i18n-ui.js",
+        "tools/test-ui-translation-quota-session-guard.cjs",
+        ".github/workflows/r125-static-locale-section-audit.yml",
+        ".github/workflows/r105-final-release.yml",
+        ".github/workflows/final-browser-audit-r9.yml"
+      ],
+      "labels": {
+        "Back": "Վերադարձ",
+        "PageNavigation": "Էջի նավիգացիա",
+        "VoiceReply": "Ձայնային պատասխան",
+        "Voice": "Ձայն"
+      },
+      "source": "Existing hy.json candidate values; provisional UI runtime labels only; native Armenian review remains required.",
+      "regression": "Armenian QUICK-map and zero-provider-call case added to quota-session guard."
     },
-    "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44308206522",
-    "note": "v19 adds Icelandic local quick labels. Full 98 × 27 matrix has not started yet.",
-    "currentStep": "Install Chromium and system dependencies",
-    "matrixStarted": false
+    "currentRun": {
+      "run": 86,
+      "runId": 44329277204,
+      "workflow": ".github/workflows/r125-static-locale-section-audit.yml",
+      "status": "in_progress",
+      "conclusion": null,
+      "headSha": "fc912d815a78f7cb98813ece0d480640d44bc565",
+      "runtimeVersion": "20261118-r125-global-quick-v23",
+      "preAuditSteps": {
+        "checkout": "success",
+        "nodeSetup": "success",
+        "playwright": "success",
+        "chromium": "in_progress",
+        "pagesReadiness": "pending",
+        "syntaxCheck": "pending",
+        "quotaGuardAndQuickLabels": "pending",
+        "noTranslateTriage": "pending",
+        "fullMatrix": "pending"
+      },
+      "matrixStarted": false,
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44329277204"
+    },
+    "scope": "No AI or translation requests; no candidate pack writes."
   },
   "latestProductionRuntimeChecks": {
     "r105": {
-      "run": 174,
-      "runId": 44313904979,
+      "run": 178,
+      "runId": 44329277252,
       "status": "completed",
       "conclusion": "success",
       "aiBinding": true,
       "centralSafetyGate": "enabled",
       "failClosed": true,
       "productionHealth": "passed",
-      "liveAiProbes": "skipped-by-policy"
+      "liveAiProbes": "skipped-by-policy",
+      "runtimeVersion": "20261118-r125-global-quick-v23"
     },
     "r123": {
-      "run": 127,
-      "runId": 44313905075,
+      "run": 130,
+      "runId": 44329277241,
       "status": "completed",
       "conclusion": "success",
       "programmaticVoiceValidation": "passed",
       "categoryTranslations": "passed",
       "voiceAcknowledgement": "passed",
       "dynamicVoicePlaceholders": "passed",
+      "headlessAndroidPlayback": "passed",
       "productionAudioAsset": "skipped",
       "liveASR": "not-verified",
       "physicalMicrophoneSpeakerCertified": false
     },
     "r9e": {
-      "run": 89,
-      "runId": 44313491683,
+      "run": 93,
+      "runId": 44329277257,
       "status": "completed",
       "conclusion": "success",
       "countryProfiles": "248/248",
       "localizedPages": "44/44",
+      "storedCurrencyCheck": "passed",
       "manualMoroccoPriority": "passed",
       "manualWorldwidePriority": "passed",
       "visibleLocales": [
@@ -10429,36 +10454,29 @@
         "IN/hi",
         "CN/zh"
       ],
-      "storedCurrencyCheck": "passed",
       "safetyGate": "passed",
       "voiceAndPwaCache": "passed",
       "liveAiProbes": "skipped-by-policy",
-      "programmaticASR": "skipped",
-      "nextRun": {
-        "run": 90,
-        "runId": 44313905116,
-        "status": "in_progress",
-        "headSha": "137afd3d5b28763662f562773210e5b362f47b1a"
-      }
+      "programmaticASR": "skipped"
     },
     "safety": {
-      "run": 53,
-      "runId": 44313905202,
+      "run": 56,
+      "runId": 44329277295,
       "status": "completed",
       "conclusion": "success",
       "blockedCases": 4,
       "benignHotelRequest": "allowed_pending_human_review"
     },
     "pages": {
-      "run": 1855,
-      "runId": 44313902715,
+      "run": 1860,
+      "runId": 44329275690,
       "status": "completed",
       "conclusion": "success",
-      "headSha": "137afd3d5b28763662f562773210e5b362f47b1a"
+      "headSha": "fc912d815a78f7cb98813ece0d480640d44bc565"
     }
   },
   "latestResumeWorkflowInspection": {
-    "checkedAt": "2026-11-18T13:30:35.482Z",
+    "checkedAt": "2026-11-18T14:58:22.353Z",
     "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
     "path": ".github/workflows/r125-hourly-candidate-resume.yml",
     "trigger": "workflow_dispatch only",
@@ -10480,10 +10498,11 @@
     },
     "currentRevisionRunObserved": false,
     "activeRuns": 0,
+    "queuedRuns": 0,
     "candidateWritesDeferred": true,
     "candidatePackWritesInLatestRun": 0,
     "translationRequestsInLatestRun": 0,
-    "note": "Fetched run #150 and its job logs. It skipped translation, audited 97/98 candidates with Divehi remaining, and pushed only audit metadata (resume-exit-code.txt/scheduled-mode.json); no candidate pack files were written. No active resume workflow run was found. The current workflow remains manual-only."
+    "note": "Verified current workflow is manual-only with translation and repair opt-ins false by default. Latest known matching run #150 is legacy, completed; no current-revision R125 resume run is present in the latest dispatch scan. Repository-wide Actions scan showed zero queued and zero in-progress runs before v23 push; no candidate packs were written."
   },
   "latestQuickFallbackRepair": {
     "checkedAt": "2026-11-18T09:45:51Z",
@@ -11571,5 +11590,93 @@
       "aiChatAvailability": "unknown-not-probed",
       "checkout": "inactive"
     }
+  },
+  "latestAutomationPass20261118V23": {
+    "checkedAt": "2026-11-18T14:58:22.353Z",
+    "mainCommit": "fc912d815a78f7cb98813ece0d480640d44bc565",
+    "runtimeVersion": "20261118-r125-global-quick-v23",
+    "repair": "Added Armenian local QUICK labels using existing hy.json values; added a zero-provider-call regression case; updated R125/R105/R9e version and live-asset assertions; refreshed 44 HTML cache references.",
+    "candidatePackWrites": 0,
+    "candidateMetadataWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "quotaBypassAttempts": 0,
+    "verification": {
+      "readback": "PASS",
+      "productionHtmlCacheRefs": "44/44 changed and read back through Git tree; index.html and games.html v23 references confirmed",
+      "r105": {
+        "run": 178,
+        "status": "success",
+        "aiBinding": true,
+        "health": "passed",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r9e": {
+        "run": 93,
+        "status": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "storedCurrency": "passed",
+        "MoroccoPriority": "passed",
+        "WorldwidePriority": "passed"
+      },
+      "r123": {
+        "run": 130,
+        "status": "success",
+        "programmaticVoice": "passed",
+        "headlessAndroidPlayback": "passed",
+        "productionAudioAsset": "skipped",
+        "liveASR": "not-verified",
+        "physicalHardware": "not-certified"
+      },
+      "safety": {
+        "run": 56,
+        "status": "success",
+        "blockedCategories": 4,
+        "benignHotelRequest": "allowed_pending_human_review"
+      },
+      "pages": {
+        "run": 1860,
+        "status": "success"
+      },
+      "r125": {
+        "run": 86,
+        "status": "in_progress",
+        "currentStep": "Install Chromium and system dependencies",
+        "matrixStarted": false
+      }
+    },
+    "ai": {
+      "binding": true,
+      "productionHealth": "passed",
+      "chatAvailability": "unknown-not-probed",
+      "translationAvailability": "unknown-not-probed",
+      "liveGenerationProbe": "skipped-by-policy",
+      "lastResumeLogError": "HTTP 503 all_translation_backends_unavailable",
+      "knownHistoricalBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429"
+      ]
+    },
+    "candidateState": {
+      "structural": 98,
+      "total": 98,
+      "quality": 97,
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "published": 0,
+      "linguisticCertification": 0,
+      "productionManifestKeys": 1045,
+      "candidateSourceKeys": 1118,
+      "unpublishedKeyDelta": 73
+    },
+    "decision": "NO-GO",
+    "notes": [
+      "Armenian fallback fixed locally in v23; full R125 matrix still pending.",
+      "No candidate branch files were changed; resume workflow was not running and no queued run existed.",
+      "No AI or translation quota was consumed; no bypass attempted."
+    ]
   }
 }
