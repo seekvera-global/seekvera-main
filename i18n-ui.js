@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261118-r125-global-quick-v29';
+const VERSION='20261118-r125-global-quick-v30';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),PACK_VALUES=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -399,6 +399,13 @@ tk:{
 'Page navigation':'Sahypa navigasiýasy',
 'Voice reply':'Sesli jogap',
 'Voice':'Ses'
+},
+// Provisional Nepali quick UI labels. Candidate values for Back/Voice were malformed; these operational labels remain provisional pending native review.
+ne:{
+'Back':'पछाडि',
+'Page navigation':'पृष्ठ नेभिगेसन',
+'Voice reply':'आवाजमा जवाफ',
+'Voice':'आवाज'
 }
 };
 // Provisional quota-neutral overrides for the exact R125 UI leaks. Native review remains required.

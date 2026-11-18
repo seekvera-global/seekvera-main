@@ -93,7 +93,8 @@ async function main(){
   {code:'uz',language:'Uzbek',labels:{'Back':'Orqaga','Page navigation':'Sahifa navigatsiyasi','Voice reply':'Ovoz javobi','Voice':'Ovoz'}},
   {code:'hy',language:'Armenian',labels:{'Back':'Վերադարձ','Page navigation':'Էջի նավիգացիա','Voice reply':'Ձայնային պատասխան','Voice':'Ձայն'}},
   {code:'tg',language:'Tajik',labels:{'Back':'Бозгашт','Page navigation':'Навигатсияи саҳифаҳо','Voice reply':'Ҷавоби овозӣ','Voice':'Овоз'}},
-  {code:'tk',language:'Turkmen',labels:{'Back':'Yza','Page navigation':'Sahypa navigasiýasy','Voice reply':'Sesli jogap','Voice':'Ses'}}
+  {code:'tk',language:'Turkmen',labels:{'Back':'Yza','Page navigation':'Sahypa navigasiýasy','Voice reply':'Sesli jogap','Voice':'Ses'}},
+  {code:'ne',language:'Nepali',labels:{'Back':'पछाडि','Page navigation':'पृष्ठ नेभिगेसन','Voice reply':'आवाजमा जवाफ','Voice':'आवाज'}}
  ];
  const quickContext={INITIAL_AI:'__TEST_INITIAL_AI__'};vm.createContext(quickContext);
  vm.runInContext(extract(i18n,'const QUICK={','// Provisional quota-neutral overrides','QUICK map')+';this.quick=QUICK;',quickContext);
