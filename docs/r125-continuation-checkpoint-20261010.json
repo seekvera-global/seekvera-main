@@ -10809,5 +10809,167 @@
       "status": "completed",
       "conclusion": "success"
     }
+  },
+  "latestAutomationPass20261118_v17": {
+    "checkedAt": "2026-11-18T11:30:00Z",
+    "sourceHead": "2787661671abcbae5f4226ee768cd50ada89f17d",
+    "repair": {
+      "commit": "2787661671abcbae5f4226ee768cd50ada89f17d",
+      "language": "et",
+      "finding": "R125 #78 completed the 98-language × 27-section matrix (2,646 applications) and 248-country matrix with zero exact, partial or unresolved static findings, but recorded one Estonian dynamic translation fallback for Back, Page navigation, Voice reply and Voice.",
+      "change": "Added quota-neutral Estonian quick labels from the existing candidate pack values to i18n-ui.js; added zero-provider-call regression coverage; bumped runtime to 20261118-r125-global-quick-v17; refreshed all 44 localized HTML cache references; updated R125, R105 and R9e version/label assertions.",
+      "labels": {
+        "Back": "Tagasi",
+        "Page navigation": "Lehe navigatsioon",
+        "Voice reply": "Kõne vastus",
+        "Voice": "Kõne"
+      },
+      "changedFiles": 49,
+      "htmlFiles": 44,
+      "candidatePackFilesChanged": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "linguisticCertification": false
+    },
+    "priorR125": {
+      "run": 78,
+      "runId": 44290870408,
+      "status": "completed",
+      "conclusion": "failure",
+      "staticMatrix": {
+        "languages": 98,
+        "sections": 27,
+        "sectionLanguageApplications": 2646,
+        "countryProfiles": 248,
+        "exactFindingCombinations": 0,
+        "partialFindingCombinations": 0,
+        "unresolvedFindingCombinations": 0,
+        "dynamicFallbackRequests": 1,
+        "dynamicFallbackLanguage": "et",
+        "dynamicFallbackStrings": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ]
+      },
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44290870408"
+    },
+    "currentR125": {
+      "run": 79,
+      "runId": 44295127787,
+      "status": "in_progress",
+      "conclusion": null,
+      "currentStep": "Install Chromium and system dependencies",
+      "matrixStarted": false,
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44295127787"
+    },
+    "productionRuns": {
+      "pages": {
+        "run": 1847,
+        "runId": 44295126275,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "r105": {
+        "run": 170,
+        "runId": 44295127630,
+        "status": "completed",
+        "conclusion": "success",
+        "aiBinding": true,
+        "productionHealth": "passed",
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "liveGenerationProbe": "skipped-by-policy"
+      },
+      "r123": {
+        "run": 123,
+        "runId": 44295128034,
+        "status": "completed",
+        "conclusion": "success",
+        "programmaticAudio": "passed",
+        "liveCategoryTranslations": "passed",
+        "voiceAcknowledgement": "passed",
+        "dynamicVoicePlaceholders": "passed",
+        "productionAudioAsset": "skipped",
+        "liveASR": "not-verified",
+        "physicalMicrophoneSpeakerCertified": false
+      },
+      "safety": {
+        "run": 50,
+        "runId": 44295127838,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "r9e": {
+        "run": 86,
+        "runId": 44295128038,
+        "status": "in_progress",
+        "conclusion": null,
+        "currentStep": "Install Chromium browser test runtime",
+        "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44295128038"
+      }
+    },
+    "resumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "trigger": "workflow_dispatch only",
+      "scheduleTriggerPresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestMatchingRun": {
+        "number": 150,
+        "id": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "resume": "skipped",
+        "audit": "success",
+        "candidatePackWrites": 0
+      },
+      "currentRevisionRunObserved": false,
+      "activeResumeRunObserved": false,
+      "candidatePackWritesThisPass": 0,
+      "note": "Workflow contains the real candidate builder behind explicit run_translations=true and deterministic writes behind repair_candidates=true. No current-revision resume run was found. No candidate packs were written."
+    },
+    "candidateState": {
+      "structuralPacks": 98,
+      "totalPacks": 98,
+      "keysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "qualityCandidates": 97,
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "published": 0,
+      "linguisticCertification": 0,
+      "productionManifestKeys": 1045,
+      "candidateSourceKeys": 1118,
+      "unpublishedKeyDelta": 73
+    },
+    "ai": {
+      "binding": true,
+      "productionHealth": "passed",
+      "chatAvailability": "unknown-not-probed",
+      "liveGenerationProbe": "skipped-by-policy",
+      "translationAvailability": "unknown-not-probed",
+      "lastResumeLogError": "HTTP 503 all_translation_backends_unavailable",
+      "knownHistoricalBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429"
+      ],
+      "directTranslationRequestsThisPass": 0,
+      "quotaBypassAttempts": 0,
+      "quotaUsageFromAutomaticClientFallback": "unknown"
+    },
+    "voice": {
+      "programmaticAudio": "passed",
+      "productionAudioAsset": "skipped",
+      "liveASR": "not-verified",
+      "physicalMicrophoneSpeakerCertified": false
+    },
+    "checkout": "inactive pending merchant configuration and end-to-end payment/settlement verification",
+    "decision": "NO-GO"
   }
 }
