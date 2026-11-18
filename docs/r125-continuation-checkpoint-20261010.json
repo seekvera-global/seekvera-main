@@ -221,14 +221,20 @@
       "quotaBypassAttempts": 0
     },
     "countryCurrency": {
-      "latestConfirmedRun": 82,
+      "latestConfirmedRun": 83,
       "latestConfirmedStatus": "passed",
       "countryProfiles": "248/248",
       "localizedPages": "44/44",
       "manualMoroccoPriority": "passed",
       "manualWorldwidePriority": "passed",
+      "visibleLocales": [
+        "MA/ar",
+        "FR/fr",
+        "IN/hi",
+        "CN/zh"
+      ],
       "currentV14Run": 83,
-      "currentV14Status": "in_progress"
+      "currentV14Status": "passed"
     },
     "safety": {
       "latestRun": 47,
@@ -10371,9 +10377,21 @@
     "r9e": {
       "run": 83,
       "runId": 44277135326,
-      "status": "in_progress",
-      "conclusion": null,
-      "headSha": "7d02e6b46a69130dcf67b88c1e6e537345a4375c"
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "7d02e6b46a69130dcf67b88c1e6e537345a4375c",
+      "countryProfiles": "248/248",
+      "manualMoroccoPriority": "passed",
+      "manualWorldwidePriority": "passed",
+      "visibleLocales": [
+        "MA/ar",
+        "FR/fr",
+        "IN/hi",
+        "CN/zh"
+      ],
+      "localizedPages": "44/44",
+      "liveAIProbes": "skipped-by-policy",
+      "liveASR": "skipped"
     },
     "safety": {
       "run": 47,
@@ -10577,7 +10595,8 @@
       "r9e": {
         "run": 83,
         "runId": 44277135326,
-        "status": "in_progress"
+        "status": "completed",
+        "conclusion": "success"
       },
       "r105": {
         "run": 167,
@@ -10606,7 +10625,9 @@
     "notes": [
       "R125 #75 completed 98 languages × 27 sections and 248 country profiles with zero static exact/partial/unresolved findings but failed on one Slovenian dynamic quick-label fallback.",
       "v14 adds local Slovenian quick labels and cache-busts 44 HTML pages; R105 #167 and Safety #47 passed; Pages #1836 deployed; R123 #120 programmatic voice checks passed while production audio asset and live ASR remained skipped.",
-      "R125 #76 and R9e #83 are still running. Candidate branch writes were deferred; latest matching resume run #150 is legacy and completed with Resume skipped."
-    ]
+      "R125 #76 and R9e #83 are still running. Candidate branch writes were deferred; latest matching resume run #150 is legacy and completed with Resume skipped.",
+      "R9e #83 completed successfully on v14: 248 country profiles checked one-by-one, Morocco and Worldwide manual selections preserved, 44 localized pages passed, four visible locale samples passed, prohibited weapon sale blocked, voice/PWA cache passed; live AI and ASR probes were skipped."
+    ],
+    "countryCurrency": "R9e #83 PASS: 248/248 country profiles, Morocco/Worldwide priority, 44/44 pages."
   }
 }
