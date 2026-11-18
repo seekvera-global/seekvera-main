@@ -9247,7 +9247,7 @@
     "liveAsr": "skipped",
     "physicalMicrophoneSpeakerCertified": false
   },
-  "latestMainCommit": "75026ddb219bea34420067b75ac2605e82539101",
+  "latestMainCommit": "e0a4c653882b6c27634a5bd300b351eeb286c63c",
   "latestAutomationPass20261118Turn11": {
     "checkedAt": "2026-11-18T05:31:36Z",
     "sourceReadback": {
@@ -11756,5 +11756,6 @@
     "voiceAndPwaCache": "passed",
     "liveAiProbes": "skipped-by-policy",
     "liveASR": "skipped"
-  }
+  },
+  "latestCheckpointCommit": "b45e4583a453ff4dd4ce126878d887717ca2cc54"
 }
