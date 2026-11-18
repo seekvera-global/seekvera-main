@@ -82,7 +82,8 @@ async function main(){
   {code:'is',language:'Icelandic',labels:{'Back':'Til baka','Page navigation':'Síðuleiðsögn','Voice reply':'Raddsvör','Voice':'Rödd'}},
   {code:'sq',language:'Albanian',labels:{'Back':'Kthehu','Page navigation':'Navigimi në faqe','Voice reply':'Përgjigje me zë','Voice':'Zëri'}},
   {code:'mk',language:'Macedonian',labels:{'Back':'Назад','Page navigation':'Навигација на страна','Voice reply':'Гласен одговор','Voice':'Глас'}},
-  {code:'ka',language:'Georgian',labels:{'Back':'უკან','Page navigation':'გვერდის ნავიგაცია','Voice reply':'ხმის პასუხი','Voice':'ხმა'}}
+  {code:'ka',language:'Georgian',labels:{'Back':'უკან','Page navigation':'გვერდის ნავიგაცია','Voice reply':'ხმის პასუხი','Voice':'ხმა'}},
+  {code:'hy',language:'Armenian',labels:{'Back':'Վերադարձ','Page navigation':'Էջի նավիգացիա','Voice reply':'Ձայնային պատասխան','Voice':'Ձայն'}}
  ];
  const quickContext={INITIAL_AI:'__TEST_INITIAL_AI__'};vm.createContext(quickContext);
  vm.runInContext(extract(i18n,'const QUICK={','// Provisional quota-neutral overrides','QUICK map')+';this.quick=QUICK;',quickContext);
