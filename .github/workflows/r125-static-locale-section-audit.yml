@@ -61,10 +61,10 @@ jobs:
               && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/games.html?locale_audit=20261117" -o /tmp/r125-games.html \
               && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/global-ui.js?v=20261117-r125-source-caption-i18n-v2" -o /tmp/r125-global-ui.js \
               && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/games.js?v=20261117-r125-game-title-i18n" -o /tmp/r125-games.js \
-              && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/i18n-ui.js?v=20261118-r125-filipino-quick-v5" -o /tmp/r125-i18n-ui.js \
+              && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/i18n-ui.js?v=20261118-r125-greek-quick-v6" -o /tmp/r125-i18n-ui.js \
               && grep -Fq 'global-ui.js?v=20261117-r125-source-caption-i18n' /tmp/r125-index.html \
               && grep -Fq 'games.js?v=20261117-r125-game-title-i18n' /tmp/r125-games.html \
-              && grep -Fq 'i18n-ui.js?v=20261118-r125-filipino-quick-v5' /tmp/r125-index.html \
+              && grep -Fq 'i18n-ui.js?v=20261118-r125-greek-quick-v6' /tmp/r125-index.html \
               && grep -Fq 'sv-control-caption-label' /tmp/r125-global-ui.js \
               && grep -Fq 'alreadyLocalizedValue' /tmp/r125-i18n-ui.js \
               && grep -Fq "'Sprachantwort'" /tmp/r125-i18n-ui.js \
@@ -112,6 +112,10 @@ jobs:
               && grep -Fq "'Pag-navigate sa pahina'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Sagot sa boses'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Boses'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Πίσω'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Πλοήγηση σε σελίδα'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Απάντηση με φωνή'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Φωνή'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Geschäftssoftware'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Business Software'" /tmp/r125-i18n-ui.js \
               && grep -Fq '<b>${g.name}</b>' /tmp/r125-games.js \
