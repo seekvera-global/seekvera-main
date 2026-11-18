@@ -111,17 +111,18 @@
   "packsPublished": false,
   "linguisticAccuracyCertified": false,
   "blockedBy": [
-    "Candidate branch contains 98 structurally complete packs with 1,118 keys and matching sourceHash; 97/98 pass the saved quality gate. Divehi (dv) remains blocked by 58 English-overlap findings requiring qualified native Dhivehi review.",
+    "Candidate branch still has 98 structurally complete packs (1,118 keys each, matching sourceHash); 97/98 pass the saved quality gate. Divehi (dv) remains blocked by 58 English-overlap findings requiring qualified native Dhivehi review.",
     "Production locale manifest has 1,045 keys versus 1,118 candidate-source keys; 73 keys remain unpublished and unreviewed. Do not promote unreviewed candidate packs to close the gap.",
-    "resume-latest.log records HTTP 503 all_translation_backends_unavailable, Dhivehi read timeouts and unparseable Workers AI outputs. Historical daily_free_ai_limit and Google HTTP429 remain blockers; no direct translation probe or quota bypass was attempted this pass.",
+    "resume-latest.log records HTTP 503 all_translation_backends_unavailable, Dhivehi read timeouts and unparseable Workers AI outputs. Historical daily_free_ai_limit and Google HTTP429 remain blockers; no direct translation-provider probe or quota bypass was attempted in this continuation.",
     "All 98 candidate packs still require qualified linguistic review; none is published or linguistically certified. Duplicate-output screening is heuristic and not a substitute for native review.",
-    "R125 #96 on v33 completed the 98-language × 27-section matrix with zero exact/partial/unresolved visible-text findings but detected one intercepted Lao dynamic fallback. Main v34 adds provisional Lao labels and zero-provider-call regression; R125 #97 is running.",
-    "R9e #103 passed 248 country profiles and 44 localized pages on v33. R9e #104 is running against v34; no v34 country/currency result yet.",
-    "R105 #190 passed production source, quota-boundary, AI-binding, Worker deployment and health checks. RUN_LIVE_AI_PROBES=false, so live chat and AI country-intent remain unverified.",
-    "R123 #141 passed programmatic audio and browser-profile server-audio playback; production audio asset/multilingual step was skipped, live ASR remains unverified, and no physical microphone/speaker certification was performed.",
-    "Safety Smoke #67 and Pages #1885 succeeded on v34.",
+    "R125 #97 on v34 completed all 98 languages × 27 sections (2,646 applications; 248 country profiles) with zero exact, partial or unresolved visible-text findings, but failed on one intercepted Burmese dynamic fallback for Back, Page navigation, Voice reply and Voice. Main v35 adds provisional local Burmese labels and a zero-provider-call regression; R125 #98 is running.",
+    "R9e #104 passed on v34; R9e #105 is running against v35. Country/currency behavior on v35 is not certified until #105 completes.",
+    "R105 #191 passed production source, quota-boundary, AI-binding, Worker deployment and production-health checks. RUN_LIVE_AI_PROBES=false, so live chat and AI country-intent remain unverified.",
+    "R123 #142 passed programmatic audio, voice acknowledgement, dynamic placeholders and Android browser-profile playback. Production audio asset/multilingual audio was skipped; live ASR and physical microphones/speakers remain unverified.",
+    "Safety Smoke #68 passed on retry. Its first attempt hit a transient Cloudflare HTTP 530 on the benign moderation request; Supabase logs showed no Edge Function execution for that 530. The retry passed all prohibited-content blocks and benign pending-human-review behavior.",
+    "Pages deployment #1888 succeeded for v35.",
     "Checkout remains inactive pending merchant configuration and end-to-end payment, forged-reference rejection and settlement verification.",
-    "The candidate-resume workflow is workflow_dispatch only, with run_translations and repair_candidates default false. Latest matching run #150 is legacy and completed with Resume skipped; no current dispatch or active resume run was found. Candidate writes remain deferred."
+    "The current candidate-resume workflow is workflow_dispatch only, with run_translations and repair_candidates default false. No current dispatch or active resume run was found; latest matching run #150 is legacy. Candidate writes remain deferred."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -179,8 +180,8 @@
     }
   },
   "remainingChecks": [
-    "Complete R125 #97 on i18n QUICK v34; confirm Lao fallback is eliminated and all 98 languages × 27 sections remain free of dynamic translation calls.",
-    "R9e #104 on v34 passed all 248 country profiles, 44 localized pages, Morocco/Worldwide priority, four visible locale cases, safety and voice/PWA cache; retain live AI and ASR as unverified.",
+    "Complete R125 #98 on v35 and confirm all 98 languages × 27 sections remain free of dynamic translation calls; Burmese is the newly repaired case.",
+    "Complete R9e #105 on v35 for 248 country profiles, 44 localized pages, country/currency priority, browser locale behavior, safety and voice/PWA cache.",
     "Resolve Divehi's 58 English-overlap findings with qualified native Dhivehi translation/review; do not synthesize or certify unreviewed wording.",
     "Refresh the read-only duplicate-output audit across all 98 candidate packs after later manual repairs; heuristic duplicate screening is not linguistic judgment.",
     "Obtain qualified native review for all 98 candidate packs; publish no partial or unreviewed packs.",
@@ -191,10 +192,10 @@
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-18T20:59:06.193Z",
+    "checkedAt": "2026-11-18T22:40:47Z",
     "aiChat": {
       "currentAvailability": "unknown-not-certified",
-      "latestProductionRun": 190,
+      "latestProductionRun": 191,
       "aiBinding": true,
       "productionHealth": "passed",
       "centralSafetyGate": "enabled",
@@ -204,10 +205,10 @@
       "quotaStatus": "historical usage unknown; no quota-free claim"
     },
     "voiceTranscription": {
-      "programmaticTests": "passed in R123 #141",
-      "browserProfileAudio": "Android browser-profile server-audio playback completed",
+      "programmaticTests": "passed in R123 #142",
+      "browserProfileAudio": "Android browser-profile server-audio playback passed",
       "productionAudioAsset": "skipped",
-      "liveASR": "skipped-by-policy in R9e #104",
+      "liveASR": "not-verified",
       "physicalDeviceCertified": false
     },
     "translation": {
@@ -225,7 +226,7 @@
       "latestConfirmedStatus": "passed on v34",
       "countryProfiles": "248/248",
       "localizedPages": "44/44",
-      "storedCurrencyAndFallback": "passed in R9e live browser audit",
+      "storedCurrencyAndFallback": "passed in R9e #104",
       "manualMoroccoPriority": "passed",
       "manualWorldwidePriority": "passed",
       "visibleLocales": [
@@ -234,12 +235,13 @@
         "IN/hi",
         "CN/zh"
       ],
+      "v35Verification": "R9e #105 in progress",
       "liveAiProbes": "skipped-by-policy",
-      "liveASR": "skipped-by-policy"
+      "liveASR": "not-verified"
     },
     "safety": {
-      "latestRun": 67,
-      "status": "success",
+      "latestRun": 68,
+      "status": "success on retry",
       "checks": [
         "live Supabase safety API",
         "prohibited content blocks",
@@ -281,7 +283,7 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-11-18T18:57:11.099Z",
+    "checkedAt": "2026-11-18T22:40:47Z",
     "candidateCommit": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
     "completedCount": 97,
     "remainingCount": 1,
@@ -8963,58 +8965,24 @@
     "decision": "NO-GO"
   },
   "latestAutomationPass20261118": {
-    "checkedAt": "2026-11-18T19:45:50Z",
-    "mainCommit": "ad9930396463a8e5639f4056880989950c7f8684",
-    "repairs": [
-      "Quota-neutral Tamil quick labels v32",
-      "Quota-neutral Khmer quick labels v33",
-      "44 HTML cache references advanced to v33",
-      "R125/R105/R9e assertions and quota-neutral tests updated"
-    ],
-    "results": {
-      "r105": "success",
-      "r9e": "in_progress",
-      "r123": "success",
-      "safety": "success",
-      "pages": "success",
-      "r125": "in_progress"
-    },
-    "candidateState": {
-      "structural": "98/98",
-      "quality": "97/98",
-      "remaining": [
-        "dv"
-      ],
-      "divehiEnglishOverlap": 58,
-      "published": 0,
-      "linguisticCertification": 0
-    },
-    "ai": {
-      "binding": true,
-      "productionHealth": "passed",
-      "chat": "unknown-not-probed",
-      "translation": "unknown-not-probed",
-      "liveProbes": 0
-    },
-    "thisPass": {
-      "candidatePackWrites": 0,
-      "candidateMetadataWrites": 0,
-      "translationRequests": 0,
-      "aiQuotaUsed": 0,
-      "published": false,
-      "linguisticCertification": false
-    },
+    "checkedAt": "2026-11-18T22:40:47Z",
+    "mainHead": "86f055faf4d4520564e76fc2b2b1b59366e699ab",
+    "repair": "Burmese quick labels v35",
+    "candidatePackWrites": 0,
+    "candidateMetadataWrites": 0,
+    "translationProviderRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticAccuracyCertified": false,
     "decision": "NO-GO",
-    "resumeWorkflow": {
-      "trigger": "workflow_dispatch only",
-      "latestRun": 150,
-      "latestRunStatus": "completed",
-      "activeRuns": 0,
-      "runTranslationsDefault": false,
-      "repairCandidatesDefault": false,
-      "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
-      "candidatePackWritesThisPass": 0
-    }
+    "notes": [
+      "R125 #97 completed 98 × 27 with zero visible exact/partial/unresolved findings but failed on one intercepted Burmese dynamic fallback; v35 repairs it.",
+      "R105 #191, R123 #142, Safety Smoke #68 (retry) and Pages #1888 succeeded.",
+      "R9e #105 and R125 #98 remain in progress; v35 country/currency and full locale-matrix certification are pending.",
+      "The first Safety Smoke #68 attempt received a Cloudflare 530 on the benign moderation request; Supabase logs showed no Edge Function execution for that response, and the retry passed.",
+      "AI chat/translation remain unknown because live AI probes are disabled; historical daily_free_ai_limit and Google HTTP429 remain blockers.",
+      "Candidate branch unchanged; no candidate packs published or linguistically certified."
+    ]
   },
   "latestR125AuditResult20261118": {
     "checkedAt": "2026-11-18",
@@ -10125,7 +10093,7 @@
     }
   },
   "latestResumeWorkflowInspection": {
-    "checkedAt": "2026-11-18T19:40:12Z",
+    "checkedAt": "2026-11-18T22:40:47Z",
     "path": ".github/workflows/r125-hourly-candidate-resume.yml",
     "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
     "trigger": "workflow_dispatch only; no schedule",
@@ -10137,10 +10105,10 @@
       "number": 150,
       "runId": 38971104197,
       "createdAt": "2026-10-16T21:41:54Z",
-      "event": "push",
       "status": "completed",
       "conclusion": "success",
-      "resume": "audit-only; no translation requests",
+      "revision": "legacy",
+      "resume": "skipped",
       "audit": {
         "completedCount": 97,
         "remaining": [
@@ -10151,7 +10119,8 @@
       },
       "candidatePackWrites": 0,
       "metadataFilesWritten": 2,
-      "commit": "cae6970"
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
     },
     "currentWorkflowDispatchRunsFound": 0,
     "activeResumeRuns": 0,
@@ -10161,7 +10130,8 @@
     "resumeStepCondition": "github.event_name == 'workflow_dispatch' && inputs.run_translations",
     "deterministicRepairConditions": "success() && (inputs.run_translations || inputs.repair_candidates)",
     "candidateWriteStepCondition": "success() && (inputs.run_translations || inputs.repair_candidates)",
-    "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2"
+    "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
+    "activeRuns": 0
   },
   "latestQuickFallbackRepair": {
     "checkedAt": "2026-11-18T09:45:51Z",
@@ -12075,6 +12045,112 @@
       "decision": "NO-GO",
       "r9e": "passed on v34",
       "r125": "still running; no candidate writes"
+    }
+  },
+  "latestMainHead": "86f055faf4d4520564e76fc2b2b1b59366e699ab",
+  "latestBurmeseRepair20261118": {
+    "commit": "86f055faf4d4520564e76fc2b2b1b59366e699ab",
+    "version": "20261118-r125-global-quick-v35",
+    "language": "my",
+    "labels": {
+      "Back": "နောက်သို့",
+      "Page navigation": "စာမျက်နှာ လမ်းညွှန်",
+      "Voice reply": "အသံဖြင့် ပြန်ကြားချက်",
+      "Voice": "အသံ"
+    },
+    "note": "Provisional quota-neutral operational labels. Existing candidate Back/Page navigation/Voice reply values were semantically unsuitable. Native Burmese review remains required.",
+    "htmlPagesCacheBumped": 44,
+    "workflowsUpdated": [
+      "r105-final-release.yml",
+      "final-browser-audit-r9.yml",
+      "r125-static-locale-section-audit.yml"
+    ],
+    "regressionTest": "Burmese quick labels must resolve locally with zero provider calls",
+    "readback": "PASS",
+    "candidatePackWrites": 0,
+    "candidateMetadataWrites": 0,
+    "translationProviderRequests": 0,
+    "aiQuotaUsed": 0
+  },
+  "latestProductionSectionAuditV35": {
+    "previousRun": {
+      "number": 97,
+      "id": 44396390752,
+      "status": "completed",
+      "conclusion": "failure",
+      "headSha": "56834432767811b9f5e5c4237268befeb4b1621b",
+      "languages": 98,
+      "sections": 27,
+      "applications": 2646,
+      "countryProfiles": 248,
+      "exact": 0,
+      "partial": 0,
+      "unresolved": 0,
+      "dynamicFallback": {
+        "language": "Burmese",
+        "requests": 1,
+        "strings": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ]
+      },
+      "aiRequests": 0,
+      "translationProviderRequests": 0
+    },
+    "currentRun": {
+      "number": 98,
+      "id": 44413607278,
+      "status": "in_progress",
+      "headSha": "86f055faf4d4520564e76fc2b2b1b59366e699ab",
+      "lastObservedStep": "Install Chromium and system dependencies",
+      "matrixResult": "pending"
+    }
+  },
+  "latestProductionRuntimeChecksV35": {
+    "r105": {
+      "run": 191,
+      "id": 44413607169,
+      "status": "completed",
+      "conclusion": "success",
+      "aiBinding": true,
+      "centralSafetyGate": "enabled",
+      "failClosed": true,
+      "productionHealth": "passed",
+      "liveAiProbes": "skipped-by-policy"
+    },
+    "r123": {
+      "run": 142,
+      "id": 44413607325,
+      "status": "completed",
+      "conclusion": "success",
+      "programmaticAudio": "passed",
+      "voiceAcknowledgement": "passed",
+      "dynamicVoicePlaceholders": "passed",
+      "browserProfileAudio": "passed",
+      "productionAudioAsset": "skipped",
+      "physicalMicrophoneSpeakerCertified": false
+    },
+    "r9e": {
+      "run": 105,
+      "id": 44413607358,
+      "status": "in_progress",
+      "headSha": "86f055faf4d4520564e76fc2b2b1b59366e699ab"
+    },
+    "safety": {
+      "run": 68,
+      "id": 44413607248,
+      "status": "completed",
+      "conclusion": "success",
+      "retryPassed": true,
+      "initialAttempt": "transient Cloudflare HTTP 530 on benign request"
+    },
+    "pages": {
+      "run": 1888,
+      "id": 44413606019,
+      "status": "completed",
+      "conclusion": "success"
     }
   }
 }
