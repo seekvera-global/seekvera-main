@@ -9002,7 +9002,17 @@
       "published": false,
       "linguisticCertification": false
     },
-    "decision": "NO-GO"
+    "decision": "NO-GO",
+    "resumeWorkflow": {
+      "trigger": "workflow_dispatch only",
+      "latestRun": 150,
+      "latestRunStatus": "completed",
+      "activeRuns": 0,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
+      "candidatePackWritesThisPass": 0
+    }
   },
   "latestR125AuditResult20261118": {
     "checkedAt": "2026-11-18",
@@ -10101,10 +10111,10 @@
     }
   },
   "latestResumeWorkflowInspection": {
-    "checkedAt": "2026-11-18T19:37:53Z",
+    "checkedAt": "2026-11-18T19:40:12Z",
     "path": ".github/workflows/r125-hourly-candidate-resume.yml",
     "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
-    "trigger": "workflow_dispatch only",
+    "trigger": "workflow_dispatch only; no schedule",
     "scheduleTriggerPresent": false,
     "runTranslationsDefault": false,
     "repairCandidatesDefault": false,
@@ -10113,20 +10123,31 @@
       "number": 150,
       "runId": 38971104197,
       "createdAt": "2026-10-16T21:41:54Z",
+      "event": "push",
       "status": "completed",
       "conclusion": "success",
-      "revision": "legacy",
-      "event": "push",
-      "resume": "skipped",
-      "audit": "success",
+      "resume": "audit-only; no translation requests",
+      "audit": {
+        "completedCount": 97,
+        "remaining": [
+          "dv"
+        ],
+        "resumeSucceeded": false,
+        "exitCode": "not-run"
+      },
       "candidatePackWrites": 0,
       "metadataFilesWritten": 2,
-      "translationRequests": 0
+      "commit": "cae6970"
     },
     "currentWorkflowDispatchRunsFound": 0,
     "activeResumeRuns": 0,
     "candidateWritesDeferred": true,
-    "note": "The latest matching run #150 was inspected directly, including its job steps and log. It is legacy and completed; Resume was skipped, the audit reported 97 complete and dv remaining, and two metadata files were committed without candidate-pack changes. The current Main workflow is manual-only; no current workflow_dispatch run or active resume run exists."
+    "note": "The workflow can run the actual candidate resume and can push candidate-stage files when explicit inputs are enabled. No active run is present now; do not start candidate writes while a resume run is active.",
+    "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
+    "resumeStepCondition": "github.event_name == 'workflow_dispatch' && inputs.run_translations",
+    "deterministicRepairConditions": "success() && (inputs.run_translations || inputs.repair_candidates)",
+    "candidateWriteStepCondition": "success() && (inputs.run_translations || inputs.repair_candidates)",
+    "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2"
   },
   "latestQuickFallbackRepair": {
     "checkedAt": "2026-11-18T09:45:51Z",
