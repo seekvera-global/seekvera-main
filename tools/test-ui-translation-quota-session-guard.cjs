@@ -45,6 +45,7 @@ async function main(){
   {code:'ru',language:'Russian',labels:{'Back':'Назад','Page navigation':'Навигация по страницам','Voice reply':'Голосовой ответ','Voice':'Голос'}},
   {code:'ur',language:'Urdu',labels:{'Back':'واپس','Page navigation':'صفحات پر نیویگیشن','Voice reply':'صوتی جواب','Voice':'آواز'}},
   {code:'ja',language:'Japanese',labels:{'Back':'戻る','Page navigation':'ページナビゲーション','Voice reply':'音声で返信','Voice':'音声'}},
+  {code:'fil',language:'Filipino',labels:{'Back':'Bumalik','Page navigation':'Pag-navigate sa pahina','Voice reply':'Sagot sa boses','Voice':'Boses'}},
   {code:'th',language:'Thai',labels:{'Back':'กลับ','Page navigation':'การนำทางหน้าเว็บ','Voice reply':'การตอบกลับด้วยเสียง','Voice':'เสียง','Business Yearly':'แพ็กเกจธุรกิจรายปี','Business Monthly':'แพ็กเกจธุรกิจรายเดือน'}},
   {code:'zu',language:'Zulu',labels:{'GLOBAL AI MARKETPLACE':'Imakethe ye-AI yomhlaba wonke','Courier & last mile':'Ukuthumela nokuletha impahla esigabeni sokugcina'}},
   {code:'ko',language:'Korean',labels:{'Back':'뒤로','Page navigation':'페이지 탐색','Voice reply':'음성 답변','Voice':'음성'}},
@@ -159,7 +160,7 @@ async function main(){
  assert.deepEqual(indonesianResult,['Kembali','Navigasi halaman','Balasan suara','Suara']);assert.equal(indonesianFetchCalls,0);
 
  // Provisional Filipino labels for the exact R125 homepage leaks must resolve locally.
- const filipinoLabels={'OPEN MARKETPLACE →':'Buksan ang pamilihan →','GLOBAL AI MARKETPLACE':'Pamilihang pandaigdig na pinapagana ng AI','🏙️ City break':'🏙️ Maikling bakasyon sa lungsod','GLOBAL AUTO SEARCH':'Pandaigdigang paghahanap ng sasakyan','CROSS-BORDER LOGISTICS':'Logistikang tumatawid sa mga hangganan','Venue / hotel Wi‑Fi QR':'QR para sa Wi‑Fi ng lugar o hotel','Auto Recharge':'Awtomatikong pag-recharge','Zero‑Cost Mode':'Mode na walang gastos','RFQ / supplier sourcing':'Kahilingan sa presyo / paghahanap ng tagapagtustos'};
+ const filipinoLabels={'Back':'Bumalik','Page navigation':'Pag-navigate sa pahina','Voice reply':'Sagot sa boses','Voice':'Boses','OPEN MARKETPLACE →':'Buksan ang pamilihan →','GLOBAL AI MARKETPLACE':'Pamilihang pandaigdig na pinapagana ng AI','🏙️ City break':'🏙️ Maikling bakasyon sa lungsod','GLOBAL AUTO SEARCH':'Pandaigdigang paghahanap ng sasakyan','CROSS-BORDER LOGISTICS':'Logistikang tumatawid sa mga hangganan','Venue / hotel Wi‑Fi QR':'QR para sa Wi‑Fi ng lugar o hotel','Auto Recharge':'Awtomatikong pag-recharge','Zero‑Cost Mode':'Mode na walang gastos','RFQ / supplier sourcing':'Kahilingan sa presyo / paghahanap ng tagapagtustos'};
  for(const value of Object.values(filipinoLabels))assert(i18n.includes(value),'Missing Filipino quick label: '+value);
  let filipinoFetchCalls=0;
  const filipinoNav={sessionStorage:storage(),AbortController,setTimeout,clearTimeout,fetch:async()=>{filipinoFetchCalls++;return{status:503,ok:false,json:async()=>({reason:'all_translation_backends_unavailable'})}},langCode:()=> 'fil',window:{SEEKVERA_I18N_R32:{tFor:(code,source)=>code==='fil'?(filipinoLabels[source]||source):source}},console};
