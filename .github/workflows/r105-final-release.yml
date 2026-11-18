@@ -74,11 +74,15 @@ jobs:
           node --check sw.js
           test "$(find i18n-r32 -maxdepth 1 -name '*.json' | wc -l)" -ge 98
           grep -F "const RELEASE='20261001-r125-dialect-voice-quality'" worker-r76.js
-          grep -F "const VERSION='20261118-r125-global-quick-v21'" i18n-ui.js
+          grep -F "const VERSION='20261118-r125-global-quick-v22'" i18n-ui.js
           grep -F "'Назад'" i18n-ui.js
           grep -F "'Навигација на страна'" i18n-ui.js
           grep -F "'Гласен одговор'" i18n-ui.js
           grep -F "'Глас'" i18n-ui.js
+          grep -F "'უკან'" i18n-ui.js
+          grep -F "'გვერდის ნავიგაცია'" i18n-ui.js
+          grep -F "'ხმის პასუხი'" i18n-ui.js
+          grep -F "'ხმა'" i18n-ui.js
           if grep -R -nE --exclude='README.md' --exclude='README-FIRST.txt' --exclude-dir='.git' 'Global API'' Key|GLOBAL_API''_KEY' .; then
             echo 'Forbidden global credential reference found'
             exit 1
@@ -118,7 +122,7 @@ jobs:
                 && grep -q 'global-ui.js?v=20261117-r125-source-caption-i18n-v2' /tmp/home.html \
                 && grep -q 'sv-control-caption-label' /tmp/global-ui.js \
                 && grep -q 'Worldwide is the neutral first-run market' /tmp/global-ui.js \
-                && grep -q '20261118-r125-global-quick-v21' /tmp/i18n-ui.js \
+                && grep -q '20261118-r125-global-quick-v22' /tmp/i18n-ui.js \
                 && grep -q 'Quay lại' /tmp/i18n-ui.js \
                 && grep -q 'Điều hướng trang' /tmp/i18n-ui.js \
                 && grep -q 'Trả lời bằng giọng nói' /tmp/i18n-ui.js \
@@ -212,7 +216,11 @@ jobs:
                 && grep -q 'Terug' /tmp/i18n-ui.js \
                 && grep -q 'Bladsynavigasie' /tmp/i18n-ui.js \
                 && grep -q 'Stemantwoord' /tmp/i18n-ui.js \
-                && grep -q 'Stem' /tmp/i18n-ui.js; then
+                && grep -q 'Stem' /tmp/i18n-ui.js \
+                && grep -q 'უკან' /tmp/i18n-ui.js \
+                && grep -q 'გვერდის ნავიგაცია' /tmp/i18n-ui.js \
+                && grep -q 'ხმის პასუხი' /tmp/i18n-ui.js \
+                && grep -q 'ხმა' /tmp/i18n-ui.js; then
                 health_ok=true
                 break
               fi
