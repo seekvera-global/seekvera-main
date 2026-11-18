@@ -189,16 +189,18 @@
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-18T14:58:22.353Z",
+    "checkedAt": "2026-11-18T15:09:34Z",
     "aiChat": {
-      "currentAvailability": "unknown-not-probed",
+      "currentAvailability": "partial-evidence-only-not-certified",
       "latestConfirmedProductionRun": 178,
       "latestConfirmedConclusion": "success",
       "aiBinding": true,
       "productionHealth": "passed",
       "centralSafetyGate": "enabled",
       "failClosed": true,
-      "liveGenerationProbe": "skipped-by-policy"
+      "liveGenerationProbe": "general English/Arabic chat probes skipped by policy; no full live-chat certification",
+      "countryControlIntentProbe": "R105 #179 passed one 'change country to Iceland' app-control request; provider/model identity not captured",
+      "safetyIntentProbe": "R105 #179 gun request was blocked by deterministic safety rules before AI generation"
     },
     "voiceTranscription": {
       "status": "programmatic voice checks passed in R123 #130: validation, category translations, voice acknowledgement, dynamic placeholders and headless Android playback; production audio asset skipped, live ASR not verified, physical hardware not certified",
@@ -9216,7 +9218,7 @@
     "decision": "NO-GO"
   },
   "latestAutomationPass20261118": {
-    "checkedAt": "2026-11-18T15:06:52Z",
+    "checkedAt": "2026-11-18T15:09:34Z",
     "sourceReadback": {
       "checkpointBlob": "2a9689b7e27a6147ffde0dcefd2e74a26a58adb7",
       "candidateSummaryBlob": "551a1cad78540f437e67d1d0a88ae1e844478022",
@@ -9256,24 +9258,61 @@
       "indexHtmlCacheRefUpdated": true
     },
     "currentRuns": {
-      "r125": 44331808281,
-      "r105": 44331808155,
-      "r123": 44331808257,
-      "r9e": 44331808129,
-      "safety": 44331808036,
-      "pages": 44331807292
+      "r125": {
+        "run": 87,
+        "runId": 44331808281,
+        "status": "in_progress",
+        "preflight": "passed",
+        "matrix": "running"
+      },
+      "r9e": {
+        "run": 94,
+        "runId": 44331808129,
+        "status": "in_progress"
+      },
+      "r105": {
+        "run": 179,
+        "runId": 44331808155,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "r123": {
+        "run": 131,
+        "runId": 44331808257,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "safety": {
+        "run": 57,
+        "runId": 44331808036,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "pagesV24": {
+        "run": 1862,
+        "runId": 44331807292,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "pagesCheckpoint": {
+        "run": 1863,
+        "runId": 44332017716,
+        "status": "completed",
+        "conclusion": "success"
+      }
     },
     "candidatePackWrites": 0,
     "translationRequests": 0,
-    "aiQuotaUsed": 0,
-    "aiChatAvailability": "unknown-not-probed",
+    "aiQuotaUsed": "unknown-not-measured",
+    "aiChatAvailability": "partial-evidence-only; one country-control intent probe passed, general live chat not certified",
     "translationAvailability": "unknown-not-probed",
     "physicalAudioCertified": false,
     "checkout": "inactive",
     "published": false,
     "linguisticCertification": false,
     "finalApproval": false,
-    "decision": "NO-GO"
+    "decision": "NO-GO",
+    "aiQuotaUsage": "unknown-not-measured: R105 country-control request reached /api/ai; general live probes skipped; no direct translation request"
   },
   "latestR125AuditResult20261118": {
     "checkedAt": "2026-11-18",
@@ -10346,20 +10385,22 @@
   },
   "latestProductionRuntimeChecks": {
     "r105": {
-      "run": 178,
-      "runId": 44329277252,
+      "run": 179,
+      "runId": 44331808155,
       "status": "completed",
       "conclusion": "success",
       "aiBinding": true,
       "centralSafetyGate": "enabled",
       "failClosed": true,
       "productionHealth": "passed",
-      "liveAiProbes": "skipped-by-policy",
-      "runtimeVersion": "20261118-r125-global-quick-v23"
+      "countryControlIntentProbe": "passed once (change country to Iceland); provider/model identity not captured",
+      "safetyIntentProbe": "blocked by deterministic safety rules before AI generation",
+      "liveGeneralChatProbes": "skipped-by-policy",
+      "runtimeVersion": "20261118-r125-global-quick-v24"
     },
     "r123": {
-      "run": 130,
-      "runId": 44329277241,
+      "run": 131,
+      "runId": 44331808257,
       "status": "completed",
       "conclusion": "success",
       "programmaticVoiceValidation": "passed",
@@ -10372,72 +10413,69 @@
       "physicalMicrophoneSpeakerCertified": false
     },
     "r9e": {
-      "run": 93,
-      "runId": 44329277257,
-      "status": "completed",
-      "conclusion": "success",
-      "countryProfiles": "248/248",
-      "localizedPages": "44/44",
-      "storedCurrencyCheck": "passed",
-      "manualMoroccoPriority": "passed",
-      "manualWorldwidePriority": "passed",
-      "visibleLocales": [
-        "MA/ar",
-        "FR/fr",
-        "IN/hi",
-        "CN/zh"
-      ],
-      "safetyGate": "passed",
-      "voiceAndPwaCache": "passed",
-      "liveAiProbes": "skipped-by-policy",
-      "programmaticASR": "skipped"
+      "run": 94,
+      "runId": 44331808129,
+      "status": "in_progress",
+      "conclusion": null
     },
     "safety": {
-      "run": 56,
-      "runId": 44329277295,
+      "run": 57,
+      "runId": 44331808036,
       "status": "completed",
       "conclusion": "success",
       "blockedCases": 4,
-      "benignHotelRequest": "allowed_pending_human_review"
+      "benignLand": "allowed_pending_human_review"
     },
     "pages": {
-      "run": 1861,
-      "runId": 44330204266,
+      "run": 1863,
+      "runId": 44332017716,
       "status": "completed",
       "conclusion": "success",
-      "headSha": "9c6e7fe56ba1ebe55c08c11ae2b6304a114b4f39"
+      "headSha": "766ef8718f3d2b0c091d7d468f8f6630401c45de",
+      "scope": "Checkpoint/documentation deployment; v24 product assets were deployed in Pages #1862."
     },
     "pendingV24Runs": {
       "r125": {
         "run": 87,
         "runId": 44331808281,
         "status": "in_progress",
-        "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44331808281"
-      },
-      "r105": {
-        "run": 179,
-        "runId": 44331808155,
-        "status": "in_progress"
-      },
-      "r123": {
-        "run": 131,
-        "runId": 44331808257,
-        "status": "in_progress"
+        "matrixStep": "in_progress",
+        "preflight": "passed"
       },
       "r9e": {
         "run": 94,
         "runId": 44331808129,
         "status": "in_progress"
       },
+      "r105": {
+        "run": 179,
+        "runId": 44331808155,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "r123": {
+        "run": 131,
+        "runId": 44331808257,
+        "status": "completed",
+        "conclusion": "success"
+      },
       "safety": {
         "run": 57,
         "runId": 44331808036,
-        "status": "in_progress"
+        "status": "completed",
+        "conclusion": "success"
       },
-      "pages": {
+      "pagesV24": {
         "run": 1862,
         "runId": 44331807292,
-        "status": "in_progress"
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "pagesCheckpoint": {
+        "run": 1863,
+        "runId": 44332017716,
+        "status": "completed",
+        "conclusion": "success"
       }
     }
   },
