@@ -181,14 +181,14 @@
     "Run the full candidate quality/script/duplicate audit after quota-neutral repairs; structural PASS alone is not quality certification.",
     "Obtain qualified native review for all 98 candidate packs; publish no partial or unreviewed packs.",
     "Re-probe AI Chat and translation only through explicitly authorized quota-safe probes; current availability remains unknown and daily_free_ai_limit/Google HTTP429 must not be bypassed.",
-    "R9e #87 passed 248 country profiles, stored currency, 44 localized pages, Morocco/Worldwide priority; complete the v19 R9e #88 rerun.",
+    "Country/currency behavior passed on v19 in R9e #88: 248 country profiles, stored currency, 44 localized pages, Morocco/Worldwide priority. Keep this check green on later releases.",
     "Perform physical microphone and audible-speaker tests on Android, iPhone/iPad and desktop; browser/headless TTS is not hardware certification.",
     "Configure a merchant account and verify checkout, payment confirmation, forged-reference rejection and settlement end-to-end."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-18T12:54:10Z",
+    "checkedAt": "2026-11-18T12:56:30Z",
     "aiChat": {
       "currentAvailability": "unknown-not-probed",
       "latestConfirmedProductionRun": 172,
@@ -216,7 +216,7 @@
       "quotaBypassAttempts": 0
     },
     "countryCurrency": {
-      "latestConfirmedRun": 87,
+      "latestConfirmedRun": 88,
       "latestConfirmedStatus": "passed",
       "countryProfiles": "248/248",
       "localizedPages": "44/44",
@@ -230,7 +230,7 @@
       ],
       "currencyPerCountryAndStoredValue": "passed",
       "currentV19Run": 88,
-      "currentV19Status": "in_progress"
+      "currentV19Status": "passed"
     },
     "safety": {
       "latestRun": 52,
@@ -720,7 +720,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-18T12:54:10Z",
+  "checkedAt": "2026-11-18T12:56:30Z",
   "latestR125Run": {
     "run": 150,
     "status": "completed",
@@ -3308,7 +3308,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-18T12:54:10Z",
+  "updatedAt": "2026-11-18T12:56:30Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -4045,17 +4045,15 @@
     "qualityGate": "NOT PASS"
   },
   "latestActionsObservation": {
-    "checkedAt": "2026-11-18T12:54:10Z",
+    "checkedAt": "2026-11-18T12:56:30Z",
     "totalRunsObserved": 6092,
-    "activeRuns": 2,
+    "activeRuns": 1,
     "queuedRuns": 0,
     "activeRunIds": [
-      44308206522,
-      44308206334
+      44308206522
     ],
     "activeRunPaths": [
-      ".github/workflows/r125-static-locale-section-audit.yml",
-      ".github/workflows/final-browser-audit-r9.yml"
+      ".github/workflows/r125-static-locale-section-audit.yml"
     ],
     "resumeWorkflowActive": false
   },
@@ -10371,7 +10369,9 @@
       "fullMatrix": "pending"
     },
     "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44308206522",
-    "note": "v19 adds Icelandic local quick labels. Full 98 × 27 matrix has not started yet."
+    "note": "v19 adds Icelandic local quick labels. Full 98 × 27 matrix has not started yet.",
+    "currentStep": "Install Chromium and system dependencies",
+    "matrixStarted": false
   },
   "latestProductionRuntimeChecks": {
     "r105": {
@@ -10401,9 +10401,24 @@
     "r9e": {
       "run": 88,
       "runId": 44308206334,
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "success",
       "headSha": "a1a7352871fc0cb9e2c1afb1aab45e739bb898f0",
+      "countryProfiles": "248/248",
+      "storedCurrencyCheck": "passed",
+      "manualMoroccoPriority": "passed",
+      "manualWorldwidePriority": "passed",
+      "visibleLocales": [
+        "MA/ar",
+        "FR/fr",
+        "IN/hi",
+        "CN/zh"
+      ],
+      "localizedPages": "44/44",
+      "liveAiProbes": "skipped-by-policy",
+      "safetyGate": "passed",
+      "voiceAndPwaCache": "passed",
+      "programmaticASR": "skipped",
       "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44308206334"
     },
     "safety": {
@@ -11264,8 +11279,8 @@
       "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44308206522"
     },
     "r9e": {
-      "run": 87,
-      "runId": 44306734410,
+      "run": 88,
+      "runId": 44308206334,
       "status": "completed",
       "conclusion": "success",
       "countryProfiles": "248/248",
@@ -11368,7 +11383,7 @@
       "physicalMicrophoneSpeakerCertified": false
     },
     "countryCurrency": {
-      "latestConfirmedRun": 87,
+      "latestConfirmedRun": 88,
       "status": "success",
       "countryProfiles": "248/248",
       "localizedPages": "44/44",
@@ -11382,7 +11397,7 @@
         "CN/zh"
       ],
       "currentV19Run": 88,
-      "currentV19Status": "in_progress"
+      "currentV19Status": "passed"
     },
     "safety": {
       "latestRun": 52,
@@ -11402,5 +11417,28 @@
     "published": false,
     "linguisticAccuracyCertified": false,
     "decision": "NO-GO"
+  },
+  "latestR9eAuditResult20261118Run88": {
+    "run": 88,
+    "runId": 44308206334,
+    "status": "completed",
+    "conclusion": "success",
+    "headSha": "a1a7352871fc0cb9e2c1afb1aab45e739bb898f0",
+    "countryProfiles": "248/248",
+    "storedCurrencyCheck": "passed",
+    "manualMoroccoPriority": "passed",
+    "manualWorldwidePriority": "passed",
+    "visibleLocales": [
+      "MA/ar",
+      "FR/fr",
+      "IN/hi",
+      "CN/zh"
+    ],
+    "localizedPages": "44/44",
+    "liveAiProbes": "skipped-by-policy",
+    "safetyGate": "passed",
+    "voiceAndPwaCache": "passed",
+    "programmaticASR": "skipped",
+    "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44308206334"
   }
 }
