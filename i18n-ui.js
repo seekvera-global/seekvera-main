@@ -149,6 +149,13 @@ hi:{
 'Page navigation':'पृष्ठ नेविगेशन',
 'Voice reply':'आवाज़ में जवाब',
 'Voice':'आवाज़'
+},
+// Provisional Russian quick UI labels; native review remains required.
+ru:{
+'Back':'Назад',
+'Page navigation':'Навигация по страницам',
+'Voice reply':'Голосовой ответ',
+'Voice':'Голос'
 }};
 // Provisional quota-neutral overrides for the exact R125 UI leaks. Native review remains required.
 const R125_PROVISIONAL={
