@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261118-r125-vietnamese-quick-labels';
+const VERSION='20261118-r125-italian-quick-labels';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),PACK_VALUES=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -56,7 +56,15 @@ ko:{
 'Page navigation':'페이지 탐색',
 'Voice reply':'음성 답변',
 'Voice':'음성'
-},es:{
+},
+// Provisional Italian quick UI labels; native review remains required.
+it:{
+'Back':'Indietro',
+'Page navigation':'Navigazione tra le pagine',
+'Voice reply':'Risposta vocale',
+'Voice':'Voce'
+},
+es:{
 'Back':'Volver','Page navigation':'Navegación de páginas','Voice reply':'Respuesta de voz','Voice':'Voz'
 },zh:{
 'Back':'返回','Page navigation':'页面导航','Voice reply':'语音回复','Voice':'语音'

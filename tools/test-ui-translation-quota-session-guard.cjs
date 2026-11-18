@@ -47,7 +47,8 @@ async function main(){
   {code:'ja',language:'Japanese',labels:{'Back':'戻る','Page navigation':'ページナビゲーション','Voice reply':'音声で返信','Voice':'音声'}},
   {code:'th',language:'Thai',labels:{'Business Yearly':'แพ็กเกจธุรกิจรายปี','Business Monthly':'แพ็กเกจธุรกิจรายเดือน'}},
   {code:'zu',language:'Zulu',labels:{'GLOBAL AI MARKETPLACE':'Imakethe ye-AI yomhlaba wonke','Courier & last mile':'Ukuthumela nokuletha impahla esigabeni sokugcina'}},
-  {code:'ko',language:'Korean',labels:{'Back':'뒤로','Page navigation':'페이지 탐색','Voice reply':'음성 답변','Voice':'음성'}}
+  {code:'ko',language:'Korean',labels:{'Back':'뒤로','Page navigation':'페이지 탐색','Voice reply':'음성 답변','Voice':'음성'}},
+  {code:'it',language:'Italian',labels:{'Back':'Indietro','Page navigation':'Navigazione tra le pagine','Voice reply':'Risposta vocale','Voice':'Voce'}}
  ];
  const quickContext={INITIAL_AI:'__TEST_INITIAL_AI__'};vm.createContext(quickContext);
  vm.runInContext(extract(i18n,'const QUICK={','// Provisional quota-neutral overrides','QUICK map')+';this.quick=QUICK;',quickContext);
