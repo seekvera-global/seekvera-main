@@ -138,7 +138,7 @@ jobs:
               && grep -Fq "'Navigacija po stranicama'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Glasovni odgovor'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Glas'" /tmp/r125-i18n-ui.js \
-              && grep -Fq "'Навигација по страницама'" /tmp/r125-i18n-ui.js \\
+              && grep -Fq "'Навигација по страницама'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Гласовни одговор'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Emuva'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Ukuzulazula kwamakhasi'" /tmp/r125-i18n-ui.js \
