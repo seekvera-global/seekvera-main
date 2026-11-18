@@ -122,11 +122,11 @@ jobs:
                 && grep -q 'Indietro' /tmp/i18n-ui.js \
                 && grep -q 'Navigazione tra le pagine' /tmp/i18n-ui.js \
                 && grep -q 'Risposta vocale' /tmp/i18n-ui.js \
-                && grep -q 'Voce' /tmp/i18n-ui.js; then
+                && grep -q 'Voce' /tmp/i18n-ui.js \
                 && grep -q 'Bumalik' /tmp/i18n-ui.js \
                 && grep -q 'Pag-navigate sa pahina' /tmp/i18n-ui.js \
                 && grep -q 'Sagot sa boses' /tmp/i18n-ui.js \
-                && grep -q 'Boses' /tmp/i18n-ui.js \
+                && grep -q 'Boses' /tmp/i18n-ui.js; then
                 health_ok=true
                 break
               fi
