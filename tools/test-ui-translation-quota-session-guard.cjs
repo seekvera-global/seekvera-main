@@ -42,6 +42,7 @@ async function main(){
  const quickCases=[
   {code:'vi',language:'Vietnamese',labels:{'Back':'Quay lại','Page navigation':'Điều hướng trang','Voice reply':'Trả lời bằng giọng nói','Voice':'Giọng nói'}},
   {code:'bn',language:'Bangla',labels:{'Back':'পেছনে','Page navigation':'পৃষ্ঠা নেভিগেশন','Voice reply':'কণ্ঠে উত্তর','Voice':'ভয়েস'}},
+  {code:'bg',language:'Bulgarian',labels:{'Back':'Назад','Page navigation':'Навигация по страниците','Voice reply':'Гласов отговор','Voice':'Глас'}},
   {code:'ru',language:'Russian',labels:{'Back':'Назад','Page navigation':'Навигация по страницам','Voice reply':'Голосовой ответ','Voice':'Голос'}},
   {code:'ur',language:'Urdu',labels:{'Back':'واپس','Page navigation':'صفحات پر نیویگیشن','Voice reply':'صوتی جواب','Voice':'آواز'}},
   {code:'ja',language:'Japanese',labels:{'Back':'戻る','Page navigation':'ページナビゲーション','Voice reply':'音声で返信','Voice':'音声'}},
