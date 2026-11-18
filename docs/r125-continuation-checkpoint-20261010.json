@@ -112,13 +112,15 @@
   "linguisticAccuracyCertified": false,
   "blockedBy": [
     "Candidate branch contains 98 structurally complete packs with 1,118 keys and matching sourceHash; 97/98 pass the saved quality gate. Divehi (dv) remains blocked by 58 English-overlap findings requiring qualified native Dhivehi review.",
-    "R125 #80 completed 98 languages × 27 sections and 248 country profiles with zero exact, partial or unresolved static findings, but one Icelandic dynamic fallback remained. v19 adds local Icelandic labels; R125 #81 is pending its full matrix.",
     "Production locale manifest has 1,045 keys versus 1,118 candidate-source keys; 73 keys remain unpublished and unreviewed. Do not promote candidate packs to close this gap.",
     "The current resume log reports Dhivehi retries timing out and HTTP 503 all_translation_backends_unavailable from three Workers AI backends. Historical daily_free_ai_limit and Google HTTP429 remain real blockers; no quota probes or bypasses were attempted.",
-    "AI Binding and production health passed in R105 #172, but live AI generation was skipped by policy; current AI Chat availability remains unknown.",
     "All 98 candidate packs still require qualified linguistic review; none is published or linguistically certified.",
     "Physical microphone/speaker certification and live ASR remain incomplete; browser/headless playback is not hardware certification.",
-    "Checkout remains inactive until merchant-account configuration and end-to-end payment/settlement verification."
+    "Checkout remains inactive until merchant-account configuration and end-to-end payment/settlement verification.",
+    "R125 #81 completed on v19 with zero exact/partial/unresolved static findings across 98 languages × 27 sections and 248 country profiles, but it detected one dynamic Albanian fallback for Back/Page navigation/Voice reply/Voice. Main v20 adds local Albanian quick labels; R125 #82 is running the full matrix and #83 is queued.",
+    "Candidate quality remains 97/98: Divehi (dv) still has 58 English-overlap findings requiring qualified native review. All 98 packs are structurally complete, but none is published or linguistically certified.",
+    "R105 #174 passed on v20 with AI Binding present and production health/safety gate/fail-closed checks passing; live AI generation probes were skipped by policy, so current AI Chat availability remains unknown.",
+    "Country/currency behavior passed on v20 in R9e #89: 248/248 country profiles, 44/44 localized pages, Morocco and Worldwide priority, four visible locale samples; R9e #90 is rerunning on the latest commit."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -176,38 +178,40 @@
     }
   },
   "remainingChecks": [
-    "Complete R125 #81 on v19: verify all 98 languages × 27 sections and 248 country profiles with zero exact, partial, unresolved or dynamic fallback findings.",
+    "Complete R125 #82 and queued #83 on v20: verify all 98 languages × 27 sections and 248 country profiles with zero exact, partial, unresolved or dynamic fallback findings.",
     "Resolve Divehi's 58 English-overlap findings with qualified native Dhivehi translation/review; do not synthesize or certify unreviewed wording.",
     "Run the full candidate quality/script/duplicate audit after quota-neutral repairs; structural PASS alone is not quality certification.",
     "Obtain qualified native review for all 98 candidate packs; publish no partial or unreviewed packs.",
     "Re-probe AI Chat and translation only through explicitly authorized quota-safe probes; current availability remains unknown and daily_free_ai_limit/Google HTTP429 must not be bypassed.",
-    "Country/currency behavior passed on v19 in R9e #88: 248 country profiles, stored currency, 44 localized pages, Morocco/Worldwide priority. Keep this check green on later releases.",
+    "Keep the v20 country/currency audit green on R9e #90: 248 country profiles, stored currency, 44 localized pages, Morocco/Worldwide priority.",
     "Perform physical microphone and audible-speaker tests on Android, iPhone/iPad and desktop; browser/headless TTS is not hardware certification.",
     "Configure a merchant account and verify checkout, payment confirmation, forged-reference rejection and settlement end-to-end."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-18T12:56:30Z",
+    "checkedAt": "2026-11-18T13:30:35.482Z",
     "aiChat": {
       "currentAvailability": "unknown-not-probed",
-      "latestConfirmedProductionRun": 172,
+      "latestConfirmedProductionRun": 174,
       "latestConfirmedConclusion": "success",
       "aiBinding": true,
       "productionHealth": "passed",
+      "centralSafetyGate": "enabled",
+      "failClosed": true,
       "liveGenerationProbe": "skipped-by-policy"
     },
     "voiceTranscription": {
-      "status": "programmatic TTS, voice acknowledgement, dynamic placeholders and headless Android playback passed; production audio asset skipped; live ASR not verified; physical hardware not certified",
+      "status": "programmatic voice checks passed in R123 #127: validation, category translations, voice acknowledgement and dynamic placeholders; production audio asset skipped, live ASR not verified, physical hardware not certified",
       "programmaticTests": "passed",
       "liveASR": "not-verified",
       "physicalDeviceCertified": false,
-      "currentV19Run": 125,
-      "currentV19Status": "programmatic-pass-production-asset-skipped"
+      "currentV20Run": 127,
+      "currentV20Status": "programmatic-pass-production-asset-skipped"
     },
     "translation": {
       "currentAvailability": "unknown-not-probed",
-      "lastObservedResumeLog": "HTTP 503 all_translation_backends_unavailable; Dhivehi retries timed out; three Workers AI backends returned unparseable responses",
+      "lastObservedResumeLog": "HTTP 503 all_translation_backends_unavailable; Dhivehi read timeouts; three Workers AI backends returned unparseable responses",
       "knownHistoricalBlockers": [
         "daily_free_ai_limit",
         "Google HTTP429"
@@ -216,7 +220,7 @@
       "quotaBypassAttempts": 0
     },
     "countryCurrency": {
-      "latestConfirmedRun": 88,
+      "latestConfirmedRun": 89,
       "latestConfirmedStatus": "passed",
       "countryProfiles": "248/248",
       "localizedPages": "44/44",
@@ -229,11 +233,11 @@
         "CN/zh"
       ],
       "currencyPerCountryAndStoredValue": "passed",
-      "currentV19Run": 88,
-      "currentV19Status": "passed"
+      "currentV20Run": 89,
+      "currentV20Status": "passed; R9e #90 rerun in progress"
     },
     "safety": {
-      "latestRun": 52,
+      "latestRun": 53,
       "status": "success",
       "blockedCategories": [
         "weapons_or_explosives",
@@ -720,7 +724,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-18T12:56:30Z",
+  "checkedAt": "2026-11-18T13:30:35.482Z",
   "latestR125Run": {
     "run": 150,
     "status": "completed",
@@ -3308,7 +3312,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-18T12:56:30Z",
+  "updatedAt": "2026-11-18T13:30:35.482Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -4045,17 +4049,29 @@
     "qualityGate": "NOT PASS"
   },
   "latestActionsObservation": {
-    "checkedAt": "2026-11-18T12:56:30Z",
-    "totalRunsObserved": 6092,
-    "activeRuns": 1,
-    "queuedRuns": 0,
+    "checkedAt": "2026-11-18T13:30:35.482Z",
+    "activeRuns": 2,
+    "queuedRuns": 1,
     "activeRunIds": [
-      44308206522
+      44313491590,
+      44313905003,
+      44313905116
     ],
     "activeRunPaths": [
-      ".github/workflows/r125-static-locale-section-audit.yml"
+      ".github/workflows/r125-static-locale-section-audit.yml",
+      ".github/workflows/final-browser-audit-r9.yml"
     ],
-    "resumeWorkflowActive": false
+    "resumeWorkflowActive": false,
+    "latestR125": {
+      "run": 82,
+      "runId": 44313491590,
+      "status": "in_progress"
+    },
+    "queuedR125": {
+      "run": 83,
+      "runId": 44313905003,
+      "status": "pending"
+    }
   },
   "structuralVerification": {
     "checkedAt": "2026-11-15T18:47:35Z",
@@ -10375,8 +10391,8 @@
   },
   "latestProductionRuntimeChecks": {
     "r105": {
-      "run": 172,
-      "runId": 44308206376,
+      "run": 174,
+      "runId": 44313904979,
       "status": "completed",
       "conclusion": "success",
       "aiBinding": true,
@@ -10386,26 +10402,25 @@
       "liveAiProbes": "skipped-by-policy"
     },
     "r123": {
-      "run": 125,
-      "runId": 44308206307,
+      "run": 127,
+      "runId": 44313905075,
       "status": "completed",
       "conclusion": "success",
-      "programmaticTTS": "passed",
+      "programmaticVoiceValidation": "passed",
+      "categoryTranslations": "passed",
       "voiceAcknowledgement": "passed",
       "dynamicVoicePlaceholders": "passed",
-      "headlessAndroidPlayback": "passed",
       "productionAudioAsset": "skipped",
       "liveASR": "not-verified",
       "physicalMicrophoneSpeakerCertified": false
     },
     "r9e": {
-      "run": 88,
-      "runId": 44308206334,
+      "run": 89,
+      "runId": 44313491683,
       "status": "completed",
       "conclusion": "success",
-      "headSha": "a1a7352871fc0cb9e2c1afb1aab45e739bb898f0",
       "countryProfiles": "248/248",
-      "storedCurrencyCheck": "passed",
+      "localizedPages": "44/44",
       "manualMoroccoPriority": "passed",
       "manualWorldwidePriority": "passed",
       "visibleLocales": [
@@ -10414,30 +10429,36 @@
         "IN/hi",
         "CN/zh"
       ],
-      "localizedPages": "44/44",
-      "liveAiProbes": "skipped-by-policy",
+      "storedCurrencyCheck": "passed",
       "safetyGate": "passed",
       "voiceAndPwaCache": "passed",
+      "liveAiProbes": "skipped-by-policy",
       "programmaticASR": "skipped",
-      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44308206334"
+      "nextRun": {
+        "run": 90,
+        "runId": 44313905116,
+        "status": "in_progress",
+        "headSha": "137afd3d5b28763662f562773210e5b362f47b1a"
+      }
     },
     "safety": {
-      "run": 52,
-      "runId": 44308206379,
+      "run": 53,
+      "runId": 44313905202,
       "status": "completed",
       "conclusion": "success",
-      "headSha": "a1a7352871fc0cb9e2c1afb1aab45e739bb898f0"
+      "blockedCases": 4,
+      "benignHotelRequest": "allowed_pending_human_review"
     },
     "pages": {
-      "run": 1851,
-      "runId": 44308206589,
+      "run": 1855,
+      "runId": 44313902715,
       "status": "completed",
       "conclusion": "success",
-      "headSha": "a1a7352871fc0cb9e2c1afb1aab45e739bb898f0"
+      "headSha": "137afd3d5b28763662f562773210e5b362f47b1a"
     }
   },
   "latestResumeWorkflowInspection": {
-    "checkedAt": "2026-11-18T12:54:10Z",
+    "checkedAt": "2026-11-18T13:30:35.482Z",
     "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
     "path": ".github/workflows/r125-hourly-candidate-resume.yml",
     "trigger": "workflow_dispatch only",
@@ -10451,6 +10472,7 @@
       "status": "completed",
       "conclusion": "success",
       "revision": "legacy",
+      "event": "push",
       "resume": "skipped",
       "audit": "success",
       "candidatePackWrites": 0,
@@ -10459,7 +10481,9 @@
     "currentRevisionRunObserved": false,
     "activeRuns": 0,
     "candidateWritesDeferred": true,
-    "note": "Latest matching run #150 was fetched and its steps inspected. No current-revision or active resume run was found; candidate packs remain untouched."
+    "candidatePackWritesInLatestRun": 0,
+    "translationRequestsInLatestRun": 0,
+    "note": "Fetched run #150 and its job logs. It skipped translation, audited 97/98 candidates with Divehi remaining, and pushed only audit metadata (resume-exit-code.txt/scheduled-mode.json); no candidate pack files were written. No active resume workflow run was found. The current workflow remains manual-only."
   },
   "latestQuickFallbackRepair": {
     "checkedAt": "2026-11-18T09:45:51Z",
@@ -11440,5 +11464,112 @@
     "voiceAndPwaCache": "passed",
     "programmaticASR": "skipped",
     "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44308206334"
+  },
+  "latestProductionSectionAuditV20": {
+    "previousRun": {
+      "run": 81,
+      "runId": 44308206522,
+      "status": "completed",
+      "conclusion": "failure",
+      "languages": 98,
+      "sections": 27,
+      "sectionLanguageApplications": 2646,
+      "countryProfiles": 248,
+      "exactFindingCombinations": 0,
+      "partialFindingCombinations": 0,
+      "unresolvedFindingCombinations": 0,
+      "dynamicFallback": {
+        "requests": 1,
+        "language": "Albanian",
+        "strings": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ]
+      },
+      "finding": "All static leak checks passed; one dynamic Albanian quick-label fallback remained."
+    },
+    "repair": {
+      "version": "20261118-r125-global-quick-v20",
+      "runtimeCommit": "a435fa22235ccf80ee9f84a7626f45737fec58a5",
+      "htmlCacheCommit": "137afd3d5b28763662f562773210e5b362f47b1a",
+      "htmlPagesUpdated": 44,
+      "codeFilesUpdated": [
+        "i18n-ui.js",
+        "tools/test-ui-translation-quota-session-guard.cjs",
+        ".github/workflows/r125-static-locale-section-audit.yml",
+        ".github/workflows/r105-final-release.yml",
+        ".github/workflows/final-browser-audit-r9.yml"
+      ],
+      "labels": {
+        "Back": "Kthehu",
+        "PageNavigation": "Navigimi në faqe",
+        "VoiceReply": "Përgjigje me zë",
+        "Voice": "Zëri"
+      },
+      "source": "existing sq.json candidate values; provisional UI runtime labels only; native review still required"
+    },
+    "currentRun": {
+      "run": 82,
+      "runId": 44313491590,
+      "status": "in_progress",
+      "conclusion": null,
+      "headSha": "a435fa22235ccf80ee9f84a7626f45737fec58a5",
+      "runtimeVersion": "20261118-r125-global-quick-v20",
+      "preAuditSteps": {
+        "checkout": "success",
+        "nodeSetup": "success",
+        "playwright": "success",
+        "chromium": "success",
+        "pagesReadiness": "success",
+        "syntaxCheck": "success",
+        "quotaGuardAndQuickLabels": "success",
+        "noTranslateTriage": "success",
+        "fullMatrix": "in_progress"
+      },
+      "matrixStarted": true,
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44313491590"
+    },
+    "queuedRun": {
+      "run": 83,
+      "runId": 44313905003,
+      "status": "pending",
+      "headSha": "137afd3d5b28763662f562773210e5b362f47b1a",
+      "runtimeVersion": "20261118-r125-global-quick-v20",
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44313905003"
+    },
+    "scope": "No AI or translation requests; no candidate pack writes."
+  },
+  "latestAutomationPass20261118V20": {
+    "checkedAt": "2026-11-18T13:30:35.482Z",
+    "mainRuntimeCommit": "a435fa22235ccf80ee9f84a7626f45737fec58a5",
+    "htmlCacheCommit": "137afd3d5b28763662f562773210e5b362f47b1a",
+    "fix": "R125 #81 found one dynamic Albanian fallback after all 98 × 27 static leak checks passed; added four quota-neutral Albanian QUICK labels sourced from the existing sq candidate pack, added zero-provider-call regression coverage, updated R105/R9e/R125 version guards, and bumped all 44 HTML cache references to v20.",
+    "verification": {
+      "quickLabelRegression": "passed in R105 #174",
+      "r125PreAudit": "passed",
+      "countryCurrency": "R9e #89 success, R9e #90 in progress",
+      "safety": "Safety #53 success",
+      "production": "R105 #174 success; AI Binding and health passed; live AI probes skipped",
+      "voice": "R123 #127 success; production audio asset skipped; live ASR not verified",
+      "pages": "Pages #1855 success"
+    },
+    "candidatePackWrites": 0,
+    "candidateMetadataWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticAccuracyCertified": false,
+    "decision": "NO-GO",
+    "remaining": {
+      "r125Audit82": "in progress",
+      "r125Audit83": "pending",
+      "divehiEnglishOverlap": 58,
+      "linguisticCertification": "0/98",
+      "physicalAudio": "pending",
+      "aiChatAvailability": "unknown-not-probed",
+      "checkout": "inactive"
+    }
   }
 }
