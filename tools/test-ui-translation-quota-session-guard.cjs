@@ -92,7 +92,8 @@ async function main(){
   {code:'ky',language:'Kyrgyz',labels:{'Back':'Артка','Page navigation':'Барак навигациясы','Voice reply':'Үн менен жооп','Voice':'Үн'}},
   {code:'uz',language:'Uzbek',labels:{'Back':'Orqaga','Page navigation':'Sahifa navigatsiyasi','Voice reply':'Ovoz javobi','Voice':'Ovoz'}},
   {code:'hy',language:'Armenian',labels:{'Back':'Վերադարձ','Page navigation':'Էջի նավիգացիա','Voice reply':'Ձայնային պատասխան','Voice':'Ձայն'}},
-  {code:'tg',language:'Tajik',labels:{'Back':'Бозгашт','Page navigation':'Навигатсияи саҳифаҳо','Voice reply':'Ҷавоби овозӣ','Voice':'Овоз'}}
+  {code:'tg',language:'Tajik',labels:{'Back':'Бозгашт','Page navigation':'Навигатсияи саҳифаҳо','Voice reply':'Ҷавоби овозӣ','Voice':'Овоз'}},
+  {code:'tk',language:'Turkmen',labels:{'Back':'Yza','Page navigation':'Sahypa navigasiýasy','Voice reply':'Sesli jogap','Voice':'Ses'}}
  ];
  const quickContext={INITIAL_AI:'__TEST_INITIAL_AI__'};vm.createContext(quickContext);
  vm.runInContext(extract(i18n,'const QUICK={','// Provisional quota-neutral overrides','QUICK map')+';this.quick=QUICK;',quickContext);
@@ -217,7 +218,8 @@ async function main(){
   {code:'sl',language:'Slovenian',labels:{'Back':'Nazaj','Page navigation':'Navigacija po straneh','Voice reply':'Glasovni odgovor','Voice':'Glas'}},
   {code:'lt',language:'Lithuanian',labels:{'Back':'Atgal','Page navigation':'Puslapių naršymas','Voice reply':'Atsakymas balsu','Voice':'Balsas'}},
   {code:'lv',language:'Latvian',labels:{'Back':'Atpakaļ','Page navigation':'Lapu navigācija','Voice reply':'Balss atbilde','Voice':'Balss'}},
-  {code:'af',language:'Afrikaans',labels:{'AI Voice Agent':'KI-stemassistent'}}
+  {code:'af',language:'Afrikaans',labels:{'AI Voice Agent':'KI-stemassistent'}},
+  {code:'tk',language:'Turkmen',labels:{'Back':'Yza','Page navigation':'Sahypa navigasiýasy','Voice reply':'Sesli jogap','Voice':'Ses'}}
  ];
  for(const item of provisionalQuickCases){
   for(const value of Object.values(item.labels))assert(i18n.includes(value),'Missing '+item.code+' provisional quick label: '+value);
