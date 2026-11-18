@@ -40,15 +40,19 @@ async function main(){
  assert.deepEqual(germanResult,['Zurück','Seitennavigation','Sprachantwort','Stimme']);assert.equal(germanFetchCalls,0);
  // Quota-neutral quick labels for Japanese navigation, Thai plan names and Zulu section headings.
  const quickCases=[
+  {code:'ru',language:'Russian',labels:{'Back':'Назад','Page navigation':'Навигация по страницам','Voice reply':'Голосовой ответ','Voice':'Голос'}},
   {code:'ja',language:'Japanese',labels:{'Back':'戻る','Page navigation':'ページナビゲーション','Voice reply':'音声で返信','Voice':'音声'}},
   {code:'th',language:'Thai',labels:{'Business Yearly':'แพ็กเกจธุรกิจรายปี','Business Monthly':'แพ็กเกจธุรกิจรายเดือน'}},
   {code:'zu',language:'Zulu',labels:{'GLOBAL AI MARKETPLACE':'Imakethe ye-AI yomhlaba wonke','Courier & last mile':'Ukuthumela nokuletha impahla esigabeni sokugcina'}},
   {code:'ko',language:'Korean',labels:{'Back':'뒤로','Page navigation':'페이지 탐색','Voice reply':'음성 답변','Voice':'음성'}}
  ];
+ const quickContext={INITIAL_AI:'__TEST_INITIAL_AI__'};vm.createContext(quickContext);
+ vm.runInContext(extract(i18n,'const QUICK={','// Provisional quota-neutral overrides','QUICK map')+';this.quick=QUICK;',quickContext);
+ const quickMap=quickContext.quick;
  for(const item of quickCases){
-  for(const value of Object.values(item.labels))assert(i18n.includes(value),'Missing '+item.code+' quick label: '+value);
+  for(const [source,value] of Object.entries(item.labels))assert.equal(quickMap[item.code]?.[source],value,item.code+' quick label missing or differs in the actual QUICK map: '+source);
   let calls=0;
-  const nav={sessionStorage:storage(),AbortController,setTimeout,clearTimeout,fetch:async()=>{calls++;return{status:503,ok:false,json:async()=>({reason:'all_translation_backends_unavailable'})}},langCode:()=>item.code,window:{SEEKVERA_I18N_R32:{tFor:(code,source)=>code===item.code?(item.labels[source]||source):source}},console};
+  const nav={sessionStorage:storage(),AbortController,setTimeout,clearTimeout,fetch:async()=>{calls++;return{status:503,ok:false,json:async()=>({reason:'all_translation_backends_unavailable'})}},langCode:()=>item.code,window:{SEEKVERA_I18N_R32:{tFor:(code,source)=>code===item.code?(quickMap[code]?.[source]||source):source}},console};
   vm.createContext(nav);vm.runInContext(navBlock,nav);
   const result=await nav.requestUiTranslation(item.language,Object.keys(item.labels));
   assert.deepEqual(result,Object.values(item.labels));assert.equal(calls,0);
