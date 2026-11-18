@@ -48,6 +48,7 @@ async function main(){
   {code:'fil',language:'Filipino',labels:{'Back':'Bumalik','Page navigation':'Pag-navigate sa pahina','Voice reply':'Sagot sa boses','Voice':'Boses'}},
   {code:'el',language:'Greek',labels:{'Back':'Πίσω','Page navigation':'Πλοήγηση σε σελίδα','Voice reply':'Απάντηση με φωνή','Voice':'Φωνή'}},
   {code:'ro',language:'Romanian',labels:{'Back':'Înapoi','Page navigation':'Navigarea paginilor','Voice reply':'Răspuns vocal','Voice':'Voce'}},
+  {code:'cs',language:'Czech',labels:{'Back':'Zpět','Page navigation':'Navigace stránek','Voice reply':'Hlasová odpověď','Voice':'Hlas'}},
   {code:'th',language:'Thai',labels:{'Back':'กลับ','Page navigation':'การนำทางหน้าเว็บ','Voice reply':'การตอบกลับด้วยเสียง','Voice':'เสียง','Business Yearly':'แพ็กเกจธุรกิจรายปี','Business Monthly':'แพ็กเกจธุรกิจรายเดือน'}},
   {code:'zu',language:'Zulu',labels:{'GLOBAL AI MARKETPLACE':'Imakethe ye-AI yomhlaba wonke','Courier & last mile':'Ukuthumela nokuletha impahla esigabeni sokugcina'}},
   {code:'ko',language:'Korean',labels:{'Back':'뒤로','Page navigation':'페이지 탐색','Voice reply':'음성 답변','Voice':'음성'}},

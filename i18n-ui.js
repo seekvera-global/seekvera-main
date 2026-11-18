@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261118-r125-romanian-quick-v7';
+const VERSION='20261118-r125-czech-quick-v8';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),PACK_VALUES=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -155,8 +155,12 @@ el:{
 'Back':'Πίσω','Page navigation':'Πλοήγηση σε σελίδα','Voice reply':'Απάντηση με φωνή','Voice':'Φωνή',
 'AI Voice Agent':'Φωνητικός βοηθός AI'
 },
-// Provisional Czech AI label; native review remains required.
+// Provisional Czech navigation and AI labels; native review remains required.
 cs:{
+'Back':'Zpět',
+'Page navigation':'Navigace stránek',
+'Voice reply':'Hlasová odpověď',
+'Voice':'Hlas',
 'AI Voice Agent':'Hlasový asistent AI'
 },
 // Provisional Slovak AI label; native review remains required.
