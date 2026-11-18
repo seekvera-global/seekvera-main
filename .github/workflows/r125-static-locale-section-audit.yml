@@ -124,6 +124,10 @@ jobs:
               && grep -Fq "'Navigace stránek'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Hlasová odpověď'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Hlas'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Takaisin'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Sivunavigointi'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Äänivastaus'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Ääni'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Emuva'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Ukuzulazula kwamakhasi'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Impendulo yezwi'" /tmp/r125-i18n-ui.js \

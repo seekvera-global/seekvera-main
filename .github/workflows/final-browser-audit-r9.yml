@@ -292,6 +292,7 @@ jobs:
             assert(i18n.includes("'Πίσω'") && i18n.includes("'Πλοήγηση σε σελίδα'") && i18n.includes("'Απάντηση με φωνή'") && i18n.includes("'Φωνή'"),'Greek quick labels missing from live i18n runtime');
             assert(i18n.includes("'Înapoi'") && i18n.includes("'Navigarea paginilor'") && i18n.includes("'Răspuns vocal'") && i18n.includes("'Voce'"),'Romanian quick labels missing from live i18n runtime');
             assert(i18n.includes("'Zpět'") && i18n.includes("'Navigace stránek'") && i18n.includes("'Hlasová odpověď'") && i18n.includes("'Hlas'"),'Czech quick labels missing from live i18n runtime');
+            assert(i18n.includes("'Takaisin'") && i18n.includes("'Sivunavigointi'") && i18n.includes("'Äänivastaus'") && i18n.includes("'Ääni'"),'Finnish quick labels missing from live i18n runtime');
             assert(i18n.includes("'Emuva'") && i18n.includes("'Ukuzulazula kwamakhasi'") && i18n.includes("'Impendulo yezwi'") && i18n.includes("'Izwi'"),'Zulu quick labels missing from live i18n runtime');
             assert(i18n.includes("'Tilbage'") && i18n.includes("'Sidenavigation'") && i18n.includes("'Stemmesvar'") && i18n.includes("'Stemme'"),'Danish quick labels missing from live i18n runtime');
             assert(i18n.includes("'Khutlela morao'") && i18n.includes("'Tsamaiso ea maqephe'") && i18n.includes("'Karabo ea lentsoe'") && i18n.includes("'Lentsoe'"),'Sesotho quick labels missing from live i18n runtime');

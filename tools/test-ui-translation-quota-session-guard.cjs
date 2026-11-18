@@ -49,6 +49,7 @@ async function main(){
   {code:'el',language:'Greek',labels:{'Back':'Πίσω','Page navigation':'Πλοήγηση σε σελίδα','Voice reply':'Απάντηση με φωνή','Voice':'Φωνή'}},
   {code:'ro',language:'Romanian',labels:{'Back':'Înapoi','Page navigation':'Navigarea paginilor','Voice reply':'Răspuns vocal','Voice':'Voce'}},
   {code:'cs',language:'Czech',labels:{'Back':'Zpět','Page navigation':'Navigace stránek','Voice reply':'Hlasová odpověď','Voice':'Hlas'}},
+  {code:'fi',language:'Finnish',labels:{'Back':'Takaisin','Page navigation':'Sivunavigointi','Voice reply':'Äänivastaus','Voice':'Ääni'}},
   {code:'zu',language:'Zulu',labels:{"Back":"Emuva","Page navigation":"Ukuzulazula kwamakhasi","Voice reply":"Impendulo yezwi","Voice":"Izwi"}},
   {code:'da',language:'Danish',labels:{"Back":"Tilbage","Page navigation":"Sidenavigation","Voice reply":"Stemmesvar","Voice":"Stemme"}},
   {code:'st',language:'Sesotho',labels:{"Back":"Khutlela morao","Page navigation":"Tsamaiso ea maqephe","Voice reply":"Karabo ea lentsoe","Voice":"Lentsoe"}},

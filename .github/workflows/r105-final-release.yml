@@ -139,6 +139,10 @@ jobs:
                 && grep -q 'Navigace stránek' /tmp/i18n-ui.js \
                 && grep -q 'Hlasová odpověď' /tmp/i18n-ui.js \
                 && grep -q 'Hlas' /tmp/i18n-ui.js \
+                && grep -q 'Takaisin' /tmp/i18n-ui.js \
+                && grep -q 'Sivunavigointi' /tmp/i18n-ui.js \
+                && grep -q 'Äänivastaus' /tmp/i18n-ui.js \
+                && grep -q 'Ääni' /tmp/i18n-ui.js \
                 && grep -q 'Emuva' /tmp/i18n-ui.js \
                 && grep -q 'Ukuzulazula kwamakhasi' /tmp/i18n-ui.js \
                 && grep -q 'Impendulo yezwi' /tmp/i18n-ui.js \

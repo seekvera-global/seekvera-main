@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261118-r125-global-quick-v9';
+const VERSION='20261118-r125-global-quick-v10';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),PACK_VALUES=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -25,6 +25,13 @@ const QUICK={ar:{
 'Understanding your speech…':'Analyse de vos paroles…',
 'Please check the words, then tap Send.':'Vérifiez le texte, puis appuyez sur Envoyer.',
 'Voice recognition is not supported in this browser.':'La reconnaissance vocale n’est pas prise en charge par ce navigateur.'
+},
+// Provisional Finnish quick UI labels; native review remains required.
+fi:{
+'Back':'Takaisin',
+'Page navigation':'Sivunavigointi',
+'Voice reply':'Äänivastaus',
+'Voice':'Ääni'
 },
 // Provisional German quick UI labels; native review remains required.
 de:{
