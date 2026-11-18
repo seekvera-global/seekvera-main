@@ -196,6 +196,7 @@ async function main(){
   {code:'sk',language:'Slovak',labels:{'AI Voice Agent':'Hlasový asistent AI'}},
   {code:'sv',language:'Swedish',labels:{'AI Voice Agent':'AI-röstassistent'}},
   {code:'no',language:'Norwegian',labels:{'AI Voice Agent':'AI-stemmeassistent','Business Monthly':'Månedlig bedriftsplan'}},
+  {code:'sl',language:'Slovenian',labels:{'Back':'Nazaj','Page navigation':'Navigacija po straneh','Voice reply':'Glasovni odgovor','Voice':'Glas'}},
   {code:'af',language:'Afrikaans',labels:{'AI Voice Agent':'KI-stemassistent'}}
  ];
  for(const item of provisionalQuickCases){
