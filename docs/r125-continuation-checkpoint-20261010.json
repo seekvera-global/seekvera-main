@@ -3338,7 +3338,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-18T06:31:36+01:00",
+  "updatedAt": "2026-11-18T06:39:17+01:00",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -9683,7 +9683,7 @@
     "liveAsr": "skipped",
     "physicalMicrophoneSpeakerCertified": false
   },
-  "latestMainCommit": "fd8172e95495e23ae0c8d40aaead0af08a3f5116",
+  "latestMainCommit": "6e96972854ecee8b95ca7fbee9f6ebfcb59cc7eb",
   "latestAutomationPass20261118Turn11": {
     "checkedAt": "2026-11-18T05:31:36Z",
     "sourceReadback": {
@@ -9902,6 +9902,258 @@
       "translationAvailability": "unknown-not-probed",
       "liveGenerationProbes": "skipped-by-policy",
       "latestResumeLogError": "HTTP 503 all_translation_backends_unavailable",
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429"
+      ],
+      "translationRequestsThisPass": 0,
+      "aiQuotaUsedThisPass": 0
+    },
+    "voice": {
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "dynamicPlaceholders": "passed",
+      "headlessAndroidAudio": "passed",
+      "liveASR": "skipped",
+      "physicalMicrophoneSpeakerCertification": false
+    },
+    "checkout": "inactive_pending_merchant_configuration_and_end_to_end_merchant_verification",
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "publishedPacks": 0,
+      "linguisticCertifications": 0,
+      "decision": "NO-GO"
+    }
+  },
+  "latestAutomationPass20261118Turn11Followup": {
+    "checkedAt": "2026-11-18T05:39:17Z",
+    "candidateState": {
+      "structuralPacks": "98/98",
+      "keysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "qualityGate": "97/98",
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "publishedPacks": 0,
+      "linguisticCertifications": 0
+    },
+    "candidateBranch": {
+      "head": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
+      "summaryUpdatedAt": "2026-11-17T22:31:44Z",
+      "candidatePackWritesThisPass": 0,
+      "latestResumeLog": "SPLIT_RETRY/DV HTTP 503; all_translation_backends_unavailable; workers-ai outputs unparseable",
+      "published": false,
+      "linguisticCertification": false
+    },
+    "resumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "triggers": [
+        "workflow_dispatch"
+      ],
+      "schedulePresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestMatchingRun": {
+        "number": 150,
+        "id": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "resume": "skipped",
+        "audit": "success",
+        "candidatePackWrites": 0,
+        "metadataFilesWritten": 2,
+        "translationRequests": 0,
+        "aiQuotaUsed": 0
+      },
+      "currentRevisionRunObserved": false,
+      "activeResumeRuns": 0,
+      "candidateWritesDeferred": true
+    },
+    "greekRepair": {
+      "commit": "6e96972854ecee8b95ca7fbee9f6ebfcb59cc7eb",
+      "filesChanged": 49,
+      "version": "20261118-r125-greek-quick-v6",
+      "translationsSource": "saved el.json candidate values; provisional, not linguistically certified",
+      "labels": {
+        "Back": "Πίσω",
+        "Page navigation": "Πλοήγηση σε σελίδα",
+        "Voice reply": "Απάντηση με φωνή",
+        "Voice": "Φωνή"
+      },
+      "changes": [
+        "Added four Greek labels to the real QUICK map",
+        "Added Greek to the actual QUICK-map quota regression test",
+        "Updated the R125 readiness gate, R105 production checks and R9e live browser assertion",
+        "Refreshed the i18n runtime cache version on all 44 HTML pages"
+      ]
+    },
+    "r125": {
+      "run65": {
+        "id": 44244503712,
+        "conclusion": "failure",
+        "languages": 98,
+        "sections": 27,
+        "applications": 2646,
+        "exactEnglishFindings": 0,
+        "partialFindings": 0,
+        "unresolvedFindings": 0,
+        "dynamicFallback": {
+          "language": "Greek",
+          "requests": 1,
+          "strings": [
+            "Back",
+            "Page navigation",
+            "Voice reply",
+            "Voice"
+          ]
+        },
+        "aiRequests": 0,
+        "providerTranslationRequests": 0,
+        "pollinationsRequests": 0
+      },
+      "run66": {
+        "id": 44245419112,
+        "status": "in_progress",
+        "conclusion": null,
+        "headSha": "6e96972854ecee8b95ca7fbee9f6ebfcb59cc7eb",
+        "readiness": "passed",
+        "syntax": "passed",
+        "quotaGuardAndQuickLabels": "passed",
+        "noTranslateExclusionGuard": "passed",
+        "fullMatrix": "in_progress",
+        "lastUpdatedAt": "2026-11-18T05:36:29Z",
+        "logsAvailable": false
+      }
+    },
+    "productionVerification": {
+      "r105": {
+        "run158": {
+          "id": 44245419110,
+          "conclusion": "success",
+          "workerDeployment": "success",
+          "productionHealth": "R107_DEPLOY_HEALTH_PASS",
+          "aiBinding": true,
+          "centralSafetyGate": "enabled",
+          "failClosed": true,
+          "countryChangeToIceland": "passed",
+          "prohibitedWeapon": "blocked",
+          "internalAssetExclusion": "passed",
+          "liveAiProbes": "skipped-by-policy"
+        },
+        "run157": {
+          "id": 44244622563,
+          "conclusion": "success"
+        },
+        "run156": {
+          "id": 44244503696,
+          "conclusion": "failure",
+          "cause": "shell syntax near unexpected token && in the health-gate script",
+          "fixedBy": "fd8172e95495e23ae0c8d40aaead0af08a3f5116"
+        }
+      },
+      "r9e": {
+        "run73": {
+          "id": 44244503754,
+          "conclusion": "success",
+          "countryProfiles": "248/248",
+          "localizedPages": "44/44",
+          "manualMoroccoPriority": "passed",
+          "manualWorldwidePriority": "passed",
+          "visibleLocales": [
+            "MA/ar",
+            "FR/fr",
+            "IN/hi",
+            "CN/zh"
+          ],
+          "safety": "prohibited weapon blocked",
+          "voiceAndPwaCache": "passed",
+          "liveAiProbes": "skipped-by-policy",
+          "liveASR": "skipped"
+        },
+        "run74": {
+          "id": 44245419256,
+          "conclusion": "success",
+          "countryProfiles": "248/248",
+          "localizedPages": "44/44",
+          "manualMoroccoPriority": "passed",
+          "manualWorldwidePriority": "passed",
+          "visibleLocales": [
+            "MA/ar",
+            "FR/fr",
+            "IN/hi",
+            "CN/zh"
+          ],
+          "safety": "prohibited weapon blocked",
+          "voiceAndPwaCache": "passed",
+          "liveAiProbes": "skipped-by-policy",
+          "liveASR": "skipped",
+          "physicalMicrophoneSpeakerCertified": false
+        }
+      },
+      "safety": {
+        "run40": {
+          "id": 44245419255,
+          "conclusion": "success",
+          "blockedCases": [
+            "weapons_or_explosives",
+            "explicit_sexual_content",
+            "stolen_counterfeit_or_fake_documents",
+            "ownership_or_consent_problem"
+          ],
+          "benignLand": "allowed_pending_human_review",
+          "failClosed": "passed"
+        }
+      },
+      "audio": {
+        "run112": {
+          "id": 44245419087,
+          "conclusion": "success",
+          "assetUpload": "45 modified static assets uploaded",
+          "audioAuthorityUnitTests": "passed",
+          "categoryTranslations": "passed",
+          "voiceAcknowledgement": "passed",
+          "dynamicVoicePlaceholders": "passed",
+          "arabicHomeAnd31Descriptions": "passed",
+          "delayedSyntheticWavHeadlessAndroid": "passed",
+          "productionAssetStep": "skipped",
+          "liveASR": "skipped",
+          "physicalMicrophoneSpeakerCertified": false
+        }
+      },
+      "pages": {
+        "run1770": {
+          "id": 44245416942,
+          "conclusion": "success"
+        }
+      }
+    },
+    "productionPackState": {
+      "productionManifest": {
+        "sourceHash": "b371f2422f8b5416",
+        "sourceCount": 1045,
+        "languageCount": 98
+      },
+      "candidatePacks": {
+        "sourceHash": "6a1126e6a2ce5629",
+        "sourceCount": 1118,
+        "languageCount": 98
+      },
+      "unpublishedKeyDelta": 73,
+      "published": false
+    },
+    "ai": {
+      "binding": true,
+      "chatAvailability": "unknown-not-probed",
+      "translationAvailability": "unknown-not-probed",
+      "liveGenerationProbes": "skipped-by-policy",
+      "latestResumeLog": "HTTP 503 all_translation_backends_unavailable",
       "knownBlockers": [
         "daily_free_ai_limit",
         "Google HTTP429"
