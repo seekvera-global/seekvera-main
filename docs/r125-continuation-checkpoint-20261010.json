@@ -180,7 +180,7 @@
   },
   "remainingChecks": [
     "Complete R125 #97 on i18n QUICK v34; confirm Lao fallback is eliminated and all 98 languages × 27 sections remain free of dynamic translation calls.",
-    "Complete R9e #104 on v34 and confirm all 248 country profiles, 44 localized pages, Morocco/Worldwide priority, language/currency persistence, safety and voice/PWA behavior.",
+    "R9e #104 on v34 passed all 248 country profiles, 44 localized pages, Morocco/Worldwide priority, four visible locale cases, safety and voice/PWA cache; retain live AI and ASR as unverified.",
     "Resolve Divehi's 58 English-overlap findings with qualified native Dhivehi translation/review; do not synthesize or certify unreviewed wording.",
     "Refresh the read-only duplicate-output audit across all 98 candidate packs after later manual repairs; heuristic duplicate screening is not linguistic judgment.",
     "Obtain qualified native review for all 98 candidate packs; publish no partial or unreviewed packs.",
@@ -207,7 +207,7 @@
       "programmaticTests": "passed in R123 #141",
       "browserProfileAudio": "Android browser-profile server-audio playback completed",
       "productionAudioAsset": "skipped",
-      "liveASR": "not-verified",
+      "liveASR": "skipped-by-policy in R9e #104",
       "physicalDeviceCertified": false
     },
     "translation": {
@@ -221,12 +221,13 @@
       "quotaBypassAttempts": 0
     },
     "countryCurrency": {
-      "latestConfirmedRun": 103,
-      "latestConfirmedStatus": "passed on v33; v34 run #104 in progress",
-      "countryProfiles": "248/248 on v33",
-      "localizedPages": "44/44 on v33",
-      "manualMoroccoPriority": "passed on v33",
-      "manualWorldwidePriority": "passed on v33",
+      "latestConfirmedRun": 104,
+      "latestConfirmedStatus": "passed on v34",
+      "countryProfiles": "248/248",
+      "localizedPages": "44/44",
+      "storedCurrencyAndFallback": "passed in R9e live browser audit",
+      "manualMoroccoPriority": "passed",
+      "manualWorldwidePriority": "passed",
       "visibleLocales": [
         "MA/ar",
         "FR/fr",
@@ -11985,9 +11986,22 @@
       "r9e": {
         "run": 104,
         "id": 44396391112,
-        "status": "in_progress",
-        "conclusion": null,
-        "scope": "country, locale, currency, delayed-detect race, all localized pages, AI/voice source assertions"
+        "status": "completed",
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "manualMoroccoPriority": "passed",
+        "manualWorldwidePriority": "passed",
+        "visibleLocales": [
+          "MA/ar",
+          "FR/fr",
+          "IN/hi",
+          "CN/zh"
+        ],
+        "safetyGate": "passed",
+        "voiceAndPwaCache": "passed",
+        "liveAiProbes": "skipped-by-policy",
+        "liveASR": "skipped"
       },
       "r105": {
         "run": 190,
@@ -12058,7 +12072,9 @@
       "quotaBypassAttempts": 0,
       "published": false,
       "linguisticCertification": false,
-      "decision": "NO-GO"
+      "decision": "NO-GO",
+      "r9e": "passed on v34",
+      "r125": "still running; no candidate writes"
     }
   }
 }
