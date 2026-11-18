@@ -115,11 +115,11 @@
     "Production locale manifest has 1,045 keys versus 1,118 candidate-source keys; 73 keys remain unpublished and unreviewed. Do not promote unreviewed candidate packs to close the gap.",
     "Latest resume-latest.log still records HTTP 503 all_translation_backends_unavailable, Dhivehi timeouts and unparseable Workers AI outputs. Historical daily_free_ai_limit and Google HTTP429 remain blockers; no direct translation probe or quota bypass was attempted this pass.",
     "All 98 candidate packs still require qualified linguistic review; none is published or linguistically certified. Duplicate-output screening is heuristic and not a substitute for native review.",
-    "R125 #94 on QUICK v31 completed 98 languages × 27 sections (2,646 applications) and 248 country profiles with zero exact, partial or unresolved visible findings, but one intercepted Tamil dynamic fallback requested Back, Page navigation, Voice reply and Voice. The browser blocked it; zero provider requests were sent. Main v32 adds provisional quota-neutral Tamil labels and a zero-provider regression; R125 #95 is currently running the full matrix.",
+    "R125 #95 on QUICK v32 completed the full 98-pack, 248-country and 98-language × 27-section scan: zero exact/partial/unresolved visible text findings. It still detected one intercepted dynamic Khmer fallback requesting Back, Page navigation, Voice reply and Voice; the provider was not called. Main v33 adds provisional quota-neutral Khmer labels and explicit zero-provider tests. R125 #96 is now running against v33.",
     "R9e #102 on v32 passed all 248 country profiles, 44 localized pages, Morocco/Worldwide priority, MA/ar, FR/fr, IN/hi and CN/zh visible locale cases, safety and voice/PWA cache. Live AI probes and ASR were skipped by policy.",
-    "R105 #188 passed source validation, all 98 locale target names, AI binding, Worker deployment, production health and safety fail-closed. RUN_LIVE_AI_PROBES=false; chat and country-intent model probes were skipped. Current AI Chat availability remains unknown.",
-    "R123 #139 passed programmatic audio/voice tests, category translations, complete voice acknowledgement and dynamic placeholders. Production audio asset/multilingual audio step was skipped; live ASR was not verified; physical microphone/speaker hardware is not certified. An Android browser-profile server-audio playback check passed but is not physical-device certification.",
-    "Safety Smoke #65 passed live Supabase safety API, four prohibited marketplace categories, benign listing pending human review, marketplace fail-closed and repository safety checks. Pages #1880 build and deployment succeeded.",
+    "R105 #189 on v33 passed source, locale-name, quota-boundary, AI binding, Worker deployment and production health checks. RUN_LIVE_AI_PROBES=false; chat and country-intent model probes were skipped, so current user-facing AI generation remains unverified.",
+    "R123 #140 passed programmatic audio-envelope, voice-language, acknowledgement, placeholder and Android browser-profile server-audio playback checks. Production audio asset/multilingual audio step was skipped; no physical microphone/speaker test was performed.",
+    "Safety Smoke #66 passed live Supabase safety API, prohibited content blocks, benign listing pending human review, marketplace fail-closed and repository safety checks. Pages #1883 build and deployment succeeded.",
     "Checkout remains inactive until merchant-account configuration and end-to-end payment, forged-reference rejection and settlement verification.",
     "The current resume workflow is workflow_dispatch only, with run_translations and repair_candidates default false; no schedule exists. Latest matching run #150 is a legacy push run, completed with Resume skipped and audit successful; it wrote two metadata files but no candidate packs. No current workflow_dispatch run or active resume run was found. Candidate writes remain deferred."
   ],
@@ -179,7 +179,7 @@
     }
   },
   "remainingChecks": [
-    "Complete R125 #95 on i18n QUICK v32 and confirm zero dynamic translation fallbacks across all 98 languages and 27 sections; current run is still in the full locale matrix step.",
+    "Complete R125 #96 on i18n QUICK v33; verify that the Khmer fallback is eliminated and all 98 languages × 27 sections remain free of dynamic translation calls. Current run is in progress.",
     "Resolve Divehi's 58 English-overlap findings with qualified native Dhivehi translation/review; do not synthesize or certify unreviewed wording.",
     "Refresh the read-only duplicate-output audit across all 98 candidate packs after later manual repairs; heuristic duplicate screening is not linguistic judgment.",
     "Obtain qualified native review for all 98 candidate packs; publish no partial or unreviewed packs.",
@@ -8962,16 +8962,17 @@
     "decision": "NO-GO"
   },
   "latestAutomationPass20261118": {
-    "checkedAt": "2026-11-18T19:37:53Z",
-    "mainCommit": "27e12fa7ce7a2bd6d07798657bb40a5e247ae307",
+    "checkedAt": "2026-11-18T19:45:50Z",
+    "mainCommit": "ad9930396463a8e5639f4056880989950c7f8684",
     "repairs": [
       "Quota-neutral Tamil quick labels v32",
-      "44 HTML cache references advanced to v32",
+      "Quota-neutral Khmer quick labels v33",
+      "44 HTML cache references advanced to v33",
       "R125/R105/R9e assertions and quota-neutral tests updated"
     ],
     "results": {
       "r105": "success",
-      "r9e": "success",
+      "r9e": "in_progress",
       "r123": "success",
       "safety": "success",
       "pages": "success",
@@ -10053,8 +10054,8 @@
   },
   "latestProductionRuntimeChecks": {
     "r105": {
-      "run": 188,
-      "runId": 44382116559,
+      "run": 189,
+      "runId": 44383491710,
       "status": "completed",
       "conclusion": "success",
       "aiBinding": true,
@@ -10064,13 +10065,14 @@
       "liveAiProbes": "skipped-by-policy"
     },
     "r123": {
-      "run": 139,
-      "runId": 44382116185,
+      "run": 140,
+      "runId": 44383491809,
       "status": "completed",
       "conclusion": "success",
       "programmaticTTS": "passed",
       "voiceAcknowledgement": "passed",
       "dynamicVoicePlaceholders": "passed",
+      "browserProfileAudio": "passed",
       "productionAudioAsset": "skipped",
       "liveASR": "not-verified",
       "physicalMicrophoneSpeakerCertified": false
@@ -10095,19 +10097,30 @@
       "liveAiProbes": "skipped-by-policy",
       "liveASR": "skipped"
     },
+    "r9eCurrent": {
+      "run": 103,
+      "runId": 44383491656,
+      "status": "in_progress"
+    },
     "safety": {
-      "run": 65,
-      "runId": 44382116134,
+      "run": 66,
+      "runId": 44383491663,
       "status": "completed",
       "conclusion": "success"
     },
     "pages": {
-      "run": 1880,
-      "runId": 44382114124,
+      "run": 1883,
+      "runId": 44383488979,
       "status": "completed",
       "conclusion": "success",
       "build": "success",
       "deploy": "success"
+    },
+    "r125": {
+      "run": 96,
+      "runId": 44383491499,
+      "status": "in_progress",
+      "step": "installing Playwright / pending full matrix"
     }
   },
   "latestResumeWorkflowInspection": {
@@ -11843,6 +11856,102 @@
         "runId": 44382116198,
         "status": "in_progress",
         "step": "Verify all locale packs, countries and sections without AI requests",
+        "resultPending": true
+      }
+    },
+    "candidatePackWrites": 0,
+    "candidateMetadataWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false
+  },
+  "latestKhmerQuickRepair20261118": {
+    "checkedAt": "2026-11-18T19:45:50Z",
+    "precedingFailure": {
+      "run": 95,
+      "runId": 44382116198,
+      "conclusion": "failure",
+      "version": "20261118-r125-global-quick-v32",
+      "languages": 98,
+      "countries": 248,
+      "sections": 27,
+      "sectionLanguageApplications": 2646,
+      "exactFindings": 0,
+      "partialFindings": 0,
+      "unresolvedFindings": 0,
+      "dynamicFallback": {
+        "language": "Khmer",
+        "count": 1,
+        "strings": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ],
+        "providerRequestsSent": 0
+      }
+    },
+    "commit": "ad9930396463a8e5639f4056880989950c7f8684",
+    "version": "20261118-r125-global-quick-v33",
+    "change": "Added provisional Khmer Back, Page navigation, Voice reply and Voice labels in QUICK; updated the quota-neutral quick-map and no-provider regression, R125/R105/R9e assertions, and all 44 HTML cache references.",
+    "labels": {
+      "Back": "ត្រឡប់ក្រោយ",
+      "PageNavigation": "ការរុករកទំព័រ",
+      "VoiceReply": "ការឆ្លើយតបជាសំឡេង",
+      "Voice": "សំឡេង"
+    },
+    "candidatePackComparison": {
+      "sourceHash": "6a1126e6a2ce5629",
+      "existingCandidateBack": "ក្រឡាប់",
+      "existingCandidatePageNavigation": "ការណាត់ជួបទំព័រ",
+      "action": "Did not reuse these semantically suspect candidate values; added separate provisional UI labels and left candidate pack untouched."
+    },
+    "linguisticStatus": "provisional; qualified native Khmer review required",
+    "readback": {
+      "htmlPagesUpdated": 44,
+      "htmlCacheRefsV33": 44,
+      "quickMapKhmer": true,
+      "quotaNeutralRegressionCases": 2,
+      "workflowAssertionsUpdated": true
+    },
+    "verification": {
+      "r105": {
+        "run": 189,
+        "runId": 44383491710,
+        "status": "success",
+        "aiBinding": true,
+        "productionHealth": true,
+        "liveAiProbes": "skipped; RUN_LIVE_AI_PROBES=false"
+      },
+      "r123": {
+        "run": 140,
+        "runId": 44383491809,
+        "status": "success",
+        "programmaticVoice": "pass",
+        "browserProfileAudio": "pass",
+        "productionAudioAsset": "skipped",
+        "physicalDeviceCertified": false
+      },
+      "safety": {
+        "run": 66,
+        "runId": 44383491663,
+        "status": "success"
+      },
+      "pages": {
+        "run": 1883,
+        "runId": 44383488979,
+        "status": "success"
+      },
+      "r9e": {
+        "run": 103,
+        "runId": 44383491656,
+        "status": "in_progress"
+      },
+      "r125": {
+        "run": 96,
+        "runId": 44383491499,
+        "status": "in_progress",
         "resultPending": true
       }
     },
