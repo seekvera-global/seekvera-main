@@ -61,10 +61,10 @@ jobs:
               && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/games.html?locale_audit=20261117" -o /tmp/r125-games.html \
               && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/global-ui.js?v=20261117-r125-source-caption-i18n-v2" -o /tmp/r125-global-ui.js \
               && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/games.js?v=20261117-r125-game-title-i18n" -o /tmp/r125-games.js \
-              && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/i18n-ui.js?v=20261118-r125-global-quick-v20" -o /tmp/r125-i18n-ui.js \
+              && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/i18n-ui.js?v=20261118-r125-global-quick-v21" -o /tmp/r125-i18n-ui.js \
               && grep -Fq 'global-ui.js?v=20261117-r125-source-caption-i18n' /tmp/r125-index.html \
               && grep -Fq 'games.js?v=20261117-r125-game-title-i18n' /tmp/r125-games.html \
-              && grep -Fq 'i18n-ui.js?v=20261118-r125-global-quick-v20' /tmp/r125-index.html \
+              && grep -Fq 'i18n-ui.js?v=20261118-r125-global-quick-v21' /tmp/r125-index.html \
               && grep -Fq 'sv-control-caption-label' /tmp/r125-global-ui.js \
               && grep -Fq 'alreadyLocalizedValue' /tmp/r125-i18n-ui.js \
               && grep -Fq "'Sprachantwort'" /tmp/r125-i18n-ui.js \
@@ -194,6 +194,10 @@ jobs:
               && grep -Fq "'Navigimi në faqe'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Përgjigje me zë'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Zëri'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Назад'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Навигација на страна'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Гласен одговор'" /tmp/r125-i18n-ui.js \
+              && grep -Fq "'Глас'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Nazaj'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Navigacija po straneh'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Glasovni odgovor'" /tmp/r125-i18n-ui.js \
