@@ -122,7 +122,8 @@
     "R123 #133 passed programmatic voice validation, category translations, voice acknowledgement, dynamic placeholders, Arabic homepage/31 descriptions and headless Android playback. Production audio asset was skipped, live ASR was not verified, and physical microphone/speaker hardware is not certified.",
     "Safety Smoke #59 passed four prohibited-category blocks and allowed a benign land request only pending human review.",
     "Checkout remains inactive until merchant-account configuration and end-to-end payment, forged-reference rejection and settlement verification.",
-    "The resume workflow is manual workflow_dispatch only, with translation and repair inputs default false. Latest matching run #150 is legacy and completed; no current-revision resume run is active. No candidate files were written in this pass."
+    "The resume workflow is manual workflow_dispatch only, with translation and repair inputs default false. Latest matching run #150 is legacy and completed; no current-revision resume run is active. No candidate files were written in this pass.",
+    "Newly discovered: R105 #181 and #182 ran an unguarded country-change request to /api/ai even with RUN_LIVE_AI_PROBES=false. The Worker route performs AI language detection, intent classification and generation; provider/model and actual quota use were not logged. v28 moves this country-intent probe behind the explicit manual opt-in and adds a static regression test. Do not assume those two CI probes consumed zero quota."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -187,23 +188,24 @@
     "Re-probe AI Chat and translation only through explicitly authorized quota-safe probes; current availability remains unknown and daily_free_ai_limit/Google HTTP429 must not be bypassed.",
     "Keep country/currency behavior green: R9e #96 passed 248 country profiles, 44 localized pages, stored currency, Morocco/Worldwide priority.",
     "Perform physical microphone and audible-speaker tests on Android, iPhone/iPad and desktop; browser/headless TTS is not hardware certification.",
-    "Configure a merchant account and verify checkout, payment confirmation, forged-reference rejection and settlement end-to-end."
+    "Configure a merchant account and verify checkout, payment confirmation, forged-reference rejection and settlement end-to-end.",
+    "Verify R105 #183's new opt-in gate passes: default push runs must skip country-intent and general-chat model probes; any live Workers AI probe requires explicit manual opt-in and may consume the free allocation."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
     "checkedAt": "2026-11-18T15:35:30Z",
     "aiChat": {
-      "currentAvailability": "partial-evidence-only-not-certified",
-      "latestConfirmedProductionRun": 181,
+      "currentAvailability": "unknown-not-certified",
+      "latestConfirmedProductionRun": 182,
       "latestConfirmedConclusion": "success",
       "aiBinding": true,
       "productionHealth": "passed",
       "centralSafetyGate": "enabled",
       "failClosed": true,
-      "liveGenerationProbe": "general English/Arabic chat probes skipped by policy; no full live-chat certification",
-      "countryControlIntentProbe": "R105 #181 passed one change-country-to-Iceland app-control request; provider/model identity not captured",
-      "safetyIntentProbe": "R105 #181 blocked prohibited request before AI generation"
+      "liveGenerationProbe": "general English/Arabic chat probes skipped; however R105 #181 and #182 each executed one unguarded country-action /api/ai request. Worker code runs language detection, intent classification and generation; provider/model and exact usage were not logged. v28 now gates this behind explicit manual opt-in.",
+      "countryControlIntentProbe": "countryAction.code=IS passed in R105 #182, but this was a real AI route and is not evidence of general chat availability",
+      "quotaStatus": "unknown; do not claim zero usage from those CI runs"
     },
     "voiceTranscription": {
       "status": "programmatic voice checks passed in R123 #133: validation, category translations, voice acknowledgement, dynamic placeholders, Arabic homepage/31 descriptions and headless Android playback; production audio asset skipped, live ASR not verified, physical hardware not certified",
@@ -254,7 +256,10 @@
     "quotaBoundary": {
       "noDirectQuotaRequestsThisPass": true,
       "automaticFallbackProviderQuotaUsage": "unknown",
-      "quotaBypassAttempts": 0
+      "quotaBypassAttempts": 0,
+      "ciCountryActionProbeRuns": 2,
+      "ciWorkersAiUsage": "unknown; R105 #181/#182 each called /api/ai for country intent, and the route invokes language detection, intent classification and generation",
+      "translationProviderRequestsThisPass": 0
     }
   },
   "voiceScriptCoverage": {
@@ -9230,53 +9235,54 @@
     "decision": "NO-GO"
   },
   "latestAutomationPass20261118": {
-    "checkedAt": "2026-11-18T15:35:30Z",
-    "mainHeadBeforeRepair": "1f6752b177e89131295023242af1ab88ed9dbc67",
+    "checkedAt": "2026-11-18T15:40:00Z",
+    "mainHeadBeforeRepair": "1fb19a83390c4d55b9ac2c431a788250acf089fd",
     "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
     "candidatePackWrites": 0,
     "candidateMetadataWrites": 0,
     "translationRequests": 0,
-    "aiQuotaUsed": 0,
+    "aiQuotaUsed": "unknown: two R105 country-action probes traversed the AI route; provider/model usage not logged",
     "published": false,
     "linguisticAccuracyCertified": false,
     "productionChecks": {
       "r125": {
-        "run": 89,
-        "id": 44336397650,
-        "conclusion": "failure",
-        "dynamicFallback": "Kyrgyz",
-        "unresolvedDom": 0,
-        "exact": 0,
-        "partial": 0
+        "run": 90,
+        "id": 44337891145,
+        "status": "in_progress",
+        "conclusion": null
       },
       "r9e": {
-        "run": 96,
-        "id": 44336397585,
-        "conclusion": "success"
+        "run": 97,
+        "id": 44337890725,
+        "status": "in_progress",
+        "conclusion": null
       },
       "r105": {
-        "run": 181,
-        "id": 44336397385,
-        "conclusion": "success"
+        "run": 182,
+        "id": 44337890886,
+        "conclusion": "success",
+        "countryActionProbe": "unguarded AI route; quota usage unknown"
       },
       "r123": {
-        "run": 133,
-        "id": 44336397773,
-        "conclusion": "success"
+        "run": 134,
+        "id": 44337890772,
+        "conclusion": "success",
+        "productionAudioAsset": "skipped"
       },
       "safety": {
-        "run": 59,
-        "id": 44336397402,
+        "run": 60,
+        "id": 44337890777,
         "conclusion": "success"
       },
       "pages": {
-        "run": 1868,
-        "id": 44336395440,
+        "run": 1869,
+        "id": 44337885704,
         "conclusion": "success"
       }
     },
     "repair": "v26 fixed Uzbek fallback and confirmed Urdu seller-plan options are translated; v27 adds corrected provisional Kyrgyz QUICK labels because candidate pack values were malformed. Candidate branch untouched.",
-    "decision": "NO-GO"
+    "decision": "NO-GO",
+    "quotaProbeRepair": "v28 gates country-action /api/ai probe behind RUN_LIVE_AI_PROBES manual opt-in and adds tools/test-r105-ai-probe-gate.cjs"
   },
   "latestR125AuditResult20261118": {
     "checkedAt": "2026-11-18",
@@ -10392,18 +10398,18 @@
   },
   "latestProductionRuntimeChecks": {
     "r105": {
-      "run": 181,
-      "runId": 44336397385,
+      "run": 182,
+      "runId": 44337890886,
       "status": "completed",
       "conclusion": "success",
       "aiBinding": true,
       "centralSafetyGate": "enabled",
       "failClosed": true,
       "productionHealth": "passed",
-      "countryControlIntentProbe": "passed once: change country to Iceland; provider/model identity not captured",
-      "safetyIntentProbe": "deterministic rules blocked prohibited request before AI generation",
+      "countryControlIntentProbe": "executed despite RUN_LIVE_AI_PROBES=false; Worker /api/ai path calls detectedLanguage, classifyIntent and ai generation; countryAction.code=IS; provider/model and usage not logged; quota consumption unknown",
+      "safetyIntentProbe": "prohibited gun request was blocked by deterministic rules before language detection/model calls",
       "liveGeneralChatProbes": "skipped-by-policy",
-      "runtimeVersion": "20261118-r125-global-quick-v26"
+      "runtimeVersion": "20261118-r125-global-quick-v27"
     },
     "r123": {
       "run": 133,
