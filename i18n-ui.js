@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261118-r125-multilang-quick-v3';
+const VERSION='20261118-r125-thai-quick-v4';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),PACK_VALUES=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -42,6 +42,10 @@ ja:{
 },
 // Provisional Thai subscription labels; native review remains required.
 th:{
+'Back':'กลับ',
+'Page navigation':'การนำทางหน้าเว็บ',
+'Voice reply':'การตอบกลับด้วยเสียง',
+'Voice':'เสียง',
 'Business Yearly':'แพ็กเกจธุรกิจรายปี',
 'Business Monthly':'แพ็กเกจธุรกิจรายเดือน'
 },
