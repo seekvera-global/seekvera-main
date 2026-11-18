@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261118-r125-global-quick-v26';
+const VERSION='20261118-r125-global-quick-v27';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),PACK_VALUES=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -371,6 +371,13 @@ kk:{
 'Page navigation':'Бет навигациясы',
 'Voice reply':'Дыбыстық жауап',
 'Voice':'Дыбыс'
+},
+// Provisional Kyrgyz quick UI labels; existing candidate values for these four labels were malformed, so these are conservative local UI wording and require native review.
+ky:{
+'Back':'Артка',
+'Page navigation':'Барак навигациясы',
+'Voice reply':'Үн менен жооп',
+'Voice':'Үн'
 },
 // Provisional Uzbek quick UI labels sourced from the existing candidate pack; native review remains required.
 uz:{

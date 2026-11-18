@@ -89,6 +89,7 @@ async function main(){
   {code:'sq',language:'Albanian',labels:{'Back':'Kthehu','Page navigation':'Navigimi në faqe','Voice reply':'Përgjigje me zë','Voice':'Zëri'}},
   {code:'mk',language:'Macedonian',labels:{'Back':'Назад','Page navigation':'Навигација на страна','Voice reply':'Гласен одговор','Voice':'Глас'}},
   {code:'ka',language:'Georgian',labels:{'Back':'უკან','Page navigation':'გვერდის ნავიგაცია','Voice reply':'ხმის პასუხი','Voice':'ხმა'}},
+  {code:'ky',language:'Kyrgyz',labels:{'Back':'Артка','Page navigation':'Барак навигациясы','Voice reply':'Үн менен жооп','Voice':'Үн'}},
   {code:'uz',language:'Uzbek',labels:{'Back':'Orqaga','Page navigation':'Sahifa navigatsiyasi','Voice reply':'Ovoz javobi','Voice':'Ovoz'}},
   {code:'hy',language:'Armenian',labels:{'Back':'Վերադարձ','Page navigation':'Էջի նավիգացիա','Voice reply':'Ձայնային պատասխան','Voice':'Ձայն'}}
  ];

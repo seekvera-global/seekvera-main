@@ -112,17 +112,17 @@
   "linguisticAccuracyCertified": false,
   "blockedBy": [
     "Candidate branch contains 98 structurally complete packs with 1,118 keys and matching sourceHash; 97/98 pass the saved quality gate. Divehi (dv) remains blocked by 58 English-overlap findings requiring qualified native Dhivehi review.",
-    "Production locale manifest has 1,045 keys versus 1,118 candidate-source keys; 73 keys remain unpublished and unreviewed. Do not promote candidate packs to close this gap.",
+    "Production locale manifest has 1,045 keys versus 1,118 candidate-source keys; 73 keys remain unpublished and unreviewed. These include navigation/voice controls and new game descriptions; do not promote unreviewed candidate packs to close the gap.",
     "The current resume log reports Dhivehi retries timing out and HTTP 503 all_translation_backends_unavailable from three Workers AI backends. Historical daily_free_ai_limit and Google HTTP429 remain blockers; no quota probes or bypasses were attempted.",
-    "All 98 candidate packs still require qualified linguistic review; none is published or linguistically certified.",
-    "R125 #88 on v25 completed with failure after checking 98 languages × 27 sections (2,646 applications) and 248 country profiles: exact/partial static findings were zero, but one intercepted Uzbek dynamic fallback request remained and one Urdu seller-plan DOM match was unresolved. No external translation request was sent.",
-    "Main v26 repair adds deterministic Uzbek QUICK labels and adds Urdu seller-plan select/option diagnostics to R125; native review remains required for provisional labels. R125 #89 must verify the result.",
-    "R9e #95 passed 248/248 country profiles, 44/44 localized pages, Morocco and Worldwide manual priority, four visible locale samples, currency stability, safety and voice/PWA cache checks. Live AI probes and live ASR were skipped by policy.",
-    "R105 #180 passed production health, AI binding, central safety gate and fail-closed checks. One country-change intent probe passed, but provider/model identity was not captured; general English/Arabic chat probes were skipped, so live AI Chat availability remains unknown.",
-    "R123 #132 passed programmatic voice validation, category translations, voice acknowledgement, dynamic placeholders, Arabic homepage/31 descriptions and headless Android playback. Production audio asset was skipped, live ASR was not verified, and physical microphone/speaker hardware is not certified.",
-    "Safety Smoke #58 passed four prohibited-category blocks and allowed a benign land request only pending human review.",
+    "All 98 candidate packs still require qualified linguistic review; none is published or linguistically certified. The 17-language duplicate screen is heuristic and still needs native-language judgment.",
+    "R125 #89 on v26 completed with failure after 98 languages × 27 sections (2,646 applications) and 248 country profiles: exact/partial/unresolved findings were all zero; the Urdu seller-plan options were visibly translated, but one intercepted Kyrgyz dynamic fallback remained. No external translation request was sent.",
+    "The v27 repair adds quota-neutral Kyrgyz QUICK labels. Existing ky.json candidate values for these four labels were malformed, so conservative UI wording was used and explicitly marked for native review.",
+    "R9e #96 passed 248/248 country profiles, 44/44 localized pages, Morocco and Worldwide manual priority, four visible locale samples, currency stability, safety and voice/PWA cache checks. Live AI probes and live ASR were skipped by policy.",
+    "R105 #181 passed production health, AI binding, central safety gate and fail-closed checks. One country-change intent probe passed, but provider/model identity was not captured; general English/Arabic chat probes were skipped, so live AI Chat availability remains unknown.",
+    "R123 #133 passed programmatic voice validation, category translations, voice acknowledgement, dynamic placeholders, Arabic homepage/31 descriptions and headless Android playback. Production audio asset was skipped, live ASR was not verified, and physical microphone/speaker hardware is not certified.",
+    "Safety Smoke #59 passed four prohibited-category blocks and allowed a benign land request only pending human review.",
     "Checkout remains inactive until merchant-account configuration and end-to-end payment, forged-reference rejection and settlement verification.",
-    "The resume workflow is manual workflow_dispatch only, with translation and repair inputs default false. Latest matching run #150 is legacy and completed; no active or queued Actions runs were observed. No candidate files were written in this pass."
+    "The resume workflow is manual workflow_dispatch only, with translation and repair inputs default false. Latest matching run #150 is legacy and completed; no current-revision resume run is active. No candidate files were written in this pass."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -180,37 +180,37 @@
     }
   },
   "remainingChecks": [
-    "Complete R125 #89 on v26 and confirm zero dynamic translation fallbacks plus resolve the Urdu seller-plan DOM diagnostic; do not suppress unresolved visible text without evidence.",
+    "Complete R125 #90 on v27 and confirm zero dynamic translation fallbacks across all 98 languages and 27 sections.",
     "Resolve Divehi's 58 English-overlap findings with qualified native Dhivehi translation/review; do not synthesize or certify unreviewed wording.",
-    "Run the full candidate quality/script/duplicate audit after quota-neutral repairs; structural PASS alone is not quality certification.",
+    "Refresh the read-only duplicate-output audit across all 98 candidate packs after later manual repairs; current 17-language/38-group screen is heuristic and not linguistic judgment.",
     "Obtain qualified native review for all 98 candidate packs; publish no partial or unreviewed packs.",
     "Re-probe AI Chat and translation only through explicitly authorized quota-safe probes; current availability remains unknown and daily_free_ai_limit/Google HTTP429 must not be bypassed.",
-    "Keep country/currency behavior green: R9e #95 passed 248 country profiles, 44 localized pages, stored currency, Morocco/Worldwide priority.",
+    "Keep country/currency behavior green: R9e #96 passed 248 country profiles, 44 localized pages, stored currency, Morocco/Worldwide priority.",
     "Perform physical microphone and audible-speaker tests on Android, iPhone/iPad and desktop; browser/headless TTS is not hardware certification.",
     "Configure a merchant account and verify checkout, payment confirmation, forged-reference rejection and settlement end-to-end."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-18T15:18:40Z",
+    "checkedAt": "2026-11-18T15:35:30Z",
     "aiChat": {
       "currentAvailability": "partial-evidence-only-not-certified",
-      "latestConfirmedProductionRun": 180,
+      "latestConfirmedProductionRun": 181,
       "latestConfirmedConclusion": "success",
       "aiBinding": true,
       "productionHealth": "passed",
       "centralSafetyGate": "enabled",
       "failClosed": true,
       "liveGenerationProbe": "general English/Arabic chat probes skipped by policy; no full live-chat certification",
-      "countryControlIntentProbe": "R105 #180 passed one change-country-to-Iceland app-control request; provider/model identity not captured",
-      "safetyIntentProbe": "R105 #180 blocked prohibited request before AI generation"
+      "countryControlIntentProbe": "R105 #181 passed one change-country-to-Iceland app-control request; provider/model identity not captured",
+      "safetyIntentProbe": "R105 #181 blocked prohibited request before AI generation"
     },
     "voiceTranscription": {
-      "status": "programmatic voice checks passed in R123 #132: validation, category translations, voice acknowledgement, dynamic placeholders, Arabic homepage/31 descriptions and headless Android playback; production audio asset skipped, live ASR not verified, physical hardware not certified",
+      "status": "programmatic voice checks passed in R123 #133: validation, category translations, voice acknowledgement, dynamic placeholders, Arabic homepage/31 descriptions and headless Android playback; production audio asset skipped, live ASR not verified, physical hardware not certified",
       "programmaticTests": "passed",
       "liveASR": "not-verified",
       "physicalDeviceCertified": false,
-      "currentRun": 132,
+      "currentRun": 133,
       "currentStatus": "programmatic-pass-production-asset-skipped"
     },
     "translation": {
@@ -224,7 +224,7 @@
       "quotaBypassAttempts": 0
     },
     "countryCurrency": {
-      "latestConfirmedRun": 95,
+      "latestConfirmedRun": 96,
       "latestConfirmedStatus": "passed",
       "countryProfiles": "248/248",
       "localizedPages": "44/44",
@@ -240,7 +240,7 @@
       "liveAiProbes": "skipped-by-policy"
     },
     "safety": {
-      "latestRun": 58,
+      "latestRun": 59,
       "status": "success",
       "blockedCategories": [
         "weapons_or_explosives",
@@ -282,7 +282,7 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-11-18T15:18:40Z",
+    "checkedAt": "2026-11-18T15:35:30Z",
     "candidateCommit": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
     "completedCount": 97,
     "remainingCount": 1,
@@ -293,7 +293,7 @@
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false,
-    "note": "Candidate summary and resume-latest.log were read from work/r125-locale-candidates-20261008 and left unchanged. Branch head remains f7cdbba. Main resume workflow latest matching run #150 is legacy; no active or queued runs. No candidate pack writes, translation requests, quota use, publication or linguistic certification in this pass.",
+    "note": "Candidate summary and resume-latest.log were read from work/r125-locale-candidates-20261008 and left unchanged. Branch head remains f7cdbba. No candidate pack writes, translation requests, quota use, publication or linguistic certification in this pass.",
     "quotaStatusCurrent": "unknown-not-probed",
     "knownDailyFreeAiLimitBlocker": true,
     "repairBatch20261114": {
@@ -9230,8 +9230,8 @@
     "decision": "NO-GO"
   },
   "latestAutomationPass20261118": {
-    "checkedAt": "2026-11-18T15:18:40Z",
-    "mainHeadBeforeRepair": "0749c6ea283b45b2bd784700889e74a9667e7569",
+    "checkedAt": "2026-11-18T15:35:30Z",
+    "mainHeadBeforeRepair": "1f6752b177e89131295023242af1ab88ed9dbc67",
     "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
     "candidatePackWrites": 0,
     "candidateMetadataWrites": 0,
@@ -9241,39 +9241,41 @@
     "linguisticAccuracyCertified": false,
     "productionChecks": {
       "r125": {
-        "run": 88,
-        "id": 44332952014,
+        "run": 89,
+        "id": 44336397650,
         "conclusion": "failure",
-        "dynamicFallback": "Uzbek",
-        "unresolvedDom": "Urdu seller-plans Business Monthly/Yearly"
+        "dynamicFallback": "Kyrgyz",
+        "unresolvedDom": 0,
+        "exact": 0,
+        "partial": 0
       },
       "r9e": {
-        "run": 95,
-        "id": 44332952073,
+        "run": 96,
+        "id": 44336397585,
         "conclusion": "success"
       },
       "r105": {
-        "run": 180,
-        "id": 44332952421,
+        "run": 181,
+        "id": 44336397385,
         "conclusion": "success"
       },
       "r123": {
-        "run": 132,
-        "id": 44332951985,
+        "run": 133,
+        "id": 44336397773,
         "conclusion": "success"
       },
       "safety": {
-        "run": 58,
-        "id": 44332952177,
+        "run": 59,
+        "id": 44336397402,
         "conclusion": "success"
       },
       "pages": {
-        "run": 1867,
-        "id": 44333444948,
+        "run": 1868,
+        "id": 44336395440,
         "conclusion": "success"
       }
     },
-    "repair": "Prepared v26 Uzbek QUICK labels, quota-neutral regression, cache-busted 44 localized HTML pages and Urdu seller-plan DOM diagnostics. Candidate branch untouched.",
+    "repair": "v26 fixed Uzbek fallback and confirmed Urdu seller-plan options are translated; v27 adds corrected provisional Kyrgyz QUICK labels because candidate pack values were malformed. Candidate branch untouched.",
     "decision": "NO-GO"
   },
   "latestR125AuditResult20261118": {
@@ -10228,11 +10230,11 @@
   },
   "latestProductionSectionAudit": {
     "previousRun": {
-      "run": 87,
-      "runId": 44331808281,
+      "run": 88,
+      "runId": 44332952014,
       "status": "completed",
       "conclusion": "failure",
-      "runtimeVersion": "20261118-r125-global-quick-v24",
+      "runtimeVersion": "20261118-r125-global-quick-v25",
       "matrix": {
         "languages": 98,
         "sections": 27,
@@ -10240,10 +10242,10 @@
         "countryProfiles": 248,
         "exact": 0,
         "partial": 0,
-        "unresolved": 0
+        "unresolved": 1
       },
       "dynamicFallback": {
-        "language": "Kazakh",
+        "language": "Uzbek",
         "requests": 1,
         "strings": [
           "Back",
@@ -10251,29 +10253,32 @@
           "Voice reply",
           "Voice"
         ]
-      }
+      },
+      "unresolvedLanguages": [
+        "ur"
+      ]
     },
     "repair": {
-      "version": "20261118-r125-global-quick-v25",
-      "commit": "a73377b185a8ada5e43ff385d21c54e608d737c4",
-      "runtimeCommit": "a73377b185a8ada5e43ff385d21c54e608d737c4",
+      "version": "20261118-r125-global-quick-v26",
+      "commit": "1f6752b177e89131295023242af1ab88ed9dbc67",
+      "runtimeCommit": "1f6752b177e89131295023242af1ab88ed9dbc67",
       "htmlPagesUpdated": 44,
       "labels": {
-        "Back": "Артқа",
-        "PageNavigation": "Бет навигациясы",
-        "VoiceReply": "Дыбыстық жауап",
-        "Voice": "Дыбыс"
+        "Back": "Orqaga",
+        "PageNavigation": "Sahifa navigatsiyasi",
+        "VoiceReply": "Ovoz javobi",
+        "Voice": "Ovoz"
       },
-      "source": "Existing kk.json candidate values; provisional UI runtime labels only; native Kazakh review remains required."
+      "source": "Existing uz.json values with a small orthographic normalization; provisional UI labels only; native Uzbek review remains required."
     },
     "currentRun": {
-      "run": 88,
-      "runId": 44332952014,
+      "run": 89,
+      "runId": 44336397650,
       "workflow": ".github/workflows/r125-static-locale-section-audit.yml",
       "status": "completed",
       "conclusion": "failure",
-      "headSha": "a73377b185a8ada5e43ff385d21c54e608d737c4",
-      "runtimeVersion": "20261118-r125-global-quick-v25",
+      "headSha": "1f6752b177e89131295023242af1ab88ed9dbc67",
+      "runtimeVersion": "20261118-r125-global-quick-v26",
       "preAuditSteps": {
         "checkout": "success",
         "nodeSetup": "success",
@@ -10296,36 +10301,35 @@
         "emptyValues": 0,
         "exactFindingCombinations": 0,
         "partialFindingCombinations": 0,
-        "unresolvedFindingCombinations": 1,
-        "unresolvedLanguages": [
-          "ur"
-        ]
+        "unresolvedFindingCombinations": 0,
+        "unresolvedLanguages": []
       },
-      "unresolvedDetails": [
-        {
-          "path": "/seller-plans.html",
-          "language": "ur",
-          "leaks": [
-            "Business Yearly",
-            "Business Monthly"
-          ],
-          "runtime": {
-            "language": "ur",
-            "readyLanguage": "ur",
-            "runtimeVersion": "20261118-r125-global-quick-v25",
-            "packReady": true
+      "urduSellerPlanDiagnostic": {
+        "language": "ur",
+        "runtimeVersion": "20261118-r125-global-quick-v26",
+        "packReady": true,
+        "expectedMonthly": "ماہانہ کاروباری منصوبہ",
+        "expectedYearly": "سالانہ کاروباری منصوبہ",
+        "selectExists": true,
+        "selectRectCount": 1,
+        "selectDisplay": "inline-block",
+        "options": [
+          {
+            "text": "ماہانہ کاروباری منصوبہ",
+            "value": "business_monthly",
+            "selected": true
           },
-          "evidence": {
-            "nodes": [],
-            "options": [],
-            "elements": [],
-            "excluded": []
+          {
+            "text": "سالانہ کاروباری منصوبہ",
+            "value": "business_yearly",
+            "selected": false
           }
-        }
-      ],
+        ],
+        "result": "visible options are translated; previous unresolved report was an evidence gap in the inspector, not a live English option"
+      },
       "dynamicFallback": {
         "requests": 1,
-        "language": "Uzbek",
+        "language": "Kyrgyz",
         "strings": [
           "Back",
           "Page navigation",
@@ -10338,37 +10342,58 @@
         "translation": 1,
         "pollinations": 0
       },
-      "conclusionReason": "All 98 packs, 248 country profiles, homepage and 27 sections passed static key/structure checks; one intercepted Uzbek dynamic fallback and one unresolved Urdu seller-plan DOM match remain. No AI or translation provider requests were sent.",
-      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44332952014"
+      "excludedOnlyExamples": [
+        {
+          "language": "Zulu",
+          "phrase": "AI Deal Agent",
+          "reason": "data-no-translate"
+        },
+        {
+          "language": "Kalaallisut",
+          "phrase": "AI Deal Agent",
+          "reason": "data-no-translate"
+        },
+        {
+          "language": "Basque",
+          "phrase": "AI Deal Agent",
+          "reason": "data-no-translate"
+        },
+        {
+          "language": "Luxembourgish",
+          "phrase": "AI Deal Agent",
+          "reason": "data-no-translate"
+        }
+      ],
+      "conclusionReason": "All 98 packs, 248 country profiles, homepage and 27 sections passed static key/structure checks with zero exact, partial or unresolved visible findings. One intercepted Kyrgyz dynamic fallback remains; no AI or translation provider request was sent.",
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44336397650"
     },
     "nextRepair": {
-      "version": "20261118-r125-global-quick-v26",
+      "version": "20261118-r125-global-quick-v27",
       "labels": {
-        "Back": "Orqaga",
-        "PageNavigation": "Sahifa navigatsiyasi",
-        "VoiceReply": "Ovoz javobi",
-        "Voice": "Ovoz"
+        "Back": "Артка",
+        "PageNavigation": "Барак навигациясы",
+        "VoiceReply": "Үн менен жооп",
+        "Voice": "Үн"
       },
-      "source": "Existing uz.json candidate values; provisional runtime QUICK labels only; native Uzbek review remains required.",
+      "source": "Conservative Kyrgyz UI wording; candidate pack values for these four labels were malformed and were not copied; native review remains required.",
       "htmlPagesUpdated": 44,
       "codeFilesUpdated": [
         "i18n-ui.js",
-        "tools/test-ui-translation-quota-session-guard.cjs",
-        "tools/r125_static_locale_section_audit.mjs"
+        "tools/test-ui-translation-quota-session-guard.cjs"
       ],
       "workflowsUpdated": [
         ".github/workflows/r125-static-locale-section-audit.yml",
         ".github/workflows/r105-final-release.yml",
         ".github/workflows/final-browser-audit-r9.yml"
       ],
-      "regression": "QUICK.uz exact-map and zero-provider-call case; Urdu seller-plan select diagnostics added without weakening visible-text assertions."
+      "regression": "QUICK.ky exact-map and zero-provider-call case; R125 #90 must verify all 98 × 27 combinations."
     },
     "scope": "No AI or translation provider requests; no candidate pack writes."
   },
   "latestProductionRuntimeChecks": {
     "r105": {
-      "run": 180,
-      "runId": 44332952421,
+      "run": 181,
+      "runId": 44336397385,
       "status": "completed",
       "conclusion": "success",
       "aiBinding": true,
@@ -10378,11 +10403,11 @@
       "countryControlIntentProbe": "passed once: change country to Iceland; provider/model identity not captured",
       "safetyIntentProbe": "deterministic rules blocked prohibited request before AI generation",
       "liveGeneralChatProbes": "skipped-by-policy",
-      "runtimeVersion": "20261118-r125-global-quick-v25"
+      "runtimeVersion": "20261118-r125-global-quick-v26"
     },
     "r123": {
-      "run": 132,
-      "runId": 44332951985,
+      "run": 133,
+      "runId": 44336397773,
       "status": "completed",
       "conclusion": "success",
       "programmaticVoiceValidation": "passed",
@@ -10396,8 +10421,8 @@
       "physicalMicrophoneSpeakerCertified": false
     },
     "r9e": {
-      "run": 95,
-      "runId": 44332952073,
+      "run": 96,
+      "runId": 44336397585,
       "status": "completed",
       "conclusion": "success",
       "countryProfiles": "248/248",
@@ -10417,8 +10442,8 @@
       "liveASR": "skipped-by-policy"
     },
     "safety": {
-      "run": 58,
-      "runId": 44332952177,
+      "run": 59,
+      "runId": 44336397402,
       "status": "completed",
       "conclusion": "success",
       "blockedCategories": [
@@ -10430,15 +10455,15 @@
       "benignLand": "allowed_pending_human_review"
     },
     "pages": {
-      "run": 1867,
-      "runId": 44333444948,
+      "run": 1868,
+      "runId": 44336395440,
       "status": "completed",
       "conclusion": "success",
-      "headSha": "0749c6ea283b45b2bd784700889e74a9667e7569"
+      "headSha": "1f6752b177e89131295023242af1ab88ed9dbc67"
     }
   },
   "latestResumeWorkflowInspection": {
-    "checkedAt": "2026-11-18T15:18:40Z",
+    "checkedAt": "2026-11-18T15:35:30Z",
     "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
     "path": ".github/workflows/r125-hourly-candidate-resume.yml",
     "trigger": "workflow_dispatch only",
@@ -10480,7 +10505,7 @@
     "candidateWritesDeferred": true,
     "candidatePackWritesInLatestRun": 0,
     "translationRequestsInLatestRun": 0,
-    "note": "Main resume workflow was read directly. The latest matching run is legacy #150, completed with Resume skipped and audit passed. A fresh repository-wide Actions query returned zero in-progress and zero queued runs. No current-revision resume run was found; candidate writes remain deferred."
+    "note": "Main resume workflow was read directly. The latest matching run is legacy #150, completed with Resume skipped and audit passed. The current workflow is manual only; no current-revision resume run was found. No candidate writes were made."
   },
   "latestQuickFallbackRepair": {
     "checkedAt": "2026-11-18T09:45:51Z",
