@@ -9319,7 +9319,8 @@
       "candidatePackWrites": 0,
       "metadataFilesWritten": 2,
       "activeResumeRuns": 0,
-      "note": "Run #150 was on a legacy workflow revision; current Main workflow contains the actual resume build step behind explicit run_translations=true."
+      "note": "Run #150 was on a legacy workflow revision; current Main workflow contains the actual resume build step behind explicit run_translations=true.",
+      "candidateWritesDeferredWhileActive": false
     },
     "candidateState": {
       "structuralPacks": 98,
@@ -9388,7 +9389,9 @@
     "checkout": "inactive pending merchant configuration and end-to-end payment/settlement verification",
     "productionCandidateKeyDelta": 73,
     "decision": "NO-GO",
-    "candidateWritesDeferredWhileResumeWorkflowActive": true
+    "candidateWritesDeferredWhileResumeWorkflowActive": false,
+    "candidateWritesThisPass": 0,
+    "note": "No candidate packs were changed. The latest matching resume run #150 is completed, and no active resume run was observed; candidate pack edits remain withheld because Divehi requires qualified native review and the translation backend/quota blockers are unresolved."
   },
   "latestR125AuditResult20261118": {
     "checkedAt": "2026-11-18",
