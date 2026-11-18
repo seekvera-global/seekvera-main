@@ -211,7 +211,7 @@ jobs:
               assert(resp.ok(),`${f} HTTP ${resp.status()}`);
               const html=await resp.text();
               assert(html.includes('global-ui.js?v='),`${f} missing global runtime`);
-              assert(html.includes('i18n-ui.js?v=20261118-r125-global-quick-v15'),`${f} missing final R9e i18n runtime`);
+              assert(html.includes('i18n-ui.js?v=20261118-r125-global-quick-v16'),`${f} missing final R9e i18n runtime`);
               assert(html.includes('voice-ai.js?v='),`${f} missing voice runtime`);
             }
             console.log('ALL LOCALIZED PAGES PASS:',pages.length);
@@ -283,7 +283,7 @@ jobs:
             const voice=await (await fetch(BASE+'/voice-ai.js?v=20261010-r127-voice-script-coverage',{cache:'no-store'})).text();
             assert(voice.includes('VOICE_SILENCE_MS=1800'),'current voice silence must be 1800ms');
             assert(voice.includes('Android|iPhone|iPad|iPod'),'mobile recorder branch missing');
-            const i18n=await (await fetch(BASE+'/i18n-ui.js?v=20261118-r125-global-quick-v15',{cache:'no-store'})).text();
+            const i18n=await (await fetch(BASE+'/i18n-ui.js?v=20261118-r125-global-quick-v16',{cache:'no-store'})).text();
             assert(i18n.includes("'Quay lại'") && i18n.includes("'Điều hướng trang'") && i18n.includes("'Trả lời bằng giọng nói'") && i18n.includes("'Giọng nói'"),'Vietnamese quick labels missing from live i18n runtime');
             assert(i18n.includes("'Indietro'") && i18n.includes("'Navigazione tra le pagine'") && i18n.includes("'Risposta vocale'") && i18n.includes("'Voce'"),'Italian quick labels missing from live i18n runtime');
             assert(i18n.includes("'Rudi nyuma'") && i18n.includes("'Urambazaji wa kurasa'") && i18n.includes("'Jibu la sauti'") && i18n.includes("'Sauti'"),'Swahili quick labels missing from live i18n runtime');
@@ -305,7 +305,8 @@ jobs:
             assert(i18n.includes("'Tillbaka'") && i18n.includes("'Sidnavigering'") && i18n.includes("'Röstsvar'") && i18n.includes("'Röst'"),'Swedish quick labels missing from live i18n runtime');
             assert(i18n.includes("'Tilbake'") && i18n.includes("'Sidenavigasjon'") && i18n.includes("'Talesvar'") && i18n.includes("'Stemme'"),'Norwegian quick labels missing from live i18n runtime');
             assert(i18n.includes("'Terug'") && i18n.includes("'Bladsynavigasie'") && i18n.includes("'Stemantwoord'") && i18n.includes("'Stem'"),'Afrikaans quick labels missing from live i18n runtime');
-            assert(i18n.includes("const VERSION='20261118-r125-global-quick-v15'"),'current i18n version missing live');
+            assert(i18n.includes("'Atpakaļ'") && i18n.includes("'Lapu navigācija'") && i18n.includes("'Balss atbilde'") && i18n.includes("'Balss'"),'Latvian quick labels missing from live i18n runtime');
+            assert(i18n.includes("const VERSION='20261118-r125-global-quick-v16'"),'current i18n version missing live');
             assert(i18n.includes('characterData:true'),'translation persistence observer missing live');
             assert(i18n.includes("'Popular categories':'الأقسام الشائعة'"),'offline Arabic Popular categories fallback missing live');
             assert(i18n.includes("'Flights':'الرحلات الجوية'"),'offline Arabic Flights fallback missing live');
