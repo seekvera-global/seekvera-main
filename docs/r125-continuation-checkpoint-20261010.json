@@ -187,7 +187,7 @@
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-18T00:56:46Z",
+    "checkedAt": "2026-11-18T00:57:02Z",
     "aiChat": {
       "checkedAt": "2026-11-18T00:54:13Z",
       "currentAvailability": "unknown-not-probed",
@@ -246,6 +246,30 @@
       "lateQuotaAfterTimeoutRegression": "passed",
       "crossModel429Regression": "passed",
       "nestedAggregateErrorRegression": "passed"
+    },
+    "countryCurrency": {
+      "checkedAt": "2026-11-18T00:57:02Z",
+      "run": 44211512345,
+      "status": "browser-audit-passed",
+      "countryProfiles": "248/248 selected and verified one-by-one",
+      "currencyState": "selected and stored currency matched for each profile",
+      "racePriority": "Morocco remains MA/ar/MAD after delayed US auto-detect",
+      "worldwidePriority": "passed",
+      "visibleLocales": [
+        "MA/ar",
+        "FR/fr",
+        "IN/hi",
+        "CN/zh"
+      ],
+      "localizedPages": "44/44 passed",
+      "scope": "Browser country/currency/profile checks and 44 localized pages; not all 98 languages × all product sections linguistic certification."
+    },
+    "safety": {
+      "checkedAt": "2026-11-18T00:57:00Z",
+      "run": 44211512345,
+      "prohibitedWeapon": "blocked",
+      "liveAiProbes": "skipped-by-policy",
+      "scope": "Live browser safety smoke probe; not full threat-model certification."
     }
   },
   "voiceScriptCoverage": {
@@ -2958,7 +2982,7 @@
     "validation": "Read-back verified; provisional manual Hausa UI terms; native review required."
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-18T00:56:46Z",
+    "checkedAt": "2026-11-18T00:57:02Z",
     "filesRead": [
       "main docs/r125-continuation-checkpoint-20261010.json",
       "candidate docs/locale-candidates-20261008/resume-summary.json",
@@ -2999,9 +3023,24 @@
       "latestR9e": {
         "run": 65,
         "id": 44211512345,
-        "status": "in_progress",
-        "conclusion": null,
-        "scope": "Live browser country/currency and locale checks; not yet complete at checkpoint update."
+        "status": "completed",
+        "conclusion": "success",
+        "countryProfiles": 248,
+        "currencyState": "selected and stored currency matched",
+        "manualCountryPriority": "MA/ar/MAD survives delayed US auto-detect",
+        "worldwidePriority": "passed",
+        "visibleLocales": [
+          "MA/ar",
+          "FR/fr",
+          "IN/hi",
+          "CN/zh"
+        ],
+        "localizedPages": 44,
+        "safety": "prohibited weapon sale blocked",
+        "voiceAndPwaCache": "passed",
+        "liveAiProbes": "skipped-by-policy",
+        "liveAsr": "skipped",
+        "physicalAudio": "not-certified"
       },
       "latestR125StaticAudit": {
         "run": 53,
@@ -3117,6 +3156,19 @@
       "published": false,
       "linguisticCertification": false,
       "decision": "NO-GO"
+    },
+    "production": {
+      "countryCurrencyRun": 44211512345,
+      "countryProfiles": 248,
+      "localizedPages": 44,
+      "selectedStoredCurrency": "passed",
+      "moroccoRacePriority": "passed",
+      "worldwidePriority": "passed",
+      "prohibitedWeapon": "blocked",
+      "liveAiProbes": "skipped-by-policy",
+      "liveASR": "skipped",
+      "physicalAudio": "pending",
+      "checkout": "inactive"
     }
   },
   "latestQuotaNeutralManualBatch": {
