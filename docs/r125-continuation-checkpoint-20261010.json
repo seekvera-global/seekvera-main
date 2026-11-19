@@ -144,7 +144,8 @@
     "R125 #137 (2026-11-19, Main 92f948f) completed 98 languages × 27 sections (2,646 applications) and 248 country profiles with zero visible exact/partial/unresolved English findings, but failed the dynamic-fallback gate: 634 browser-intercepted requests across 97 languages and 80 unique strings on /games and /seller-plans. The audit intercepted all requests locally; provider/AI/Pollinations requests and quota used were zero.",
     "R125 #137's 80 unique fallback strings split into 60 game categories/descriptions already present only in unpublished candidate source (9 categories, 51 descriptions) and 20 seller-plan strings absent from candidate source. Do not mark these as no-translate or publish unreviewed candidate packs.",
     "The seller-plans load-once repair reduced fallback request count from 673 in R125 #136 to 634 in #137 (39 fewer, 5.8%), while all 80 unique strings remain. The remaining failure is genuine missing static localization, not a visible-English leak or provider outage in this audit.",
-    "Latest matching candidate-resume workflow run remains legacy #150 (completed; resume skipped; zero candidate pack writes). Current Main workflow is manual-only, not hourly scheduled; no active candidate-resume run or current-revision run was found. Candidate branch head remains f7cdbba43212f7062d499fae7027c94f4d1f02a2."
+    "Latest matching candidate-resume workflow run remains legacy #150 (completed; resume skipped; zero candidate pack writes). Current Main workflow is manual-only, not hourly scheduled; no active candidate-resume run or current-revision run was found. Candidate branch head remains f7cdbba43212f7062d499fae7027c94f4d1f02a2.",
+    "A fresh read-only reimplementation of the exact suspicious_overlap() rule against the current dv.json and source.json reproduced all 58 Divehi findings. Nine exact source-equal values are preserved HTML/brand/reference/CSS invariants and are not part of the 58; the 58 findings are genuine long English prefixes/fragments followed by Dhivehi text, with longest retained English runs up to 36 words."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -17583,5 +17584,258 @@
       "translationRequests": 0
     },
     "auditFinding": "R125 #137 still observes 20 unique seller-plan fallback strings on 71 languages. Keep them visible and auditable; do not mark them no-translate."
+  },
+  "divehiOverlapReview20261119": {
+    "checkedAt": "2026-11-19",
+    "branch": "work/r125-locale-candidates-20261008",
+    "sourceHash": "6a1126e6a2ce5629",
+    "sourceKeys": 1118,
+    "divehiPackKeys": 1118,
+    "savedQualityFailure": "english_overlap:58",
+    "reproducedUsing": "Current tools/build_current_locale_delta.py suspicious_overlap() rule: at least five contiguous English words retained from a source string of at least five words, with documented source-invariant/URL/code exclusions.",
+    "reproducedCount": 58,
+    "exactUnchangedValues": 9,
+    "exactUnchangedInterpretation": "html, Payoneer, Paystack, WhatsApp, ad-reference token and CSS/layout invariant strings; these are not the 58 overlap findings.",
+    "finding": "The 58 are long English prefixes or contiguous English fragments followed by Dhivehi text; the longest retained English runs include 36, 24, 23, 22 and 20 words. This is genuine incomplete localization, not just unchanged brand names.",
+    "flaggedKeys": [
+      {
+        "key": "Fallback for unsupported eSIM devices. Registration rules, operators and pricing can change, so confirm current local requirements.",
+        "longestEnglishRun": 5
+      },
+      {
+        "key": "I’m the SEEKVERA AI assistant. Tell me what you need and I’ll help you find the right section, compare options or search worldwide.",
+        "longestEnglishRun": 5
+      },
+      {
+        "key": "You reached a remote village alive. They tell you the nearest road is still more than a day away. The jungle gets harder from here.",
+        "longestEnglishRun": 6
+      },
+      {
+        "key": "print this page and place it at reception, entrances, rooms, events or service desks. People can scan without typing the website address.",
+        "longestEnglishRun": 14
+      },
+      {
+        "key": "paid calls, paid APIs, paid verification, ads, subscriptions or company payments require an owner notice first. Auto Recharge remains OFF.",
+        "longestEnglishRun": 16
+      },
+      {
+        "key": "Best in landscape, but it also works in portrait. Touch the left stick to move. Swipe anywhere else to look. Use ACTION near useful objects.",
+        "longestEnglishRun": 9
+      },
+      {
+        "key": "Future participating venues may offer time-limited access by QR or voucher. No venue is shown as participating until configured and verified.",
+        "longestEnglishRun": 11
+      },
+      {
+        "key": "SEEKVERA may later earn commission from approved tracked partner links. A partner's commission should not be the only reason it is recommended.",
+        "longestEnglishRun": 10
+      },
+      {
+        "key": "the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.",
+        "longestEnglishRun": 7
+      },
+      {
+        "key": "You survived the crash, recovered basic gear, reached water and built a small fire. The next part goes deeper into the jungle and becomes harder.",
+        "longestEnglishRun": 14
+      },
+      {
+        "key": "Mobile data, not Wi‑Fi. Compare verified provider plans by destination, data, validity, tethering and top-up when live provider data is connected.",
+        "longestEnglishRun": 5
+      },
+      {
+        "key": "SEEKVERA will show only gateways that are enabled for the merchant account. Card acceptance depends on the customer bank, card network and country.",
+        "longestEnglishRun": 12
+      },
+      {
+        "key": "Avoid sensitive banking on untrusted Wi‑Fi. Use HTTPS. Never share OTP, PIN, passwords or card security codes. Confirm the network name with the venue.",
+        "longestEnglishRun": 7
+      },
+      {
+        "key": "SEEKVERA does not guarantee customs clearance, transit time or shipping price. Confirm current requirements with the chosen provider and relevant authorities.",
+        "longestEnglishRun": 11
+      },
+      {
+        "key": "SEEKVERA helps travelers find and compare verified connectivity options. Live prices, coverage and availability must come from current providers or venue data.",
+        "longestEnglishRun": 9
+      },
+      {
+        "key": "50 free touch-friendly mini games for Android, iPhone and desktop. Racing, action, flying, forest adventures, space, puzzles and kids games — no purchase required.",
+        "longestEnglishRun": 9
+      },
+      {
+        "key": "The site saves only non-sensitive interface preferences such as language. Request descriptions and contact details are not stored in your browser after submission.",
+        "longestEnglishRun": 10
+      },
+      {
+        "key": "Phone: left stick moves • drag the right side to turn camera • ACTION changes with what is nearby • JUMP. Desktop: WASD / arrows • mouse drag • E • Space • Shift to run.",
+        "longestEnglishRun": 18
+      },
+      {
+        "key": "not active in the SEEKVERA server yet. A secure OAuth connection plus scheduled worker/queue execution is required before the system can send or read emails autonomously.",
+        "longestEnglishRun": 7
+      },
+      {
+        "key": "Participating venues can display SEEKVERA QR with an authorized offer, duration and instructions. Private Wi‑Fi passwords must never be exposed without venue authorization.",
+        "longestEnglishRun": 13
+      },
+      {
+        "key": "Choose a country once and SEEKVERA switches the app language, currency, AI context and country-aware sections automatically. You can still change language manually if you want.",
+        "longestEnglishRun": 17
+      },
+      {
+        "key": "Type any destination anywhere in the world. SEEKVERA AI will build a practical guide with tourist places, safety, transport, food, culture and an itinerary matched to your trip.",
+        "longestEnglishRun": 7
+      },
+      {
+        "key": "AI guidance is not an official visa, immigration or safety advisory. Verify critical rules and emergency information with official sources, especially before international travel.",
+        "longestEnglishRun": 11
+      },
+      {
+        "key": "Health search requires extra care. SEEKVERA can help route users to providers, but important medical decisions should be made with qualified professionals and legitimate facilities.",
+        "longestEnglishRun": 5
+      },
+      {
+        "key": "Search nearby services, transport, food, shopping, family needs, utilities, emergency help and local information. SEEKVERA routes each request to the right service or trusted source.",
+        "longestEnglishRun": 14
+      },
+      {
+        "key": "Choose any country or city. SEEKVERA can help you discover tourist places, build an AI trip plan, find hotels and transport, open maps, check nearby essentials and look for public Wi-Fi.",
+        "longestEnglishRun": 5
+      },
+      {
+        "key": "Messages sent to the SEEKVERA AI assistant may be processed by external AI infrastructure used to generate a response. Only send information you are comfortable sharing for that purpose.",
+        "longestEnglishRun": 19
+      },
+      {
+        "key": "Health content is informational and is not a medical diagnosis. Travel, safety, legal and financial information can change and should be independently verified when the decision is important.",
+        "longestEnglishRun": 10
+      },
+      {
+        "key": "You left the crash site with a knife, jacket, water and a bag. The jungle is now the game world. From here the full Part 1 can continue with water, shelter, fire, animals and the first night.",
+        "longestEnglishRun": 13
+      },
+      {
+        "key": "Individuals and businesses can advertise lawful products, property, vehicles, jobs, services and equipment. Every new ad stays pending and is not publicly listed until it passes safety review.",
+        "longestEnglishRun": 13
+      },
+      {
+        "key": "Emergency results should prioritize verified official police, ambulance, fire, hospital and embassy contacts for the user’s country and location. SEEKVERA should never invent emergency numbers.",
+        "longestEnglishRun": 19
+      },
+      {
+        "key": "entertainment discovery must use official/licensed providers and respect regional availability. Safety Gate protections apply to user-submitted entertainment links, comments, media and listings.",
+        "longestEnglishRun": 11
+      },
+      {
+        "key": "Find lawful entertainment options available in your country. SEEKVERA can guide users to official streaming, rental, purchase, music, game and reading providers instead of hosting pirated content.",
+        "longestEnglishRun": 8
+      },
+      {
+        "key": "Users may report suspicious or unlawful content. SEEKVERA may act on valid legal requests and may preserve or disclose information when required by applicable law, court order or lawful authority.",
+        "longestEnglishRun": 7
+      },
+      {
+        "key": "Hosting comparisons should consider reliability, renewal pricing, support, backups, email needs and where the audience is located. The cheapest first-year offer is not always the cheapest long term.",
+        "longestEnglishRun": 17
+      },
+      {
+        "key": "Solar should be sized around actual load, hours of backup, battery chemistry and local installation conditions. A cheap package can become expensive if it is undersized or built with poor components.",
+        "longestEnglishRun": 16
+      },
+      {
+        "key": "He came for a quiet trek near the edge of the rainforest. One wrong path, no signal, and daylight is disappearing. Find water, make a fire, recover useful gear, reach shelter and keep moving toward people.",
+        "longestEnglishRun": 12
+      },
+      {
+        "key": "SEEKVERA can guide and organize the trip, but visa rules, official travel advisories, emergency numbers and opening hours can change. Verify critical travel information with official sources before acting.",
+        "longestEnglishRun": 20
+      },
+      {
+        "key": "Education searches include very different needs: a student looking for a course, a school buying management software, or a professional comparing certification programs. SEEKVERA keeps those intents separate.",
+        "longestEnglishRun": 23
+      },
+      {
+        "key": "Start inside the aircraft, survive the crash, collect what you can from the wreckage, then walk into the jungle. This preview uses the realistic visual direction you approved — not the cartoon-style 3D build.",
+        "longestEnglishRun": 19
+      },
+      {
+        "key": "Job seekers need verified vacancies, clear role requirements and safe application channels. SEEKVERA's job section is intended to route users toward legitimate platforms and employers as partners are verified.",
+        "longestEnglishRun": 12
+      },
+      {
+        "key": "Property search should separate long-term rent, shortlets, land and property-management tools. Prices alone do not tell the full story: agency fees, service charges, location, utilities and verification matter.",
+        "longestEnglishRun": 11
+      },
+      {
+        "key": "These platform rules help reduce risk but do not replace local legal advice. Marketplace laws differ by country, so SEEKVERA should obtain jurisdiction-specific legal review before large-scale commercial launch.",
+        "longestEnglishRun": 13
+      },
+      {
+        "key": "With your permission, SEEKVERA uses your phone location to look for nearby places in OpenStreetMap data that are tagged with Wi-Fi or internet access. Availability is community-supplied and may not always be current.",
+        "longestEnglishRun": 24
+      },
+      {
+        "key": "SEEKVERA is a global discovery and comparison project. The zero-cost MVP helps users organize a need by country and category, then routes them toward eligible third-party providers as partner relationships are approved.",
+        "longestEnglishRun": 8
+      },
+      {
+        "key": "SEEKVERA is an information, discovery, referral and marketplace interface. Third-party sellers and providers are responsible for their listings, ownership, permissions, legal compliance, delivery and service performance.",
+        "longestEnglishRun": 9
+      },
+      {
+        "key": "You may use SEEKVERA only for lawful products, services, travel, property, jobs, businesses and information. You must follow the laws that apply to you, the item or service, and the country where the activity takes place.",
+        "longestEnglishRun": 15
+      },
+      {
+        "key": "New or edited ads, user media, links, profiles, offers and future user-generated features should inherit the same Safety Gate. Unsafe or uncertain content stays blocked or pending rather than being published automatically.",
+        "longestEnglishRun": 19
+      },
+      {
+        "key": "The architecture separates routine research/negotiation from paid actions and irreversible owner approvals. Background email execution is not claimed active until secure app-side OAuth and scheduled execution are connected.",
+        "longestEnglishRun": 13
+      },
+      {
+        "key": "SEEKVERA does not require an account for basic search and discovery. Do not submit passwords, payment-card details, government ID numbers or other highly sensitive information through search, Request Anything or the AI assistant.",
+        "longestEnglishRun": 11
+      },
+      {
+        "key": "Some current or future tracked links may use cookies or attribution technologies under the destination provider or affiliate-network privacy policy. SEEKVERA may receive a commission without increasing the price charged to you by the destination provider.",
+        "longestEnglishRun": 20
+      },
+      {
+        "key": "A low sticker price is not enough. A useful comparison should consider warranty, seller reputation, delivery, return policy, voltage or network compatibility, and total landed cost. SEEKVERA will activate tracked merchant links only after partner approval.",
+        "longestEnglishRun": 7
+      },
+      {
+        "key": "Users must verify identity, ownership, title documents, product authenticity, licences, permits, prices and payment instructions before completing a transaction. SEEKVERA is not the merchant of record for ordinary third-party listings unless a specific transaction clearly states otherwise.",
+        "longestEnglishRun": 19
+      },
+      {
+        "key": "SEEKVERA may earn a commission when a user completes a qualifying purchase, booking, subscription or referral through certain tracked links. This should not create an extra charge to the user unless the provider clearly states otherwise. Partner compensation is not intended to be the only ranking factor.",
+        "longestEnglishRun": 20
+      },
+      {
+        "key": "SEEKVERA AI may refuse requests that involve prohibited or illegal goods, services or content. Automated moderation can make mistakes, so suspicious content may also require manual review. Users must not try to bypass safety checks by changing spelling, using coded language or hiding prohibited content in images.",
+        "longestEnglishRun": 14
+      },
+      {
+        "key": "By posting an ad, you confirm that you own the item/property/content or are authorized by the owner to advertise it. You also confirm that you have the right to use every photo, video, document and description you upload. You must not advertise another person's house, land, vehicle, business or belongings without permission.",
+        "longestEnglishRun": 22
+      },
+      {
+        "key": "Weapons, ammunition, explosives, military/police uniforms or combat equipment, explicit nudity/pornography or sexual services, controlled drugs, stolen/counterfeit goods, fake documents, scams/fraud, trafficking, extremist/terrorist material, privacy abuse, and other illegal goods or services. Unsafe ads are blocked or rejected.",
+        "longestEnglishRun": 36
+      },
+      {
+        "key": "New marketplace ads may be screened by automated safety checks and may remain pending until reviewed. SEEKVERA may reject, hide, remove, restrict or preserve records of content that appears unsafe, unlawful, misleading or unauthorized. Approval is not a guarantee that a listing is genuine, legal in every jurisdiction or risk-free.",
+        "longestEnglishRun": 16
+      }
+    ],
+    "scriptWarningCount": 0,
+    "candidatePackChanged": false,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "linguisticCertification": false,
+    "nextAction": "Qualified Dhivehi review and correction of all 58 values; do not auto-approve or use quota bypass."
   }
 }
