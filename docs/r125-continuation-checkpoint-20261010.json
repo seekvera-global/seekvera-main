@@ -138,7 +138,8 @@
     "R125 #129 remained in the Pages readiness step because the workflow hardcoded stale games.js v20261117 and i18n-ui.js v56 refs while checked-out pages referenced games.js v20261119-proper-name-exclusions and i18n-ui.js v57. The gate was repaired to derive refs from source pages; the old run is not yet complete and the next audit uses a new concurrency group.",
     "The first dynamic R125 asset-ref workflow patch contained over-escaped grep and shell quoting; readback caught it before claiming success. Corrected the regex and shell quoting, and moved the next audit to concurrency group v3.",
     "R125 readiness still contained an obsolete assertion requiring the old game-title markup and rejecting data-no-translate names. Updated it to the new proper-name spans while preserving checks for translatable categories and descriptions; the next audit uses concurrency group v4.",
-    "R125 #132 exposed a Bash syntax error caused by two doubled trailing backslashes in the dynamic asset readiness condition. Corrected both to single line-continuation backslashes and moved the next audit to concurrency group v5."
+    "R125 #132 exposed a Bash syntax error caused by two doubled trailing backslashes in the dynamic asset readiness condition. Corrected both to single line-continuation backslashes and moved the next audit to concurrency group v5.",
+    "The latest valid R125 run #134 has passed readiness and entered the full 98×27 matrix, but the matrix has not finished. The last completed matrix (#128) still failed 1,178 intercepted dynamic translation fallbacks; the proper-name and seller-plan fixes await #134 results."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -209,7 +210,8 @@
     "Re-run R125 after seller-plan source-aware no-translate guard; confirm only already-localized values are excluded and missing plan names/descriptions/period labels remain flagged.",
     "Confirm repaired R125 run starts the matrix after deriving live asset refs from index.html and games.html; do not wait on stale #129/#130 readiness gates.",
     "Verify R125 #133 passes live asset readiness and the revised proper-name checks before running the full 98×27 matrix.",
-    "Confirm R125 #134 passes the Pages readiness shell block and starts the locale matrix; do not treat #132/#133 as matrix results."
+    "Confirm R125 #134 passes the Pages readiness shell block and starts the locale matrix; do not treat #132/#133 as matrix results.",
+    "Read R125 #134 final matrix result; use its exact dynamic fallback count and remaining strings to decide the next quota-neutral repair."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
@@ -303,7 +305,7 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-11-19T16:05:43Z",
+    "checkedAt": "2026-11-19T16:26:10Z",
     "candidateCommit": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
     "completedCount": 97,
     "remainingCount": 1,
@@ -576,7 +578,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-19T12:55:30Z",
+  "checkedAt": "2026-11-19T16:26:10Z",
   "latestR125Run": {
     "run": 150,
     "status": "completed",
@@ -3112,7 +3114,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-19T16:02:36Z",
+  "updatedAt": "2026-11-19T16:26:10Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -9961,11 +9963,11 @@
     "note": "The full 98×27 matrix completed and found zero visible exact/partial/unresolved English leaks, but it failed the separate no-dynamic-fallback gate. Production manifest has 1,045 keys; candidate source has 1,118. Of 133 dynamic strings, 60 exist in candidate source but are unpublished and 73 are absent from candidate source."
   },
   "latestProductionRuntimeChecks": {
-    "checkedAt": "2026-11-19T16:02:36Z",
-    "headSha": "d6df957911d1692b3457535903b0091217be3ae9",
+    "checkedAt": "2026-11-19T16:26:10Z",
+    "headSha": "d40ab4195dba74c0d5fc80d08bd672a34bf1d6c2",
     "r105": {
-      "run": 218,
-      "runId": 44563893636,
+      "run": 219,
+      "runId": 44564685410,
       "status": "success",
       "sourceValidation": "passed",
       "localeTargetNames": "98/98",
@@ -9977,12 +9979,13 @@
       "failClosed": true,
       "liveChatProbe": "skipped-by-policy",
       "countryIntentProbe": "skipped-by-policy",
-      "aiQuotaUsed": 0
+      "aiQuotaUsed": 0,
+      "sellerPlanRegression": "passed"
     },
     "r9e": {
       "run": 137,
       "runId": 44561221665,
-      "conclusion": "success",
+      "status": "success",
       "countryProfiles": "248/248",
       "localizedPages": "44/44",
       "manualMoroccoPriority": "passed",
@@ -9998,8 +10001,8 @@
       "liveAiProbes": "skipped-by-policy"
     },
     "r123": {
-      "run": 167,
-      "runId": 44563893734,
+      "run": 168,
+      "runId": 44564685382,
       "status": "success",
       "audioAuthority": "passed",
       "ttsEnvelope": "passed",
@@ -10015,7 +10018,7 @@
     "safety": {
       "run": 91,
       "runId": 44561221713,
-      "conclusion": "success",
+      "status": "success",
       "blockedCategories": [
         "weapons_or_explosives",
         "explicit_sexual_content",
@@ -10025,8 +10028,8 @@
       "benignLand": "allowed_pending_human_review"
     },
     "pages": {
-      "run": 1944,
-      "runId": 44563891052,
+      "run": 1949,
+      "runId": 44565722653,
       "status": "success",
       "build": "success",
       "deploy": "success"
@@ -10040,7 +10043,7 @@
     }
   },
   "latestResumeWorkflowInspection": {
-    "checkedAt": "2026-11-19T16:05:43Z",
+    "checkedAt": "2026-11-19T16:26:10Z",
     "path": ".github/workflows/r125-hourly-candidate-resume.yml",
     "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
     "trigger": "workflow_dispatch only; no hourly schedule",
@@ -10069,7 +10072,7 @@
     "candidatePackWritesThisPass": 0,
     "candidateMetadataWritesThisPass": 0,
     "candidateWritesDeferred": true,
-    "note": "Inspected latest matching Actions run #150 and its job steps: Resume was skipped, audit succeeded, no candidate pack writes. No current matching or active resume run observed. Main workflow is manual-only despite its hourly name."
+    "note": "Current Main workflow is manual-only despite the hourly name. Latest matching run is legacy #150; Resume skipped, audit succeeded, and no candidate pack writes occurred."
   },
   "latestQuickFallbackRepair": {
     "checkedAt": "2026-11-18T09:45:51Z",
@@ -11985,7 +11988,7 @@
       "r125": "still running; no candidate writes"
     }
   },
-  "latestMainHead": "d6df957911d1692b3457535903b0091217be3ae9",
+  "latestMainHead": "41523a5d10a0a5767b7282bb91c188b207bcbd95",
   "latestBurmeseRepair20261118": {
     "commit": "86f055faf4d4520564e76fc2b2b1b59366e699ab",
     "version": "20261118-r125-global-quick-v35",
@@ -13313,9 +13316,9 @@
     ]
   },
   "latestAutomationPass20261119": {
-    "checkedAt": "2026-11-19T16:05:43Z",
+    "checkedAt": "2026-11-19T16:26:10Z",
     "sourceReadback": {
-      "checkpointSha": "6c1c1786dd9b50781788624ffd88ee98ed431ffb",
+      "checkpointSha": "c42b92ad686e8528cca732164d88127564154cb8",
       "resumeSummarySha": "551a1cad78540f437e67d1d0a88ae1e844478022",
       "resumeLogSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
       "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2"
@@ -13332,20 +13335,36 @@
       "linguisticCertification": 0
     },
     "r125": {
-      "run": 128,
-      "runId": 44561221758,
-      "conclusion": "failure",
-      "languageSectionApplications": 2646,
-      "countryProfiles": 248,
-      "visibleExactLeaks": 0,
-      "visiblePartialLeaks": 0,
-      "unresolvedVisibleLeaks": 0,
-      "dynamicFallbackRequestsIntercepted": 1178,
-      "dynamicFallbackLanguages": 97,
-      "dynamicFallbackUniqueStrings": 133,
-      "providerRequests": 0,
-      "aiRequests": 0,
-      "quotaUsed": 0
+      "lastCompletedRun": 128,
+      "lastCompletedRunId": 44561221758,
+      "lastCompletedConclusion": "failure",
+      "lastCompletedMatrix": {
+        "languages": 98,
+        "sections": 27,
+        "applications": 2646,
+        "countryProfiles": 248,
+        "visibleExactLeaks": 0,
+        "visiblePartialLeaks": 0,
+        "unresolvedVisibleLeaks": 0
+      },
+      "dynamicFallback": {
+        "browserInterceptedRequests": 1178,
+        "languages": 97,
+        "uniqueStrings": 133,
+        "inProductionSource": 0,
+        "inCandidateSource": 60,
+        "absentFromCandidateSource": 73,
+        "providerRequests": 0,
+        "aiRequests": 0,
+        "quotaUsed": 0
+      },
+      "currentRun": {
+        "number": 134,
+        "runId": 44565724507,
+        "status": "in_progress",
+        "readiness": "passed",
+        "matrix": "in_progress"
+      }
     },
     "dynamicStringAnalysis": {
       "inProductionSource": 0,
@@ -13371,16 +13390,18 @@
       "translationBackend": "unknown-not-probed",
       "historicalBlockers": [
         "daily_free_ai_limit",
-        "Google HTTP429"
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable"
       ],
       "liveProbes": 0,
       "translationProviderRequests": 0,
       "quotaUsed": 0
     },
     "voice": {
-      "programmaticTTS": "passed in R123 #165",
+      "programmaticTTS": "passed",
       "voiceAcknowledgement": "passed",
       "dynamicVoicePlaceholders": "passed",
+      "androidBrowserProfilePlayback": "passed",
       "liveASR": "not-verified",
       "physicalMicrophoneSpeakerCertification": false
     },
@@ -13395,6 +13416,7 @@
     },
     "safety": {
       "run": 91,
+      "runId": 44561221713,
       "status": "success",
       "blockedCategories": 4,
       "benignLand": "allowed_pending_human_review"
@@ -13433,8 +13455,8 @@
       "headSha": "64c79923af25ac2a86466c9d16c568209526a815"
     },
     "r105": {
-      "run": 218,
-      "runId": 44563893636,
+      "run": 219,
+      "runId": 44564685410,
       "status": "success",
       "health": "passed",
       "workerDeployment": "success",
@@ -13444,15 +13466,15 @@
       "liveChatAndCountryIntent": "not-probed-by-policy"
     },
     "r123": {
-      "run": 167,
-      "runId": 44563893734,
+      "run": 168,
+      "runId": 44564685382,
       "status": "success",
       "tts": "passed",
       "voiceAcknowledgement": "passed",
       "dynamicVoicePlaceholder": "passed",
       "browserProfilePlayback": "passed",
-      "physicalDeviceCertification": false,
-      "productionAssetMultilingualAudioStep": "skipped"
+      "productionAssetMultilingualAudioStep": "skipped",
+      "physicalDeviceCertification": false
     },
     "securityAdvisories": {
       "checkedAt": "2026-11-19T16:15:32Z",
@@ -13625,6 +13647,22 @@
         ],
         "note": "No locale matrix result is claimed from #132 or #133."
       }
+    },
+    "repairs": [
+      "Excluded proper game titles, localized Intl.DisplayNames country badges, and Al Jazeera brand labels without suppressing game descriptions/categories.",
+      "Fixed seller-plan double localization: values already translated by the local pack are no longer recaptured by the global MutationObserver; missing values remain audit-visible.",
+      "Updated stale regression tests and R125 readiness assertions.",
+      "Replaced hard-coded R125 cache-busting refs with refs derived from index.html/games.html; corrected shell line continuations."
+    ],
+    "r9e": {
+      "run": 137,
+      "runId": 44561221665,
+      "status": "success",
+      "countryProfiles": "248/248",
+      "localizedPages": "44/44",
+      "moroccoPriority": "passed",
+      "worldwidePriority": "passed",
+      "currency": "passed"
     }
   },
   "latestAutomationPass20261119V42": {
@@ -16893,6 +16931,76 @@
         }
       ],
       "note": "No locale matrix result is claimed from #132 or #133."
-    }
+    },
+    "currentValidRun": {
+      "number": 134,
+      "runId": 44565724507,
+      "status": "in_progress",
+      "readiness": "passed",
+      "matrix": "in_progress",
+      "headSha": "41523a5d10a0a5767b7282bb91c188b207bcbd95"
+    },
+    "staleRuns": [
+      {
+        "number": 129,
+        "runId": 44563364075,
+        "status": "completed",
+        "conclusion": "failure",
+        "reason": "stale asset refs"
+      },
+      {
+        "number": 130,
+        "runId": 44564685345,
+        "status": "in_progress",
+        "reason": "old hard-coded refs"
+      },
+      {
+        "number": 131,
+        "runId": 44565071259,
+        "status": "in_progress",
+        "reason": "first dynamic refs with shell escaping defect"
+      },
+      {
+        "number": 132,
+        "runId": 44565299565,
+        "status": "completed",
+        "conclusion": "failure",
+        "reason": "stale game markup assertion and malformed line continuation"
+      },
+      {
+        "number": 133,
+        "runId": 44565471305,
+        "status": "in_progress",
+        "reason": "doubled line continuations"
+      }
+    ],
+    "currentWorkflow": "concurrency group v5; dynamic asset refs; proper-name game markup assertions; single-backslash line continuations"
+  },
+  "latestR125CurrentRun20261119": {
+    "checkedAt": "2026-11-19T16:26:10Z",
+    "run": 134,
+    "runId": 44565724507,
+    "headSha": "41523a5d10a0a5767b7282bb91c188b207bcbd95",
+    "status": "in_progress",
+    "conclusion": null,
+    "readiness": {
+      "pagesAssets": "passed",
+      "syntaxCheck": "passed",
+      "quotaGuard": "passed",
+      "quickLabelRegression": "passed",
+      "noTranslateAuditTriage": "passed"
+    },
+    "matrix": {
+      "status": "in_progress",
+      "expectedLanguages": 98,
+      "expectedSections": 27,
+      "expectedApplications": 2646,
+      "expectedCountryProfiles": 248
+    },
+    "providerRequests": 0,
+    "aiRequests": 0,
+    "pollinationsRequests": 0,
+    "quotaUsed": 0,
+    "note": "First current-revision R125 run to pass Pages readiness after deriving asset refs dynamically and align the game-title no-translate assertion. Matrix is running; no result claimed yet."
   }
 }
