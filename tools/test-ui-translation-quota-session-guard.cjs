@@ -106,6 +106,7 @@ async function main(){
   {code:'bs',language:'Bosnian',labels:{'Back':'Nazad','Page navigation':'Navigacija stranicama','Voice reply':'Odgovor glasom','Voice':'Glas'}},
   {code:'lo',language:'Lao',labels:{'Back':'ກັບຄືນ','Page navigation':'ການນຳທາງໜ້າ','Voice reply':'ຄຳຕອບດ້ວຍສຽງ','Voice':'ສຽງ'}},
   {code:'lo',language:'Lao',labels:{'Back':'ກັບຄືນ','Page navigation':'ການນຳທາງໜ້າ','Voice reply':'ຄຳຕອບດ້ວຍສຽງ','Voice':'ສຽງ'}}
+  {code:'rw',language:'Kinyarwanda',labels:{'Back':'Subira inyuma','Page navigation':'Kuyobora urupapuro','Voice reply':"Igisubizo cy'ijwi",'Voice':'Ijwi'}},
  ];
  const quickContext={INITIAL_AI:'__TEST_INITIAL_AI__'};vm.createContext(quickContext);
  vm.runInContext(extract(i18n,'const QUICK={','// Provisional quota-neutral overrides','QUICK map')+';this.quick=QUICK;',quickContext);
