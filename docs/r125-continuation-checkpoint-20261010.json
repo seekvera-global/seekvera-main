@@ -13375,5 +13375,182 @@
       "Complete real-device microphone/speaker tests on Android, iPhone/iPad and desktop.",
       "Configure merchant checkout and verify payments, forged-reference rejection and settlement."
     ]
+  },
+  "latestAutomationPass20261119": {
+    "checkedAt": "2026-11-19T05:53:10Z",
+    "filesRead": [
+      "main: docs/r125-continuation-checkpoint-20261010.json",
+      "branch work/r125-locale-candidates-20261008: docs/locale-candidates-20261008/resume-summary.json",
+      "branch work/r125-locale-candidates-20261008: docs/locale-candidates-20261008/resume-latest.log",
+      "main: .github/workflows/r125-hourly-candidate-resume.yml",
+      "main: i18n-ui.js",
+      "candidate branch: docs/locale-candidates-20261008/ti.json",
+      "main: .github/workflows/safety-smoke-test.yml"
+    ],
+    "candidateState": {
+      "structuralPacks": 98,
+      "totalPacks": 98,
+      "keysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "savedQualityPassing": 97,
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "published": false,
+      "linguisticCertification": 0
+    },
+    "r125ProductionAudit": {
+      "run": 102,
+      "runId": 44446631767,
+      "status": "completed",
+      "conclusion": "failure",
+      "checkedAt": "2026-11-19T02:45:36Z",
+      "languages": 98,
+      "sections": 27,
+      "sectionLanguageApplications": 2646,
+      "visibleEnglish": {
+        "exact": 0,
+        "partial": 0,
+        "unresolved": 0
+      },
+      "dynamicFallback": {
+        "interceptedRequests": 1,
+        "providerRequests": 0,
+        "language": "Tigrinya",
+        "strings": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ],
+        "failureReason": "zero dynamic-fallback gate"
+      },
+      "countryProfiles": 248,
+      "note": "The browser test intercepted /api/ui-translate locally; no translation provider request was sent and no AI quota was used."
+    },
+    "resumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "workflowSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
+      "trigger": "workflow_dispatch only",
+      "scheduleTriggerPresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestMatchingRun": {
+        "number": 150,
+        "runId": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "resume": "skipped",
+        "audit": "success",
+        "candidatePackWrites": 0,
+        "metadataFilesWritten": 2
+      },
+      "currentRevisionRunObserved": false,
+      "activeResumeRuns": 0,
+      "candidatePackWritesThisPass": 0,
+      "candidateMetadataWritesThisPass": 0,
+      "translationRequestsThisPass": 0,
+      "aiQuotaUsedThisPass": 0,
+      "candidateWritesDeferred": true
+    },
+    "productionChecks": {
+      "r105": {
+        "run": 195,
+        "runId": 44446631832,
+        "conclusion": "success",
+        "aiBinding": true,
+        "productionHealth": "passed",
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "quotaBoundaryTests": "passed",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r123": {
+        "run": 146,
+        "runId": 44446631912,
+        "conclusion": "success",
+        "programmaticTTS": "passed",
+        "voiceAcknowledgement": "passed",
+        "arabicHomeAnd31Descriptions": "passed",
+        "androidBrowserProfilePlayback": "passed",
+        "liveASR": "not-verified",
+        "physicalDeviceCertified": false
+      },
+      "r9e": {
+        "run": 114,
+        "runId": 44446631846,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "manualMoroccoPriority": "passed",
+        "manualWorldwidePriority": "passed",
+        "visibleLocales": [
+          "MA/ar",
+          "FR/fr",
+          "IN/hi",
+          "CN/zh"
+        ],
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "safety": {
+        "run": 72,
+        "runId": 44446631868,
+        "conclusion": "success",
+        "blockedCases": 4,
+        "benignLand": "allowed_pending_human_review"
+      },
+      "pages": {
+        "run": 1900,
+        "runId": 44457934388,
+        "conclusion": "success",
+        "build": "success",
+        "deploy": "success"
+      }
+    },
+    "ciMaintenanceRepair": {
+      "finding": "Safety smoke workflow still used actions/checkout@v4 and emitted the Node 20 deprecation warning.",
+      "commit": "4e6d6c54559624dee039f0788af16909ecd60ff1",
+      "file": ".github/workflows/safety-smoke-test.yml",
+      "change": "Upgrade actions/checkout from v4 to v5 only; safety assertions and API calls unchanged.",
+      "readback": "PASS; checkout v5 present, v4 absent.",
+      "validationRun": {
+        "number": 73,
+        "runId": 44468157669,
+        "status": "completed",
+        "conclusion": "success",
+        "checkoutV5": true,
+        "node20Warning": false,
+        "blockedCases": 4,
+        "benignLand": "allowed_pending_human_review"
+      }
+    },
+    "runtimeAvailability": {
+      "aiChat": "unknown-not-certified; binding and production health pass, live generation probe skipped by policy",
+      "translation": "unknown-not-probed; resume log shows Dhivehi timeouts and HTTP503 all_translation_backends_unavailable; historical daily_free_ai_limit and Google HTTP429 remain blockers",
+      "voice": "programmatic TTS and browser-profile playback passed; live ASR and physical microphones/speakers not certified",
+      "countryCurrency": "v39 R9e passed 248/248 profiles and 44/44 localized pages including Morocco and Worldwide priority",
+      "safety": "live safety smoke passed four prohibited cases and held benign land for human review",
+      "checkout": "inactive pending merchant configuration and end-to-end verification"
+    },
+    "usage": {
+      "translationRequests": 0,
+      "liveAiGenerationProbes": 0,
+      "aiQuotaUsed": 0,
+      "quotaBypassAttempts": 0,
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "published": false,
+      "linguisticCertification": false
+    },
+    "decision": "NO-GO",
+    "notes": [
+      "The user-provided 63/98 and 35 remaining figures do not match the current files. Main checkpoint and candidate resume summary record 98/98 structurally complete, 97/98 saved quality-gate pass, and Divehi as the one remaining pack.",
+      "Candidate Tigrinya Back and Page navigation values were read but are semantically suspect; no unreviewed Tigrinya strings were promoted. External dictionary lookup supports voice/reply vocabulary but does not replace qualified native UI review.",
+      "No candidate writes were made. Current resume workflow has no active run; latest matching run remains legacy #150.",
+      "No provider translation or live AI probe was sent."
+    ]
   }
 }
