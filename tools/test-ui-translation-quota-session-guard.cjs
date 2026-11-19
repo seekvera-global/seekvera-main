@@ -122,7 +122,7 @@ async function main(){
  const quickContext={INITIAL_AI:'__TEST_INITIAL_AI__'};vm.createContext(quickContext);
  vm.runInContext(extract(i18n,'const QUICK={','// Provisional quota-neutral overrides','QUICK map')+';this.quick=QUICK;',quickContext);
  const quickMap=quickContext.quick;
- assert.deepEqual(quickMap.te,{'Back':'వెనక్కి','Page navigation':'పేజీ నావిగేషన్','Voice reply':'స్వరం సమాధానం','Voice':'స్వరం'},'Telugu quick labels must exist in the actual QUICK map');
+ assert.deepEqual({...quickMap.te},{'Back':'వెనక్కి','Page navigation':'పేజీ నావిగేషన్','Voice reply':'స్వరం సమాధానం','Voice':'స్వరం'},'Telugu quick labels must exist in the actual QUICK map');
  for(const item of quickCases){
   for(const [source,value] of Object.entries(item.labels))assert.equal(quickMap[item.code]?.[source],value,item.code+' quick label missing or differs in the actual QUICK map: '+source);
   let calls=0;

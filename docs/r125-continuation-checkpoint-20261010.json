@@ -128,7 +128,8 @@
     "R125 #114 on v50 completed 98 × 27 applications with zero visible exact/partial/unresolved findings but one locally intercepted Telugu dynamic fallback; v51 adds quota-neutral Telugu QUICK labels and a zero-provider-call regression, pending re-audit.",
     "R9e #130 on v50 passed 248/248 country profiles and 44/44 pages, Morocco/Worldwide priority, currency fallback, safety and voice/PWA cache; v51 requires re-audit.",
     "R105 #207, R123 #158, Safety #84 and Pages #1918 passed on v50; live AI generation/country intent, live ASR and physical audio remain unverified.",
-    "v51 introduced a missing comma between the Galician and Telugu QUICK entries. R105 #208 and R123 #159 caught the SyntaxError before Worker deployment. v52 corrects the syntax and bumps all cache references; re-verification is pending."
+    "v51 introduced a missing comma between the Galician and Telugu QUICK entries. R105 #208 and R123 #159 caught the SyntaxError before Worker deployment. v52 corrects the syntax and bumps all cache references; re-verification is pending.",
+    "R105 #209 exposed a test-only cross-realm strict-deep-equality issue after the v52 JavaScript syntax correction; the test now shallow-copies QUICK.te before comparison. R123 #160 passed and deployed the Worker; R9e #132 and R125 #116 are still pending/in progress."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -186,17 +187,19 @@
     }
   },
   "remainingChecks": [
-    "Complete R125 audit on v52 with zero visible English findings and zero dynamic fallback across 98 × 27 applications.",
-    "Complete R9e browser audit on v52 and confirm 248/248 countries, 44/44 pages, Morocco/Worldwide priority, currency, safety and voice/PWA cache.",
-    "Confirm R105 and R123 source validation and production deployment on v52.",
-    "Keep AI live chat and translation provider availability unknown unless a quota-safe probe is explicitly permitted.",
-    "Obtain qualified native-language review for all 98 packs; resolve Divehi 58 overlap and 28 duplicate groups across 11 languages.",
-    "Complete physical audio hardware tests and merchant checkout configuration/settlement verification."
+    "R105 #210 must pass the corrected Telugu QUICK regression and complete source validation/deployment on v52.",
+    "Complete R125 #116 on v52; require zero exact, partial, unresolved and dynamic-fallback findings across 98 languages × 27 sections.",
+    "Complete R9e #132 on v52; verify 248 country/territory profiles, 44 pages, Morocco/Worldwide priority, currency, safety and voice/PWA cache.",
+    "Review Divehi's 58 English-overlap findings and 28 duplicate-output groups across 11 languages with qualified native reviewers; do not promote candidate packs.",
+    "Obtain qualified linguistic review for all 98 locale packs; none is published or linguistically certified.",
+    "Keep live AI chat, AI country intent and translation-backend availability unknown until a permitted quota-safe probe can run without bypassing daily_free_ai_limit or Google HTTP429.",
+    "Complete physical microphone/speaker tests on real Android, iPhone/iPad and desktop devices; browser/headless audio checks are not hardware certification.",
+    "Configure merchant checkout and complete end-to-end payment, forged-reference rejection and settlement verification."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-19T12:23:21Z",
+    "checkedAt": "2026-11-19T12:47:00Z",
     "aiChat": {
       "currentAvailability": "unknown-not-certified",
       "latestProductionRun": 207,
@@ -206,12 +209,17 @@
       "failClosed": true,
       "liveGenerationProbe": "skipped-by-policy",
       "generalChatAndCountryIntent": "not-probed",
-      "quotaStatus": "historical usage unknown; no quota-free claim"
+      "quotaStatus": "historical usage unknown; no quota-free claim",
+      "latestR105Run": 209,
+      "latestR105Conclusion": "failed before deploy on test assertion",
+      "latestR123Run": 160,
+      "workerDeployment": "success",
+      "countryIntent": "not-probed"
     },
     "voiceTranscription": {
-      "programmaticTests": "passed in R123 #158",
+      "programmaticTests": "passed in R123 #160",
       "browserProfileAudio": "Android browser-profile server-audio playback passed",
-      "productionAudioAsset": "skipped",
+      "productionAssetMultilingualAudio": "skipped",
       "liveASR": "not-verified",
       "physicalDeviceCertified": false
     },
@@ -227,7 +235,7 @@
     },
     "countryCurrency": {
       "latestConfirmedRun": 130,
-      "latestConfirmedStatus": "passed on v50; v51 recheck pending",
+      "latestConfirmedStatus": "passed on v50; v52 R9e #132 pending",
       "countryProfiles": "248/248",
       "localizedPages": "44/44",
       "storedCurrencyAndFallback": "passed on v50",
@@ -241,7 +249,8 @@
       ],
       "liveAiProbes": "skipped-by-policy",
       "liveASR": "not-verified",
-      "v51Verification": "pending R9e after v51"
+      "v51Verification": "pending R9e after v51",
+      "v52Verification": "pending R9e #132"
     },
     "safety": {
       "latestRun": 84,
@@ -552,7 +561,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-19T12:44:00Z",
+  "checkedAt": "2026-11-19T12:47:00Z",
   "latestR125Run": {
     "run": 150,
     "status": "completed",
@@ -10048,25 +10057,31 @@
   },
   "latestProductionRuntimeChecks": {
     "r105": {
-      "run": 208,
-      "runId": 44525819982,
+      "run": 209,
+      "runId": 44526753552,
       "status": "completed",
       "conclusion": "failure",
-      "failure": "i18n-ui.js SyntaxError: Unexpected identifier te; deployment skipped"
+      "failure": "strict deepEqual rejected VM cross-realm QUICK.te object; deploy skipped"
     },
     "r123": {
-      "run": 159,
-      "runId": 44525819830,
+      "run": 160,
+      "runId": 44526753579,
       "status": "completed",
-      "conclusion": "failure",
-      "failure": "audio authority validation blocked by the same i18n syntax error; deployment skipped"
+      "conclusion": "success",
+      "workerDeployment": "success",
+      "audioAuthorityValidation": "passed",
+      "liveCategoryTranslation": "passed",
+      "voiceAcknowledgement": "passed",
+      "dynamicVoicePlaceholders": "passed",
+      "androidBrowserProfileAudio": "passed",
+      "productionAssetMultilingualAudio": "skipped",
+      "liveASR": "not-verified",
+      "physicalMicrophoneSpeakerCertified": false
     },
     "r9e": {
-      "run": 131,
-      "runId": 44525819759,
-      "status": "completed",
-      "conclusion": "failure",
-      "failure": "stale 404.html runtime version assertion after 248-country and locale-priority checks"
+      "run": 132,
+      "runId": 44526753534,
+      "status": "in_progress"
     },
     "r9eCurrent": {
       "run": 103,
@@ -10074,22 +10089,23 @@
       "status": "in_progress"
     },
     "safety": {
-      "run": 85,
-      "runId": 44525819918,
+      "run": 86,
+      "runId": 44526753737,
       "status": "completed",
       "conclusion": "success"
     },
     "pages": {
-      "run": 1921,
-      "runId": 44525818941,
+      "run": 1922,
+      "runId": 44526751484,
       "status": "completed",
-      "conclusion": "success"
+      "conclusion": "success",
+      "build": "success",
+      "deploy": "success"
     },
     "r125": {
-      "run": 96,
-      "runId": 44383491499,
-      "status": "in_progress",
-      "step": "installing Playwright / pending full matrix"
+      "run": 116,
+      "runId": 44526753527,
+      "status": "pending"
     }
   },
   "latestResumeWorkflowInspection": {
@@ -13660,7 +13676,7 @@
       "checkout is inactive pending merchant configuration"
     ]
   },
-  "lastUpdatedAt": "2026-11-19T12:44:00Z",
+  "lastUpdatedAt": "2026-11-19T12:47:00Z",
   "latestAutomationPass20261119V43": {
     "checkedAt": "2026-11-19T07:07:23.959Z",
     "mainBaseSha": "1d1d89dd55a1502618f180ea35a151ed436e3101",
@@ -15495,5 +15511,61 @@
       "Obtain qualified native-language review for all 98 packs; resolve Divehi 58 overlap and 28 duplicate groups across 11 languages.",
       "Complete physical audio hardware tests and merchant checkout configuration/settlement verification."
     ]
+  },
+  "latestAutomationPass20261119V53TestFix": {
+    "checkedAt": "2026-11-19T12:47:00Z",
+    "mainParentSha": "6b6e41a41ee01bee496bff2b40d01a4d6a4d20a1",
+    "runtimeVersion": "20261119-r125-global-quick-v52",
+    "finding": "R105 #209 correctly parsed i18n-ui.js but its new test used assert.deepEqual on a VM-created cross-realm object; strict deep equality rejects different realm prototypes even when all four values match.",
+    "repair": "Changed the test to compare a current-realm shallow copy ({...quickMap.te}) against the expected Telugu labels. No runtime strings or candidate packs changed.",
+    "r105": {
+      "run": 209,
+      "runId": 44526753552,
+      "conclusion": "failure",
+      "failure": "test assertion failed due cross-realm object prototype; Worker deployment skipped"
+    },
+    "r123": {
+      "run": 160,
+      "runId": 44526753579,
+      "conclusion": "success",
+      "workerDeployment": "success",
+      "audioAuthorityValidation": "success",
+      "liveCategoryTranslation": "success",
+      "voiceAcknowledgement": "success",
+      "dynamicVoicePlaceholders": "success",
+      "androidBrowserProfilePlayback": "passed",
+      "productionAssetMultilingualAudio": "skipped",
+      "liveASR": "not-verified",
+      "physicalHardwareCertified": false
+    },
+    "safety": {
+      "run": 86,
+      "runId": 44526753737,
+      "conclusion": "success"
+    },
+    "pages": {
+      "run": 1922,
+      "runId": 44526751484,
+      "conclusion": "success"
+    },
+    "r9e": {
+      "run": 132,
+      "runId": 44526753534,
+      "status": "in_progress",
+      "lastObserved": "live browser audit"
+    },
+    "r125": {
+      "run": 116,
+      "runId": 44526753527,
+      "status": "pending"
+    },
+    "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "aiAvailability": "unknown-not-certified; no live generation or translation probe",
+    "decision": "NO-GO"
   }
 }
