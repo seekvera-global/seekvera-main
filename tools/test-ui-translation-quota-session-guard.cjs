@@ -284,7 +284,7 @@ async function main(){
  assert(sellerPlans.includes('window.SEEKVERA_I18N_R32?.tFor?.(language,source)'),'seller plan names must use the selected locale pack');
  assert(sellerPlans.includes('window.SEEKVERA_I18N_R32?.loadPack?.(language)'),'seller plan rendering must wait for the locale pack');
  assert(sellerPlans.includes('p.replaceChildren();s.replaceChildren();'),'seller plan rendering must replace nodes safely');
- assert(!/d\\.innerHTML\\s*=/.test(sellerPlans),'database plan fields must not be interpolated into innerHTML');
+ assert(!/d\.innerHTML\s*=/.test(sellerPlans),'database plan fields must not be interpolated into innerHTML');
  assert(sellerPlans.includes('new MutationObserver'),'seller plans must rerender when the selected language changes');
  console.log('PASS: session quota circuit breaker, shared in-flight lock, sequential batches, navigation fallback, reverse pack-value guard and safe localized seller plans');
 }
