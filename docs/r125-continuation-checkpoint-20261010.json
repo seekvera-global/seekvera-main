@@ -18363,5 +18363,207 @@
       "decision": "NO-GO"
     }
   },
-  "lastVerifiedMainHead": "70fab7e4ece0d110789ad0f7181a3f3021658afa"
+  "lastVerifiedMainHead": "70fab7e4ece0d110789ad0f7181a3f3021658afa",
+  "latestAutomationPass20261119Turn14": {
+    "checkedAt": "2026-11-19T22:48:40Z",
+    "filesRead": [
+      "main: docs/r125-continuation-checkpoint-20261010.json",
+      "branch work/r125-locale-candidates-20261008: docs/locale-candidates-20261008/resume-summary.json",
+      "branch work/r125-locale-candidates-20261008: docs/locale-candidates-20261008/resume-latest.log",
+      "main: .github/workflows/r125-hourly-candidate-resume.yml"
+    ],
+    "main": {
+      "inspectedHead": "fe697f304f00c06b3b3b8d507801bb305c4f4653",
+      "latestPagesRun": {
+        "number": 1962,
+        "id": 44621995830,
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "fe697f304f00c06b3b3b8d507801bb305c4f4653"
+      },
+      "latestSiteHealthRun": {
+        "number": 335,
+        "id": 44613234728,
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "70fab7e4ece0d110789ad0f7181a3f3021658afa",
+        "scope": "API health, robots/sitemap and 18 public pages"
+      },
+      "diffFromLatestR125Audit": {
+        "base": "92f948f1e654e40f1621a97350aca7ebdf7422c9",
+        "head": "fe697f304f00c06b3b3b8d507801bb305c4f4653",
+        "aheadBy": 6,
+        "changedFiles": [
+          "docs/r125-continuation-checkpoint-20261010.json"
+        ],
+        "interpretation": "No application or workflow code changed after R125 #137; its 80-string dynamic-fallback failure remains applicable to current application code."
+      },
+      "latest100Actions": {
+        "totalRuns": 6536,
+        "returned": 100,
+        "queuedOrInProgress": 0,
+        "latestRun": {
+          "number": 1962,
+          "id": 44621995830,
+          "status": "completed",
+          "conclusion": "success"
+        }
+      }
+    },
+    "candidateState": {
+      "candidateBranch": "work/r125-locale-candidates-20261008",
+      "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
+      "lastCandidateCommit": "2026-11-17T22:35:47Z",
+      "summaryUpdatedAt": "2026-11-17T22:31:44Z",
+      "resumeSummaryBlobSha": "551a1cad78540f437e67d1d0a88ae1e844478022",
+      "resumeLatestLogBlobSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
+      "structuralPacks": "98/98",
+      "savedQualityGate": "97/98",
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "productionLocaleKeys": 1045,
+      "candidateSourceKeys": 1118,
+      "unpublishedKeyDelta": 73,
+      "publishedPacks": 0,
+      "linguisticallyCertifiedPacks": 0
+    },
+    "latestR125": {
+      "run": 137,
+      "runId": 44595354460,
+      "headSha": "92f948f1e654e40f1621a97350aca7ebdf7422c9",
+      "conclusion": "failure",
+      "matrix": {
+        "languages": 98,
+        "sections": 27,
+        "applications": 2646,
+        "countryProfiles": 248,
+        "visibleExact": 0,
+        "visiblePartial": 0,
+        "visibleUnresolved": 0
+      },
+      "dynamicFallback": {
+        "interceptedRequests": 634,
+        "uniqueStrings": 80,
+        "affectedLanguages": 97,
+        "gameStrings": 60,
+        "sellerPlanStrings": 20,
+        "paths": [
+          "/games",
+          "/seller-plans"
+        ],
+        "providerRequests": 0,
+        "aiRequests": 0,
+        "pollinationsRequests": 0,
+        "quotaUsed": 0,
+        "interception": "local HTTP 418 before Worker/providers"
+      }
+    },
+    "candidateResumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "blobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
+      "triggers": [
+        "workflow_dispatch"
+      ],
+      "schedulePresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestMatchingRun": {
+        "number": 150,
+        "id": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "event": "push",
+        "headBranch": "main",
+        "headSha": "0911d8f826e7347f3b5dbf9aacccc7893ee85dd8",
+        "revision": "legacy"
+      },
+      "latestRunSteps": {
+        "resume": "skipped",
+        "audit": "success",
+        "saveProgress": "success",
+        "metadataFilesWritten": 2,
+        "candidatePackWrites": 0,
+        "translationRequests": 0,
+        "aiQuotaUsed": 0,
+        "auditResult": {
+          "completedCount": 97,
+          "remaining": [
+            "dv"
+          ],
+          "resumeSucceeded": false,
+          "readyForLinguisticReview": false,
+          "exitCode": "not-run"
+        }
+      },
+      "currentRevisionRunObserved": false,
+      "activeRunsInLatest100": 0,
+      "candidateWritesThisPass": 0,
+      "candidateWritesDeferred": true
+    },
+    "runtime": {
+      "ai": {
+        "binding": true,
+        "productionHealth": "passed in R105 #221",
+        "liveChat": "unknown-not-certified; probe skipped by policy",
+        "countryIntent": "not-tested",
+        "translationBackend": "unknown-not-probed",
+        "knownBlockers": [
+          "daily_free_ai_limit",
+          "Google HTTP429",
+          "HTTP 503 all_translation_backends_unavailable"
+        ]
+      },
+      "countryCurrency": {
+        "run": 138,
+        "runId": 44593451053,
+        "status": "passed",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "moroccoPriority": "passed",
+        "worldwidePriority": "passed",
+        "currencyFallback": "passed",
+        "headSha": "dac26d2c87e78add075755bd95fc84cb080a2184"
+      },
+      "safety": {
+        "run": 92,
+        "runId": 44593451109,
+        "status": "passed",
+        "blockedCategories": 4,
+        "benignLand": "allowed_pending_human_review"
+      },
+      "voice": {
+        "run": 169,
+        "runId": 44593451076,
+        "status": "passed_programmatically",
+        "tts": "passed",
+        "voiceAcknowledgement": "passed",
+        "dynamicPlaceholders": "passed",
+        "liveASR": "not-verified",
+        "physicalMicrophoneSpeakerCertified": false
+      },
+      "checkout": "inactive pending merchant configuration and end-to-end payment/refund/forged-reference/settlement/webhook verification"
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "databaseWrites": 0,
+      "candidateBranchModified": false,
+      "published": false,
+      "linguisticCertification": false,
+      "decision": "NO-GO"
+    },
+    "notes": [
+      "The user-provided 63/98 count is stale. The current Main checkpoint and candidate files report 98/98 structurally complete, 97/98 passing the saved quality gate, with Divehi as the sole quality-gate failure.",
+      "resume-summary.json is older than the Main checkpoint and still records completedCount 97, remaining dv, exitCode 1, resumeSucceeded false and readyForLinguisticReview false.",
+      "resume-latest.log remains a historical failed Dhivehi attempt: read timeouts, HTTP 503 all_translation_backends_unavailable and three unparseable Workers AI outputs.",
+      "The current Main resume workflow is manual-only, despite its hourly name. Its latest matching run #150 is legacy and completed; the resume step was skipped. The run wrote two metadata files but zero candidate packs. No current-revision run or active run was found in the latest Actions window.",
+      "No AI or translation live probe was made because quota and provider rate-limit blockers remain; no quota was bypassed.",
+      "Pages #1962 deployed the exact inspected Main head. Site Health #335 passed on 70fab; the only change from the R125 #137 application-code head through current Main is the checkpoint document."
+    ]
+  }
 }
