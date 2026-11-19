@@ -130,7 +130,8 @@
     "R105 #207, R123 #158, Safety #84 and Pages #1918 passed on v50; live AI generation/country intent, live ASR and physical audio remain unverified.",
     "v51 introduced a missing comma between the Galician and Telugu QUICK entries. R105 #208 and R123 #159 caught the SyntaxError before Worker deployment. v52 corrects the syntax and bumps all cache references; re-verification is pending.",
     "R105 #209 exposed a test-only cross-realm strict-deep-equality issue after the v52 JavaScript syntax correction; the test now shallow-copies QUICK.te before comparison. R123 #160 passed and deployed the Worker; R9e #132 and R125 #116 are still pending/in progress.",
-    "R125 #125 completed the full v54 browser matrix (98 languages × 27 sections = 2,646 applications; 248 country profiles) with zero visible exact/partial/unresolved English findings, but one locally intercepted Gujarati dynamic translation fallback for Back, Page navigation, Voice reply and Voice. v55 adds provisional Gujarati QUICK labels, a zero-provider regression, and refreshes all 44 HTML cache references; R125 #126 is running the v55 full matrix."
+    "R125 #125 completed the full v54 browser matrix (98 languages × 27 sections = 2,646 applications; 248 country profiles) with zero visible exact/partial/unresolved English findings, but one locally intercepted Gujarati dynamic translation fallback for Back, Page navigation, Voice reply and Voice. v55 adds provisional Gujarati QUICK labels, a zero-provider regression, and refreshes all 44 HTML cache references; R125 #126 is running the v55 full matrix.",
+    "R125 #126 on v55 completed the 98×27 matrix and found zero visible English leaks, but one Punjabi dynamic translation fallback for Back, Page navigation, Voice reply and Voice. v56 adds provisional Punjabi QUICK labels based on existing Punjabi pack vocabulary and improves the static audit so intercepted non-quota 418 responses expose every fallback language/page without reaching a provider; R125 #127 is running."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -188,9 +189,9 @@
     }
   },
   "remainingChecks": [
-    "R125 #126 on v55 is running the full 98-language × 27-section browser matrix; require zero exact, partial, unresolved and dynamic-fallback findings before acceptance.",
-    "If R125 #126 reports findings, triage exact source keys and affected pages; do not suppress findings or invoke dynamic translation to make the audit pass.",
-    "Review Divehi's 58 English-overlap findings and exact duplicate-output groups with qualified native reviewers; do not promote candidate packs.",
+    "R125 #127 on v56 must finish the full 98-language × 27-section matrix; require zero exact, partial, unresolved and dynamic-fallback findings, including the expanded per-language/page fallback diagnostic.",
+    "If R125 #127 reports additional fallback languages, triage the complete language/page list and add only locally supported provisional labels; do not suppress findings or call translation providers.",
+    "Review Divehi's 58 English-overlap findings and reconcile the duplicate-output count: the checkpoint records 28 groups across 11 languages, while the saved read-only report dated 2026-11-15 records 27 groups across 10 languages.",
     "Obtain qualified linguistic review for all 98 locale packs; none is published or linguistically certified.",
     "Keep live AI chat and translation-backend availability unknown until a permitted quota-safe generation/translation probe can run without bypassing daily_free_ai_limit or Google HTTP429.",
     "Certify physical microphone input and audible speaker output on real Android, iPhone/iPad and desktop devices; browser/headless audio tests are not hardware certification.",
@@ -199,25 +200,26 @@
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-19T15:35:01Z",
+    "checkedAt": "2026-11-19T15:46:33Z",
     "aiChat": {
       "currentAvailability": "unknown-not-certified",
-      "latestProductionRun": 214,
+      "latestProductionRun": 215,
       "aiBinding": true,
       "productionHealth": "passed",
       "centralSafetyGate": "enabled",
       "failClosed": true,
       "liveGenerationProbe": "skipped-by-policy",
       "generalChatAndCountryIntent": "not-probed",
-      "quotaStatus": "health endpoint confirmed AI binding and safety configuration; no live chat/country-intent inference probe was run. daily_free_ai_limit and Google HTTP429 remain historical blockers."
+      "quotaStatus": "fresh production health endpoint returned ok=true and aiBinding=true; no live chat/country-intent inference probe was run. daily_free_ai_limit and Google HTTP429 remain historical blockers."
     },
     "voiceTranscription": {
-      "programmaticTests": "passed in R123 #163",
+      "programmaticTests": "passed in R123 #164",
       "categoryTranslations": "passed",
       "voiceAcknowledgement": "passed",
       "dynamicVoicePlaceholders": "passed",
+      "androidBrowserProfileTTS": "passed",
       "productionAssetMultilingualAudio": "skipped",
-      "liveASR": "skipped/not-verified",
+      "liveASR": "not-verified",
       "physicalDeviceCertified": false
     },
     "translation": {
@@ -233,11 +235,13 @@
     "countryCurrency": {
       "latestConfirmedRun": 135,
       "latestConfirmedStatus": "passed on v55",
-      "countryProfiles": "248/248",
-      "localizedPages": "44/44",
-      "storedCurrencyAndFallback": "passed",
-      "manualMoroccoPriority": "passed",
-      "manualWorldwidePriority": "passed",
+      "currentRun": 136,
+      "currentRunStatus": "in_progress on v56",
+      "countryProfiles": "248/248 on v55",
+      "localizedPages": "44/44 on v55",
+      "storedCurrencyAndFallback": "passed on v55",
+      "manualMoroccoPriority": "passed on v55",
+      "manualWorldwidePriority": "passed on v55",
       "visibleLocales": [
         "MA/ar",
         "FR/fr",
@@ -248,7 +252,7 @@
       "liveASR": "not-verified"
     },
     "safety": {
-      "latestRun": 89,
+      "latestRun": 90,
       "status": "success",
       "blockedCases": 4,
       "benignLand": "allowed_pending_human_review"
@@ -285,7 +289,7 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-11-19T15:36:32Z",
+    "checkedAt": "2026-11-19T15:46:33Z",
     "candidateCommit": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
     "completedCount": 97,
     "remainingCount": 1,
@@ -16142,9 +16146,9 @@
     "decision": "NO-GO"
   },
   "latestExecution": {
-    "checkedAt": "2026-11-19T15:36:32Z",
-    "mainCommit": "831654fa56dd4c4e6b5074e741186ade89c42da7",
-    "runtimeVersion": "20261119-r125-global-quick-v55",
+    "checkedAt": "2026-11-19T15:46:54Z",
+    "mainCommit": "f237e2d2fe55a29a5d152327ff7aa79f52f72ef8",
+    "runtimeVersion": "20261119-r125-global-quick-v56",
     "changes": {
       "provisionalGujaratiQuickLabels": {
         "Back": "પાછળ",
@@ -16153,16 +16157,25 @@
         "voice": "વૉઇસ",
         "nativeReviewRequired": true
       },
+      "provisionalPunjabiQuickLabels": {
+        "Back": "ਵਾਪਸ",
+        "pageNavigation": "ਪੰਨਿਆਂ ਦੀ ਨੈਵੀਗੇਸ਼ਨ",
+        "voiceReply": "ਵੌਇਸ ਜਵਾਬ",
+        "voice": "ਵੌਇਸ",
+        "derivedFromExistingPackVocabulary": true,
+        "nativeReviewRequired": true
+      },
       "cacheReferencesUpdated": 44,
       "regressionsAdded": [
-        "Gujarati quick labels resolve locally without provider calls",
-        "R105 and R9e assert Gujarati quick labels and v55 runtime",
-        "R125 preflight asserts Gujarati quick labels and v55 runtime"
+        "Gujarati and Punjabi quick labels resolve locally without provider calls",
+        "R105 and R9e assert Gujarati/Punjabi quick labels and v56 runtime",
+        "R125 preflight asserts Gujarati/Punjabi quick labels and v56 runtime",
+        "R125 audit returns a locally intercepted non-quota 418 and records every fallback language and page path; it no longer lets the first 503 session breaker hide later fallback languages"
       ]
     },
     "previousR125": {
-      "run": 125,
-      "runId": 44543965618,
+      "run": 126,
+      "runId": 44556294910,
       "status": "completed",
       "conclusion": "failure",
       "languages": 98,
@@ -16173,65 +16186,84 @@
       "visibleEnglishPartial": 0,
       "visibleEnglishUnresolved": 0,
       "dynamicFallbacks": 1,
-      "fallbackLanguage": "gu",
+      "fallbackLanguage": "pa",
       "fallbackStrings": [
         "Back",
         "Page navigation",
         "Voice reply",
         "Voice"
       ],
-      "reason": "Gujarati QUICK labels were missing; the browser intercepted the provider request, so no translation quota was consumed."
+      "reason": "Punjabi QUICK labels were missing; the provider request was intercepted locally. The audit's previous 503 stub also activated the client session breaker and could hide later fallbacks; this was corrected in v56."
     },
     "currentR125": {
-      "run": 126,
-      "runId": 44556294910,
+      "run": 127,
+      "runId": 44558517171,
       "status": "in_progress",
       "preflight": "passed",
       "matrix": "running",
-      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44556294910"
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44558517171"
     },
     "latestRuns": {
       "R105": {
-        "run": 214,
+        "run": 215,
         "status": "success",
-        "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44556294783"
+        "healthOk": true,
+        "aiBinding": true,
+        "liveChatAndCountryIntentProbes": "skipped-by-policy",
+        "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44558517698"
       },
       "R9e": {
-        "run": 135,
-        "status": "success",
-        "countryProfiles": 248,
-        "localizedPages": 44,
-        "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44556294885"
+        "run": 136,
+        "status": "in_progress",
+        "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44558517399"
       },
       "R123": {
-        "run": 163,
+        "run": 164,
         "status": "success",
         "programmaticTTS": "passed",
         "voiceAcknowledgement": "passed",
         "dynamicVoicePlaceholders": "passed",
-        "liveASR": "skipped",
+        "liveASR": "not-verified",
         "physicalAudio": "not-certified",
-        "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44556294948"
+        "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44558517400"
       },
       "Safety": {
-        "run": 89,
+        "run": 90,
         "status": "success",
         "blockedCases": 4,
-        "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44556294689"
+        "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44558517153"
       },
       "Pages": {
-        "run": 1937,
+        "run": 1939,
         "status": "success",
-        "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44556293016"
+        "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44558513653"
       }
     },
     "notes": [
-      "R105 #214 confirmed production /api/health ok=true, aiBinding=true, centralSafetyGate enabled and failClosed=true; RUN_LIVE_AI_PROBES=false, so live chat and country-intent generation remain unverified.",
-      "R9e #135 passed 248 country profiles one-by-one, Morocco priority, Worldwide priority, MA/ar, FR/fr, IN/hi, CN/zh, all 44 localized pages, Safety Gate and Voice/PWA cache; live AI probes and live ASR were skipped.",
-      "R123 #163 passed programmatic TTS/audio envelope, language/intent, Android browser-profile playback, voice acknowledgement and placeholder tests; production multilingual audio asset verification was skipped and no physical-device certification was performed.",
-      "Safety #89 blocked weapons/explosives, explicit sexual content, fake documents and ownership/consent violations; benign land remained pending human review.",
-      "Pages deployment #1937 succeeded.",
-      "Candidate branch unchanged; no candidate pack writes, translations, publication or linguistic certification this pass."
+      "R105 #215 deployed v56 and confirmed production /api/health ok=true, aiBinding=true, centralSafetyGate enabled and failClosed=true; RUN_LIVE_AI_PROBES=false, so live chat and country-intent generation remain unverified.",
+      "R123 #164 passed programmatic TTS/audio envelope, language/intent, Android browser-profile playback, voice acknowledgement, category translation and placeholder tests; production multilingual audio asset verification was skipped and no physical-device certification was performed.",
+      "Safety #90 blocked weapons/explosives, explicit sexual content, fake documents and ownership/consent violations; benign land remained pending human review.",
+      "Pages deployment #1939 succeeded.",
+      "R125 #127 and R9e #136 are still running on v56; candidate branch unchanged and no candidate packs were written, translated, published or linguistically certified.",
+      "The user-provided 63/98 figure is stale relative to the files read: 98/98 packs are structurally complete, 97/98 pass the saved candidate quality gate, and Divehi is the remaining quality failure."
     ]
+  },
+  "duplicateAuditReconciliation": {
+    "checkpointCount": {
+      "groups": 28,
+      "languages": 11
+    },
+    "savedReadOnlyReport": {
+      "file": "docs/locale-candidates-20261008/full98-readonly-structural-duplicate-audit-20261115.json",
+      "checkedAt": "2026-11-15T10:46:35Z",
+      "groups": 27,
+      "languages": 10,
+      "excludedExpectedBrandGroup": {
+        "language": "tk",
+        "value": "SEEKVERA"
+      }
+    },
+    "reconciled": false,
+    "required": true
   }
 }
