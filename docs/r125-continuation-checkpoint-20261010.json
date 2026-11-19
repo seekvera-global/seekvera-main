@@ -12847,5 +12847,143 @@
       "No candidate pack or metadata was changed, no translation provider was called, and no AI quota was consumed.",
       "Dzongkha wording is provisional and not linguistically certified."
     ]
+  },
+  "latestAutomationPass20261119V40": {
+    "checkedAt": "2026-11-19T03:41:23Z",
+    "filesRead": {
+      "checkpoint": {
+        "path": "docs/r125-continuation-checkpoint-20261010.json",
+        "ref": "main",
+        "blobSha": "6b12b95c54f49eda15eca987b9c2deff70fd0035"
+      },
+      "resumeSummary": {
+        "path": "docs/locale-candidates-20261008/resume-summary.json",
+        "ref": "work/r125-locale-candidates-20261008",
+        "blobSha": "551a1cad78540f437e67d1d0a88ae1e844478022",
+        "updatedAt": "2026-11-17T22:31:44Z"
+      },
+      "resumeLog": {
+        "path": "docs/locale-candidates-20261008/resume-latest.log",
+        "ref": "work/r125-locale-candidates-20261008",
+        "blobSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b"
+      },
+      "resumeWorkflow": {
+        "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+        "ref": "main",
+        "blobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2"
+      }
+    },
+    "v39": {
+      "mergeCommit": "daf602d541ed5912e80b67ca629aa6515e9a6b88",
+      "readback": {
+        "i18nRuntimeVersion": "20261119-r125-global-quick-v39",
+        "dzongkhaQuickMapPresent": true,
+        "sellerPlansWaitForLocalePack": true,
+        "sellerPlansUseTFor": true,
+        "sellerPlansUseTextContent": true,
+        "sellerPlansAvoidDatabaseInnerHTML": true,
+        "sellerPlansObserveLanguageChanges": true,
+        "RangeBasedVisibleTextAuditPresent": true
+      },
+      "postMergeR125": "not observed; 98 languages x 27 sections (2,646 applications) still requires a fresh run",
+      "postMergeR9e": "not observed; v39 country/currency and 44-page verification still requires a fresh run",
+      "postMergePagesDeployment": "not observed in current checkpoint",
+      "safety": "latest confirmed Safety #71 passed on v38; v39 recheck pending",
+      "voice": "latest confirmed R123 #145 programmatic pass on v38; live ASR and physical device tests pending"
+    },
+    "resumeWorkflow": {
+      "trigger": "workflow_dispatch only; no schedule trigger",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestMatchingRun": {
+        "number": 150,
+        "id": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "jobId": 117209410195,
+        "resumeStep": "skipped",
+        "auditStep": "success",
+        "auditOutput": {
+          "completedCount": 97,
+          "remaining": [
+            "dv"
+          ],
+          "readyForLinguisticReview": false,
+          "exitCode": "not-run"
+        },
+        "saveProgressStep": "success",
+        "metadataFilesWritten": 2,
+        "candidatePackWrites": 0,
+        "translationRequests": 0,
+        "aiQuotaUsed": 0
+      },
+      "currentRevisionRunObserved": false,
+      "candidateWritesDeferred": true,
+      "note": "The latest matching run available is legacy #150, not a CI verification of the current Main workflow. Current workflow persists candidate-stage changes only when run_translations or repair_candidates is explicitly true. No candidate write was started in this pass."
+    },
+    "commitStatusObservation": {
+      "v39Commit": "daf602d541ed5912e80b67ca629aa6515e9a6b88",
+      "combinedStatusContexts": 0,
+      "commitAssociatedPrWorkflowRunsReturned": 0,
+      "scope": "Commit-associated lookup returned PR-triggered runs only; this does not replace a repository-wide Actions run listing."
+    },
+    "candidateState": {
+      "structural": 98,
+      "total": 98,
+      "qualityGatePassed": 97,
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "published": 0,
+      "linguisticCertification": 0,
+      "productionKeys": 1045,
+      "candidateSourceKeys": 1118,
+      "unpublishedKeyDelta": 73
+    },
+    "runtimeAvailability": {
+      "aiBinding": "present",
+      "productionHealth": "last confirmed passed in R105 #194 on v38",
+      "liveAIChat": "unknown-not-probed",
+      "translationBackend": "unknown-not-probed",
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP 503 all_translation_backends_unavailable",
+        "Dhivehi read timeouts"
+      ],
+      "liveAiProbesThisPass": 0,
+      "translationRequestsThisPass": 0,
+      "quotaUsedThisPass": 0,
+      "quotaBypassAttempts": 0
+    },
+    "countryCurrency": "last confirmed R9e #108 passed on v38: 248/248 country profiles, 44/44 localized pages, Morocco/Worldwide priority and MA/ar, FR/fr, IN/hi, CN/zh; v39 verification pending",
+    "safety": "last confirmed Safety #71 passed on v38; prohibited categories blocked and benign land allowed pending human review; v39 recheck pending",
+    "voice": {
+      "programmaticTTS": "last confirmed passed in R123 #145 on v38",
+      "browserProfileAudio": "passed",
+      "liveASR": "not verified",
+      "physicalMicrophoneSpeakerCertification": false
+    },
+    "checkout": "inactive pending merchant configuration and end-to-end payment, forged-reference rejection and settlement verification",
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "quotaBypassAttempts": 0,
+      "candidateBranchModified": false,
+      "decision": "NO-GO"
+    },
+    "nextActions": [
+      "Run or observe a fresh audit-only R125 against the merged v39 Main revision; require zero exact, partial, unresolved and dynamic-fallback findings across 98 languages x 27 sections and 248 country profiles.",
+      "Verify a fresh R9e browser audit against v39, including 248 country profiles, 44 localized pages, stored country/currency, Morocco/Worldwide priority, safety and voice/PWA cache.",
+      "Keep candidate writes deferred while any R125 resume run is active; do not enable translation or repair inputs without a separate explicit authorization and quota-safe reason.",
+      "Resolve Divehi's 58 English-overlap findings with qualified native review; obtain qualified linguistic review for all 98 packs.",
+      "Keep live AI/translation availability unknown until authorized quota-safe probes can run without bypassing daily_free_ai_limit or Google HTTP429.",
+      "Perform physical microphone/speaker tests on real Android, iPhone/iPad and desktop devices; configure merchant account and complete checkout/settlement verification."
+    ]
   }
 }
