@@ -187,7 +187,8 @@
     }
   },
   "remainingChecks": [
-    "R125 #119 on v54 must finish 98 languages × 27 sections and show zero exact, partial, unresolved and dynamic-fallback findings; it was still waiting for Pages asset readiness at the last check.",
+    "Run R125 #121 after the live asset diagnostic; it must reach and complete 98 languages × 27 sections with zero visible findings and zero dynamic fallbacks.",
+    "Resolve the exact live Pages asset/readiness mismatch identified by R125 diagnostic; repository source files themselves pass the expected v54 checks.",
     "Review Divehi's 58 English-overlap findings and 28 duplicate-output groups across 11 languages with qualified native reviewers; do not promote candidate packs.",
     "Obtain qualified linguistic review for all 98 locale packs; none is published or linguistically certified.",
     "Keep live AI chat and translation-backend availability unknown until a permitted quota-safe probe can run without bypassing daily_free_ai_limit or Google HTTP429.",
@@ -283,20 +284,20 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-11-19T12:23:21Z",
+    "checkedAt": "2026-11-19T13:48:58.771Z",
     "candidateCommit": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
     "completedCount": 97,
     "remainingCount": 1,
     "firstFailure": "dv",
     "failureReason": "english_overlap:58",
-    "latestProviderBlocker": "HTTP 503 all_translation_backends_unavailable; Dhivehi read timeouts; three Workers AI backends unparseable; historical Google HTTP429 and daily_free_ai_limit",
+    "latestProviderBlocker": "HTTP 503 all_translation_backends_unavailable; Dhivehi read timeouts; three Workers AI outputs unparseable; historical daily_free_ai_limit and Google HTTP429",
     "quotaStillBlocked": true,
     "published": false,
     "linguisticAccuracyCertified": false,
     "readyForLinguisticReview": false,
     "auditPending": true,
     "latestMatchingRun": {
-      "runNumber": 150,
+      "number": 150,
       "runId": 38971104197,
       "createdAt": "2026-10-16T21:41:54Z",
       "event": "push",
@@ -336,7 +337,10 @@
       "translationRequestsSent": 0
     },
     "activeRunObserved": false,
-    "candidateWritesThisPass": 0
+    "candidateWritesThisPass": 0,
+    "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
+    "translationRequests": 0,
+    "aiQuotaUsed": 0
   },
   "builderRepair": {
     "commit": "634a0d31cb571300d658bb24580bdad3cbaeb75b",
@@ -3088,7 +3092,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-19T13:43:18.980Z",
+  "updatedAt": "2026-11-19T13:48:58.771Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -9890,18 +9894,19 @@
     "runId": 44535614640,
     "workflow": ".github/workflows/r125-static-locale-section-audit.yml",
     "createdAt": "2026-11-19T13:39:21Z",
-    "status": "in_progress",
-    "conclusion": null,
+    "status": "completed",
+    "conclusion": "failure",
     "headSha": "ee2ec5dd4cffa6ec4e52a75976e04551b3a0716f",
     "runtimeVersion": "20261119-r125-global-quick-v54",
     "languages": 98,
     "sections": 27,
     "sectionLanguageApplications": 2646,
     "countryProfiles": 248,
-    "lastObservedStep": "Wait for Pages to serve the audited locale assets",
+    "matrixStarted": false,
     "dynamicFallbackRequests": null,
     "translationProviderCalls": 0,
-    "note": "Run has not reached the locale matrix yet; do not infer pass/fail from its in-progress state."
+    "failureStage": "Wait for Pages to serve the audited locale assets",
+    "finding": "R125_LATEST_PAGES_ASSETS_TIMEOUT after all readiness retries; locale matrix did not start, so no v54 language/section conclusion is available."
   },
   "latestProductionRuntimeChecks": {
     "checkedAt": "2026-11-19T13:43:18.980Z",
@@ -9939,7 +9944,7 @@
     }
   },
   "latestResumeWorkflowInspection": {
-    "checkedAt": "2026-11-19T13:43:18.980Z",
+    "checkedAt": "2026-11-19T13:48:58.771Z",
     "path": ".github/workflows/r125-hourly-candidate-resume.yml",
     "trigger": "workflow_dispatch only; no schedule",
     "scheduleTriggerPresent": false,
@@ -11883,7 +11888,7 @@
       "r125": "still running; no candidate writes"
     }
   },
-  "latestMainHead": "8e1139fa78ff440ae279732ceb39d7b69288aa6a",
+  "latestMainHead": "196cc34754607b1e80a6350cde9b284f3f510c0d",
   "latestBurmeseRepair20261118": {
     "commit": "86f055faf4d4520564e76fc2b2b1b59366e699ab",
     "version": "20261118-r125-global-quick-v35",
@@ -13490,7 +13495,7 @@
       "checkout is inactive pending merchant configuration"
     ]
   },
-  "lastUpdatedAt": "2026-11-19T13:43:18.980Z",
+  "lastUpdatedAt": "2026-11-19T13:48:58.771Z",
   "latestAutomationPass20261119V43": {
     "checkedAt": "2026-11-19T07:07:23.959Z",
     "mainBaseSha": "1d1d89dd55a1502618f180ea35a151ed436e3101",
@@ -14133,7 +14138,7 @@
     "decision": "NO-GO"
   },
   "latestR125ResumeInspection": {
-    "checkedAt": "2026-11-19T13:43:18.980Z",
+    "checkedAt": "2026-11-19T13:48:58.771Z",
     "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
     "triggers": [
       "workflow_dispatch"
@@ -14162,7 +14167,7 @@
   "quota": {
     "translationRequestsSent": 0,
     "aiQuotaUsed": 0,
-    "providerAvailability": "not probed this pass; latest preserved candidate log still records HTTP 503 all_translation_backends_unavailable and Dhivehi timeouts; historical daily_free_ai_limit and Google HTTP429 remain blockers"
+    "providerAvailability": "not probed this pass; saved resume log still shows HTTP 503 all_translation_backends_unavailable and Dhivehi timeouts; daily_free_ai_limit and Google HTTP429 remain blockers"
   },
   "latestAutomationPass20261119V47": {
     "checkedAt": "2026-11-19T09:48:06Z",
@@ -15543,6 +15548,18 @@
       },
       "providerCalls": 0,
       "note": "All visible leak counts were zero; one intercepted Marathi quick-label request caused the zero-dynamic-fallback gate to fail."
+    },
+    {
+      "run": 119,
+      "runId": 44535614640,
+      "headSha": "ee2ec5dd4cffa6ec4e52a75976e04551b3a0716f",
+      "runtimeVersion": "20261119-r125-global-quick-v54",
+      "status": "completed",
+      "conclusion": "failure",
+      "failureStage": "Pages asset readiness",
+      "matrixStarted": false,
+      "providerCalls": 0,
+      "note": "No language matrix was run; failure is infrastructure/readiness, not evidence of translation defects."
     }
   ],
   "latestAutomationPass20261119V54": {
@@ -15775,5 +15792,61 @@
     "status": "completed",
     "conclusion": "success",
     "headSha": "8e1139fa78ff440ae279732ceb39d7b69288aa6a"
+  },
+  "latestR125AssetReadinessDiagnostic20261119": {
+    "failedRun": {
+      "number": 119,
+      "id": 44535614640,
+      "conclusion": "failure",
+      "reason": "R125_LATEST_PAGES_ASSETS_TIMEOUT"
+    },
+    "diagnosticRun": {
+      "number": 120,
+      "id": 44536839664,
+      "status": "in_progress",
+      "headSha": "6b4447dc499bef5942eb326b2209637207bc0d22",
+      "lastObservedStep": "Install Chromium and system dependencies"
+    },
+    "correctedDiagnosticRun": {
+      "number": 121,
+      "id": 44536946388,
+      "status": "pending",
+      "headSha": "196cc34754607b1e80a6350cde9b284f3f510c0d"
+    },
+    "workflowChanges": [
+      "Added HTTP/status and token-level diagnostic output after asset readiness timeout.",
+      "Corrected literal JavaScript template tokens in the diagnostic check."
+    ],
+    "sourceAssetReadback": {
+      "indexHtmlV54": true,
+      "gamesHtmlJsReference": true,
+      "globalUiCaptionMarker": true,
+      "gamesJsExpectedTitleMarkup": true,
+      "gamesJsNoBadNoTranslateMarker": true,
+      "i18nV54": true,
+      "marathiQuickLabels": true
+    },
+    "note": "Repository source checks pass; the exact live asset/readiness mismatch remains to be identified by the diagnostic run."
+  },
+  "latestQuickLabelCandidateScreen20261119": {
+    "checkedAt": "2026-11-19T13:48:58.771Z",
+    "branch": "work/r125-locale-candidates-20261008",
+    "languagesScreened": [
+      "mr",
+      "gu",
+      "pa",
+      "ps",
+      "ga",
+      "cy",
+      "mi",
+      "ku",
+      "xh"
+    ],
+    "scope": "Four candidate values for Back, Page navigation, Voice reply and Voice",
+    "finding": "Marathi values used for the provisional runtime quick-label repair. Several other candidate values appear semantically suspicious or mistranslated (e.g. Punjabi Back rendered as west, Pashto Back as before/front, Irish Page navigation as paper control); these were not copied into production.",
+    "candidateBranchWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "status": "read-only heuristic screen; qualified native review required"
   }
 }
