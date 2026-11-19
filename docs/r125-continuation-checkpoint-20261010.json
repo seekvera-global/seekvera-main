@@ -3083,7 +3083,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-19T08:05:52Z",
+  "updatedAt": "2026-11-19T09:26:08.606Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -11777,7 +11777,7 @@
     "sourceHash": "6a1126e6a2ce5629",
     "productionSourceCount": 1045,
     "unpublishedUnreviewedKeyDelta": 73,
-    "note": "The prompt's 63/98 figure is not reflected in the current branch files: 98/98 packs are structurally complete; 97/98 pass the saved quality gate."
+    "note": "The current branch files show 98/98 structurally complete, 97/98 passing the saved quality gate, and Divehi as the remaining quality failure; the task prompt's 63/98 figure is stale relative to the current checkpoint and branch summary."
   },
   "latestTamilQuickRepair20261118": {
     "checkedAt": "2026-11-18T19:37:53Z",
@@ -12071,7 +12071,7 @@
       "r125": "still running; no candidate writes"
     }
   },
-  "latestMainHead": "031aabb97014dd64f0d2ef30d850ca963b6ddf5a",
+  "latestMainHead": "07781aab27dc4586da5063357ba3d7ad43cf8e1a",
   "latestBurmeseRepair20261118": {
     "commit": "86f055faf4d4520564e76fc2b2b1b59366e699ab",
     "version": "20261118-r125-global-quick-v35",
@@ -13678,7 +13678,7 @@
       "checkout is inactive pending merchant configuration"
     ]
   },
-  "lastUpdatedAt": "2026-11-19T08:05:52Z",
+  "lastUpdatedAt": "2026-11-19T09:26:08.606Z",
   "latestAutomationPass20261119V43": {
     "checkedAt": "2026-11-19T07:07:23.959Z",
     "mainBaseSha": "1d1d89dd55a1502618f180ea35a151ed436e3101",
@@ -14028,5 +14028,330 @@
     },
     "checkout": "inactive pending merchant configuration and end-to-end payment, forged-reference rejection and settlement verification",
     "decision": "NO-GO"
+  },
+  "latestAutomationPass20261119V45": {
+    "checkedAt": "2026-11-19T09:17:05Z",
+    "mainCommit": "288763a9655bcaa1d589846dcb2b194441c464f0",
+    "runtimeVersion": "20261119-r125-global-quick-v45",
+    "repair": {
+      "language": "to",
+      "name": "Tongan",
+      "labels": {
+        "Back": "Foki",
+        "PageNavigation": "Fakahinohino ki he peesi",
+        "VoiceReply": "Tali ʻaki ʻa e leʻo",
+        "Voice": "Leʻo"
+      },
+      "status": "provisional; native review required",
+      "candidatePackModified": false,
+      "htmlCacheReferencesUpdated": 44,
+      "workflowsUpdated": [
+        "r125-static-locale-section-audit.yml",
+        "r105-final-release.yml",
+        "final-browser-audit-r9.yml"
+      ],
+      "quotaNeutral": true
+    },
+    "precedingR125": {
+      "run": 108,
+      "runId": 44494470110,
+      "conclusion": "failure",
+      "languages": 98,
+      "sections": 27,
+      "applications": 2646,
+      "countries": 248,
+      "exactFindings": 0,
+      "partialFindings": 0,
+      "unresolvedFindings": 0,
+      "dynamicFallback": {
+        "language": "Somali",
+        "requests": 1,
+        "strings": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ]
+      },
+      "externalTranslationProviderRequests": 0
+    },
+    "verification": {
+      "r9e": {
+        "run": 124,
+        "runId": 44494469782,
+        "conclusion": "success",
+        "runtimeVersion": "v45",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "manualMoroccoPriority": "pass",
+        "manualWorldwidePriority": "pass",
+        "visibleLocales": [
+          "MA/ar",
+          "FR/fr",
+          "IN/hi",
+          "CN/zh"
+        ],
+        "safetyGate": "pass",
+        "voiceAndPwaCache": "pass",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r105": {
+        "run": 201,
+        "runId": 44494469746,
+        "conclusion": "success",
+        "aiBinding": true,
+        "productionHealth": "pass",
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "liveAiProbes": false
+      },
+      "r123": {
+        "run": 152,
+        "runId": 44494469894,
+        "conclusion": "success",
+        "programmaticAudio": "pass",
+        "voiceAcknowledgement": "pass",
+        "dynamicVoicePlaceholders": "pass",
+        "browserProfileAudio": "pass",
+        "productionAudioAssetAndMultilingualAudio": "skipped",
+        "physicalDevicesCertified": false
+      },
+      "safety": {
+        "run": 79,
+        "runId": 44494469736,
+        "conclusion": "success"
+      },
+      "pages": {
+        "run": 1909,
+        "runId": 44494468397,
+        "conclusion": "success"
+      }
+    },
+    "candidatePackWrites": 0,
+    "candidateMetadataWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false
+  },
+  "latestAutomationPass20261119V46": {
+    "checkedAt": "2026-11-19T09:26:08.606Z",
+    "mainCommit": "07781aab27dc4586da5063357ba3d7ad43cf8e1a",
+    "runtimeVersion": "20261119-r125-global-quick-v46",
+    "repair": {
+      "language": "so",
+      "name": "Somali",
+      "labels": {
+        "Back": "Dib u noqo",
+        "PageNavigation": "Hagidda bogagga",
+        "VoiceReply": "Jawaab cod ah",
+        "Voice": "Cod"
+      },
+      "status": "provisional; native review required",
+      "evidence": [
+        "https://www.englishtosomali.org/dictionary/back/",
+        "https://www.translate.com/dictionary/english-somali/guidance-13196940",
+        "https://glosbe.com/en/so/page",
+        "https://www.translate.com/dictionary/english-somali/voice-32679372",
+        "https://www.zorc.net/RDZorc/SOMALI/SOMALI-ENGLISH%3DDICTIONARY.pdf"
+      ],
+      "candidatePackModified": false,
+      "htmlCacheReferencesUpdated": 44,
+      "workflowsUpdated": [
+        "r125-static-locale-section-audit.yml",
+        "r105-final-release.yml",
+        "final-browser-audit-r9.yml"
+      ],
+      "quotaNeutral": true
+    },
+    "precedingR125": {
+      "run": 108,
+      "runId": 44494470110,
+      "conclusion": "failure",
+      "runtimeVersion": "v45",
+      "languages": 98,
+      "sections": 27,
+      "applications": 2646,
+      "countries": 248,
+      "exactFindings": 0,
+      "partialFindings": 0,
+      "unresolvedFindings": 0,
+      "dynamicFallback": {
+        "language": "Somali",
+        "requests": 1,
+        "strings": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ]
+      },
+      "externalTranslationProviderRequests": 0
+    },
+    "runs": {
+      "r125": {
+        "run": 109,
+        "runId": 44495649316,
+        "status": "in_progress",
+        "lastObservedStep": "Install Chromium and system dependencies",
+        "resultPending": true
+      },
+      "r9e": {
+        "run": 125,
+        "runId": 44495649543,
+        "status": "in_progress",
+        "lastObservedStep": "Install Chromium browser test runtime",
+        "resultPending": true
+      },
+      "r105": {
+        "run": 202,
+        "runId": 44495649516,
+        "conclusion": "success",
+        "aiBinding": true,
+        "productionHealth": "pass",
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "liveAiProbes": false
+      },
+      "r123": {
+        "run": 153,
+        "runId": 44495649312,
+        "conclusion": "success",
+        "programmaticAudio": "pass",
+        "voiceAcknowledgement": "pass",
+        "dynamicVoicePlaceholders": "pass",
+        "browserProfileAudio": "pass",
+        "productionAudioAssetAndMultilingualAudio": "skipped",
+        "physicalMicrophoneSpeakerCertified": false
+      },
+      "safety": {
+        "run": 80,
+        "runId": 44495649464,
+        "conclusion": "success",
+        "blockedCases": 4,
+        "benignListing": "allowed_pending_human_review"
+      },
+      "pages": {
+        "run": 1910,
+        "runId": 44495647504,
+        "conclusion": "success"
+      }
+    },
+    "candidateState": {
+      "structural": "98/98",
+      "qualityGate": "97/98",
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "published": 0,
+      "linguisticCertification": 0,
+      "sourceKeys": 1118,
+      "productionKeys": 1045,
+      "unpublishedKeyDelta": 73,
+      "duplicateGroups": 28,
+      "duplicateLanguages": [
+        "ig",
+        "dz",
+        "ti",
+        "kl",
+        "rw",
+        "to",
+        "ku",
+        "xh",
+        "st",
+        "tn",
+        "dv"
+      ]
+    },
+    "resumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "trigger": "workflow_dispatch only",
+      "scheduleTriggerPresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestMatchingRun": {
+        "run": 150,
+        "runId": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "resumeStep": "skipped",
+        "auditStep": "success",
+        "candidatePackWrites": 0,
+        "metadataFilesWritten": 2
+      },
+      "recentRunsScanned": 100,
+      "activeRuns": 0,
+      "currentRevisionRunObserved": false,
+      "candidateWritesThisPass": 0
+    },
+    "ai": {
+      "binding": true,
+      "productionHealth": "pass",
+      "liveGeneration": "not-probed; RUN_LIVE_AI_PROBES=false",
+      "countryIntentProbe": "skipped-by-policy",
+      "translationBackend": "not-probed",
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable"
+      ],
+      "translationRequestsThisPass": 0,
+      "aiQuotaUsedThisPass": 0,
+      "quotaBypassAttempts": 0
+    },
+    "voice": {
+      "programmaticTTS": "pass",
+      "voiceAcknowledgement": "pass",
+      "dynamicVoicePlaceholders": "pass",
+      "androidBrowserProfileAudio": "pass",
+      "productionAudioAsset": "skipped",
+      "liveASR": "not-verified",
+      "physicalMicrophoneSpeakerCertified": false
+    },
+    "checkout": "inactive pending merchant configuration and end-to-end payment, forged-reference rejection and settlement verification",
+    "candidatePackWrites": 0,
+    "candidateMetadataWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "decision": "NO-GO"
+  },
+  "latestR125ResumeInspection": {
+    "checkedAt": "2026-11-19T09:26:08.606Z",
+    "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
+    "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
+    "triggers": [
+      "workflow_dispatch"
+    ],
+    "scheduleTriggerPresent": false,
+    "runTranslationsDefault": false,
+    "repairCandidatesDefault": false,
+    "latestRun": {
+      "number": 150,
+      "id": 38971104197,
+      "createdAt": "2026-10-16T21:41:54Z",
+      "status": "completed",
+      "conclusion": "success",
+      "workflowRevision": "legacy",
+      "resumeStep": "skipped",
+      "auditStep": "success",
+      "saveProgress": "success",
+      "candidatePackWrites": 0,
+      "metadataFilesWritten": 2
+    },
+    "currentRevisionRunObserved": false,
+    "activeRunsObserved": 0,
+    "recentRepositoryRunsScanned": 100,
+    "candidateWritesThisPass": 0,
+    "interpretation": "The latest matching run remains legacy #150. No active or newer resume-workflow run was found in the latest 100 repository runs. The current workflow is manual-only; candidate writes remain disabled by default and no candidate files were changed."
+  },
+  "quota": {
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "providerAvailability": "not probed; historical daily_free_ai_limit, Google HTTP429 and HTTP503 remain blockers"
   }
 }
