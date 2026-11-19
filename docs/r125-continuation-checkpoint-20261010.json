@@ -137,7 +137,8 @@
     "Seller plan rendering was inserting local-pack translations into the DOM without marking them as already localized; the global MutationObserver then attempted to translate translated values again (e.g. Business Monthly -> Kgwedi le Kgwedi ya Kgwebo). Canonical Supabase rows were verified; renderer guard now preserves translated output while leaving missing strings auditable.",
     "R125 #129 remained in the Pages readiness step because the workflow hardcoded stale games.js v20261117 and i18n-ui.js v56 refs while checked-out pages referenced games.js v20261119-proper-name-exclusions and i18n-ui.js v57. The gate was repaired to derive refs from source pages; the old run is not yet complete and the next audit uses a new concurrency group.",
     "The first dynamic R125 asset-ref workflow patch contained over-escaped grep and shell quoting; readback caught it before claiming success. Corrected the regex and shell quoting, and moved the next audit to concurrency group v3.",
-    "R125 readiness still contained an obsolete assertion requiring the old game-title markup and rejecting data-no-translate names. Updated it to the new proper-name spans while preserving checks for translatable categories and descriptions; the next audit uses concurrency group v4."
+    "R125 readiness still contained an obsolete assertion requiring the old game-title markup and rejecting data-no-translate names. Updated it to the new proper-name spans while preserving checks for translatable categories and descriptions; the next audit uses concurrency group v4.",
+    "R125 #132 exposed a Bash syntax error caused by two doubled trailing backslashes in the dynamic asset readiness condition. Corrected both to single line-continuation backslashes and moved the next audit to concurrency group v5."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -207,7 +208,8 @@
     "Audit the live Supabase seller-plan names and descriptions; map stable plan codes to canonical source keys only after verifying actual row values and complete localization coverage.",
     "Re-run R125 after seller-plan source-aware no-translate guard; confirm only already-localized values are excluded and missing plan names/descriptions/period labels remain flagged.",
     "Confirm repaired R125 run starts the matrix after deriving live asset refs from index.html and games.html; do not wait on stale #129/#130 readiness gates.",
-    "Verify R125 #133 passes live asset readiness and the revised proper-name checks before running the full 98×27 matrix."
+    "Verify R125 #133 passes live asset readiness and the revised proper-name checks before running the full 98×27 matrix.",
+    "Confirm R125 #134 passes the Pages readiness shell block and starts the locale matrix; do not treat #132/#133 as matrix results."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
@@ -13593,6 +13595,35 @@
           }
         ],
         "note": "Run #132 cannot be treated as a valid result for the latest game-title markup; the repaired #133 must pass readiness and matrix."
+      },
+      "lineContinuationRepair": {
+        "checkedAt": "2026-11-19T16:23:40Z",
+        "finding": "R125 #132 failed before matrix execution with Bash syntax error near &&. Readback showed two trailing backslashes on the first two dynamically interpolated grep lines, which escaped each other instead of continuing the shell command.",
+        "repair": "Removed one trailing backslash from each affected line; verified every continuation in the readiness condition is exactly one backslash. Moved the next run to concurrency group v5.",
+        "fixedLines": [
+          114,
+          115
+        ],
+        "priorRuns": [
+          {
+            "run": 132,
+            "runId": 44565299565,
+            "status": "failure",
+            "cause": "stale game markup assertion; workflow revision before that assertion was updated"
+          },
+          {
+            "run": 133,
+            "runId": 44565471305,
+            "status": "in_progress",
+            "cause": "workflow revision with doubled line continuations; no result accepted"
+          },
+          {
+            "run": 134,
+            "expectedRevision": "single-backslash line continuations and current game markup",
+            "concurrencyGroup": "seekvera-r125-static-locale-audit-v5"
+          }
+        ],
+        "note": "No locale matrix result is claimed from #132 or #133."
       }
     }
   },
@@ -16688,8 +16719,8 @@
     },
     "workflowRepair": {
       "file": ".github/workflows/r125-static-locale-section-audit.yml",
-      "change": "Dynamic asset refs now use correct shell quoting; readiness checks now expect proper-name game-title spans and still require game categories/descriptions to remain translatable; concurrency group v4.",
-      "purpose": "Keep readiness checks aligned with the audited source instead of rejecting the intended localization exclusions."
+      "change": "Dynamic asset refs and game-title assertions are now aligned; the two malformed line continuations were corrected to one backslash each; concurrency group v5.",
+      "purpose": "Allow the quota-neutral R125 audit to pass Pages readiness and reach the 98×27 matrix."
     }
   },
   "latestSupabaseSecurityAdvisory20261119": {
@@ -16833,6 +16864,35 @@
         }
       ],
       "note": "Run #132 cannot be treated as a valid result for the latest game-title markup; the repaired #133 must pass readiness and matrix."
+    },
+    "lineContinuationRepair": {
+      "checkedAt": "2026-11-19T16:23:40Z",
+      "finding": "R125 #132 failed before matrix execution with Bash syntax error near &&. Readback showed two trailing backslashes on the first two dynamically interpolated grep lines, which escaped each other instead of continuing the shell command.",
+      "repair": "Removed one trailing backslash from each affected line; verified every continuation in the readiness condition is exactly one backslash. Moved the next run to concurrency group v5.",
+      "fixedLines": [
+        114,
+        115
+      ],
+      "priorRuns": [
+        {
+          "run": 132,
+          "runId": 44565299565,
+          "status": "failure",
+          "cause": "stale game markup assertion; workflow revision before that assertion was updated"
+        },
+        {
+          "run": 133,
+          "runId": 44565471305,
+          "status": "in_progress",
+          "cause": "workflow revision with doubled line continuations; no result accepted"
+        },
+        {
+          "run": 134,
+          "expectedRevision": "single-backslash line continuations and current game markup",
+          "concurrencyGroup": "seekvera-r125-static-locale-audit-v5"
+        }
+      ],
+      "note": "No locale matrix result is claimed from #132 or #133."
     }
   }
 }
