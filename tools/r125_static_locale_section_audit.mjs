@@ -200,7 +200,7 @@ try {
   const paths = [...new Set(hrefs.map(href => new URL(href, BASE).pathname))];
   assert(paths.length >= 25, 'unique section paths below expected minimum: ' + paths.length);
 
-  // Neon Highway is a named game title; its dedicated game-title assertion below still verifies any supplied localized title.
+  // Neon Highway is an intentionally preserved game proper name; visible game titles stay source-identical across locales.
   const approvedProperNouns = new Set(['YouTube Music', 'United Kingdom', 'United States', 'Neon Highway']);
   const candidateEnglish = sourceKeys.filter(value =>
     value.length >= 12 &&
@@ -479,15 +479,23 @@ try {
         console.log('R125_URDU_SELLER_PLAN_DIAGNOSTIC', JSON.stringify(diagnostic));
       }
       if (path.endsWith('/games.html')) {
-        const expectedGameTitle = String(packs[language]?.['Neon Highway'] || 'Neon Highway').trim();
-        if (expectedGameTitle !== 'Neon Highway') {
-          const renderedTitles = await page.evaluate(() => ({
-            selected: document.querySelector('#gameTitle')?.textContent?.trim() || '',
-            firstCard: document.querySelector('#gameGrid .game b')?.textContent?.trim() || ''
+        const renderedTitles = await page.evaluate(() => {
+          const selected = document.querySelector('#gameTitle');
+          const cards = [...document.querySelectorAll('#gameGrid .game b span')].map(node => ({
+            text: node.textContent.trim(),
+            noTranslate: node.hasAttribute('data-no-translate')
           }));
-          assert.equal(renderedTitles.selected, expectedGameTitle, 'localized selected game title: ' + language);
-          assert.equal(renderedTitles.firstCard, expectedGameTitle, 'localized game card title: ' + language);
-        }
+          return {
+            selected: selected?.textContent?.trim() || '',
+            selectedNoTranslate: selected?.hasAttribute('data-no-translate') || false,
+            cards
+          };
+        });
+        assert.equal(renderedTitles.selected, 'Neon Highway', 'preserved selected game proper name: ' + language);
+        assert.equal(renderedTitles.selectedNoTranslate, true, 'selected game proper-name marker: ' + language);
+        assert.equal(renderedTitles.cards.length, 50, 'all 50 game cards rendered: ' + language);
+        assert.equal(renderedTitles.cards[0]?.text, 'Neon Highway', 'preserved first game-card proper name: ' + language);
+        assert(renderedTitles.cards.every(card => card.noTranslate), 'all game-card titles carry proper-name markers: ' + language);
       }
       const leaks = visibleEnglish.filter(value =>
         typeof packs[language]?.[value] === 'string' &&
