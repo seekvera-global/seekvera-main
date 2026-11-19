@@ -133,7 +133,8 @@
     "R125 #125 completed the full v54 browser matrix (98 languages × 27 sections = 2,646 applications; 248 country profiles) with zero visible exact/partial/unresolved English findings, but one locally intercepted Gujarati dynamic translation fallback for Back, Page navigation, Voice reply and Voice. v55 adds provisional Gujarati QUICK labels, a zero-provider regression, and refreshes all 44 HTML cache references; R125 #126 is running the v55 full matrix.",
     "R125 #126 on v55 completed the 98×27 matrix and found zero visible English leaks, but one Punjabi dynamic translation fallback for Back, Page navigation, Voice reply and Voice. v56 adds provisional Punjabi QUICK labels based on existing Punjabi pack vocabulary and improves the static audit so intercepted non-quota 418 responses expose every fallback language/page without reaching a provider; R125 #127 is running.",
     "R125 #128 on v57 completed all 98×27 applications and 248 country profiles with zero visible English leak findings, but failed the no-dynamic-fallback gate: 1,178 browser-side /api/ui-translate calls across 97 languages and 133 unique strings. All were intercepted locally; zero provider/AI/Pollinations requests and zero quota used. 60 strings exist only in the unpublished candidate source; 73 are absent from candidate source.",
-    "R105 #217 and R123 #166 stopped before deployment because tools/test-locale-cognates.cjs still expected the old <b>${g.name}</b> markup after the proper-name exclusion repair. Audio unit tests and live Arabic homepage/31 category-description checks passed; the regression assertion is corrected and must be rerun."
+    "R105 #217 and R123 #166 stopped before deployment because tools/test-locale-cognates.cjs still expected the old <b>${g.name}</b> markup after the proper-name exclusion repair. Audio unit tests and live Arabic homepage/31 category-description checks passed; the regression assertion is corrected and must be rerun.",
+    "Seller plan rendering was inserting local-pack translations into the DOM without marking them as already localized; the global MutationObserver then attempted to translate translated values again (e.g. Business Monthly -> Kgwedi le Kgwedi ya Kgwebo). Canonical Supabase rows were verified; renderer guard now preserves translated output while leaving missing strings auditable."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -200,7 +201,8 @@
     "Configure a real merchant account and complete end-to-end checkout, payment, refund, settlement and webhook verification before enabling checkout.",
     "Re-run R125 after the proper-name exclusions for game titles, Al Jazeera and Intl.DisplayNames country badges; require the dynamic fallback count to fall without excluding descriptions, categories, plan copy or other genuine UI.",
     "Resolve the remaining dynamic fallback strings: 60 are in the unpublished candidate source and 73 are absent from candidate source. Do not publish unreviewed packs or disguise translatable UI as no-translate.",
-    "Audit the live Supabase seller-plan names and descriptions; map stable plan codes to canonical source keys only after verifying actual row values and complete localization coverage."
+    "Audit the live Supabase seller-plan names and descriptions; map stable plan codes to canonical source keys only after verifying actual row values and complete localization coverage.",
+    "Re-run R125 after seller-plan source-aware no-translate guard; confirm only already-localized values are excluded and missing plan names/descriptions/period labels remain flagged."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
@@ -9955,10 +9957,20 @@
     "checkedAt": "2026-11-19T16:02:36Z",
     "headSha": "d6df957911d1692b3457535903b0091217be3ae9",
     "r105": {
-      "run": 217,
-      "runId": 44563363979,
-      "status": "failure",
-      "failure": "tools/test-locale-cognates.cjs asserted obsolete game-title markup; deployment and production-health steps skipped"
+      "run": 218,
+      "runId": 44563893636,
+      "status": "success",
+      "sourceValidation": "passed",
+      "localeTargetNames": "98/98",
+      "quotaGuard": "passed",
+      "workerDeployment": "success",
+      "productionHealth": "passed",
+      "aiBinding": true,
+      "centralSafetyGate": "enabled",
+      "failClosed": true,
+      "liveChatProbe": "skipped-by-policy",
+      "countryIntentProbe": "skipped-by-policy",
+      "aiQuotaUsed": 0
     },
     "r9e": {
       "run": 137,
@@ -9979,12 +9991,19 @@
       "liveAiProbes": "skipped-by-policy"
     },
     "r123": {
-      "run": 166,
-      "runId": 44563364475,
-      "status": "failure",
-      "failure": "same stale tools/test-locale-cognates.cjs assertion; audio unit checks and live Arabic home/31 descriptions passed; deploy skipped",
-      "programmaticAudio": "passed before stale assertion",
-      "physicalDeviceCertified": false
+      "run": 167,
+      "runId": 44563893734,
+      "status": "success",
+      "audioAuthority": "passed",
+      "ttsEnvelope": "passed",
+      "languageIntentCases": "12/12 passed",
+      "arabicDialectContinuity": "passed",
+      "voiceAcknowledgement": "passed",
+      "dynamicVoicePlaceholders": "passed",
+      "androidBrowserProfilePlayback": "passed",
+      "productionAssetMultilingualAudioStep": "skipped",
+      "liveAsr": "not-certified",
+      "physicalMicrophoneSpeakerCertification": false
     },
     "safety": {
       "run": 91,
@@ -9999,9 +10018,9 @@
       "benignLand": "allowed_pending_human_review"
     },
     "pages": {
-      "run": 1943,
-      "runId": 44563360737,
-      "conclusion": "success",
+      "run": 1944,
+      "runId": 44563891052,
+      "status": "success",
       "build": "success",
       "deploy": "success"
     },
@@ -10009,7 +10028,8 @@
       "run": 129,
       "runId": 44563364075,
       "status": "in_progress",
-      "headSha": "64c79923af25ac2a86466c9d16c568209526a815"
+      "headSha": "64c79923af25ac2a86466c9d16c568209526a815",
+      "step": "Wait for Pages to serve audited locale assets"
     }
   },
   "latestResumeWorkflowInspection": {
@@ -13375,7 +13395,8 @@
     "checkout": "inactive pending merchant configuration and end-to-end payment/refund/settlement verification",
     "changes": [
       "Added proper-name and locale-formatted-country exclusions to reduce false dynamic translation requests without suppressing translatable descriptions or plan copy.",
-      "Updated the stale locale-cognate regression to assert the new proper-name spans and ensure descriptions/categories remain translatable."
+      "Updated the stale locale-cognate regression to assert the new proper-name spans and ensure descriptions/categories remain translatable.",
+      "Fixed seller-plan double-localization: already-translated local-pack values are no longer recaptured as source; missing translations remain audit-visible."
     ],
     "candidatePackWrites": 0,
     "candidateMetadataWrites": 0,
@@ -13395,13 +13416,103 @@
       }
     },
     "pages": {
-      "run": 1943,
-      "conclusion": "success"
+      "run": 1944,
+      "runId": 44563891052,
+      "status": "success"
     },
     "r125Next": {
       "run": 129,
       "status": "in_progress",
       "headSha": "64c79923af25ac2a86466c9d16c568209526a815"
+    },
+    "r105": {
+      "run": 218,
+      "runId": 44563893636,
+      "status": "success",
+      "health": "passed",
+      "workerDeployment": "success",
+      "aiBinding": true,
+      "safetyGate": "enabled",
+      "failClosed": true,
+      "liveChatAndCountryIntent": "not-probed-by-policy"
+    },
+    "r123": {
+      "run": 167,
+      "runId": 44563893734,
+      "status": "success",
+      "tts": "passed",
+      "voiceAcknowledgement": "passed",
+      "dynamicVoicePlaceholder": "passed",
+      "browserProfilePlayback": "passed",
+      "physicalDeviceCertification": false,
+      "productionAssetMultilingualAudioStep": "skipped"
+    },
+    "securityAdvisories": {
+      "checkedAt": "2026-11-19T16:15:32Z",
+      "projectRef": "nrdpyydfrpmqedtzmbyw",
+      "infoFindings": [
+        {
+          "table": "public.marketplace_moderation_audit",
+          "rlsEnabled": true,
+          "policyCount": 0,
+          "interpretation": "RLS default-deny; no public/authenticated policies."
+        },
+        {
+          "table": "public.marketplace_submission_rate",
+          "rlsEnabled": true,
+          "policyCount": 0,
+          "interpretation": "RLS default-deny; no public/authenticated policies."
+        }
+      ],
+      "severity": "INFO",
+      "action": "No policy added; these tables contain moderation/rate-limit state and exposing them would be unsafe without a documented access model."
+    },
+    "sellerPlans": {
+      "checkedAt": "2026-11-19T16:17:40Z",
+      "table": "public.marketplace_plans",
+      "rows": [
+        {
+          "code": "free",
+          "name": "Free Ad",
+          "billing_period": "free",
+          "duration_days": 30,
+          "max_active_ads": 3
+        },
+        {
+          "code": "boost_7",
+          "name": "Boost 7 Days",
+          "billing_period": "one_time",
+          "duration_days": 7
+        },
+        {
+          "code": "top_7",
+          "name": "Top Ad 7 Days",
+          "billing_period": "one_time",
+          "duration_days": 7
+        },
+        {
+          "code": "business_monthly",
+          "name": "Business Monthly",
+          "billing_period": "monthly",
+          "duration_days": 30,
+          "max_active_ads": 50
+        },
+        {
+          "code": "business_yearly",
+          "name": "Business Yearly",
+          "billing_period": "yearly",
+          "duration_days": 365,
+          "max_active_ads": 100
+        },
+        {
+          "code": "featured_30",
+          "name": "Featured 30 Days",
+          "billing_period": "one_time",
+          "duration_days": 30
+        }
+      ],
+      "finding": "Database rows contain canonical English names. R125's Kgwedi le Kgwedi ya Kgwebo and Khoebo Selemo le Selemo are already-localized pack outputs re-captured by the global MutationObserver, not database values.",
+      "repair": "seller-plans.html now marks a rendered text node no-translate only when the custom local-pack result differs from its canonical source. Untranslated/missing strings remain eligible for localization and the audit."
     }
   },
   "latestAutomationPass20261119V42": {
@@ -16484,6 +16595,82 @@
       "file": "tools/test-locale-cognates.cjs",
       "change": "Update regression assertions for data-no-translate game-title spans, selected-game/overlay state transitions, and proper-name markers in games.html, jobs.html and media.html.",
       "reason": "R105 #217 and R123 #166 exposed an outdated assertion that required the previous <b>${g.name}</b> markup; this was a test expectation failure, not an audio or runtime regression."
+    },
+    "sellerPlans": {
+      "file": "seller-plans.html",
+      "changes": [
+        "appendPlanText now receives the canonical source value and marks only already-translated output data-no-translate.",
+        "Localized ad-plan option labels receive the same guard.",
+        "Maximum-ad labels now use complete canonical source keys such as 'Up to 50 active ads' rather than translating fragments independently."
+      ],
+      "safety": "Missing/untranslated source values remain unmarked and therefore remain visible to R125; this is not a blanket exclusion."
     }
+  },
+  "latestSupabaseSecurityAdvisory20261119": {
+    "checkedAt": "2026-11-19T16:15:32Z",
+    "projectRef": "nrdpyydfrpmqedtzmbyw",
+    "infoFindings": [
+      {
+        "table": "public.marketplace_moderation_audit",
+        "rlsEnabled": true,
+        "policyCount": 0,
+        "interpretation": "RLS default-deny; no public/authenticated policies."
+      },
+      {
+        "table": "public.marketplace_submission_rate",
+        "rlsEnabled": true,
+        "policyCount": 0,
+        "interpretation": "RLS default-deny; no public/authenticated policies."
+      }
+    ],
+    "severity": "INFO",
+    "action": "No policy added; these tables contain moderation/rate-limit state and exposing them would be unsafe without a documented access model."
+  },
+  "latestSellerPlansAudit20261119": {
+    "checkedAt": "2026-11-19T16:17:40Z",
+    "table": "public.marketplace_plans",
+    "rows": [
+      {
+        "code": "free",
+        "name": "Free Ad",
+        "billing_period": "free",
+        "duration_days": 30,
+        "max_active_ads": 3
+      },
+      {
+        "code": "boost_7",
+        "name": "Boost 7 Days",
+        "billing_period": "one_time",
+        "duration_days": 7
+      },
+      {
+        "code": "top_7",
+        "name": "Top Ad 7 Days",
+        "billing_period": "one_time",
+        "duration_days": 7
+      },
+      {
+        "code": "business_monthly",
+        "name": "Business Monthly",
+        "billing_period": "monthly",
+        "duration_days": 30,
+        "max_active_ads": 50
+      },
+      {
+        "code": "business_yearly",
+        "name": "Business Yearly",
+        "billing_period": "yearly",
+        "duration_days": 365,
+        "max_active_ads": 100
+      },
+      {
+        "code": "featured_30",
+        "name": "Featured 30 Days",
+        "billing_period": "one_time",
+        "duration_days": 30
+      }
+    ],
+    "finding": "Database rows contain canonical English names. R125's Kgwedi le Kgwedi ya Kgwebo and Khoebo Selemo le Selemo are already-localized pack outputs re-captured by the global MutationObserver, not database values.",
+    "repair": "seller-plans.html now marks a rendered text node no-translate only when the custom local-pack result differs from its canonical source. Untranslated/missing strings remain eligible for localization and the audit."
   }
 }
