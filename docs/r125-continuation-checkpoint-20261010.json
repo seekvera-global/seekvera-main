@@ -131,7 +131,8 @@
     "v51 introduced a missing comma between the Galician and Telugu QUICK entries. R105 #208 and R123 #159 caught the SyntaxError before Worker deployment. v52 corrects the syntax and bumps all cache references; re-verification is pending.",
     "R105 #209 exposed a test-only cross-realm strict-deep-equality issue after the v52 JavaScript syntax correction; the test now shallow-copies QUICK.te before comparison. R123 #160 passed and deployed the Worker; R9e #132 and R125 #116 are still pending/in progress.",
     "R125 #125 completed the full v54 browser matrix (98 languages × 27 sections = 2,646 applications; 248 country profiles) with zero visible exact/partial/unresolved English findings, but one locally intercepted Gujarati dynamic translation fallback for Back, Page navigation, Voice reply and Voice. v55 adds provisional Gujarati QUICK labels, a zero-provider regression, and refreshes all 44 HTML cache references; R125 #126 is running the v55 full matrix.",
-    "R125 #126 on v55 completed the 98×27 matrix and found zero visible English leaks, but one Punjabi dynamic translation fallback for Back, Page navigation, Voice reply and Voice. v56 adds provisional Punjabi QUICK labels based on existing Punjabi pack vocabulary and improves the static audit so intercepted non-quota 418 responses expose every fallback language/page without reaching a provider; R125 #127 is running."
+    "R125 #126 on v55 completed the 98×27 matrix and found zero visible English leaks, but one Punjabi dynamic translation fallback for Back, Page navigation, Voice reply and Voice. v56 adds provisional Punjabi QUICK labels based on existing Punjabi pack vocabulary and improves the static audit so intercepted non-quota 418 responses expose every fallback language/page without reaching a provider; R125 #127 is running.",
+    "R125 #128 on v57 completed all 98×27 applications and 248 country profiles with zero visible English leak findings, but failed the no-dynamic-fallback gate: 1,178 browser-side /api/ui-translate calls across 97 languages and 133 unique strings. All were intercepted locally; zero provider/AI/Pollinations requests and zero quota used. 60 strings exist only in the unpublished candidate source; 73 are absent from candidate source."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -195,12 +196,15 @@
     "Obtain qualified linguistic review for all 98 locale packs; none is published or linguistically certified.",
     "Keep live AI chat and translation-backend availability unknown until a permitted quota-safe generation/translation probe can run without bypassing daily_free_ai_limit or Google HTTP429.",
     "Certify physical microphone input and audible speaker output on real Android, iPhone/iPad and desktop devices; browser/headless audio tests are not hardware certification.",
-    "Configure a real merchant account and complete end-to-end checkout, payment, refund, settlement and webhook verification before enabling checkout."
+    "Configure a real merchant account and complete end-to-end checkout, payment, refund, settlement and webhook verification before enabling checkout.",
+    "Re-run R125 after the proper-name exclusions for game titles, Al Jazeera and Intl.DisplayNames country badges; require the dynamic fallback count to fall without excluding descriptions, categories, plan copy or other genuine UI.",
+    "Resolve the remaining dynamic fallback strings: 60 are in the unpublished candidate source and 73 are absent from candidate source. Do not publish unreviewed packs or disguise translatable UI as no-translate.",
+    "Audit the live Supabase seller-plan names and descriptions; map stable plan codes to canonical source keys only after verifying actual row values and complete localization coverage."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-19T15:46:33Z",
+    "checkedAt": "2026-11-19T16:05:43Z",
     "aiChat": {
       "currentAvailability": "unknown-not-certified",
       "latestProductionRun": 215,
@@ -289,7 +293,7 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-11-19T15:46:33Z",
+    "checkedAt": "2026-11-19T16:05:43Z",
     "candidateCommit": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
     "completedCount": 97,
     "remainingCount": 1,
@@ -305,16 +309,16 @@
       "number": 150,
       "runId": 38971104197,
       "createdAt": "2026-10-16T21:41:54Z",
-      "event": "push",
-      "revision": "legacy",
       "status": "completed",
       "conclusion": "success",
+      "revision": "legacy",
+      "event": "push",
+      "headSha": "0911d8f826e7347f3b5dbf9aacccc7893ee85dd8",
       "resume": "skipped",
       "audit": "success",
       "candidatePackWrites": 0,
       "metadataFilesWritten": 2,
-      "translationRequests": 0,
-      "aiQuotaUsed": 0
+      "translationRequests": 0
     },
     "currentWorkflowDispatchRunsFound": 0,
     "activeResumeRuns": 0,
@@ -9900,8 +9904,8 @@
     "runId": 44561221758,
     "workflow": ".github/workflows/r125-static-locale-section-audit.yml",
     "createdAt": "2026-11-19T16:00:40Z",
-    "status": "in_progress",
-    "conclusion": null,
+    "status": "completed",
+    "conclusion": "failure",
     "headSha": "d6df957911d1692b3457535903b0091217be3ae9",
     "runtimeVersion": "20261119-r125-global-quick-v57",
     "languages": 98,
@@ -9913,9 +9917,38 @@
     "quotaGuard": "passed",
     "quickLabelRegression": "passed",
     "noTranslateTriage": "passed",
-    "matrix": "in_progress",
-    "lastObservedStep": "Verify all locale packs, countries and sections without AI requests",
-    "note": "The v57 browser preflight and local quick-label tests passed; full locale/section matrix is still running. No provider calls are permitted or made."
+    "matrix": "completed",
+    "missingKeys": 0,
+    "extraKeys": 0,
+    "emptyValues": 0,
+    "exactFindingCombinations": 0,
+    "partialFindingCombinations": 0,
+    "unresolvedFindingCombinations": 0,
+    "dynamicFallback": {
+      "browserInterceptedRequests": 1178,
+      "languages": 97,
+      "uniqueStrings": 133,
+      "presentInProductionSource": 0,
+      "presentInCandidateSource": 60,
+      "absentFromCandidateSource": 73,
+      "providerRequests": 0,
+      "aiRequests": 0,
+      "pollinationsRequests": 0,
+      "quotaUsed": 0,
+      "sampleStrings": [
+        "🌍 Botswana",
+        "الجزيرة",
+        "Racing games",
+        "Touch controls",
+        "A dark high-speed runner challenge.",
+        "Business plan descriptions",
+        "monthly",
+        "yearly"
+      ]
+    },
+    "countryMatrix": "248/248 passed",
+    "failure": "Unexpected browser-side /api/ui-translate calls: 1178 (expected 0). All calls were intercepted locally with HTTP 418 before reaching the Worker/provider. No AI or translation provider requests were made.",
+    "note": "The full 98×27 matrix completed and found zero visible exact/partial/unresolved English leaks, but it failed the separate no-dynamic-fallback gate. Production manifest has 1,045 keys; candidate source has 1,118. Of 133 dynamic strings, 60 exist in candidate source but are unpublished and 73 are absent from candidate source."
   },
   "latestProductionRuntimeChecks": {
     "checkedAt": "2026-11-19T16:02:36Z",
@@ -9981,9 +10014,10 @@
     }
   },
   "latestResumeWorkflowInspection": {
-    "checkedAt": "2026-11-19T16:02:36Z",
+    "checkedAt": "2026-11-19T16:05:43Z",
     "path": ".github/workflows/r125-hourly-candidate-resume.yml",
-    "trigger": "workflow_dispatch only; no schedule",
+    "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
+    "trigger": "workflow_dispatch only; no hourly schedule",
     "scheduleTriggerPresent": false,
     "runTranslationsDefault": false,
     "repairCandidatesDefault": false,
@@ -9996,10 +10030,12 @@
       "conclusion": "success",
       "revision": "legacy",
       "event": "push",
+      "headSha": "0911d8f826e7347f3b5dbf9aacccc7893ee85dd8",
       "resume": "skipped",
       "audit": "success",
       "candidatePackWrites": 0,
-      "metadataFilesWritten": 2
+      "metadataFilesWritten": 2,
+      "translationRequests": 0
     },
     "currentWorkflowDispatchRunsFound": 0,
     "activeResumeRuns": 0,
@@ -10007,7 +10043,7 @@
     "candidatePackWritesThisPass": 0,
     "candidateMetadataWritesThisPass": 0,
     "candidateWritesDeferred": true,
-    "note": "The latest matching run is legacy #150; no active resume run exists. The workflow contains a real Resume step but has no hourly schedule and its write-capable inputs default false."
+    "note": "Inspected latest matching Actions run #150 and its job steps: Resume was skipped, audit succeeded, no candidate pack writes. No current matching or active resume run observed. Main workflow is manual-only despite its hourly name."
   },
   "latestQuickFallbackRepair": {
     "checkedAt": "2026-11-18T09:45:51Z",
@@ -13251,181 +13287,103 @@
     ]
   },
   "latestAutomationPass20261119": {
-    "checkedAt": "2026-11-19T05:53:10Z",
-    "filesRead": [
-      "main: docs/r125-continuation-checkpoint-20261010.json",
-      "branch work/r125-locale-candidates-20261008: docs/locale-candidates-20261008/resume-summary.json",
-      "branch work/r125-locale-candidates-20261008: docs/locale-candidates-20261008/resume-latest.log",
-      "main: .github/workflows/r125-hourly-candidate-resume.yml",
-      "main: i18n-ui.js",
-      "candidate branch: docs/locale-candidates-20261008/ti.json",
-      "main: .github/workflows/safety-smoke-test.yml"
-    ],
+    "checkedAt": "2026-11-19T16:05:43Z",
+    "sourceReadback": {
+      "checkpointSha": "6c1c1786dd9b50781788624ffd88ee98ed431ffb",
+      "resumeSummarySha": "551a1cad78540f437e67d1d0a88ae1e844478022",
+      "resumeLogSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
+      "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2"
+    },
     "candidateState": {
-      "structuralPacks": 98,
-      "totalPacks": 98,
-      "keysPerPack": 1118,
-      "sourceHash": "6a1126e6a2ce5629",
-      "savedQualityPassing": 97,
+      "structural": 98,
+      "total": 98,
+      "quality": 97,
       "remaining": [
         "dv"
       ],
       "divehiEnglishOverlap": 58,
-      "published": false,
+      "published": 0,
       "linguisticCertification": 0
     },
-    "r125ProductionAudit": {
-      "run": 102,
-      "runId": 44446631767,
-      "status": "completed",
+    "r125": {
+      "run": 128,
+      "runId": 44561221758,
       "conclusion": "failure",
-      "checkedAt": "2026-11-19T02:45:36Z",
-      "languages": 98,
-      "sections": 27,
-      "sectionLanguageApplications": 2646,
-      "visibleEnglish": {
-        "exact": 0,
-        "partial": 0,
-        "unresolved": 0
-      },
-      "dynamicFallback": {
-        "interceptedRequests": 1,
-        "providerRequests": 0,
-        "language": "Tigrinya",
-        "strings": [
-          "Back",
-          "Page navigation",
-          "Voice reply",
-          "Voice"
-        ],
-        "failureReason": "zero dynamic-fallback gate"
-      },
+      "languageSectionApplications": 2646,
       "countryProfiles": 248,
-      "note": "The browser test intercepted /api/ui-translate locally; no translation provider request was sent and no AI quota was used."
+      "visibleExactLeaks": 0,
+      "visiblePartialLeaks": 0,
+      "unresolvedVisibleLeaks": 0,
+      "dynamicFallbackRequestsIntercepted": 1178,
+      "dynamicFallbackLanguages": 97,
+      "dynamicFallbackUniqueStrings": 133,
+      "providerRequests": 0,
+      "aiRequests": 0,
+      "quotaUsed": 0
+    },
+    "dynamicStringAnalysis": {
+      "inProductionSource": 0,
+      "inCandidateSource": 60,
+      "absentFromCandidateSource": 73,
+      "note": "Candidate-source presence is not permission to publish; all candidate packs remain unreviewed."
     },
     "resumeWorkflow": {
-      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
-      "workflowSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
-      "trigger": "workflow_dispatch only",
-      "scheduleTriggerPresent": false,
-      "runTranslationsDefault": false,
-      "repairCandidatesDefault": false,
-      "latestMatchingRun": {
-        "number": 150,
-        "runId": 38971104197,
-        "createdAt": "2026-10-16T21:41:54Z",
-        "status": "completed",
-        "conclusion": "success",
-        "revision": "legacy",
-        "resume": "skipped",
-        "audit": "success",
-        "candidatePackWrites": 0,
-        "metadataFilesWritten": 2
-      },
-      "currentRevisionRunObserved": false,
-      "activeResumeRuns": 0,
-      "candidatePackWritesThisPass": 0,
-      "candidateMetadataWritesThisPass": 0,
-      "translationRequestsThisPass": 0,
-      "aiQuotaUsedThisPass": 0,
-      "candidateWritesDeferred": true
-    },
-    "productionChecks": {
-      "r105": {
-        "run": 195,
-        "runId": 44446631832,
-        "conclusion": "success",
-        "aiBinding": true,
-        "productionHealth": "passed",
-        "centralSafetyGate": "enabled",
-        "failClosed": true,
-        "quotaBoundaryTests": "passed",
-        "liveAiProbes": "skipped-by-policy"
-      },
-      "r123": {
-        "run": 146,
-        "runId": 44446631912,
-        "conclusion": "success",
-        "programmaticTTS": "passed",
-        "voiceAcknowledgement": "passed",
-        "arabicHomeAnd31Descriptions": "passed",
-        "androidBrowserProfilePlayback": "passed",
-        "liveASR": "not-verified",
-        "physicalDeviceCertified": false
-      },
-      "r9e": {
-        "run": 114,
-        "runId": 44446631846,
-        "conclusion": "success",
-        "countryProfiles": "248/248",
-        "localizedPages": "44/44",
-        "manualMoroccoPriority": "passed",
-        "manualWorldwidePriority": "passed",
-        "visibleLocales": [
-          "MA/ar",
-          "FR/fr",
-          "IN/hi",
-          "CN/zh"
-        ],
-        "liveAiProbes": "skipped-by-policy"
-      },
-      "safety": {
-        "run": 72,
-        "runId": 44446631868,
-        "conclusion": "success",
-        "blockedCases": 4,
-        "benignLand": "allowed_pending_human_review"
-      },
-      "pages": {
-        "run": 1900,
-        "runId": 44457934388,
-        "conclusion": "success",
-        "build": "success",
-        "deploy": "success"
-      }
-    },
-    "ciMaintenanceRepair": {
-      "finding": "Safety smoke workflow still used actions/checkout@v4 and emitted the Node 20 deprecation warning.",
-      "commit": "4e6d6c54559624dee039f0788af16909ecd60ff1",
-      "file": ".github/workflows/safety-smoke-test.yml",
-      "change": "Upgrade actions/checkout from v4 to v5 only; safety assertions and API calls unchanged.",
-      "readback": "PASS; checkout v5 present, v4 absent.",
-      "validationRun": {
-        "number": 73,
-        "runId": 44468157669,
-        "status": "completed",
-        "conclusion": "success",
-        "checkoutV5": true,
-        "node20Warning": false,
-        "blockedCases": 4,
-        "benignLand": "allowed_pending_human_review"
-      }
-    },
-    "runtimeAvailability": {
-      "aiChat": "unknown-not-certified; binding and production health pass, live generation probe skipped by policy",
-      "translation": "unknown-not-probed; resume log shows Dhivehi timeouts and HTTP503 all_translation_backends_unavailable; historical daily_free_ai_limit and Google HTTP429 remain blockers",
-      "voice": "programmatic TTS and browser-profile playback passed; live ASR and physical microphones/speakers not certified",
-      "countryCurrency": "v39 R9e passed 248/248 profiles and 44/44 localized pages including Morocco and Worldwide priority",
-      "safety": "live safety smoke passed four prohibited cases and held benign land for human review",
-      "checkout": "inactive pending merchant configuration and end-to-end verification"
-    },
-    "usage": {
-      "translationRequests": 0,
-      "liveAiGenerationProbes": 0,
-      "aiQuotaUsed": 0,
-      "quotaBypassAttempts": 0,
+      "latestMatchingRun": 150,
+      "runId": 38971104197,
+      "status": "completed",
+      "resume": "skipped",
+      "audit": "success",
       "candidatePackWrites": 0,
-      "candidateMetadataWrites": 0,
-      "published": false,
-      "linguisticCertification": false
+      "activeRuns": 0,
+      "trigger": "workflow_dispatch only"
     },
-    "decision": "NO-GO",
-    "notes": [
-      "The user-provided 63/98 and 35 remaining figures do not match the current files. Main checkpoint and candidate resume summary record 98/98 structurally complete, 97/98 saved quality-gate pass, and Divehi as the one remaining pack.",
-      "Candidate Tigrinya Back and Page navigation values were read but are semantically suspect; no unreviewed Tigrinya strings were promoted. External dictionary lookup supports voice/reply vocabulary but does not replace qualified native UI review.",
-      "No candidate writes were made. Current resume workflow has no active run; latest matching run remains legacy #150.",
-      "No provider translation or live AI probe was sent."
-    ]
+    "ai": {
+      "binding": true,
+      "productionHealth": "passed",
+      "liveChat": "unknown-not-certified",
+      "countryIntent": "not-probed",
+      "translationBackend": "unknown-not-probed",
+      "historicalBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429"
+      ],
+      "liveProbes": 0,
+      "translationProviderRequests": 0,
+      "quotaUsed": 0
+    },
+    "voice": {
+      "programmaticTTS": "passed in R123 #165",
+      "voiceAcknowledgement": "passed",
+      "dynamicVoicePlaceholders": "passed",
+      "liveASR": "not-verified",
+      "physicalMicrophoneSpeakerCertification": false
+    },
+    "countryCurrency": {
+      "run": 137,
+      "status": "success",
+      "countryProfiles": "248/248",
+      "localizedPages": "44/44",
+      "moroccoPriority": "passed",
+      "worldwidePriority": "passed",
+      "currency": "passed"
+    },
+    "safety": {
+      "run": 91,
+      "status": "success",
+      "blockedCategories": 4,
+      "benignLand": "allowed_pending_human_review"
+    },
+    "checkout": "inactive pending merchant configuration and end-to-end payment/refund/settlement verification",
+    "changes": [
+      "Added proper-name and locale-formatted-country exclusions to reduce false dynamic translation requests without suppressing translatable descriptions or plan copy."
+    ],
+    "candidatePackWrites": 0,
+    "candidateMetadataWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "decision": "NO-GO"
   },
   "latestAutomationPass20261119V42": {
     "checkedAt": "2026-11-19T06:58:28.773Z",
@@ -16478,5 +16436,30 @@
       "The 131 dynamic strings still trigger quota-neutral local interception in the R125 audit on four paths; do not suppress or bypass the gate. The full unique-string diagnostic is now emitted by R125 #128.",
       "No candidate packs were written or published, no translation provider was called, and no AI quota was used."
     ]
+  },
+  "latestContinuationRepair20261119": {
+    "checkedAt": "2026-11-19T16:05:43Z",
+    "baseMainSha": "9f22bd7bbd0b6b01fb14d7ebb6486be84cfd8e40",
+    "scope": "Quota-neutral main-branch UI source repair; candidate branch untouched",
+    "changes": [
+      {
+        "file": "jobs.html",
+        "change": "Mark the country badge no-translate because Intl.DisplayNames already returns the selected locale's region name; remove stale 'jobs' suffix from the initial placeholder."
+      },
+      {
+        "file": "media.html",
+        "change": "Mark Al Jazeera and الجزيرة as proper-name brand labels; do not send brand names to dynamic translation."
+      },
+      {
+        "file": "games.html",
+        "change": "Mark the selected game title as a proper name and bump games.js cache version."
+      },
+      {
+        "file": "games.js",
+        "change": "Mark all game-card and selected-game names as no-translate; keep game descriptions, categories and controls eligible for localization."
+      }
+    ],
+    "reason": "R125 #128 recorded these three categories among 133 dynamic strings. They are proper names or already locale-formatted country names, not translatable UI copy.",
+    "validation": "Exact source replacements applied once each; R125 re-audit required to confirm reduction. No locale packs changed, no provider calls, no candidate writes."
   }
 }
