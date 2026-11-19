@@ -23,9 +23,13 @@ try {
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
         const fetched = await page.evaluate(async targetUrl => {
-          const response = await fetch(targetUrl, { cache: 'no-store', credentials: 'same-origin' });
-          const body = await response.text();
-          return { status: response.status, body, cfRay: response.headers.get('cf-ray') || '' };
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 30000);
+          try {
+            const response = await fetch(targetUrl, { cache: 'no-store', credentials: 'same-origin', signal: controller.signal });
+            const body = await response.text();
+            return { status: response.status, body, cfRay: response.headers.get('cf-ray') || '' };
+          } finally { clearTimeout(timeout); }
         }, url);
         const response = {
           status: () => fetched.status,
@@ -42,7 +46,7 @@ try {
         return response;
       } catch (error) {
         const message = String(error);
-        const transient = /ECONNRESET|ETIMEDOUT|ECONNREFUSED|EAI_AGAIN|socket hang up|network/i.test(message);
+        const transient = /ECONNRESET|ETIMEDOUT|ECONNREFUSED|EAI_AGAIN|socket hang up|network|TimeoutError|AbortError|aborted/i.test(message);
         if (!transient || attempt === maxAttempts) throw error;
         console.warn('R125_STATIC_FETCH_RETRY', label, message.slice(0, 180), 'attempt', attempt);
         await pause(350 * (2 ** (attempt - 1)));

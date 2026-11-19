@@ -87,8 +87,12 @@ jobs:
                 ];
                 for (const [name, path, file] of assets) {
                   const result = await page.evaluate(async target => {
-                    const response = await fetch(target, { cache: 'no-store', credentials: 'same-origin' });
-                    return { status: response.status, body: await response.text(), cfRay: response.headers.get('cf-ray') || '', server: response.headers.get('server') || '' };
+                    const controller = new AbortController();
+                    const timeout = setTimeout(() => controller.abort(), 15000);
+                    try {
+                      const response = await fetch(target, { cache: 'no-store', credentials: 'same-origin', signal: controller.signal });
+                      return { status: response.status, body: await response.text(), cfRay: response.headers.get('cf-ray') || '', server: response.headers.get('server') || '' };
+                    } finally { clearTimeout(timeout); }
                   }, path);
                   console.log('R125_BROWSER_HTTP', name, result.status, 'bytes=' + result.body.length, 'cf-ray=' + result.cfRay, 'server=' + result.server);
                   if (result.status !== 200) { console.error('R125_BROWSER_BODY', name, result.body.slice(0, 400)); throw new Error(name + ' HTTP ' + result.status); }
