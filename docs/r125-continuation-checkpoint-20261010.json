@@ -16976,7 +16976,7 @@
     "currentWorkflow": "concurrency group v5; dynamic asset refs; proper-name game markup assertions; single-backslash line continuations"
   },
   "latestR125CurrentRun20261119": {
-    "checkedAt": "2026-11-19T17:34:03.593Z",
+    "checkedAt": "2026-11-19T17:35:26.517Z",
     "run": 135,
     "runId": 44578246973,
     "headSha": "a283b91a3030f1313c42d9c6f6188b26ca027524",
@@ -16984,9 +16984,14 @@
     "conclusion": null,
     "previousRun": 134,
     "readiness": {
-      "pending": "Chromium/system dependency installation at last observation"
+      "pagesAssets": "passed",
+      "syntaxCheck": "passed",
+      "quotaGuard": "passed",
+      "quickLabelRegression": "passed",
+      "noTranslateAuditTriage": "passed"
     },
     "matrix": {
+      "status": "in_progress",
       "expectedLanguages": 98,
       "expectedSections": 27,
       "expectedApplications": 2646,
@@ -16996,7 +17001,7 @@
     "aiRequests": 0,
     "pollinationsRequests": 0,
     "quotaUsed": 0,
-    "note": "The audit assertion now treats all 50 game titles as proper names and verifies data-no-translate markers while leaving categories/descriptions in scope. Run #135 has not produced a matrix result yet."
+    "note": "Run #135 passed Chromium installation, Pages asset readiness, syntax, quota guard, local quick-label regression and no-translate triage; the full locale/country/section matrix is now running."
   },
   "structurallyCompleteCandidates": 98,
   "qualityPassingCandidates": 97,
@@ -17041,7 +17046,7 @@
     "candidatePacksChanged": false
   },
   "latestAutomationPass20261119V57": {
-    "checkedAt": "2026-11-19T17:34:03.593Z",
+    "checkedAt": "2026-11-19T17:35:26.517Z",
     "filesRead": [
       "main: docs/r125-continuation-checkpoint-20261010.json",
       "branch work/r125-locale-candidates-20261008: docs/locale-candidates-20261008/resume-summary.json",
@@ -17075,6 +17080,8 @@
       "run135": {
         "id": 44578246973,
         "status": "in_progress",
+        "readiness": "passed",
+        "matrix": "in_progress",
         "matrixResult": "pending"
       }
     },
@@ -17125,9 +17132,10 @@
         "benignLand": "allowed_pending_human_review"
       },
       "pages": {
-        "run": 1951,
-        "runId": 44578245817,
-        "conclusion": "success"
+        "run": 1952,
+        "runId": 44578571796,
+        "conclusion": "success",
+        "checkpointCommit": "18086f15f5df8d58203ad3ecd53cad19da54a13a"
       }
     },
     "ai": {
