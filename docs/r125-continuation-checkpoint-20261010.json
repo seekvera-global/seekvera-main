@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-19",
+  "date": "2026-11-20",
   "finalApproval": false,
   "sourceHash": "6a1126e6a2ce5629",
   "sourceCount": 1118,
@@ -18565,5 +18565,299 @@
       "No AI or translation live probe was made because quota and provider rate-limit blockers remain; no quota was bypassed.",
       "Pages #1962 deployed the exact inspected Main head. Site Health #335 passed on 70fab; the only change from the R125 #137 application-code head through current Main is the checkpoint document."
     ]
+  },
+  "latestDuplicateAuditReconciliation20261120": {
+    "checkedAt": "2026-11-19T23:34:02Z",
+    "scope": [
+      "ig",
+      "dz",
+      "ti",
+      "kl",
+      "rw",
+      "to",
+      "ku",
+      "xh",
+      "st",
+      "tn",
+      "dv"
+    ],
+    "method": "Fresh direct read-only fetch of the 11 languages flagged by the 2026-11-19 normalized duplicate screen; compared exact duplicate output groups >=4 against whitespace-collapsed, case-folded groups >=4.",
+    "source": {
+      "count": 1118,
+      "sourceHash": "6a1126e6a2ce5629"
+    },
+    "packsFetched": 11,
+    "packsWith1118Translations": 11,
+    "sourceHashMatches": 11,
+    "exactDuplicateOutputGroups": 27,
+    "exactDuplicateLanguages": 10,
+    "normalizedDuplicateOutputGroups": 28,
+    "normalizedDuplicateLanguages": 11,
+    "perLanguage": [
+      {
+        "language": "ig",
+        "exactGroups": 0,
+        "normalizedGroups": 1,
+        "normalizedOnlyGroup": {
+          "value": "Ọrụ",
+          "sourceKeys": [
+            "Job",
+            "Jobs",
+            "Service",
+            "Services"
+          ],
+          "count": 4
+        },
+        "nativeReviewRequired": true
+      },
+      {
+        "language": "dz",
+        "exactGroups": 1,
+        "normalizedGroups": 1
+      },
+      {
+        "language": "ti",
+        "exactGroups": 2,
+        "normalizedGroups": 2
+      },
+      {
+        "language": "kl",
+        "exactGroups": 5,
+        "normalizedGroups": 5
+      },
+      {
+        "language": "rw",
+        "exactGroups": 3,
+        "normalizedGroups": 3
+      },
+      {
+        "language": "to",
+        "exactGroups": 3,
+        "normalizedGroups": 3
+      },
+      {
+        "language": "ku",
+        "exactGroups": 2,
+        "normalizedGroups": 2
+      },
+      {
+        "language": "xh",
+        "exactGroups": 3,
+        "normalizedGroups": 3
+      },
+      {
+        "language": "st",
+        "exactGroups": 4,
+        "normalizedGroups": 4
+      },
+      {
+        "language": "tn",
+        "exactGroups": 2,
+        "normalizedGroups": 2
+      },
+      {
+        "language": "dv",
+        "exactGroups": 2,
+        "normalizedGroups": 2
+      }
+    ],
+    "reconciliation": "The prior 27-group/10-language and 28-group/11-language reports are now reconciled: exact grouping yields 27/10; normalizing whitespace and case adds one Igbo group (Ọrụ for Job, Jobs, Service, Services). This may be semantically legitimate; native Igbo review is required. Other repeated clusters remain heuristic warnings, not linguistic judgments.",
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false
+  },
+  "latestActionsObservation20261120": {
+    "checkedAt": "2026-11-19T23:34:02Z",
+    "mainHead": "cd1624c87ce70b0e52ab1c2323214ded394051a6",
+    "latestRepositoryActions": {
+      "totalRuns": 6537,
+      "returnedRuns": 100,
+      "queuedOrInProgress": 0,
+      "latestRun": {
+        "number": 1963,
+        "id": 44632443683,
+        "name": "pages build and deployment",
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "cd1624c87ce70b0e52ab1c2323214ded394051a6"
+      }
+    },
+    "workflowDispatchEvents": {
+      "totalRuns": 5,
+      "candidateResumeMatches": 0,
+      "activeRuns": 0
+    },
+    "candidateResume": {
+      "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "trigger": "workflow_dispatch only",
+      "schedulePresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "lastKnownMatchingRun": {
+        "number": 150,
+        "id": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "workflowRevision": "legacy push-triggered revision",
+        "resume": "skipped",
+        "audit": "success",
+        "candidatePackWrites": 0,
+        "metadataFilesWritten": 2
+      },
+      "currentRevisionRunObserved": false,
+      "activeCandidateResumeRunObserved": false
+    },
+    "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
+    "candidateBranchChanged": false,
+    "candidateWritesDeferred": true,
+    "note": "The latest 100 repository runs contain no active run and no candidate-resume run. All five workflow_dispatch events contain no candidate-resume dispatch. The last known matching run remains legacy #150; no candidate writes were made."
+  },
+  "latestAIAvailabilityVerification20261120": {
+    "checkedAt": "2026-11-19T23:34:02Z",
+    "workerFileSha": "c7f341505d63b2043b002cd54264004fea7da84a",
+    "healthEndpointContract": "/api/health returns aiBinding presence, model identifiers, centralSafetyGate and failClosed; it does not call a model or establish generation capacity.",
+    "aiBinding": "present in latest R105 #221",
+    "productionHealth": "passed in R105 #221",
+    "liveChat": "unknown-not-certified; live generation probe skipped",
+    "countryIntent": "not-tested",
+    "translationBackend": "unknown-not-probed",
+    "knownHistoricalBlockers": [
+      "daily_free_ai_limit",
+      "Google HTTP429",
+      "HTTP 503 all_translation_backends_unavailable",
+      "Dhivehi read timeouts and unparseable Workers AI outputs"
+    ],
+    "newLiveProbes": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "quotaBypassAttempts": 0
+  },
+  "latestAutomationPass20261120Turn15": {
+    "checkedAt": "2026-11-19T23:34:02Z",
+    "filesRead": [
+      "main: docs/r125-continuation-checkpoint-20261010.json",
+      "branch work/r125-locale-candidates-20261008: docs/locale-candidates-20261008/resume-summary.json",
+      "branch work/r125-locale-candidates-20261008: docs/locale-candidates-20261008/resume-latest.log",
+      "main: .github/workflows/r125-hourly-candidate-resume.yml",
+      "main: worker.js",
+      "branch: source.json and 11 flagged locale packs"
+    ],
+    "candidateState": {
+      "structural": "98/98",
+      "savedQualityGate": "97/98",
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "published": 0,
+      "linguisticCertification": 0,
+      "productionKeys": 1045,
+      "candidateKeys": 1118,
+      "unpublishedKeyDelta": 73
+    },
+    "duplicateReconciliation": {
+      "exactGroups": 27,
+      "exactLanguages": 10,
+      "normalizedGroups": 28,
+      "normalizedLanguages": 11,
+      "extraNormalizedIgboGroup": "Ọrụ: Job/Jobs/Service/Services; native review required"
+    },
+    "latestR125": {
+      "run": 137,
+      "runId": 44595354460,
+      "headSha": "92f948f1e654e40f1621a97350aca7ebdf7422c9",
+      "conclusion": "failure",
+      "languages": 98,
+      "sections": 27,
+      "applications": 2646,
+      "countryProfiles": 248,
+      "visibleLeaks": {
+        "exact": 0,
+        "partial": 0,
+        "unresolved": 0
+      },
+      "interceptedDynamicRequests": 634,
+      "uniqueStrings": 80,
+      "affectedLanguages": 97,
+      "gameStrings": 60,
+      "sellerPlanStrings": 20,
+      "providerRequests": 0,
+      "aiRequests": 0,
+      "pollinationsRequests": 0,
+      "quotaUsed": 0
+    },
+    "currentMain": {
+      "head": "cd1624c87ce70b0e52ab1c2323214ded394051a6",
+      "compareFromR125AuditHead": {
+        "aheadBy": 7,
+        "behindBy": 0,
+        "changedFiles": [
+          "docs/r125-continuation-checkpoint-20261010.json"
+        ]
+      },
+      "latestPages": {
+        "run": 1963,
+        "id": 44632443683,
+        "status": "completed",
+        "conclusion": "success",
+        "build": "success",
+        "reportBuildStatus": "success",
+        "deploy": "success"
+      }
+    },
+    "productionRuntime": {
+      "r105": {
+        "run": 221,
+        "conclusion": "success",
+        "aiBinding": true,
+        "health": true,
+        "liveChatProbe": "skipped",
+        "countryIntentProbe": "skipped"
+      },
+      "r123": {
+        "run": 169,
+        "conclusion": "success",
+        "programmaticTts": "passed",
+        "voiceAcknowledgement": "passed",
+        "dynamicPlaceholders": "passed",
+        "liveAsr": "not-verified",
+        "physicalDeviceCertified": false
+      },
+      "r9e": {
+        "run": 138,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "moroccoWorldwidePriority": "passed",
+        "currencyFallback": "passed"
+      },
+      "safety": {
+        "run": 92,
+        "conclusion": "success",
+        "blockedCategories": 4,
+        "benignLand": "allowed_pending_human_review"
+      }
+    },
+    "workflow": {
+      "trigger": "workflow_dispatch only",
+      "schedulePresent": false,
+      "lastKnownMatchingRun": 150,
+      "currentRevisionDispatches": 0,
+      "activeRunsInLatest100": 0
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "databaseWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "quotaBypassAttempts": 0,
+      "published": false,
+      "linguisticCertification": false,
+      "decision": "NO-GO"
+    }
   }
 }
