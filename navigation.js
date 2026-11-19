@@ -149,6 +149,8 @@ async function translateStaticAI(){
   }catch{}
 }
 async function translateResidualUI(){
+  // R32 is the canonical localizer for these nodes; do not translate its rendered output again.
+  if(window.SEEKVERA_I18N_R32)return;
   const l=langCode();if(l==='en')return;
   try{await window.SEEKVERA_I18N_R32?.loadPack?.(l)}catch{}
   const selectors=['.r5-hero p','.sv-global-tip'];

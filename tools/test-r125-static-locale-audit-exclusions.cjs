@@ -16,3 +16,12 @@ assert.deepEqual(Array.from(partial.partial),['Courier & last mile']);
 const unresolved=classify(['Missing label'],{nodes:[],options:[],elements:[],excluded:[]});
 assert.deepEqual(Array.from(unresolved.unresolved),['Missing label']);
 console.log('PASS: explicit no-translate/user-content occurrences are separated from real visible leaks');
+
+const navigation=fs.readFileSync('navigation.js','utf8');
+const residualStart=navigation.indexOf('async function translateResidualUI(){');
+const residualEnd=navigation.indexOf('\nfunction runLocaleEngines',residualStart);
+assert(residualStart>=0&&residualEnd>residualStart,'navigation residual-localizer source not found');
+const residual=navigation.slice(residualStart,residualEnd);
+assert.match(residual,/if\s*\(\s*window\.SEEKVERA_I18N_R32\s*\)\s*return\s*;/,
+  'R32 must own visible UI localization and prevent a second pass over already-localized dock/hero text');
+console.log('PASS: R32-owned visible UI is not re-translated by the legacy residual fallback');
