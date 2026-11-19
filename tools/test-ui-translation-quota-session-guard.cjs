@@ -118,6 +118,7 @@ async function main(){
    {code:'eu',language:'Basque',labels:{'Back':'Atzera','Page navigation':'Orriaren nabigazioa','Voice reply':'Ahots-erantzuna','Voice':'Ahotsa'}},
    // Provisional Galician quick labels drawn from the existing locale pack; native review remains required.
    {code:'gl',language:'Galician',labels:{'Back':'Atrás','Page navigation':'Navegación de páxina','Voice reply':'Resposta por voz','Voice':'Voz'}},
+  {code:'mr',language:'Marathi',labels:{'Back':'परत','Page navigation':'पेज नेव्हिगेशन','Voice reply':'व्हॉईस प्रतिसाद','Voice':'व्हॉईस'}},
  ];
  const quickContext={INITIAL_AI:'__TEST_INITIAL_AI__'};vm.createContext(quickContext);
  vm.runInContext(extract(i18n,'const QUICK={','// Provisional quota-neutral overrides','QUICK map')+';this.quick=QUICK;',quickContext);

@@ -61,10 +61,10 @@ jobs:
               && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/games.html?locale_audit=20261117" -o /tmp/r125-games.html \
               && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/global-ui.js?v=20261117-r125-source-caption-i18n-v2" -o /tmp/r125-global-ui.js \
               && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/games.js?v=20261117-r125-game-title-i18n" -o /tmp/r125-games.js \
-              && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/i18n-ui.js?v=20261119-r125-global-quick-v53" -o /tmp/r125-i18n-ui.js \
+              && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/i18n-ui.js?v=20261119-r125-global-quick-v54" -o /tmp/r125-i18n-ui.js \
               && grep -Fq 'global-ui.js?v=20261117-r125-source-caption-i18n' /tmp/r125-index.html \
               && grep -Fq 'games.js?v=20261117-r125-game-title-i18n' /tmp/r125-games.html \
-              && grep -Fq 'i18n-ui.js?v=20261119-r125-global-quick-v53' /tmp/r125-index.html \
+              && grep -Fq 'i18n-ui.js?v=20261119-r125-global-quick-v54' /tmp/r125-index.html \
               && grep -Fq 'sv-control-caption-label' /tmp/r125-global-ui.js \
               && grep -Fq 'alreadyLocalizedValue' /tmp/r125-i18n-ui.js \
               && grep -Fq "'Sprachantwort'" /tmp/r125-i18n-ui.js \
@@ -273,6 +273,7 @@ jobs:
                && grep -Fq "'Cod'" /tmp/r125-i18n-ui.js \
               && grep -Fq "mg:{'Back':'Miverina','Page navigation':'Fitetezana pejy','Voice reply':'Valiny am-peo','Voice':'Feo'}" /tmp/r125-i18n-ui.js \
               && grep -Fq "ml:{'Back':'പിന്നോക്കം','Page navigation':'പേജ് നിയന്ത്രണം','Voice reply':'വോയിസ് മറുപടി','Voice':'വോയിസ്'}" /tmp/r125-i18n-ui.js \
+              && grep -Fq "mr:{'Back':'परत','Page navigation':'पेज नेव्हिगേഷൻ','Voice reply':'व्हॉईस प्रतिसाद','Voice':'व्हॉईस'}" /tmp/r125-i18n-ui.js \
               && grep -Fq "'နောက်သို့'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'စာမျက်နှာ လမ်းညွှန်'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'အသံဖြင့် ပြန်ကြားချက်'" /tmp/r125-i18n-ui.js \

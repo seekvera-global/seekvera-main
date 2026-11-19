@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261119-r125-global-quick-v53';
+const VERSION='20261119-r125-global-quick-v54';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),PACK_VALUES=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -479,6 +479,8 @@ gl:{'Back':'Atrás','Page navigation':'Navegación de páxina','Voice reply':'Re
 te:{'Back':'వెనక్కి','Page navigation':'పేజీ నావిగేషన్','Voice reply':'స్వరం సమాధానం','Voice':'స్వరం'},
 // Provisional Malayalam quick UI labels copied from the existing structurally valid candidate pack; native review remains required.
 ml:{'Back':'പിന്നോക്കം','Page navigation':'പേജ് നിയന്ത്രണം','Voice reply':'വോയിസ് മറുപടി','Voice':'വോയിസ്'},
+// Provisional Marathi quick UI labels from the structurally complete candidate pack; native review remains required.
+mr:{'Back':'परत','Page navigation':'पेज नेव्हिगेशन','Voice reply':'व्हॉईस प्रतिसाद','Voice':'व्हॉईस'},
 };
 // Provisional quota-neutral overrides for the exact R125 UI leaks. Native review remains required.
 const R125_PROVISIONAL={
