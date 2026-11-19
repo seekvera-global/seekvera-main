@@ -187,13 +187,13 @@
     }
   },
   "remainingChecks": [
-    "Run R125 #121 after the live asset diagnostic; it must reach and complete 98 languages × 27 sections with zero visible findings and zero dynamic fallbacks.",
-    "Resolve the exact live Pages asset/readiness mismatch identified by R125 diagnostic; repository source files themselves pass the expected v54 checks.",
-    "Review Divehi's 58 English-overlap findings and 28 duplicate-output groups across 11 languages with qualified native reviewers; do not promote candidate packs.",
+    "R125 #124 must pass browser-based production asset readiness and complete the 98-language × 27-section matrix with zero exact, partial, unresolved, and dynamic-fallback findings.",
+    "If R125 #124 fails, inspect browser HTTP status, response body, and cf-ray; do not weaken Cloudflare or production access controls.",
+    "Review Divehi's 58 English-overlap findings and duplicate-output groups with qualified native reviewers; do not promote candidate packs.",
     "Obtain qualified linguistic review for all 98 locale packs; none is published or linguistically certified.",
     "Keep live AI chat and translation-backend availability unknown until a permitted quota-safe probe can run without bypassing daily_free_ai_limit or Google HTTP429.",
-    "Complete physical microphone/speaker tests on real Android, iPhone/iPad and desktop devices; browser/headless audio checks are not hardware certification.",
-    "Configure merchant checkout and complete end-to-end payment, forged-reference rejection and settlement verification."
+    "Certify physical microphone input and audible speaker output on real Android, iPhone/iPad, and desktop devices; browser/headless audio tests are not hardware certification.",
+    "Configure a real merchant account and complete end-to-end checkout, payment, refund, settlement, and webhook verification before enabling checkout."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
@@ -284,7 +284,7 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-11-19T13:48:58.771Z",
+    "checkedAt": "2026-11-19T14:21:05.585Z",
     "candidateCommit": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
     "completedCount": 97,
     "remainingCount": 1,
@@ -2067,7 +2067,7 @@
     "candidateBranchModifiedThisRun": false,
     "quotaProbeSent": false,
     "structuralRepairUsedNoAI": true,
-    "checkedAt": "2026-11-19T02:46:56Z"
+    "checkedAt": "2026-11-19T14:21:05.585Z"
   },
   "aiChat": {
     "lastDirectProbeAt": "2026-11-13T13:18:20+01:00",
@@ -2075,7 +2075,8 @@
     "latestReleaseRun": 44438819301,
     "latestReleaseLiveAiProbe": "R105 #194: AI binding and production health passed; RUN_LIVE_AI_PROBES=false, so live chat generation and AI country-intent were not tested",
     "aiBinding": "present in production health response",
-    "chatGenerationAvailability": "unknown-currently"
+    "chatGenerationAvailability": "unknown-currently",
+    "note": "AI Binding and Production Health passed in R105 #213; no live generation or country-intent probe was sent this pass."
   },
   "countryCurrencySections": {
     "latestReleaseRun": 44438819301,
@@ -3092,7 +3093,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-19T13:48:58.771Z",
+  "updatedAt": "2026-11-19T14:21:05.585Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -9890,23 +9891,20 @@
     "note": "The supplied 63/98 + 35 remaining figure is stale; current Main checkpoint and candidate summary show 98 structurally complete, 97 quality-passing and only Divehi blocked by 58 overlap findings."
   },
   "latestProductionSectionAudit": {
-    "run": 119,
-    "runId": 44535614640,
+    "run": 124,
+    "runId": 44542524835,
     "workflow": ".github/workflows/r125-static-locale-section-audit.yml",
-    "createdAt": "2026-11-19T13:39:21Z",
-    "status": "completed",
-    "conclusion": "failure",
-    "headSha": "ee2ec5dd4cffa6ec4e52a75976e04551b3a0716f",
+    "createdAt": "2026-11-19T14:19:42Z",
+    "status": "pending",
+    "conclusion": null,
+    "headSha": "ef8bb1aa4e959e0ea1b9f568d9528512d510da8a",
     "runtimeVersion": "20261119-r125-global-quick-v54",
     "languages": 98,
     "sections": 27,
     "sectionLanguageApplications": 2646,
     "countryProfiles": 248,
     "matrixStarted": false,
-    "dynamicFallbackRequests": null,
-    "translationProviderCalls": 0,
-    "failureStage": "Wait for Pages to serve the audited locale assets",
-    "finding": "R125_LATEST_PAGES_ASSETS_TIMEOUT after all readiness retries; locale matrix did not start, so no v54 language/section conclusion is available."
+    "note": "Queued browser-transport audit after readiness and fetch-timeout repairs; no result yet."
   },
   "latestProductionRuntimeChecks": {
     "checkedAt": "2026-11-19T13:43:18.980Z",
@@ -9944,7 +9942,7 @@
     }
   },
   "latestResumeWorkflowInspection": {
-    "checkedAt": "2026-11-19T13:48:58.771Z",
+    "checkedAt": "2026-11-19T14:21:05.585Z",
     "path": ".github/workflows/r125-hourly-candidate-resume.yml",
     "trigger": "workflow_dispatch only; no schedule",
     "scheduleTriggerPresent": false,
@@ -9972,7 +9970,7 @@
     "candidateWritesDeferred": true,
     "candidatePackWritesThisPass": 0,
     "candidateMetadataWritesThisPass": 0,
-    "note": "Latest matching run remains legacy #150. It completed; no active resume run was found. Candidate branch left untouched this pass."
+    "note": "Current Main workflow has an explicit Resume step and deterministic repair steps, but they require manual opt-in; latest matching run #150 is a completed legacy run, not a current-revision execution."
   },
   "latestQuickFallbackRepair": {
     "checkedAt": "2026-11-18T09:45:51Z",
@@ -11888,7 +11886,7 @@
       "r125": "still running; no candidate writes"
     }
   },
-  "latestMainHead": "196cc34754607b1e80a6350cde9b284f3f510c0d",
+  "latestMainHead": "ef8bb1aa4e959e0ea1b9f568d9528512d510da8a",
   "latestBurmeseRepair20261118": {
     "commit": "86f055faf4d4520564e76fc2b2b1b59366e699ab",
     "version": "20261118-r125-global-quick-v35",
@@ -13495,7 +13493,7 @@
       "checkout is inactive pending merchant configuration"
     ]
   },
-  "lastUpdatedAt": "2026-11-19T13:48:58.771Z",
+  "lastUpdatedAt": "2026-11-19T14:21:05.585Z",
   "latestAutomationPass20261119V43": {
     "checkedAt": "2026-11-19T07:07:23.959Z",
     "mainBaseSha": "1d1d89dd55a1502618f180ea35a151ed436e3101",
@@ -14167,7 +14165,7 @@
   "quota": {
     "translationRequestsSent": 0,
     "aiQuotaUsed": 0,
-    "providerAvailability": "not probed this pass; saved resume log still shows HTTP 503 all_translation_backends_unavailable and Dhivehi timeouts; daily_free_ai_limit and Google HTTP429 remain blockers"
+    "providerAvailability": "not probed this pass; saved resume log still records HTTP 503 all_translation_backends_unavailable and Dhivehi timeouts; historical daily_free_ai_limit and Google HTTP429 remain blockers"
   },
   "latestAutomationPass20261119V47": {
     "checkedAt": "2026-11-19T09:48:06Z",
@@ -15798,20 +15796,22 @@
       "number": 119,
       "id": 44535614640,
       "conclusion": "failure",
-      "reason": "R125_LATEST_PAGES_ASSETS_TIMEOUT"
+      "reason": "R125_LATEST_PAGES_ASSETS_TIMEOUT",
+      "matrixStarted": false
     },
     "diagnosticRun": {
       "number": 120,
       "id": 44536839664,
-      "status": "in_progress",
-      "headSha": "6b4447dc499bef5942eb326b2209637207bc0d22",
-      "lastObservedStep": "Install Chromium and system dependencies"
+      "status": "completed",
+      "conclusion": "failure",
+      "finding": "HTTP 403 Forbidden for index.html, games.html, global-ui.js, games.js and i18n-ui.js from curl/Python urllib."
     },
     "correctedDiagnosticRun": {
       "number": 121,
       "id": 44536946388,
-      "status": "pending",
-      "headSha": "196cc34754607b1e80a6350cde9b284f3f510c0d"
+      "status": "completed",
+      "conclusion": "failure",
+      "finding": "Same HTTP 403 for all five assets; repository source readback passed; locale matrix did not start."
     },
     "workflowChanges": [
       "Added HTTP/status and token-level diagnostic output after asset readiness timeout.",
@@ -15826,7 +15826,40 @@
       "i18nV54": true,
       "marathiQuickLabels": true
     },
-    "note": "Repository source checks pass; the exact live asset/readiness mismatch remains to be identified by the diagnostic run."
+    "note": "Repository source checks pass; the exact live asset/readiness mismatch remains to be identified by the diagnostic run.",
+    "checkedAt": "2026-11-19T14:21:05.585Z",
+    "shellTransportRun": {
+      "number": 122,
+      "id": 44542043601,
+      "status": "completed",
+      "conclusion": "failure",
+      "failureStage": "Wait for Pages to serve the audited locale assets",
+      "finding": "Bash heredoc terminator was indented; runner reported wanted NODE and unexpected end of file. No locale matrix started."
+    },
+    "supersededRun": {
+      "number": 123,
+      "id": 44542161768,
+      "status": "completed",
+      "conclusion": "cancelled",
+      "note": "Pending run was superseded when the newer audit run entered the same concurrency group."
+    },
+    "latestBrowserRun": {
+      "number": 124,
+      "id": 44542524835,
+      "status": "pending",
+      "headSha": "ef8bb1aa4e959e0ea1b9f568d9528512d510da8a"
+    },
+    "crossCheck": {
+      "r9eRun": 134,
+      "r9eRunId": 44535614542,
+      "conclusion": "success",
+      "note": "R9e used Chromium on the same v54 release and passed 248/248 country profiles and 44/44 pages; this supports a transport-specific R125 readiness defect rather than proving all locale assets pass."
+    },
+    "matrixStarted": false,
+    "translationProviderCalls": 0,
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0
   },
   "latestQuickLabelCandidateScreen20261119": {
     "checkedAt": "2026-11-19T13:48:58.771Z",
@@ -15848,5 +15881,139 @@
     "translationRequests": 0,
     "aiQuotaUsed": 0,
     "status": "read-only heuristic screen; qualified native review required"
+  },
+  "latestR125BrowserTransportRepair20261119": {
+    "checkedAt": "2026-11-19T14:21:05.585Z",
+    "commits": [
+      "e1382e46139ca53c7aba1f3ebbe9c72b49fc3312",
+      "20200224c1b7c2226bb9462e2e3f797d1e035d3c",
+      "ef8bb1aa4e959e0ea1b9f568d9528512d510da8a"
+    ],
+    "finding": "R125 preflight used curl and Python urllib; both received HTTP 403 for all five production assets. The browser-based R9e audit passed on the same v54 release.",
+    "changes": [
+      "Replaced curl/urllib readiness requests with Chromium page navigation and same-origin fetches.",
+      "Changed the full static locale audit from Playwright APIRequestContext to browser page.fetch so production access is tested with the same browser transport.",
+      "Added explicit live i18n-ui v54 and global-ui v2 script-reference assertions.",
+      "Intercepted AI and translation endpoints with quota-neutral 503 mocks in preflight and audit; no provider request is sent.",
+      "Added 15-second preflight and 30-second audit fetch abort guards.",
+      "Fixed the shell heredoc delimiter after run #122 exposed the indentation error."
+    ],
+    "validation": {
+      "workflowReadback": "PASS",
+      "auditScriptReadback": "PASS",
+      "r125Run122": "failed on heredoc syntax before matrix",
+      "r125Run124": "pending",
+      "productionRuntimeFilesChanged": false,
+      "candidateBranchChanged": false
+    },
+    "quota": {
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "quotaBypassAttempted": false
+    },
+    "decision": "NO-GO until R125 #124 completes and all other release gates pass."
+  },
+  "latestAutomationPass20261119V55": {
+    "checkedAt": "2026-11-19T14:21:05.585Z",
+    "mainBaseSha": "ef8bb1aa4e959e0ea1b9f568d9528512d510da8a",
+    "commits": [
+      "e1382e46139ca53c7aba1f3ebbe9c72b49fc3312",
+      "20200224c1b7c2226bb9462e2e3f797d1e035d3c",
+      "ef8bb1aa4e959e0ea1b9f568d9528512d510da8a"
+    ],
+    "candidateState": {
+      "structurallyComplete": 98,
+      "total": 98,
+      "qualityPassing": 97,
+      "qualityRemaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "published": 0,
+      "linguisticallyCertified": 0
+    },
+    "candidateWorkflow": {
+      "currentTrigger": "workflow_dispatch only",
+      "schedule": false,
+      "latestMatchingRun": 150,
+      "latestMatchingRunId": 38971104197,
+      "latestMatchingRunRevision": "legacy",
+      "latestMatchingRunConclusion": "success",
+      "resumeStep": "skipped",
+      "candidatePackWrites": 0,
+      "activeCurrentRuns": 0
+    },
+    "production": {
+      "r105": {
+        "run": 213,
+        "runId": 44535767548,
+        "conclusion": "success",
+        "aiBinding": true,
+        "productionHealth": true,
+        "liveChatProbe": "not run"
+      },
+      "r9e": {
+        "run": 134,
+        "runId": 44535614542,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44"
+      },
+      "r123": {
+        "run": 162,
+        "runId": 44535614582,
+        "conclusion": "success",
+        "programmaticTTS": "pass",
+        "voiceAcknowledgement": "pass",
+        "liveASR": "skipped",
+        "physicalDeviceCertification": false
+      },
+      "safety": {
+        "run": 88,
+        "runId": 44535614599,
+        "conclusion": "success"
+      },
+      "pages": {
+        "run": 1926,
+        "runId": 44535766174,
+        "conclusion": "success"
+      }
+    },
+    "r125": {
+      "previousRun119": "failed at non-browser asset readiness",
+      "diagnostic120and121": "HTTP 403 on curl/urllib",
+      "run122": "failed on shell heredoc indentation",
+      "run123": "cancelled when superseded",
+      "run124": "pending after browser transport repair"
+    },
+    "ai": {
+      "binding": "present",
+      "liveChat": "unknown-not-probed",
+      "translationBackend": "unknown-not-probed",
+      "savedLog": "HTTP 503 all_translation_backends_unavailable; Dhivehi timeouts; three Workers AI outputs unparseable",
+      "historicalBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429"
+      ],
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "voice": {
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "liveASR": "not certified",
+      "physicalMicrophoneSpeaker": "not certified"
+    },
+    "checkout": "inactive pending merchant configuration",
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "candidateBranchModified": false,
+      "published": false,
+      "linguisticCertification": false
+    },
+    "decision": "NO-GO"
   }
 }
