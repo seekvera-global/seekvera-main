@@ -10042,10 +10042,10 @@
     }
   },
   "latestResumeWorkflowInspection": {
-    "checkedAt": "2026-11-19T17:34:03.593Z",
+    "checkedAt": "2026-11-19",
     "path": ".github/workflows/r125-hourly-candidate-resume.yml",
     "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
-    "trigger": "workflow_dispatch only; no hourly schedule",
+    "trigger": "workflow_dispatch only; no schedule",
     "scheduleTriggerPresent": false,
     "runTranslationsDefault": false,
     "repairCandidatesDefault": false,
@@ -10057,12 +10057,9 @@
       "status": "completed",
       "conclusion": "success",
       "revision": "legacy",
-      "event": "push",
-      "headSha": "0911d8f826e7347f3b5dbf9aacccc7893ee85dd8",
       "resume": "skipped",
       "audit": "success",
       "candidatePackWrites": 0,
-      "metadataFilesWritten": 2,
       "translationRequests": 0
     },
     "currentWorkflowDispatchRunsFound": 0,
@@ -10071,7 +10068,11 @@
     "candidatePackWritesThisPass": 0,
     "candidateMetadataWritesThisPass": 0,
     "candidateWritesDeferred": true,
-    "note": "The latest matching run is legacy #150, not a run of the current Main workflow. The current workflow can resume translations or write deterministic candidate repairs only after explicit input opt-in; no current candidate-resume run is active and no candidate writes were made."
+    "note": "Fresh Actions query and job log inspection confirm #150 is still the latest matching candidate-resume run. It is a legacy revision; the current manual workflow has not run. No candidate pack writes or translation requests were made.",
+    "currentRevisionRunObserved": false,
+    "activeRuns": 0,
+    "translationRequestsThisPass": 0,
+    "aiQuotaUsedThisPass": 0
   },
   "latestQuickFallbackRepair": {
     "checkedAt": "2026-11-18T09:45:51Z",
@@ -16976,22 +16977,23 @@
     "currentWorkflow": "concurrency group v5; dynamic asset refs; proper-name game markup assertions; single-backslash line continuations"
   },
   "latestR125CurrentRun20261119": {
-    "checkedAt": "2026-11-19T17:35:26.517Z",
-    "run": 135,
-    "runId": 44578246973,
-    "headSha": "a283b91a3030f1313c42d9c6f6188b26ca027524",
+    "checkedAt": "2026-11-19",
+    "run": 136,
+    "runId": 44593451193,
+    "headSha": "dac26d2c87e78add075755bd95fc84cb080a2184",
     "status": "in_progress",
     "conclusion": null,
-    "previousRun": 134,
+    "previousRun": 135,
     "readiness": {
-      "pagesAssets": "passed",
-      "syntaxCheck": "passed",
-      "quotaGuard": "passed",
-      "quickLabelRegression": "passed",
-      "noTranslateAuditTriage": "passed"
+      "chromiumInstall": "in_progress",
+      "pagesDeployment": "success",
+      "syntaxCheck": "pending",
+      "quotaGuard": "pending",
+      "quickLabelRegression": "pending",
+      "noTranslateAuditTriage": "pending"
     },
     "matrix": {
-      "status": "in_progress",
+      "status": "pending",
       "expectedLanguages": 98,
       "expectedSections": 27,
       "expectedApplications": 2646,
@@ -17001,7 +17003,7 @@
     "aiRequests": 0,
     "pollinationsRequests": 0,
     "quotaUsed": 0,
-    "note": "Run #135 passed Chromium installation, Pages asset readiness, syntax, quota guard, local quick-label regression and no-translate triage; the full locale/country/section matrix is now running."
+    "note": "R125 #136 was triggered by the v109 residual-localizer fix. It is currently installing Chromium; no translation/AI/Pollinations requests are made by this quota-neutral audit."
   },
   "structurallyCompleteCandidates": 98,
   "qualityPassingCandidates": 97,
@@ -17180,5 +17182,127 @@
       "linguisticCertification": false,
       "decision": "NO-GO"
     }
+  },
+  "latestAutomationPass20261119Turn11": {
+    "checkedAt": "2026-11-19",
+    "mainCommit": "dac26d2c87e78add075755bd95fc84cb080a2184",
+    "navigationFix": {
+      "file": "navigation.js",
+      "change": "translateResidualUI returns when SEEKVERA_I18N_R32 exists, preventing the legacy residual translator from re-translating already-localized .sv-global-tip labels.",
+      "cacheVersion": "navigation.js?v=20261119-r125-residual-i18n-guard-v109",
+      "pagesUpdated": 44,
+      "regressionTest": "tools/test-r125-static-locale-audit-exclusions.cjs",
+      "deployment": "Pages #1954 success; R105 #220 Worker deploy and production health success"
+    },
+    "previousAudit": {
+      "run": 135,
+      "runId": 44578246973,
+      "status": "completed",
+      "conclusion": "failure",
+      "languages": 98,
+      "sections": 27,
+      "sectionLanguageApplications": 2646,
+      "countryProfiles": 248,
+      "exactLeaks": 0,
+      "partialLeaks": 0,
+      "unresolvedLeaks": 0,
+      "interceptedDynamicTranslationRequests": 2457,
+      "affectedLanguages": 97,
+      "uniqueFallbackStrings": 85,
+      "paths": 16,
+      "candidateSourceOverlap": 60,
+      "absentFromCandidateSource": 25,
+      "providerRequests": 0,
+      "aiRequests": 0,
+      "quotaUsed": 0,
+      "note": "The 5 Arabic global dock labels were already-localized outputs re-entering navigation.js residual translation. Remaining English fallback keys include unpublished candidate source delta and seller-plan labels; do not hide or publish unreviewed packs."
+    },
+    "production": {
+      "pages": {
+        "run": 1954,
+        "runId": 44593449051,
+        "conclusion": "success"
+      },
+      "r105": {
+        "run": 220,
+        "runId": 44593451308,
+        "conclusion": "success",
+        "aiBinding": true,
+        "productionHealth": "passed",
+        "liveChatProbe": "skipped-by-policy",
+        "countryIntentProbe": "skipped-by-policy"
+      },
+      "r9e": {
+        "run": 138,
+        "runId": 44593451053,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "moroccoPriority": "passed",
+        "worldwidePriority": "passed",
+        "safetyGate": "passed",
+        "voicePwaCache": "passed",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r123": {
+        "run": 169,
+        "runId": 44593451076,
+        "conclusion": "success",
+        "programmaticTTS": "passed",
+        "voiceAcknowledgement": "passed",
+        "dynamicVoicePlaceholders": "passed",
+        "productionAssetMultilingualAudio": "skipped",
+        "liveASR": "skipped",
+        "physicalDeviceCertification": false
+      },
+      "safety": {
+        "run": 92,
+        "runId": 44593451109,
+        "conclusion": "success",
+        "blockedCases": 4,
+        "benignLand": "allowed_pending_human_review"
+      }
+    },
+    "candidateState": {
+      "branch": "work/r125-locale-candidates-20261008",
+      "head": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
+      "structurallyComplete": 98,
+      "total": 98,
+      "qualityPassing": 97,
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "published": 0,
+      "linguisticallyCertified": 0,
+      "candidatePackWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "ai": {
+      "binding": true,
+      "productionHealth": true,
+      "liveChatAvailability": "unknown-not-probed",
+      "countryIntent": "not-probed",
+      "translationBackend": "unknown-not-probed",
+      "historicalBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable"
+      ],
+      "probesSent": 0,
+      "quotaUsed": 0
+    },
+    "voice": {
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "dynamicVoicePlaceholders": "passed",
+      "liveASR": "skipped",
+      "physicalMicrophoneSpeakerCertification": false
+    },
+    "checkout": "inactive pending merchant configuration and end-to-end payment/refund/settlement/webhook verification",
+    "safety": "latest live smoke passed; prohibited categories blocked and benign land remains pending human review",
+    "candidateResumeWorkflow": "latest matching run #150 is legacy and completed; no active run; no candidate writes",
+    "decision": "NO-GO"
   }
 }

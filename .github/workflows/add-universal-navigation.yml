@@ -1,11 +1,6 @@
-name: Add universal Back and Home navigation
+name: Manual recovery for universal Back and Home navigation
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'navigation.js'
-      - '.github/workflows/add-universal-navigation.yml'
   workflow_dispatch:
 
 permissions:
@@ -27,7 +22,7 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           import re
-          tag='<script src="navigation.js?v=20260924-nav-v1" defer></script>'
+          tag='<script src="navigation.js?v=20261119-r125-residual-i18n-guard-v109" defer></script>'
           changed=[]
           for p in sorted(Path('.').glob('*.html')):
               if p.name.lower().startswith('google'):
@@ -54,10 +49,11 @@ jobs:
           node --check navigation.js
           grep -q 'svBackButton' navigation.js
           grep -q 'svHomeButton' navigation.js
+          grep -q 'if(window.SEEKVERA_I18N_R32)return;' navigation.js
           count=0
           for f in *.html; do
             case "$f" in google*) continue;; esac
-            grep -q 'navigation.js?v=20260924-nav-v1' "$f"
+            grep -q 'navigation.js?v=20261119-r125-residual-i18n-guard-v109' "$f"
             count=$((count+1))
           done
           echo "Navigation coverage passed on $count public HTML pages."
