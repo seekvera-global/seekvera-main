@@ -187,9 +187,9 @@
     }
   },
   "remainingChecks": [
-    "R125 #124 must pass browser-based production asset readiness and complete the 98-language × 27-section matrix with zero exact, partial, unresolved, and dynamic-fallback findings.",
-    "If R125 #124 fails, inspect browser HTTP status, response body, and cf-ray; do not weaken Cloudflare or production access controls.",
-    "Review Divehi's 58 English-overlap findings and duplicate-output groups with qualified native reviewers; do not promote candidate packs.",
+    "R125 #125 is now running the full 98-language × 27-section browser matrix; require zero exact, partial, unresolved, and dynamic-fallback findings before accepting it.",
+    "If R125 #125 reports language/section findings, triage exact source keys and affected pages; do not suppress findings or invoke dynamic translation to make the audit pass.",
+    "Review Divehi's 58 English-overlap findings and the 28 duplicate-output groups across 11 languages with qualified native reviewers; do not promote candidate packs.",
     "Obtain qualified linguistic review for all 98 locale packs; none is published or linguistically certified.",
     "Keep live AI chat and translation-backend availability unknown until a permitted quota-safe probe can run without bypassing daily_free_ai_limit or Google HTTP429.",
     "Certify physical microphone input and audible speaker output on real Android, iPhone/iPad, and desktop devices; browser/headless audio tests are not hardware certification.",
@@ -284,7 +284,7 @@
   },
   "candidateResume": {
     "run": null,
-    "checkedAt": "2026-11-19T14:21:05.585Z",
+    "checkedAt": "2026-11-19T14:29:04.121Z",
     "candidateCommit": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
     "completedCount": 97,
     "remainingCount": 1,
@@ -2067,7 +2067,7 @@
     "candidateBranchModifiedThisRun": false,
     "quotaProbeSent": false,
     "structuralRepairUsedNoAI": true,
-    "checkedAt": "2026-11-19T14:21:05.585Z"
+    "checkedAt": "2026-11-19T14:29:04.121Z"
   },
   "aiChat": {
     "lastDirectProbeAt": "2026-11-13T13:18:20+01:00",
@@ -2076,7 +2076,7 @@
     "latestReleaseLiveAiProbe": "R105 #194: AI binding and production health passed; RUN_LIVE_AI_PROBES=false, so live chat generation and AI country-intent were not tested",
     "aiBinding": "present in production health response",
     "chatGenerationAvailability": "unknown-currently",
-    "note": "AI Binding and Production Health passed in R105 #213; no live generation or country-intent probe was sent this pass."
+    "note": "AI Binding and Production Health passed in R105 #213; live chat and AI country-intent were not probed because RUN_LIVE_AI_PROBES=false and quota status remains unknown."
   },
   "countryCurrencySections": {
     "latestReleaseRun": 44438819301,
@@ -3093,7 +3093,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-19T14:21:05.585Z",
+  "updatedAt": "2026-11-19T14:29:04.121Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -9891,20 +9891,25 @@
     "note": "The supplied 63/98 + 35 remaining figure is stale; current Main checkpoint and candidate summary show 98 structurally complete, 97 quality-passing and only Divehi blocked by 58 overlap findings."
   },
   "latestProductionSectionAudit": {
-    "run": 124,
-    "runId": 44542524835,
+    "run": 125,
+    "runId": 44543965618,
     "workflow": ".github/workflows/r125-static-locale-section-audit.yml",
-    "createdAt": "2026-11-19T14:19:42Z",
-    "status": "pending",
+    "createdAt": "2026-11-19T14:27:37Z",
+    "status": "in_progress",
     "conclusion": null,
-    "headSha": "ef8bb1aa4e959e0ea1b9f568d9528512d510da8a",
+    "headSha": "3a8d1bd89d38492f003f3142b72cee4d84bd4085",
     "runtimeVersion": "20261119-r125-global-quick-v54",
     "languages": 98,
     "sections": 27,
     "sectionLanguageApplications": 2646,
     "countryProfiles": 248,
-    "matrixStarted": false,
-    "note": "Queued browser-transport audit after readiness and fetch-timeout repairs; no result yet."
+    "matrixStarted": true,
+    "lastObservedStep": "Verify all locale packs, countries and sections without AI requests",
+    "preflight": "passed",
+    "syntaxCheck": "passed",
+    "quotaGuard": "passed",
+    "noTranslateTriage": "passed",
+    "note": "Browser readiness passed; full locale/section/country matrix has started. No result yet."
   },
   "latestProductionRuntimeChecks": {
     "checkedAt": "2026-11-19T13:43:18.980Z",
@@ -9942,7 +9947,7 @@
     }
   },
   "latestResumeWorkflowInspection": {
-    "checkedAt": "2026-11-19T14:21:05.585Z",
+    "checkedAt": "2026-11-19T14:29:04.121Z",
     "path": ".github/workflows/r125-hourly-candidate-resume.yml",
     "trigger": "workflow_dispatch only; no schedule",
     "scheduleTriggerPresent": false,
@@ -9970,7 +9975,7 @@
     "candidateWritesDeferred": true,
     "candidatePackWritesThisPass": 0,
     "candidateMetadataWritesThisPass": 0,
-    "note": "Current Main workflow has an explicit Resume step and deterministic repair steps, but they require manual opt-in; latest matching run #150 is a completed legacy run, not a current-revision execution."
+    "note": "Current workflow contains an actual Resume step and deterministic repair steps, but requires explicit manual opt-in. Latest matching run #150 is legacy and completed; no current run is active."
   },
   "latestQuickFallbackRepair": {
     "checkedAt": "2026-11-18T09:45:51Z",
@@ -11886,7 +11891,7 @@
       "r125": "still running; no candidate writes"
     }
   },
-  "latestMainHead": "ef8bb1aa4e959e0ea1b9f568d9528512d510da8a",
+  "latestMainHead": "3a8d1bd89d38492f003f3142b72cee4d84bd4085",
   "latestBurmeseRepair20261118": {
     "commit": "86f055faf4d4520564e76fc2b2b1b59366e699ab",
     "version": "20261118-r125-global-quick-v35",
@@ -13493,7 +13498,7 @@
       "checkout is inactive pending merchant configuration"
     ]
   },
-  "lastUpdatedAt": "2026-11-19T14:21:05.585Z",
+  "lastUpdatedAt": "2026-11-19T14:29:04.121Z",
   "latestAutomationPass20261119V43": {
     "checkedAt": "2026-11-19T07:07:23.959Z",
     "mainBaseSha": "1d1d89dd55a1502618f180ea35a151ed436e3101",
@@ -14165,7 +14170,7 @@
   "quota": {
     "translationRequestsSent": 0,
     "aiQuotaUsed": 0,
-    "providerAvailability": "not probed this pass; saved resume log still records HTTP 503 all_translation_backends_unavailable and Dhivehi timeouts; historical daily_free_ai_limit and Google HTTP429 remain blockers"
+    "providerAvailability": "not probed this pass; saved resume log still shows HTTP 503 all_translation_backends_unavailable and Dhivehi timeouts; historical daily_free_ai_limit and Google HTTP429 remain blockers"
   },
   "latestAutomationPass20261119V47": {
     "checkedAt": "2026-11-19T09:48:06Z",
@@ -15804,14 +15809,14 @@
       "id": 44536839664,
       "status": "completed",
       "conclusion": "failure",
-      "finding": "HTTP 403 Forbidden for index.html, games.html, global-ui.js, games.js and i18n-ui.js from curl/Python urllib."
+      "finding": "curl/Python urllib received HTTP 403 for all five production assets."
     },
     "correctedDiagnosticRun": {
       "number": 121,
       "id": 44536946388,
       "status": "completed",
       "conclusion": "failure",
-      "finding": "Same HTTP 403 for all five assets; repository source readback passed; locale matrix did not start."
+      "finding": "Same non-browser HTTP 403 for all five assets; source readback passed."
     },
     "workflowChanges": [
       "Added HTTP/status and token-level diagnostic output after asset readiness timeout.",
@@ -15827,27 +15832,29 @@
       "marathiQuickLabels": true
     },
     "note": "Repository source checks pass; the exact live asset/readiness mismatch remains to be identified by the diagnostic run.",
-    "checkedAt": "2026-11-19T14:21:05.585Z",
+    "checkedAt": "2026-11-19T14:29:04.121Z",
     "shellTransportRun": {
       "number": 122,
       "id": 44542043601,
       "status": "completed",
       "conclusion": "failure",
-      "failureStage": "Wait for Pages to serve the audited locale assets",
-      "finding": "Bash heredoc terminator was indented; runner reported wanted NODE and unexpected end of file. No locale matrix started."
+      "failureStage": "Pages asset readiness",
+      "finding": "Bash heredoc terminator was indented; runner reported wanted NODE and unexpected end of file."
     },
     "supersededRun": {
       "number": 123,
       "id": 44542161768,
       "status": "completed",
       "conclusion": "cancelled",
-      "note": "Pending run was superseded when the newer audit run entered the same concurrency group."
+      "note": "Superseded while pending by a newer audit in the same concurrency group."
     },
     "latestBrowserRun": {
-      "number": 124,
-      "id": 44542524835,
-      "status": "pending",
-      "headSha": "ef8bb1aa4e959e0ea1b9f568d9528512d510da8a"
+      "number": 125,
+      "id": 44543965618,
+      "status": "in_progress",
+      "headSha": "3a8d1bd89d38492f003f3142b72cee4d84bd4085",
+      "lastObservedStep": "Verify all locale packs, countries and sections without AI requests",
+      "matrixStarted": true
     },
     "crossCheck": {
       "r9eRun": 134,
@@ -15855,11 +15862,26 @@
       "conclusion": "success",
       "note": "R9e used Chromium on the same v54 release and passed 248/248 country profiles and 44/44 pages; this supports a transport-specific R125 readiness defect rather than proving all locale assets pass."
     },
-    "matrixStarted": false,
+    "matrixStarted": true,
     "translationProviderCalls": 0,
     "candidatePackWrites": 0,
     "translationRequests": 0,
-    "aiQuotaUsed": 0
+    "aiQuotaUsed": 0,
+    "browserRun": {
+      "number": 124,
+      "id": 44542524835,
+      "status": "completed",
+      "conclusion": "failure",
+      "finding": "Chromium fetched index.html, games.html, global-ui.js, games.js and i18n-ui.js successfully with HTTP 200; readiness loop still failed because the Marathi Page navigation grep literal mixed Devanagari and Malayalam code points."
+    },
+    "markerValidation": {
+      "checkedAt": "2026-11-19T14:29:04.121Z",
+      "grepPatternsChecked": 234,
+      "positiveSourceMarkersMissing": 0,
+      "negativeNoTranslateMarkerPresent": false,
+      "result": "PASS",
+      "finding": "The only positive source marker mismatch was the mixed-script Marathi Page navigation literal; corrected to the exact Devanagari value from i18n-ui.js."
+    }
   },
   "latestQuickLabelCandidateScreen20261119": {
     "checkedAt": "2026-11-19T13:48:58.771Z",
@@ -15883,35 +15905,35 @@
     "status": "read-only heuristic screen; qualified native review required"
   },
   "latestR125BrowserTransportRepair20261119": {
-    "checkedAt": "2026-11-19T14:21:05.585Z",
+    "checkedAt": "2026-11-19T14:29:04.121Z",
     "commits": [
       "e1382e46139ca53c7aba1f3ebbe9c72b49fc3312",
       "20200224c1b7c2226bb9462e2e3f797d1e035d3c",
-      "ef8bb1aa4e959e0ea1b9f568d9528512d510da8a"
+      "ef8bb1aa4e959e0ea1b9f568d9528512d510da8a",
+      "3a8d1bd89d38492f003f3142b72cee4d84bd4085"
     ],
-    "finding": "R125 preflight used curl and Python urllib; both received HTTP 403 for all five production assets. The browser-based R9e audit passed on the same v54 release.",
+    "finding": "The initial R125 403s came from curl/Python urllib; Chromium successfully fetched all five assets with HTTP 200. The next failure was a single mixed-script Marathi readiness literal, not an asset outage.",
     "changes": [
-      "Replaced curl/urllib readiness requests with Chromium page navigation and same-origin fetches.",
-      "Changed the full static locale audit from Playwright APIRequestContext to browser page.fetch so production access is tested with the same browser transport.",
-      "Added explicit live i18n-ui v54 and global-ui v2 script-reference assertions.",
-      "Intercepted AI and translation endpoints with quota-neutral 503 mocks in preflight and audit; no provider request is sent.",
-      "Added 15-second preflight and 30-second audit fetch abort guards.",
-      "Fixed the shell heredoc delimiter after run #122 exposed the indentation error."
+      "Replaced curl/urllib readiness with real Chromium navigation and same-origin fetches.",
+      "Changed static pack fetches in the audit to browser page.fetch with bounded timeouts.",
+      "Intercepted AI and translation endpoints; no provider requests are sent.",
+      "Fixed the heredoc delimiter exposed by run #122.",
+      "Corrected the Marathi Page navigation grep literal to match the exact Devanagari string in production i18n-ui.js."
     ],
     "validation": {
-      "workflowReadback": "PASS",
-      "auditScriptReadback": "PASS",
-      "r125Run122": "failed on heredoc syntax before matrix",
-      "r125Run124": "pending",
-      "productionRuntimeFilesChanged": false,
-      "candidateBranchChanged": false
+      "run122": "failed on heredoc syntax before matrix",
+      "run124": "all five assets HTTP 200; failed on one mixed-script Marathi grep marker",
+      "sourceMarkerCheck": "234 checks; zero positive source mismatches after correction",
+      "run125": "browser readiness, syntax check, quota guard and no-translate triage passed; full matrix in progress"
     },
     "quota": {
       "translationRequests": 0,
       "aiQuotaUsed": 0,
       "quotaBypassAttempted": false
     },
-    "decision": "NO-GO until R125 #124 completes and all other release gates pass."
+    "decision": "NO-GO until R125 #125 and remaining release gates pass.",
+    "productionRuntimeFilesChanged": false,
+    "candidateBranchChanged": false
   },
   "latestAutomationPass20261119V55": {
     "checkedAt": "2026-11-19T14:21:05.585Z",
@@ -16003,6 +16025,108 @@
       "voiceAcknowledgement": "passed",
       "liveASR": "not certified",
       "physicalMicrophoneSpeaker": "not certified"
+    },
+    "checkout": "inactive pending merchant configuration",
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "candidateBranchModified": false,
+      "published": false,
+      "linguisticCertification": false
+    },
+    "decision": "NO-GO"
+  },
+  "latestAutomationPass20261119V56": {
+    "checkedAt": "2026-11-19T14:29:04.121Z",
+    "mainBaseSha": "3a8d1bd89d38492f003f3142b72cee4d84bd4085",
+    "commits": [
+      "e1382e46139ca53c7aba1f3ebbe9c72b49fc3312",
+      "20200224c1b7c2226bb9462e2e3f797d1e035d3c",
+      "ef8bb1aa4e959e0ea1b9f568d9528512d510da8a",
+      "3a8d1bd89d38492f003f3142b72cee4d84bd4085"
+    ],
+    "candidateState": {
+      "structurallyComplete": 98,
+      "total": 98,
+      "qualityPassing": 97,
+      "qualityRemaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "duplicateGroups": 28,
+      "duplicateLanguages": 11,
+      "published": 0,
+      "linguisticallyCertified": 0
+    },
+    "candidateWorkflow": {
+      "trigger": "workflow_dispatch only",
+      "schedule": false,
+      "latestMatchingRun": 150,
+      "latestMatchingRunRevision": "legacy",
+      "latestMatchingRunConclusion": "success",
+      "resumeStep": "skipped",
+      "candidatePackWrites": 0,
+      "activeCurrentRuns": 0
+    },
+    "r125": {
+      "run124": "browser assets HTTP 200; failed on one mixed-script Marathi grep marker",
+      "run125": "preflight/syntax/quota guard/no-translate triage passed; full matrix in progress"
+    },
+    "production": {
+      "r105": {
+        "run": 213,
+        "runId": 44535767548,
+        "conclusion": "success",
+        "aiBinding": true,
+        "productionHealth": true,
+        "liveChatProbe": "not run"
+      },
+      "r9e": {
+        "run": 134,
+        "runId": 44535614542,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44"
+      },
+      "r123": {
+        "run": 162,
+        "runId": 44535614582,
+        "conclusion": "success",
+        "programmaticTTS": "pass",
+        "voiceAcknowledgement": "pass",
+        "liveASR": "skipped",
+        "physicalDeviceCertification": false
+      },
+      "safety": {
+        "run": 88,
+        "runId": 44535614599,
+        "conclusion": "success"
+      },
+      "pages": {
+        "run": 1926,
+        "runId": 44535766174,
+        "conclusion": "success"
+      }
+    },
+    "ai": {
+      "binding": "present",
+      "liveChat": "unknown-not-probed",
+      "translationBackend": "unknown-not-probed",
+      "savedLog": "HTTP 503 all_translation_backends_unavailable; Dhivehi timeouts; three Workers AI outputs unparseable",
+      "historicalBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429"
+      ],
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "voice": {
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "liveASR": "not-certified",
+      "physicalMicrophoneSpeaker": "not-certified"
     },
     "checkout": "inactive pending merchant configuration",
     "thisPass": {
