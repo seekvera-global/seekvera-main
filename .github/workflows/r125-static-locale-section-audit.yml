@@ -315,7 +315,7 @@ jobs:
                && grep -Fq "'Cod'" /tmp/r125-i18n-ui.js \
               && grep -Fq "mg:{'Back':'Miverina','Page navigation':'Fitetezana pejy','Voice reply':'Valiny am-peo','Voice':'Feo'}" /tmp/r125-i18n-ui.js \
               && grep -Fq "ml:{'Back':'പിന്നോക്കം','Page navigation':'പേജ് നിയന്ത്രണം','Voice reply':'വോയിസ് മറുപടി','Voice':'വോയിസ്'}" /tmp/r125-i18n-ui.js \
-              && grep -Fq "mr:{'Back':'परत','Page navigation':'पेज नेव्हिगേഷൻ','Voice reply':'व्हॉईस प्रतिसाद','Voice':'व्हॉईस'}" /tmp/r125-i18n-ui.js \
+              && grep -Fq "mr:{'Back':'परत','Page navigation':'पेज नेव्हिगेशन','Voice reply':'व्हॉईस प्रतिसाद','Voice':'व्हॉईस'}" /tmp/r125-i18n-ui.js \
               && grep -Fq "'နောက်သို့'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'စာမျက်နှာ လမ်းညွှန်'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'အသံဖြင့် ပြန်ကြားချက်'" /tmp/r125-i18n-ui.js \
