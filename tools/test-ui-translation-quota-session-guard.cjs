@@ -318,6 +318,10 @@ async function main(){
  assert(sellerPlans.includes('p.replaceChildren();s.replaceChildren();'),'seller plan rendering must replace nodes safely');
  assert(!/d\.innerHTML\s*=/.test(sellerPlans),'database plan fields must not be interpolated into innerHTML');
  assert(sellerPlans.includes('new MutationObserver'),'seller plans must rerender when the selected language changes');
+const sellerPlanLoadCalls=sellerPlans.match(/loadPlans\(\);/g)||[];
+assert.equal(sellerPlanLoadCalls.length,1,'seller plan data must load exactly once per page; duplicate fetches can race locale rendering');
+assert(sellerPlans.includes('const localeObserver=new MutationObserver'),'seller plan locale observer must initialize immediately');
+assert(!sellerPlans.includes("document.addEventListener('DOMContentLoaded',()=>{void loadPlans()"),'seller plan loading must not wait for an already-fired DOMContentLoaded event');
  console.log('PASS: session quota circuit breaker, shared in-flight lock, sequential batches, navigation fallback, reverse pack-value guard and safe localized seller plans');
 }
 main().catch(e=>{console.error(e);process.exitCode=1;});

@@ -16981,29 +16981,49 @@
     "run": 136,
     "runId": 44593451193,
     "headSha": "dac26d2c87e78add075755bd95fc84cb080a2184",
-    "status": "in_progress",
-    "conclusion": null,
+    "status": "completed",
+    "conclusion": "failure",
     "previousRun": 135,
     "readiness": {
-      "chromiumInstall": "in_progress",
-      "pagesDeployment": "success",
-      "syntaxCheck": "pending",
-      "quotaGuard": "pending",
-      "quickLabelRegression": "pending",
-      "noTranslateAuditTriage": "pending"
+      "chromiumInstall": "success",
+      "pagesReadiness": "success",
+      "syntaxCheck": "success",
+      "quotaGuard": "success",
+      "quickLabelRegression": "success",
+      "noTranslateAuditTriage": "success",
+      "matrix": "completed"
     },
     "matrix": {
-      "status": "pending",
-      "expectedLanguages": 98,
-      "expectedSections": 27,
-      "expectedApplications": 2646,
-      "expectedCountryProfiles": 248
+      "languagesFetched": "98/98",
+      "countryProfiles": "248/248",
+      "homeLanguageApplications": "98/98",
+      "sections": "27/27",
+      "sectionLanguageApplications": 2646
     },
     "providerRequests": 0,
     "aiRequests": 0,
     "pollinationsRequests": 0,
     "quotaUsed": 0,
-    "note": "R125 #136 was triggered by the v109 residual-localizer fix. It is currently installing Chromium; no translation/AI/Pollinations requests are made by this quota-neutral audit."
+    "note": "The v109 navigation guard removed all five Arabic localized dock labels from fallback. The remaining 80 unique strings are 60 unpublished candidate-source game/category keys plus 20 seller-plan labels absent from candidate source. R125 correctly remains red because 673 quota-neutral intercepted fallback requests remain.",
+    "leaks": {
+      "exact": 0,
+      "partial": 0,
+      "unresolved": 0
+    },
+    "dynamicFallback": {
+      "interceptedRequests": 673,
+      "affectedLanguages": 97,
+      "uniqueStrings": 80,
+      "paths": [
+        "/games",
+        "/seller-plans"
+      ],
+      "arabicLocalizedDockStrings": 0,
+      "aiRequests": 0,
+      "pollinationsRequests": 0,
+      "providerRequests": 0,
+      "quotaUsed": 0
+    }
   },
   "structurallyCompleteCandidates": 98,
   "qualityPassingCandidates": 97,
@@ -17192,7 +17212,20 @@
       "cacheVersion": "navigation.js?v=20261119-r125-residual-i18n-guard-v109",
       "pagesUpdated": 44,
       "regressionTest": "tools/test-r125-static-locale-audit-exclusions.cjs",
-      "deployment": "Pages #1954 success; R105 #220 Worker deploy and production health success"
+      "deployment": "Pages #1954 success; R105 #220 Worker deploy and production health success",
+      "confirmedByR125Run136": true,
+      "previousFallbackRequests": 2457,
+      "currentFallbackRequests": 673,
+      "reductionPercent": 72.6,
+      "previousUniqueFallbackStrings": 85,
+      "currentUniqueFallbackStrings": 80,
+      "previousPaths": 16,
+      "currentPaths": [
+        "/games",
+        "/seller-plans"
+      ],
+      "ArabicDockLabelsRemoved": 5,
+      "note": "R125 #136 confirms the legacy navigation residual pass no longer re-translates already-localized global dock labels. Remaining fallback is confined to games and seller plans."
     },
     "previousAudit": {
       "run": 135,
@@ -17303,6 +17336,56 @@
     "checkout": "inactive pending merchant configuration and end-to-end payment/refund/settlement/webhook verification",
     "safety": "latest live smoke passed; prohibited categories blocked and benign land remains pending human review",
     "candidateResumeWorkflow": "latest matching run #150 is legacy and completed; no active run; no candidate writes",
-    "decision": "NO-GO"
+    "decision": "NO-GO",
+    "sellerPlansRepair": {
+      "status": "implemented in this checkpoint commit",
+      "change": "Removed the duplicate loadPlans() call; initialize the language MutationObserver immediately and fetch/render plan rows once.",
+      "regressionTest": "tools/test-ui-translation-quota-session-guard.cjs asserts exactly one loadPlans() invocation.",
+      "purpose": "Avoid duplicate Supabase plan fetches and render races; does not pretend to translate the 20 missing seller-plan strings.",
+      "translationCallsAdded": 0,
+      "candidateBranchTouched": false
+    }
+  },
+  "latestR125AuditResult20261119Turn11": {
+    "run": 136,
+    "runId": 44593451193,
+    "conclusion": "failure",
+    "previousRun": 135,
+    "previousInterceptedRequests": 2457,
+    "previousUniqueStrings": 85,
+    "previousPaths": 16,
+    "currentInterceptedRequests": 673,
+    "currentUniqueStrings": 80,
+    "currentPaths": [
+      "/games",
+      "/seller-plans"
+    ],
+    "reductionRequests": 1784,
+    "reductionPercent": 72.6,
+    "candidateSourceKeys": {
+      "count": 60,
+      "gameCategories": 9,
+      "gameDescriptions": 51,
+      "published": false
+    },
+    "missingCandidateSourceKeys": {
+      "count": 20,
+      "area": "seller-plans"
+    },
+    "localizedArabicDockStringsRemoved": 5,
+    "allLanguages": 98,
+    "allSections": 27,
+    "sectionLanguageApplications": 2646,
+    "countryProfiles": 248,
+    "visibleLeaks": {
+      "exact": 0,
+      "partial": 0,
+      "unresolved": 0
+    },
+    "providerRequests": 0,
+    "aiRequests": 0,
+    "pollinationsRequests": 0,
+    "quotaUsed": 0,
+    "result": "not ready; fallback keys remain and candidate packs must not be published before linguistic review"
   }
 }
