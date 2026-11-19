@@ -109,6 +109,7 @@ async function main(){
   {code:'rw',language:'Kinyarwanda',labels:{'Back':'Subira inyuma','Page navigation':'Kuyobora urupapuro','Voice reply':"Igisubizo cy'ijwi",'Voice':'Ijwi'}},
   {code:'sm',language:'Samoan',labels:{'Back':"Toe fo'i",'Page navigation':"Fa'atautaiga o itulau",'Voice reply':'Tali leo','Voice':'Leo'}},
    {code:'to',language:'Tongan',labels:{'Back':'Foki','Page navigation':'Fakahinohino ki he peesi','Voice reply':'Tali ʻaki ʻa e leʻo','Voice':'Leʻo'}},
+   {code:'so',language:'Somali',labels:{'Back':'Dib u noqo','Page navigation':'Hagidda bogagga','Voice reply':'Jawaab cod ah','Voice':'Cod'}},
  ];
  const quickContext={INITIAL_AI:'__TEST_INITIAL_AI__'};vm.createContext(quickContext);
  vm.runInContext(extract(i18n,'const QUICK={','// Provisional quota-neutral overrides','QUICK map')+';this.quick=QUICK;',quickContext);
