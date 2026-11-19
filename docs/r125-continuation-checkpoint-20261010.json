@@ -18127,5 +18127,241 @@
       "linguisticCertification": false,
       "decision": "NO-GO"
     }
-  }
+  },
+  "latestActionsObservation20261119Turn13": {
+    "checkedAt": "2026-11-19T21:42:55Z",
+    "query": "GET /repos/seekvera-global/seekvera-main/actions/runs?per_page=100",
+    "totalRuns": 6535,
+    "returnedRuns": 100,
+    "queuedOrInProgressInReturnedWindow": 0,
+    "latestR125SectionAudit": {
+      "run": 137,
+      "runId": 44595354460,
+      "status": "completed",
+      "conclusion": "failure",
+      "headSha": "92f948f1e654e40f1621a97350aca7ebdf7422c9"
+    },
+    "candidateResumeRunInReturnedWindow": 0,
+    "latestKnownCandidateResumeRun": {
+      "run": 150,
+      "runId": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "revision": "legacy",
+      "createdAt": "2026-10-16T21:41:54Z"
+    },
+    "limitation": "The current workflow has no run on its current revision; run #150 was fetched directly and is legacy."
+  },
+  "latestPagesAndHealth20261119Turn13": {
+    "checkedAt": "2026-11-19T21:42:55Z",
+    "mainHead": "70fab7e4ece0d110789ad0f7181a3f3021658afa",
+    "pages": {
+      "run": 1961,
+      "runId": 44612177040,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "70fab7e4ece0d110789ad0f7181a3f3021658afa",
+      "build": "success",
+      "deploy": "success"
+    },
+    "siteHealth": {
+      "run": 335,
+      "runId": 44613234728,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "70fab7e4ece0d110789ad0f7181a3f3021658afa",
+      "apiHealth": "ok:true",
+      "robotsSitemap": "official-domain-canonical-and-correct",
+      "namedPublicPages": 18,
+      "httpStatus": 200,
+      "logMarker": "SEEKVERA OFFICIAL PRODUCTION HEALTH PASS"
+    },
+    "scope": "Current Main head documentation/checkpoint deployment and official-domain smoke health; not full product or linguistic certification."
+  },
+  "latestAutomationPass20261119Turn13": {
+    "checkedAt": "2026-11-19T21:42:55Z",
+    "filesRead": [
+      "main: docs/r125-continuation-checkpoint-20261010.json",
+      "branch work/r125-locale-candidates-20261008: docs/locale-candidates-20261008/resume-summary.json",
+      "branch work/r125-locale-candidates-20261008: docs/locale-candidates-20261008/resume-latest.log",
+      "main: .github/workflows/r125-hourly-candidate-resume.yml"
+    ],
+    "candidateState": {
+      "structural": "98/98",
+      "quality": "97/98",
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "published": 0,
+      "linguisticCertification": 0,
+      "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2"
+    },
+    "r125": {
+      "run": 137,
+      "runId": 44595354460,
+      "headSha": "92f948f1e654e40f1621a97350aca7ebdf7422c9",
+      "conclusion": "failure",
+      "readiness": "all passed",
+      "packsFetched": "98/98",
+      "countryProfiles": "248/248",
+      "homeLanguageApplications": "98/98",
+      "sections": "27/27",
+      "sectionLanguageApplications": 2646,
+      "visibleLeaks": {
+        "exact": 0,
+        "partial": 0,
+        "unresolved": 0
+      },
+      "dynamicFallback": {
+        "interceptedRequests": 634,
+        "uniqueStrings": 80,
+        "affectedLanguages": 97,
+        "paths": [
+          "/games",
+          "/seller-plans"
+        ],
+        "gameStrings": 60,
+        "sellerPlanStrings": 20,
+        "interception": "local HTTP 418 before Worker/providers"
+      },
+      "providerRequests": 0,
+      "aiRequests": 0,
+      "pollinationsRequests": 0,
+      "quotaUsed": 0
+    },
+    "duplicateReview": {
+      "latestCheckpointScreen": {
+        "date": "2026-11-19T04:15:02Z",
+        "groups": 28,
+        "languages": 11,
+        "method": "normalized whitespace/case, threshold >=4",
+        "languagesList": [
+          "ig",
+          "dz",
+          "ti",
+          "kl",
+          "rw",
+          "to",
+          "ku",
+          "xh",
+          "st",
+          "tn",
+          "dv"
+        ]
+      },
+      "olderCandidateSummaryScreen": {
+        "date": "2026-11-15T10:46:35Z",
+        "groups": 27,
+        "languages": 10,
+        "method": "exact identical outputs, threshold >=4, expected Turkish brand group excluded"
+      },
+      "reconciled": false,
+      "note": "Different snapshot dates and normalization rules; keep as heuristic warning until one same-method full re-read. Igbo 'Job/Jobs/Service/Services' group may be legitimate and needs native review."
+    },
+    "candidateResumeWorkflow": {
+      "trigger": "workflow_dispatch only; no schedule",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestMatchingRun": {
+        "run": 150,
+        "runId": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "resume": "skipped",
+        "audit": "success",
+        "candidatePackWrites": 0,
+        "metadataFilesWritten": 2,
+        "translationRequests": 0,
+        "aiQuotaUsed": 0
+      },
+      "currentRevisionRunObserved": false,
+      "activeRunsInLatest100": 0,
+      "candidateWritesDeferred": true
+    },
+    "ai": {
+      "binding": true,
+      "productionHealth": "passed in R105 #221",
+      "liveChat": "unknown-not-certified; live probe skipped by policy",
+      "countryIntent": "not-tested",
+      "translationBackend": "unknown-not-probed",
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP 503 all_translation_backends_unavailable"
+      ],
+      "newLiveProbes": 0,
+      "quotaBypassAttempts": 0
+    },
+    "productionChecks": {
+      "r105": {
+        "run": 221,
+        "runId": 44595354344,
+        "conclusion": "success",
+        "aiBinding": true,
+        "health": true,
+        "safetyGate": "enabled",
+        "failClosed": true,
+        "liveChatProbe": "skipped-by-policy",
+        "countryIntentProbe": "skipped-by-policy"
+      },
+      "r9e": {
+        "run": 138,
+        "runId": 44593451053,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "MoroccoPriority": "passed",
+        "WorldwidePriority": "passed",
+        "currencyFallback": "passed",
+        "visibleLocales": [
+          "MA/ar",
+          "FR/fr",
+          "IN/hi",
+          "CN/zh"
+        ]
+      },
+      "r123": {
+        "run": 169,
+        "runId": 44593451076,
+        "conclusion": "success",
+        "programmaticTTS": "passed",
+        "voiceAcknowledgement": "passed",
+        "dynamicVoicePlaceholders": "passed",
+        "androidBrowserProfilePlayback": "passed",
+        "liveASR": "not-verified",
+        "productionMultilingualAudio": "skipped",
+        "physicalMicrophoneSpeakerCertified": false
+      },
+      "safety": {
+        "run": 92,
+        "runId": 44593451109,
+        "conclusion": "success",
+        "blockedCategories": 4,
+        "benignLand": "allowed-pending-human-review"
+      }
+    },
+    "checkout": "inactive pending merchant configuration and end-to-end payment/refund/forged-reference/settlement/webhook verification",
+    "currentPagesAndHealth": {
+      "pagesRun": 1961,
+      "pagesRunId": 44612177040,
+      "siteHealthRun": 335,
+      "siteHealthRunId": 44613234728,
+      "mainHead": "70fab7e4ece0d110789ad0f7181a3f3021658afa",
+      "bothSucceeded": true
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "databaseWrites": 0,
+      "published": false,
+      "linguisticCertification": false,
+      "decision": "NO-GO"
+    }
+  },
+  "lastVerifiedMainHead": "70fab7e4ece0d110789ad0f7181a3f3021658afa"
 }
