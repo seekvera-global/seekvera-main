@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261119-r125-global-quick-v46';
+const VERSION='20261119-r125-global-quick-v47';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),PACK_VALUES=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -522,7 +522,9 @@ tr:{
 'Voice reply':'Sesli yanıt',
 'Voice':'Ses'
 },
-dz:{'Back':'ཕྱིར་ལོག','Page navigation':'ཤོག་ངོས་འགྲུལ་སྐྱོད','Voice reply':'སྐད་ཀྱི་ལན','Voice':'སྐད་སྒྲ'}
+dz:{'Back':'ཕྱིར་ལོག','Page navigation':'ཤོག་ངོས་འགྲུལ་སྐྱོད','Voice reply':'སྐད་ཀྱི་ལན','Voice':'སྐད་སྒྲ'},
+// Provisional Divehi quick UI labels; dictionary-backed components, native review required.
+dv:{'Back':'ފަހަތަށް','Page navigation':'ޞަފްޙާތަކަށް ދާ މަގު','Voice reply':'އަޑުން ޖަވާބު','Voice':'އަޑު'}
 };
 
 function api(p){const h=location.hostname;return(h==='seekveraglobal.com'||h==='www.seekveraglobal.com'||h.endsWith('workers.dev'))?p:'https://seekvera-main.seekvera-global.workers.dev'+p}
