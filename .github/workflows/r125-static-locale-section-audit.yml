@@ -31,7 +31,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: seekvera-r125-static-locale-audit
+  group: seekvera-r125-static-locale-audit-v2
   cancel-in-progress: false
 
 jobs:
@@ -56,6 +56,13 @@ jobs:
           SEEKVERA_BASE_URL: https://seekveraglobal.com
         run: |
           set -euo pipefail
+          GLOBAL_UI_REF=$(grep -oE 'global-ui\\.js\\?v=[^\" ]+' index.html | head -n 1)
+          GAMES_JS_REF=$(grep -oE 'games\\.js\\?v=[^\" ]+' games.html | head -n 1)
+          I18N_UI_REF=$(grep -oE 'i18n-ui\\.js\\?v=[^\" ]+' index.html | head -n 1)
+          for ref in \"$GLOBAL_UI_REF\" \"$GAMES_JS_REF\" \"$I18N_UI_REF\"; do
+            if [[ -z \"$ref\" ]]; then echo R125_EXPECTED_ASSET_REF_MISSING; exit 1; fi
+          done
+          export R125_GLOBAL_UI_REF=\"$GLOBAL_UI_REF\" R125_GAMES_JS_REF=\"$GAMES_JS_REF\" R125_I18N_UI_REF=\"$I18N_UI_REF\"
           fetch_assets() {
             node --input-type=module <<'NODE'
               import { chromium } from 'playwright';
@@ -81,9 +88,9 @@ jobs:
                 await writeFile('/tmp/r125-index.html', homeBody, 'utf8');
                 const assets = [
                   ['games_html', '/games.html?locale_audit=20261117', '/tmp/r125-games.html'],
-                  ['global_ui', '/global-ui.js?v=20261117-r125-source-caption-i18n-v2', '/tmp/r125-global-ui.js'],
-                  ['games_js', '/games.js?v=20261117-r125-game-title-i18n', '/tmp/r125-games.js'],
-                  ['i18n_ui', '/i18n-ui.js?v=20261119-r125-global-quick-v56', '/tmp/r125-i18n-ui.js']
+                  ['global_ui', '/' + process.env.R125_GLOBAL_UI_REF, '/tmp/r125-global-ui.js'],
+                  ['games_js', '/' + process.env.R125_GAMES_JS_REF, '/tmp/r125-games.js'],
+                  ['i18n_ui', '/' + process.env.R125_I18N_UI_REF, '/tmp/r125-i18n-ui.js']
                 ];
                 for (const [name, path, file] of assets) {
                   const result = await page.evaluate(async target => {
@@ -104,9 +111,9 @@ jobs:
           }
           for attempt in $(seq 1 36); do
             if fetch_assets \
-              && grep -Fq 'global-ui.js?v=20261117-r125-source-caption-i18n' /tmp/r125-index.html \
-              && grep -Fq 'games.js?v=20261117-r125-game-title-i18n' /tmp/r125-games.html \
-              && grep -Fq 'i18n-ui.js?v=20261119-r125-global-quick-v56' /tmp/r125-index.html \
+              && grep -Fq \"$GLOBAL_UI_REF\" /tmp/r125-index.html \\
+              && grep -Fq \"$GAMES_JS_REF\" /tmp/r125-games.html \\
+              && grep -Fq \"$I18N_UI_REF\" /tmp/r125-index.html \
               && grep -Fq 'sv-control-caption-label' /tmp/r125-global-ui.js \
               && grep -Fq 'alreadyLocalizedValue' /tmp/r125-i18n-ui.js \
               && grep -Fq "'Sprachantwort'" /tmp/r125-i18n-ui.js \

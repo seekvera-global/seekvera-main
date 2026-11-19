@@ -134,7 +134,8 @@
     "R125 #126 on v55 completed the 98×27 matrix and found zero visible English leaks, but one Punjabi dynamic translation fallback for Back, Page navigation, Voice reply and Voice. v56 adds provisional Punjabi QUICK labels based on existing Punjabi pack vocabulary and improves the static audit so intercepted non-quota 418 responses expose every fallback language/page without reaching a provider; R125 #127 is running.",
     "R125 #128 on v57 completed all 98×27 applications and 248 country profiles with zero visible English leak findings, but failed the no-dynamic-fallback gate: 1,178 browser-side /api/ui-translate calls across 97 languages and 133 unique strings. All were intercepted locally; zero provider/AI/Pollinations requests and zero quota used. 60 strings exist only in the unpublished candidate source; 73 are absent from candidate source.",
     "R105 #217 and R123 #166 stopped before deployment because tools/test-locale-cognates.cjs still expected the old <b>${g.name}</b> markup after the proper-name exclusion repair. Audio unit tests and live Arabic homepage/31 category-description checks passed; the regression assertion is corrected and must be rerun.",
-    "Seller plan rendering was inserting local-pack translations into the DOM without marking them as already localized; the global MutationObserver then attempted to translate translated values again (e.g. Business Monthly -> Kgwedi le Kgwedi ya Kgwebo). Canonical Supabase rows were verified; renderer guard now preserves translated output while leaving missing strings auditable."
+    "Seller plan rendering was inserting local-pack translations into the DOM without marking them as already localized; the global MutationObserver then attempted to translate translated values again (e.g. Business Monthly -> Kgwedi le Kgwedi ya Kgwebo). Canonical Supabase rows were verified; renderer guard now preserves translated output while leaving missing strings auditable.",
+    "R125 #129 remained in the Pages readiness step because the workflow hardcoded stale games.js v20261117 and i18n-ui.js v56 refs while checked-out pages referenced games.js v20261119-proper-name-exclusions and i18n-ui.js v57. The gate was repaired to derive refs from source pages; the old run is not yet complete and the next audit uses a new concurrency group."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -202,7 +203,8 @@
     "Re-run R125 after the proper-name exclusions for game titles, Al Jazeera and Intl.DisplayNames country badges; require the dynamic fallback count to fall without excluding descriptions, categories, plan copy or other genuine UI.",
     "Resolve the remaining dynamic fallback strings: 60 are in the unpublished candidate source and 73 are absent from candidate source. Do not publish unreviewed packs or disguise translatable UI as no-translate.",
     "Audit the live Supabase seller-plan names and descriptions; map stable plan codes to canonical source keys only after verifying actual row values and complete localization coverage.",
-    "Re-run R125 after seller-plan source-aware no-translate guard; confirm only already-localized values are excluded and missing plan names/descriptions/period labels remain flagged."
+    "Re-run R125 after seller-plan source-aware no-translate guard; confirm only already-localized values are excluded and missing plan names/descriptions/period labels remain flagged.",
+    "Confirm repaired R125 run starts the matrix after deriving live asset refs from index.html and games.html; do not wait on stale #129/#130 readiness gates."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
@@ -13513,6 +13515,32 @@
       ],
       "finding": "Database rows contain canonical English names. R125's Kgwedi le Kgwedi ya Kgwebo and Khoebo Selemo le Selemo are already-localized pack outputs re-captured by the global MutationObserver, not database values.",
       "repair": "seller-plans.html now marks a rendered text node no-translate only when the custom local-pack result differs from its canonical source. Untranslated/missing strings remain eligible for localization and the audit."
+    },
+    "r125ReadinessGate": {
+      "checkedAt": "2026-11-19T16:19:20Z",
+      "run129": {
+        "run": 129,
+        "runId": 44563364075,
+        "status": "in_progress",
+        "step": "Wait for Pages to serve the audited locale assets"
+      },
+      "run130": {
+        "run": 130,
+        "runId": 44564685345,
+        "status": "pending",
+        "headSha": "d40ab4195dba74c0d5fc80d08bd672a34bf1d6c2"
+      },
+      "staleExpected": {
+        "gamesJs": "games.js?v=20261117-r125-game-title-i18n",
+        "actualGamesJs": "games.js?v=20261119-r125-proper-name-exclusions",
+        "i18nUi": "i18n-ui.js?v=20261119-r125-global-quick-v56",
+        "actualI18nUi": "i18n-ui.js?v=20261119-r125-global-quick-v57"
+      },
+      "rootCause": "The R125 Pages-readiness loop hardcoded stale asset query strings. It fetched the old URLs and grepped for old refs, while the current checked-out pages referenced the new game-title exclusion asset and v57 i18n runtime. The run remained in the readiness step before any locale matrix execution.",
+      "repair": "R125 now derives global-ui.js, games.js and i18n-ui.js cache-busting refs from checked-out index.html/games.html, fetches those exact refs, and verifies the live HTML contains them. New concurrency group v2 lets the repaired audit start without waiting behind stale runs.",
+      "candidateWrites": 0,
+      "providerRequests": 0,
+      "quotaUsed": 0
     }
   },
   "latestAutomationPass20261119V42": {
@@ -16604,6 +16632,11 @@
         "Maximum-ad labels now use complete canonical source keys such as 'Up to 50 active ads' rather than translating fragments independently."
       ],
       "safety": "Missing/untranslated source values remain unmarked and therefore remain visible to R125; this is not a blanket exclusion."
+    },
+    "workflowRepair": {
+      "file": ".github/workflows/r125-static-locale-section-audit.yml",
+      "change": "Replace hard-coded asset version strings with refs extracted from checked-out pages and bump the concurrency group for the repaired audit lane.",
+      "purpose": "Prevent future cache-version drift from holding R125 in Pages readiness before the language matrix starts."
     }
   },
   "latestSupabaseSecurityAdvisory20261119": {
@@ -16672,5 +16705,31 @@
     ],
     "finding": "Database rows contain canonical English names. R125's Kgwedi le Kgwedi ya Kgwebo and Khoebo Selemo le Selemo are already-localized pack outputs re-captured by the global MutationObserver, not database values.",
     "repair": "seller-plans.html now marks a rendered text node no-translate only when the custom local-pack result differs from its canonical source. Untranslated/missing strings remain eligible for localization and the audit."
+  },
+  "latestR125ReadinessGateDiagnosis20261119": {
+    "checkedAt": "2026-11-19T16:19:20Z",
+    "run129": {
+      "run": 129,
+      "runId": 44563364075,
+      "status": "in_progress",
+      "step": "Wait for Pages to serve the audited locale assets"
+    },
+    "run130": {
+      "run": 130,
+      "runId": 44564685345,
+      "status": "pending",
+      "headSha": "d40ab4195dba74c0d5fc80d08bd672a34bf1d6c2"
+    },
+    "staleExpected": {
+      "gamesJs": "games.js?v=20261117-r125-game-title-i18n",
+      "actualGamesJs": "games.js?v=20261119-r125-proper-name-exclusions",
+      "i18nUi": "i18n-ui.js?v=20261119-r125-global-quick-v56",
+      "actualI18nUi": "i18n-ui.js?v=20261119-r125-global-quick-v57"
+    },
+    "rootCause": "The R125 Pages-readiness loop hardcoded stale asset query strings. It fetched the old URLs and grepped for old refs, while the current checked-out pages referenced the new game-title exclusion asset and v57 i18n runtime. The run remained in the readiness step before any locale matrix execution.",
+    "repair": "R125 now derives global-ui.js, games.js and i18n-ui.js cache-busting refs from checked-out index.html/games.html, fetches those exact refs, and verifies the live HTML contains them. New concurrency group v2 lets the repaired audit start without waiting behind stale runs.",
+    "candidateWrites": 0,
+    "providerRequests": 0,
+    "quotaUsed": 0
   }
 }
