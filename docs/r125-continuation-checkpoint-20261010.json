@@ -145,8 +145,8 @@
     "UI translation now stops immediately on daily_free_ai_limit and provider HTTP429/rate limits before trying another model; locale delta builder stops before split/retry on quota/rate-limit responses. No translation request or quota was consumed.",
     "Exclude internal docs, developer tools and Python caches from Cloudflare static assets; production R105 #87 confirmed four representative internal paths return HTTP 404."
   ],
-  "runtimeCommit": "9c3256ccc3179f19b6f45105576c711dc38cda26",
-  "runtimeDeployRun": 44234572723,
+  "runtimeCommit": "8e1139fa78ff440ae279732ceb39d7b69288aa6a",
+  "runtimeDeployRun": 44535767548,
   "runtimeDeployConclusion": "success",
   "browserCandidateCheck": {
     "run": 38082490180,
@@ -187,9 +187,7 @@
     }
   },
   "remainingChecks": [
-    "R125 #118 on v53 must complete all 98 languages × 27 sections with zero exact, partial, unresolved and dynamic-fallback findings.",
-    "R9e #133 on v53 must re-confirm 248 country/territory profiles, 44 pages, Morocco/Worldwide priority, currency, safety and voice/PWA cache.",
-    "R105 #211 and R123 #161 must validate and deploy v53; live AI chat and country intent remain unprobed unless a permitted quota-safe probe is available.",
+    "R125 #119 on v54 must finish 98 languages × 27 sections and show zero exact, partial, unresolved and dynamic-fallback findings; it was still waiting for Pages asset readiness at the last check.",
     "Review Divehi's 58 English-overlap findings and 28 duplicate-output groups across 11 languages with qualified native reviewers; do not promote candidate packs.",
     "Obtain qualified linguistic review for all 98 locale packs; none is published or linguistically certified.",
     "Keep live AI chat and translation-backend availability unknown until a permitted quota-safe probe can run without bypassing daily_free_ai_limit or Google HTTP429.",
@@ -199,26 +197,23 @@
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-19T12:55:30Z",
+    "checkedAt": "2026-11-19T13:43:18.980Z",
     "aiChat": {
       "currentAvailability": "unknown-not-certified",
-      "latestProductionRun": 210,
+      "latestProductionRun": 213,
       "aiBinding": true,
       "productionHealth": "passed",
       "centralSafetyGate": "enabled",
       "failClosed": true,
       "liveGenerationProbe": "skipped-by-policy",
       "generalChatAndCountryIntent": "not-probed",
-      "quotaStatus": "daily_free_ai_limit and Google HTTP429 remain historical blockers; no live generation or translation probe sent",
-      "latestR105Run": 210,
-      "latestR105Conclusion": "success-health-passed-live-probes-skipped",
-      "latestR123Run": 160,
-      "workerDeployment": "success",
-      "countryIntent": "not-probed"
+      "quotaStatus": "daily_free_ai_limit and Google HTTP429 remain historical blockers; no live generation or translation probe sent"
     },
     "voiceTranscription": {
-      "programmaticTests": "passed in R123 #160",
-      "browserProfileAudio": "Android browser-profile server-audio playback passed",
+      "programmaticTests": "passed in R123 #162",
+      "categoryTranslations": "passed",
+      "voiceAcknowledgement": "passed",
+      "dynamicVoicePlaceholders": "passed",
       "productionAssetMultilingualAudio": "skipped",
       "liveASR": "not-verified",
       "physicalDeviceCertified": false
@@ -234,13 +229,13 @@
       "quotaBypassAttempts": 0
     },
     "countryCurrency": {
-      "latestConfirmedRun": 132,
-      "latestConfirmedStatus": "passed on v52; v53 recheck pending",
+      "latestConfirmedRun": 134,
+      "latestConfirmedStatus": "passed on v54",
       "countryProfiles": "248/248",
       "localizedPages": "44/44",
-      "storedCurrencyAndFallback": "passed on v52",
-      "manualMoroccoPriority": "passed on v50",
-      "manualWorldwidePriority": "passed on v50",
+      "storedCurrencyAndFallback": "passed",
+      "manualMoroccoPriority": "passed",
+      "manualWorldwidePriority": "passed",
       "visibleLocales": [
         "MA/ar",
         "FR/fr",
@@ -248,28 +243,19 @@
         "CN/zh"
       ],
       "liveAiProbes": "skipped-by-policy",
-      "liveASR": "not-verified",
-      "v51Verification": "pending R9e after v51",
-      "v52Verification": "pending R9e #132",
-      "moroccoPriority": "passed",
-      "worldwidePriority": "passed",
-      "v53Verification": "pending R9e #133"
+      "liveASR": "not-verified"
     },
     "safety": {
-      "latestRun": 86,
+      "latestRun": 88,
       "status": "success",
       "blockedCases": 4,
-      "benignLand": "allowed_pending_human_review",
-      "latestConclusion": "success",
-      "blockedCategories": 4,
-      "benignListings": "pending human review"
+      "benignLand": "allowed_pending_human_review"
     },
     "checkout": "inactive pending merchant configuration and end-to-end payment, forged-reference rejection and settlement verification",
     "quotaBoundary": {
       "translationProviderRequestsThisPass": 0,
       "liveGenerationProbesThisPass": 0,
-      "quotaBypassAttempts": 0,
-      "historicalProviderUsage": "unknown"
+      "quotaBypassAttempts": 0
     }
   },
   "voiceScriptCoverage": {
@@ -3102,7 +3088,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-19T09:26:08.606Z",
+  "updatedAt": "2026-11-19T13:43:18.980Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -9900,131 +9886,61 @@
     "note": "The supplied 63/98 + 35 remaining figure is stale; current Main checkpoint and candidate summary show 98 structurally complete, 97 quality-passing and only Divehi blocked by 58 overlap findings."
   },
   "latestProductionSectionAudit": {
-    "run": 117,
-    "runId": 44527127269,
+    "run": 119,
+    "runId": 44535614640,
     "workflow": ".github/workflows/r125-static-locale-section-audit.yml",
-    "createdAt": "2026-11-19T12:47:13Z",
-    "completedAt": "2026-11-19T12:55:11Z",
-    "status": "completed",
-    "conclusion": "failure",
-    "headSha": "ff3e3f5cdfc5bf1c9a8dfa23cbe476049a204adf",
-    "runtimeVersion": "20261119-r125-global-quick-v52",
+    "createdAt": "2026-11-19T13:39:21Z",
+    "status": "in_progress",
+    "conclusion": null,
+    "headSha": "ee2ec5dd4cffa6ec4e52a75976e04551b3a0716f",
+    "runtimeVersion": "20261119-r125-global-quick-v54",
     "languages": 98,
     "sections": 27,
     "sectionLanguageApplications": 2646,
     "countryProfiles": 248,
-    "missingKeys": 0,
-    "extraKeys": 0,
-    "emptyValues": 0,
-    "exactFindingCombinations": 0,
-    "partialFindingCombinations": 0,
-    "unresolvedFindingCombinations": 0,
-    "dynamicFallbackRequests": 1,
-    "dynamicFallbackLanguages": [
-      "ml"
-    ],
-    "dynamicFallbackStrings": [
-      "Back",
-      "Page navigation",
-      "Voice reply",
-      "Voice"
-    ],
-    "blockedRequests": {
-      "ai": 0,
-      "translation": 1,
-      "pollinations": 0
-    },
+    "lastObservedStep": "Wait for Pages to serve the audited locale assets",
+    "dynamicFallbackRequests": null,
     "translationProviderCalls": 0,
-    "finding": "One intercepted browser POST to /api/ui-translate for Malayalam quick labels caused the zero-dynamic-fallback gate to fail. Visible exact, partial and unresolved English findings were all zero; no AI or translation-provider request was sent."
+    "note": "Run has not reached the locale matrix yet; do not infer pass/fail from its in-progress state."
   },
   "latestProductionRuntimeChecks": {
+    "checkedAt": "2026-11-19T13:43:18.980Z",
+    "headSha": "8e1139fa78ff440ae4e52a75976e04551b3a0716f",
     "r105": {
-      "run": 210,
-      "runId": 44527127390,
-      "status": "completed",
+      "run": 213,
       "conclusion": "success",
-      "headSha": "ff3e3f5cdfc5bf1c9a8dfa23cbe476049a204adf",
-      "sourceValidation": "success",
-      "all98LanguageNames": "success",
-      "quotaGuard": "success",
-      "workerDeployment": "success",
-      "productionHealth": "success",
       "aiBinding": true,
-      "centralSafetyGate": "enabled",
-      "failClosed": true,
-      "liveAiProbes": "skipped-by-policy",
-      "liveChatAndCountryIntent": "not-probed"
-    },
-    "r123": {
-      "run": 160,
-      "runId": 44526753579,
-      "status": "completed",
-      "conclusion": "success",
-      "audioAuthorityValidation": "passed",
-      "liveCategoryTranslation": "passed",
-      "voiceAcknowledgement": "passed",
-      "dynamicVoicePlaceholders": "passed",
-      "androidBrowserProfilePlayback": "passed",
-      "productionAssetMultilingualAudio": "skipped",
-      "liveASR": "not-verified",
-      "physicalMicrophoneSpeakerCertified": false
-    },
-    "r9e": {
-      "run": 132,
-      "runId": 44526753534,
-      "status": "completed",
-      "conclusion": "success",
-      "headSha": "6b6e41a41ee01bee496bff2b40d01a4d6a4d20a1",
-      "countryProfiles": "248/248",
-      "localizedPages": "44/44",
-      "moroccoPriority": "passed",
-      "worldwidePriority": "passed",
-      "currencyAndFallback": "passed",
-      "safetyGate": "passed",
-      "voiceAndPwaCache": "passed",
+      "productionHealth": "pass",
       "liveAiProbes": "skipped-by-policy"
     },
-    "r9eCurrent": {
-      "run": 103,
-      "runId": 44383491656,
-      "status": "in_progress"
+    "r9e": {
+      "run": 134,
+      "conclusion": "success",
+      "countryProfiles": 248,
+      "localizedPages": 44,
+      "currency": "pass",
+      "moroccoWorldwidePriority": "pass"
+    },
+    "r123": {
+      "run": 162,
+      "conclusion": "success",
+      "programmaticAudio": "pass",
+      "productionAsset": "skipped",
+      "liveASR": "skipped"
     },
     "safety": {
-      "run": 86,
-      "runId": 44526753737,
-      "status": "completed",
+      "run": 88,
       "conclusion": "success",
-      "blockedCategories": [
-        "weapons_or_explosives",
-        "explicit_sexual_content",
-        "stolen_counterfeit_or_fake_documents",
-        "ownership_or_consent_problem"
-      ],
-      "benignLand": "allowed_pending_human_review",
-      "failClosed": "passed"
+      "blockedCategories": 4
     },
     "pages": {
-      "run": 1922,
-      "runId": 44526751484,
-      "status": "completed",
-      "conclusion": "success",
-      "build": "success",
-      "deploy": "success"
-    },
-    "r125": {
-      "run": 117,
-      "runId": 44527127269,
-      "status": "completed",
-      "conclusion": "failure",
-      "dynamicFallbackLanguage": "ml",
-      "visibleLeakFindings": 0,
-      "sectionLanguageApplications": 2646
+      "run": 1926,
+      "conclusion": "success"
     }
   },
   "latestResumeWorkflowInspection": {
-    "checkedAt": "2026-11-19T12:23:21Z",
+    "checkedAt": "2026-11-19T13:43:18.980Z",
     "path": ".github/workflows/r125-hourly-candidate-resume.yml",
-    "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
     "trigger": "workflow_dispatch only; no schedule",
     "scheduleTriggerPresent": false,
     "runTranslationsDefault": false,
@@ -10039,34 +9955,19 @@
       "revision": "legacy",
       "event": "push",
       "resume": "skipped",
-      "audit": {
-        "completedCount": 97,
-        "remaining": [
-          "dv"
-        ],
-        "resumeSucceeded": false,
-        "readyForLinguisticReview": false,
-        "exitCode": "not-run"
-      },
-      "saveProgress": "success",
-      "metadataFilesWritten": 2,
+      "audit": "success",
       "candidatePackWrites": 0,
+      "metadataFilesWritten": 2,
       "translationRequests": 0,
       "aiQuotaUsed": 0
     },
     "currentWorkflowDispatchRunsFound": 0,
     "activeResumeRuns": 0,
-    "candidateWritesDeferred": true,
-    "note": "Latest matching run remains legacy #150; it completed with resume skipped, zero candidate-pack writes and two metadata files. The current Main workflow has no matching run or active run; the candidate branch head is unchanged.",
-    "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
-    "resumeStepCondition": "github.event_name == 'workflow_dispatch' && inputs.run_translations",
-    "deterministicRepairConditions": "success() && (inputs.run_translations || inputs.repair_candidates)",
-    "candidateWriteStepCondition": "success() && (inputs.run_translations || inputs.repair_candidates)",
     "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
-    "activeRuns": 0,
-    "currentRevisionRunObserved": false,
+    "candidateWritesDeferred": true,
     "candidatePackWritesThisPass": 0,
-    "candidateMetadataWritesThisPass": 0
+    "candidateMetadataWritesThisPass": 0,
+    "note": "Latest matching run remains legacy #150. It completed; no active resume run was found. Candidate branch left untouched this pass."
   },
   "latestQuickFallbackRepair": {
     "checkedAt": "2026-11-18T09:45:51Z",
@@ -11583,7 +11484,7 @@
     },
     "scope": "No translation-provider request, no AI generation probe, no candidate-pack write and no publication."
   },
-  "latestMainCodeCommit": "daf602d541ed5912e80b67ca629aa6515e9a6b88",
+  "latestMainCodeCommit": "ee2ec5dd4cffa6ec4e52a75976e04551b3a0716f",
   "latestProductionSectionAuditV31": {
     "checkedAt": "2026-11-18T18:57:11.099Z",
     "runtimeVersion": "20261118-r125-global-quick-v31",
@@ -11982,7 +11883,7 @@
       "r125": "still running; no candidate writes"
     }
   },
-  "latestMainHead": "089ea122968edfdae6a99c48713d69226a40c8e6",
+  "latestMainHead": "8e1139fa78ff440ae279732ceb39d7b69288aa6a",
   "latestBurmeseRepair20261118": {
     "commit": "86f055faf4d4520564e76fc2b2b1b59366e699ab",
     "version": "20261118-r125-global-quick-v35",
@@ -13589,7 +13490,7 @@
       "checkout is inactive pending merchant configuration"
     ]
   },
-  "lastUpdatedAt": "2026-11-19T12:55:30Z",
+  "lastUpdatedAt": "2026-11-19T13:43:18.980Z",
   "latestAutomationPass20261119V43": {
     "checkedAt": "2026-11-19T07:07:23.959Z",
     "mainBaseSha": "1d1d89dd55a1502618f180ea35a151ed436e3101",
@@ -14232,9 +14133,8 @@
     "decision": "NO-GO"
   },
   "latestR125ResumeInspection": {
-    "checkedAt": "2026-11-19T12:55:30Z",
+    "checkedAt": "2026-11-19T13:43:18.980Z",
     "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
-    "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
     "triggers": [
       "workflow_dispatch"
     ],
@@ -14244,10 +14144,8 @@
     "latestRun": {
       "number": 150,
       "id": 38971104197,
-      "createdAt": "2026-10-16T21:41:54Z",
       "status": "completed",
       "conclusion": "success",
-      "workflowRevision": "legacy",
       "resumeStep": "skipped",
       "auditStep": "success",
       "candidatePackWrites": 0,
@@ -14255,34 +14153,11 @@
     },
     "currentRevisionRunObserved": false,
     "activeRunsObserved": 0,
-    "recentRepositoryRunsScanned": 2100,
-    "candidateWritesThisPass": 0,
-    "interpretation": "The latest matching run remains legacy #150. A scan of 2,100 recent repository runs found no newer or active run for this workflow. The current workflow is manual-only; candidate writes remain disabled by default and no candidate files were changed.",
     "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
-    "trigger": "workflow_dispatch only; no hourly schedule",
-    "latestMatchingRun": {
-      "number": 150,
-      "id": 38971104197,
-      "createdAt": "2026-10-16T21:41:54Z",
-      "status": "completed",
-      "conclusion": "success",
-      "revision": "legacy",
-      "resume": "skipped",
-      "audit": "success",
-      "candidatePackWrites": 0,
-      "metadataFilesWritten": 2,
-      "translationRequests": 0,
-      "aiQuotaUsed": 0,
-      "jobId": 117209410195,
-      "jobRechecked": "completed",
-      "logFinding": "HTTP 503 daily free AI allocation exhausted; audit-only; completedCount 97; remaining dv; exitCode not-run"
-    },
-    "activeRuns": 0,
     "candidatePackWritesThisPass": 0,
     "candidateMetadataWritesThisPass": 0,
     "translationRequestsThisPass": 0,
-    "aiQuotaUsedThisPass": 0,
-    "note": "Latest matching resume run remains legacy #150. No active or queued R125 candidate-resume run was found. The separate static locale audit #117 completed before this repair and failed on one Malayalam dynamic fallback; no candidate pack files were changed."
+    "aiQuotaUsedThisPass": 0
   },
   "quota": {
     "translationRequestsSent": 0,
@@ -15642,6 +15517,32 @@
         "regression": "QUICK.ky exact-map and zero-provider-call case; R125 #90 must verify all 98 × 27 combinations."
       },
       "scope": "No AI or translation provider requests; no candidate pack writes."
+    },
+    {
+      "run": 118,
+      "runId": 44529903078,
+      "headSha": "63cb292d7e7ecc2cf9be21168b48b02b295e95e6",
+      "runtimeVersion": "20261119-r125-global-quick-v53",
+      "status": "completed",
+      "conclusion": "failure",
+      "languages": 98,
+      "sections": 27,
+      "applications": 2646,
+      "exact": 0,
+      "partial": 0,
+      "unresolved": 0,
+      "dynamicFallback": {
+        "language": "mr",
+        "strings": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ],
+        "requests": 1
+      },
+      "providerCalls": 0,
+      "note": "All visible leak counts were zero; one intercepted Marathi quick-label request caused the zero-dynamic-fallback gate to fail."
     }
   ],
   "latestAutomationPass20261119V54": {
@@ -15712,5 +15613,167 @@
     "linguisticCertification": false,
     "aiAvailability": "unknown-not-certified; live generation and translation probes skipped",
     "decision": "NO-GO"
+  },
+  "latestAutomationPass20261119V54Followup": {
+    "checkedAt": "2026-11-19T13:43:18.980Z",
+    "mainBaseSha": "8e1139fa78ff440ae279732ceb39d7b69288aa6a",
+    "codeCommit": "ee2ec5dd4cffa6ec4e52a75976e04551b3a0716f",
+    "workflowGateCommit": "8e1139fa78ff440ae279732ceb39d7b69288aa6a",
+    "runtimeVersion": "20261119-r125-global-quick-v54",
+    "finding": "R125 #118 isolated one intercepted Marathi dynamic fallback for Back, Page navigation, Voice reply and Voice after all 2,646 language-section applications showed zero exact/partial/unresolved visible findings.",
+    "repair": {
+      "language": "mr",
+      "labels": {
+        "Back": "परत",
+        "Page navigation": "पेज नेव्हिगेशन",
+        "Voice reply": "व्हॉईस प्रतिसाद",
+        "Voice": "व्हॉईस"
+      },
+      "source": "Structurally complete Marathi candidate pack, 1,118 keys and matching sourceHash; provisional UI-only labels, native review required.",
+      "changes": [
+        "QUICK.mr added",
+        "zero-provider-call regression added",
+        "R105/R9e/R125 assertions updated",
+        "44 HTML cache references bumped to v54"
+      ]
+    },
+    "filesChanged": 48,
+    "productionChecks": {
+      "r105": {
+        "run": 213,
+        "runId": 44535767548,
+        "conclusion": "success",
+        "sourceValidation": "success",
+        "all98LanguageNames": "success",
+        "quotaBoundaryTests": "success",
+        "workerDeployment": "success",
+        "productionHealth": "success",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r9e": {
+        "run": 134,
+        "runId": 44535614542,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "moroccoPriority": "pass",
+        "worldwidePriority": "pass",
+        "currency": "pass",
+        "safety": "pass",
+        "voicePwaCache": "pass",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r123": {
+        "run": 162,
+        "runId": 44535614582,
+        "conclusion": "success",
+        "programmaticVoice": "pass",
+        "categoryTranslations": "pass",
+        "voiceAcknowledgement": "pass",
+        "dynamicVoicePlaceholders": "pass",
+        "productionAudioAsset": "skipped",
+        "liveASR": "skipped",
+        "physicalAudio": "not-certified"
+      },
+      "safety": {
+        "run": 88,
+        "runId": 44535614599,
+        "conclusion": "success",
+        "blockedCategories": 4,
+        "benignLand": "allowed_pending_human_review"
+      },
+      "pages": {
+        "run": 1926,
+        "runId": 44535766174,
+        "conclusion": "success"
+      }
+    },
+    "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
+    "candidatePackWrites": 0,
+    "candidateMetadataWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "decision": "NO-GO",
+    "note": "R105 #212 failed because its own source gate still expected v53; that gate was corrected in commit 8e1139f and R105 #213 passed."
+  },
+  "latestR9eCountryCurrencyAudit20261119V54": {
+    "run": 134,
+    "runId": 44535614542,
+    "status": "completed",
+    "conclusion": "success",
+    "headSha": "ee2ec5dd4cffa6ec4e52a75976e04551b3a0716f",
+    "runtimeVersion": "20261119-r125-global-quick-v54",
+    "countryProfiles": 248,
+    "localizedPages": 44,
+    "countrySelection": "248/248 pass",
+    "moroccoPriority": "MA survived delayed US auto-detect",
+    "worldwidePriority": "pass",
+    "visibleLocales": [
+      "MA/ar",
+      "FR/fr",
+      "IN/hi",
+      "CN/zh"
+    ],
+    "safety": "prohibited weapon sale blocked",
+    "voicePwaCache": "pass",
+    "liveAiProbes": "skipped-by-policy",
+    "liveASR": "skipped"
+  },
+  "latestR105Verification20261119V54": {
+    "run": 213,
+    "runId": 44535767548,
+    "status": "completed",
+    "conclusion": "success",
+    "headSha": "8e1139fa78ff440ae279732ceb39d7b69288aa6a",
+    "sourceValidation": "pass",
+    "all98LanguageNames": "pass",
+    "quotaBoundaryTests": "pass",
+    "workerDeployment": "pass",
+    "productionHealth": "pass",
+    "aiBinding": true,
+    "centralSafetyGate": "enabled",
+    "failClosed": true,
+    "liveAiProbes": "skipped-by-policy",
+    "countryIntent": "not-probed"
+  },
+  "latestAudioAuthorityVerification20261119V54": {
+    "run": 162,
+    "runId": 44535614582,
+    "status": "completed",
+    "conclusion": "success",
+    "headSha": "ee2ec5dd4cffa6ec4e52a75976e04551b3a0716f",
+    "programmaticAudio": "pass",
+    "categoryTranslations": "pass",
+    "voiceAcknowledgement": "pass",
+    "dynamicVoicePlaceholders": "pass",
+    "productionAudioAsset": "skipped",
+    "liveASR": "skipped",
+    "browserProfileAudio": "Android browser-profile server audio pass in prior authority path",
+    "physicalDeviceCertified": false
+  },
+  "latestSafetySmoke20261119V54": {
+    "run": 88,
+    "runId": 44535614599,
+    "status": "completed",
+    "conclusion": "success",
+    "blockedCategories": 4,
+    "blocked": [
+      "weapons_or_explosives",
+      "explicit_sexual_content",
+      "stolen_counterfeit_or_fake_documents",
+      "ownership_or_consent_problem"
+    ],
+    "benignLand": "allowed_pending_human_review",
+    "liveSupabaseSafetyApi": "pass",
+    "marketplaceFailClosed": "pass"
+  },
+  "latestPagesDeployment20261119V54": {
+    "run": 1926,
+    "runId": 44535766174,
+    "status": "completed",
+    "conclusion": "success",
+    "headSha": "8e1139fa78ff440ae279732ceb39d7b69288aa6a"
   }
 }
