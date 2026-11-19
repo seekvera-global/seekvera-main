@@ -13552,5 +13552,109 @@
       "No candidate writes were made. Current resume workflow has no active run; latest matching run remains legacy #150.",
       "No provider translation or live AI probe was sent."
     ]
-  }
+  },
+  "latestAutomationPass20261119V42": {
+    "checkedAt": "2026-11-19T06:58:28.773Z",
+    "mainBaseSha": "f36b5822958769ec38c6966fe216e8d669b51dc8",
+    "status": "repair-prepared-pending-post-deploy-verification",
+    "repair": "Added provisional quota-neutral Tigrinya quick UI labels to the runtime so the four R125 labels no longer require dynamic translation. Qualified native review remains required.",
+    "runtimeVersion": "20261119-r125-global-quick-v40",
+    "tigrinyaQuickLabels": {
+      "provisional": true,
+      "nativeReviewRequired": true,
+      "values": {
+        "Back": "ተመለስ",
+        "PageNavigation": "ናይ ገጽ ምድህሳስ",
+        "VoiceReply": "መልሲ ብድምጺ",
+        "Voice": "ድምጺ"
+      },
+      "references": [
+        "https://bootstrap21.org/ti/docs/4.6/components/pagination/",
+        "https://geezexperience.com/?dr=1&searchkey=%E1%85%A8%E1%88%A8%E1%8C%B8",
+        "https://glosbe.com/en/ti/reply",
+        "https://geezexperience.com/?dr=1&searchkey=%E1%8B%B0%E1%88%83%E1%8B%AD"
+      ]
+    },
+    "changes": {
+      "htmlCacheReferencesUpdated": 44,
+      "runtimeQuickMapUpdated": true,
+      "quotaGuardTestUpdated": true,
+      "duplicateLaoQuickCaseRemoved": true,
+      "r125AuditWorkflowUpdated": true,
+      "r105ReleaseWorkflowUpdated": true,
+      "r9eBrowserAuditUpdated": true,
+      "candidatePacksChanged": 0,
+      "candidateBranchChanged": false
+    },
+    "candidateResumeWorkflow": {
+      "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "candidateWriteCondition": "run_translations=true OR repair_candidates=true",
+      "latestKnownRun": {
+        "runNumber": 150,
+        "runId": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "event": "push",
+        "conclusion": "success",
+        "resumeStep": "skipped",
+        "auditStep": "success",
+        "saveProgressStep": "success"
+      },
+      "latestActionsListActiveRuns": 0,
+      "candidateWritesThisPass": 0
+    },
+    "quota": {
+      "translationRequestsSent": 0,
+      "aiQuotaUsed": 0,
+      "liveProviderAvailability": "not probed; daily_free_ai_limit and historical Google HTTP429/HTTP503 remain blockers"
+    },
+    "verification": {
+      "latestR125V39Run": {
+        "runNumber": 102,
+        "runId": 44446631767,
+        "conclusion": "failure",
+        "cause": "one Tigrinya dynamic fallback attempt for Back, Page navigation, Voice reply, Voice"
+      },
+      "countryCurrency": {
+        "runNumber": 114,
+        "runId": 44446631846,
+        "conclusion": "success"
+      },
+      "aiBindingAndHealth": {
+        "runNumber": 195,
+        "runId": 44446631832,
+        "conclusion": "success",
+        "liveGeneration": "not tested"
+      },
+      "voice": {
+        "runNumber": 146,
+        "runId": 44446631912,
+        "conclusion": "success",
+        "physicalDevices": "not certified"
+      },
+      "safety": {
+        "runNumber": 73,
+        "runId": 44468157669,
+        "conclusion": "success"
+      },
+      "pages": {
+        "runNumber": 1902,
+        "runId": 44468292854,
+        "conclusion": "success"
+      }
+    },
+    "blockers": [
+      "Tigrinya quick labels are provisional and require qualified native review",
+      "Divehi has 58 English overlaps",
+      "11-language duplicate clusters require human review",
+      "98 language packs have no linguistic certification",
+      "live AI generation availability is unverified",
+      "physical microphone and speaker checks are pending",
+      "checkout is inactive pending merchant configuration"
+    ]
+  },
+  "lastUpdatedAt": "2026-11-19T06:58:28.773Z"
 }

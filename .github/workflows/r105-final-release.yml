@@ -74,7 +74,7 @@ jobs:
           node --check sw.js
           test "$(find i18n-r32 -maxdepth 1 -name '*.json' | wc -l)" -ge 98
           grep -F "const RELEASE='20261001-r125-dialect-voice-quality'" worker-r76.js
-          grep -F "const VERSION='20261119-r125-global-quick-v39'" i18n-ui.js
+          grep -F "const VERSION='20261119-r125-global-quick-v40'" i18n-ui.js
           grep -F "'Назад'" i18n-ui.js
           grep -F "'Навигација на страна'" i18n-ui.js
           grep -F "'Гласен одговор'" i18n-ui.js
@@ -142,6 +142,10 @@ jobs:
           grep -F "be:{'Back':'Назад','Page navigation':'Навігацыя па старонках','Voice reply':'Галасавы адказ','Voice':'Голас'}" i18n-ui.js
           grep -F "bs:{'Back':'Nazad','Page navigation':'Navigacija stranicama','Voice reply':'Odgovor glasom','Voice':'Glas'}" i18n-ui.js
           grep -F "dz:{'Back':'ཕྱིར་ལོག','Page navigation':'ཤོག་ངོས་འགྲུལ་སྐྱོད','Voice reply':'སྐད་ཀྱི་ལན','Voice':'སྐད་སྒྲ'}" i18n-ui.js
+          grep -F "'ተመለስ'" i18n-ui.js
+          grep -F "'ናይ ገጽ ምድህሳስ'" i18n-ui.js
+          grep -F "'መልሲ ብድምጺ'" i18n-ui.js
+          grep -F "'ድምጺ'" i18n-ui.js
           if grep -R -nE --exclude='README.md' --exclude='README-FIRST.txt' --exclude-dir='.git' 'Global API'' Key|GLOBAL_API''_KEY' .; then
             echo 'Forbidden global credential reference found'
             exit 1
@@ -184,7 +188,7 @@ jobs:
                 && grep -q 'global-ui.js?v=20261117-r125-source-caption-i18n-v2' /tmp/home.html \
                 && grep -q 'sv-control-caption-label' /tmp/global-ui.js \
                 && grep -q 'Worldwide is the neutral first-run market' /tmp/global-ui.js \
-                && grep -q '20261119-r125-global-quick-v39' /tmp/i18n-ui.js \
+                && grep -q '20261119-r125-global-quick-v40' /tmp/i18n-ui.js \
                 && grep -q 'ກັບຄືນ' /tmp/i18n-ui.js \
                 && grep -q 'ການນຳທາງໜ້າ' /tmp/i18n-ui.js \
                 && grep -q 'ຄຳຕອບດ້ວຍສຽງ' /tmp/i18n-ui.js \
@@ -200,6 +204,10 @@ jobs:
                 && grep -q "be:{'Back':'Назад','Page navigation':'Навігацыя па старонках','Voice reply':'Галасавы адказ','Voice':'Голас'}" /tmp/i18n-ui.js \
                 && grep -q "bs:{'Back':'Nazad','Page navigation':'Navigacija stranicama','Voice reply':'Odgovor glasom','Voice':'Glas'}" /tmp/i18n-ui.js \
                 && grep -q "dz:{'Back':'ཕྱིར་ལོག','Page navigation':'ཤོག་ངོས་འགྲུལ་སྐྱོད','Voice reply':'སྐད་ཀྱི་ལན','Voice':'སྐད་སྒྲ'}" /tmp/i18n-ui.js \
+                && grep -q 'ተመለስ' /tmp/i18n-ui.js \
+                && grep -q 'ናይ ገጽ ምድህሳስ' /tmp/i18n-ui.js \
+                && grep -q 'መልሲ ብድምጺ' /tmp/i18n-ui.js \
+                && grep -q 'ድምጺ' /tmp/i18n-ui.js \
                 && grep -q 'திரும்பு' /tmp/i18n-ui.js \
                 && grep -q 'பக்க வழிசெலுத்தல்' /tmp/i18n-ui.js \
                 && grep -q 'குரல் பதில்' /tmp/i18n-ui.js \

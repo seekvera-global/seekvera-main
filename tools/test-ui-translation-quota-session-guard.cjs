@@ -98,6 +98,7 @@ async function main(){
   {code:'ne',language:'Nepali',labels:{'Back':'पछाडि','Page navigation':'पृष्ठ नेभिगेसन','Voice reply':'आवाजमा जवाफ','Voice':'आवाज'}},
   {code:'si',language:'Sinhala',labels:{'Back':'ආපසු','Page navigation':'පිටු සංචාලනය','Voice reply':'හඬ පිළිතුර','Voice':'හඬ'}},
    {code:'km',language:'Khmer',labels:{'Back':'ត្រឡប់ក្រោយ','Page navigation':'ការរុករកទំព័រ','Voice reply':'ការឆ្លើយតបជាសំឡេង','Voice':'សំឡេង'}},
+  {code:'ti',language:'Tigrinya',labels:{'Back':'ተመለስ','Page navigation':'ናይ ገጽ ምድህሳስ','Voice reply':'መልሲ ብድምጺ','Voice':'ድምጺ'}},
   {code:'mn',language:'Mongolian',labels:{'Back':'Буцах','Page navigation':'Хуудас хооронд шилжих','Voice reply':'Дуу хоолойгоор хариулах','Voice':'Дуу хоолой'}},
   {code:'be',language:'Belarusian',labels:{'Back':'Назад','Page navigation':'Навігацыя па старонках','Voice reply':'Галасавы адказ','Voice':'Голас'}},
   {code:'bs',language:'Bosnian',labels:{'Back':'Nazad','Page navigation':'Navigacija stranicama','Voice reply':'Odgovor glasom','Voice':'Glas'}},
