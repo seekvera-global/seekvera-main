@@ -326,8 +326,8 @@ jobs:
               ("global caption marker", "global_ui", "sv-control-caption-label", False),
               ("i18n version", "i18n_ui", "const VERSION='20261119-r125-global-quick-v54'", False),
               ("i18n Marathi labels", "i18n_ui", "mr:{'Back':'परत','Page navigation':'पेज नेव्हिगेशन','Voice reply':'व्हॉईस प्रतिसाद','Voice':'व्हॉईस'}", False),
-              ("games title markup", "games_js", "<b>\${g.name}</b>", False),
-              ("games translation eligibility", "games_js", "data-no-translate>\${g.name}", True),
+              ("games title markup", "games_js", "<b>${g.name}</b>", False),
+              ("games translation eligibility", "games_js", "data-no-translate>${g.name}", True),
           ]
           for label, name, token, negate in checks:
               found = token in data.get(name, "")
