@@ -14,6 +14,7 @@ try {
     userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140 Safari/537.36'
   });
   context.setDefaultTimeout(20000);
+  let page;
 
   // Static locale assets can be reset transiently when many packs are fetched together.
   // Retry only network/transient 5xx failures; never retry translation or AI endpoints.
@@ -21,7 +22,18 @@ try {
     const maxAttempts = 4;
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
-        const response = await context.request.get(url, { timeout: 30000 });
+        const fetched = await page.evaluate(async targetUrl => {
+          const response = await fetch(targetUrl, { cache: 'no-store', credentials: 'same-origin' });
+          const body = await response.text();
+          return { status: response.status, body, cfRay: response.headers.get('cf-ray') || '' };
+        }, url);
+        const response = {
+          status: () => fetched.status,
+          json: async () => JSON.parse(fetched.body),
+          text: async () => fetched.body
+        };
+        console.log('R125_BROWSER_STATIC_FETCH', label, 'HTTP', response.status(), 'bytes', fetched.body.length, 'cf-ray', fetched.cfRay);
+        if (response.status() !== 200) console.error('R125_BROWSER_STATIC_BODY', label, fetched.body.slice(0, 300));
         if (response.status() >= 500 && response.status() <= 599 && attempt < maxAttempts) {
           console.warn('R125_STATIC_FETCH_RETRY', label, 'HTTP', response.status(), 'attempt', attempt);
           await pause(350 * (2 ** (attempt - 1)));
@@ -78,7 +90,7 @@ try {
     }
   });
 
-  const page = await context.newPage();
+  page = await context.newPage();
   const pageErrors = [];
   page.on('pageerror', error => pageErrors.push(String(error)));
 
@@ -91,6 +103,14 @@ try {
     () => window.SEEKVERA_LOCALE_R15 && window.SEEKVERA_I18N_R32,
     { timeout: 30000 }
   );
+
+  const liveRuntimeAssets = await page.evaluate(() => ({
+    i18n: [...document.scripts].find(script => script.src.includes('/i18n-ui.js'))?.src || '',
+    globalUi: [...document.scripts].find(script => script.src.includes('/global-ui.js'))?.src || ''
+  }));
+  console.log('R125_BROWSER_RUNTIME_ASSETS', JSON.stringify(liveRuntimeAssets));
+  assert(liveRuntimeAssets.i18n.includes('20261119-r125-global-quick-v54'), 'live page must load the audited v54 i18n runtime');
+  assert(liveRuntimeAssets.globalUi.includes('20261117-r125-source-caption-i18n-v2'), 'live page must load the audited global UI asset');
 
   const manifestResponse = await getStaticResponse(BASE + '/i18n-r32/manifest.json?v=' + Date.now(), 'manifest');
   const sourceResponse = await getStaticResponse(BASE + '/i18n-r32-source.json?v=' + Date.now(), 'source');

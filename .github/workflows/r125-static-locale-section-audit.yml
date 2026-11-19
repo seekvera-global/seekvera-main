@@ -56,12 +56,50 @@ jobs:
           SEEKVERA_BASE_URL: https://seekveraglobal.com
         run: |
           set -euo pipefail
+          fetch_assets() {
+            node --input-type=module <<'NODE'
+              import { chromium } from 'playwright';
+              import { writeFile } from 'node:fs/promises';
+              const base = process.env.SEEKVERA_BASE_URL || 'https://seekveraglobal.com';
+              const browser = await chromium.launch({ headless: true });
+              try {
+                const context = await browser.newContext({
+                  viewport: { width: 390, height: 844 },
+                  locale: 'en-US',
+                  serviceWorkers: 'block',
+                  userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140 Safari/537.36'
+                });
+                await context.route('**/api/ai**', route => route.fulfill({ status: 503, contentType: 'application/json', body: '{"ok":false,"audit":"quota-neutral"}' }));
+                await context.route('**/api/ui-translate**', route => route.fulfill({ status: 503, contentType: 'application/json', body: '{"ok":false,"audit":"quota-neutral"}' }));
+                await context.route('https://text.pollinations.ai/**', route => route.fulfill({ status: 503, contentType: 'text/plain', body: 'quota-neutral static audit' }));
+                const page = await context.newPage();
+                const home = await page.goto(base + '/index.html?locale_audit=20261117', { waitUntil: 'domcontentloaded', timeout: 60000 });
+                if (!home) throw new Error('homepage response missing');
+                const homeBody = await home.text();
+                console.log('R125_BROWSER_HTTP index', home.status(), 'bytes=' + homeBody.length, 'cf-ray=' + (home.headers()['cf-ray'] || ''));
+                if (home.status() !== 200) { console.error('R125_BROWSER_BODY index', homeBody.slice(0, 400)); throw new Error('homepage HTTP ' + home.status()); }
+                await writeFile('/tmp/r125-index.html', homeBody, 'utf8');
+                const assets = [
+                  ['games_html', '/games.html?locale_audit=20261117', '/tmp/r125-games.html'],
+                  ['global_ui', '/global-ui.js?v=20261117-r125-source-caption-i18n-v2', '/tmp/r125-global-ui.js'],
+                  ['games_js', '/games.js?v=20261117-r125-game-title-i18n', '/tmp/r125-games.js'],
+                  ['i18n_ui', '/i18n-ui.js?v=20261119-r125-global-quick-v54', '/tmp/r125-i18n-ui.js']
+                ];
+                for (const [name, path, file] of assets) {
+                  const result = await page.evaluate(async target => {
+                    const response = await fetch(target, { cache: 'no-store', credentials: 'same-origin' });
+                    return { status: response.status, body: await response.text(), cfRay: response.headers.get('cf-ray') || '', server: response.headers.get('server') || '' };
+                  }, path);
+                  console.log('R125_BROWSER_HTTP', name, result.status, 'bytes=' + result.body.length, 'cf-ray=' + result.cfRay, 'server=' + result.server);
+                  if (result.status !== 200) { console.error('R125_BROWSER_BODY', name, result.body.slice(0, 400)); throw new Error(name + ' HTTP ' + result.status); }
+                  await writeFile(file, result.body, 'utf8');
+                }
+                await context.close();
+              } finally { await browser.close(); }
+              NODE
+          }
           for attempt in $(seq 1 36); do
-            if curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/index.html?locale_audit=20261117" -o /tmp/r125-index.html \
-              && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/games.html?locale_audit=20261117" -o /tmp/r125-games.html \
-              && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/global-ui.js?v=20261117-r125-source-caption-i18n-v2" -o /tmp/r125-global-ui.js \
-              && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/games.js?v=20261117-r125-game-title-i18n" -o /tmp/r125-games.js \
-              && curl -fsSL --max-time 10 "$SEEKVERA_BASE_URL/i18n-ui.js?v=20261119-r125-global-quick-v54" -o /tmp/r125-i18n-ui.js \
+            if fetch_assets \
               && grep -Fq 'global-ui.js?v=20261117-r125-source-caption-i18n' /tmp/r125-index.html \
               && grep -Fq 'games.js?v=20261117-r125-game-title-i18n' /tmp/r125-games.html \
               && grep -Fq 'i18n-ui.js?v=20261119-r125-global-quick-v54' /tmp/r125-index.html \
@@ -301,40 +339,7 @@ jobs:
             fi
             sleep 5
           done
-          python - <<'PY'
-          from urllib.request import urlopen
-          targets = {
-              "index": "https://seekveraglobal.com/index.html?locale_audit_diag=20261119",
-              "games_html": "https://seekveraglobal.com/games.html?locale_audit_diag=20261119",
-              "global_ui": "https://seekveraglobal.com/global-ui.js?v=20261117-r125-source-caption-i18n-v2",
-              "games_js": "https://seekveraglobal.com/games.js?v=20261117-r125-game-title-i18n",
-              "i18n_ui": "https://seekveraglobal.com/i18n-ui.js?v=20261119-r125-global-quick-v54",
-          }
-          data = {}
-          for name, url in targets.items():
-              try:
-                  with urlopen(url, timeout=12) as response:
-                      body = response.read().decode("utf-8", "replace")
-                      data[name] = body
-                      print(f"R125_DIAG_HTTP {name} {response.status} bytes={len(body)}")
-              except Exception as exc:
-                  print(f"R125_DIAG_HTTP_FAIL {name} {type(exc).__name__}: {exc}")
-          checks = [
-              ("index i18n v54", "index", "i18n-ui.js?v=20261119-r125-global-quick-v54", False),
-              ("index global-ui v2", "index", "global-ui.js?v=20261117-r125-source-caption-i18n", False),
-              ("games html js ref", "games_html", "games.js?v=20261117-r125-game-title-i18n", False),
-              ("global caption marker", "global_ui", "sv-control-caption-label", False),
-              ("i18n version", "i18n_ui", "const VERSION='20261119-r125-global-quick-v54'", False),
-              ("i18n Marathi labels", "i18n_ui", "mr:{'Back':'परत','Page navigation':'पेज नेव्हिगेशन','Voice reply':'व्हॉईस प्रतिसाद','Voice':'व्हॉईस'}", False),
-              ("games title markup", "games_js", "<b>${g.name}</b>", False),
-              ("games translation eligibility", "games_js", "data-no-translate>${g.name}", True),
-          ]
-          for label, name, token, negate in checks:
-              found = token in data.get(name, "")
-              ok = (not found) if negate else found
-              print(f"R125_DIAG_{'PASS' if ok else 'FAIL'} {label}")
-          PY
-          echo R125_LATEST_PAGES_ASSETS_TIMEOUT >&2
+          echo R125_BROWSER_ASSET_READINESS_TIMEOUT >&2
           exit 1
 
       - name: Syntax check quota-neutral audit
