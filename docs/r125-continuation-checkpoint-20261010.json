@@ -132,7 +132,8 @@
     "R105 #209 exposed a test-only cross-realm strict-deep-equality issue after the v52 JavaScript syntax correction; the test now shallow-copies QUICK.te before comparison. R123 #160 passed and deployed the Worker; R9e #132 and R125 #116 are still pending/in progress.",
     "R125 #125 completed the full v54 browser matrix (98 languages × 27 sections = 2,646 applications; 248 country profiles) with zero visible exact/partial/unresolved English findings, but one locally intercepted Gujarati dynamic translation fallback for Back, Page navigation, Voice reply and Voice. v55 adds provisional Gujarati QUICK labels, a zero-provider regression, and refreshes all 44 HTML cache references; R125 #126 is running the v55 full matrix.",
     "R125 #126 on v55 completed the 98×27 matrix and found zero visible English leaks, but one Punjabi dynamic translation fallback for Back, Page navigation, Voice reply and Voice. v56 adds provisional Punjabi QUICK labels based on existing Punjabi pack vocabulary and improves the static audit so intercepted non-quota 418 responses expose every fallback language/page without reaching a provider; R125 #127 is running.",
-    "R125 #128 on v57 completed all 98×27 applications and 248 country profiles with zero visible English leak findings, but failed the no-dynamic-fallback gate: 1,178 browser-side /api/ui-translate calls across 97 languages and 133 unique strings. All were intercepted locally; zero provider/AI/Pollinations requests and zero quota used. 60 strings exist only in the unpublished candidate source; 73 are absent from candidate source."
+    "R125 #128 on v57 completed all 98×27 applications and 248 country profiles with zero visible English leak findings, but failed the no-dynamic-fallback gate: 1,178 browser-side /api/ui-translate calls across 97 languages and 133 unique strings. All were intercepted locally; zero provider/AI/Pollinations requests and zero quota used. 60 strings exist only in the unpublished candidate source; 73 are absent from candidate source.",
+    "R105 #217 and R123 #166 stopped before deployment because tools/test-locale-cognates.cjs still expected the old <b>${g.name}</b> markup after the proper-name exclusion repair. Audio unit tests and live Arabic homepage/31 category-description checks passed; the regression assertion is corrected and must be rerun."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -9954,15 +9955,10 @@
     "checkedAt": "2026-11-19T16:02:36Z",
     "headSha": "d6df957911d1692b3457535903b0091217be3ae9",
     "r105": {
-      "run": 216,
-      "runId": 44561221845,
-      "conclusion": "success",
-      "aiBinding": true,
-      "productionHealth": "passed",
-      "centralSafetyGate": "enabled",
-      "failClosed": true,
-      "quotaBoundaryTests": "passed",
-      "liveAiProbes": "skipped-by-policy"
+      "run": 217,
+      "runId": 44563363979,
+      "status": "failure",
+      "failure": "tools/test-locale-cognates.cjs asserted obsolete game-title markup; deployment and production-health steps skipped"
     },
     "r9e": {
       "run": 137,
@@ -9983,14 +9979,11 @@
       "liveAiProbes": "skipped-by-policy"
     },
     "r123": {
-      "run": 165,
-      "runId": 44561221674,
-      "conclusion": "success",
-      "categoryTranslations": "passed",
-      "voiceAcknowledgement": "passed",
-      "dynamicVoicePlaceholders": "passed",
-      "productionMultilingualAudioAsset": "skipped",
-      "liveASR": "not-verified",
+      "run": 166,
+      "runId": 44563364475,
+      "status": "failure",
+      "failure": "same stale tools/test-locale-cognates.cjs assertion; audio unit checks and live Arabic home/31 descriptions passed; deploy skipped",
+      "programmaticAudio": "passed before stale assertion",
       "physicalDeviceCertified": false
     },
     "safety": {
@@ -10006,11 +9999,17 @@
       "benignLand": "allowed_pending_human_review"
     },
     "pages": {
-      "run": 1941,
-      "runId": 44561220452,
+      "run": 1943,
+      "runId": 44563360737,
       "conclusion": "success",
       "build": "success",
       "deploy": "success"
+    },
+    "r125": {
+      "run": 129,
+      "runId": 44563364075,
+      "status": "in_progress",
+      "headSha": "64c79923af25ac2a86466c9d16c568209526a815"
     }
   },
   "latestResumeWorkflowInspection": {
@@ -13375,7 +13374,8 @@
     },
     "checkout": "inactive pending merchant configuration and end-to-end payment/refund/settlement verification",
     "changes": [
-      "Added proper-name and locale-formatted-country exclusions to reduce false dynamic translation requests without suppressing translatable descriptions or plan copy."
+      "Added proper-name and locale-formatted-country exclusions to reduce false dynamic translation requests without suppressing translatable descriptions or plan copy.",
+      "Updated the stale locale-cognate regression to assert the new proper-name spans and ensure descriptions/categories remain translatable."
     ],
     "candidatePackWrites": 0,
     "candidateMetadataWrites": 0,
@@ -13383,7 +13383,26 @@
     "aiQuotaUsed": 0,
     "published": false,
     "linguisticCertification": false,
-    "decision": "NO-GO"
+    "decision": "NO-GO",
+    "runtimeFailures": {
+      "r105": {
+        "run": 217,
+        "reason": "stale test expectation for previous games.js markup; source validation stopped before deployment"
+      },
+      "r123": {
+        "run": 166,
+        "reason": "same stale test expectation; all preceding audio-envelope, ASR safety, language and dynamic voice tests passed; live Arabic homepage and all 31 category descriptions passed"
+      }
+    },
+    "pages": {
+      "run": 1943,
+      "conclusion": "success"
+    },
+    "r125Next": {
+      "run": 129,
+      "status": "in_progress",
+      "headSha": "64c79923af25ac2a86466c9d16c568209526a815"
+    }
   },
   "latestAutomationPass20261119V42": {
     "checkedAt": "2026-11-19T06:58:28.773Z",
@@ -16460,6 +16479,11 @@
       }
     ],
     "reason": "R125 #128 recorded these three categories among 133 dynamic strings. They are proper names or already locale-formatted country names, not translatable UI copy.",
-    "validation": "Exact source replacements applied once each; R125 re-audit required to confirm reduction. No locale packs changed, no provider calls, no candidate writes."
+    "validation": "R125 #129 is running against commit 64c799. R105 #217 and R123 #166 failed before deploy because tools/test-locale-cognates.cjs still asserted the old game-title markup. Audio unit checks and the live Arabic homepage/31 category-description probe passed; the stale test is updated in this commit.",
+    "testRepair": {
+      "file": "tools/test-locale-cognates.cjs",
+      "change": "Update regression assertions for data-no-translate game-title spans, selected-game/overlay state transitions, and proper-name markers in games.html, jobs.html and media.html.",
+      "reason": "R105 #217 and R123 #166 exposed an outdated assertion that required the previous <b>${g.name}</b> markup; this was a test expectation failure, not an audio or runtime regression."
+    }
   }
 }
