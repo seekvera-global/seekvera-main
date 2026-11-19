@@ -135,7 +135,8 @@
     "R125 #128 on v57 completed all 98×27 applications and 248 country profiles with zero visible English leak findings, but failed the no-dynamic-fallback gate: 1,178 browser-side /api/ui-translate calls across 97 languages and 133 unique strings. All were intercepted locally; zero provider/AI/Pollinations requests and zero quota used. 60 strings exist only in the unpublished candidate source; 73 are absent from candidate source.",
     "R105 #217 and R123 #166 stopped before deployment because tools/test-locale-cognates.cjs still expected the old <b>${g.name}</b> markup after the proper-name exclusion repair. Audio unit tests and live Arabic homepage/31 category-description checks passed; the regression assertion is corrected and must be rerun.",
     "Seller plan rendering was inserting local-pack translations into the DOM without marking them as already localized; the global MutationObserver then attempted to translate translated values again (e.g. Business Monthly -> Kgwedi le Kgwedi ya Kgwebo). Canonical Supabase rows were verified; renderer guard now preserves translated output while leaving missing strings auditable.",
-    "R125 #129 remained in the Pages readiness step because the workflow hardcoded stale games.js v20261117 and i18n-ui.js v56 refs while checked-out pages referenced games.js v20261119-proper-name-exclusions and i18n-ui.js v57. The gate was repaired to derive refs from source pages; the old run is not yet complete and the next audit uses a new concurrency group."
+    "R125 #129 remained in the Pages readiness step because the workflow hardcoded stale games.js v20261117 and i18n-ui.js v56 refs while checked-out pages referenced games.js v20261119-proper-name-exclusions and i18n-ui.js v57. The gate was repaired to derive refs from source pages; the old run is not yet complete and the next audit uses a new concurrency group.",
+    "The first dynamic R125 asset-ref workflow patch contained over-escaped grep and shell quoting; readback caught it before claiming success. Corrected the regex and shell quoting, and moved the next audit to concurrency group v3."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -13540,7 +13541,38 @@
       "repair": "R125 now derives global-ui.js, games.js and i18n-ui.js cache-busting refs from checked-out index.html/games.html, fetches those exact refs, and verifies the live HTML contains them. New concurrency group v2 lets the repaired audit start without waiting behind stale runs.",
       "candidateWrites": 0,
       "providerRequests": 0,
-      "quotaUsed": 0
+      "quotaUsed": 0,
+      "shellEscapingRepair": {
+        "checkedAt": "2026-11-19T16:21:35Z",
+        "finding": "The first dynamic-ref workflow patch was over-escaped in the YAML shell block: grep patterns contained doubled backslashes and shell variables had literal escaped quotes.",
+        "repair": "Corrected the ERE patterns to single escaped dots/question marks, removed literal quote escapes, and moved the repaired lane to concurrency group v3.",
+        "queuedRuns": [
+          {
+            "run": 129,
+            "runId": 44563364075,
+            "status": "in_progress",
+            "workflowRevision": "old hard-coded refs"
+          },
+          {
+            "run": 130,
+            "runId": 44564685345,
+            "status": "in_progress",
+            "workflowRevision": "old hard-coded refs"
+          },
+          {
+            "run": 131,
+            "runId": 44565071259,
+            "status": "queued",
+            "workflowRevision": "first dynamic-ref patch with shell escaping defect"
+          },
+          {
+            "run": 132,
+            "expectedRevision": "corrected dynamic-ref patch",
+            "concurrencyGroup": "seekvera-r125-static-locale-audit-v3"
+          }
+        ],
+        "note": "No locale matrix result is claimed from these stale readiness runs. The corrected run must pass Pages readiness before the matrix can begin."
+      }
     }
   },
   "latestAutomationPass20261119V42": {
@@ -16635,8 +16667,8 @@
     },
     "workflowRepair": {
       "file": ".github/workflows/r125-static-locale-section-audit.yml",
-      "change": "Replace hard-coded asset version strings with refs extracted from checked-out pages and bump the concurrency group for the repaired audit lane.",
-      "purpose": "Prevent future cache-version drift from holding R125 in Pages readiness before the language matrix starts."
+      "change": "Derive live asset refs from checked-out pages; fetch exact refs; use concurrency group v3; shell quoting corrected after readback caught over-escaping.",
+      "purpose": "Prevent cache-version drift and avoid queueing the repaired audit behind stale readiness runs."
     }
   },
   "latestSupabaseSecurityAdvisory20261119": {
@@ -16730,6 +16762,37 @@
     "repair": "R125 now derives global-ui.js, games.js and i18n-ui.js cache-busting refs from checked-out index.html/games.html, fetches those exact refs, and verifies the live HTML contains them. New concurrency group v2 lets the repaired audit start without waiting behind stale runs.",
     "candidateWrites": 0,
     "providerRequests": 0,
-    "quotaUsed": 0
+    "quotaUsed": 0,
+    "shellEscapingRepair": {
+      "checkedAt": "2026-11-19T16:21:35Z",
+      "finding": "The first dynamic-ref workflow patch was over-escaped in the YAML shell block: grep patterns contained doubled backslashes and shell variables had literal escaped quotes.",
+      "repair": "Corrected the ERE patterns to single escaped dots/question marks, removed literal quote escapes, and moved the repaired lane to concurrency group v3.",
+      "queuedRuns": [
+        {
+          "run": 129,
+          "runId": 44563364075,
+          "status": "in_progress",
+          "workflowRevision": "old hard-coded refs"
+        },
+        {
+          "run": 130,
+          "runId": 44564685345,
+          "status": "in_progress",
+          "workflowRevision": "old hard-coded refs"
+        },
+        {
+          "run": 131,
+          "runId": 44565071259,
+          "status": "queued",
+          "workflowRevision": "first dynamic-ref patch with shell escaping defect"
+        },
+        {
+          "run": 132,
+          "expectedRevision": "corrected dynamic-ref patch",
+          "concurrencyGroup": "seekvera-r125-static-locale-audit-v3"
+        }
+      ],
+      "note": "No locale matrix result is claimed from these stale readiness runs. The corrected run must pass Pages readiness before the matrix can begin."
+    }
   }
 }
