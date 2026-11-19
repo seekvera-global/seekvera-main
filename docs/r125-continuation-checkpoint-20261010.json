@@ -182,11 +182,11 @@
     }
   },
   "remainingChecks": [
-    "Complete R125 #106 on v43 and require zero exact, partial, unresolved and dynamic-fallback findings across 98 languages × 27 sections. The previous v42 run #105 had one intercepted Kinyarwanda fallback, provisionally repaired in v43.",
-    "Complete R9e #121 on v43 and verify all 248 country profiles, all 44 localized pages, country/language priority, stored currency and voice/PWA cache against the deployed v43 assets.",
-    "Keep Divehi's 58 English-overlap findings and 28 duplicate-output groups across 11 languages in qualified native review; do not promote candidate packs.",
-    "Obtain qualified linguistic review for all 98 locale packs, including Kinyarwanda, Tigrinya, Faroese, Kalaallisut and the other provisional labels; none is published or linguistically certified.",
-    "Keep live AI chat and translation-backend availability unknown until a permitted quota-safe probe can run without bypassing daily_free_ai_limit or Google HTTP429.",
+    "Complete R125 #114 on v50 and require zero exact, partial, unresolved and dynamic-fallback findings across 98 languages × 27 sections (2,646 applications).",
+    "Complete R9e #130 on v50; verify 248 country/territory profiles, 44 localized pages, Morocco and Worldwide selection priority, stored currency, visible locales, safety and voice/PWA cache.",
+    "Review Divehi's 58 English-overlap findings and 28 duplicate-output groups across 11 languages with qualified native reviewers; do not promote candidate packs.",
+    "Obtain qualified linguistic review for all 98 locale packs; none is published or linguistically certified.",
+    "Keep live AI chat, AI country intent and translation-backend availability unknown until a permitted quota-safe probe can run without bypassing daily_free_ai_limit or Google HTTP429.",
     "Complete physical microphone/speaker tests on real Android, iPhone/iPad and desktop devices; browser/headless audio checks are not hardware certification.",
     "Configure merchant checkout and complete end-to-end payment, forged-reference rejection and settlement verification."
   ],
@@ -548,7 +548,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-19T08:05:52Z",
+  "checkedAt": "2026-11-19T11:55:21.416Z",
   "latestR125Run": {
     "run": 150,
     "status": "completed",
@@ -13678,7 +13678,7 @@
       "checkout is inactive pending merchant configuration"
     ]
   },
-  "lastUpdatedAt": "2026-11-19T10:43:28Z",
+  "lastUpdatedAt": "2026-11-19T11:55:21.416Z",
   "latestAutomationPass20261119V43": {
     "checkedAt": "2026-11-19T07:07:23.959Z",
     "mainBaseSha": "1d1d89dd55a1502618f180ea35a151ed436e3101",
@@ -14800,6 +14800,396 @@
       "conclusion": "success",
       "blockedCases": 4,
       "benignLand": "allowed_pending_human_review"
+    },
+    "checkout": "inactive pending merchant configuration and end-to-end payment, forged-reference rejection and settlement verification",
+    "candidatePackWrites": 0,
+    "candidateMetadataWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "decision": "NO-GO"
+  },
+  "latestAutomationPass20261119V49": {
+    "checkedAt": "2026-11-19T11:43:25Z",
+    "mainCommit": "038192a8e3c0711b0b74981005dfc9ec9b5ba076",
+    "runtimeVersion": "20261119-r125-global-quick-v49",
+    "repair": {
+      "language": "eu",
+      "name": "Basque",
+      "labels": {
+        "Back": "Atzera",
+        "Page navigation": "Orriaren nabigazioa",
+        "Voice reply": "Ahots-erantzuna",
+        "Voice": "Ahotsa"
+      },
+      "status": "provisional; Back and Page navigation drawn from the saved candidate pack; Voice and Voice reply align with existing production pack terminology; qualified native-speaker review remains required",
+      "candidatePackModified": false,
+      "candidateBranchModified": false,
+      "htmlCacheReferencesUpdated": 44,
+      "workflowsUpdated": [
+        ".github/workflows/r105-final-release.yml",
+        ".github/workflows/final-browser-audit-r9.yml",
+        ".github/workflows/r125-static-locale-section-audit.yml"
+      ],
+      "regressionTestUpdated": "tools/test-ui-translation-quota-session-guard.cjs",
+      "quotaNeutral": true,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "precedingR125": {
+      "run": 112,
+      "runId": 44509488404,
+      "conclusion": "failure",
+      "runtimeVersion": "20261119-r125-global-quick-v48",
+      "languages": 98,
+      "sections": 27,
+      "applications": 2646,
+      "countryProfiles": 248,
+      "exactFindings": 0,
+      "partialFindings": 0,
+      "unresolvedFindings": 0,
+      "dynamicFallback": {
+        "language": "Basque",
+        "requests": 1,
+        "strings": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ]
+      },
+      "providerRequestsSent": 0
+    },
+    "productionChecks": {
+      "pages": {
+        "run": 1917,
+        "runId": 44517346023,
+        "conclusion": "success",
+        "deployedCommit": "038192a8e3c0711b0b74981005dfc9ec9b5ba076"
+      },
+      "r105": {
+        "run": 206,
+        "runId": 44517348272,
+        "conclusion": "success",
+        "aiBinding": true,
+        "productionHealth": "passed",
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r123": {
+        "run": 157,
+        "runId": 44517347788,
+        "conclusion": "success",
+        "programmaticTTS": "passed",
+        "voiceAcknowledgement": "passed",
+        "dynamicVoicePlaceholders": "passed",
+        "androidBrowserProfilePlayback": "passed",
+        "productionAudioAssetAndMultilingualAudio": "skipped",
+        "liveASR": "not-verified",
+        "physicalDeviceCertified": false
+      },
+      "safety": {
+        "run": 83,
+        "runId": 44517347441,
+        "conclusion": "success",
+        "blockedCases": 4,
+        "benignLand": "allowed_pending_human_review"
+      },
+      "r9e": {
+        "run": 129,
+        "runId": 44517347606,
+        "status": "in_progress",
+        "resultPending": true
+      }
+    },
+    "candidateState": {
+      "structural": "98/98",
+      "qualityGate": "97/98",
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "duplicateGroups": 28,
+      "duplicateLanguages": [
+        "ig",
+        "dz",
+        "ti",
+        "kl",
+        "rw",
+        "to",
+        "ku",
+        "xh",
+        "st",
+        "tn",
+        "dv"
+      ],
+      "sourceKeys": 1118,
+      "productionKeys": 1045,
+      "unpublishedKeyDelta": 73,
+      "published": 0,
+      "linguisticCertification": 0,
+      "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
+      "candidateWritesThisPass": 0
+    },
+    "resumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "trigger": "workflow_dispatch only; no schedule",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestMatchingRun": 150,
+      "latestRunId": 38971104197,
+      "latestRunStatus": "completed",
+      "latestRunConclusion": "success",
+      "latestRunRevision": "legacy",
+      "resumeStep": "skipped",
+      "auditStep": "success",
+      "candidatePackWrites": 0,
+      "metadataFilesWritten": 2,
+      "currentRevisionRunObserved": false,
+      "activeRuns": 0,
+      "candidateWritesThisPass": 0
+    },
+    "ai": {
+      "binding": true,
+      "productionHealth": "pass",
+      "liveGeneration": "not-probed; RUN_LIVE_AI_PROBES=false",
+      "countryIntentProbe": "not-tested",
+      "translationBackend": "not-probed",
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable"
+      ],
+      "translationRequestsThisPass": 0,
+      "aiQuotaUsedThisPass": 0,
+      "quotaBypassAttempts": 0
+    },
+    "countryCurrency": {
+      "latestCompletedAudit": "R9e #128 on v48",
+      "countryProfiles": "248/248",
+      "localizedPages": "44/44",
+      "manualMoroccoPriority": "pass",
+      "manualWorldwidePriority": "pass",
+      "visibleLocales": [
+        "MA/ar",
+        "FR/fr",
+        "IN/hi",
+        "CN/zh"
+      ],
+      "storedCurrency": "pass",
+      "v49Audit": "pending R9e #129"
+    },
+    "voice": {
+      "latestCompletedAudit": "R123 #157 on v49",
+      "programmaticTTS": "pass",
+      "voiceAcknowledgement": "pass",
+      "dynamicVoicePlaceholders": "pass",
+      "androidBrowserProfilePlayback": "pass",
+      "productionAudioAssetAndMultilingualAudio": "skipped",
+      "liveASR": "not-verified",
+      "physicalMicrophoneSpeakerCertified": false
+    },
+    "checkout": "inactive pending merchant configuration and end-to-end payment, forged-reference rejection and settlement verification",
+    "candidatePackWrites": 0,
+    "candidateMetadataWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "decision": "NO-GO"
+  },
+  "latestAutomationPass20261119V50": {
+    "checkedAt": "2026-11-19T11:53:08Z",
+    "mainCommit": "f2c8382c1a804ccce8e100483a504ebd25247e71",
+    "runtimeVersion": "20261119-r125-global-quick-v50",
+    "repair": {
+      "language": "gl",
+      "name": "Galician",
+      "labels": {
+        "Back": "Atrás",
+        "Page navigation": "Navegación de páxina",
+        "Voice reply": "Resposta por voz",
+        "Voice": "Voz"
+      },
+      "status": "provisional; selected from existing candidate and production pack vocabulary; native-speaker review remains required",
+      "evidence": {
+        "candidateBack": "Atrás",
+        "candidatePageNavigation": "Navegación de páxina",
+        "productionVoiceReply": "Activar ou desactivar a resposta de voz",
+        "productionVoice": "Voz + Chat"
+      },
+      "candidatePackModified": false,
+      "candidateBranchModified": false,
+      "htmlCacheReferencesUpdated": 44,
+      "workflowsUpdated": [
+        ".github/workflows/r105-final-release.yml",
+        ".github/workflows/final-browser-audit-r9.yml",
+        ".github/workflows/r125-static-locale-section-audit.yml"
+      ],
+      "regressionTestUpdated": "tools/test-ui-translation-quota-session-guard.cjs",
+      "quotaNeutral": true,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "precedingR125": {
+      "run": 113,
+      "runId": 44517347684,
+      "conclusion": "failure",
+      "runtimeVersion": "20261119-r125-global-quick-v49",
+      "languages": 98,
+      "sections": 27,
+      "applications": 2646,
+      "countryProfiles": 248,
+      "exactFindings": 0,
+      "partialFindings": 0,
+      "unresolvedFindings": 0,
+      "dynamicFallback": {
+        "language": "Galician",
+        "requests": 1,
+        "strings": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ]
+      },
+      "blockedRequests": {
+        "ai": 0,
+        "translation": 1,
+        "pollinations": 0
+      },
+      "providerRequestsSent": 0
+    },
+    "productionChecks": {
+      "pages": {
+        "run": 1918,
+        "runId": 44518777996,
+        "status": "in_progress",
+        "deployedCommit": "f2c8382c1a804ccce8e100483a504ebd25247e71"
+      },
+      "r105": {
+        "run": 207,
+        "runId": 44518778955,
+        "conclusion": "success",
+        "aiBinding": true,
+        "productionHealth": "passed",
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r123": {
+        "run": 158,
+        "runId": 44518778772,
+        "status": "in_progress"
+      },
+      "safety": {
+        "run": 84,
+        "runId": 44518778824,
+        "conclusion": "success",
+        "blockedCases": 4,
+        "benignLand": "allowed_pending_human_review"
+      },
+      "r125": {
+        "run": 114,
+        "runId": 44518778745,
+        "status": "in_progress",
+        "lastObservedStep": "Install Chromium and system dependencies"
+      },
+      "r9e": {
+        "run": 130,
+        "runId": 44518778866,
+        "status": "in_progress",
+        "lastObservedStep": "Install Chromium browser test runtime"
+      },
+      "previousR9e": {
+        "run": 129,
+        "runId": 44517347606,
+        "status": "in_progress",
+        "lastObservedStep": "Install Chromium browser test runtime"
+      }
+    },
+    "candidateState": {
+      "structural": "98/98",
+      "qualityGate": "97/98",
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "duplicateGroups": 28,
+      "duplicateLanguages": [
+        "ig",
+        "dz",
+        "ti",
+        "kl",
+        "rw",
+        "to",
+        "ku",
+        "xh",
+        "st",
+        "tn",
+        "dv"
+      ],
+      "sourceKeys": 1118,
+      "productionKeys": 1045,
+      "unpublishedKeyDelta": 73,
+      "published": 0,
+      "linguisticCertification": 0,
+      "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
+      "candidateWritesThisPass": 0
+    },
+    "resumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "trigger": "workflow_dispatch only; no schedule",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestMatchingRun": 150,
+      "latestRunId": 38971104197,
+      "latestRunStatus": "completed",
+      "latestRunConclusion": "success",
+      "latestRunRevision": "legacy",
+      "resumeStep": "skipped",
+      "auditStep": "success",
+      "candidatePackWrites": 0,
+      "metadataFilesWritten": 2,
+      "currentRevisionRunObserved": false,
+      "activeRuns": 0,
+      "candidateWritesThisPass": 0
+    },
+    "ai": {
+      "binding": true,
+      "productionHealth": "pass",
+      "liveGeneration": "not-probed; RUN_LIVE_AI_PROBES=false",
+      "countryIntentProbe": "not-tested",
+      "translationBackend": "not-probed",
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable"
+      ],
+      "translationRequestsThisPass": 0,
+      "aiQuotaUsedThisPass": 0,
+      "quotaBypassAttempts": 0
+    },
+    "countryCurrency": {
+      "latestCompletedAudit": "R9e #128 on v48",
+      "countryProfiles": "248/248",
+      "localizedPages": "44/44",
+      "manualMoroccoPriority": "pass",
+      "manualWorldwidePriority": "pass",
+      "storedCurrency": "pass",
+      "v50Audit": "pending R9e #130"
+    },
+    "voice": {
+      "latestCompletedAudit": "R123 #157 on v49",
+      "programmaticTTS": "pass",
+      "voiceAcknowledgement": "pass",
+      "dynamicVoicePlaceholders": "pass",
+      "androidBrowserProfilePlayback": "pass",
+      "productionAudioAssetAndMultilingualAudio": "skipped",
+      "liveASR": "not-verified",
+      "physicalMicrophoneSpeakerCertified": false
     },
     "checkout": "inactive pending merchant configuration and end-to-end payment, forged-reference rejection and settlement verification",
     "candidatePackWrites": 0,
