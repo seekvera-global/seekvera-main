@@ -112,17 +112,19 @@
   "linguisticAccuracyCertified": false,
   "blockedBy": [
     "Candidate branch has 98 structurally complete packs (1,118 keys each, matching sourceHash); 97/98 pass the saved quality gate. Divehi (dv) remains blocked by 58 English-overlap findings requiring qualified native Dhivehi review.",
-    "R125 #101 on v38 completed 98 languages × 27 sections (2,646 applications; 248 country profiles), with zero exact and partial findings, but one unresolved Urdu seller-plan finding and one intercepted Dzongkha fallback. Main v39 commit daf602d541ed5912e80b67ca629aa6515e9a6b88 repairs dynamic seller-plan localization, Range-based audit visibility and Dzongkha fallback; fresh R125 v39 result is pending.",
-    "R9e #108 passed on v38: 248/248 country profiles, 44/44 localized pages, Morocco/Worldwide priority, MA/ar, FR/fr, IN/hi and CN/zh, safety, voice and PWA cache. v39 verification remains pending.",
+    "Fresh read-only duplicate screen fetched all 98 packs and found 28 exact duplicate-output groups across 11 languages (ig,dz,ti,kl,rw,to,ku,xh,st,tn,dv); broad clusters across unrelated game descriptions/help text require native review. This heuristic is not linguistic certification.",
+    "R125 #102 on v39 completed 98 languages × 27 sections (2,646 applications; 248 country profiles) with zero exact, partial or unresolved visible English findings, but one intercepted Tigrinya dynamic fallback for Back/Page navigation/Voice reply/Voice caused the required zero-fallback gate to fail. No provider request or quota was used.",
+    "Tigrinya candidate values for Back and Page navigation appear semantically mismatched; do not copy them into production without qualified native review. The Tigrinya local fallback remains unresolved.",
+    "R9e #114 passed on v39: 248/248 country profiles, stored currency, Morocco/Worldwide priority, MA/ar, FR/fr, IN/hi, CN/zh, 44/44 localized pages, safety and voice/PWA cache. Live AI probes and programmatic ASR were skipped by policy.",
+    "R105 #195 passed source validation, quota-boundary tests, AI binding, Worker deployment and production health with central Safety Gate enabled and fail-closed true. RUN_LIVE_AI_PROBES=false, so live chat generation and AI country-intent remain unverified.",
+    "R123 #146 passed programmatic audio envelope/TTS, dialect and voice acknowledgement tests, Arabic homepage plus 31 descriptions, and Android browser-profile playback. Production audio asset/multilingual audio and live ASR were skipped; physical microphones/speakers are not certified.",
+    "Safety Smoke #72 passed the live Supabase safety API and fail-closed UI checks: prohibited weapons, explicit sexual content, fake documents/counterfeit and ownership/consent problems were blocked; benign land remained pending human review.",
+    "Pages deployment #1896 succeeded for v39. Documentation-only Pages #1899 also succeeded.",
     "Production locale manifest has 1,045 keys versus 1,118 candidate-source keys; 73 keys remain unpublished and unreviewed. Do not promote unreviewed candidate packs to close the gap.",
-    "resume-latest.log records Dhivehi read timeouts and HTTP 503 all_translation_backends_unavailable with three unparseable Workers AI outputs. Historical daily_free_ai_limit and Google HTTP429 remain blockers; no provider probe or quota bypass was attempted in this continuation.",
-    "All 98 candidate packs still require qualified linguistic review; none is published or linguistically certified. Dzongkha v39 labels are provisional and require native review.",
-    "R105 #194 passed source validation, quota-boundary tests, AI binding, Worker deployment and production health. RUN_LIVE_AI_PROBES=false, so live chat generation and AI country-intent remain unverified.",
-    "R123 #145 passed programmatic audio envelope/TTS, voice acknowledgement, dynamic placeholders and Android browser-profile playback. Production audio asset/multilingual audio was skipped; live ASR and physical microphones/speakers remain unverified.",
-    "Safety Smoke #71 passed the live Supabase safety API, marketplace safety UI and fail-closed checks on v38; v39 recheck is pending.",
-    "Pages deployment #1894 succeeded for v38. The v39 merge is confirmed, but its deployment run has not yet been observed through available run/status data.",
+    "resume-latest.log records Dhivehi read timeouts and HTTP 503 all_translation_backends_unavailable with three unparseable Workers AI outputs. Historical daily_free_ai_limit and Google HTTP429 remain blockers; no provider probe or quota bypass was attempted.",
+    "AI binding and production health pass, but live AI chat and translation backend availability remain unknown because live generation probes were not run and the free daily quota/provider rate limit must not be bypassed.",
     "Checkout remains inactive pending merchant configuration and end-to-end payment, forged-reference rejection and settlement verification.",
-    "The candidate-resume workflow is workflow_dispatch only, with run_translations and repair_candidates default false. Latest matching run #150 is legacy and completed; resume was skipped, audit succeeded with 97 packs, zero candidate packs were written and two metadata files were written. No current-revision dispatch or active resume run was observed; candidate writes remain deferred."
+    "The candidate-resume workflow is workflow_dispatch only, with run_translations and repair_candidates default false. Latest matching run #150 is legacy and completed; resume was skipped, audit succeeded with 97 quality-passing packs, zero candidate packs were written and two metadata files were written. No active or current-revision resume run was observed; candidate writes remain deferred."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -180,14 +182,12 @@
     }
   },
   "remainingChecks": [
-    "Verify the fresh post-merge R125 v39 run across all 98 languages × 27 sections (2,646 applications), all 248 country profiles and zero dynamic translation requests; do not infer success from the merged code alone.",
-    "Verify the fresh post-merge R9e v39 browser audit for 248 country profiles, 44 localized pages, stored country/currency behavior, Morocco/Worldwide priority, safety and voice/PWA cache.",
-    "Resolve Divehi's 58 English-overlap findings with qualified native Dhivehi translation/review; do not synthesize or certify unreviewed wording.",
-    "Refresh the read-only duplicate-output audit across all 98 candidate packs after later manual repairs; heuristic duplicate screening is not linguistic judgment.",
-    "Obtain qualified native review for all 98 candidate packs; publish no partial or unreviewed packs.",
-    "Re-probe AI Chat and translation only through explicitly authorized quota-safe probes; current live availability remains unknown and daily_free_ai_limit/Google HTTP429 must not be bypassed.",
-    "Perform physical microphone and audible-speaker tests on Android, iPhone/iPad and desktop; browser/headless TTS is not hardware certification.",
-    "Configure a merchant account and verify checkout, payment confirmation, forged-reference rejection and settlement end-to-end."
+    "Resolve the Tigrinya dynamic fallback with qualified native labels; rerun audit-only R125 and require zero exact, partial, unresolved and dynamic-fallback findings across 98 languages × 27 sections.",
+    "Keep Divehi's 58 English-overlap findings and 28 duplicate-output groups across 11 languages in native review; do not promote candidate packs.",
+    "Obtain qualified linguistic review for all 98 locale packs; none is published or linguistically certified.",
+    "Keep live AI chat and translation backend availability unknown until a permitted quota-safe probe can run without bypassing daily_free_ai_limit or Google HTTP429.",
+    "Complete physical microphone/speaker tests on real Android, iPhone/iPad and desktop devices; browser/headless audio checks are not hardware certification.",
+    "Configure merchant checkout and complete end-to-end payment, forged-reference rejection and settlement verification."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
@@ -3061,7 +3061,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-19T02:46:56Z",
+  "updatedAt": "2026-11-19T04:15:02Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -10092,7 +10092,7 @@
     }
   },
   "latestResumeWorkflowInspection": {
-    "checkedAt": "2026-11-18T22:40:47Z",
+    "checkedAt": "2026-11-19T04:15:02Z",
     "path": ".github/workflows/r125-hourly-candidate-resume.yml",
     "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
     "trigger": "workflow_dispatch only; no schedule",
@@ -10107,6 +10107,7 @@
       "status": "completed",
       "conclusion": "success",
       "revision": "legacy",
+      "event": "push",
       "resume": "skipped",
       "audit": {
         "completedCount": 97,
@@ -10116,21 +10117,23 @@
         "resumeSucceeded": false,
         "exitCode": "not-run"
       },
-      "candidatePackWrites": 0,
+      "saveProgress": "success",
       "metadataFilesWritten": 2,
+      "candidatePackWrites": 0,
       "translationRequests": 0,
       "aiQuotaUsed": 0
     },
     "currentWorkflowDispatchRunsFound": 0,
     "activeResumeRuns": 0,
     "candidateWritesDeferred": true,
-    "note": "The workflow can run the actual candidate resume and can push candidate-stage files when explicit inputs are enabled. No active run is present now; do not start candidate writes while a resume run is active.",
+    "note": "The latest matching run is legacy #150 and completed; it skipped resume, audited 97/98 quality-passing packs, wrote two metadata files but zero candidate packs. No active or current-revision resume run was observed; no candidate write was started.",
     "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
     "resumeStepCondition": "github.event_name == 'workflow_dispatch' && inputs.run_translations",
     "deterministicRepairConditions": "success() && (inputs.run_translations || inputs.repair_candidates)",
     "candidateWriteStepCondition": "success() && (inputs.run_translations || inputs.repair_candidates)",
     "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
-    "activeRuns": 0
+    "activeRuns": 0,
+    "currentRevisionRunObserved": false
   },
   "latestQuickFallbackRepair": {
     "checkedAt": "2026-11-18T09:45:51Z",
@@ -12510,7 +12513,7 @@
     "candidateWritesDeferred": true
   },
   "knownDynamicFallbackLanguages": [
-    "dz"
+    "ti"
   ],
   "latestBosnianRepair20261119V38": {
     "checkedAt": "2026-11-19T01:41:40Z",
@@ -12748,25 +12751,72 @@
     "my",
     "mn",
     "be",
-    "bs"
+    "bs",
+    "dz"
   ],
   "latestProductionSectionAuditV39": {
-    "checkedAt": "2026-11-19T02:46:56Z",
+    "checkedAt": "2026-11-19T02:49:47Z",
     "mergeCommit": "daf602d541ed5912e80b67ca629aa6515e9a6b88",
     "runtimeVersion": "20261119-r125-global-quick-v39",
     "repairPullRequest": 9,
     "repairStatus": "merged",
-    "priorV38Run": {
-      "number": 101,
-      "runId": 44438819220,
-      "status": "completed",
-      "conclusion": "failure"
-    },
     "postMergeRun": {
-      "status": "not-yet-observed",
-      "runId": null,
-      "combinedStatusContexts": 0,
-      "commitWorkflowRunsReturned": 0
+      "number": 102,
+      "runId": 44446631767,
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44446631767",
+      "packsRead": 98,
+      "countryProfiles": 248,
+      "homepageLanguageApplications": 98,
+      "sectionPaths": 27,
+      "sectionLanguageApplications": 2646,
+      "findings": {
+        "exact": 0,
+        "partial": 0,
+        "unresolved": 0
+      },
+      "excludedOnlyExamples": [
+        {
+          "language": "zu",
+          "phrase": "AI Deal Agent",
+          "reason": "data-no-translate"
+        },
+        {
+          "language": "kl",
+          "phrase": "AI Deal Agent",
+          "reason": "data-no-translate"
+        },
+        {
+          "language": "eu",
+          "phrase": "AI Deal Agent",
+          "reason": "data-no-translate"
+        },
+        {
+          "language": "lb",
+          "phrase": "AI Deal Agent",
+          "reason": "data-no-translate"
+        }
+      ],
+      "dynamicFallback": {
+        "language": "Tigrinya",
+        "code": "ti",
+        "requests": 1,
+        "strings": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ]
+      },
+      "blockedRequests": {
+        "ai": 0,
+        "translation": 1,
+        "pollinations": 0
+      },
+      "providerRequestsSent": 0,
+      "translationQuotaUsed": 0,
+      "failureReason": "The audit intercepted one in-browser /api/ui-translate fallback for Tigrinya and returned a local 503. All 2,646 language-section applications completed with zero visible exact, partial or unresolved English findings, but the required dynamic-fallback count is zero."
     },
     "requiredCoverage": {
       "languages": 98,
@@ -12775,28 +12825,93 @@
       "countryProfiles": 248
     },
     "expectedDynamicTranslationRequests": 0,
-    "note": "Do not claim v39 audit success until a fresh R125 run on the merged Main commit completes."
+    "decision": "NO-GO",
+    "note": "v39 fixed the Urdu seller-plan evidence and Dzongkha fallback. The remaining Tigrinya quick labels require qualified native review; do not reuse questionable candidate values or bypass translation quotas."
   },
   "latestProductionRuntimeChecksV39": {
-    "checkedAt": "2026-11-19T02:46:56Z",
+    "checkedAt": "2026-11-19T04:15:02Z",
     "mainCommit": "daf602d541ed5912e80b67ca629aa6515e9a6b88",
     "r105": {
-      "status": "not-yet-observed"
+      "run": 195,
+      "runId": 44446631832,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44446631832",
+      "checks": [
+        "source validation",
+        "98 locale target names",
+        "quota-boundary tests",
+        "AI binding",
+        "Worker deployment",
+        "production health"
+      ],
+      "healthAssertions": {
+        "ok": true,
+        "aiBinding": true,
+        "centralSafetyGate": "enabled",
+        "failClosed": true
+      },
+      "liveAIProbes": false,
+      "liveChatGeneration": "not tested",
+      "aiCountryIntent": "not tested"
     },
     "r9e": {
-      "status": "not-yet-observed"
+      "run": 114,
+      "runId": 44446631846,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44446631846",
+      "countryProfiles": "248/248",
+      "storedCurrency": "passed",
+      "manualMoroccoPriority": "passed",
+      "manualWorldwidePriority": "passed",
+      "visibleLocales": [
+        "MA/ar",
+        "FR/fr",
+        "IN/hi",
+        "CN/zh"
+      ],
+      "localizedPages": "44/44",
+      "safetyGate": "passed",
+      "voiceAndPwaCache": "passed",
+      "liveAiProbes": "skipped-by-policy",
+      "programmaticAsr": "skipped"
     },
     "pages": {
-      "status": "not-yet-observed"
+      "run": 1896,
+      "runId": 44446630566,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44446630566",
+      "deployedCommit": "daf602d541ed5912e80b67ca629aa6515e9a6b88"
     },
     "safety": {
-      "latestConfirmedRun": 71,
-      "status": "success on v38; v39 recheck pending"
+      "run": 72,
+      "runId": 44446631868,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44446631868",
+      "prohibitedWeapons": "blocked",
+      "explicitSexualContent": "blocked",
+      "fakeDocumentsAndCounterfeit": "blocked",
+      "ownershipOrConsentProblem": "blocked",
+      "benignLand": "allowed_pending_human_review"
     },
     "voice": {
-      "latestConfirmedRun": 145,
-      "status": "programmatic pass on v38; physical devices not certified"
-    }
+      "run": 146,
+      "runId": 44446631912,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44446631912",
+      "programmaticTTS": "passed",
+      "audioEnvelopeAndDialectTests": "passed",
+      "arabicHomeAnd31Descriptions": "passed",
+      "androidBrowserProfilePlayback": "passed",
+      "productionAudioAssetAndMultilingualAudio": "skipped",
+      "liveASR": "not verified",
+      "physicalMicrophoneSpeakerCertification": false
+    },
+    "checkout": "inactive pending merchant configuration and end-to-end payment, forged-reference rejection and settlement verification"
   },
   "latestAutomationPass20261119V39": {
     "checkedAt": "2026-11-19T02:46:56Z",
@@ -12984,6 +13099,281 @@
       "Resolve Divehi's 58 English-overlap findings with qualified native review; obtain qualified linguistic review for all 98 packs.",
       "Keep live AI/translation availability unknown until authorized quota-safe probes can run without bypassing daily_free_ai_limit or Google HTTP429.",
       "Perform physical microphone/speaker tests on real Android, iPhone/iPad and desktop devices; configure merchant account and complete checkout/settlement verification."
+    ]
+  },
+  "latestReadOnlyDuplicateScreen20261119": {
+    "checkedAt": "2026-11-19T04:15:02Z",
+    "branch": "work/r125-locale-candidates-20261008",
+    "branchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
+    "method": "Read-only direct GitHub fetch of all 98 locale JSON packs; group identical normalized translation outputs after whitespace/case normalization, threshold >=4 source keys.",
+    "packsFetched": 98,
+    "packsWith1118Keys": 98,
+    "sourceHashMatches": 98,
+    "sourceHash": "6a1126e6a2ce5629",
+    "keySetParityCheckedThisPass": false,
+    "priorFullStructuralReadback": "2026-11-15: 98/98 key sets exact, zero missing/extra/empty values; this pass refreshed the duplicate screen only.",
+    "duplicateOutputScreen": {
+      "threshold": 4,
+      "languagesWithGroups": 11,
+      "exactDuplicateGroups": 28,
+      "groupsByLanguage": {
+        "ig": 1,
+        "dz": 1,
+        "ti": 2,
+        "kl": 5,
+        "rw": 3,
+        "to": 3,
+        "ku": 2,
+        "xh": 3,
+        "st": 4,
+        "tn": 2,
+        "dv": 2
+      },
+      "examples": [
+        {
+          "language": "ig",
+          "value": "ọrụ",
+          "sourceKeys": [
+            "Job",
+            "Jobs",
+            "Service",
+            "Services"
+          ],
+          "review": "Potentially legitimate shared term; native review required."
+        },
+        {
+          "language": "dz",
+          "sourceKeyCount": 14,
+          "review": "One identical output is reused for 14 unrelated game descriptions; high-priority native review."
+        },
+        {
+          "language": "ti",
+          "groupSizes": [
+            9,
+            5
+          ],
+          "review": "Two identical-output clusters cover unrelated game descriptions; native review required."
+        },
+        {
+          "language": "kl",
+          "groupCount": 5,
+          "review": "Multiple clusters collapse unrelated game descriptions and UI labels."
+        },
+        {
+          "language": "rw",
+          "groupCount": 3,
+          "review": "Three broad duplicate clusters across unrelated game descriptions."
+        },
+        {
+          "language": "to",
+          "groupCount": 3,
+          "review": "Three broad duplicate clusters across game descriptions and UI labels."
+        },
+        {
+          "language": "ku",
+          "groupCount": 2,
+          "review": "One category group and one broad game-description cluster."
+        },
+        {
+          "language": "xh",
+          "groupCount": 3,
+          "review": "Broad duplicate clusters include unrelated descriptions and voice/UI strings."
+        },
+        {
+          "language": "st",
+          "groupCount": 4,
+          "review": "Four broad duplicate clusters, including long safety/help descriptions."
+        },
+        {
+          "language": "tn",
+          "groupCount": 2,
+          "review": "Two broad duplicate clusters across unrelated UI and game descriptions."
+        },
+        {
+          "language": "dv",
+          "groupCount": 2,
+          "review": "Existing Divehi quality blocker remains; 58 English-overlap findings still require native review."
+        }
+      ]
+    },
+    "tigrinyaQuickLabelReadback": {
+      "Back": "በመጀመሪያ",
+      "PageNavigation": "መግለጫ መንገድ",
+      "VoiceReply": "ድምጽ መልስ",
+      "Voice": "ድምጽ",
+      "review": "Back and Page navigation appear semantically mismatched; do not copy these candidate values into production without a qualified Tigrinya reviewer."
+    },
+    "execution": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "quotaBypassAttempts": 0,
+      "published": false,
+      "linguisticCertification": false
+    },
+    "limitations": [
+      "Duplicate screen is heuristic, not a linguistic certification or full quality gate.",
+      "Some identical outputs may be valid equivalents; broad clusters across unrelated descriptions require native review."
+    ]
+  },
+  "latestAutomationPass20261119V41": {
+    "checkedAt": "2026-11-19T04:15:02Z",
+    "mainCommit": "9c3dfa7faa57dcb3a67ebc1c5670e77165b04a47",
+    "v39CodeCommit": "daf602d541ed5912e80b67ca629aa6515e9a6b88",
+    "filesRead": {
+      "checkpoint": {
+        "path": "docs/r125-continuation-checkpoint-20261010.json",
+        "ref": "main"
+      },
+      "resumeSummary": {
+        "path": "docs/locale-candidates-20261008/resume-summary.json",
+        "ref": "work/r125-locale-candidates-20261008",
+        "checkedAt": "2026-11-17T09:53:12Z"
+      },
+      "resumeLog": {
+        "path": "docs/locale-candidates-20261008/resume-latest.log",
+        "ref": "work/r125-locale-candidates-20261008",
+        "sha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b"
+      },
+      "resumeWorkflow": {
+        "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+        "ref": "main"
+      }
+    },
+    "candidateState": {
+      "structural": 98,
+      "total": 98,
+      "qualityGatePassed": 97,
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "published": 0,
+      "linguisticCertification": 0,
+      "productionKeys": 1045,
+      "candidateSourceKeys": 1118,
+      "unpublishedKeyDelta": 73
+    },
+    "r125": {
+      "run": 102,
+      "runId": 44446631767,
+      "conclusion": "failure",
+      "matrixApplications": 2646,
+      "exact": 0,
+      "partial": 0,
+      "unresolved": 0,
+      "dynamicFallback": {
+        "language": "ti",
+        "requests": 1,
+        "strings": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ]
+      },
+      "providerRequestsSent": 0,
+      "quotaUsed": 0
+    },
+    "r9e": {
+      "run": 114,
+      "runId": 44446631846,
+      "conclusion": "success",
+      "countryProfiles": "248/248",
+      "localizedPages": "44/44",
+      "manualMoroccoPriority": "pass",
+      "manualWorldwidePriority": "pass",
+      "visibleLocales": [
+        "MA/ar",
+        "FR/fr",
+        "IN/hi",
+        "CN/zh"
+      ],
+      "liveAiProbes": "skipped"
+    },
+    "r105": {
+      "run": 195,
+      "runId": 44446631832,
+      "conclusion": "success",
+      "aiBinding": true,
+      "health": true,
+      "centralSafetyGate": "enabled",
+      "failClosed": true,
+      "liveAiProbes": false
+    },
+    "r123": {
+      "run": 146,
+      "runId": 44446631912,
+      "conclusion": "success",
+      "programmaticAudio": "pass",
+      "productionAudioAsset": "skipped",
+      "liveASR": "not verified",
+      "physicalDevices": "not certified"
+    },
+    "safety": {
+      "run": 72,
+      "runId": 44446631868,
+      "conclusion": "success"
+    },
+    "pages": {
+      "run": 1896,
+      "runId": 44446630566,
+      "conclusion": "success"
+    },
+    "resumeWorkflow": {
+      "latestMatchingRun": 150,
+      "revision": "legacy",
+      "status": "completed",
+      "activeRuns": 0,
+      "candidatePackWrites": 0,
+      "metadataFilesWritten": 2,
+      "candidateWritesDeferred": true
+    },
+    "duplicateScreen": {
+      "packsFetched": 98,
+      "matchingKeyCount": 98,
+      "matchingSourceHash": 98,
+      "exactDuplicateGroups": 28,
+      "languagesWithGroups": 11,
+      "reviewRequired": true
+    },
+    "runtimeAvailability": {
+      "aiBinding": "present",
+      "productionHealth": "passed in R105 #195",
+      "liveAIChat": "unknown-not-probed",
+      "AIcountryIntent": "not-probed",
+      "translationBackend": "unknown-not-probed",
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP 503 all_translation_backends_unavailable",
+        "Dhivehi read timeouts",
+        "Tigrinya local quick labels require native review"
+      ],
+      "liveAiProbesThisPass": 0,
+      "translationRequestsThisPass": 0,
+      "quotaUsedThisPass": 0,
+      "quotaBypassAttempts": 0
+    },
+    "checkout": "inactive pending merchant configuration and end-to-end payment, forged-reference rejection and settlement verification",
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "quotaBypassAttempts": 0,
+      "candidateBranchModified": false,
+      "decision": "NO-GO"
+    },
+    "decision": "NO-GO",
+    "nextActions": [
+      "Resolve Tigrinya Back/Page navigation/Voice reply/Voice quick labels with a qualified native reviewer, then rerun R125 audit-only on v39.",
+      "Keep Divehi's 58 English-overlap findings and the 28 duplicate-output groups across 11 languages in native review; do not promote candidate packs.",
+      "Obtain qualified linguistic review for all 98 packs; no packs are published or certified.",
+      "Keep live AI/translation status unknown until a permitted quota-safe probe can run without bypassing daily_free_ai_limit or Google HTTP429.",
+      "Complete real-device microphone/speaker tests on Android, iPhone/iPad and desktop.",
+      "Configure merchant checkout and verify payments, forged-reference rejection and settlement."
     ]
   }
 }
