@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261119-r125-global-quick-v44';
+const VERSION='20261119-r125-global-quick-v45';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),PACK_VALUES=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -462,7 +462,9 @@ fo:{'Back':'Aftur','Page navigation':'Navigatión á síðum','Voice reply':'Aft
 // Provisional Kinyarwanda quick UI labels; phrasebook-backed Back wording; qualified native review remains required.
 rw:{'Back':'Subira inyuma','Page navigation':'Kuyobora urupapuro','Voice reply':"Igisubizo cy'ijwi",'Voice':'Ijwi'},
 // Provisional Samoan quick UI labels; dictionary-backed core words, qualified native review still required.
-sm:{'Back':"Toe fo'i",'Page navigation':"Fa'atautaiga o itulau",'Voice reply':'Tali leo','Voice':'Leo'}
+sm:{'Back':"Toe fo'i",'Page navigation':"Fa'atautaiga o itulau",'Voice reply':'Tali leo','Voice':'Leo'},
+// Provisional Tongan quick UI labels; dictionary-backed core words, compound UI phrasing still needs native review.
+to:{'Back':'Foki','Page navigation':'Fakahinohino ki he peesi','Voice reply':'Tali ʻaki ʻa e leʻo','Voice':'Leʻo'}
 };
 // Provisional quota-neutral overrides for the exact R125 UI leaks. Native review remains required.
 const R125_PROVISIONAL={
