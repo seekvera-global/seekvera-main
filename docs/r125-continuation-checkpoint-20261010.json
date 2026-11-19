@@ -111,18 +111,18 @@
   "packsPublished": false,
   "linguisticAccuracyCertified": false,
   "blockedBy": [
-    "Candidate branch still has 98 structurally complete packs (1,118 keys each, matching sourceHash); 97/98 pass the saved quality gate. Divehi (dv) remains blocked by 58 English-overlap findings requiring qualified native Dhivehi review.",
+    "Candidate branch has 98 structurally complete packs (1,118 keys each, matching sourceHash); 97/98 pass the saved quality gate. Divehi (dv) remains blocked by 58 English-overlap findings requiring qualified native Dhivehi review.",
+    "R125 #100 on v37 completed the full 98-language × 27-section matrix (2,646 applications; 248 country profiles) with zero exact, partial or unresolved visible-text findings, but failed on one intercepted Bosnian dynamic fallback for Back, Page navigation, Voice reply and Voice. Main v38 adds provisional Bosnian quick labels from the existing candidate pack and a zero-provider-call regression; R125 #101 is running.",
+    "R9e #107 passed on v37: 248/248 country profiles, 44/44 localized pages, manual Morocco and Worldwide priority, visible MA/ar, FR/fr, IN/hi and CN/zh, safety gate, voice and PWA cache. R9e #108 is running against v38.",
     "Production locale manifest has 1,045 keys versus 1,118 candidate-source keys; 73 keys remain unpublished and unreviewed. Do not promote unreviewed candidate packs to close the gap.",
-    "resume-latest.log records HTTP 503 all_translation_backends_unavailable, Dhivehi read timeouts and unparseable Workers AI outputs. Historical daily_free_ai_limit and Google HTTP429 remain blockers; no direct translation-provider probe or quota bypass was attempted in this continuation.",
-    "All 98 candidate packs still require qualified linguistic review; none is published or linguistically certified. Duplicate-output screening is heuristic and not a substitute for native review.",
-    "R125 #97 on v34 completed all 98 languages × 27 sections (2,646 applications; 248 country profiles) with zero exact, partial or unresolved visible-text findings, but failed on one intercepted Burmese dynamic fallback for Back, Page navigation, Voice reply and Voice. Main v35 adds provisional local Burmese labels and a zero-provider-call regression; R125 #98 is running.",
-    "R9e #104 passed on v34; R9e #105 is running against v35. Country/currency behavior on v35 is not certified until #105 completes.",
-    "R105 #191 passed production source, quota-boundary, AI-binding, Worker deployment and production-health checks. RUN_LIVE_AI_PROBES=false, so live chat and AI country-intent remain unverified.",
-    "R123 #142 passed programmatic audio, voice acknowledgement, dynamic placeholders and Android browser-profile playback. Production audio asset/multilingual audio was skipped; live ASR and physical microphones/speakers remain unverified.",
-    "Safety Smoke #68 passed on retry. Its first attempt hit a transient Cloudflare HTTP 530 on the benign moderation request; Supabase logs showed no Edge Function execution for that 530. The retry passed all prohibited-content blocks and benign pending-human-review behavior.",
-    "Pages deployment #1888 succeeded for v35.",
+    "resume-latest.log records HTTP 503 all_translation_backends_unavailable, Dhivehi read timeouts and unparseable outputs from three Workers AI backends. Historical daily_free_ai_limit and Google HTTP429 remain blockers; no direct translation-provider probe or quota bypass was attempted in this continuation.",
+    "All 98 candidate packs still require qualified linguistic review; none is published or linguistically certified. Duplicate-output screening is heuristic and not a substitute for native review. Bosnian v38 labels are provisional and require native review.",
+    "R105 #194 passed source validation, 98 language-name validation, quota-boundary tests, AI binding, Worker deployment and production health. RUN_LIVE_AI_PROBES=false, so live chat and AI country-intent remain unverified.",
+    "R123 #145 passed programmatic audio envelope/TTS, voice acknowledgement, dynamic placeholders and Android browser-profile playback. Production audio asset/multilingual audio was skipped; live ASR and physical microphones/speakers remain unverified.",
+    "Safety Smoke #71 passed the live Supabase safety API, marketplace safety UI and fail-closed checks; prohibited categories remain blocked and benign content requires human review.",
+    "Pages deployment #1894 succeeded for the v38 site build and deployment.",
     "Checkout remains inactive pending merchant configuration and end-to-end payment, forged-reference rejection and settlement verification.",
-    "The current candidate-resume workflow is workflow_dispatch only, with run_translations and repair_candidates default false. No current dispatch or active resume run was found; latest matching run #150 is legacy. Candidate writes remain deferred."
+    "The current candidate-resume workflow is workflow_dispatch only, with run_translations and repair_candidates default false. Latest matching run #150 is legacy and completed; resume was skipped, audit succeeded, zero candidate packs were written, and two metadata files were committed. Its log records a production speech HTTP 503 due to exhausted daily free AI allocation. No current-revision dispatch or active resume run was found; candidate writes remain deferred."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -180,8 +180,8 @@
     }
   },
   "remainingChecks": [
-    "Complete R125 #100 on v37 and verify all 98 languages × 27 sections with zero dynamic translation requests; the run is currently in progress.",
-    "Complete R9e #107 on v37 for 248 country profiles, 44 localized pages, stored country/currency behavior, Morocco/Worldwide priority, safety and voice/PWA cache; the run is currently in progress.",
+    "Complete R125 #101 on v38 and verify all 98 languages × 27 sections with zero dynamic translation requests; the run is currently in progress.",
+    "Complete R9e #108 on v38 for 248 country profiles, 44 localized pages, stored country/currency behavior, Morocco/Worldwide priority, safety, voice and PWA cache; the run is currently in progress.",
     "Resolve Divehi's 58 English-overlap findings with qualified native Dhivehi translation/review; do not synthesize or certify unreviewed wording.",
     "Refresh the read-only duplicate-output audit across all 98 candidate packs after later manual repairs; heuristic duplicate screening is not linguistic judgment.",
     "Obtain qualified native review for all 98 candidate packs; publish no partial or unreviewed packs.",
@@ -192,10 +192,10 @@
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-19T00:24:18Z",
+    "checkedAt": "2026-11-19T01:43:00Z",
     "aiChat": {
       "currentAvailability": "unknown-not-certified",
-      "latestProductionRun": 193,
+      "latestProductionRun": 194,
       "aiBinding": true,
       "productionHealth": "passed",
       "centralSafetyGate": "enabled",
@@ -205,7 +205,7 @@
       "quotaStatus": "historical usage unknown; no quota-free claim"
     },
     "voiceTranscription": {
-      "programmaticTests": "passed in R123 #144",
+      "programmaticTests": "passed in R123 #145",
       "browserProfileAudio": "Android browser-profile server-audio playback passed",
       "productionAudioAsset": "skipped",
       "liveASR": "not-verified",
@@ -222,8 +222,8 @@
       "quotaBypassAttempts": 0
     },
     "countryCurrency": {
-      "latestConfirmedRun": 106,
-      "latestConfirmedStatus": "passed on v36",
+      "latestConfirmedRun": 107,
+      "latestConfirmedStatus": "passed on v37",
       "countryProfiles": "248/248",
       "localizedPages": "44/44",
       "storedCurrencyAndFallback": "passed",
@@ -235,12 +235,12 @@
         "IN/hi",
         "CN/zh"
       ],
-      "v37Verification": "pending R9e #107",
+      "v38Verification": "pending R9e #108",
       "liveAiProbes": "skipped-by-policy",
       "liveASR": "not-verified"
     },
     "safety": {
-      "latestRun": 70,
+      "latestRun": 71,
       "status": "success",
       "blockedCases": 4,
       "benignLand": "allowed_pending_human_review"
@@ -12044,7 +12044,7 @@
       "r125": "still running; no candidate writes"
     }
   },
-  "latestMainHead": "49f9a5c21692b0016241d90b031519b624012c18",
+  "latestMainHead": "3a2c34dfb9b5a3c2a0bb1484940d33810cc274d2",
   "latestBurmeseRepair20261118": {
     "commit": "86f055faf4d4520564e76fc2b2b1b59366e699ab",
     "version": "20261118-r125-global-quick-v35",
@@ -12467,16 +12467,13 @@
   },
   "latestResumeWorkflowInspection20261119": {
     "path": ".github/workflows/r125-hourly-candidate-resume.yml",
-    "trigger": "workflow_dispatch only",
-    "scheduleTriggerPresent": false,
+    "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
+    "trigger": "workflow_dispatch only; no schedule",
     "runTranslationsDefault": false,
     "repairCandidatesDefault": false,
-    "currentRevisionRunObserved": false,
-    "currentWorkflowDispatchRunsFound": 0,
-    "activeRuns": 0,
     "latestMatchingRun": {
       "number": 150,
-      "id": 38971104197,
+      "runId": 38971104197,
       "createdAt": "2026-10-16T21:41:54Z",
       "status": "completed",
       "conclusion": "success",
@@ -12485,12 +12482,217 @@
       "audit": "success",
       "candidatePackWrites": 0,
       "metadataFilesWritten": 2,
-      "metadataCommit": "cae6970",
       "translationRequests": 0,
       "aiQuotaUsed": 0
     },
+    "latestRunLogReadback": {
+      "jobId": 117209410195,
+      "status": "completed",
+      "conclusion": "success",
+      "resumeStep": "skipped",
+      "auditCompletedCount": 97,
+      "remaining": [
+        "dv"
+      ],
+      "readyForLinguisticReview": false,
+      "productionSpeechHttp503": "daily free AI allocation exhausted",
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "currentRevisionRunObserved": false,
+    "currentWorkflowDispatchRunsFound": 0,
+    "activeRuns": 0,
     "currentCandidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
     "candidatePackWritesThisPass": 0,
-    "candidateMetadataWritesThisPass": 0
+    "candidateMetadataWritesThisPass": 0,
+    "candidateWritesDeferred": true
+  },
+  "knownDynamicFallbackLanguages": [
+    "bs"
+  ],
+  "latestBosnianRepair20261119V38": {
+    "checkedAt": "2026-11-19T01:41:40Z",
+    "commit": "3a2c34dfb9b5a3c2a0bb1484940d33810cc274d2",
+    "runtimeVersion": "20261119-r125-global-quick-v38",
+    "language": "bs",
+    "finding": "R125 #100 on v37 found one intercepted dynamic translation request for Bosnian: Back, Page navigation, Voice reply and Voice.",
+    "productionPack": {
+      "sourceHash": "b371f2422f8b5416",
+      "keys": 1045,
+      "missingKeys": [
+        "Back",
+        "Page navigation",
+        "Voice reply",
+        "Voice"
+      ]
+    },
+    "candidatePack": {
+      "sourceHash": "6a1126e6a2ce5629",
+      "keys": 1118,
+      "values": {
+        "Back": "Nazad",
+        "Page navigation": "Navigacija stranicama",
+        "Voice reply": "Odgovor glasom",
+        "Voice": "Glas"
+      }
+    },
+    "runtimeValues": {
+      "Back": "Nazad",
+      "PageNavigation": "Navigacija stranicama",
+      "VoiceReply": "Odgovor glasom",
+      "Voice": "Glas"
+    },
+    "source": "Existing Bosnian candidate pack; no candidate pack was changed.",
+    "linguisticStatus": "provisional; qualified native Bosnian review required",
+    "changes": {
+      "filesChanged": 49,
+      "htmlCacheReferencesUpdated": 44,
+      "codeFilesUpdated": 5,
+      "regressionTest": "Bosnian QUICK exact-map and zero-provider-call case",
+      "workflowAssertionsUpdated": [
+        "R125",
+        "R105",
+        "R9e"
+      ]
+    },
+    "readback": {
+      "mainHead": "3a2c34dfb9b5a3c2a0bb1484940d33810cc274d2",
+      "i18nUiVersion": "v38",
+      "indexHtmlCache": "v38",
+      "candidatePackModified": false
+    }
+  },
+  "latestProductionSectionAuditV38": {
+    "previousRun": {
+      "number": 100,
+      "runId": 44428548056,
+      "status": "completed",
+      "conclusion": "failure",
+      "headSha": "49f9a5c21692b0016241d90b031519b624012c18",
+      "languages": 98,
+      "sections": 27,
+      "applications": 2646,
+      "countryProfiles": 248,
+      "exact": 0,
+      "partial": 0,
+      "unresolved": 0,
+      "dynamicFallback": {
+        "language": "Bosnian",
+        "requests": 1,
+        "strings": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ]
+      },
+      "blockedRequests": {
+        "ai": 0,
+        "translation": 1,
+        "pollinations": 0
+      }
+    },
+    "repairCommit": "3a2c34dfb9b5a3c2a0bb1484940d33810cc274d2",
+    "currentRun": {
+      "number": 101,
+      "runId": 44438819220,
+      "status": "in_progress",
+      "headSha": "3a2c34dfb9b5a3c2a0bb1484940d33810cc274d2",
+      "lastObservedStep": "Install Chromium and system dependencies",
+      "matrixResult": "pending"
+    }
+  },
+  "latestProductionRuntimeChecksV38": {
+    "readback": "PASS",
+    "r105": {
+      "run": 194,
+      "runId": 44438819301,
+      "status": "completed",
+      "conclusion": "success",
+      "aiBinding": true,
+      "productionHealth": "passed",
+      "centralSafetyGate": "enabled",
+      "failClosed": true,
+      "liveAiProbes": "skipped; RUN_LIVE_AI_PROBES=false"
+    },
+    "r123": {
+      "run": 145,
+      "runId": 44438819250,
+      "status": "completed",
+      "conclusion": "success",
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "dynamicVoicePlaceholders": "passed",
+      "androidBrowserProfileAudio": "passed",
+      "productionAudioAsset": "skipped",
+      "liveASR": "not-verified",
+      "physicalDeviceCertified": false
+    },
+    "r9e": {
+      "run": 108,
+      "runId": 44438819342,
+      "status": "in_progress",
+      "lastObservedStep": "Install Chromium browser test runtime",
+      "v38Verification": "pending"
+    },
+    "safety": {
+      "run": 71,
+      "runId": 44438819178,
+      "status": "completed",
+      "conclusion": "success",
+      "blockedCases": 4,
+      "benignLand": "allowed_pending_human_review"
+    },
+    "pages": {
+      "run": 1894,
+      "runId": 44438818888,
+      "status": "completed",
+      "conclusion": "success",
+      "build": "success",
+      "deploy": "success"
+    },
+    "r125": {
+      "run": 101,
+      "runId": 44438819220,
+      "status": "in_progress",
+      "lastObservedStep": "Install Chromium and system dependencies",
+      "matrixResult": "pending"
+    }
+  },
+  "latestAutomationPass20261119V38": {
+    "checkedAt": "2026-11-19T01:43:00Z",
+    "mainCommit": "3a2c34dfb9b5a3c2a0bb1484940d33810cc274d2",
+    "candidatePackWrites": 0,
+    "candidateMetadataWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticAccuracyCertified": false,
+    "decision": "NO-GO",
+    "notes": [
+      "R125 #100 completed 98×27 (2,646 applications; 248 country profiles) with zero static exact/partial/unresolved findings but failed on one Bosnian dynamic translation fallback.",
+      "v38 adds provisional Bosnian quick labels and zero-provider-call regression; R125 #101 is in progress.",
+      "R9e #107 passed on v37; R9e #108 is in progress on v38.",
+      "R105 #194, R123 #145, Safety #71 and Pages #1894 succeeded; live AI probes and physical audio certification remain skipped/unverified.",
+      "Candidate branch remains 98 structurally complete, 97 quality-gate pass, with Divehi 58 English-overlap findings; no packs published or linguistically certified.",
+      "Current candidate-resume workflow has no active run; latest matching run #150 is legacy and completed. Candidate writes remain deferred."
+    ],
+    "productionPackState": {
+      "productionManifest": {
+        "version": "20260926-r76-complete-global-final",
+        "sourceHash": "b371f2422f8b5416",
+        "sourceCount": 1045,
+        "languageCount": 98,
+        "englishPackCount": 1045
+      },
+      "candidateSource": {
+        "sourceHash": "6a1126e6a2ce5629",
+        "sourceCount": 1118,
+        "languageCount": 98,
+        "structurallyCompletePacks": 98
+      },
+      "unpublishedKeyDelta": 73,
+      "published": false
+    }
   }
 }
