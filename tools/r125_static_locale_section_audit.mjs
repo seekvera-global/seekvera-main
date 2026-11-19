@@ -113,7 +113,7 @@ try {
     globalUi: [...document.scripts].find(script => script.src.includes('/global-ui.js'))?.src || ''
   }));
   console.log('R125_BROWSER_RUNTIME_ASSETS', JSON.stringify(liveRuntimeAssets));
-  assert(liveRuntimeAssets.i18n.includes('20261119-r125-global-quick-v54'), 'live page must load the audited v54 i18n runtime');
+  assert(liveRuntimeAssets.i18n.includes('20261119-r125-global-quick-v55'), 'live page must load the audited v54 i18n runtime');
   assert(liveRuntimeAssets.globalUi.includes('20261117-r125-source-caption-i18n-v2'), 'live page must load the audited global UI asset');
 
   const manifestResponse = await getStaticResponse(BASE + '/i18n-r32/manifest.json?v=' + Date.now(), 'manifest');
