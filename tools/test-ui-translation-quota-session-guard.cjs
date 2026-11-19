@@ -231,7 +231,8 @@ async function main(){
   {code:'tk',language:'Turkmen',labels:{'Back':'Yza','Page navigation':'Sahypa navigasiýasy','Voice reply':'Sesli jogap','Voice':'Ses'}},
    {code:'ta',language:'Tamil',labels:{'Back':'திரும்பு','Page navigation':'பக்க வழிசெலுத்தல்','Voice reply':'குரல் பதில்','Voice':'குரல்'}},
    {code:'km',language:'Khmer',labels:{'Back':'ត្រឡប់ក្រោយ','Page navigation':'ការរុករកទំព័រ','Voice reply':'ការឆ្លើយតបជាសំឡេង','Voice':'សំឡេង'}},
-  {code:'my',language:'Burmese',labels:{'Back':'နောက်သို့','Page navigation':'စာမျက်နှာ လမ်းညွှန်','Voice reply':'အသံဖြင့် ပြန်ကြားချက်','Voice':'အသံ'}}
+  {code:'my',language:'Burmese',labels:{'Back':'နောက်သို့','Page navigation':'စာမျက်နှာ လမ်းညွှန်','Voice reply':'အသံဖြင့် ပြန်ကြားချက်','Voice':'အသံ'}},
+  {code:'dz',language:'Dzongkha',labels:{'Back':'ཕྱིར་ལོག','Page navigation':'ཤོག་ངོས་འགྲུལ་སྐྱོད','Voice reply':'སྐད་ཀྱི་ལན','Voice':'སྐད་སྒྲ'}}
  ];
  for(const item of provisionalQuickCases){
   for(const value of Object.values(item.labels))assert(i18n.includes(value),'Missing '+item.code+' provisional quick label: '+value);
@@ -248,7 +249,7 @@ async function main(){
  const provisionalContext={};vm.createContext(provisionalContext);
  vm.runInContext(provisionalBlock+';this.labels=R125_PROVISIONAL;',provisionalContext);
  const r125Labels=provisionalContext.labels;
- assert.deepEqual(Object.keys(r125Labels).sort(),['fy','lb','lo','mg','rm','rw','tn','tr'].sort());
+ assert.deepEqual(Object.keys(r125Labels).sort(),['dz','fy','lb','lo','mg','rm','rw','tn','tr'].sort());
  const rawGetBlock=extract(i18n,'function rawGet(l,s){','function get(l,s){','R125 provisional raw lookup');
  const rawContext={canonical:s=>String(s||'').trim(),QUICK:{},R125_PROVISIONAL:r125Labels,MEM:new Map(),plainKey:s=>String(s||''),localStorage:storage(),k:()=>''};
  vm.createContext(rawContext);vm.runInContext(rawGetBlock+';this.rawGet=rawGet;',rawContext);
@@ -276,9 +277,15 @@ async function main(){
   assert.deepEqual(result,Object.values(labels),code+' provisional labels should resolve locally');
   assert.equal(calls,0,code+' provisional labels must not call translation provider');
  }
- assert.equal(r125LabelCount,36,'unexpected R125 provisional mapping count');
+ assert.equal(r125LabelCount,40,'unexpected R125 provisional mapping count');
  assert(i18n.includes("typeof R125_PROVISIONAL!=='undefined'"),'rawGet must remain compatible with isolated legacy tests');
 
- console.log('PASS: session quota circuit breaker, shared in-flight lock, sequential batches, navigation fallback and reverse pack-value guard');
+ const sellerPlans=fs.readFileSync('seller-plans.html','utf8');
+ assert(sellerPlans.includes('window.SEEKVERA_I18N_R32?.tFor?.(language,source)'),'seller plan names must use the selected locale pack');
+ assert(sellerPlans.includes('window.SEEKVERA_I18N_R32?.loadPack?.(language)'),'seller plan rendering must wait for the locale pack');
+ assert(sellerPlans.includes('p.replaceChildren();s.replaceChildren();'),'seller plan rendering must replace nodes safely');
+ assert(!/d\\.innerHTML\\s*=/.test(sellerPlans),'database plan fields must not be interpolated into innerHTML');
+ assert(sellerPlans.includes('new MutationObserver'),'seller plans must rerender when the selected language changes');
+ console.log('PASS: session quota circuit breaker, shared in-flight lock, sequential batches, navigation fallback, reverse pack-value guard and safe localized seller plans');
 }
 main().catch(e=>{console.error(e);process.exitCode=1;});
