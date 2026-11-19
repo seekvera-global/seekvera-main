@@ -12071,7 +12071,7 @@
       "r125": "still running; no candidate writes"
     }
   },
-  "latestMainHead": "07781aab27dc4586da5063357ba3d7ad43cf8e1a",
+  "latestMainHead": "586f4cccd03233ffe573b8c38eeb86f23988cfe8",
   "latestBurmeseRepair20261118": {
     "commit": "86f055faf4d4520564e76fc2b2b1b59366e699ab",
     "version": "20261118-r125-global-quick-v35",
@@ -13678,7 +13678,7 @@
       "checkout is inactive pending merchant configuration"
     ]
   },
-  "lastUpdatedAt": "2026-11-19T09:26:08.606Z",
+  "lastUpdatedAt": "2026-11-19T09:48:06Z",
   "latestAutomationPass20261119V43": {
     "checkedAt": "2026-11-19T07:07:23.959Z",
     "mainBaseSha": "1d1d89dd55a1502618f180ea35a151ed436e3101",
@@ -14321,7 +14321,7 @@
     "decision": "NO-GO"
   },
   "latestR125ResumeInspection": {
-    "checkedAt": "2026-11-19T09:26:08.606Z",
+    "checkedAt": "2026-11-19T09:48:06Z",
     "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
     "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
     "triggers": [
@@ -14345,13 +14345,249 @@
     },
     "currentRevisionRunObserved": false,
     "activeRunsObserved": 0,
-    "recentRepositoryRunsScanned": 100,
+    "recentRepositoryRunsScanned": 2100,
     "candidateWritesThisPass": 0,
-    "interpretation": "The latest matching run remains legacy #150. No active or newer resume-workflow run was found in the latest 100 repository runs. The current workflow is manual-only; candidate writes remain disabled by default and no candidate files were changed."
+    "interpretation": "The latest matching run remains legacy #150. A scan of 2,100 recent repository runs found no newer or active run for this workflow. The current workflow is manual-only; candidate writes remain disabled by default and no candidate files were changed.",
+    "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2"
   },
   "quota": {
     "translationRequestsSent": 0,
     "aiQuotaUsed": 0,
     "providerAvailability": "not probed; historical daily_free_ai_limit, Google HTTP429 and HTTP503 remain blockers"
+  },
+  "latestAutomationPass20261119V47": {
+    "checkedAt": "2026-11-19T09:48:06Z",
+    "mainCommit": "586f4cccd03233ffe573b8c38eeb86f23988cfe8",
+    "runtimeVersion": "20261119-r125-global-quick-v47",
+    "repair": {
+      "language": "dv",
+      "name": "Divehi",
+      "labels": {
+        "Back": "ފަހަތަށް",
+        "PageNavigation": "ޞަފްޙާތަކަށް ދާ މަގު",
+        "VoiceReply": "އަޑުން ޖަވާބު",
+        "Voice": "އަޑު"
+      },
+      "status": "provisional; dictionary-backed components; compound Page navigation phrasing and all four UI labels still require native review",
+      "evidence": [
+        "https://hassanhameed.com/english-dhivehi-dictionary-b/",
+        "https://kaikki.org/dictionary/All%20languages%20combined/meaning/%DE%8A/%DE%8A%DE%AA/%DE%8A%DE%AA%DE%81%DE%B0.html",
+        "https://glosbe.com/en/dv/road",
+        "https://glosbe.com/en/dv/reply",
+        "https://glosbe.com/en/dv/answer"
+      ],
+      "candidatePackModified": false,
+      "htmlCacheReferencesUpdated": 44,
+      "workflowsUpdated": [
+        "r125-static-locale-section-audit.yml",
+        "r105-final-release.yml",
+        "final-browser-audit-r9.yml"
+      ],
+      "regressionTestUpdated": "tools/test-ui-translation-quota-session-guard.cjs",
+      "quotaNeutral": true,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0
+    },
+    "supersededAttempt": {
+      "commit": "b7edd60b63ab54157964fdcbfecbae77a05bbb65",
+      "run": 203,
+      "runId": 44499094509,
+      "conclusion": "failure",
+      "cause": "The first v47 patch placed the Divehi labels in R125_PROVISIONAL rather than the QUICK map; the quota-session test correctly rejected that placement."
+    },
+    "correction": {
+      "commit": "586f4cccd03233ffe573b8c38eeb86f23988cfe8",
+      "change": "Moved the four provisional labels into QUICK.dv and removed the duplicate R125_PROVISIONAL entry.",
+      "validation": "R105 #204 source validation and quota-guard regression tests passed."
+    },
+    "precedingR125": {
+      "run": 109,
+      "runId": 44495649316,
+      "conclusion": "failure",
+      "runtimeVersion": "20261119-r125-global-quick-v46",
+      "languages": 98,
+      "sections": 27,
+      "applications": 2646,
+      "countries": 248,
+      "exactFindings": 0,
+      "partialFindings": 0,
+      "unresolvedFindings": 0,
+      "dynamicFallback": {
+        "language": "Divehi",
+        "requests": 1,
+        "strings": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ]
+      },
+      "providerRequestsSent": 0
+    },
+    "runs": {
+      "r125": {
+        "run": 111,
+        "runId": 44499609823,
+        "status": "in_progress",
+        "lastObservedStep": "Install Chromium and system dependencies",
+        "resultPending": true,
+        "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44499609823"
+      },
+      "r9e": {
+        "run": 127,
+        "runId": 44499609683,
+        "status": "in_progress",
+        "lastObservedStep": "Install Chromium browser test runtime",
+        "resultPending": true,
+        "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44499609683"
+      },
+      "r105": {
+        "run": 204,
+        "runId": 44499609897,
+        "status": "completed",
+        "conclusion": "success",
+        "sourceValidation": "pass",
+        "localeTargetNames": "98/98",
+        "quotaGuardTests": "pass",
+        "aiBinding": true,
+        "productionHealth": "pass",
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "liveAiProbes": false,
+        "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44499609897"
+      },
+      "r123": {
+        "run": 155,
+        "runId": 44499609507,
+        "status": "completed",
+        "conclusion": "success",
+        "programmaticAudio": "pass",
+        "voiceAcknowledgement": "pass",
+        "dynamicVoicePlaceholders": "pass",
+        "androidBrowserProfileAudio": "pass",
+        "productionAudioAssetAndMultilingualAudio": "skipped",
+        "liveASR": "not verified",
+        "physicalMicrophoneSpeakerCertified": false,
+        "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44499609507"
+      },
+      "safety": {
+        "run": 81,
+        "runId": 44499094468,
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44499094468"
+      },
+      "pages": {
+        "run": 1913,
+        "runId": 44499608170,
+        "status": "completed",
+        "conclusion": "success",
+        "deployedCommit": "586f4cccd03233ffe573b8c38eeb86f23988cfe8",
+        "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44499608170"
+      }
+    },
+    "candidateState": {
+      "structural": "98/98",
+      "qualityGate": "97/98",
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "published": 0,
+      "linguisticCertification": 0,
+      "sourceKeys": 1118,
+      "productionKeys": 1045,
+      "unpublishedKeyDelta": 73,
+      "duplicateGroups": 28,
+      "duplicateLanguages": [
+        "ig",
+        "dz",
+        "ti",
+        "kl",
+        "rw",
+        "to",
+        "ku",
+        "xh",
+        "st",
+        "tn",
+        "dv"
+      ],
+      "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
+      "candidateWritesThisPass": 0
+    },
+    "resumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "trigger": "workflow_dispatch only",
+      "scheduleTriggerPresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestMatchingRun": {
+        "run": 150,
+        "runId": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "resumeStep": "skipped",
+        "auditStep": "success",
+        "candidatePackWrites": 0,
+        "metadataFilesWritten": 2
+      },
+      "recentRunsScanned": 2100,
+      "activeRuns": 0,
+      "currentRevisionRunObserved": false,
+      "candidateWritesThisPass": 0
+    },
+    "ai": {
+      "binding": true,
+      "productionHealth": "pass",
+      "liveGeneration": "not-probed; RUN_LIVE_AI_PROBES=false",
+      "countryIntentProbe": "skipped-by-policy",
+      "translationBackend": "not-probed",
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable"
+      ],
+      "translationRequestsThisPass": 0,
+      "aiQuotaUsedThisPass": 0,
+      "quotaBypassAttempts": 0
+    },
+    "countryCurrency": {
+      "previousV46Audit": {
+        "run": 125,
+        "runId": 44495649543,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "manualMoroccoPriority": "pass",
+        "manualWorldwidePriority": "pass",
+        "storedCurrency": "pass",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "v47Audit": {
+        "run": 127,
+        "runId": 44499609683,
+        "status": "in_progress",
+        "resultPending": true
+      }
+    },
+    "voice": {
+      "programmaticTTS": "pass",
+      "voiceAcknowledgement": "pass",
+      "dynamicVoicePlaceholders": "pass",
+      "androidBrowserProfileAudio": "pass",
+      "productionAudioAssetAndMultilingualAudio": "skipped",
+      "liveASR": "not verified",
+      "physicalMicrophoneSpeakerCertified": false
+    },
+    "checkout": "inactive pending merchant configuration and end-to-end payment, forged-reference rejection and settlement verification",
+    "candidatePackWrites": 0,
+    "candidateMetadataWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "decision": "NO-GO"
   }
 }
