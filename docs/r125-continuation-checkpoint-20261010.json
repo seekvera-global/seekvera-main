@@ -136,7 +136,8 @@
     "R105 #217 and R123 #166 stopped before deployment because tools/test-locale-cognates.cjs still expected the old <b>${g.name}</b> markup after the proper-name exclusion repair. Audio unit tests and live Arabic homepage/31 category-description checks passed; the regression assertion is corrected and must be rerun.",
     "Seller plan rendering was inserting local-pack translations into the DOM without marking them as already localized; the global MutationObserver then attempted to translate translated values again (e.g. Business Monthly -> Kgwedi le Kgwedi ya Kgwebo). Canonical Supabase rows were verified; renderer guard now preserves translated output while leaving missing strings auditable.",
     "R125 #129 remained in the Pages readiness step because the workflow hardcoded stale games.js v20261117 and i18n-ui.js v56 refs while checked-out pages referenced games.js v20261119-proper-name-exclusions and i18n-ui.js v57. The gate was repaired to derive refs from source pages; the old run is not yet complete and the next audit uses a new concurrency group.",
-    "The first dynamic R125 asset-ref workflow patch contained over-escaped grep and shell quoting; readback caught it before claiming success. Corrected the regex and shell quoting, and moved the next audit to concurrency group v3."
+    "The first dynamic R125 asset-ref workflow patch contained over-escaped grep and shell quoting; readback caught it before claiming success. Corrected the regex and shell quoting, and moved the next audit to concurrency group v3.",
+    "R125 readiness still contained an obsolete assertion requiring the old game-title markup and rejecting data-no-translate names. Updated it to the new proper-name spans while preserving checks for translatable categories and descriptions; the next audit uses concurrency group v4."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -205,7 +206,8 @@
     "Resolve the remaining dynamic fallback strings: 60 are in the unpublished candidate source and 73 are absent from candidate source. Do not publish unreviewed packs or disguise translatable UI as no-translate.",
     "Audit the live Supabase seller-plan names and descriptions; map stable plan codes to canonical source keys only after verifying actual row values and complete localization coverage.",
     "Re-run R125 after seller-plan source-aware no-translate guard; confirm only already-localized values are excluded and missing plan names/descriptions/period labels remain flagged.",
-    "Confirm repaired R125 run starts the matrix after deriving live asset refs from index.html and games.html; do not wait on stale #129/#130 readiness gates."
+    "Confirm repaired R125 run starts the matrix after deriving live asset refs from index.html and games.html; do not wait on stale #129/#130 readiness gates.",
+    "Verify R125 #133 passes live asset readiness and the revised proper-name checks before running the full 98×27 matrix."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
@@ -13572,6 +13574,25 @@
           }
         ],
         "note": "No locale matrix result is claimed from these stale readiness runs. The corrected run must pass Pages readiness before the matrix can begin."
+      },
+      "gameMarkupCheckRepair": {
+        "checkedAt": "2026-11-19T16:22:45Z",
+        "finding": "After fixing asset refs, the readiness gate still asserted the old game-card markup <b>${g.name}</b> and explicitly rejected data-no-translate game names. This contradicted the intentional proper-name repair.",
+        "repair": "Updated the readiness gate to require the new nested no-translate game-name span, selected-game title marker, game.html title marker, and unchanged independently translatable category/description spans.",
+        "queuedRuns": [
+          {
+            "run": 132,
+            "runId": 44565299565,
+            "status": "in_progress",
+            "workflowRevision": "dynamic asset refs v3 but stale game markup assertion"
+          },
+          {
+            "run": 133,
+            "expectedRevision": "updated game markup assertion",
+            "concurrencyGroup": "seekvera-r125-static-locale-audit-v4"
+          }
+        ],
+        "note": "Run #132 cannot be treated as a valid result for the latest game-title markup; the repaired #133 must pass readiness and matrix."
       }
     }
   },
@@ -16667,8 +16688,8 @@
     },
     "workflowRepair": {
       "file": ".github/workflows/r125-static-locale-section-audit.yml",
-      "change": "Derive live asset refs from checked-out pages; fetch exact refs; use concurrency group v3; shell quoting corrected after readback caught over-escaping.",
-      "purpose": "Prevent cache-version drift and avoid queueing the repaired audit behind stale readiness runs."
+      "change": "Dynamic asset refs now use correct shell quoting; readiness checks now expect proper-name game-title spans and still require game categories/descriptions to remain translatable; concurrency group v4.",
+      "purpose": "Keep readiness checks aligned with the audited source instead of rejecting the intended localization exclusions."
     }
   },
   "latestSupabaseSecurityAdvisory20261119": {
@@ -16793,6 +16814,25 @@
         }
       ],
       "note": "No locale matrix result is claimed from these stale readiness runs. The corrected run must pass Pages readiness before the matrix can begin."
+    },
+    "gameMarkupCheckRepair": {
+      "checkedAt": "2026-11-19T16:22:45Z",
+      "finding": "After fixing asset refs, the readiness gate still asserted the old game-card markup <b>${g.name}</b> and explicitly rejected data-no-translate game names. This contradicted the intentional proper-name repair.",
+      "repair": "Updated the readiness gate to require the new nested no-translate game-name span, selected-game title marker, game.html title marker, and unchanged independently translatable category/description spans.",
+      "queuedRuns": [
+        {
+          "run": 132,
+          "runId": 44565299565,
+          "status": "in_progress",
+          "workflowRevision": "dynamic asset refs v3 but stale game markup assertion"
+        },
+        {
+          "run": 133,
+          "expectedRevision": "updated game markup assertion",
+          "concurrencyGroup": "seekvera-r125-static-locale-audit-v4"
+        }
+      ],
+      "note": "Run #132 cannot be treated as a valid result for the latest game-title markup; the repaired #133 must pass readiness and matrix."
     }
   }
 }

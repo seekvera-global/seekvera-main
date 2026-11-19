@@ -31,7 +31,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: seekvera-r125-static-locale-audit-v3
+  group: seekvera-r125-static-locale-audit-v4
   cancel-in-progress: false
 
 jobs:
@@ -345,8 +345,11 @@ jobs:
               && grep -Fq "'Navigacija po straneh'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Glasovni odgovor'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'Glas'" /tmp/r125-i18n-ui.js \
-              && grep -Fq '<b>${g.name}</b>' /tmp/r125-games.js \
-              && ! grep -Fq 'data-no-translate>${g.name}' /tmp/r125-games.js; then
+              && grep -Fq '<b><span data-no-translate>${g.name}</span></b>' /tmp/r125-games.js \
+              && ! grep -Fq '<b>${g.name}</b>' /tmp/r125-games.js \
+              && grep -Fq "overlayTitle.setAttribute('data-no-translate','1')" /tmp/r125-games.js \
+              && grep -Fq '<span>${categoryLabel(g.cat)}</span> · <span>${g.desc}</span>' /tmp/r125-games.js \
+              && grep -Fq 'id="gameTitle" data-no-translate="1"' /tmp/r125-games.html; then
               echo R125_LATEST_PAGES_ASSETS_READY
               exit 0
             fi
