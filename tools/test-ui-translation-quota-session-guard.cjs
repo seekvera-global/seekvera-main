@@ -114,6 +114,8 @@ async function main(){
    {code:'dv',language:'Divehi',labels:{'Back':'ފަހަތަށް','Page navigation':'ޞަފްޙާތަކަށް ދާ މަގު','Voice reply':'އަޑުން ޖަވާބު','Voice':'އަޑު'}},
    // Provisional Malagasy quick labels; native review remains required.
    {code:'mg',language:'Malagasy',labels:{'Back':'Miverina','Page navigation':'Fitetezana pejy','Voice reply':'Valiny am-peo','Voice':'Feo'}},
+   // Provisional Basque quick labels from the existing production vocabulary; native review remains required.
+   {code:'eu',language:'Basque',labels:{'Back':'Atzera','Page navigation':'Orriaren nabigazioa','Voice reply':'Ahots-erantzuna','Voice':'Ahotsa'}},
  ];
  const quickContext={INITIAL_AI:'__TEST_INITIAL_AI__'};vm.createContext(quickContext);
  vm.runInContext(extract(i18n,'const QUICK={','// Provisional quota-neutral overrides','QUICK map')+';this.quick=QUICK;',quickContext);

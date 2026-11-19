@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261119-r125-global-quick-v48';
+const VERSION='20261119-r125-global-quick-v49';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),PACK_VALUES=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -470,7 +470,9 @@ so:{'Back':'Dib u noqo','Page navigation':'Hagidda bogagga','Voice reply':'Jawaa
 // Provisional Divehi quick UI labels; dictionary-backed components, native review required.
 dv:{'Back':'ފަހަތަށް','Page navigation':'ޞަފްޙާތަކަށް ދާ މަގު','Voice reply':'އަޑުން ޖަވާބު','Voice':'އަޑު'},
 // Provisional Malagasy quick UI labels; dictionary-backed components, compound Page navigation phrasing remains pending native review.
-mg:{'Back':'Miverina','Page navigation':'Fitetezana pejy','Voice reply':'Valiny am-peo','Voice':'Feo'}
+mg:{'Back':'Miverina','Page navigation':'Fitetezana pejy','Voice reply':'Valiny am-peo','Voice':'Feo'},
+// Provisional Basque quick UI labels; existing pack terms; native-speaker review remains required.
+eu:{'Back':'Atzera','Page navigation':'Orriaren nabigazioa','Voice reply':'Ahots-erantzuna','Voice':'Ahotsa'}
 };
 // Provisional quota-neutral overrides for the exact R125 UI leaks. Native review remains required.
 const R125_PROVISIONAL={
