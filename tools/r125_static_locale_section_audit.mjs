@@ -190,6 +190,11 @@ try {
   async function inspectLeakState(phrases) {
     return page.evaluate(targets => {
       const norm = value => String(value || '').replace(/\\s+/g, ' ').trim();
+      const hasVisibleText = target => {
+        const range = document.createRange();
+        range.selectNodeContents(target);
+        return [...range.getClientRects()].some(rect => rect.width > 0 && rect.height > 0);
+      };
       const nodes = [];
       const options = [];
       const elements = [];
@@ -202,7 +207,7 @@ try {
       let node;
       while ((node = walker.nextNode())) {
         const el = node.parentElement;
-        if (!el || !el.getClientRects().length) continue;
+        if (!el || !hasVisibleText(node)) continue;
         const raw = norm(node.nodeValue);
         if (!raw) continue;
         const excludedRoot = el.closest('[data-no-translate],[data-user-content]');
@@ -275,10 +280,10 @@ try {
         const hasOption = options.some(item => item.phrase === phrase);
         if (hasNode || hasOption) continue;
         const candidates = [...document.body.querySelectorAll('*')].filter(el =>
-          el.getClientRects().length && !el.closest('[data-no-translate],[data-user-content]') && norm(el.innerText).includes(phrase)
+          hasVisibleText(el) && !el.closest('[data-no-translate],[data-user-content]') && norm(el.innerText).includes(phrase)
         );
         const leaves = candidates.filter(el =>
-          ![...el.children].some(child => child.getClientRects().length && norm(child.innerText).includes(phrase))
+          ![...el.children].some(child => hasVisibleText(child) && norm(child.innerText).includes(phrase))
         );
         for (const el of leaves.slice(0, 4)) {
           const text = norm(el.innerText || el.textContent);
