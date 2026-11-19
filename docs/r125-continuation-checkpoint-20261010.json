@@ -13569,10 +13569,10 @@
         "Voice": "ድምጺ"
       },
       "references": [
+        "https://bibelvers.no/ti/tigrigna-2013/2-samuel/15/20",
         "https://bootstrap21.org/ti/docs/4.6/components/pagination/",
-        "https://geezexperience.com/?dr=1&searchkey=%E1%85%A8%E1%88%A8%E1%8C%B8",
         "https://glosbe.com/en/ti/reply",
-        "https://geezexperience.com/?dr=1&searchkey=%E1%8B%B0%E1%88%83%E1%8B%AD"
+        "https://www.tigrinyadictionary.com/index.php?dr=0&searchkey=voice"
       ]
     },
     "changes": {
@@ -13656,5 +13656,177 @@
       "checkout is inactive pending merchant configuration"
     ]
   },
-  "lastUpdatedAt": "2026-11-19T06:58:28.773Z"
+  "lastUpdatedAt": "2026-11-19T07:07:23.959Z",
+  "latestAutomationPass20261119V43": {
+    "checkedAt": "2026-11-19T07:07:23.959Z",
+    "mainBaseSha": "1d1d89dd55a1502618f180ea35a151ed436e3101",
+    "status": "repair-prepared-pending-post-deploy-verification",
+    "runtimeVersion": "20261119-r125-global-quick-v41",
+    "repair": "Added provisional Faroese quick UI labels after R125 v40 detected one Faroese dynamic fallback. Tigrinya fallback is now absent from the v40 audit; native review remains required for both languages.",
+    "tigrinya": {
+      "labels": {
+        "Back": "ተመለስ",
+        "PageNavigation": "ናይ ገጽ ምድህሳስ",
+        "VoiceReply": "መልሲ ብድምጺ",
+        "Voice": "ድምጺ"
+      },
+      "provisional": true,
+      "nativeReviewRequired": true,
+      "references": [
+        "https://bibelvers.no/ti/tigrigna-2013/2-samuel/15/20",
+        "https://bootstrap21.org/ti/docs/4.6/components/pagination/",
+        "https://glosbe.com/en/ti/reply",
+        "https://www.tigrinyadictionary.com/index.php?dr=0&searchkey=voice"
+      ]
+    },
+    "faroese": {
+      "labels": {
+        "Back": "Aftur",
+        "PageNavigation": "Navigatión á síðum",
+        "VoiceReply": "Aftursvar við rødd",
+        "Voice": "Rødd"
+      },
+      "provisional": true,
+      "nativeReviewRequired": true,
+      "references": [
+        "https://glosbe.com/en/fo/back",
+        "https://en.wiktionary.org/wiki/s%C3%AD%C3%B0a",
+        "https://fma.fo/wp-content/uploads/2025/07/linuskipini-atak-um-trygdarstand-2024-fragreiding-2025-1.pdf",
+        "https://fo.wiktionary.org/wiki/aftursvar",
+        "https://glosbe.com/en/fo/voice"
+      ]
+    },
+    "changes": {
+      "htmlCacheReferencesUpdated": 44,
+      "runtimeQuickMapUpdated": true,
+      "quotaGuardTestUpdated": true,
+      "r125AuditWorkflowUpdated": true,
+      "r105ReleaseWorkflowUpdated": true,
+      "r9eBrowserAuditUpdated": true,
+      "candidatePacksChanged": 0,
+      "candidateBranchChanged": false
+    },
+    "latestR125V40Audit": {
+      "runNumber": 103,
+      "runId": 44476150976,
+      "conclusion": "failure",
+      "languages": 98,
+      "sections": 27,
+      "sectionLanguageApplications": 2646,
+      "countries": 248,
+      "exactVisibleLeaks": 0,
+      "partialVisibleLeaks": 0,
+      "unresolvedVisibleLeaks": 0,
+      "fallback": {
+        "language": "Faroese",
+        "requests": 1,
+        "strings": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ]
+      },
+      "translationRequestInterceptedLocally": true,
+      "externalTranslationProviderRequests": 0,
+      "tigrinyaFallback": "none"
+    },
+    "productionVerificationV40": {
+      "r9e": {
+        "runNumber": 115,
+        "runId": 44476150994,
+        "conclusion": "success",
+        "countryProfiles": 248,
+        "localizedPages": 44,
+        "manualMoroccoPriority": "pass",
+        "worldwidePriority": "pass",
+        "visibleLocales": [
+          "MA/ar",
+          "FR/fr",
+          "IN/hi",
+          "CN/zh"
+        ],
+        "safetyGate": "pass",
+        "voiceAndPwaCache": "pass",
+        "liveAiProbes": "skipped_by_policy",
+        "liveAsrProbe": "skipped"
+      },
+      "r105": {
+        "runNumber": 196,
+        "runId": 44476151051,
+        "conclusion": "success",
+        "workerDeployment": "success",
+        "healthOk": true,
+        "aiBinding": true,
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "liveAiProbes": false
+      },
+      "safety": {
+        "runNumber": 74,
+        "runId": 44476150928,
+        "conclusion": "success"
+      },
+      "voice": {
+        "runNumber": 147,
+        "runId": 44476150925,
+        "conclusion": "success",
+        "assetAndMultilingualAudioStep": "skipped",
+        "voiceAcknowledgement": "pass",
+        "dynamicVoicePlaceholders": "pass",
+        "physicalDevices": "not_certified"
+      },
+      "pages": {
+        "runNumber": 1903,
+        "runId": 44476150045,
+        "conclusion": "success"
+      }
+    },
+    "candidateResumeWorkflow": {
+      "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "candidateWriteCondition": "run_translations=true OR repair_candidates=true",
+      "latestKnownRun": {
+        "runNumber": 150,
+        "runId": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "event": "push",
+        "conclusion": "success",
+        "resumeStep": "skipped",
+        "auditStep": "success",
+        "saveProgressStep": "success"
+      },
+      "activeRunObserved": false,
+      "candidateWritesThisPass": 0
+    },
+    "candidateState": {
+      "structuralComplete": 98,
+      "qualityGatePassed": 97,
+      "remaining": [
+        "dv"
+      ],
+      "published": 0,
+      "linguisticallyCertified": 0,
+      "currentSourceKeys": 1118,
+      "productionKeys": 1045,
+      "deltaKeys": 73
+    },
+    "quota": {
+      "translationRequestsSent": 0,
+      "aiQuotaUsed": 0,
+      "providerAvailability": "not probed; daily_free_ai_limit and historical Google HTTP429/HTTP503 remain blockers"
+    },
+    "blockers": [
+      "Faroese provisional labels need qualified native review",
+      "Tigrinya provisional labels need qualified native review",
+      "Divehi remains the only candidate pack failing the saved quality gate",
+      "58 Divehi English overlaps and 11-language duplicate clusters need review",
+      "98 locale packs remain without linguistic certification",
+      "live AI generation is unverified",
+      "physical microphone and speaker checks are pending",
+      "checkout is inactive pending merchant configuration"
+    ]
+  }
 }

@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261119-r125-global-quick-v40';
+const VERSION='20261119-r125-global-quick-v41';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),PACK_VALUES=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -454,7 +454,9 @@ be:{'Back':'Назад','Page navigation':'Навігацыя па старон�
 // Provisional Bosnian quick UI labels sourced from the existing candidate pack; native review remains required.
 bs:{'Back':'Nazad','Page navigation':'Navigacija stranicama','Voice reply':'Odgovor glasom','Voice':'Glas'},
 // Provisional Tigrinya quick UI labels based on published Tigrinya localization/dictionary references; qualified native review remains required.
-ti:{'Back':'ተመለስ','Page navigation':'ናይ ገጽ ምድህሳስ','Voice reply':'መልሲ ብድምጺ','Voice':'ድምጺ'}
+ti:{'Back':'ተመለስ','Page navigation':'ናይ ገጽ ምድህሳስ','Voice reply':'መልሲ ብድምጺ','Voice':'ድምጺ'},
+// Provisional Faroese quick UI labels assembled from Faroese dictionary and public-language references; qualified native review remains required.
+fo:{'Back':'Aftur','Page navigation':'Navigatión á síðum','Voice reply':'Aftursvar við rødd','Voice':'Rødd'}
 };
 // Provisional quota-neutral overrides for the exact R125 UI leaks. Native review remains required.
 const R125_PROVISIONAL={
