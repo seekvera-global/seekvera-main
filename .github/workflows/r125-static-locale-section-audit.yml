@@ -301,6 +301,39 @@ jobs:
             fi
             sleep 5
           done
+          python - <<'PY'
+          from urllib.request import urlopen
+          targets = {
+              "index": "https://seekveraglobal.com/index.html?locale_audit_diag=20261119",
+              "games_html": "https://seekveraglobal.com/games.html?locale_audit_diag=20261119",
+              "global_ui": "https://seekveraglobal.com/global-ui.js?v=20261117-r125-source-caption-i18n-v2",
+              "games_js": "https://seekveraglobal.com/games.js?v=20261117-r125-game-title-i18n",
+              "i18n_ui": "https://seekveraglobal.com/i18n-ui.js?v=20261119-r125-global-quick-v54",
+          }
+          data = {}
+          for name, url in targets.items():
+              try:
+                  with urlopen(url, timeout=12) as response:
+                      body = response.read().decode("utf-8", "replace")
+                      data[name] = body
+                      print(f"R125_DIAG_HTTP {name} {response.status} bytes={len(body)}")
+              except Exception as exc:
+                  print(f"R125_DIAG_HTTP_FAIL {name} {type(exc).__name__}: {exc}")
+          checks = [
+              ("index i18n v54", "index", "i18n-ui.js?v=20261119-r125-global-quick-v54", False),
+              ("index global-ui v2", "index", "global-ui.js?v=20261117-r125-source-caption-i18n", False),
+              ("games html js ref", "games_html", "games.js?v=20261117-r125-game-title-i18n", False),
+              ("global caption marker", "global_ui", "sv-control-caption-label", False),
+              ("i18n version", "i18n_ui", "const VERSION='20261119-r125-global-quick-v54'", False),
+              ("i18n Marathi labels", "i18n_ui", "mr:{'Back':'परत','Page navigation':'पेज नेव्हिगेशन','Voice reply':'व्हॉईस प्रतिसाद','Voice':'व्हॉईस'}", False),
+              ("games title markup", "games_js", "<b>\${g.name}</b>", False),
+              ("games translation eligibility", "games_js", "data-no-translate>\${g.name}", True),
+          ]
+          for label, name, token, negate in checks:
+              found = token in data.get(name, "")
+              ok = (not found) if negate else found
+              print(f"R125_DIAG_{'PASS' if ok else 'FAIL'} {label}")
+          PY
           echo R125_LATEST_PAGES_ASSETS_TIMEOUT >&2
           exit 1
 
