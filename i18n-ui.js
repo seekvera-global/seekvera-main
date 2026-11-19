@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261119-r125-global-quick-v50';
+const VERSION='20261119-r125-global-quick-v51';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),PACK_VALUES=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -475,6 +475,8 @@ mg:{'Back':'Miverina','Page navigation':'Fitetezana pejy','Voice reply':'Valiny 
 eu:{'Back':'Atzera','Page navigation':'Orriaren nabigazioa','Voice reply':'Ahots-erantzuna','Voice':'Ahotsa'},
 // Provisional Galician quick UI labels; existing pack vocabulary; native-speaker review remains required.
 gl:{'Back':'Atrás','Page navigation':'Navegación de páxina','Voice reply':'Resposta por voz','Voice':'Voz'}
+// Provisional Telugu quick UI labels copied from the existing structurally valid candidate pack; native review remains required.
+te:{'Back':'వెనక్కి','Page navigation':'పేజీ నావిగేషన్','Voice reply':'స్వరం సమాధానం','Voice':'స్వరం'},
 };
 // Provisional quota-neutral overrides for the exact R125 UI leaks. Native review remains required.
 const R125_PROVISIONAL={
