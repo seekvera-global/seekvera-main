@@ -74,7 +74,7 @@ jobs:
           node --check sw.js
           test "$(find i18n-r32 -maxdepth 1 -name '*.json' | wc -l)" -ge 98
           grep -F "const RELEASE='20261001-r125-dialect-voice-quality'" worker-r76.js
-          grep -F "const VERSION='20261119-r125-global-quick-v47'" i18n-ui.js
+          grep -F "const VERSION='20261119-r125-global-quick-v48'" i18n-ui.js
           grep -F "'Назад'" i18n-ui.js
           grep -F "'Навигација на страна'" i18n-ui.js
           grep -F "'Гласен одговор'" i18n-ui.js
@@ -164,6 +164,7 @@ jobs:
            grep -F 'Hagidda bogagga' i18n-ui.js
            grep -F 'Jawaab cod ah' i18n-ui.js
            grep -F 'Cod' i18n-ui.js
+          grep -F "mg:{'Back':'Miverina','Page navigation':'Fitetezana pejy','Voice reply':'Valiny am-peo','Voice':'Feo'}" i18n-ui.js
           if grep -R -nE --exclude='README.md' --exclude='README-FIRST.txt' --exclude-dir='.git' 'Global API'' Key|GLOBAL_API''_KEY' .; then
             echo 'Forbidden global credential reference found'
             exit 1
@@ -206,7 +207,7 @@ jobs:
                 && grep -q 'global-ui.js?v=20261117-r125-source-caption-i18n-v2' /tmp/home.html \
                 && grep -q 'sv-control-caption-label' /tmp/global-ui.js \
                 && grep -q 'Worldwide is the neutral first-run market' /tmp/global-ui.js \
-                && grep -q '20261119-r125-global-quick-v47' /tmp/i18n-ui.js \
+                && grep -q '20261119-r125-global-quick-v48' /tmp/i18n-ui.js \
                 && grep -q 'ກັບຄືນ' /tmp/i18n-ui.js \
                 && grep -q 'ການນຳທາງໜ້າ' /tmp/i18n-ui.js \
                 && grep -q 'ຄຳຕອບດ້ວຍສຽງ' /tmp/i18n-ui.js \
@@ -236,6 +237,7 @@ jobs:
                 && grep -q 'Kuyobora urupapuro' /tmp/i18n-ui.js \
                 && grep -q "Igisubizo cy'ijwi" /tmp/i18n-ui.js \
                 && grep -q 'Ijwi' /tmp/i18n-ui.js \
+                && grep -q "mg:{'Back':'Miverina','Page navigation':'Fitetezana pejy','Voice reply':'Valiny am-peo','Voice':'Feo'}" /tmp/i18n-ui.js \
                 && grep -q 'திரும்பு' /tmp/i18n-ui.js \
                 && grep -q 'பக்க வழிசெலுத்தல்' /tmp/i18n-ui.js \
                 && grep -q 'குரல் பதில்' /tmp/i18n-ui.js \

@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261119-r125-global-quick-v47';
+const VERSION='20261119-r125-global-quick-v48';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),PACK_VALUES=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -468,7 +468,9 @@ to:{'Back':'Foki','Page navigation':'Fakahinohino ki he peesi','Voice reply':'Ta
 // Provisional Somali quick UI labels; core words are dictionary-backed, compound UI phrasing remains pending native review.
 so:{'Back':'Dib u noqo','Page navigation':'Hagidda bogagga','Voice reply':'Jawaab cod ah','Voice':'Cod'},
 // Provisional Divehi quick UI labels; dictionary-backed components, native review required.
-dv:{'Back':'ފަހަތަށް','Page navigation':'ޞަފްޙާތަކަށް ދާ މަގު','Voice reply':'އަޑުން ޖަވާބު','Voice':'އަޑު'}
+dv:{'Back':'ފަހަތަށް','Page navigation':'ޞަފްޙާތަކަށް ދާ މަގު','Voice reply':'އަޑުން ޖަވާބު','Voice':'އަޑު'},
+// Provisional Malagasy quick UI labels; dictionary-backed components, compound Page navigation phrasing remains pending native review.
+mg:{'Back':'Miverina','Page navigation':'Fitetezana pejy','Voice reply':'Valiny am-peo','Voice':'Feo'}
 };
 // Provisional quota-neutral overrides for the exact R125 UI leaks. Native review remains required.
 const R125_PROVISIONAL={
