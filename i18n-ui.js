@@ -466,7 +466,9 @@ sm:{'Back':"Toe fo'i",'Page navigation':"Fa'atautaiga o itulau",'Voice reply':'T
 // Provisional Tongan quick UI labels; dictionary-backed core words, compound UI phrasing still needs native review.
 to:{'Back':'Foki','Page navigation':'Fakahinohino ki he peesi','Voice reply':'Tali ʻaki ʻa e leʻo','Voice':'Leʻo'},
 // Provisional Somali quick UI labels; core words are dictionary-backed, compound UI phrasing remains pending native review.
-so:{'Back':'Dib u noqo','Page navigation':'Hagidda bogagga','Voice reply':'Jawaab cod ah','Voice':'Cod'}
+so:{'Back':'Dib u noqo','Page navigation':'Hagidda bogagga','Voice reply':'Jawaab cod ah','Voice':'Cod'},
+// Provisional Divehi quick UI labels; dictionary-backed components, native review required.
+dv:{'Back':'ފަހަތަށް','Page navigation':'ޞަފްޙާތަކަށް ދާ މަގު','Voice reply':'އަޑުން ޖަވާބު','Voice':'އަޑު'}
 };
 // Provisional quota-neutral overrides for the exact R125 UI leaks. Native review remains required.
 const R125_PROVISIONAL={
@@ -523,8 +525,7 @@ tr:{
 'Voice':'Ses'
 },
 dz:{'Back':'ཕྱིར་ལོག','Page navigation':'ཤོག་ངོས་འགྲུལ་སྐྱོད','Voice reply':'སྐད་ཀྱི་ལན','Voice':'སྐད་སྒྲ'},
-// Provisional Divehi quick UI labels; dictionary-backed components, native review required.
-dv:{'Back':'ފަހަތަށް','Page navigation':'ޞަފްޙާތަކަށް ދާ މަގު','Voice reply':'އަޑުން ޖަވާބު','Voice':'އަޑު'}
+
 };
 
 function api(p){const h=location.hostname;return(h==='seekveraglobal.com'||h==='www.seekveraglobal.com'||h.endsWith('workers.dev'))?p:'https://seekvera-main.seekvera-global.workers.dev'+p}
