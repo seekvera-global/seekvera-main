@@ -69,10 +69,12 @@ try {
       url: route.request().url(),
       method: route.request().method(),
       language: payload.language || payload.lang || 'unknown',
+      pagePath: page ? new URL(page.url()).pathname : '',
       strings: Array.isArray(payload.strings) ? payload.strings.slice(0, 20) : [],
       stringCount: Array.isArray(payload.strings) ? payload.strings.length : 0
     });
-    await route.fulfill({ status: 503, contentType: 'application/json', body: '{"ok":false,"audit":"static-pack-only"}' });
+    // A neutral 418 is intercepted locally and does not trip the browser's quota circuit breaker; this exposes every missing locale without reaching any provider.
+    await route.fulfill({ status: 418, contentType: 'application/json', body: '{"ok":false,"reason":"audit_intercepted_nonquota"}' });
   });
   await context.route('https://text.pollinations.ai/**', async route => {
     blocked.pollinations.push(route.request().url());
@@ -113,7 +115,7 @@ try {
     globalUi: [...document.scripts].find(script => script.src.includes('/global-ui.js'))?.src || ''
   }));
   console.log('R125_BROWSER_RUNTIME_ASSETS', JSON.stringify(liveRuntimeAssets));
-  assert(liveRuntimeAssets.i18n.includes('20261119-r125-global-quick-v55'), 'live page must load the audited v54 i18n runtime');
+  assert(liveRuntimeAssets.i18n.includes('20261119-r125-global-quick-v56'), 'live page must load the audited v54 i18n runtime');
   assert(liveRuntimeAssets.globalUi.includes('20261117-r125-source-caption-i18n-v2'), 'live page must load the audited global UI asset');
 
   const manifestResponse = await getStaticResponse(BASE + '/i18n-r32/manifest.json?v=' + Date.now(), 'manifest');
@@ -523,14 +525,15 @@ try {
   const fallbackByLanguage = {};
   for (const request of blocked.translation) {
     const language = request.language || 'unknown';
-    const entry = fallbackByLanguage[language] || { requests: 0, strings: new Set() };
+    const entry = fallbackByLanguage[language] || { requests: 0, strings: new Set(), paths: new Set() };
     entry.requests++;
+    if (request.pagePath) entry.paths.add(request.pagePath);
     for (const value of request.strings || []) entry.strings.add(value);
     fallbackByLanguage[language] = entry;
   }
   const fallbackSummary = Object.fromEntries(Object.entries(fallbackByLanguage).map(([language, value]) => [
     language,
-    { requests: value.requests, uniqueStrings: value.strings.size, samples: [...value.strings].slice(0, 20) }
+    { requests: value.requests, uniqueStrings: value.strings.size, samples: [...value.strings].slice(0, 20), paths: [...value.paths].sort() }
   ]));
   console.log('R125_STATIC_LEAK_DETAILS', JSON.stringify(leakFindings));
   console.log('R125_STATIC_PARTIAL_MATCH_DETAILS', JSON.stringify(partialFindings));

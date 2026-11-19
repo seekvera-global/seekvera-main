@@ -83,7 +83,7 @@ jobs:
                   ['games_html', '/games.html?locale_audit=20261117', '/tmp/r125-games.html'],
                   ['global_ui', '/global-ui.js?v=20261117-r125-source-caption-i18n-v2', '/tmp/r125-global-ui.js'],
                   ['games_js', '/games.js?v=20261117-r125-game-title-i18n', '/tmp/r125-games.js'],
-                  ['i18n_ui', '/i18n-ui.js?v=20261119-r125-global-quick-v55', '/tmp/r125-i18n-ui.js']
+                  ['i18n_ui', '/i18n-ui.js?v=20261119-r125-global-quick-v56', '/tmp/r125-i18n-ui.js']
                 ];
                 for (const [name, path, file] of assets) {
                   const result = await page.evaluate(async target => {
@@ -106,7 +106,7 @@ jobs:
             if fetch_assets \
               && grep -Fq 'global-ui.js?v=20261117-r125-source-caption-i18n' /tmp/r125-index.html \
               && grep -Fq 'games.js?v=20261117-r125-game-title-i18n' /tmp/r125-games.html \
-              && grep -Fq 'i18n-ui.js?v=20261119-r125-global-quick-v55' /tmp/r125-index.html \
+              && grep -Fq 'i18n-ui.js?v=20261119-r125-global-quick-v56' /tmp/r125-index.html \
               && grep -Fq 'sv-control-caption-label' /tmp/r125-global-ui.js \
               && grep -Fq 'alreadyLocalizedValue' /tmp/r125-i18n-ui.js \
               && grep -Fq "'Sprachantwort'" /tmp/r125-i18n-ui.js \
@@ -317,6 +317,7 @@ jobs:
               && grep -Fq "ml:{'Back':'പിന്നോക്കം','Page navigation':'പേജ് നിയന്ത്രണം','Voice reply':'വോയിസ് മറുപടി','Voice':'വോയിസ്'}" /tmp/r125-i18n-ui.js \
               && grep -Fq "mr:{'Back':'परत','Page navigation':'पेज नेव्हिगेशन','Voice reply':'व्हॉईस प्रतिसाद','Voice':'व्हॉईस'}" /tmp/r125-i18n-ui.js \
                && grep -Fq "gu:{'Back':'પાછળ','Page navigation':'પૃષ્ઠ નેવિગેશન','Voice reply':'વૉઇસ જવાબ','Voice':'વૉઇસ'}" /tmp/r125-i18n-ui.js \
+               && grep -Fq "pa:{'Back':'ਵਾਪਸ','Page navigation':'ਪੰਨਿਆਂ ਦੀ ਨੈਵੀਗੇਸ਼ਨ','Voice reply':'ਵੌਇਸ ਜਵਾਬ','Voice':'ਵੌਇਸ'}" /tmp/r125-i18n-ui.js \
               && grep -Fq "'နောက်သို့'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'စာမျက်နှာ လမ်းညွှန်'" /tmp/r125-i18n-ui.js \
               && grep -Fq "'အသံဖြင့် ပြန်ကြားချက်'" /tmp/r125-i18n-ui.js \
