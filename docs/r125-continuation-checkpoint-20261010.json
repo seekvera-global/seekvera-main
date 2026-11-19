@@ -12600,8 +12600,8 @@
       "runId": 44438819220,
       "status": "completed",
       "headSha": "3a2c34dfb9b5a3c2a0bb1484940d33810cc274d2",
-      "lastObservedStep": "Install Chromium and system dependencies",
-      "matrixResult": "pending",
+      "lastObservedStep": "Completed 98-language × 27-section matrix; one Urdu seller-plan unresolved finding and one intercepted Dzongkha fallback",
+      "matrixResult": "completed-with-1-unresolved-and-1-fallback",
       "conclusion": "failure",
       "languages": 98,
       "sections": 27,
@@ -12666,8 +12666,8 @@
       "run": 108,
       "runId": 44438819342,
       "status": "completed",
-      "lastObservedStep": "Install Chromium browser test runtime",
-      "v38Verification": "pending",
+      "lastObservedStep": "Final R9e live browser audit passed",
+      "v38Verification": "passed",
       "conclusion": "success",
       "countryProfiles": "248/248",
       "localizedPages": "44/44",
@@ -12682,7 +12682,8 @@
       "safetyGate": "passed",
       "voiceAndPwaCache": "passed",
       "liveASR": "not-verified",
-      "liveAiProbes": "skipped-by-policy"
+      "liveAiProbes": "skipped-by-policy",
+      "countryCurrency": "248/248 country profiles and 44/44 localized pages"
     },
     "safety": {
       "run": 71,
