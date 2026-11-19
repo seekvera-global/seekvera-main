@@ -17496,5 +17496,92 @@
       "conclusion": "failure",
       "reason": "634 dynamic fallback requests remain"
     }
+  },
+  "sellerPlanSourceAudit20261119": {
+    "checkedAt": "2026-11-19",
+    "source": "Supabase production read-only SELECT public.marketplace_plans",
+    "rows": 6,
+    "allRowsActive": true,
+    "rls": {
+      "enabled": true,
+      "forced": false,
+      "policy": "public can view marketplace plans",
+      "roles": [
+        "anon",
+        "authenticated"
+      ],
+      "command": "SELECT",
+      "predicate": "is_active = true"
+    },
+    "plans": [
+      {
+        "code": "free",
+        "name": "Free Ad",
+        "description": "Basic 30-day listing. Moderated before going live.",
+        "billingPeriod": "free",
+        "durationDays": 30,
+        "maxActiveAds": 3,
+        "featuredRank": 0,
+        "isActive": true
+      },
+      {
+        "code": "boost_7",
+        "name": "Boost 7 Days",
+        "description": "Higher visibility in category and search results for 7 days.",
+        "billingPeriod": "one_time",
+        "durationDays": 7,
+        "maxActiveAds": null,
+        "featuredRank": 20,
+        "isActive": true
+      },
+      {
+        "code": "top_7",
+        "name": "Top Ad 7 Days",
+        "description": "Priority placement above standard ads for 7 days.",
+        "billingPeriod": "one_time",
+        "durationDays": 7,
+        "maxActiveAds": null,
+        "featuredRank": 50,
+        "isActive": true
+      },
+      {
+        "code": "business_monthly",
+        "name": "Business Monthly",
+        "description": "Business profile, more active listings and stronger visibility.",
+        "billingPeriod": "monthly",
+        "durationDays": 30,
+        "maxActiveAds": 50,
+        "featuredRank": 60,
+        "isActive": true
+      },
+      {
+        "code": "business_yearly",
+        "name": "Business Yearly",
+        "description": "Annual business plan with expanded listing allowance.",
+        "billingPeriod": "yearly",
+        "durationDays": 365,
+        "maxActiveAds": 100,
+        "featuredRank": 70,
+        "isActive": true
+      },
+      {
+        "code": "featured_30",
+        "name": "Featured 30 Days",
+        "description": "Featured badge and stronger placement for 30 days.",
+        "billingPeriod": "one_time",
+        "durationDays": 30,
+        "maxActiveAds": null,
+        "featuredRank": 80,
+        "isActive": true
+      }
+    ],
+    "sourceKeyDecision": {
+      "mappingApplied": false,
+      "reason": "Actual DB values are verified, but complete 98-locale static coverage is not. Mapping stable plan codes to source keys now would not remove the 20 seller-plan fallback strings or certify their translations.",
+      "rowsModified": 0,
+      "migrationsApplied": 0,
+      "translationRequests": 0
+    },
+    "auditFinding": "R125 #137 still observes 20 unique seller-plan fallback strings on 71 languages. Keep them visible and auditable; do not mark them no-translate."
   }
 }
