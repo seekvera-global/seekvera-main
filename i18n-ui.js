@@ -508,12 +508,7 @@ tr:{
 'Voice reply':'Sesli yanıt',
 'Voice':'Ses'
 },
-dz:{
-'Back':'ཕྱིར་ལོག',
-'Page navigation':'ཤོག་ངོས་འགྲུལ་སྐྱོད',
-'Voice reply':'སྐད་ཀྱི་ལན',
-'Voice':'སྐད་སྒྲ'
-}
+dz:{'Back':'ཕྱིར་ལོག','Page navigation':'ཤོག་ངོས་འགྲུལ་སྐྱོད','Voice reply':'སྐད་ཀྱི་ལན','Voice':'སྐད་སྒྲ'}
 };
 
 function api(p){const h=location.hostname;return(h==='seekveraglobal.com'||h==='www.seekveraglobal.com'||h.endsWith('workers.dev'))?p:'https://seekvera-main.seekvera-global.workers.dev'+p}
