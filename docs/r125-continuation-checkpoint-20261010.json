@@ -548,7 +548,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-19T11:55:21.416Z",
+  "checkedAt": "2026-11-19T11:57:03.182Z",
   "latestR125Run": {
     "run": 150,
     "status": "completed",
@@ -13678,7 +13678,7 @@
       "checkout is inactive pending merchant configuration"
     ]
   },
-  "lastUpdatedAt": "2026-11-19T11:55:21.416Z",
+  "lastUpdatedAt": "2026-11-19T11:57:03.182Z",
   "latestAutomationPass20261119V43": {
     "checkedAt": "2026-11-19T07:07:23.959Z",
     "mainBaseSha": "1d1d89dd55a1502618f180ea35a151ed436e3101",
@@ -15001,7 +15001,7 @@
     "decision": "NO-GO"
   },
   "latestAutomationPass20261119V50": {
-    "checkedAt": "2026-11-19T11:53:08Z",
+    "checkedAt": "2026-11-19T11:57:03.182Z",
     "mainCommit": "f2c8382c1a804ccce8e100483a504ebd25247e71",
     "runtimeVersion": "20261119-r125-global-quick-v50",
     "repair": {
@@ -15066,7 +15066,7 @@
       "pages": {
         "run": 1918,
         "runId": 44518777996,
-        "status": "in_progress",
+        "conclusion": "success",
         "deployedCommit": "f2c8382c1a804ccce8e100483a504ebd25247e71"
       },
       "r105": {
@@ -15082,7 +15082,14 @@
       "r123": {
         "run": 158,
         "runId": 44518778772,
-        "status": "in_progress"
+        "conclusion": "success",
+        "programmaticTTS": "passed",
+        "voiceAcknowledgement": "passed",
+        "dynamicVoicePlaceholders": "passed",
+        "androidBrowserProfilePlayback": "passed",
+        "productionAudioAssetAndMultilingualAudio": "skipped",
+        "liveASR": "not-verified",
+        "physicalDeviceCertified": false
       },
       "safety": {
         "run": 84,
@@ -15095,19 +15102,23 @@
         "run": 114,
         "runId": 44518778745,
         "status": "in_progress",
-        "lastObservedStep": "Install Chromium and system dependencies"
+        "lastObservedStep": "Install Chromium and system dependencies",
+        "stepStartedAt": "2026-11-19T11:53:30Z"
       },
       "r9e": {
         "run": 130,
         "runId": 44518778866,
         "status": "in_progress",
-        "lastObservedStep": "Install Chromium browser test runtime"
+        "lastObservedStep": "Install Chromium browser test runtime",
+        "stepStartedAt": "2026-11-19T11:53:20Z"
       },
       "previousR9e": {
         "run": 129,
         "runId": 44517347606,
         "status": "in_progress",
-        "lastObservedStep": "Install Chromium browser test runtime"
+        "lastObservedStep": "Install Chromium browser test runtime",
+        "stepStartedAt": "2026-11-19T11:43:43Z",
+        "note": "Long-running install; no final result available. New v50 run #130 is also in progress."
       }
     },
     "candidateState": {
@@ -15182,7 +15193,7 @@
       "v50Audit": "pending R9e #130"
     },
     "voice": {
-      "latestCompletedAudit": "R123 #157 on v49",
+      "latestCompletedAudit": "R123 #158 on v50",
       "programmaticTTS": "pass",
       "voiceAcknowledgement": "pass",
       "dynamicVoicePlaceholders": "pass",
