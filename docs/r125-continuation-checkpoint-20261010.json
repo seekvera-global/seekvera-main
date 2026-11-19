@@ -187,31 +187,31 @@
     }
   },
   "remainingChecks": [
-    "R105 #210 must pass the corrected Telugu QUICK regression and complete source validation/deployment on v52.",
-    "Complete R125 #116 on v52; require zero exact, partial, unresolved and dynamic-fallback findings across 98 languages × 27 sections.",
-    "Complete R9e #132 on v52; verify 248 country/territory profiles, 44 pages, Morocco/Worldwide priority, currency, safety and voice/PWA cache.",
+    "R125 #118 on v53 must complete all 98 languages × 27 sections with zero exact, partial, unresolved and dynamic-fallback findings.",
+    "R9e #133 on v53 must re-confirm 248 country/territory profiles, 44 pages, Morocco/Worldwide priority, currency, safety and voice/PWA cache.",
+    "R105 #211 and R123 #161 must validate and deploy v53; live AI chat and country intent remain unprobed unless a permitted quota-safe probe is available.",
     "Review Divehi's 58 English-overlap findings and 28 duplicate-output groups across 11 languages with qualified native reviewers; do not promote candidate packs.",
     "Obtain qualified linguistic review for all 98 locale packs; none is published or linguistically certified.",
-    "Keep live AI chat, AI country intent and translation-backend availability unknown until a permitted quota-safe probe can run without bypassing daily_free_ai_limit or Google HTTP429.",
+    "Keep live AI chat and translation-backend availability unknown until a permitted quota-safe probe can run without bypassing daily_free_ai_limit or Google HTTP429.",
     "Complete physical microphone/speaker tests on real Android, iPhone/iPad and desktop devices; browser/headless audio checks are not hardware certification.",
     "Configure merchant checkout and complete end-to-end payment, forged-reference rejection and settlement verification."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-19T12:47:00Z",
+    "checkedAt": "2026-11-19T12:55:30Z",
     "aiChat": {
       "currentAvailability": "unknown-not-certified",
-      "latestProductionRun": 207,
+      "latestProductionRun": 210,
       "aiBinding": true,
       "productionHealth": "passed",
       "centralSafetyGate": "enabled",
       "failClosed": true,
       "liveGenerationProbe": "skipped-by-policy",
       "generalChatAndCountryIntent": "not-probed",
-      "quotaStatus": "historical usage unknown; no quota-free claim",
-      "latestR105Run": 209,
-      "latestR105Conclusion": "failed before deploy on test assertion",
+      "quotaStatus": "daily_free_ai_limit and Google HTTP429 remain historical blockers; no live generation or translation probe sent",
+      "latestR105Run": 210,
+      "latestR105Conclusion": "success-health-passed-live-probes-skipped",
       "latestR123Run": 160,
       "workerDeployment": "success",
       "countryIntent": "not-probed"
@@ -234,11 +234,11 @@
       "quotaBypassAttempts": 0
     },
     "countryCurrency": {
-      "latestConfirmedRun": 130,
-      "latestConfirmedStatus": "passed on v50; v52 R9e #132 pending",
+      "latestConfirmedRun": 132,
+      "latestConfirmedStatus": "passed on v52; v53 recheck pending",
       "countryProfiles": "248/248",
       "localizedPages": "44/44",
-      "storedCurrencyAndFallback": "passed on v50",
+      "storedCurrencyAndFallback": "passed on v52",
       "manualMoroccoPriority": "passed on v50",
       "manualWorldwidePriority": "passed on v50",
       "visibleLocales": [
@@ -250,13 +250,19 @@
       "liveAiProbes": "skipped-by-policy",
       "liveASR": "not-verified",
       "v51Verification": "pending R9e after v51",
-      "v52Verification": "pending R9e #132"
+      "v52Verification": "pending R9e #132",
+      "moroccoPriority": "passed",
+      "worldwidePriority": "passed",
+      "v53Verification": "pending R9e #133"
     },
     "safety": {
-      "latestRun": 84,
+      "latestRun": 86,
       "status": "success",
       "blockedCases": 4,
-      "benignLand": "allowed_pending_human_review"
+      "benignLand": "allowed_pending_human_review",
+      "latestConclusion": "success",
+      "blockedCategories": 4,
+      "benignListings": "pending human review"
     },
     "checkout": "inactive pending merchant configuration and end-to-end payment, forged-reference rejection and settlement verification",
     "quotaBoundary": {
@@ -561,7 +567,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-19T12:47:00Z",
+  "checkedAt": "2026-11-19T12:55:30Z",
   "latestR125Run": {
     "run": 150,
     "status": "completed",
@@ -9894,186 +9900,71 @@
     "note": "The supplied 63/98 + 35 remaining figure is stale; current Main checkpoint and candidate summary show 98 structurally complete, 97 quality-passing and only Divehi blocked by 58 overlap findings."
   },
   "latestProductionSectionAudit": {
-    "previousRun": {
-      "run": 88,
-      "runId": 44332952014,
-      "status": "completed",
-      "conclusion": "failure",
-      "runtimeVersion": "20261118-r125-global-quick-v25",
-      "matrix": {
-        "languages": 98,
-        "sections": 27,
-        "applications": 2646,
-        "countryProfiles": 248,
-        "exact": 0,
-        "partial": 0,
-        "unresolved": 1
-      },
-      "dynamicFallback": {
-        "language": "Uzbek",
-        "requests": 1,
-        "strings": [
-          "Back",
-          "Page navigation",
-          "Voice reply",
-          "Voice"
-        ]
-      },
-      "unresolvedLanguages": [
-        "ur"
-      ]
+    "run": 117,
+    "runId": 44527127269,
+    "workflow": ".github/workflows/r125-static-locale-section-audit.yml",
+    "createdAt": "2026-11-19T12:47:13Z",
+    "completedAt": "2026-11-19T12:55:11Z",
+    "status": "completed",
+    "conclusion": "failure",
+    "headSha": "ff3e3f5cdfc5bf1c9a8dfa23cbe476049a204adf",
+    "runtimeVersion": "20261119-r125-global-quick-v52",
+    "languages": 98,
+    "sections": 27,
+    "sectionLanguageApplications": 2646,
+    "countryProfiles": 248,
+    "missingKeys": 0,
+    "extraKeys": 0,
+    "emptyValues": 0,
+    "exactFindingCombinations": 0,
+    "partialFindingCombinations": 0,
+    "unresolvedFindingCombinations": 0,
+    "dynamicFallbackRequests": 1,
+    "dynamicFallbackLanguages": [
+      "ml"
+    ],
+    "dynamicFallbackStrings": [
+      "Back",
+      "Page navigation",
+      "Voice reply",
+      "Voice"
+    ],
+    "blockedRequests": {
+      "ai": 0,
+      "translation": 1,
+      "pollinations": 0
     },
-    "repair": {
-      "version": "20261118-r125-global-quick-v26",
-      "commit": "1f6752b177e89131295023242af1ab88ed9dbc67",
-      "runtimeCommit": "1f6752b177e89131295023242af1ab88ed9dbc67",
-      "htmlPagesUpdated": 44,
-      "labels": {
-        "Back": "Orqaga",
-        "PageNavigation": "Sahifa navigatsiyasi",
-        "VoiceReply": "Ovoz javobi",
-        "Voice": "Ovoz"
-      },
-      "source": "Existing uz.json values with a small orthographic normalization; provisional UI labels only; native Uzbek review remains required."
-    },
-    "currentRun": {
-      "run": 89,
-      "runId": 44336397650,
-      "workflow": ".github/workflows/r125-static-locale-section-audit.yml",
-      "status": "completed",
-      "conclusion": "failure",
-      "headSha": "1f6752b177e89131295023242af1ab88ed9dbc67",
-      "runtimeVersion": "20261118-r125-global-quick-v26",
-      "preAuditSteps": {
-        "checkout": "success",
-        "nodeSetup": "success",
-        "playwright": "success",
-        "chromium": "success",
-        "pagesReadiness": "success",
-        "syntaxCheck": "success",
-        "quotaGuardAndQuickLabels": "success",
-        "noTranslateTriage": "success"
-      },
-      "matrixStarted": true,
-      "matrixResult": {
-        "languages": 98,
-        "sections": 27,
-        "sectionLanguageApplications": 2646,
-        "countryProfiles": 248,
-        "packsRead": 98,
-        "missingKeys": 0,
-        "extraKeys": 0,
-        "emptyValues": 0,
-        "exactFindingCombinations": 0,
-        "partialFindingCombinations": 0,
-        "unresolvedFindingCombinations": 0,
-        "unresolvedLanguages": []
-      },
-      "urduSellerPlanDiagnostic": {
-        "language": "ur",
-        "runtimeVersion": "20261118-r125-global-quick-v26",
-        "packReady": true,
-        "expectedMonthly": "ماہانہ کاروباری منصوبہ",
-        "expectedYearly": "سالانہ کاروباری منصوبہ",
-        "selectExists": true,
-        "selectRectCount": 1,
-        "selectDisplay": "inline-block",
-        "options": [
-          {
-            "text": "ماہانہ کاروباری منصوبہ",
-            "value": "business_monthly",
-            "selected": true
-          },
-          {
-            "text": "سالانہ کاروباری منصوبہ",
-            "value": "business_yearly",
-            "selected": false
-          }
-        ],
-        "result": "visible options are translated; previous unresolved report was an evidence gap in the inspector, not a live English option"
-      },
-      "dynamicFallback": {
-        "requests": 1,
-        "language": "Kyrgyz",
-        "strings": [
-          "Back",
-          "Page navigation",
-          "Voice reply",
-          "Voice"
-        ]
-      },
-      "blockedRequests": {
-        "ai": 0,
-        "translation": 1,
-        "pollinations": 0
-      },
-      "excludedOnlyExamples": [
-        {
-          "language": "Zulu",
-          "phrase": "AI Deal Agent",
-          "reason": "data-no-translate"
-        },
-        {
-          "language": "Kalaallisut",
-          "phrase": "AI Deal Agent",
-          "reason": "data-no-translate"
-        },
-        {
-          "language": "Basque",
-          "phrase": "AI Deal Agent",
-          "reason": "data-no-translate"
-        },
-        {
-          "language": "Luxembourgish",
-          "phrase": "AI Deal Agent",
-          "reason": "data-no-translate"
-        }
-      ],
-      "conclusionReason": "All 98 packs, 248 country profiles, homepage and 27 sections passed static key/structure checks with zero exact, partial or unresolved visible findings. One intercepted Kyrgyz dynamic fallback remains; no AI or translation provider request was sent.",
-      "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44336397650"
-    },
-    "nextRepair": {
-      "version": "20261118-r125-global-quick-v27",
-      "labels": {
-        "Back": "Артка",
-        "PageNavigation": "Барак навигациясы",
-        "VoiceReply": "Үн менен жооп",
-        "Voice": "Үн"
-      },
-      "source": "Conservative Kyrgyz UI wording; candidate pack values for these four labels were malformed and were not copied; native review remains required.",
-      "htmlPagesUpdated": 44,
-      "codeFilesUpdated": [
-        "i18n-ui.js",
-        "tools/test-ui-translation-quota-session-guard.cjs"
-      ],
-      "workflowsUpdated": [
-        ".github/workflows/r125-static-locale-section-audit.yml",
-        ".github/workflows/r105-final-release.yml",
-        ".github/workflows/final-browser-audit-r9.yml"
-      ],
-      "regression": "QUICK.ky exact-map and zero-provider-call case; R125 #90 must verify all 98 × 27 combinations."
-    },
-    "scope": "No AI or translation provider requests; no candidate pack writes."
+    "translationProviderCalls": 0,
+    "finding": "One intercepted browser POST to /api/ui-translate for Malayalam quick labels caused the zero-dynamic-fallback gate to fail. Visible exact, partial and unresolved English findings were all zero; no AI or translation-provider request was sent."
   },
   "latestProductionRuntimeChecks": {
     "r105": {
-      "run": 209,
-      "runId": 44526753552,
+      "run": 210,
+      "runId": 44527127390,
       "status": "completed",
-      "conclusion": "failure",
-      "failure": "strict deepEqual rejected VM cross-realm QUICK.te object; deploy skipped"
+      "conclusion": "success",
+      "headSha": "ff3e3f5cdfc5bf1c9a8dfa23cbe476049a204adf",
+      "sourceValidation": "success",
+      "all98LanguageNames": "success",
+      "quotaGuard": "success",
+      "workerDeployment": "success",
+      "productionHealth": "success",
+      "aiBinding": true,
+      "centralSafetyGate": "enabled",
+      "failClosed": true,
+      "liveAiProbes": "skipped-by-policy",
+      "liveChatAndCountryIntent": "not-probed"
     },
     "r123": {
       "run": 160,
       "runId": 44526753579,
       "status": "completed",
       "conclusion": "success",
-      "workerDeployment": "success",
       "audioAuthorityValidation": "passed",
       "liveCategoryTranslation": "passed",
       "voiceAcknowledgement": "passed",
       "dynamicVoicePlaceholders": "passed",
-      "androidBrowserProfileAudio": "passed",
+      "androidBrowserProfilePlayback": "passed",
       "productionAssetMultilingualAudio": "skipped",
       "liveASR": "not-verified",
       "physicalMicrophoneSpeakerCertified": false
@@ -10081,7 +9972,17 @@
     "r9e": {
       "run": 132,
       "runId": 44526753534,
-      "status": "in_progress"
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "6b6e41a41ee01bee496bff2b40d01a4d6a4d20a1",
+      "countryProfiles": "248/248",
+      "localizedPages": "44/44",
+      "moroccoPriority": "passed",
+      "worldwidePriority": "passed",
+      "currencyAndFallback": "passed",
+      "safetyGate": "passed",
+      "voiceAndPwaCache": "passed",
+      "liveAiProbes": "skipped-by-policy"
     },
     "r9eCurrent": {
       "run": 103,
@@ -10092,7 +9993,15 @@
       "run": 86,
       "runId": 44526753737,
       "status": "completed",
-      "conclusion": "success"
+      "conclusion": "success",
+      "blockedCategories": [
+        "weapons_or_explosives",
+        "explicit_sexual_content",
+        "stolen_counterfeit_or_fake_documents",
+        "ownership_or_consent_problem"
+      ],
+      "benignLand": "allowed_pending_human_review",
+      "failClosed": "passed"
     },
     "pages": {
       "run": 1922,
@@ -10103,9 +10012,13 @@
       "deploy": "success"
     },
     "r125": {
-      "run": 116,
-      "runId": 44526753527,
-      "status": "pending"
+      "run": 117,
+      "runId": 44527127269,
+      "status": "completed",
+      "conclusion": "failure",
+      "dynamicFallbackLanguage": "ml",
+      "visibleLeakFindings": 0,
+      "sectionLanguageApplications": 2646
     }
   },
   "latestResumeWorkflowInspection": {
@@ -13676,7 +13589,7 @@
       "checkout is inactive pending merchant configuration"
     ]
   },
-  "lastUpdatedAt": "2026-11-19T12:47:00Z",
+  "lastUpdatedAt": "2026-11-19T12:55:30Z",
   "latestAutomationPass20261119V43": {
     "checkedAt": "2026-11-19T07:07:23.959Z",
     "mainBaseSha": "1d1d89dd55a1502618f180ea35a151ed436e3101",
@@ -14319,7 +14232,7 @@
     "decision": "NO-GO"
   },
   "latestR125ResumeInspection": {
-    "checkedAt": "2026-11-19T10:43:28Z",
+    "checkedAt": "2026-11-19T12:55:30Z",
     "workflowPath": ".github/workflows/r125-hourly-candidate-resume.yml",
     "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
     "triggers": [
@@ -14337,7 +14250,6 @@
       "workflowRevision": "legacy",
       "resumeStep": "skipped",
       "auditStep": "success",
-      "saveProgress": "success",
       "candidatePackWrites": 0,
       "metadataFilesWritten": 2
     },
@@ -14370,7 +14282,7 @@
     "candidateMetadataWritesThisPass": 0,
     "translationRequestsThisPass": 0,
     "aiQuotaUsedThisPass": 0,
-    "note": "Re-fetched the latest matching run's jobs and logs. #150 is legacy, not current-revision CI. It skipped candidate translation and changed no candidate packs, but wrote two audit metadata files to the candidate branch. Current Main workflow gates persistence behind explicit run_translations=true or repair_candidates=true."
+    "note": "Latest matching resume run remains legacy #150. No active or queued R125 candidate-resume run was found. The separate static locale audit #117 completed before this repair and failed on one Malayalam dynamic fallback; no candidate pack files were changed."
   },
   "quota": {
     "translationRequestsSent": 0,
@@ -15566,6 +15478,239 @@
     "published": false,
     "linguisticCertification": false,
     "aiAvailability": "unknown-not-certified; no live generation or translation probe",
+    "decision": "NO-GO"
+  },
+  "latestProductionSectionAuditHistory": [
+    {
+      "previousRun": {
+        "run": 88,
+        "runId": 44332952014,
+        "status": "completed",
+        "conclusion": "failure",
+        "runtimeVersion": "20261118-r125-global-quick-v25",
+        "matrix": {
+          "languages": 98,
+          "sections": 27,
+          "applications": 2646,
+          "countryProfiles": 248,
+          "exact": 0,
+          "partial": 0,
+          "unresolved": 1
+        },
+        "dynamicFallback": {
+          "language": "Uzbek",
+          "requests": 1,
+          "strings": [
+            "Back",
+            "Page navigation",
+            "Voice reply",
+            "Voice"
+          ]
+        },
+        "unresolvedLanguages": [
+          "ur"
+        ]
+      },
+      "repair": {
+        "version": "20261118-r125-global-quick-v26",
+        "commit": "1f6752b177e89131295023242af1ab88ed9dbc67",
+        "runtimeCommit": "1f6752b177e89131295023242af1ab88ed9dbc67",
+        "htmlPagesUpdated": 44,
+        "labels": {
+          "Back": "Orqaga",
+          "PageNavigation": "Sahifa navigatsiyasi",
+          "VoiceReply": "Ovoz javobi",
+          "Voice": "Ovoz"
+        },
+        "source": "Existing uz.json values with a small orthographic normalization; provisional UI labels only; native Uzbek review remains required."
+      },
+      "currentRun": {
+        "run": 89,
+        "runId": 44336397650,
+        "workflow": ".github/workflows/r125-static-locale-section-audit.yml",
+        "status": "completed",
+        "conclusion": "failure",
+        "headSha": "1f6752b177e89131295023242af1ab88ed9dbc67",
+        "runtimeVersion": "20261118-r125-global-quick-v26",
+        "preAuditSteps": {
+          "checkout": "success",
+          "nodeSetup": "success",
+          "playwright": "success",
+          "chromium": "success",
+          "pagesReadiness": "success",
+          "syntaxCheck": "success",
+          "quotaGuardAndQuickLabels": "success",
+          "noTranslateTriage": "success"
+        },
+        "matrixStarted": true,
+        "matrixResult": {
+          "languages": 98,
+          "sections": 27,
+          "sectionLanguageApplications": 2646,
+          "countryProfiles": 248,
+          "packsRead": 98,
+          "missingKeys": 0,
+          "extraKeys": 0,
+          "emptyValues": 0,
+          "exactFindingCombinations": 0,
+          "partialFindingCombinations": 0,
+          "unresolvedFindingCombinations": 0,
+          "unresolvedLanguages": []
+        },
+        "urduSellerPlanDiagnostic": {
+          "language": "ur",
+          "runtimeVersion": "20261118-r125-global-quick-v26",
+          "packReady": true,
+          "expectedMonthly": "ماہانہ کاروباری منصوبہ",
+          "expectedYearly": "سالانہ کاروباری منصوبہ",
+          "selectExists": true,
+          "selectRectCount": 1,
+          "selectDisplay": "inline-block",
+          "options": [
+            {
+              "text": "ماہانہ کاروباری منصوبہ",
+              "value": "business_monthly",
+              "selected": true
+            },
+            {
+              "text": "سالانہ کاروباری منصوبہ",
+              "value": "business_yearly",
+              "selected": false
+            }
+          ],
+          "result": "visible options are translated; previous unresolved report was an evidence gap in the inspector, not a live English option"
+        },
+        "dynamicFallback": {
+          "requests": 1,
+          "language": "Kyrgyz",
+          "strings": [
+            "Back",
+            "Page navigation",
+            "Voice reply",
+            "Voice"
+          ]
+        },
+        "blockedRequests": {
+          "ai": 0,
+          "translation": 1,
+          "pollinations": 0
+        },
+        "excludedOnlyExamples": [
+          {
+            "language": "Zulu",
+            "phrase": "AI Deal Agent",
+            "reason": "data-no-translate"
+          },
+          {
+            "language": "Kalaallisut",
+            "phrase": "AI Deal Agent",
+            "reason": "data-no-translate"
+          },
+          {
+            "language": "Basque",
+            "phrase": "AI Deal Agent",
+            "reason": "data-no-translate"
+          },
+          {
+            "language": "Luxembourgish",
+            "phrase": "AI Deal Agent",
+            "reason": "data-no-translate"
+          }
+        ],
+        "conclusionReason": "All 98 packs, 248 country profiles, homepage and 27 sections passed static key/structure checks with zero exact, partial or unresolved visible findings. One intercepted Kyrgyz dynamic fallback remains; no AI or translation provider request was sent.",
+        "url": "https://github.com/seekvera-global/seekvera-main/actions/runs/44336397650"
+      },
+      "nextRepair": {
+        "version": "20261118-r125-global-quick-v27",
+        "labels": {
+          "Back": "Артка",
+          "PageNavigation": "Барак навигациясы",
+          "VoiceReply": "Үн менен жооп",
+          "Voice": "Үн"
+        },
+        "source": "Conservative Kyrgyz UI wording; candidate pack values for these four labels were malformed and were not copied; native review remains required.",
+        "htmlPagesUpdated": 44,
+        "codeFilesUpdated": [
+          "i18n-ui.js",
+          "tools/test-ui-translation-quota-session-guard.cjs"
+        ],
+        "workflowsUpdated": [
+          ".github/workflows/r125-static-locale-section-audit.yml",
+          ".github/workflows/r105-final-release.yml",
+          ".github/workflows/final-browser-audit-r9.yml"
+        ],
+        "regression": "QUICK.ky exact-map and zero-provider-call case; R125 #90 must verify all 98 × 27 combinations."
+      },
+      "scope": "No AI or translation provider requests; no candidate pack writes."
+    }
+  ],
+  "latestAutomationPass20261119V54": {
+    "checkedAt": "2026-11-19T12:55:30Z",
+    "mainBaseSha": "ff3e3f5cdfc5bf1c9a8dfa23cbe476049a204adf",
+    "runtimeVersion": "20261119-r125-global-quick-v52",
+    "finding": "R125 #117 audited all 98 languages × 27 sections and all 248 country profiles. Visible exact/partial/unresolved findings were zero, but one intercepted dynamic translation request remained for Malayalam Back, Page navigation, Voice reply and Voice.",
+    "repair": {
+      "language": "ml",
+      "labels": {
+        "Back": "പിന്നോക്കം",
+        "Page navigation": "പേജ് നിയന്ത്രണം",
+        "Voice reply": "വോയിസ് മറുപടി",
+        "Voice": "വോയിസ്"
+      },
+      "source": "Existing structurally valid Malayalam candidate pack; provisional only, native-speaker review required.",
+      "changes": [
+        "QUICK.ml added to i18n-ui.js",
+        "zero-provider-call regression added",
+        "R105/R9e/R125 checks updated",
+        "44 HTML cache references bumped to v53"
+      ]
+    },
+    "productionChecks": {
+      "r105": {
+        "run": 210,
+        "conclusion": "success",
+        "workerDeployment": "success",
+        "productionHealth": "success",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r9e": {
+        "run": 132,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "pages": "44/44",
+        "currency": "passed",
+        "moroccoWorldwidePriority": "passed",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "r123": {
+        "run": 160,
+        "conclusion": "success",
+        "programmaticVoice": "passed",
+        "androidBrowserProfilePlayback": "passed",
+        "liveASR": "not-verified",
+        "physicalAudio": "not-certified"
+      },
+      "safety": {
+        "run": 86,
+        "conclusion": "success"
+      },
+      "pages": {
+        "run": 1922,
+        "conclusion": "success"
+      },
+      "r125": {
+        "run": 117,
+        "conclusion": "failure",
+        "reason": "one Malayalam dynamic fallback; all 2,646 language-section applications completed"
+      }
+    },
+    "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "aiAvailability": "unknown-not-certified; live generation and translation probes skipped",
     "decision": "NO-GO"
   }
 }

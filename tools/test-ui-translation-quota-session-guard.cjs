@@ -123,6 +123,7 @@ async function main(){
  vm.runInContext(extract(i18n,'const QUICK={','// Provisional quota-neutral overrides','QUICK map')+';this.quick=QUICK;',quickContext);
  const quickMap=quickContext.quick;
  assert.deepEqual({...quickMap.te},{'Back':'వెనక్కి','Page navigation':'పేజీ నావిగేషన్','Voice reply':'స్వరం సమాధానం','Voice':'స్వరం'},'Telugu quick labels must exist in the actual QUICK map');
+ assert.deepEqual({...quickMap.ml},{'Back':'പിന്നോക്കം','Page navigation':'പേജ് നിയന്ത്രണം','Voice reply':'വോയിസ് മറുപടി','Voice':'വോയിസ്'},'Malayalam quick labels must exist in the actual QUICK map');
  for(const item of quickCases){
   for(const [source,value] of Object.entries(item.labels))assert.equal(quickMap[item.code]?.[source],value,item.code+' quick label missing or differs in the actual QUICK map: '+source);
   let calls=0;
@@ -249,7 +250,8 @@ async function main(){
    {code:'km',language:'Khmer',labels:{'Back':'ត្រឡប់ក្រោយ','Page navigation':'ការរុករកទំព័រ','Voice reply':'ការឆ្លើយតបជាសំឡេង','Voice':'សំឡេង'}},
   {code:'my',language:'Burmese',labels:{'Back':'နောက်သို့','Page navigation':'စာမျက်နှာ လမ်းညွှန်','Voice reply':'အသံဖြင့် ပြန်ကြားချက်','Voice':'အသံ'}},
   {code:'dz',language:'Dzongkha',labels:{'Back':'ཕྱིར་ལོག','Page navigation':'ཤོག་ངོས་འགྲུལ་སྐྱོད','Voice reply':'སྐད་ཀྱི་ལན','Voice':'སྐད་སྒྲ'}},
-  {code:'te',language:'Telugu',labels:{'Back':'వెనక్కి','Page navigation':'పేజీ నావిగేషన్','Voice reply':'స్వరం సమాధానం','Voice':'స్వరం'}}
+  {code:'te',language:'Telugu',labels:{'Back':'వెనక్కి','Page navigation':'పేజీ నావిగేషన్','Voice reply':'స్వరం సమాధానం','Voice':'స్వరం'}},
+  {code:'ml',language:'Malayalam',labels:{'Back':'പിന്നോക്കം','Page navigation':'പേജ് നിയന്ത്രണം','Voice reply':'വോയിസ് മറുപടി','Voice':'വോയിസ്'}}
  ];
  for(const item of provisionalQuickCases){
   for(const value of Object.values(item.labels))assert(i18n.includes(value),'Missing '+item.code+' provisional quick label: '+value);
