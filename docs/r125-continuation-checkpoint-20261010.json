@@ -127,7 +127,8 @@
     "Checkout remains inactive pending merchant configuration and end-to-end payment, forged-reference rejection and settlement verification.",
     "R125 #114 on v50 completed 98 × 27 applications with zero visible exact/partial/unresolved findings but one locally intercepted Telugu dynamic fallback; v51 adds quota-neutral Telugu QUICK labels and a zero-provider-call regression, pending re-audit.",
     "R9e #130 on v50 passed 248/248 country profiles and 44/44 pages, Morocco/Worldwide priority, currency fallback, safety and voice/PWA cache; v51 requires re-audit.",
-    "R105 #207, R123 #158, Safety #84 and Pages #1918 passed on v50; live AI generation/country intent, live ASR and physical audio remain unverified."
+    "R105 #207, R123 #158, Safety #84 and Pages #1918 passed on v50; live AI generation/country intent, live ASR and physical audio remain unverified.",
+    "v51 introduced a missing comma between the Galician and Telugu QUICK entries. R105 #208 and R123 #159 caught the SyntaxError before Worker deployment. v52 corrects the syntax and bumps all cache references; re-verification is pending."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -185,13 +186,12 @@
     }
   },
   "remainingChecks": [
-    "Run R125 on v51 and require zero exact, partial, unresolved and dynamic-fallback findings across 98 languages × 27 sections (2,646 applications).",
-    "Run R9e on v51 and verify 248 country/territory profiles, 44 localized pages, Morocco and Worldwide priority, stored currency, visible locales, safety and voice/PWA cache.",
-    "Review Divehi's 58 English-overlap findings and 28 duplicate-output groups across 11 languages with qualified native reviewers; do not promote candidate packs.",
-    "Obtain qualified linguistic review for all 98 locale packs; none is published or linguistically certified.",
-    "Keep live AI chat, AI country intent and translation-backend availability unknown until a permitted quota-safe probe can run without bypassing daily_free_ai_limit or Google HTTP429.",
-    "Complete physical microphone/speaker tests on real Android, iPhone/iPad and desktop devices; browser/headless audio checks are not hardware certification.",
-    "Configure merchant checkout and complete end-to-end payment, forged-reference rejection and settlement verification."
+    "Complete R125 audit on v52 with zero visible English findings and zero dynamic fallback across 98 × 27 applications.",
+    "Complete R9e browser audit on v52 and confirm 248/248 countries, 44/44 pages, Morocco/Worldwide priority, currency, safety and voice/PWA cache.",
+    "Confirm R105 and R123 source validation and production deployment on v52.",
+    "Keep AI live chat and translation provider availability unknown unless a quota-safe probe is explicitly permitted.",
+    "Obtain qualified native-language review for all 98 packs; resolve Divehi 58 overlap and 28 duplicate groups across 11 languages.",
+    "Complete physical audio hardware tests and merchant checkout configuration/settlement verification."
   ],
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
@@ -552,7 +552,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-19T12:23:21Z",
+  "checkedAt": "2026-11-19T12:44:00Z",
   "latestR125Run": {
     "run": 150,
     "status": "completed",
@@ -10048,50 +10048,25 @@
   },
   "latestProductionRuntimeChecks": {
     "r105": {
-      "run": 207,
-      "runId": 44518778955,
+      "run": 208,
+      "runId": 44525819982,
       "status": "completed",
-      "conclusion": "success",
-      "aiBinding": true,
-      "centralSafetyGate": "enabled",
-      "failClosed": true,
-      "productionHealth": "passed",
-      "liveAiProbes": "skipped-by-policy",
-      "countryIntentProbe": "skipped-by-policy"
+      "conclusion": "failure",
+      "failure": "i18n-ui.js SyntaxError: Unexpected identifier te; deployment skipped"
     },
     "r123": {
-      "run": 158,
-      "runId": 44518778772,
+      "run": 159,
+      "runId": 44525819830,
       "status": "completed",
-      "conclusion": "success",
-      "programmaticTTS": "passed",
-      "voiceAcknowledgement": "passed",
-      "dynamicVoicePlaceholders": "passed",
-      "browserProfileAudio": "Android browser-profile playback passed",
-      "productionAudioAsset": "skipped",
-      "liveASR": "not-verified",
-      "physicalMicrophoneSpeakerCertified": false
+      "conclusion": "failure",
+      "failure": "audio authority validation blocked by the same i18n syntax error; deployment skipped"
     },
     "r9e": {
-      "run": 130,
-      "runId": 44518778866,
+      "run": 131,
+      "runId": 44525819759,
       "status": "completed",
-      "conclusion": "success",
-      "countryProfiles": "248/248",
-      "localizedPages": "44/44",
-      "manualMoroccoPriority": "passed",
-      "manualWorldwidePriority": "passed",
-      "visibleLocales": [
-        "MA/ar",
-        "FR/fr",
-        "IN/hi",
-        "CN/zh"
-      ],
-      "currencyAndFallback": "passed",
-      "safetyGate": "passed",
-      "voiceAndPwaCache": "passed",
-      "liveAiProbes": "skipped-by-policy",
-      "liveASR": "skipped"
+      "conclusion": "failure",
+      "failure": "stale 404.html runtime version assertion after 248-country and locale-priority checks"
     },
     "r9eCurrent": {
       "run": 103,
@@ -10099,21 +10074,16 @@
       "status": "in_progress"
     },
     "safety": {
-      "run": 84,
-      "runId": 44518778824,
+      "run": 85,
+      "runId": 44525819918,
       "status": "completed",
-      "conclusion": "success",
-      "blockedCases": 4,
-      "benignLand": "allowed_pending_human_review",
-      "marketplaceFailClosed": "passed"
+      "conclusion": "success"
     },
     "pages": {
-      "run": 1918,
-      "runId": 44518777996,
+      "run": 1921,
+      "runId": 44525818941,
       "status": "completed",
-      "conclusion": "success",
-      "build": "success",
-      "deploy": "success"
+      "conclusion": "success"
     },
     "r125": {
       "run": 96,
@@ -13690,7 +13660,7 @@
       "checkout is inactive pending merchant configuration"
     ]
   },
-  "lastUpdatedAt": "2026-11-19T12:23:21Z",
+  "lastUpdatedAt": "2026-11-19T12:44:00Z",
   "latestAutomationPass20261119V43": {
     "checkedAt": "2026-11-19T07:07:23.959Z",
     "mainBaseSha": "1d1d89dd55a1502618f180ea35a151ed436e3101",
@@ -15433,5 +15403,97 @@
     ],
     "candidateBranchModified": false,
     "decision": "NO-GO"
+  },
+  "latestAutomationPass20261119V52": {
+    "checkedAt": "2026-11-19T12:44:00Z",
+    "mainParentSha": "21367a6b9101a86ed3a13ab68a6bea9efade901d",
+    "runtimeVersion": "20261119-r125-global-quick-v52",
+    "previousRuntimeVersion": "20261119-r125-global-quick-v51",
+    "repair": {
+      "finding": "R105 #208 and R123 #159 detected a JavaScript syntax error: the new Telugu QUICK entry followed the Galician entry without a comma.",
+      "fix": "Added the missing comma after QUICK.gl, bumped the cache version to v52, and updated all 44 localized HTML script references plus R105/R9e/R125 assertions.",
+      "language": "te",
+      "labels": {
+        "Back": "వెనక్కి",
+        "Page navigation": "పేజీ నావిగేషన్",
+        "Voice reply": "స్వరం సమాధానం",
+        "Voice": "స్వరం"
+      },
+      "nativeReviewRequired": true,
+      "providerRequests": 0
+    },
+    "v51Verification": {
+      "r105": {
+        "run": 208,
+        "runId": 44525819982,
+        "conclusion": "failure",
+        "failure": "SyntaxError: Unexpected identifier 'te' in i18n-ui.js; source validation stopped before Worker deployment."
+      },
+      "r123": {
+        "run": 159,
+        "runId": 44525819830,
+        "conclusion": "failure",
+        "failure": "Audio authority validation encountered the same i18n-ui.js syntax error; Worker deployment skipped."
+      },
+      "r9e": {
+        "run": 131,
+        "runId": 44525819759,
+        "conclusion": "failure",
+        "failure": "Country matrix passed 248 profiles; Morocco and Worldwide priority passed; visible MA/ar, FR/fr, IN/hi and CN/zh passed; page runtime assertion then found 404.html serving a stale i18n version instead of v51."
+      },
+      "r125": {
+        "run": 115,
+        "runId": 44525819728,
+        "status": "in_progress",
+        "lastObserved": "Chromium install / full matrix pending"
+      },
+      "safety": {
+        "run": 85,
+        "runId": 44525819918,
+        "conclusion": "success"
+      },
+      "pages": {
+        "run": 1921,
+        "runId": 44525818941,
+        "conclusion": "success"
+      }
+    },
+    "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
+    "candidateBranchModified": false,
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "ai": {
+      "binding": true,
+      "productionHealth": "previous v50 R105 passed",
+      "liveChatAvailability": "unknown-not-certified",
+      "liveGenerationProbe": "not run",
+      "countryIntentAI": "not probed",
+      "translationAvailability": "unknown-not-probed",
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable"
+      ],
+      "quotaBypassAttempts": 0
+    },
+    "voice": {
+      "programmaticTTS": "previous v50 R123 #158 passed",
+      "v51R123": "failed before deploy because of syntax error",
+      "liveASR": "not-verified",
+      "physicalMicrophoneSpeakerCertified": false
+    },
+    "checkout": "inactive pending merchant configuration and end-to-end payment, forged-reference rejection and settlement verification",
+    "decision": "NO-GO",
+    "nextChecks": [
+      "Complete R125 audit on v52 with zero visible English findings and zero dynamic fallback across 98 × 27 applications.",
+      "Complete R9e browser audit on v52 and confirm 248/248 countries, 44/44 pages, Morocco/Worldwide priority, currency, safety and voice/PWA cache.",
+      "Confirm R105 and R123 source validation and production deployment on v52.",
+      "Keep AI live chat and translation provider availability unknown unless a quota-safe probe is explicitly permitted.",
+      "Obtain qualified native-language review for all 98 packs; resolve Divehi 58 overlap and 28 duplicate groups across 11 languages.",
+      "Complete physical audio hardware tests and merchant checkout configuration/settlement verification."
+    ]
   }
 }
