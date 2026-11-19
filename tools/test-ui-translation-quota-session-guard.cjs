@@ -112,6 +112,8 @@ async function main(){
    {code:'so',language:'Somali',labels:{'Back':'Dib u noqo','Page navigation':'Hagidda bogagga','Voice reply':'Jawaab cod ah','Voice':'Cod'}},
    // Dictionary-backed provisional Divehi labels; native review remains required.
    {code:'dv',language:'Divehi',labels:{'Back':'ފަހަތަށް','Page navigation':'ޞަފްޙާތަކަށް ދާ މަގު','Voice reply':'އަޑުން ޖަވާބު','Voice':'އަޑު'}},
+   // Provisional Malagasy quick labels; native review remains required.
+   {code:'mg',language:'Malagasy',labels:{'Back':'Miverina','Page navigation':'Fitetezana pejy','Voice reply':'Valiny am-peo','Voice':'Feo'}},
  ];
  const quickContext={INITIAL_AI:'__TEST_INITIAL_AI__'};vm.createContext(quickContext);
  vm.runInContext(extract(i18n,'const QUICK={','// Provisional quota-neutral overrides','QUICK map')+';this.quick=QUICK;',quickContext);
