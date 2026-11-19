@@ -1,7 +1,7 @@
 /* SEEKVERA R75 universal locale runtime: one country -> one language/currency -> every visible UI string. */
 (()=>{'use strict';
 if(window.__SEEKVERA_I18N_R32)return;window.__SEEKVERA_I18N_R32=true;
-const VERSION='20261119-r125-global-quick-v56';
+const VERSION='20261119-r125-global-quick-v57';
 const SRC=new WeakMap(),ATTRSRC=new WeakMap(),OPTIONSRC=new WeakMap(),MEM=new Map(),PACKS=new Map(),PACKING=new Map(),PACK_VALUES=new Map(),RENDERED_TEXT=new WeakMap(),RENDERED_ATTR=new WeakMap();
 const RTL=new Set(['ar','fa','ur','he','ps','dv']);
 const ATTRS=['placeholder','aria-label','title'];
@@ -485,6 +485,24 @@ mr:{'Back':'परत','Page navigation':'पेज नेव्हिगेश�
 gu:{'Back':'પાછળ','Page navigation':'પૃષ્ઠ નેવિગેશન','Voice reply':'વૉઇસ જવાબ','Voice':'વૉઇસ'},
 // Provisional Punjabi quick UI labels use existing pack vocabulary; qualified native review remains required.
 pa:{'Back':'ਵਾਪਸ','Page navigation':'ਪੰਨਿਆਂ ਦੀ ਨੈਵੀਗੇਸ਼ਨ','Voice reply':'ਵੌਇਸ ਜਵਾਬ','Voice':'ਵੌਇਸ'},
+// Provisional quota-neutral quick UI labels; native-speaker review remains required.
+ps:{'Back':'بېرته','Page navigation':'د پاڼو تګ راتګ','Voice reply':'غږیز ځواب','Voice':'غږ'},
+// Provisional Irish quick UI labels; native-speaker review remains required.
+ga:{'Back':'Ar ais','Page navigation':'Nascleanúint leathanaigh','Voice reply':'Freagra gutha','Voice':'Guth'},
+// Provisional Welsh quick UI labels; native-speaker review remains required.
+cy:{'Back':'Yn ôl','Page navigation':'Llywio tudalennau','Voice reply':'Ateb llais','Voice':'Llais'},
+// Provisional Māori quick UI labels; native-speaker review remains required.
+mi:{'Back':'Hoki','Page navigation':'Whakatere whārangi','Voice reply':'Whakautu ā-reo','Voice':'Reo'},
+// Provisional Western Frisian quick UI labels; native-speaker review remains required.
+fy:{'Back':'Werom','Page navigation':'Sidenavigaasje','Voice reply':'Stimantwurd','Voice':'Stim'},
+// Provisional Luxembourgish quick UI labels; native-speaker review remains required.
+lb:{'Back':'Zréck','Page navigation':'Säitennavigatioun','Voice reply':'Stëmm-Äntwert','Voice':'Stëmm'},
+// Provisional Kurmanji Kurdish quick UI labels; native-speaker review remains required.
+ku:{'Back':'Vegere','Page navigation':'Gerîna rûpelan','Voice reply':'Bersiva dengî','Voice':'Deng'},
+// Provisional Xhosa quick UI labels; native-speaker review remains required.
+xh:{'Back':'Buyela','Page navigation':'Ukuhamba phakathi kwamaphepha','Voice reply':'Impendulo yelizwi','Voice':'Ilizwi'},
+// Provisional Romansh quick UI labels; native-speaker review remains required.
+rm:{'Back':'Enavos','Page navigation':'Navigaziun da paginas','Voice reply':'Resposta vocala','Voice':'Vusch'},
 };
 // Provisional quota-neutral overrides for the exact R125 UI leaks. Native review remains required.
 const R125_PROVISIONAL={

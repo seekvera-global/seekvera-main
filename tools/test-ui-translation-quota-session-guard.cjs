@@ -121,6 +121,16 @@ async function main(){
    // Provisional Galician quick labels drawn from the existing locale pack; native review remains required.
    {code:'gl',language:'Galician',labels:{'Back':'Atrás','Page navigation':'Navegación de páxina','Voice reply':'Resposta por voz','Voice':'Voz'}},
   {code:'mr',language:'Marathi',labels:{'Back':'परत','Page navigation':'पेज नेव्हिगेशन','Voice reply':'व्हॉईस प्रतिसाद','Voice':'व्हॉईस'}},
+  // Provisional quick labels for the remaining R125 dynamic-fallback locales.
+  {code:'ps',language:'Pashto',labels:{'Back':'بېرته','Page navigation':'د پاڼو تګ راتګ','Voice reply':'غږیز ځواب','Voice':'غږ'}},
+  {code:'ga',language:'Irish',labels:{'Back':'Ar ais','Page navigation':'Nascleanúint leathanaigh','Voice reply':'Freagra gutha','Voice':'Guth'}},
+  {code:'cy',language:'Welsh',labels:{'Back':'Yn ôl','Page navigation':'Llywio tudalennau','Voice reply':'Ateb llais','Voice':'Llais'}},
+  {code:'mi',language:'Māori',labels:{'Back':'Hoki','Page navigation':'Whakatere whārangi','Voice reply':'Whakautu ā-reo','Voice':'Reo'}},
+  {code:'fy',language:'Western Frisian',labels:{'Back':'Werom','Page navigation':'Sidenavigaasje','Voice reply':'Stimantwurd','Voice':'Stim'}},
+  {code:'lb',language:'Luxembourgish',labels:{'Back':'Zréck','Page navigation':'Säitennavigatioun','Voice reply':'Stëmm-Äntwert','Voice':'Stëmm'}},
+  {code:'ku',language:'Kurdish',labels:{'Back':'Vegere','Page navigation':'Gerîna rûpelan','Voice reply':'Bersiva dengî','Voice':'Deng'}},
+  {code:'xh',language:'Xhosa',labels:{'Back':'Buyela','Page navigation':'Ukuhamba phakathi kwamaphepha','Voice reply':'Impendulo yelizwi','Voice':'Ilizwi'}},
+  {code:'rm',language:'Romansh',labels:{'Back':'Enavos','Page navigation':'Navigaziun da paginas','Voice reply':'Resposta vocala','Voice':'Vusch'}},
  ];
  const quickContext={INITIAL_AI:'__TEST_INITIAL_AI__'};vm.createContext(quickContext);
  vm.runInContext(extract(i18n,'const QUICK={','// Provisional quota-neutral overrides','QUICK map')+';this.quick=QUICK;',quickContext);
