@@ -58,7 +58,7 @@ async function renderPlans(){
   const code=String(x.code||'');
   const nameSource=PLAN_NAME_SOURCE[code]||String(x.name??'').trim();
   const billingPeriod=String(x.billing_period||'').trim().toLowerCase();
-  const periodSource=billingPeriodSourceFor(billingPeriod); do not imply a live one-time payment cadence before merchant terms are configured.\n  const periodSource=billingPeriod==='one_time'?'':(BILLING_PERIOD_SOURCE[billingPeriod]||billingPeriod.replace(/_/g,' '));
+  const periodSource=billingPeriodSourceFor(billingPeriod);
   if(periodSource&&!nameSource.toLowerCase().includes(periodSource.toLowerCase()))appendPlanText(d,'span','tag',localized(periodSource,language),periodSource);
   appendPlanText(d,'div','name',localized(nameSource,language),nameSource);
   const durationSource=x.duration_days?String(x.duration_days)+' days':'Flexible billing';
