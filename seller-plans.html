@@ -3,6 +3,19 @@
 <link rel="stylesheet" href="i18n-premium.css?v=20260924-az-r8">
 </head><body><header class="top"><a class="brand" href="index.html"><span class="mark">S</span>SEEKVERA</a><div class="topnav"><a class="btn" href="marketplace.html">Marketplace</a><a class="btn primary" href="post-ad.html">Post an Ad</a></div></header><main class="wrap"><section class="hero"><span class="tag">Worldwide seller options</span><h1>Promote Ads & Business Listings</h1><div class="muted">Keep basic ads free. Upgrade only when you want stronger placement, more listings or business visibility.</div><div class="note"><b>Global checkout:</b> the customer chooses an available payment gateway. No payment is taken here. Final prices and live checkout require connected merchant accounts.</div></section><section id="plans" class="plans"></section><section class="box paybox"><h2>Preferred payment method (not active yet)</h2><div class="gateways"><div class="gateway active" data-gateway="paystack"><b>Paystack</b><small>Cards and local payment methods where supported.</small></div><div class="gateway" data-gateway="payoneer"><b>Payoneer</b><small>Global checkout where supported by the merchant account.</small></div></div><div class="small" style="margin-top:8px">SEEKVERA will show only gateways that are enabled for the merchant account. Card acceptance depends on the customer bank, card network and country.</div></section><section class="forms"><div class="box"><h2>Promote an existing ad</h2><div class="muted">Enter the ad reference and request a promotion. No charge will be taken now.</div><input id="adRef" placeholder="SV-YYYYMMDD-XXXXXXXX"><select id="adPlan"></select><input id="adContact" placeholder="Phone, WhatsApp or email"><input id="adName" placeholder="Seller name (optional)"><button class="btn primary" id="adSubmit">Request promotion</button><div class="status" id="adStatus"></div></div><div class="box"><h2>Business subscription</h2><div class="muted">For companies, dealers, agencies and professional sellers that need more listings and visibility.</div><input id="bizName" placeholder="Business name"><input id="bizCountry" placeholder="Anywhere in the world"><select id="bizPlan"><option value="business_monthly">Business Monthly</option><option value="business_yearly">Business Yearly</option></select><input id="bizContact" placeholder="Phone, WhatsApp or email"><button class="btn primary" id="bizSubmit">Request promotion</button><div class="status" id="bizStatus"></div></div></section></main><script>const SB='https://nrdpyydfrpmqedtzmbyw.supabase.co',KEY='sb_publishable_tqqPQxqdNowIsSlJz4bW5w_kHOC905o',H={'apikey':KEY};let planRows=[],gateway='paystack';document.querySelectorAll('.gateway').forEach(el=>el.onclick=()=>{document.querySelectorAll('.gateway').forEach(x=>x.classList.remove('active'));el.classList.add('active');gateway=el.dataset.gateway});const localeCode=()=>String(document.documentElement.lang||'en').trim().toLowerCase().split('-')[0]||'en';
 const localized=(value,language=localeCode())=>{const source=String(value??'').trim();if(!source)return '';const translated=window.SEEKVERA_I18N_R32?.tFor?.(language,source);return typeof translated==='string'&&translated.trim()?translated:source};
+const PLAN_NAME_SOURCE=Object.freeze({
+ free:'Free · 30 days',
+ boost_7:'Boost · optional',
+ top_7:'Top Ad · optional',
+ business_monthly:'Business Monthly',
+ business_yearly:'Business Yearly',
+ featured_30:'Featured · optional'
+});
+const BILLING_PERIOD_SOURCE=Object.freeze({
+ free:'Free',
+ monthly:'Business Monthly',
+ yearly:'Business Yearly'
+});
 function appendPlanText(parent,tag,className,value,source){const el=document.createElement(tag);if(className)el.className=className;const text=String(value??'');el.textContent=text;if(source!==undefined&&text!==String(source??'').trim())el.setAttribute('data-no-translate','1');parent.appendChild(el);return el}
 let renderEpoch=0,lastRenderedLanguage='';
 async function renderPlans(){
@@ -14,9 +27,12 @@ async function renderPlans(){
  p.replaceChildren();s.replaceChildren();lastRenderedLanguage=language;
  for(const x of planRows){
   const d=document.createElement('div');d.className='plan'+(Number(x.featured_rank)>=50?' featured':'');
-  const period=String(x.billing_period||'').replace(/_/g,' ').replace(/\\b[a-z]/g,c=>c.toUpperCase());
-  appendPlanText(d,'span','tag',localized(period,language),period);
-  appendPlanText(d,'div','name',localized(x.name,language),x.name);
+  const code=String(x.code||'');
+  const nameSource=PLAN_NAME_SOURCE[code]||String(x.name??'').trim();
+  const billingPeriod=String(x.billing_period||'').trim().toLowerCase();
+  const periodSource=BILLING_PERIOD_SOURCE[billingPeriod]||billingPeriod.replace(/_/g,' ');
+  if(periodSource&&!nameSource.toLowerCase().includes(periodSource.toLowerCase()))appendPlanText(d,'span','tag',localized(periodSource,language),periodSource);
+  appendPlanText(d,'div','name',localized(nameSource,language),nameSource);
   appendPlanText(d,'div','price',localized('Price set at checkout',language),'Price set at checkout');
   const durationSource=x.duration_days?String(x.duration_days)+' days':'Flexible billing';const durationValue=x.duration_days?String(x.duration_days)+' '+localized('days',language):localized('Flexible billing',language);appendPlanText(d,'div','small',durationValue,durationSource);
   appendPlanText(d,'p','',localized(x.description,language),x.description);
