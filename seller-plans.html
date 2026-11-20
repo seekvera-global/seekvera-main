@@ -33,12 +33,14 @@ async function renderPlans(){
   const periodSource=BILLING_PERIOD_SOURCE[billingPeriod]||billingPeriod.replace(/_/g,' ');
   if(periodSource&&!nameSource.toLowerCase().includes(periodSource.toLowerCase()))appendPlanText(d,'span','tag',localized(periodSource,language),periodSource);
   appendPlanText(d,'div','name',localized(nameSource,language),nameSource);
-  appendPlanText(d,'div','price',localized('Price set at checkout',language),'Price set at checkout');
-  const durationSource=x.duration_days?String(x.duration_days)+' days':'Flexible billing';const durationValue=x.duration_days?String(x.duration_days)+' '+localized('days',language):localized('Flexible billing',language);appendPlanText(d,'div','small',durationValue,durationSource);
+  const durationSource=x.duration_days?String(x.duration_days)+' days':'Flexible billing';
+  if(code==='boost_7'||code==='top_7')appendPlanText(d,'div','small',localized('7 days',language),'7 days');
+  else if(code==='featured_30')appendPlanText(d,'div','small',localized('30 days',language),'30 days');
+  else if(!PLAN_NAME_SOURCE[code])appendPlanText(d,'div','small',localized(durationSource,language),durationSource);
   appendPlanText(d,'p','',localized(x.description,language),x.description);
   if(x.max_active_ads){const limitSource='Up to '+Number(x.max_active_ads)+' active ads';appendPlanText(d,'div','small',localized(limitSource,language),limitSource)}
   p.appendChild(d);
-  if(!['free','business_monthly','business_yearly'].includes(String(x.code||''))){const o=document.createElement('option');o.value=String(x.code||'');const optionText=localized(x.name,language);o.textContent=optionText;if(optionText!==String(x.name??'').trim())o.setAttribute('data-no-translate','1');s.appendChild(o)}
+  if(!['free','business_monthly','business_yearly'].includes(String(x.code||''))){const o=document.createElement('option');o.value=String(x.code||'');const optionText=localized(nameSource,language);o.textContent=optionText;if(optionText!==String(nameSource??'').trim())o.setAttribute('data-no-translate','1');s.appendChild(o)}
  }
 }
 async function loadPlans(){try{const r=await fetch(SB+'/rest/v1/marketplace_plans?select=*&order=featured_rank.asc',{headers:H});planRows=r.ok?await r.json():[]}catch{planRows=[]}lastRenderedLanguage='';await renderPlans()}
