@@ -13554,7 +13554,7 @@
       "checkout is inactive pending merchant configuration"
     ]
   },
-  "lastUpdatedAt": "2026-11-20T05:35:14Z",
+  "lastUpdatedAt": "2026-11-20T05:52:38.269Z",
   "latestAutomationPass20261119V43": {
     "checkedAt": "2026-11-19T07:07:23.959Z",
     "mainBaseSha": "1d1d89dd55a1502618f180ea35a151ed436e3101",
@@ -19830,7 +19830,7 @@
     "decision": "NO-GO"
   },
   "latestContinuationCheck20261120Turn21": {
-    "checkedAt": "2026-11-20T05:35:14Z",
+    "checkedAt": "2026-11-20T05:52:38.269Z",
     "filesRead": [
       "main: docs/r125-continuation-checkpoint-20261010.json",
       "candidate branch: docs/locale-candidates-20261008/resume-summary.json",
@@ -20123,7 +20123,43 @@
       "quotaBypassAttempts": 0,
       "published": false,
       "linguisticCertification": false,
-      "decision": "NO-GO"
+      "decision": "NO-GO",
+      "workflowDisplayNameRepair": true,
+      "workflowGuardStaticChecks": "PASS"
+    },
+    "workflowNamingRepair": {
+      "issue": "The workflow display name said 'hourly' although the YAML has workflow_dispatch only and no schedule trigger.",
+      "change": "Renamed the Actions display name to 'R125 manual candidate resume (quota-safe by default)' and added an explicit manual-only/quota comment. No trigger, input, condition, concurrency or write behavior changed.",
+      "commits": [
+        {
+          "sha": "bde6d390c9e5100a2ff59a2329a991dcfedb45d5",
+          "file": ".github/workflows/r125-hourly-candidate-resume.yml"
+        },
+        {
+          "sha": "57bc9b06edacb3c43e36b3aca2c41ea14e422761",
+          "file": "tools/test-r125-audit-only-guard.py"
+        },
+        {
+          "sha": "b083236cc3646d0fd34580f50df452f2ea13875d",
+          "file": "tools/test-r125-audit-only-guard.py"
+        }
+      ],
+      "guardChecks": {
+        "manualName": true,
+        "noHourlyLabel": true,
+        "manualDispatch": true,
+        "noSchedule": true,
+        "noPush": true,
+        "cancelInProgressFalse": true,
+        "runTranslationsDefaultFalse": true,
+        "repairCandidatesDefaultFalse": true,
+        "translationExplicitOptIn": true,
+        "auditOnlyGated": true,
+        "deterministicRepairGated": true,
+        "persistenceGated": true,
+        "result": "PASS static mirror of workflow guard assertions; Python name-regex separately passed"
+      },
+      "note": "This corrects the misleading display label; it does not enable an hourly schedule or trigger translation."
     }
   }
 }
