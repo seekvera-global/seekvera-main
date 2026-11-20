@@ -25,3 +25,43 @@ const intro={AI_INTRO:{en:'Detailed English intro'},langCode:()=> 'ha',tx:s=>s==
 assert(i18n.includes('.ai-msg,.sv-global-msg'));
 const games=fs.readFileSync('games.js','utf8');assert(games.includes('<b><span data-no-translate>${g.name}</span></b>'));assert(!games.includes('<b>${g.name}</b>'));assert(!games.includes('<b data-no-translate>${g.name}</b>'));assert(!games.includes("title.setAttribute('data-no-translate'"));assert(games.includes("overlayTitle.setAttribute('data-no-translate','1')"));assert(games.includes("overlayTitle.removeAttribute('data-no-translate');overlayTitle.textContent='Game Over'"));assert(games.includes("overlayTitle.removeAttribute('data-no-translate');overlayTitle.textContent='Paused'"));assert(games.includes("overlayText.firstElementChild.textContent=game.name"));assert(games.includes('<span data-no-translate></span> · Score '));assert(games.includes('<span>${categoryLabel(g.cat)}</span> · <span>${g.desc}</span>'));const gamePage=fs.readFileSync('games.html','utf8');assert(gamePage.includes('id="gameTitle" data-no-translate="1"'));assert(gamePage.includes('games.js?v=20261119-r125-proper-name-exclusions'));const jobsPage=fs.readFileSync('jobs.html','utf8');assert(jobsPage.includes('id="jobCountryBadge" data-no-translate="1"'));const mediaPage=fs.readFileSync('media.html','utf8');assert(mediaPage.includes('<b data-no-translate="1">Al Jazeera</b>'));assert(mediaPage.includes('<b data-no-translate="1">الجزيرة</b>'));assert(globalSource.includes("label.className='sv-control-caption-label'"));assert(!globalSource.includes("cap.dataset.noTranslate='1'"));assert(!globalSource.includes("querySelector('.sv-control-caption-label').textContent="));assert(!globalSource.includes("setAttribute('aria-label','Country / Region')"));assert(!globalSource.includes("setAttribute('aria-label','Language')"));assert(!globalSource.includes("setAttribute('aria-label','Currency')"));
 console.log('PASS: uncovered intro languages reuse their static pack; actual chat replies are preserved; game descriptions use independent translation keys.');
+
+
+// R125 seller-plan duration CLDR guard: no provider calls, no guessed translations.
+const sellerDurationPage=fs.readFileSync('seller-plans.html','utf8');
+assert(sellerDurationPage.includes('function localizedPlanDuration('));
+assert(sellerDurationPage.includes('localizedPlanDuration(30,language)'));
+assert(sellerDurationPage.includes('const periodSource=billingPeriodSourceFor(billingPeriod);'));
+assert(!sellerDurationPage.includes("localized('one time'"));
+const durationStart=sellerDurationPage.indexOf('const localizedPlanDuration=');
+const durationEnd=sellerDurationPage.indexOf('const PLAN_NAME_SOURCE=',durationStart);
+assert(durationStart>=0&&durationEnd>durationStart);
+const durationContext={Intl,localized:value=>value};
+vm.createContext(durationContext);
+vm.runInContext(sellerDurationPage.slice(durationStart,durationEnd)+';globalThis.localizedPlanDuration=localizedPlanDuration;',durationContext);
+const localeManifest=JSON.parse(fs.readFileSync('i18n-r32/manifest.json','utf8'));
+const normalizeDuration=value=>String(value).replace(/\p{N}+/gu,'#').replace(/\s+/g,' ').trim();
+const englishDuration=normalizeDuration(new Intl.NumberFormat('en',{style:'unit',unit:'day',unitDisplay:'long'}).format(30));
+let cldrLocalizedDurationCount=0;
+for(const locale of localeManifest.languages){
+ const cldrValue=new Intl.NumberFormat(locale,{style:'unit',unit:'day',unitDisplay:'long'}).format(30);
+ const expected=normalizeDuration(cldrValue)!==englishDuration?cldrValue:'30 days';
+ assert.equal(durationContext.localizedPlanDuration(30,locale),expected,locale);
+ if(expected!=='30 days')cldrLocalizedDurationCount++;
+}
+assert.equal(durationContext.localizedPlanDuration(0,'ar'),'');
+for(const [locale,expected] of [['ar','30 يومًا'],['fr','30 jours'],['ru','30 дней'],['zh','30天']]){
+ assert.equal(durationContext.localizedPlanDuration(30,locale),expected,locale);
+}
+const periodStart=sellerDurationPage.indexOf('const BILLING_PERIOD_SOURCE=');
+const periodEnd=sellerDurationPage.indexOf('function appendPlanText(',periodStart);
+assert(periodStart>=0&&periodEnd>periodStart);
+const periodContext={Object};
+vm.createContext(periodContext);
+vm.runInContext(sellerDurationPage.slice(periodStart,periodEnd)+';globalThis.billingPeriodSourceFor=billingPeriodSourceFor;',periodContext);
+assert.equal(periodContext.billingPeriodSourceFor('one_time'),'');
+assert.equal(periodContext.billingPeriodSourceFor('free'),'Free');
+assert.equal(periodContext.billingPeriodSourceFor('monthly'),'Business Monthly');
+assert.equal(periodContext.billingPeriodSourceFor('yearly'),'Business Yearly');
+console.log(`PASS: CLDR day-unit formatting avoids a dynamic translation for ${cldrLocalizedDurationCount}/${localeManifest.languages.length} locale tags; unsupported locale units retain the existing quota-guarded fallback.`);
+console.log('PASS: one-time cadence is not advertised while checkout is inactive; free/monthly/yearly billing labels remain.');
