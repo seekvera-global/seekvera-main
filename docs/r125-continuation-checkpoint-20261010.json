@@ -147,7 +147,10 @@
     "Latest matching candidate-resume workflow run remains legacy #150 (completed; resume skipped; zero candidate pack writes). Current Main workflow is manual-only, not hourly scheduled; no active candidate-resume run or current-revision run was found. Candidate branch head remains f7cdbba43212f7062d499fae7027c94f4d1f02a2.",
     "A fresh read-only reimplementation of the exact suspicious_overlap() rule against the current dv.json and source.json reproduced all 58 Divehi findings. Nine exact source-equal values are preserved HTML/brand/reference/CSS invariants and are not part of the 58; the 58 findings are genuine long English prefixes/fragments followed by Dhivehi text, with longest retained English runs up to 36 words.",
     "R125 #137 (2026-11-19) completed 98 languages × 27 sections (2,646 applications) and 248 country profiles with zero visible exact/partial/unresolved English findings, but failed the no-dynamic-fallback gate: 634 locally intercepted requests across 97 languages and 80 unique strings. Exact source comparison split these into 60 game strings present only in the unpublished candidate source and 20 seller-plan strings absent from candidate source. All calls were intercepted locally; provider/AI/Pollinations requests and quota used were zero.",
-    "Current Main candidate-resume workflow is workflow_dispatch only (no hourly schedule), defaults both run_translations and repair_candidates to false, and may write candidate packs only in explicit repair/translation mode. Latest matching run #150 is legacy, completed, resume skipped, zero candidate-pack writes; latest 100 repository Actions runs show no active run. Candidate branch head f7cdbba43212f7062d499fae7027c94f4d1f02a2 was preserved."
+    "Current Main candidate-resume workflow is workflow_dispatch only (no hourly schedule), defaults both run_translations and repair_candidates to false, and may write candidate packs only in explicit repair/translation mode. Latest matching run #150 is legacy, completed, resume skipped, zero candidate-pack writes; latest 100 repository Actions runs show no active run. Candidate branch head f7cdbba43212f7062d499fae7027c94f4d1f02a2 was preserved.",
+    "2026-11-20 R125 static audit #141 on Main ce26d1b completed the full 98-pack, 98-home-language, 27-section (2,646 applications) and 248-country matrices. Visible English exact/partial/unresolved findings were zero, but the no-dynamic-fallback gate failed: 651 locally intercepted UI-translation calls across 97 languages and 76 unique strings (60 game strings already in candidate source; 16 seller-plan strings absent from candidate source). AI, Pollinations and external provider requests were zero.",
+    "2026-11-20 Candidate branch received a quota-neutral provisional Divehi quick-label consistency repair: four values copied from the existing main i18n-ui.js QUICK.dv map. Candidate dv pack readback preserved 1,118 keys and sourceHash 6a1126e6a2ce5629. This does not resolve the 58 long English-overlap findings and is not linguistic certification or publication.",
+    "2026-11-20 R125 static audit readiness fix bypassed stale Cloudflare cache and reached all matrix steps; Pages #1970 passed. Latest candidate-resume workflow remains manual-only; no active run was found, and no translation requests or quota use occurred."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -218,20 +221,20 @@
   "resumeTool": "tools/build_current_locale_delta.py",
   "policy": "Never publish partial or unreviewed packs. Do not represent mocked or headless audio as physical device certification.",
   "runtimeAvailability": {
-    "checkedAt": "2026-11-19T19:15:04Z",
+    "checkedAt": "2026-11-20T01:48:58.998Z",
     "aiChat": {
       "currentAvailability": "unknown-not-certified",
-      "latestProductionRun": 221,
+      "latestProductionRun": 224,
       "aiBinding": true,
       "productionHealth": "passed",
       "centralSafetyGate": "enabled",
       "failClosed": true,
       "liveGenerationProbe": "skipped-by-policy",
       "generalChatAndCountryIntent": "not-probed",
-      "quotaStatus": "R105 #221 health and deployment passed; no live chat or country-intent inference probe was run. daily_free_ai_limit and Google HTTP429 remain historical blockers."
+      "quotaStatus": "No live generation probe was run; daily_free_ai_limit and Google HTTP429 remain historical blockers."
     },
     "voiceTranscription": {
-      "programmaticTests": "passed in R123 #169",
+      "programmaticTests": "passed in R123 #170",
       "categoryTranslations": "passed",
       "voiceAcknowledgement": "passed",
       "dynamicVoicePlaceholders": "passed",
@@ -252,7 +255,7 @@
     },
     "countryCurrency": {
       "latestConfirmedRun": 138,
-      "latestConfirmedStatus": "passed on head dac26d2 (not the seller-plans-only follow-up commit)",
+      "latestConfirmedStatus": "passed on head dac26d2; country/currency implementation unchanged through e57a and ce26",
       "countryProfiles": "248/248",
       "localizedPages": "44/44",
       "storedCurrencyAndFallback": "passed",
@@ -264,8 +267,7 @@
         "IN/hi",
         "CN/zh"
       ],
-      "liveAiProbes": "skipped-by-policy",
-      "liveASR": "not-verified"
+      "liveAiProbes": "skipped-by-policy"
     },
     "safety": {
       "latestRun": 92,
@@ -278,7 +280,7 @@
       "translationProviderRequestsThisPass": 0,
       "liveGenerationProbesThisPass": 0,
       "quotaBypassAttempts": 0,
-      "browserInterceptedFallbackRequests": 634
+      "browserInterceptedFallbackRequests": 651
     }
   },
   "voiceScriptCoverage": {
@@ -2829,98 +2831,140 @@
     "validation": "Read-back verified; provisional manual Hausa UI terms; native review required."
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-18T15:54:50.918Z",
+    "checkedAt": "2026-11-20T01:48:58.998Z",
     "filesRead": [
       "main docs/r125-continuation-checkpoint-20261010.json",
       "candidate docs/locale-candidates-20261008/resume-summary.json",
       "candidate docs/locale-candidates-20261008/resume-latest.log",
       "main .github/workflows/r125-hourly-candidate-resume.yml",
       "main .github/workflows/r125-static-locale-section-audit.yml",
-      "main .github/workflows/r105-final-release.yml",
-      "main .github/workflows/final-browser-audit-r9.yml",
+      "main tools/r125_static_locale_section_audit.mjs",
+      "main tools/build_current_locale_delta.py",
+      "main tools/audit_locale_candidates.py",
       "main i18n-ui.js",
-      "main tools/test-ui-translation-quota-session-guard.cjs"
+      "candidate docs/locale-candidates-20261008/dv.json",
+      "candidate docs/locale-candidates-20261008/source.json"
     ],
     "sourceReadback": {
-      "checkpointBlobSha": "e1a62352b572c3e1470d9007ee6de45c112079f5",
-      "candidateSummaryBlobSha": "551a1cad78540f437e67d1d0a88ae1e844478022",
-      "resumeLatestLogBlobSha": "1ca195f7a528e7b073ecff1166cd1e4142b55e9b",
+      "checkpointBlobSha": "26aeb6ed94d762e5dd32947fa7a4f2f1d54cc176",
+      "candidateSummaryBlobSha": "3ee90814f02ab641cf3adbea01db90c8e8b7ed89",
+      "resumeLatestLogBlobSha": "a6888c7673def0f715bbb746003fd2f8c054c6e7",
+      "candidateDvPackBlobSha": "b7aab027a7563ce6024b2c3d5381a6ebc9345089",
       "candidateBranch": "work/r125-locale-candidates-20261008",
-      "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2"
+      "candidateBranchHead": "51e395153d8ca01026eca3bdddb37fd0df2aaf10"
     },
     "actions": {
-      "latestR105": {
-        "run": 184,
-        "id": 44340406943,
+      "latestR125StaticAudit": {
+        "run": 141,
+        "id": 44655215569,
+        "status": "completed",
+        "conclusion": "failure",
+        "headSha": "ce26d1b731fcbb6fd46a8107e448e9f25b5e3f57",
+        "visibleEnglish": {
+          "exact": 0,
+          "partial": 0,
+          "unresolved": 0
+        },
+        "sectionLanguageApplications": 2646,
+        "localePacksLoaded": 98,
+        "homeLanguageMatrix": "98/98",
+        "sectionMatrix": "27/27",
+        "countryProfiles": 248,
+        "dynamicFallbackRequests": 651,
+        "dynamicFallbackLanguages": 97,
+        "uniqueFallbackStrings": 76,
+        "candidateSourceStrings": 60,
+        "sellerPlanStringsMissingFromCandidateSource": 16,
+        "aiRequests": 0,
+        "providerTranslationRequests": 0,
+        "pollinationsRequests": 0,
+        "emptyMarketplaceMockChecks": 3,
+        "failureReason": "No-dynamic-fallback gate; all /api/ui-translate calls were locally intercepted. The audit did not contact translation providers."
+      },
+      "precedingR125StaticAudit": {
+        "run": 140,
+        "id": 44649363160,
+        "status": "completed",
+        "conclusion": "failure",
+        "failureReason": "stale Cloudflare edge cache served old asset versions; no full matrix ran"
+      },
+      "latestCandidateResume": {
+        "run": 150,
+        "id": 38971104197,
         "status": "completed",
         "conclusion": "success",
+        "revision": "legacy",
+        "resume": "skipped",
+        "audit": "success",
+        "candidatePackWrites": 0,
+        "translationRequests": 0,
+        "aiQuotaUsed": 0,
+        "currentWorkflowDispatchRuns": 0,
+        "activeRuns": 0
+      },
+      "latestR105": {
+        "run": 224,
+        "id": 44655130248,
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "e57a5584e0b59fdfe1ae3a4a021b6c11edecb56f",
         "aiBinding": true,
+        "productionHealth": "passed",
         "centralSafetyGate": "enabled",
         "failClosed": true,
-        "liveAiProbes": "skipped-by-policy"
+        "liveGeneration": "skipped-by-policy",
+        "countryIntent": "skipped-by-policy"
       },
       "latestR123": {
-        "run": 135,
-        "id": 44340407039,
+        "run": 170,
+        "id": 44655130207,
         "status": "completed",
         "conclusion": "success",
+        "headSha": "e57a5584e0b59fdfe1ae3a4a021b6c11edecb56f",
         "programmaticAudio": "passed",
-        "headlessAndroidPlayback": "passed",
+        "voiceAcknowledgement": "passed",
+        "dynamicVoicePlaceholders": "passed",
+        "androidBrowserProfilePlayback": "passed",
+        "productionMultilingualAudio": "skipped",
         "liveASR": "skipped",
-        "physicalAudio": "not-certified"
+        "physicalMicrophoneSpeakerCertified": false
       },
       "latestR9e": {
-        "run": 98,
-        "id": 44340407370,
+        "run": 138,
+        "id": 44593451053,
         "status": "completed",
         "conclusion": "success",
+        "headSha": "dac26d2c87e78add075755bd95fc84cb080a2184",
         "countryProfiles": "248/248",
         "localizedPages": "44/44",
         "MoroccoPriority": "passed",
         "WorldwidePriority": "passed",
         "currencyStability": "passed",
-        "liveAiProbes": "skipped-by-policy"
-      },
-      "latestR125StaticAudit": {
-        "run": 91,
-        "id": 44340407067,
-        "status": "in_progress",
-        "conclusion": null,
-        "headSha": "1babbd03c3ab3dbfbc9d1bff0639c72b022af9e3",
-        "scope": "98 languages x 27 sections after Tajik local QUICK repair"
-      },
-      "precedingR125StaticAudit": {
-        "run": 90,
-        "id": 44337891145,
-        "status": "completed",
-        "conclusion": "failure",
-        "headSha": "1fb19a83390c4d55b9ac2c431a788250acf089fd",
-        "dynamicFallback": {
-          "language": "Tajik",
-          "requests": 1,
-          "strings": [
-            "Back",
-            "Page navigation",
-            "Voice reply",
-            "Voice"
-          ]
-        },
-        "exact": 0,
-        "partial": 0,
-        "unresolved": 0
+        "visibleLocales": [
+          "MA/ar",
+          "FR/fr",
+          "IN/hi",
+          "CN/zh"
+        ],
+        "liveAIProbes": "skipped-by-policy",
+        "codePathsUnchangedSinceRun": true
       },
       "latestSafety": {
-        "run": 61,
-        "id": 44340406833,
-        "status": "completed",
-        "conclusion": "success"
-      },
-      "latestPages": {
-        "run": 1871,
-        "id": 44340404751,
+        "run": 92,
+        "id": 44593451109,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "1babbd03c3ab3dbfbc9d1bff0639c72b022af9e3"
+        "headSha": "dac26d2c87e78add075755bd95fc84cb080a2184",
+        "blockedCases": 4,
+        "benignLand": "allowed_pending_human_review",
+        "safetyCodeUnchangedSinceRun": true
+      },
+      "latestPages": {
+        "run": 1970,
+        "id": 44655214064,
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "ce26d1b731fcbb6fd46a8107e448e9f25b5e3f57"
       }
     },
     "workflow": {
@@ -2933,25 +2977,19 @@
       "repairCandidatesDefault": false,
       "translationRequiresExplicitOptIn": true,
       "repairModeMayWriteCandidatePacks": true,
-      "latestMatchingRun": {
-        "number": 150,
-        "runId": 38971104197,
-        "status": "completed",
-        "conclusion": "success",
-        "revision": "legacy",
-        "resume": "skipped",
-        "audit": "success"
-      },
+      "latestMatchingRun": 150,
+      "latestMatchingRunIsLegacy": true,
       "currentWorkflowDispatchRuns": 0,
       "activeResumeRuns": 0,
-      "candidateWritesDeferred": true
+      "candidateWritesDeferredWhileResumeActive": true,
+      "candidateWritesThisPassAfterNoActiveResume": 1
     },
     "candidateState": {
       "structural": 98,
       "total": 98,
       "keysPerPack": 1118,
       "sourceHash": "6a1126e6a2ce5629",
-      "qualityCandidates": 97,
+      "qualityPassingCandidates": 97,
       "remaining": [
         "dv"
       ],
@@ -2962,24 +3000,30 @@
       "linguisticCertification": false,
       "productionKeyCount": 1045,
       "unpublishedKeyDelta": 73,
-      "freshPackReadback": {
-        "packsRead": 98,
-        "missingFiles": 0,
-        "extraFiles": 0,
-        "sourceHashMatches": 98,
-        "exactKeySets": 98,
-        "missingKeys": 0,
-        "extraKeys": 0,
-        "emptyValues": 0
+      "lastQuotaNeutralRepair": {
+        "language": "dv",
+        "exactEdits": 4,
+        "keys": [
+          "Back",
+          "Page navigation",
+          "Voice reply",
+          "Voice"
+        ],
+        "copiedFrom": "main i18n-ui.js QUICK.dv",
+        "sourceHashPreserved": true,
+        "keysPerPackPreserved": 1118,
+        "nativeReviewRequired": true
       }
     },
     "thisPass": {
-      "mainCommit": "1babbd03c3ab3dbfbc9d1bff0639c72b022af9e3",
-      "candidatePackWrites": 0,
-      "candidateMetadataWrites": 0,
+      "mainCommitBeforeCheckpoint": "ce26d1b731fcbb6fd46a8107e448e9f25b5e3f57",
+      "candidateBranchHead": "51e395153d8ca01026eca3bdddb37fd0df2aaf10",
+      "candidatePackWrites": 1,
+      "candidateMetadataWrites": 2,
       "translationRequests": 0,
-      "aiQuotaUsage": "unknown historical usage; no direct live model probe was made",
-      "readbackVerified": true,
+      "aiQuotaUsed": 0,
+      "candidatePackReadbackVerified": true,
+      "summaryAndLogReadbackVerified": true,
       "published": false,
       "linguisticCertification": false,
       "decision": "NO-GO"
@@ -2989,24 +3033,26 @@
       "chatAvailability": "unknown-not-probed",
       "liveGeneration": "skipped-by-policy",
       "translationAvailability": "unknown-not-probed",
-      "lastResumeLogError": "HTTP 503 all_translation_backends_unavailable",
       "knownBlockers": [
         "daily_free_ai_limit",
-        "Google HTTP429"
+        "Google HTTP429",
+        "HTTP 503 all_translation_backends_unavailable"
       ],
-      "directTranslationRequestsThisPass": 0,
+      "directLiveGenerationProbesThisPass": 0,
+      "directTranslationProbesThisPass": 0,
       "quotaBypassAttempts": 0,
-      "historicalR105CountryProbeUsage": "unknown; earlier #181/#182 ran before the opt-in gate"
+      "providerRequestsThisPass": 0
     },
     "voice": {
-      "programmaticTTS": "passed",
-      "headlessAndroidPlayback": "passed",
+      "programmaticTTS": "passed in R123 #170",
       "voiceAcknowledgement": "passed",
       "dynamicPlaceholders": "passed",
+      "androidBrowserProfilePlayback": "passed",
+      "productionMultilingualAudio": "skipped",
       "liveASR": "not-verified",
       "physicalMicrophoneSpeakerCertification": false
     },
-    "checkout": "inactive pending merchant configuration and end-to-end merchant verification",
+    "checkout": "inactive pending merchant configuration and end-to-end payment, forged-reference rejection, refund, settlement and webhook verification",
     "decision": "NO-GO"
   },
   "latestQuotaNeutralManualBatch": {
@@ -13627,7 +13673,7 @@
       "checkout is inactive pending merchant configuration"
     ]
   },
-  "lastUpdatedAt": "2026-11-19T16:02:36Z",
+  "lastUpdatedAt": "2026-11-20T01:48:58.998Z",
   "latestAutomationPass20261119V43": {
     "checkedAt": "2026-11-19T07:07:23.959Z",
     "mainBaseSha": "1d1d89dd55a1502618f180ea35a151ed436e3101",
@@ -19047,5 +19093,120 @@
       "linguisticCertification": false,
       "decision": "NO-GO"
     }
+  },
+  "latestAutomationPass20261120Turn17": {
+    "checkedAt": "2026-11-20T01:48:58.998Z",
+    "mainHeadBeforeCheckpoint": "ce26d1b731fcbb6fd46a8107e448e9f25b5e3f57",
+    "candidateBranchHead": "51e395153d8ca01026eca3bdddb37fd0df2aaf10",
+    "candidateRepair": {
+      "language": "dv",
+      "exactEdits": 4,
+      "keys": [
+        "Back",
+        "Page navigation",
+        "Voice reply",
+        "Voice"
+      ],
+      "quotaNeutral": true,
+      "notPublished": true,
+      "nativeReviewRequired": true
+    },
+    "latestR125": {
+      "run": 141,
+      "id": 44655215569,
+      "conclusion": "failure",
+      "dynamicFallbackRequests": 651,
+      "uniqueStrings": 76,
+      "affectedLanguages": 97,
+      "visibleEnglishLeaks": 0,
+      "applications": 2646,
+      "providerRequests": 0
+    },
+    "latestR105": {
+      "run": 224,
+      "conclusion": "success",
+      "liveAI": "not-probed"
+    },
+    "latestR123": {
+      "run": 170,
+      "conclusion": "success",
+      "physicalAudio": "not-certified"
+    },
+    "latestR9e": {
+      "run": 138,
+      "conclusion": "success",
+      "countries": 248,
+      "localizedPages": 44
+    },
+    "latestSafety": {
+      "run": 92,
+      "conclusion": "success",
+      "blockedCases": 4
+    },
+    "latestPages": {
+      "run": 1970,
+      "conclusion": "success"
+    },
+    "candidateResume": {
+      "latestRun": 150,
+      "activeRuns": 0,
+      "workflowManualOnly": true
+    },
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "decision": "NO-GO"
+  },
+  "latestR125StaticAudit20261120": {
+    "run": 141,
+    "id": 44655215569,
+    "headSha": "ce26d1b731fcbb6fd46a8107e448e9f25b5e3f57",
+    "status": "completed",
+    "conclusion": "failure",
+    "cacheBypassReadiness": "passed",
+    "localePacks": "98/98",
+    "homeLanguageMatrix": "98/98",
+    "sections": "27/27",
+    "applications": 2646,
+    "countryProfiles": "248/248",
+    "visibleEnglishLeaks": {
+      "exact": 0,
+      "partial": 0,
+      "unresolved": 0
+    },
+    "dynamicFallback": {
+      "requests": 651,
+      "languages": 97,
+      "uniqueStrings": 76,
+      "gameStrings": 60,
+      "sellerPlanStrings": 16
+    },
+    "interceptedRequests": {
+      "ai": 0,
+      "uiTranslate": 651,
+      "pollinations": 0,
+      "externalProvider": 0
+    },
+    "reason": "Dynamic fallback remains; no provider quota used."
+  },
+  "latestDivehiQuickLabelRepair20261120": {
+    "branch": "work/r125-locale-candidates-20261008",
+    "branchHead": "51e395153d8ca01026eca3bdddb37fd0df2aaf10",
+    "pack": "docs/locale-candidates-20261008/dv.json",
+    "exactEdits": 4,
+    "keys": [
+      "Back",
+      "Page navigation",
+      "Voice reply",
+      "Voice"
+    ],
+    "sourceHash": "6a1126e6a2ce5629",
+    "keysPerPack": 1118,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "published": false,
+    "linguisticCertification": false,
+    "nativeReviewRequired": true
   }
 }
