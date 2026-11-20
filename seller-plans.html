@@ -11,6 +11,14 @@ const PLAN_NAME_SOURCE=Object.freeze({
  business_yearly:'Business Yearly',
  featured_30:'Featured · optional'
 });
+const PLAN_DESCRIPTION_SOURCE=Object.freeze({
+ free:"New ads are moderated before they appear publicly. Featured placement is available separately.",
+ boost_7:"Keep basic ads free. Upgrade only when you want stronger placement, more listings or business visibility.",
+ top_7:"Keep basic ads free. Upgrade only when you want stronger placement, more listings or business visibility.",
+ business_monthly:"For companies, dealers, agencies and professional sellers that need more listings and visibility.",
+ business_yearly:"For companies, dealers, agencies and professional sellers that need more listings and visibility.",
+ featured_30:"Keep basic ads free. Upgrade only when you want stronger placement, more listings or business visibility."
+});
 const BILLING_PERIOD_SOURCE=Object.freeze({
  free:'Free',
  monthly:'Business Monthly',
@@ -37,7 +45,8 @@ async function renderPlans(){
   if(code==='boost_7'||code==='top_7')appendPlanText(d,'div','small',localized('7 days',language),'7 days');
   else if(code==='featured_30')appendPlanText(d,'div','small',localized('30 days',language),'30 days');
   else if(!PLAN_NAME_SOURCE[code])appendPlanText(d,'div','small',localized(durationSource,language),durationSource);
-  appendPlanText(d,'p','',localized(x.description,language),x.description);
+  const descriptionSource=PLAN_DESCRIPTION_SOURCE[code]||String(x.description??'').trim();
+  appendPlanText(d,'p','',localized(descriptionSource,language),descriptionSource);
   if(x.max_active_ads){const limitSource='Up to '+Number(x.max_active_ads)+' active ads';appendPlanText(d,'div','small',localized(limitSource,language),limitSource)}
   p.appendChild(d);
   if(!['free','business_monthly','business_yearly'].includes(String(x.code||''))){const o=document.createElement('option');o.value=String(x.code||'');const optionText=localized(nameSource,language);o.textContent=optionText;if(optionText!==String(nameSource??'').trim())o.setAttribute('data-no-translate','1');s.appendChild(o)}
