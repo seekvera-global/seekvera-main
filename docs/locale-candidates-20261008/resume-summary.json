@@ -5702,10 +5702,12 @@
     },
     "branchComparison": {
       "status": "diverged",
-      "candidateAheadBy": 609,
-      "candidateBehindBy": 640,
+      "candidateAheadBy": 611,
+      "candidateBehindBy": 642,
       "mergeBase": "320ff472cc8eef5ea573c872f1b0c949a22593d0",
-      "bulkMergeOrCherryPick": "not performed"
+      "snapshotMainHead": "6b4b768e86f006263ccf135e476c5bb1afaf3ff5",
+      "snapshotBeforeThisSummaryUpdate": true,
+      "mergeOrBulkCherryPick": "not performed"
     },
     "latestR125StaticAudit": {
       "run": 153,
@@ -5880,6 +5882,15 @@
       "candidateWritesDeferred": true,
       "decision": "NO-GO",
       "CLDRRuntimeCheck": "R105 #243 CI Node 22: 87/97 non-English locale tags use CLDR day-unit wording; 10 use standardized d; no English 30 days fallback. The earlier local V8 estimate of 49/98 was superseded."
+    },
+    "pagesDeployment": {
+      "run": 2004,
+      "runId": 44708160021,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "efc5e231a77a3ea262c64dc854d97122dbd6807c",
+      "build": "success",
+      "deploy": "success"
     }
   }
 }
