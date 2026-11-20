@@ -8,3 +8,9 @@ DELTA_FAILURE dv HTTP Error 503: Service Unavailable {"ok":false,"error":"UI tra
 STAGED_ONLY 0 FAILED 1
 
 2026-11-20T01:46:37.609Z QUOTA_NEUTRAL_REPAIR Divehi: copied four provisional quick UI labels (Back, Page navigation, Voice reply, Voice) from the existing main i18n-ui.js QUICK.dv map. Readback PASS: 1,118 keys and sourceHash 6a1126e6a2ce5629 preserved. No translation requests; AI quota used 0; not published; not linguistically certified; native review still required.
+2026-11-20T07:58:40Z QUOTA_NEUTRAL_SELLER_PLAN_DESCRIPTION_REPAIR: mapped six plan descriptions across six plan codes to three existing production locale source keys; the R125 guard verified those keys in all 98 production packs.
+2026-11-20T07:58:40Z R125_STATIC_AUDIT #146: 98 languages x 27 sections = 2,646 applications; 248 country profiles; visible English exact/partial/unresolved = 0; dynamic fallback = 567 requests / 65 unique strings; 60 game strings + 5 seller-plan strings; AI=0, Pollinations=0, quota used=0; failure remains the dynamic-fallback gate.
+2026-11-20T07:58:40Z SELLER_PLAN_REMAINING: 30 days; Up to 100 active ads; Up to 3 active ads; Up to 50 active ads; one time.
+2026-11-20T07:58:40Z R105 #232 PASS: Worker deployed, R107 deploy health pass, AI binding present, live AI and country-intent probes skipped by policy.
+2026-11-20T07:58:40Z Audio Authority #174 PASS: validation, live category translations, voice acknowledgement and dynamic voice placeholders; production multilingual audio assets and live ASR skipped; physical devices not certified.
+2026-11-20T07:58:40Z Pages #1990 PASS; IndexNow #176 PASS. Candidate pack writes=0; candidate translations=0; AI quota used=0; no quota bypass; no publication; no linguistic certification.
