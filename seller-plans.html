@@ -39,6 +39,11 @@ const BILLING_PERIOD_SOURCE=Object.freeze({
  monthly:'Business Monthly',
  yearly:'Business Yearly'
 });
+function billingPeriodSourceFor(billingPeriod){
+ // Checkout is inactive; do not imply a live one-time payment cadence before merchant terms are configured.
+ if(billingPeriod==='one_time')return '';
+ return BILLING_PERIOD_SOURCE[billingPeriod]||billingPeriod.replace(/_/g,' ');
+}
 function appendPlanText(parent,tag,className,value,source){const el=document.createElement(tag);if(className)el.className=className;const text=String(value??'');el.textContent=text;if(source!==undefined&&text!==String(source??'').trim())el.setAttribute('data-no-translate','1');parent.appendChild(el);return el}
 let renderEpoch=0,lastRenderedLanguage='';
 async function renderPlans(){
@@ -53,7 +58,7 @@ async function renderPlans(){
   const code=String(x.code||'');
   const nameSource=PLAN_NAME_SOURCE[code]||String(x.name??'').trim();
   const billingPeriod=String(x.billing_period||'').trim().toLowerCase();
-  // Checkout is inactive; do not imply a live one-time payment cadence before merchant terms are configured.\n  const periodSource=billingPeriod==='one_time'?'':(BILLING_PERIOD_SOURCE[billingPeriod]||billingPeriod.replace(/_/g,' '));
+  const periodSource=billingPeriodSourceFor(billingPeriod); do not imply a live one-time payment cadence before merchant terms are configured.\n  const periodSource=billingPeriod==='one_time'?'':(BILLING_PERIOD_SOURCE[billingPeriod]||billingPeriod.replace(/_/g,' '));
   if(periodSource&&!nameSource.toLowerCase().includes(periodSource.toLowerCase()))appendPlanText(d,'span','tag',localized(periodSource,language),periodSource);
   appendPlanText(d,'div','name',localized(nameSource,language),nameSource);
   const durationSource=x.duration_days?String(x.duration_days)+' days':'Flexible billing';
