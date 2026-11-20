@@ -20667,7 +20667,7 @@
     },
     "decision": "NO-GO"
   },
-  "latestCandidateSummaryCommit": "3322da58d0a580aa8eb4c1720bef566936e012ce",
+  "latestCandidateSummaryCommit": "0ed7024082fd0912d3b0a61ae2d05d547aa87274",
   "latestR125StaticAudit20261120Turn25": {
     "run": 153,
     "runId": 44703845681,
@@ -20737,7 +20737,8 @@
         "mergeBase": "320ff472cc8eef5ea573c872f1b0c949a22593d0"
       },
       "bulkMergeOrCherryPick": "not performed",
-      "candidatePacksChanged": false
+      "candidatePacksChanged": false,
+      "headAfterSummaryCorrection": "0ed7024082fd0912d3b0a61ae2d05d547aa87274"
     },
     "resumeWorkflow": {
       "name": "R125 manual candidate resume (quota-safe by default)",
@@ -20768,15 +20769,19 @@
     "sellerPlanProgress": {
       "planDescriptions": "six plan codes map to three existing production source keys present in all 98 production packs",
       "duration": {
-        "localizedCLDRDayUnitTags": 49,
-        "standardizedDaySymbolTags": 49,
+        "localeTags": 98,
+        "nonEnglishLocaleTags": 97,
+        "localizedCLDRDayUnitTags": 87,
+        "standardizedDaySymbolTags": 10,
         "english30DaysFallback": "not emitted in R125 #153",
+        "evidence": "R105 #243 CI Node 22 test-locale-cognates.cjs",
         "examples": {
           "ar": "30 يومًا",
           "fr": "30 jours",
           "ru": "30 дней",
           "zh": "30天"
-        }
+        },
+        "correction": "Supersedes the earlier local V8 estimate of 49/98; CI counted 87/97 non-English tags localized and 10 using the standardized d symbol."
       },
       "oneTimeCadence": "hidden while checkout is inactive",
       "remainingFallbackStrings": [
@@ -20842,7 +20847,16 @@
         "centralSafetyGate": "enabled",
         "failClosed": true,
         "liveAiProbes": "skipped-by-policy",
-        "countryIntentProbe": "skipped-by-policy"
+        "countryIntentProbe": "skipped-by-policy",
+        "cldrDurationTest": {
+          "run": 243,
+          "runId": 44703845640,
+          "result": "passed",
+          "localized": 87,
+          "nonEnglishLocaleTags": 97,
+          "standardizedDaySymbol": 10,
+          "oneTimeCadenceHiddenWhileCheckoutInactive": true
+        }
       },
       "latestAudio": {
         "run": 178,
@@ -20924,7 +20938,17 @@
       "quotaBypassAttempts": 0,
       "published": false,
       "linguisticCertification": false,
-      "decision": "NO-GO"
+      "decision": "NO-GO",
+      "CLDRRuntimeCheck": "R105 #243 CI Node 22: 87/97 non-English locale tags use CLDR day-unit wording; 10 use standardized d; no English 30 days fallback. Earlier local V8 estimate 49/98 superseded."
+    },
+    "pagesDeployment": {
+      "run": 2003,
+      "runId": 44707848837,
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "eb5769a2d3502bbabaa769734a83cdb2d4a22af0",
+      "build": "success",
+      "deploy": "success"
     }
   }
 }
