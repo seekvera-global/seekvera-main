@@ -21947,5 +21947,91 @@
       "candidateWritesDeferred": true,
       "decision": "NO-GO"
     }
+  },
+  "lastAutomationPass20261120Turn31": {
+    "checkedAt": "2026-11-20T14:16:36.531Z",
+    "result": "Freshly re-read the requested Main checkpoint, candidate summary and resume log; inspected the current manual-resume workflow, latest located matching resume run #150 job, R125 #153 job log, latest Main commit, candidate branch head commit, branch comparison, candidate source/new-key manifest and six representative candidate packs.",
+    "newFindings": [
+      "The prompt's 63/98 structural-completion and 35-remaining figures are stale or mislabelled. Current Main checkpoint records 98/98 structurally complete candidate packs, 97/98 saved quality-gate passes and Divehi (dv) as the sole quality-gate failure with 58 English-overlap findings. The number 63 is R125 #153's count of unique dynamic-fallback strings, not candidate packs.",
+      "Freshly inspected candidate source.json and new-keys.json: 1,118 source strings, matching sourceHash 6a1126e6a2ce5629, with 73 candidate-only strings. Six representative packs (ar, fr, ha, yo, ig, dv) each read back 1,118 translations with matching language/sourceHash, zero missing keys, zero extra keys and zero empty values. This is a six-pack spot check, not a new full 98-pack audit.",
+      "R125 #153 job log was re-read: 98 languages, 27 sections and 2,646 language-section applications; 248 country profiles; zero visible English exact/partial/unresolved findings; 551 locally intercepted dynamic-translation requests across 97 languages and 63 unique strings (60 game strings plus three seller-limit phrases); zero AI/provider/Pollinations requests and zero quota used.",
+      "Latest Main commit is 9d25cec535d0ab2d9296d645dd637ee274d7c1dc and changes only the Main checkpoint. Candidate branch head is 7e5bf641a760a104a07b4eda858cd0b37836b848 and its latest commit changes only docs/locale-candidates-20261008/dv.json. Branches are diverged: candidate 618 commits ahead and 648 behind Main. No merge/cherry-pick was performed.",
+      "Inspected latest located matching candidate-resume run #150 job: completed success, Resume public UI candidates skipped, audit success, artifact uploaded, and no candidate-pack writes. This is a legacy run from 2026-10-16, not a run of the current workflow. The current workflow is workflow_dispatch only with run_translations=false and repair_candidates=false defaults. A fresh repository-wide Actions run listing could not be independently retrieved through the available GitHub operations in this pass; the last stored listing at 13:46 UTC showed no active matching run.",
+      "The candidate branch summary reports 304 repairs since the last audit and auditPending=true. The most recent candidate commit touched only dv.json; no candidate files were changed in this pass.",
+      "R105 #243 health/binding/failClosed checks passed, but live AI chat, live translation and country-intent probes were skipped. daily_free_ai_limit, Google HTTP429, HTTP503 and Dhivehi timeouts remain known blockers; live AI availability is unknown and no probe was sent.",
+      "Audio #178 programmatic checks passed, but production multilingual assets and live ASR were skipped; physical microphones/speakers remain uncertified. Country #138 and Safety #92 passed on 2026-11-19 but were not rerun on current Main. R125 #153 did cover 248 country profiles. Checkout remains inactive pending merchant configuration.",
+      "No safe quota-neutral code repair can eliminate the 60 game fallbacks or three seller-limit phrases without promoting unreviewed candidate translations or hiding meaningful UI. Those actions were not taken."
+    ],
+    "candidateState": {
+      "structurallyComplete": 98,
+      "total": 98,
+      "qualityGatePassing": 97,
+      "qualityGateRemaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlapFindings": 58,
+      "published": 0,
+      "linguisticallyCertified": 0,
+      "candidateSourceKeys": 1118,
+      "productionSourceKeys": 1045,
+      "candidateOnlyKeys": 73,
+      "candidateOnlyGameStrings": 60,
+      "candidateOnlyUiVoiceStrings": 13,
+      "sampledPacks": {
+        "languages": [
+          "ar",
+          "fr",
+          "ha",
+          "yo",
+          "ig",
+          "dv"
+        ],
+        "keysPerPack": 1118,
+        "missing": 0,
+        "extra": 0,
+        "empty": 0,
+        "sourceHash": "6a1126e6a2ce5629"
+      }
+    },
+    "latestCandidateResume": {
+      "workflowId": 380800850,
+      "trigger": "workflow_dispatch only",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestLocatedMatchingRun": {
+        "number": 150,
+        "id": 38971104197,
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "resume": "skipped",
+        "audit": "success",
+        "candidatePackWrites": 0
+      },
+      "latestRepositoryRunListing": "not independently refreshed this pass; last stored listing at 2026-11-20T13:46:13Z showed 0 active/queued matching runs"
+    },
+    "currentHeads": {
+      "main": "9d25cec535d0ab2d9296d645dd637ee274d7c1dc",
+      "candidate": "7e5bf641a760a104a07b4eda858cd0b37836b848"
+    },
+    "branchComparison": {
+      "status": "diverged",
+      "candidateAhead": 618,
+      "candidateBehind": 648
+    },
+    "thisPass": {
+      "codeRepairs": 0,
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "providerRequests": 0,
+      "aiQuotaUsed": 0,
+      "databaseWrites": 0,
+      "quotaBypassAttempts": 0,
+      "published": false,
+      "linguisticCertification": false,
+      "candidateWritesDeferred": true,
+      "decision": "NO-GO"
+    }
   }
 }
