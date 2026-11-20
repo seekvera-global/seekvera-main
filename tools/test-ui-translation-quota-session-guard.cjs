@@ -337,6 +337,9 @@ async function main(){
  assert(!sellerPlans.includes("localized('Price set at checkout',language)"),'per-card checkout placeholder must not duplicate the global checkout disclosure');
  assert(sellerPlans.includes('Final prices and live checkout require connected merchant accounts.'),'global checkout disclosure must remain visible');
  assert(sellerPlans.includes("localized('7 days',language)")&&sellerPlans.includes('localizedPlanDuration(30,language)'),'known promotion durations must use the reviewed 7-day source key and the CLDR 30-day formatter');
+ assert(!sellerPlans.includes("localized('30 days',language)"),'30-day duration must not invoke a missing static key or dynamic translation fallback');
+ assert(sellerPlans.includes("for(const unitDisplay of ['long','short','narrow'])"),'30-day duration must try all available CLDR unit widths');
+ assert(sellerPlans.includes('return `${count} d`;'),'unsupported CLDR locales must use the standardized day symbol instead of English');
  assert(!sellerPlans.includes("localized('days',language)"),'duration labels must use complete source phrases, not an unlocalized generic suffix');
  assert(sellerPlans.includes("if(code==='boost_7'||code==='top_7')appendPlanText(d,'div','small',localized('7 days',language),'7 days')"),'seven-day promotion plans must use the reviewed 7 days source key');
  assert(sellerPlans.includes("else if(code==='featured_30')appendPlanText(d,'div','small',localizedPlanDuration(30,language),'30 days')"),'featured promotion must retain its explicit 30-day duration through the CLDR helper');
