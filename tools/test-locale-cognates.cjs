@@ -29,7 +29,7 @@ console.log('PASS: uncovered intro languages reuse their static pack; actual cha
 
 // R125 seller-plan duration CLDR guard: no provider calls, no guessed translations.
 const sellerDurationPage=fs.readFileSync('seller-plans.html','utf8');
-assert(sellerDurationPage.includes('function localizedPlanDuration('));
+assert(sellerDurationPage.includes('const localizedPlanDuration='));
 assert(sellerDurationPage.includes('localizedPlanDuration(30,language)'));
 assert(sellerDurationPage.includes('const periodSource=billingPeriodSourceFor(billingPeriod);'));
 assert(!sellerDurationPage.includes("localized('one time'"));
