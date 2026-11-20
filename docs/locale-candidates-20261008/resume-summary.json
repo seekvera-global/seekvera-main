@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-17T09:53:12Z",
+  "checkedAt": "2026-11-20T08:58:07Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -4391,7 +4391,7 @@
     "r125Ci": "pending next manual run",
     "candidatePacksChanged": 0
   },
-  "updatedAt": "2026-11-20T07:58:40Z",
+  "updatedAt": "2026-11-20T08:58:07Z",
   "latestBuilderQuotaStopRepair": {
     "checkedAt": "2026-11-17T02:57:08Z",
     "finding": "The locale builder stopped the entire language loop only when the error text contained the literal daily_free_ai_limit. Google HTTP429/provider_rate_limited and all_translation_backends_unavailable were terminal inside translate_small, but the outer loop could continue to the next language; the 503 backend-unavailable response could also fall through to recursive batch splitting.",
@@ -5638,5 +5638,235 @@
       "remainingBlockers": "60 game strings plus five seller-plan strings remain dynamic; no verified 98-language translations were available."
     },
     "decision": "NO-GO"
+  },
+  "latestContinuationCheck20261120Turn24": {
+    "checkedAt": "2026-11-20T08:58:07Z",
+    "mainHeadBeforeCheckpoint": "6b4b768e86f006263ccf135e476c5bb1afaf3ff5",
+    "candidateBranchHeadBeforeSummaryUpdate": "67dad36e73f2d85435c3af677e76c54644385e2d",
+    "filesRead": [
+      "main: docs/r125-continuation-checkpoint-20261010.json",
+      "candidate branch: docs/locale-candidates-20261008/resume-summary.json",
+      "candidate branch: docs/locale-candidates-20261008/resume-latest.log",
+      "main: .github/workflows/r125-hourly-candidate-resume.yml",
+      "main: seller-plans.html",
+      "main: i18n-r32-source.json",
+      "main: i18n-r32/manifest.json",
+      "main: tools/test-locale-cognates.cjs",
+      "main: .github/workflows/r125-static-locale-section-audit.yml"
+    ],
+    "candidateState": {
+      "structurallyComplete": 98,
+      "total": 98,
+      "qualityGatePassing": 97,
+      "qualityGateRemaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlapFindings": 58,
+      "divehiDuplicateGroups4plus": 2,
+      "divehiDuplicateKeysAffected": 19,
+      "candidateSourceCount": 1118,
+      "candidateSourceHash": "6a1126e6a2ce5629",
+      "productionSourceCount": 1045,
+      "candidateOnlyKeys": 73,
+      "candidateOnlyUiVoiceKeysOutsideR125Matrix": 13,
+      "publishedPacks": 0,
+      "linguisticallyCertifiedPacks": 0
+    },
+    "latestCandidateResumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "name": "R125 manual candidate resume (quota-safe by default)",
+      "trigger": "workflow_dispatch only",
+      "scheduleTriggerPresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestLocatedRun": {
+        "number": 150,
+        "id": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "event": "push",
+        "workflowRevision": "legacy",
+        "resume": "skipped",
+        "audit": "success",
+        "candidatePackWrites": 0,
+        "metadataFilesWritten": 2
+      },
+      "latest100RepositoryRuns": {
+        "matchingResumeRuns": 0,
+        "activeOrQueuedRuns": 0
+      },
+      "candidateWritesThisPass": 0,
+      "candidateWritesDeferred": true,
+      "note": "No matching candidate-resume run appeared in the latest 100 repository Actions runs. No candidate pack writes were made."
+    },
+    "branchComparison": {
+      "status": "diverged",
+      "candidateAheadBy": 609,
+      "candidateBehindBy": 640,
+      "mergeBase": "320ff472cc8eef5ea573c872f1b0c949a22593d0",
+      "bulkMergeOrCherryPick": "not performed"
+    },
+    "latestR125StaticAudit": {
+      "run": 153,
+      "runId": 44703845681,
+      "createdAt": "2026-11-20T08:36:04Z",
+      "completedAt": "2026-11-20T08:41:12Z",
+      "status": "completed",
+      "conclusion": "failure",
+      "headSha": "6b4b768e86f006263ccf135e476c5bb1afaf3ff5",
+      "localePacks": "98/98",
+      "homeLanguageMatrix": "98/98",
+      "sections": "27/27",
+      "applications": 2646,
+      "countryProfiles": "248/248",
+      "visibleEnglish": {
+        "exact": 0,
+        "partial": 0,
+        "unresolved": 0
+      },
+      "dynamicFallbackRequests": 551,
+      "dynamicFallbackLanguages": 97,
+      "uniqueFallbackStrings": 63,
+      "gameStrings": 60,
+      "sellerPlanStrings": 3,
+      "remainingSellerPlanStrings": [
+        "Up to 100 active ads",
+        "Up to 3 active ads",
+        "Up to 50 active ads"
+      ],
+      "blockedRequests": {
+        "ai": 0,
+        "translation": 551,
+        "pollinations": 0,
+        "externalProvider": 0
+      },
+      "quotaUsed": 0,
+      "failureReason": "Dynamic fallback requests remain; visible English leak findings are zero.",
+      "comparedWithR125_146": {
+        "previousRequests": 567,
+        "previousUniqueStrings": 65,
+        "requestDelta": -16,
+        "uniqueStringDelta": -2
+      },
+      "note": "30 days no longer appears in the dynamic fallback list; one_time cadence remains hidden while checkout is inactive."
+    },
+    "sellerPlanRepair": {
+      "cldrDuration": {
+        "localeTags": 98,
+        "cldrLocalizedDayUnit": 49,
+        "standardizedDaySymbolFallback": 49,
+        "english30DaysFallback": "not emitted",
+        "examples": {
+          "ar": "30 يومًا",
+          "fr": "30 jours",
+          "ru": "30 дней",
+          "zh": "30天"
+        }
+      },
+      "oneTimeCadence": "hidden while checkout is inactive",
+      "remainingDynamicStrings": [
+        "Up to 100 active ads",
+        "Up to 3 active ads",
+        "Up to 50 active ads"
+      ],
+      "remainingStringsAbsentFromCandidateAndProductionSource": true,
+      "planDescriptionSourceKeys": "six plan codes mapped to three existing production locale keys across all 98 packs",
+      "databaseWrites": 0
+    },
+    "latestProductionChecks": {
+      "r105": {
+        "run": 243,
+        "runId": 44703845640,
+        "conclusion": "success",
+        "workerDeployed": true,
+        "productionHealth": "R107_DEPLOY_HEALTH_PASS",
+        "aiBinding": true,
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "liveAiProbes": "skipped-by-policy",
+        "countryIntentProbe": "skipped-by-policy"
+      },
+      "audio": {
+        "run": 178,
+        "runId": 44703668265,
+        "conclusion": "success",
+        "audioAuthorityValidation": "passed",
+        "liveCategoryTranslations": "passed",
+        "voiceAcknowledgement": "passed",
+        "dynamicVoicePlaceholders": "passed",
+        "productionMultilingualAudioAssets": "skipped",
+        "liveASR": "not_verified",
+        "physicalMicrophonesSpeakers": "not_certified"
+      },
+      "pages": {
+        "run": 2002,
+        "runId": 44703843987,
+        "conclusion": "success",
+        "build": "success",
+        "deploy": "success",
+        "headSha": "6b4b768e86f006263ccf135e476c5bb1afaf3ff5"
+      },
+      "countryCurrency": {
+        "run": 138,
+        "runId": 44593451053,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "moroccoPriority": "passed",
+        "worldwidePriority": "passed",
+        "currencyFallback": "passed"
+      },
+      "safety": {
+        "run": 92,
+        "runId": 44593451109,
+        "conclusion": "success",
+        "blocked": [
+          "weapons_or_explosives",
+          "explicit_sexual_content",
+          "stolen_counterfeit_or_fake_documents",
+          "ownership_or_consent_problem"
+        ],
+        "benignLand": "allowed_pending_human_review"
+      },
+      "checkout": "inactive_pending_merchant_configuration_and_end_to_end_payment_refund_settlement_webhook_verification"
+    },
+    "aiAvailability": {
+      "binding": true,
+      "productionHealth": "passed",
+      "liveChat": "unknown_not_probed",
+      "liveTranslation": "unknown_not_probed",
+      "liveAiGeneration": "skipped-by-policy",
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable",
+        "Dhivehi read timeouts",
+        "three unparseable Workers AI outputs"
+      ],
+      "probesSent": 0,
+      "translationRequestsSent": 0,
+      "quotaUsed": 0,
+      "quotaBypassAttempts": 0
+    },
+    "voice": {
+      "programmaticTTSAndAcknowledgement": "passed",
+      "dynamicVoicePlaceholders": "passed",
+      "liveASR": "not_verified_skipped",
+      "productionMultilingualAudioAssets": "not_verified_skipped",
+      "physicalMicrophonesSpeakers": "not_certified"
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "translationRequests": 0,
+      "providerRequests": 0,
+      "aiQuotaUsed": 0,
+      "databaseWrites": 0,
+      "quotaBypassAttempts": 0,
+      "published": false,
+      "linguisticCertification": false,
+      "candidateWritesDeferred": true,
+      "decision": "NO-GO"
+    }
   }
 }
