@@ -332,6 +332,14 @@ async function main(){
  assert.deepEqual({...planNameMap},{free:'Free · 30 days',boost_7:'Boost · optional',top_7:'Top Ad · optional',business_monthly:'Business Monthly',business_yearly:'Business Yearly',featured_30:'Featured · optional'});
  assert.deepEqual({...billingPeriodMap},{free:'Free',monthly:'Business Monthly',yearly:'Business Yearly'});
  assert(!Object.hasOwn(billingPeriodMap,'one_time'),'one-time cadence must remain visible and auditable until it has a reviewed static key');
+ assert(sellerPlans.includes('localized(nameSource,language)'),'promotion dropdown must use the canonical plan-name source key');
+ assert(!sellerPlans.includes('localized(x.name,language)'),'promotion dropdown must not bypass canonical plan-name localization');
+ assert(!sellerPlans.includes("localized('Price set at checkout',language)"),'per-card checkout placeholder must not duplicate the global checkout disclosure');
+ assert(sellerPlans.includes('Final prices and live checkout require connected merchant accounts.'),'global checkout disclosure must remain visible');
+ assert(sellerPlans.includes("localized('7 days',language)")&&sellerPlans.includes("localized('30 days',language)"),'known promotion durations must use exact locale source keys');
+ assert(sellerPlans.includes('localized(x.description,language)'),'seller plan descriptions must remain translatable');
+ assert(sellerPlans.includes('localized(limitSource,language)'),'active-ad limits must remain translatable');
+ assert(sellerPlans.includes("billingPeriod.replace(/_/g,' ')"),'one-time billing cadence must remain visible for audit');
  assert(sellerPlans.includes('!nameSource.toLowerCase().includes(periodSource.toLowerCase())'),'billing badge must not duplicate cadence already shown in the plan name');
  const localeManifest=JSON.parse(fs.readFileSync('i18n-r32/manifest.json','utf8'));
  const localeSource=JSON.parse(fs.readFileSync('i18n-r32-source.json','utf8'));
