@@ -20667,7 +20667,7 @@
     },
     "decision": "NO-GO"
   },
-  "latestCandidateSummaryCommit": "0ed7024082fd0912d3b0a61ae2d05d547aa87274",
+  "latestCandidateSummaryCommit": "584314e914086fe069f036d5b49192b53ea4ddbf",
   "latestR125StaticAudit20261120Turn25": {
     "run": 153,
     "runId": 44703845681,
@@ -20729,12 +20729,14 @@
       "main: .github/workflows/r123-production-cert.yml"
     ],
     "candidateBranch": {
-      "headAfterSummaryUpdate": "3322da58d0a580aa8eb4c1720bef566936e012ce",
+      "headAfterSummaryUpdate": "584314e914086fe069f036d5b49192b53ea4ddbf",
       "comparison": {
         "status": "diverged",
-        "aheadBy": 610,
-        "behindBy": 640,
-        "mergeBase": "320ff472cc8eef5ea573c872f1b0c949a22593d0"
+        "aheadBy": 612,
+        "behindBy": 642,
+        "mergeBase": "320ff472cc8eef5ea573c872f1b0c949a22593d0",
+        "snapshotMainHead": "efc5e231a77a3ea262c64dc854d97122dbd6807c",
+        "snapshotBeforeThisCheckpointUpdate": true
       },
       "bulkMergeOrCherryPick": "not performed",
       "candidatePacksChanged": false,
@@ -20942,11 +20944,11 @@
       "CLDRRuntimeCheck": "R105 #243 CI Node 22: 87/97 non-English locale tags use CLDR day-unit wording; 10 use standardized d; no English 30 days fallback. Earlier local V8 estimate 49/98 superseded."
     },
     "pagesDeployment": {
-      "run": 2003,
-      "runId": 44707848837,
+      "run": 2004,
+      "runId": 44708160021,
       "status": "completed",
       "conclusion": "success",
-      "headSha": "eb5769a2d3502bbabaa769734a83cdb2d4a22af0",
+      "headSha": "efc5e231a77a3ea262c64dc854d97122dbd6807c",
       "build": "success",
       "deploy": "success"
     }
