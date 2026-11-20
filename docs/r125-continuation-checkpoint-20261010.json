@@ -13554,7 +13554,7 @@
       "checkout is inactive pending merchant configuration"
     ]
   },
-  "lastUpdatedAt": "2026-11-20T05:52:38.269Z",
+  "lastUpdatedAt": "2026-11-20T05:53:27.654Z",
   "latestAutomationPass20261119V43": {
     "checkedAt": "2026-11-19T07:07:23.959Z",
     "mainBaseSha": "1d1d89dd55a1502618f180ea35a151ed436e3101",
@@ -19830,7 +19830,7 @@
     "decision": "NO-GO"
   },
   "latestContinuationCheck20261120Turn21": {
-    "checkedAt": "2026-11-20T05:52:38.269Z",
+    "checkedAt": "2026-11-20T05:53:27.654Z",
     "filesRead": [
       "main: docs/r125-continuation-checkpoint-20261010.json",
       "candidate branch: docs/locale-candidates-20261008/resume-summary.json",
@@ -20160,6 +20160,20 @@
         "result": "PASS static mirror of workflow guard assertions; Python name-regex separately passed"
       },
       "note": "This corrects the misleading display label; it does not enable an hourly schedule or trigger translation."
+    },
+    "codeDeltaSinceLatestR125Audit": {
+      "auditHead": "48c65731076e464622fb3fa30a226e2fd220bcdb",
+      "currentHeadBeforeCheckpoint": "8233bc2bab44006018d3a63419c10c59d33ff140",
+      "compareStatus": "ahead",
+      "aheadBy": 8,
+      "behindBy": 0,
+      "changedFiles": [
+        ".github/workflows/r125-hourly-candidate-resume.yml",
+        "tools/test-r125-audit-only-guard.py",
+        "docs/r125-continuation-checkpoint-20261010.json"
+      ],
+      "productRuntimeCodeChanged": false,
+      "interpretation": "R125 #144 still describes the same product runtime and locale code. Changes after the audit were workflow naming/guard and documentation only."
     }
   }
 }
