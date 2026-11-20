@@ -4928,5 +4928,43 @@
     "unpublishedKeyDelta": 73,
     "published": false,
     "note": "The live production i18n-r32 manifest remains at 1,045 source keys; the candidate source is 1,118 keys. Candidate packs are not published. Do not promote unreviewed packs to close this 73-key gap."
-  }
+  },
+  "lastQuotaNeutralRepair": {
+    "checkedAt": "2026-11-20T01:46:35.651Z",
+    "branch": "work/r125-locale-candidates-20261008",
+    "language": "dv",
+    "exactEdits": 4,
+    "keys": [
+      "Back",
+      "Page navigation",
+      "Voice reply",
+      "Voice"
+    ],
+    "copiedFrom": "main i18n-ui.js local QUICK.dv map",
+    "sourceHash": "6a1126e6a2ce5629",
+    "keysPerPack": 1118,
+    "translationRequestsSent": 0,
+    "aiQuotaUsed": 0,
+    "publication": false,
+    "linguisticCertification": false,
+    "nativeReviewRequired": true,
+    "validation": "Read back candidate pack; all four values match the existing local QUICK map; sourceHash and 1,118-key count preserved. Provisional consistency repair only."
+  },
+  "quotaNeutralRepairHistory": [
+    {
+      "checkedAt": "2026-11-14T22:46:16Z",
+      "branch": "work/r125-locale-candidates-20261008",
+      "languageCount": 64,
+      "exactEdits": 86,
+      "sourceUnchanged": true,
+      "keysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "translationRequestsSent": 0,
+      "aiQuotaUsed": 0,
+      "publication": false,
+      "linguisticCertification": false,
+      "validation": "Read back all 64 touched packs: 1,118 translation keys each and matching sourceHash; all changed Payoneer/Paystack/WhatsApp brand strings now exact. This is deterministic brand normalization, not native-language certification."
+    }
+  ],
+  "lastUpdatedAt": "2026-11-20T01:46:35.651Z"
 }
