@@ -318,6 +318,33 @@ async function main(){
  assert(sellerPlans.includes('p.replaceChildren();s.replaceChildren();'),'seller plan rendering must replace nodes safely');
  assert(!/d\.innerHTML\s*=/.test(sellerPlans),'database plan fields must not be interpolated into innerHTML');
  assert(sellerPlans.includes('new MutationObserver'),'seller plans must rerender when the selected language changes');
+ const readSellerPlanMap=(name)=>{
+  const marker='const '+name+'=Object.freeze(';
+  const start=sellerPlans.indexOf(marker);
+  assert(start>=0,'seller plan map missing: '+name);
+  const bodyStart=start+marker.length;
+  const end=sellerPlans.indexOf(');',bodyStart);
+  assert(end>bodyStart,'seller plan map is incomplete: '+name);
+  return vm.runInNewContext('('+sellerPlans.slice(bodyStart,end)+')');
+ };
+ const planNameMap=readSellerPlanMap('PLAN_NAME_SOURCE');
+ const billingPeriodMap=readSellerPlanMap('BILLING_PERIOD_SOURCE');
+ assert.deepEqual({...planNameMap},{free:'Free · 30 days',boost_7:'Boost · optional',top_7:'Top Ad · optional',business_monthly:'Business Monthly',business_yearly:'Business Yearly',featured_30:'Featured · optional'});
+ assert.deepEqual({...billingPeriodMap},{free:'Free',monthly:'Business Monthly',yearly:'Business Yearly'});
+ assert(!Object.hasOwn(billingPeriodMap,'one_time'),'one-time cadence must remain visible and auditable until it has a reviewed static key');
+ assert(sellerPlans.includes('!nameSource.toLowerCase().includes(periodSource.toLowerCase())'),'billing badge must not duplicate cadence already shown in the plan name');
+ const localeManifest=JSON.parse(fs.readFileSync('i18n-r32/manifest.json','utf8'));
+ const localeSource=JSON.parse(fs.readFileSync('i18n-r32-source.json','utf8'));
+ const canonicalPlanKeys=[...new Set([...Object.values(planNameMap),...Object.values(billingPeriodMap)])];
+ for(const key of canonicalPlanKeys)assert(localeSource.strings.includes(key),'canonical seller-plan key missing from production source: '+key);
+ assert.equal(localeManifest.packs,98,'production locale manifest must contain 98 packs');
+ assert.equal(localeManifest.languages.length,98,'production locale manifest must list 98 languages');
+ for(const code of localeManifest.languages){
+  const pack=JSON.parse(fs.readFileSync('i18n-r32/'+code+'.json','utf8'));
+  assert.equal(pack.sourceHash,localeManifest.sourceHash,code+' seller-plan pack source hash mismatch');
+  assert.equal(pack.count,localeManifest.sourceCount,code+' seller-plan pack source count mismatch');
+  for(const key of canonicalPlanKeys)assert(typeof pack.translations?.[key]==='string'&&pack.translations[key].trim(),code+' missing canonical seller-plan translation: '+key);
+ }
 const sellerPlanLoadCalls=sellerPlans.match(/loadPlans\(\);/g)||[];
 assert.equal(sellerPlanLoadCalls.length,1,'seller plan data must load exactly once per page; duplicate fetches can race locale rendering');
 assert(sellerPlans.includes('const localeObserver=new MutationObserver'),'seller plan locale observer must initialize immediately');
