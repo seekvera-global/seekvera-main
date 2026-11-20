@@ -13554,7 +13554,7 @@
       "checkout is inactive pending merchant configuration"
     ]
   },
-  "lastUpdatedAt": "2026-11-20T05:53:27.654Z",
+  "lastUpdatedAt": "2026-11-20T05:54:26.203Z",
   "latestAutomationPass20261119V43": {
     "checkedAt": "2026-11-19T07:07:23.959Z",
     "mainBaseSha": "1d1d89dd55a1502618f180ea35a151ed436e3101",
@@ -19830,7 +19830,7 @@
     "decision": "NO-GO"
   },
   "latestContinuationCheck20261120Turn21": {
-    "checkedAt": "2026-11-20T05:53:27.654Z",
+    "checkedAt": "2026-11-20T05:54:26.203Z",
     "filesRead": [
       "main: docs/r125-continuation-checkpoint-20261010.json",
       "candidate branch: docs/locale-candidates-20261008/resume-summary.json",
@@ -20174,6 +20174,38 @@
       ],
       "productRuntimeCodeChanged": false,
       "interpretation": "R125 #144 still describes the same product runtime and locale code. Changes after the audit were workflow naming/guard and documentation only."
+    },
+    "runtimeCodeDeltaSinceCertifications": {
+      "sinceR105Head": "48c65731076e464622fb3fa30a226e2fd220bcdb",
+      "sinceR123Head": "f427f6d03c671ab57cda9e569850b5e9a680cf48",
+      "sinceR9eSafetyHead": "dac26d2c87e78add075755bd95fc84cb080a2184",
+      "currentHeadBeforeCheckpoint": "aa8ad59a15e60c62678e8bac384b84f58a141b90",
+      "sinceR105ChangedFiles": [
+        ".github/workflows/r125-hourly-candidate-resume.yml",
+        "docs/r125-continuation-checkpoint-20261010.json",
+        "tools/test-r125-audit-only-guard.py"
+      ],
+      "sinceR123ChangedFiles": [
+        ".github/workflows/r125-hourly-candidate-resume.yml",
+        "docs/r125-continuation-checkpoint-20261010.json",
+        "tools/test-r125-audit-only-guard.py",
+        "tools/test-ui-translation-quota-session-guard.cjs"
+      ],
+      "sinceR9eSafetyChangedFiles": [
+        ".github/workflows/add-universal-navigation.yml",
+        ".github/workflows/r125-hourly-candidate-resume.yml",
+        ".github/workflows/r125-static-locale-section-audit.yml",
+        "docs/r125-continuation-checkpoint-20261010.json",
+        "seller-plans.html",
+        "tools/test-locale-cognates.cjs",
+        "tools/test-r125-audit-only-guard.py",
+        "tools/test-ui-translation-quota-session-guard.cjs"
+      ],
+      "workerRuntimeChangedSinceR105": false,
+      "voiceRuntimeChangedSinceR123": false,
+      "countryCurrencyRuntimeChangedSinceR9e": false,
+      "safetyRuntimeChangedSinceSafetySmoke": false,
+      "interpretation": "Latest R105/R123/R9e/Safety checks remain applicable to their respective runtime paths; subsequent commits touched workflow/docs/tests and seller-plan page only, not worker, voice, country/currency or safety runtime code."
     }
   }
 }
