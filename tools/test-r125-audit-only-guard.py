@@ -30,6 +30,8 @@ def input_block(name: str) -> str:
 
 
 assert re.search(r"(?m)^  workflow_dispatch:\s*$", workflow), "R125 must remain manually dispatched"
+assert re.search(r"(?m)^name: R125 manual candidate resume \\(quota-safe by default\\)$", workflow), "Workflow name must reflect manual-only operation"
+assert not re.search(r"(?im)^name: .*hourly", workflow), "Do not label a manual-only workflow as hourly"
 assert "schedule:" not in workflow, "Unexpected scheduled R125 execution"
 assert not re.search(r"(?m)^  push:\s*$", workflow), "R125 must not resume automatically on push"
 assert re.search(r"(?m)^  cancel-in-progress: false\s*$", workflow), "Do not cancel an active R125 run"
