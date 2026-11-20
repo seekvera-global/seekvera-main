@@ -1,4 +1,5 @@
-name: R125 hourly candidate resume
+name: R125 manual candidate resume (quota-safe by default)
+# Manual-only by design: provider translation consumes quota; no hourly schedule is enabled.
 on:
   workflow_dispatch:
     inputs:
