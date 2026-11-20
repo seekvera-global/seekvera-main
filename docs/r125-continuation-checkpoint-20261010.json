@@ -3115,7 +3115,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-19T16:26:10Z",
+  "updatedAt": "2026-11-20T00:46:00Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -18855,6 +18855,194 @@
       "translationRequests": 0,
       "aiQuotaUsed": 0,
       "quotaBypassAttempts": 0,
+      "published": false,
+      "linguisticCertification": false,
+      "decision": "NO-GO"
+    }
+  },
+  "latestSellerPlanCanonicalMappingRepair20261120": {
+    "checkedAt": "2026-11-20T00:46:00Z",
+    "mainCodeHead": "4f48908775999d2cfa960fadf4be80c43726a4c3",
+    "commits": [
+      {
+        "sha": "e90bf1234ca44e4cc084b9717d43d9016545ad91",
+        "path": ".github/workflows/r125-static-locale-section-audit.yml",
+        "change": "Fetch seller-plans.html during readiness and wait for both canonical-map markers before running the live matrix."
+      },
+      {
+        "sha": "6da35f23d416172965763e4cc307fdfae6da8ba0",
+        "path": "seller-plans.html",
+        "change": "Map stable plan codes and billing periods to canonical keys already present in the 1,045-key production locale source; preserve one-time cadence as auditable fallback."
+      },
+      {
+        "sha": "4f48908775999d2cfa960fadf4be80c43726a4c3",
+        "path": "tools/test-ui-translation-quota-session-guard.cjs",
+        "change": "Add a quota-neutral regression checking canonical keys and non-empty values in all 98 production locale packs."
+      }
+    ],
+    "canonicalPlanNameKeys": {
+      "free": "Free · 30 days",
+      "boost_7": "Boost · optional",
+      "top_7": "Top Ad · optional",
+      "business_monthly": "Business Monthly",
+      "business_yearly": "Business Yearly",
+      "featured_30": "Featured · optional"
+    },
+    "canonicalBillingPeriodKeys": {
+      "free": "Free",
+      "monthly": "Business Monthly",
+      "yearly": "Business Yearly"
+    },
+    "intentionallyUnmappedBillingPeriod": "one time",
+    "expectedFallbackStringsRemoved": 7,
+    "remainingSellerPlanFallbackStrings": 13,
+    "validation": {
+      "productionManifestPacks": 98,
+      "productionManifestLanguages": 98,
+      "productionSourceCount": 1045,
+      "canonicalKeysPresentInProductionSource": true,
+      "sampledPacks": [
+        "en",
+        "ar",
+        "fr",
+        "hi",
+        "zh",
+        "dv"
+      ],
+      "sampledCanonicalValuesNonEmpty": true,
+      "sellerInlineJavaScriptSyntax": "pass",
+      "regressionTestJavaScriptSyntax": "pass",
+      "full98PackRegressionAdded": true,
+      "full98PackRegressionExecution": "pending R125 CI",
+      "liveDynamicFallbackReduction": "pending R125 browser matrix"
+    },
+    "auditReadiness": {
+      "workflow": "r125-static-locale-section-audit.yml",
+      "pushPathIncludesSellerPlansHtml": true,
+      "fetchesDeployedSellerPlansPage": true,
+      "waitsForPlanNameAndBillingPeriodMarkers": true,
+      "combinedCommitStatusEntriesAtReadback": 0,
+      "interpretation": "No check entries were returned at readback; do not treat this as a CI pass. R125 result remains pending/unconfirmed."
+    },
+    "candidateBranchModified": false,
+    "candidatePackWrites": 0,
+    "candidateMetadataWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "quotaBypassAttempts": 0,
+    "databaseWrites": 0,
+    "packsPublished": false,
+    "linguisticCertification": false,
+    "decision": "NO-GO"
+  },
+  "latestActionsObservation20261120Turn16": {
+    "checkedAt": "2026-11-20T00:46:00Z",
+    "latestRecordedRepositorySnapshot": "2026-11-19T23:34:02Z",
+    "latestRecordedRepositoryRun": {
+      "number": 1963,
+      "id": 44632443683,
+      "name": "pages build and deployment",
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "cd1624c87ce70b0e52ab1c2323214ded394051a6"
+    },
+    "latestRecordedQueuedOrInProgress": 0,
+    "latestKnownCandidateResumeRun": {
+      "number": 150,
+      "id": 38971104197,
+      "status": "completed",
+      "conclusion": "success",
+      "workflowRevision": "legacy",
+      "resumeStep": "skipped",
+      "auditStep": "success",
+      "candidatePackWrites": 0,
+      "metadataFilesWritten": 2
+    },
+    "freshRepositoryRunList": "not available from the connected GitHub Actions operations in this pass",
+    "currentCommitCombinedStatusEntries": 0,
+    "candidateResumeActiveRun": "not observed in latest recorded snapshot; fresh state not independently retrievable",
+    "candidateWritesDeferred": true,
+    "candidateBranchHead": "f7cdbba43212f7062d499fae7027c94f4d1f02a2",
+    "candidateBranchChanged": false,
+    "candidatePackWritesThisPass": 0
+  },
+  "latestAutomationPass20261120Turn16": {
+    "checkedAt": "2026-11-20T00:46:00Z",
+    "filesRead": [
+      "main: docs/r125-continuation-checkpoint-20261010.json",
+      "branch work/r125-locale-candidates-20261008: docs/locale-candidates-20261008/resume-summary.json",
+      "branch work/r125-locale-candidates-20261008: docs/locale-candidates-20261008/resume-latest.log",
+      "main: .github/workflows/r125-hourly-candidate-resume.yml",
+      "main: .github/workflows/r125-static-locale-section-audit.yml",
+      "main: seller-plans.html",
+      "main: tools/test-ui-translation-quota-session-guard.cjs",
+      "main: i18n-r32-source.json and i18n-r32/manifest.json"
+    ],
+    "currentCandidateState": {
+      "structural": "98/98",
+      "savedQualityGate": "97/98",
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "published": 0,
+      "linguisticCertification": 0
+    },
+    "currentDynamicFallbackBaseline": {
+      "r125Run": 137,
+      "runId": 44595354460,
+      "interceptedRequests": 634,
+      "uniqueStrings": 80,
+      "affectedLanguages": 97,
+      "gameStrings": 60,
+      "sellerPlanStrings": 20,
+      "providerRequests": 0,
+      "aiRequests": 0,
+      "pollinationsRequests": 0,
+      "quotaUsed": 0
+    },
+    "sellerPlanRepair": "Committed canonical plan-name and billing-period source mappings, added all-98-pack regression coverage, and made the R125 readiness gate wait for the updated seller-plans page. The expected reduction of seven fallback strings has not yet been measured by the browser matrix.",
+    "latestCandidateResumeInspection": "Legacy run #150 was re-fetched; it completed with resume skipped and audit success. Latest recorded Actions snapshot at 2026-11-19T23:34:02Z had zero active runs and zero candidate-resume dispatches. A fresher run listing was not available in the connected Actions operations; candidate writes were therefore deferred.",
+    "runtimeAvailability": {
+      "aiBinding": "present in R105 #221",
+      "productionHealth": "passed",
+      "liveChat": "unknown-not-certified",
+      "countryIntent": "not-tested",
+      "translationBackend": "unknown-not-probed",
+      "knownBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP 503 all_translation_backends_unavailable"
+      ]
+    },
+    "voice": {
+      "programmaticTts": "passed in R123 #169",
+      "voiceAcknowledgement": "passed",
+      "dynamicPlaceholders": "passed",
+      "liveASR": "not-verified",
+      "physicalMicrophoneSpeakerCertified": false
+    },
+    "countryCurrency": {
+      "lastConfirmedRun": 138,
+      "countryProfiles": "248/248",
+      "localizedPages": "44/44",
+      "moroccoWorldwidePriority": "passed",
+      "currencyFallback": "passed",
+      "fullCurrentHeadRecertification": false
+    },
+    "safety": {
+      "lastConfirmedRun": 92,
+      "blockedCategories": 4,
+      "benignLand": "allowed_pending_human_review"
+    },
+    "checkout": "inactive pending merchant configuration and end-to-end payment/refund/settlement/webhook verification",
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "quotaBypassAttempts": 0,
+      "databaseWrites": 0,
       "published": false,
       "linguisticCertification": false,
       "decision": "NO-GO"
