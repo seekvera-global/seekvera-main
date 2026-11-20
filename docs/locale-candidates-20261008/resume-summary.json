@@ -5754,15 +5754,18 @@
     "sellerPlanRepair": {
       "cldrDuration": {
         "localeTags": 98,
-        "cldrLocalizedDayUnit": 49,
-        "standardizedDaySymbolFallback": 49,
-        "english30DaysFallback": "not emitted",
+        "nonEnglishLocaleTags": 97,
+        "localizedCLDRDayUnitTags": 87,
+        "standardizedDaySymbolTags": 10,
+        "english30DaysFallback": "not emitted in R125 #153",
+        "evidence": "R105 #243 CI Node 22 test-locale-cognates.cjs log",
         "examples": {
           "ar": "30 يومًا",
           "fr": "30 jours",
           "ru": "30 дней",
           "zh": "30天"
-        }
+        },
+        "correction": "Supersedes the earlier local V8 estimate of 49/98; the authoritative CI run counted 87/97 non-English tags localized and 10 using the standardized d symbol."
       },
       "oneTimeCadence": "hidden while checkout is inactive",
       "remainingDynamicStrings": [
@@ -5785,7 +5788,16 @@
         "centralSafetyGate": "enabled",
         "failClosed": true,
         "liveAiProbes": "skipped-by-policy",
-        "countryIntentProbe": "skipped-by-policy"
+        "countryIntentProbe": "skipped-by-policy",
+        "cldrDurationTest": {
+          "run": 243,
+          "runId": 44703845640,
+          "result": "passed",
+          "localized": 87,
+          "nonEnglishLocaleTags": 97,
+          "standardizedDaySymbol": 10,
+          "oneTimeCadenceHiddenWhileCheckoutInactive": true
+        }
       },
       "audio": {
         "run": 178,
@@ -5866,7 +5878,8 @@
       "published": false,
       "linguisticCertification": false,
       "candidateWritesDeferred": true,
-      "decision": "NO-GO"
+      "decision": "NO-GO",
+      "CLDRRuntimeCheck": "R105 #243 CI Node 22: 87/97 non-English locale tags use CLDR day-unit wording; 10 use standardized d; no English 30 days fallback. The earlier local V8 estimate of 49/98 was superseded."
     }
   }
 }
