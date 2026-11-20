@@ -3159,7 +3159,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-20T10:21:00Z",
+  "updatedAt": "2026-11-20T11:13:26Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -21499,5 +21499,202 @@
       "candidateWritesDeferred": true,
       "decision": "NO-GO"
     }
+  },
+  "latestContinuationCheck20261120Turn28": {
+    "checkedAt": "2026-11-20T11:13:26Z",
+    "mainHeadBeforeCheckpointWrite": "72cfdf073338a1947d1f288af65d55b81d07bf37",
+    "candidateBranch": "work/r125-locale-candidates-20261008",
+    "candidateBranchHead": "4b1940344bd80d747f0e9bb53e2f5747d8702d26",
+    "filesRead": [
+      "main: docs/r125-continuation-checkpoint-20261010.json",
+      "candidate: docs/locale-candidates-20261008/resume-summary.json",
+      "candidate: docs/locale-candidates-20261008/resume-latest.log",
+      "main: .github/workflows/r125-hourly-candidate-resume.yml",
+      "main: seller-plans.html",
+      "main: i18n-r32-source.json",
+      "candidate: docs/locale-candidates-20261008/source.json",
+      "main: tools/r125_static_locale_section_audit.mjs"
+    ],
+    "candidateState": {
+      "structurallyComplete": 98,
+      "total": 98,
+      "qualityGatePassing": 97,
+      "qualityGateRemaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlapFindings": 58,
+      "sourceKeysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "publishedPacks": 0,
+      "linguisticallyCertifiedPacks": 0
+    },
+    "correction": "63 is the unique dynamic-fallback string count from R125 #153, not the number of incomplete locale packs. The prompt's 63/98 and 35 remaining figures are stale.",
+    "resumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "workflowId": 380800850,
+      "trigger": "workflow_dispatch only",
+      "scheduleTriggerPresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latest100RepositoryRuns": {
+        "totalCount": 6638,
+        "returnedRuns": 100,
+        "matchingWorkflowRuns": 0,
+        "activeOrQueuedMatchingRuns": 0
+      },
+      "latestLocatedMatchingRun": {
+        "number": 150,
+        "id": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "resume": "skipped",
+        "audit": "success",
+        "candidatePackWrites": 0,
+        "metadataFilesWritten": 2
+      },
+      "candidateWritesThisPass": 0
+    },
+    "latestR125": {
+      "number": 153,
+      "id": 44703845681,
+      "createdAt": "2026-11-20T08:36:04Z",
+      "completedAt": "2026-11-20T08:41:12Z",
+      "conclusion": "failure",
+      "headSha": "6b4b768e86f006263ccf135e476c5bb1afaf3ff5",
+      "localePacks": "98/98",
+      "homeLanguageMatrix": "98/98",
+      "sections": "27/27",
+      "applications": 2646,
+      "countryProfiles": "248/248",
+      "visibleEnglish": {
+        "exact": 0,
+        "partial": 0,
+        "unresolved": 0
+      },
+      "dynamicFallbackRequests": 551,
+      "dynamicFallbackLanguages": 97,
+      "uniqueFallbackStrings": 63,
+      "gameStrings": 60,
+      "sellerPlanStrings": 3,
+      "sellerPlanPhrases": [
+        "Up to 100 active ads",
+        "Up to 3 active ads",
+        "Up to 50 active ads"
+      ],
+      "aiRequests": 0,
+      "providerRequests": 0,
+      "pollinationsRequests": 0,
+      "quotaUsed": 0,
+      "failedGate": "no-dynamic-fallback; visible-English checks passed",
+      "jobLogVerified": true
+    },
+    "codeCurrency": {
+      "comparisonFromR125HeadToCurrentMainHead": {
+        "status": "ahead",
+        "aheadBy": 5,
+        "behindBy": 0,
+        "changedFiles": [
+          "docs/r125-continuation-checkpoint-20261010.json"
+        ]
+      },
+      "meaning": "R125 #153 still covers the current application code; only the checkpoint document changed afterward."
+    },
+    "latestAI": {
+      "run": 243,
+      "id": 44703845640,
+      "conclusion": "success",
+      "headSha": "6b4b768e86f006263ccf135e476c5bb1afaf3ff5",
+      "aiBinding": true,
+      "productionHealth": "passed",
+      "centralSafetyGate": "enabled",
+      "failClosed": true,
+      "liveChat": "unknown-not-probed",
+      "liveTranslation": "unknown-not-probed",
+      "countryIntentProbe": "skipped-by-policy",
+      "blockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable",
+        "Dhivehi read timeouts",
+        "three unparseable Workers AI outputs"
+      ],
+      "liveProbesSent": 0,
+      "translationRequestsSent": 0,
+      "quotaUsed": 0
+    },
+    "latestVoice": {
+      "run": 178,
+      "id": 44703668265,
+      "conclusion": "success",
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "dynamicVoicePlaceholders": "passed",
+      "androidBrowserProfilePlayback": "passed",
+      "productionMultilingualAudioAssets": "not-verified",
+      "liveASR": "not-verified",
+      "physicalMicrophonesSpeakers": "not-certified"
+    },
+    "countryAndSafety": {
+      "countryRun": 138,
+      "countryRunId": 44593451053,
+      "countryConclusion": "success",
+      "safetyRun": 92,
+      "safetyRunId": 44593451109,
+      "safetyConclusion": "success",
+      "testedHead": "dac26d2c87e78add075755bd95fc84cb080a2184",
+      "changedFilesSinceThatHead": [
+        ".github/workflows/add-universal-navigation.yml",
+        ".github/workflows/r125-hourly-candidate-resume.yml",
+        ".github/workflows/r125-static-locale-section-audit.yml",
+        "docs/r125-continuation-checkpoint-20261010.json",
+        "seller-plans.html",
+        "tools/test-locale-cognates.cjs",
+        "tools/test-r125-audit-only-guard.py",
+        "tools/test-ui-translation-quota-session-guard.cjs"
+      ],
+      "note": "No country-profile, currency-runtime or safety implementation file appears in the intervening diff; the 248-country R125 matrix also passed. R9e/Safety have not been re-dispatched on the latest head."
+    },
+    "checkout": "inactive pending merchant configuration and end-to-end payment/refund/settlement/webhook verification",
+    "thisPass": {
+      "codeRepairs": 0,
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "providerRequests": 0,
+      "aiQuotaUsed": 0,
+      "databaseWrites": 0,
+      "quotaBypassAttempts": 0,
+      "published": false,
+      "linguisticCertification": false,
+      "candidateWritesDeferred": true,
+      "reason": "No active candidate-resume run was observed, but the remaining strings have no reviewed translation source; candidate packs remain untouched.",
+      "decision": "NO-GO"
+    }
+  },
+  "latestAutomationPass20261120Turn28": {
+    "checkedAt": "2026-11-20T11:13:26Z",
+    "result": "Fresh read of both branches, candidate log, current resume workflow, latest 100 repository Actions runs, R125 job log, R105 job log, audio job log, and commit comparisons completed.",
+    "newFindings": [
+      "Current latest 100 repository Actions runs contain no run for workflow ID 380800850 and no active/queued candidate-resume run; the only located matching run remains legacy #150 from 2026-10-16.",
+      "R125 #153 job log explicitly enumerates 63 unique fallback strings: 60 game strings and three active-ad limit strings. It confirms 551 locally intercepted translation requests and zero AI/provider/Pollinations requests or quota use.",
+      "Comparing R125 #153's head to current Main shows the only intervening change is the checkpoint JSON; the failed R125 result remains current for application code.",
+      "R105 #243 logs confirm AI binding, production health, Central Safety Gate and failClosed passed, while live AI chat and country-intent probes were skipped by policy.",
+      "Audio #178 logs confirm programmatic TTS/audio envelope, voice acknowledgement, voice placeholder, and Android browser-profile playback checks passed; Live ASR and physical microphone/speaker certification remain outstanding.",
+      "Country R9e #138 and Safety #92 passed on 2026-11-19. Their intervening diff to R125 #153 contains no country/currency runtime or safety implementation file, but those suites have not been rerun on the latest head.",
+      "The three active-ad limit phrases are generated from Supabase max_active_ads values in seller-plans.html; they are not static HTML literals and have no corresponding source keys in either locale source. Hiding or removing them would be an unsafe false pass."
+    ],
+    "codeRepairs": 0,
+    "documentationUpdates": 1,
+    "candidatePackWrites": 0,
+    "translationRequests": 0,
+    "providerRequests": 0,
+    "aiQuotaUsed": 0,
+    "databaseWrites": 0,
+    "quotaBypassAttempts": 0,
+    "published": 0,
+    "linguisticallyCertified": 0,
+    "decision": "NO-GO"
   }
 }
