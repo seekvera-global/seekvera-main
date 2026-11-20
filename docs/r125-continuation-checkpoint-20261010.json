@@ -593,7 +593,7 @@
     "audioAuthorityRun": 43219069259,
     "audioAuthorityConclusion": "success"
   },
-  "checkedAt": "2026-11-20T09:31:51Z",
+  "checkedAt": "2026-11-20T12:22:15Z",
   "latestR125Run": {
     "run": 150,
     "status": "completed",
@@ -21696,5 +21696,176 @@
     "published": 0,
     "linguisticallyCertified": 0,
     "decision": "NO-GO"
+  },
+  "lastAutomationPass20261120Turn29": {
+    "checkedAt": "2026-11-20T12:22:15Z",
+    "result": "Re-read the required Main checkpoint, candidate summary/log and current resume workflow; inspected the latest 100 Actions runs, latest located candidate-resume run #150, R125 #153/R105 #243/Audio #178 logs, current branch heads, production/candidate locale sources, selected candidate packs, and active marketplace plan rows using a read-only Supabase query.",
+    "newFindings": [
+      "The latest 100 repository Actions runs contain no run for workflow ID 380800850 and no active/queued runs. The latest located matching run remains legacy #150 from 2026-10-16; its job completed successfully with Resume skipped, candidate audit reporting 97/98 and zero candidate-pack writes.",
+      "Current Main resume workflow is workflow_dispatch only, not hourly scheduled. run_translations and repair_candidates both default false. No candidate pack writes were made this pass.",
+      "Current R125 #153 job log confirms 551 locally intercepted UI-translation calls across 97 languages and 63 unique strings: 60 game strings plus three seller-plan limit strings. Visible English findings were zero. AI/provider/Pollinations requests and quota use were zero.",
+      "Exact source comparison confirms the candidate source has 73 keys absent from the 1,045-key production source: 60 game strings and 13 additional UI/voice strings. The 13 are Back, Voice, Safety Gate, Voice reply, Page navigation, Search marketplace, SEEKVERA quick tools, Open matching section, Understanding your speech…, Please check the words, then tap Send., Audio could not play. Tap the speaker to retry., Voice recognition is not supported in this browser., and I could not understand that audio yet — tap the microphone and try again.",
+      "Read-only sampling of candidate en/ar/fr/ha/yo/ig/dv packs found all 60 game keys present and nonempty in each sampled pack. This is structural evidence only. Sampled Igbo/Divehi outputs reinforce the existing duplicate/quality warnings; do not promote or certify them without qualified native review.",
+      "Read-only Supabase query confirmed six active marketplace plans. max_active_ads values are 3 for free, 50 for business_monthly and 100 for business_yearly; boost_7, top_7 and featured_30 have null limits. This confirms the three R125 seller-limit strings are real business data and must not be hidden or removed.",
+      "R105 #243 production health passed, AI binding and failClosed Safety Gate were present, but RUN_LIVE_AI_PROBES=false and live chat/country-intent probes were skipped. Current live chat/translation availability therefore remains unknown; no probe was sent.",
+      "Audio #178 passed programmatic TTS, voice acknowledgement and dynamic placeholders; production multilingual audio asset verification was skipped. Live ASR and physical microphones/speakers remain unverified.",
+      "Country R9e #138 and Safety #92 passed on 2026-11-19, but neither suite has been re-dispatched on the latest Main head. R125 #153 did pass its 248-country matrix.",
+      "Pages #2008 completed build and deploy successfully at 2026-11-20 11:18 UTC.",
+      "Comparing R125 #153 head 6b4b768 to current Main 3b5e1ab shows six commits ahead and only docs/r125-continuation-checkpoint-20261010.json changed; R125 #153 remains current for application code.",
+      "Current Main-to-candidate branch comparison is diverged: candidate branch 615 commits ahead and 646 behind. No merge or cherry-pick was performed."
+    ],
+    "candidateState": {
+      "structurallyComplete": 98,
+      "total": 98,
+      "qualityGatePassing": 97,
+      "qualityGateRemaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlapFindings": 58,
+      "published": 0,
+      "linguisticallyCertified": 0,
+      "candidateSourceKeys": 1118,
+      "productionSourceKeys": 1045,
+      "candidateOnlyKeys": 73,
+      "candidateOnlyGameStrings": 60,
+      "candidateOnlyUiVoiceStrings": 13
+    },
+    "latestCandidateResume": {
+      "workflowId": 380800850,
+      "trigger": "workflow_dispatch only",
+      "scheduleTriggerPresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latest100RepositoryRuns": {
+        "totalCount": 6639,
+        "returnedRuns": 100,
+        "matchingWorkflowRuns": 0,
+        "activeOrQueuedMatchingRuns": 0
+      },
+      "latestLocatedMatchingRun": {
+        "number": 150,
+        "id": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "resume": "skipped",
+        "audit": "success",
+        "candidatePackWrites": 0,
+        "metadataFilesWritten": 2
+      }
+    },
+    "latestR125": {
+      "run": 153,
+      "id": 44703845681,
+      "conclusion": "failure",
+      "headSha": "6b4b768e86f006263ccf135e476c5bb1afaf3ff5",
+      "localePacks": "98/98",
+      "homeLanguageMatrix": "98/98",
+      "sections": "27/27",
+      "applications": 2646,
+      "countryProfiles": "248/248",
+      "visibleEnglish": {
+        "exact": 0,
+        "partial": 0,
+        "unresolved": 0
+      },
+      "dynamicFallbackRequests": 551,
+      "dynamicFallbackLanguages": 97,
+      "uniqueFallbackStrings": 63,
+      "gameStrings": 60,
+      "sellerPlanStrings": 3,
+      "aiRequests": 0,
+      "providerRequests": 0,
+      "pollinationsRequests": 0,
+      "quotaUsed": 0
+    },
+    "sellerPlanData": {
+      "source": "read-only Supabase SELECT public.marketplace_plans",
+      "projectStatus": "ACTIVE_HEALTHY",
+      "activeRows": 6,
+      "limits": {
+        "free": 3,
+        "business_monthly": 50,
+        "business_yearly": 100
+      },
+      "nullLimitPlans": [
+        "boost_7",
+        "top_7",
+        "featured_30"
+      ],
+      "databaseWrites": 0
+    },
+    "ai": {
+      "run": 243,
+      "id": 44703845640,
+      "conclusion": "success",
+      "health": "pass",
+      "aiBinding": true,
+      "centralSafetyGate": "enabled",
+      "failClosed": true,
+      "liveChat": "unknown-not-probed",
+      "liveTranslation": "unknown-not-probed",
+      "countryIntentProbe": "skipped-by-policy",
+      "blockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable",
+        "Dhivehi read timeouts",
+        "three unparseable Workers AI outputs"
+      ],
+      "liveProbesSent": 0,
+      "translationRequestsSent": 0,
+      "quotaUsed": 0
+    },
+    "voice": {
+      "run": 178,
+      "id": 44703668265,
+      "conclusion": "success",
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "dynamicVoicePlaceholders": "passed",
+      "productionMultilingualAudioAssets": "skipped",
+      "liveASR": "not-verified",
+      "physicalMicrophonesSpeakers": "not-certified"
+    },
+    "countrySafety": {
+      "countryRun": 138,
+      "countryRunId": 44593451053,
+      "countryConclusion": "success",
+      "safetyRun": 92,
+      "safetyRunId": 44593451109,
+      "safetyConclusion": "success",
+      "testedDate": "2026-11-19",
+      "retestedOnLatestHead": false,
+      "latestR125CountryMatrix": "248/248 pass"
+    },
+    "pages": {
+      "run": 2008,
+      "id": 44726385011,
+      "conclusion": "success",
+      "completedAt": "2026-11-20T11:18:15Z"
+    },
+    "branchComparison": {
+      "mainHead": "3b5e1ab44235c24eb3ecc529a72daedc3ebb5370",
+      "candidateHead": "4c280efc1df6943a5aa433181e6afe7c6ece843a",
+      "candidateAhead": 615,
+      "candidateBehind": 646
+    },
+    "thisPass": {
+      "codeRepairs": 0,
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "providerRequests": 0,
+      "aiQuotaUsed": 0,
+      "databaseWrites": 0,
+      "quotaBypassAttempts": 0,
+      "published": false,
+      "linguisticCertification": false,
+      "candidateWritesDeferred": true,
+      "reason": "Candidate game/UI translations exist only in unpublished, uncertified candidate packs; seller-limit labels have no reviewed translations. Preserve them until native review. No safe quota-neutral code change can remove these content blockers.",
+      "decision": "NO-GO"
+    }
   }
 }
