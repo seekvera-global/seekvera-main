@@ -7,16 +7,20 @@ const localizedPlanDuration=(days,language=localeCode())=>{
  const count=Number(days);
  if(!Number.isInteger(count)||count<=0)return '';
  const source=`${count} days`;
+ const locale=String(language||'en').toLowerCase().split(/[-_]/)[0];
+ if(locale==='en')return source;
  const packed=localized(source,language);
  if(packed&&packed!==source)return packed;
- try{
-  const formatter=new Intl.NumberFormat(language,{style:'unit',unit:'day',unitDisplay:'long'});
-  const formatted=formatter.format(count);
-  const english=new Intl.NumberFormat('en',{style:'unit',unit:'day',unitDisplay:'long'}).format(count);
-  const normalize=value=>String(value).replace(/\p{N}+/gu,'#').replace(/\s+/g,' ').trim();
-  if(formatted&&normalize(formatted)!==normalize(english))return formatted;
- }catch{}
- return source;
+ const normalize=value=>String(value).replace(/\p{N}+/gu,'#').replace(/\s+/g,' ').trim();
+ for(const unitDisplay of ['long','short','narrow']){
+  try{
+   const formatted=new Intl.NumberFormat(language,{style:'unit',unit:'day',unitDisplay}).format(count);
+   const english=new Intl.NumberFormat('en',{style:'unit',unit:'day',unitDisplay}).format(count);
+   if(formatted&&normalize(formatted)!==normalize(english))return formatted;
+  }catch{}
+ }
+ // Use the standardized day symbol rather than leave an English phrase visible.
+ return `${count} d`;
 };
 const PLAN_NAME_SOURCE=Object.freeze({
  free:'Free · 30 days',
