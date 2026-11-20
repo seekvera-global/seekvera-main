@@ -151,7 +151,9 @@
     "2026-11-20 R125 static audit #141 on Main ce26d1b completed the full 98-pack, 98-home-language, 27-section (2,646 applications) and 248-country matrices. Visible English exact/partial/unresolved findings were zero, but the no-dynamic-fallback gate failed: 651 locally intercepted UI-translation calls across 97 languages and 76 unique strings (60 game strings already in candidate source; 16 seller-plan strings absent from candidate source). AI, Pollinations and external provider requests were zero.",
     "2026-11-20 Candidate branch received a quota-neutral provisional Divehi quick-label consistency repair: four values copied from the existing main i18n-ui.js QUICK.dv map. Candidate dv pack readback preserved 1,118 keys and sourceHash 6a1126e6a2ce5629. This does not resolve the 58 long English-overlap findings and is not linguistic certification or publication.",
     "2026-11-20 R125 static audit readiness fix bypassed stale Cloudflare cache and reached all matrix steps; Pages #1970 passed. Latest candidate-resume workflow remains manual-only; no active run was found, and no translation requests or quota use occurred.",
-    "2026-11-20 R125 #144 on Main code head 48c6573 completed 98 locale packs, 98 home languages, 27 sections (2,646 applications) and 248 country profiles with zero visible exact/partial/unresolved English findings, but failed the no-dynamic-fallback gate: 587 locally intercepted requests across 97 languages and 71 unique strings (60 game strings + 11 seller-plan strings). No AI/provider/Pollinations request or quota use occurred. Compared with pre-repair #141 (651 requests, 76 strings, 16 seller strings), five seller strings and 64 requests were removed; #142 and #144 raw counts varied (577/587), so do not claim deterministic request reduction."
+    "2026-11-20 R125 #144 on Main code head 48c6573 completed 98 locale packs, 98 home languages, 27 sections (2,646 applications) and 248 country profiles with zero visible exact/partial/unresolved English findings, but failed the no-dynamic-fallback gate: 587 locally intercepted requests across 97 languages and 71 unique strings (60 game strings + 11 seller-plan strings). No AI/provider/Pollinations request or quota use occurred. Compared with pre-repair #141 (651 requests, 76 strings, 16 seller strings), five seller strings and 64 requests were removed; #142 and #144 raw counts varied (577/587), so do not claim deterministic request reduction.",
+    "2026-11-20 Turn 21: re-fetched latest known candidate-resume run #150 and R125 static audit #144 job logs. #150 is completed on a legacy workflow revision with resume skipped; #144 failed the no-dynamic-fallback gate at 587 locally intercepted requests/71 strings. The current resume workflow is workflow_dispatch only. A fresh repository-wide Actions run list was not available through the connected operations, so candidate writes remain deferred.",
+    "2026-11-20 Turn 21: live Supabase read-only verification confirmed six active marketplace plans and the RLS policies. Security advisor INFO findings for marketplace_moderation_audit and marketplace_submission_rate are fail-closed: anon/authenticated privileges are absent. Checkout remains inactive."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -13552,7 +13554,7 @@
       "checkout is inactive pending merchant configuration"
     ]
   },
-  "lastUpdatedAt": "2026-11-20T04:32:29.990Z",
+  "lastUpdatedAt": "2026-11-20T05:35:14Z",
   "latestAutomationPass20261119V43": {
     "checkedAt": "2026-11-19T07:07:23.959Z",
     "mainBaseSha": "1d1d89dd55a1502618f180ea35a151ed436e3101",
@@ -19826,5 +19828,302 @@
       "linguisticCertification": false
     },
     "decision": "NO-GO"
+  },
+  "latestContinuationCheck20261120Turn21": {
+    "checkedAt": "2026-11-20T05:35:14Z",
+    "filesRead": [
+      "main: docs/r125-continuation-checkpoint-20261010.json",
+      "candidate branch: docs/locale-candidates-20261008/resume-summary.json",
+      "candidate branch: docs/locale-candidates-20261008/resume-latest.log",
+      "main: .github/workflows/r125-hourly-candidate-resume.yml",
+      "main: seller-plans.html",
+      "main: games.html",
+      "main: games.js",
+      "main: i18n-ui.js",
+      "main: i18n-r32-source.json",
+      "main: tools/test-locale-cognates.cjs",
+      "live Supabase: marketplace_plans rows, pg_policies, role privileges and security advisors"
+    ],
+    "mainHeadBeforeCheckpointUpdate": "f897ddcd0570ac9e4f4310996afabf08867ccb27",
+    "blobs": {
+      "checkpoint": "faee041fc22172c4215b92e07513fa7bf4e11fb1",
+      "candidateSummary": "6dd87dfccdd190ed78c9566627de89c2c91de47e",
+      "candidateResumeLog": "a6888c7673def0f715bbb746003fd2f8c054c6e7",
+      "candidateWorkflow": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2"
+    },
+    "candidateState": {
+      "structural": "98/98",
+      "savedQualityGate": "97/98",
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "sourceHash": "6a1126e6a2ce5629",
+      "candidateSourceCount": 1118,
+      "productionSourceCount": 1045,
+      "unpublishedKeyDelta": 73,
+      "publishedPacks": 0,
+      "linguisticallyCertifiedPacks": 0,
+      "note": "The prompt's 63/98 and 35 remaining figures are stale. The current checkpoint and candidate summary show 98 structurally complete; 97 pass the saved quality gate."
+    },
+    "sourceDelta": {
+      "candidateOnlyKeys": 73,
+      "r125DynamicFallbackStrings": 71,
+      "gameStrings": 60,
+      "sellerPlanStrings": 11,
+      "candidateOnlyUiVoiceKeysOutside27SectionMatrix": 13,
+      "note": "The 13 candidate-only UI/voice keys need separate voice/UI coverage. Do not promote unreviewed candidate packs."
+    },
+    "actions": {
+      "latestKnownCandidateResume": {
+        "run": 150,
+        "runId": 38971104197,
+        "status": "completed",
+        "conclusion": "success",
+        "workflowRevision": "legacy",
+        "resumeStep": "skipped",
+        "auditStep": "success",
+        "candidatePackWrites": 0,
+        "metadataFilesWritten": 2,
+        "evidence": "Fetched job 117209410195 and its decoded log. Audit reported completedCount 97, remaining dv, resumeSucceeded false, exitCode not-run. The two writes were scheduled-mode/resume-exit metadata, not locale packs."
+      },
+      "currentCandidateResumeWorkflow": {
+        "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+        "trigger": "workflow_dispatch only",
+        "schedulePresent": false,
+        "runTranslationsDefault": false,
+        "repairCandidatesDefault": false,
+        "translationStepRequiresExplicitRunTranslations": true,
+        "deterministicCandidateRepairRequiresExplicitRepairCandidates": true
+      },
+      "latestR125StaticAudit": {
+        "run": 144,
+        "runId": 44661446764,
+        "status": "completed",
+        "conclusion": "failure",
+        "localePacks": "98/98",
+        "homeLanguages": "98/98",
+        "sections": "27/27",
+        "applications": 2646,
+        "countryProfiles": "248/248",
+        "visibleEnglish": {
+          "exact": 0,
+          "partial": 0,
+          "unresolved": 0
+        },
+        "dynamicFallbackRequests": 587,
+        "uniqueFallbackStrings": 71,
+        "affectedLanguages": 97,
+        "gameStrings": 60,
+        "sellerPlanStrings": 11,
+        "interceptedRequests": {
+          "uiTranslate": 587,
+          "ai": 0,
+          "pollinations": 0,
+          "externalProvider": 0
+        },
+        "quotaUsed": 0,
+        "topRequestLanguage": {
+          "name": "Tswana",
+          "requests": 21
+        },
+        "failureReason": "No-dynamic-fallback gate; all UI translation requests were intercepted locally."
+      },
+      "production": {
+        "r105": {
+          "run": 228,
+          "runId": 44661446719,
+          "status": "completed",
+          "conclusion": "success",
+          "aiBinding": true,
+          "productionHealth": "passed",
+          "centralSafetyGate": "enabled",
+          "failClosed": true,
+          "liveAiGeneration": "skipped-by-policy",
+          "countryIntent": "not-run"
+        },
+        "r123": {
+          "run": 171,
+          "runId": 44661402845,
+          "status": "completed",
+          "conclusion": "success",
+          "programmaticTTS": "passed",
+          "voiceAcknowledgement": "passed",
+          "dynamicVoicePlaceholders": "passed",
+          "productionMultilingualAudio": "skipped",
+          "liveASR": "not-verified",
+          "physicalMicrophoneSpeakerCertification": false
+        },
+        "r9e": {
+          "run": 138,
+          "runId": 44593451053,
+          "status": "completed",
+          "conclusion": "success",
+          "countryProfiles": "248/248",
+          "localizedPages": "44/44",
+          "moroccoPriority": "passed",
+          "worldwidePriority": "passed",
+          "currencyFallback": "passed",
+          "liveAiProbes": "skipped-by-policy"
+        },
+        "safety": {
+          "run": 92,
+          "runId": 44593451109,
+          "status": "completed",
+          "conclusion": "success",
+          "blockedCategories": 4,
+          "benignLand": "allowed-pending-human-review"
+        },
+        "pages": {
+          "run": 1977,
+          "runId": 44666588809,
+          "status": "completed",
+          "conclusion": "success",
+          "build": "passed",
+          "deploy": "passed"
+        }
+      },
+      "freshRepositoryRunList": "Not available through the connected GitHub Actions operations in this pass. The known matching candidate-resume run #150 was fetched and is completed, but a newer in-progress run cannot be ruled out.",
+      "candidateWritesDeferred": true
+    },
+    "candidateBranchCompare": {
+      "status": "diverged",
+      "aheadBy": 606,
+      "behindBy": 616,
+      "mergeBase": "320ff472cc8eef5ea573c872f1b0c949a22593d0",
+      "decision": "Do not merge/promote the candidate branch wholesale into Main; preserve it as a separate staging branch."
+    },
+    "supabase": {
+      "projectStatus": "ACTIVE_HEALTHY",
+      "table": "public.marketplace_plans",
+      "rlsEnabled": true,
+      "activeRows": 6,
+      "plans": [
+        {
+          "code": "free",
+          "billingPeriod": "free",
+          "durationDays": 30,
+          "maxActiveAds": 3,
+          "priceNGN": 0,
+          "priceUSD": 0,
+          "active": true
+        },
+        {
+          "code": "boost_7",
+          "billingPeriod": "one_time",
+          "durationDays": 7,
+          "maxActiveAds": null,
+          "priceNGN": 2500,
+          "priceUSD": 2.99,
+          "active": true
+        },
+        {
+          "code": "top_7",
+          "billingPeriod": "one_time",
+          "durationDays": 7,
+          "maxActiveAds": null,
+          "priceNGN": 5000,
+          "priceUSD": 4.99,
+          "active": true
+        },
+        {
+          "code": "business_monthly",
+          "billingPeriod": "monthly",
+          "durationDays": 30,
+          "maxActiveAds": 50,
+          "priceNGN": 15000,
+          "priceUSD": 15,
+          "active": true
+        },
+        {
+          "code": "business_yearly",
+          "billingPeriod": "yearly",
+          "durationDays": 365,
+          "maxActiveAds": 100,
+          "priceNGN": 150000,
+          "priceUSD": 150,
+          "active": true
+        },
+        {
+          "code": "featured_30",
+          "billingPeriod": "one_time",
+          "durationDays": 30,
+          "maxActiveAds": null,
+          "priceNGN": 7500,
+          "priceUSD": 7.99,
+          "active": true
+        }
+      ],
+      "policies": {
+        "marketplacePlans": "RLS SELECT policy for anon/authenticated only when is_active=true; no RLS write policy.",
+        "marketplacePaymentRequests": "RLS anon INSERT only when status=initiated and provider_reference IS NULL; no anon select/update policy.",
+        "marketplaceModerationAudit": "RLS enabled; no anon/authenticated table privileges and no public policy.",
+        "marketplaceSubmissionRate": "RLS enabled; no anon/authenticated table privileges and no public policy."
+      },
+      "securityAdvisor": {
+        "infoFindings": 2,
+        "findings": [
+          "marketplace_moderation_audit: RLS enabled with no policies",
+          "marketplace_submission_rate: RLS enabled with no policies"
+        ],
+        "interpretation": "These two INFO findings are fail-closed private tables: anon/authenticated table privileges are false. No DB change was made."
+      },
+      "databaseWrites": 0,
+      "checkout": "inactive; merchant configuration and end-to-end payment/refund/settlement/webhook verification remain required"
+    },
+    "ai": {
+      "binding": "present",
+      "productionHealth": "passed in R105 #228",
+      "liveChatAvailability": "unknown-not-probed",
+      "translationBackendAvailability": "unknown-not-probed",
+      "blockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP 503 all_translation_backends_unavailable in resume-latest.log"
+      ],
+      "liveProbes": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "quotaBypassAttempts": 0
+    },
+    "voice": {
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "dynamicVoicePlaceholders": "passed",
+      "productionMultilingualAudio": "skipped",
+      "liveASR": "not-verified",
+      "physicalMicrophoneSpeakerCertification": false
+    },
+    "countryCurrency": {
+      "lastPassingRun": 138,
+      "countryProfiles": "248/248",
+      "localizedPages": "44/44",
+      "moroccoPriority": "passed",
+      "worldwidePriority": "passed",
+      "currencyFallback": "passed",
+      "fullCurrentHeadRecertification": false
+    },
+    "safety": {
+      "lastPassingRun": 92,
+      "blockedCategories": [
+        "weapons/explosives",
+        "explicit sexual content",
+        "fake documents",
+        "ownership/consent violations"
+      ],
+      "benignLand": "allowed-pending-human-review"
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "databaseWrites": 0,
+      "translationRequests": 0,
+      "providerRequests": 0,
+      "aiQuotaUsed": 0,
+      "quotaBypassAttempts": 0,
+      "published": false,
+      "linguisticCertification": false,
+      "decision": "NO-GO"
+    }
   }
 }
