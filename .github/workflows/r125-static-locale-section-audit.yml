@@ -80,18 +80,20 @@ jobs:
                 await context.route('**/api/ui-translate**', route => route.fulfill({ status: 503, contentType: 'application/json', body: '{"ok":false,"audit":"quota-neutral"}' }));
                 await context.route('https://text.pollinations.ai/**', route => route.fulfill({ status: 503, contentType: 'text/plain', body: 'quota-neutral static audit' }));
                 const page = await context.newPage();
-                const home = await page.goto(base + '/index.html?locale_audit=20261117', { waitUntil: 'domcontentloaded', timeout: 60000 });
+                const auditNonce = Date.now();
+                await page.setExtraHTTPHeaders({ 'cache-control': 'no-cache', pragma: 'no-cache' });
+                const home = await page.goto(base + `/index.html?locale_audit=20261120-r125-${auditNonce}`, { waitUntil: 'domcontentloaded', timeout: 60000 });
                 if (!home) throw new Error('homepage response missing');
                 const homeBody = await home.text();
                 console.log('R125_BROWSER_HTTP index', home.status(), 'bytes=' + homeBody.length, 'cf-ray=' + (home.headers()['cf-ray'] || ''));
                 if (home.status() !== 200) { console.error('R125_BROWSER_BODY index', homeBody.slice(0, 400)); throw new Error('homepage HTTP ' + home.status()); }
                 await writeFile('/tmp/r125-index.html', homeBody, 'utf8');
                 const assets = [
-                  ['games_html', '/games.html?locale_audit=20261117', '/tmp/r125-games.html'],
-                  ['seller_plans', '/seller-plans.html?locale_audit=20261120-plan-source-map', '/tmp/r125-seller-plans.html'],
-                  ['global_ui', '/' + process.env.R125_GLOBAL_UI_REF, '/tmp/r125-global-ui.js'],
-                  ['games_js', '/' + process.env.R125_GAMES_JS_REF, '/tmp/r125-games.js'],
-                  ['i18n_ui', '/' + process.env.R125_I18N_UI_REF, '/tmp/r125-i18n-ui.js']
+                  ['games_html', `/games.html?locale_audit=20261120-r125-${auditNonce}`, '/tmp/r125-games.html'],
+                  ['seller_plans', `/seller-plans.html?locale_audit=20261120-plan-source-map&r125=${auditNonce}`, '/tmp/r125-seller-plans.html'],
+                  ['global_ui', `/${process.env.R125_GLOBAL_UI_REF}&r125=${auditNonce}`, '/tmp/r125-global-ui.js'],
+                  ['games_js', `/${process.env.R125_GAMES_JS_REF}&r125=${auditNonce}`, '/tmp/r125-games.js'],
+                  ['i18n_ui', `/${process.env.R125_I18N_UI_REF}&r125=${auditNonce}`, '/tmp/r125-i18n-ui.js']
                 ];
                 for (const [name, path, file] of assets) {
                   const result = await page.evaluate(async target => {
@@ -359,6 +361,26 @@ jobs:
             sleep 5
           done
           echo R125_BROWSER_ASSET_READINESS_TIMEOUT >&2
+          echo "R125_EXPECTED_GLOBAL_UI_REF=$GLOBAL_UI_REF" >&2
+          echo "R125_EXPECTED_GAMES_JS_REF=$GAMES_JS_REF" >&2
+          echo "R125_EXPECTED_I18N_UI_REF=$I18N_UI_REF" >&2
+          for item in \
+            "/tmp/r125-index.html|$GLOBAL_UI_REF" \
+            "/tmp/r125-index.html|$I18N_UI_REF" \
+            "/tmp/r125-games.html|$GAMES_JS_REF" \
+            "/tmp/r125-seller-plans.html|PLAN_NAME_SOURCE" \
+            "/tmp/r125-seller-plans.html|BILLING_PERIOD_SOURCE" \
+            "/tmp/r125-global-ui.js|sv-control-caption-label" \
+            "/tmp/r125-i18n-ui.js|alreadyLocalizedValue" \
+            "/tmp/r125-games.js|<b><span data-no-translate>\${g.name}</span></b>"; do
+            file="${item%%|*}"
+            marker="${item#*|}"
+            if [[ -f "$file" ]] && grep -Fq "$marker" "$file"; then
+              echo "R125_ASSET_MARKER_PRESENT $file $marker" >&2
+            else
+              echo "R125_ASSET_MARKER_MISSING $file $marker" >&2
+            fi
+          done
           exit 1
 
       - name: Syntax check quota-neutral audit
