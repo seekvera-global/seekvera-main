@@ -21867,5 +21867,85 @@
       "reason": "Candidate game/UI translations exist only in unpublished, uncertified candidate packs; seller-limit labels have no reviewed translations. Preserve them until native review. No safe quota-neutral code change can remove these content blockers.",
       "decision": "NO-GO"
     }
+  },
+  "lastAutomationPass20261120Turn30": {
+    "checkedAt": "2026-11-20T13:46:13Z",
+    "result": "Freshly re-read the required Main checkpoint, candidate summary/log and current resume workflow; queried the latest 100 GitHub Actions runs, inspected the legacy candidate-resume job log and latest R125 #153 job log, compared the R125 code head with current Main, and audited the production/candidate locale source keys plus seller-plan rendering.",
+    "newFindings": [
+      "Latest repository Actions listing returned 100 of 6,640 runs; none used candidate-resume workflow ID 380800850 and none were active/queued. Latest located matching run remains legacy #150 (38971104197, 2026-10-16).",
+      "Candidate-resume #150 job log confirms Resume public UI candidates was skipped, candidate audit succeeded, artifact was uploaded, and the save step created a metadata-only commit; zero candidate packs were written. resume-latest.log is a historical build log whose latest entries are 2026-11-20 07:58 UTC, not a live provider-availability probe.",
+      "Current Main .github/workflows/r125-hourly-candidate-resume.yml is workflow_dispatch only, has no schedule, and defaults run_translations and repair_candidates to false. No candidate writes were attempted.",
+      "R125 #153 remains the latest R125 run in the latest 100 Actions results. Its job log confirms 98 packs, 98 home-language checks, 27/27 sections, 2,646 applications and 248 country profiles; zero visible English exact/partial/unresolved findings; 551 locally intercepted translation calls across 97 languages and 63 strings (60 game strings plus three seller limits); zero provider/AI/Pollinations requests and zero quota use.",
+      "Comparing R125 #153 code head 6b4b768e86f006263ccf135e476c5bb1afaf3ff5 to current Main 42b732ac36ce4979d3c6338249d51e34470e0cdc shows seven commits ahead and only docs/r125-continuation-checkpoint-20261010.json changed. The R125 application-code result remains applicable to current Main.",
+      "Fresh exact source comparison confirms 1,045 production keys versus 1,118 candidate keys, a 73-key delta: 60 game strings and 13 UI/voice strings. Production has no active-ads key and no safe standalone compositional keys for the seller-limit phrase; the phrase is assembled directly from max_active_ads in seller-plans.html. Keep the actual limits visible and do not suppress them.",
+      "Candidate summary still reports 97 quality-gate-complete languages and Divehi (dv) remaining with 58 English-overlap findings; all 98 packs are structurally complete with 1,118 keys/sourceHash, but zero packs are published and zero linguistically certified.",
+      "R105 #243 production health passed with AI binding and failClosed Safety Gate, but live chat/translation/country-intent probes were skipped. daily_free_ai_limit, Google HTTP429, HTTP503 and Dhivehi timeouts remain; live AI availability is unknown.",
+      "Audio #178 passed programmatic TTS/acknowledgement/placeholders, but production multilingual audio asset verification and live ASR were skipped; physical microphones/speakers remain uncertified. Country #138 and Safety #92 passed on 2026-11-19 but were not rerun on current Main; R125 #153 did pass the 248-country matrix. Checkout remains inactive pending merchant configuration.",
+      "Main-to-candidate refs remain diverged: candidate is 617 commits ahead and 647 behind. No merge or cherry-pick was performed."
+    ],
+    "candidateState": {
+      "structurallyComplete": 98,
+      "total": 98,
+      "qualityGatePassing": 97,
+      "qualityGateRemaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlapFindings": 58,
+      "published": 0,
+      "linguisticallyCertified": 0,
+      "candidateSourceKeys": 1118,
+      "productionSourceKeys": 1045,
+      "candidateOnlyKeys": 73,
+      "candidateOnlyGameStrings": 60,
+      "candidateOnlyUiVoiceStrings": 13
+    },
+    "latestCandidateResume": {
+      "workflowId": 380800850,
+      "trigger": "workflow_dispatch only",
+      "scheduleTriggerPresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latest100RepositoryRuns": {
+        "totalCount": 6640,
+        "returnedRuns": 100,
+        "matchingWorkflowRuns": 0,
+        "activeOrQueuedMatchingRuns": 0
+      },
+      "latestLocatedMatchingRun": {
+        "number": 150,
+        "id": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "resume": "skipped",
+        "audit": "success",
+        "candidatePackWrites": 0,
+        "metadataFilesWritten": 2,
+        "jobLogInspected": true
+      }
+    },
+    "currentHeads": {
+      "main": "42b732ac36ce4979d3c6338249d51e34470e0cdc"
+    },
+    "branchComparison": {
+      "status": "diverged",
+      "candidateAhead": 617,
+      "candidateBehind": 647
+    },
+    "thisPass": {
+      "codeRepairs": 0,
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "providerRequests": 0,
+      "aiQuotaUsed": 0,
+      "databaseWrites": 0,
+      "quotaBypassAttempts": 0,
+      "published": false,
+      "linguisticCertification": false,
+      "candidateWritesDeferred": true,
+      "decision": "NO-GO"
+    }
   }
 }
