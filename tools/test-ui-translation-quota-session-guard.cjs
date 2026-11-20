@@ -337,13 +337,17 @@ async function main(){
  assert(!sellerPlans.includes("localized('Price set at checkout',language)"),'per-card checkout placeholder must not duplicate the global checkout disclosure');
  assert(sellerPlans.includes('Final prices and live checkout require connected merchant accounts.'),'global checkout disclosure must remain visible');
  assert(sellerPlans.includes("localized('7 days',language)")&&sellerPlans.includes("localized('30 days',language)"),'known promotion durations must use exact locale source keys');
+ assert(!sellerPlans.includes("localized('days',language)"),'duration labels must use complete source phrases, not an unlocalized generic suffix');
+ assert(sellerPlans.includes("if(code==='boost_7'||code==='top_7')appendPlanText(d,'div','small',localized('7 days',language),'7 days')"),'seven-day promotion plans must use the reviewed 7 days source key');
+ assert(sellerPlans.includes("else if(code==='featured_30')appendPlanText(d,'div','small',localized('30 days',language),'30 days')"),'featured promotion must retain its explicit 30-day duration');
+ assert(sellerPlans.includes("else if(!PLAN_NAME_SOURCE[code])appendPlanText(d,'div','small',localized(durationSource,language),durationSource)"),'unknown future plans must retain an auditable duration fallback');
  assert(sellerPlans.includes('localized(x.description,language)'),'seller plan descriptions must remain translatable');
  assert(sellerPlans.includes('localized(limitSource,language)'),'active-ad limits must remain translatable');
  assert(sellerPlans.includes("billingPeriod.replace(/_/g,' ')"),'one-time billing cadence must remain visible for audit');
  assert(sellerPlans.includes('!nameSource.toLowerCase().includes(periodSource.toLowerCase())'),'billing badge must not duplicate cadence already shown in the plan name');
  const localeManifest=JSON.parse(fs.readFileSync('i18n-r32/manifest.json','utf8'));
  const localeSource=JSON.parse(fs.readFileSync('i18n-r32-source.json','utf8'));
- const canonicalPlanKeys=[...new Set([...Object.values(planNameMap),...Object.values(billingPeriodMap)])];
+ const canonicalPlanKeys=[...new Set([...Object.values(planNameMap),...Object.values(billingPeriodMap),'7 days'])];
  for(const key of canonicalPlanKeys)assert(localeSource.strings.includes(key),'canonical seller-plan key missing from production source: '+key);
  assert.equal(localeManifest.packs,98,'production locale manifest must contain 98 packs');
  assert.equal(localeManifest.languages.length,98,'production locale manifest must list 98 languages');
