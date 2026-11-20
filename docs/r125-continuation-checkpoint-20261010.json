@@ -13552,7 +13552,7 @@
       "checkout is inactive pending merchant configuration"
     ]
   },
-  "lastUpdatedAt": "2026-11-20T02:33:40.841Z",
+  "lastUpdatedAt": "2026-11-20T04:32:29.990Z",
   "latestAutomationPass20261119V43": {
     "checkedAt": "2026-11-19T07:07:23.959Z",
     "mainBaseSha": "1d1d89dd55a1502618f180ea35a151ed436e3101",
@@ -19622,5 +19622,209 @@
       "R105 #228, R123 #171 and Pages #1976 passed. R9e #138 and Safety #92 passed and their implementation paths have not changed.",
       "Live AI generation, AI country intent, translation-backend availability, live ASR, production multilingual audio assets and physical microphone/speaker operation remain unverified. Checkout remains inactive pending merchant configuration."
     ]
+  },
+  "candidateCountReconciliation": {
+    "checkedAt": "2026-11-20T04:32:29.990Z",
+    "promptClaim": {
+      "structuralComplete": 63,
+      "remaining": 35
+    },
+    "verifiedCurrent": {
+      "structuralComplete": 98,
+      "qualityGatePassing": 97,
+      "qualityGateRemaining": [
+        "dv"
+      ],
+      "published": 0,
+      "linguisticallyCertified": 0
+    },
+    "sourceHash": "6a1126e6a2ce5629",
+    "sourceCount": 1118,
+    "note": "The prompt's 63/98 figure is stale. The latest candidate branch files and saved structural audit show 98/98 structurally complete; 97/98 pass the saved quality gate. Divehi is structurally complete but still has 58 long English-overlap findings."
+  },
+  "latestAutomationPass20261120Turn20": {
+    "checkedAt": "2026-11-20T04:32:29.990Z",
+    "mainHeadBeforeCheckpointUpdate": "654895bd7def0c1103cb4715beae602737f81cd4",
+    "candidateBranchHead": "d10549108d5457695a0375148abefd48b99fd86c",
+    "candidateSummaryCommit": "d10549108d5457695a0375148abefd48b99fd86c",
+    "filesRead": [
+      "main: docs/r125-continuation-checkpoint-20261010.json",
+      "candidate branch: docs/locale-candidates-20261008/resume-summary.json",
+      "candidate branch: docs/locale-candidates-20261008/resume-latest.log",
+      "main: .github/workflows/r125-hourly-candidate-resume.yml",
+      "main: seller-plans.html",
+      "main: i18n-ui.js",
+      "main: i18n-r32-source.json",
+      "main: tools/r125_static_locale_section_audit.mjs"
+    ],
+    "candidateBranch": {
+      "structural": "98/98",
+      "savedQualityGate": "97/98",
+      "remaining": [
+        "dv"
+      ],
+      "sourceHash": "6a1126e6a2ce5629",
+      "sourceCount": 1118,
+      "divehiEnglishOverlap": 58,
+      "published": 0,
+      "linguisticCertification": 0,
+      "latestReadOnlyDivehiAudit": {
+        "packBlobSha": "b7aab027a7563ce6024b2c3d5381a6ebc9345089",
+        "translationEntries": 1118,
+        "missingKeys": 0,
+        "extraKeys": 0,
+        "emptyValues": 0,
+        "cssInvariantMismatches": 0,
+        "reservedIdentifierExact": true,
+        "duplicateGroupsThreshold4": 2,
+        "duplicateKeysAffected": 19,
+        "previousDuplicateKeysAffected": 20,
+        "nativeReviewRequired": true
+      }
+    },
+    "candidateResumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "triggers": [
+        "workflow_dispatch"
+      ],
+      "scheduleTriggerPresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestMatchingRun": {
+        "number": 150,
+        "id": 38971104197,
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "resume": "skipped",
+        "audit": "success",
+        "candidatePackWrites": 0,
+        "metadataFilesWritten": 2
+      },
+      "currentRevisionRunObserved": false,
+      "activeRunsInLatest100": 0,
+      "candidatePackWritesThisPass": 0
+    },
+    "latestR125StaticAudit": {
+      "run": 144,
+      "id": 44661446764,
+      "conclusion": "failure",
+      "languages": 98,
+      "sections": 27,
+      "sectionLanguageApplications": 2646,
+      "countryProfiles": 248,
+      "visibleEnglish": {
+        "exact": 0,
+        "partial": 0,
+        "unresolved": 0
+      },
+      "dynamicFallbackRequests": 587,
+      "uniqueFallbackStrings": 71,
+      "affectedLanguages": 97,
+      "gameStrings": 60,
+      "sellerPlanStrings": 11,
+      "providerRequests": 0,
+      "aiRequests": 0,
+      "pollinationsRequests": 0,
+      "quotaUsed": 0,
+      "failureReason": "No-dynamic-fallback gate; all requests intercepted locally."
+    },
+    "sourceDeltaReconciliation": {
+      "production": {
+        "count": 1045,
+        "sourceHash": "b371f2422f8b5416"
+      },
+      "candidate": {
+        "count": 1118,
+        "sourceHash": "6a1126e6a2ce5629"
+      },
+      "candidateOnlyKeys": 73,
+      "candidateOnlyKeysNotRequestedByR125Matrix": 13,
+      "r125DynamicFallbackStrings": 71,
+      "r125FallbackStringsNotInCandidateSource": 11,
+      "r125FallbackComposition": "60 game category/description strings plus 11 seller-plan strings",
+      "note": "The 13 additional candidate-only UI/voice keys were not requested by the 27-section R125 matrix and require separate UI/voice-state reconciliation."
+    },
+    "production": {
+      "r105": {
+        "run": 228,
+        "id": 44661446719,
+        "conclusion": "success",
+        "aiBinding": true,
+        "productionHealth": "passed",
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "liveAiGeneration": "skipped-by-policy",
+        "countryIntent": "not-run"
+      },
+      "r123": {
+        "run": 171,
+        "id": 44661402845,
+        "conclusion": "success",
+        "programmaticTTS": "passed",
+        "voiceAcknowledgement": "passed",
+        "dynamicVoicePlaceholders": "passed",
+        "liveASR": "skipped",
+        "physicalMicrophoneSpeakerCertification": false
+      },
+      "r9e": {
+        "run": 138,
+        "id": 44593451053,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "moroccoPriority": "passed",
+        "worldwidePriority": "passed",
+        "currencyFallback": "passed",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "safety": {
+        "run": 92,
+        "id": 44593451109,
+        "conclusion": "success",
+        "blockedCategories": 4,
+        "benignLand": "allowed-pending-human-review"
+      },
+      "pages": {
+        "run": 1977,
+        "id": 44666588809,
+        "conclusion": "success",
+        "build": "passed",
+        "deploy": "passed"
+      }
+    },
+    "aiAvailability": {
+      "binding": true,
+      "productionHealth": "passed",
+      "liveChat": "unknown-not-probed",
+      "translationBackend": "unknown-not-probed",
+      "historicalBlockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable"
+      ],
+      "translationRequestsSent": 0,
+      "aiQuotaUsed": 0,
+      "quotaBypassAttempts": 0
+    },
+    "voice": {
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "liveASR": "not-verified/skipped",
+      "physicalMicrophoneSpeakerCertification": false
+    },
+    "checkout": "inactive pending merchant configuration and end-to-end payment/refund/settlement/webhook verification",
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateSummaryMetadataWrites": 1,
+      "mainCheckpointWrites": 1,
+      "translationRequests": 0,
+      "providerRequests": 0,
+      "aiQuotaUsed": 0,
+      "quotaBypassAttempts": 0,
+      "published": false,
+      "linguisticCertification": false
+    },
+    "decision": "NO-GO"
   }
 }
