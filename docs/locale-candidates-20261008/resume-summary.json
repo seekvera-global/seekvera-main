@@ -4966,7 +4966,7 @@
       "validation": "Read back all 64 touched packs: 1,118 translation keys each and matching sourceHash; all changed Payoneer/Paystack/WhatsApp brand strings now exact. This is deterministic brand normalization, not native-language certification."
     }
   ],
-  "lastUpdatedAt": "2026-11-20T04:32:14.142Z",
+  "lastUpdatedAt": "2026-11-20T06:29:46Z",
   "candidateCountReconciliation": {
     "checkedAt": "2026-11-20T04:32:14.142Z",
     "sourceHash": "6a1126e6a2ce5629",
@@ -5163,6 +5163,220 @@
       "quotaBypassAttempts": 0,
       "published": false,
       "linguisticCertification": false
+    },
+    "decision": "NO-GO"
+  },
+  "latestContinuationCheck20261120Turn22": {
+    "checkedAt": "2026-11-20T06:29:46Z",
+    "filesRead": [
+      "main: docs/r125-continuation-checkpoint-20261010.json",
+      "candidate branch: docs/locale-candidates-20261008/resume-summary.json",
+      "candidate branch: docs/locale-candidates-20261008/resume-latest.log",
+      "main: .github/workflows/r125-hourly-candidate-resume.yml",
+      "main: .github/workflows/r125-static-locale-section-audit.yml",
+      "main: seller-plans.html",
+      "main: i18n-ui.js",
+      "main: i18n-r32-source.json",
+      "main: games.js"
+    ],
+    "mainHead": "8cd3ed0f1d1caacbd2686d383d648bf9d3d0ada2",
+    "candidateBranchComparison": {
+      "status": "diverged",
+      "aheadBy": 606,
+      "behindBy": 623,
+      "mergeBase": "320ff472cc8eef5ea573c872f1b0c949a22593d0",
+      "mergeOrBulkCherryPick": "not performed"
+    },
+    "runtimeCodeComparison": {
+      "base": "48c65731076e464622fb3fa30a226e2fd220bcdb",
+      "head": "8cd3ed0f1d1caacbd2686d383d648bf9d3d0ada2",
+      "aheadBy": 10,
+      "changedFiles": [
+        ".github/workflows/r125-hourly-candidate-resume.yml",
+        "docs/r125-continuation-checkpoint-20261010.json",
+        "tools/test-r125-audit-only-guard.py"
+      ],
+      "applicationRuntimeFilesChanged": 0
+    },
+    "actions": {
+      "latestKnownCandidateResume": {
+        "run": 150,
+        "id": 38971104197,
+        "workflowId": 380800850,
+        "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+        "createdAt": "2026-10-16T21:41:54Z",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success",
+        "workflowRevision": "legacy",
+        "resume": "skipped",
+        "audit": "success",
+        "candidatePackWrites": 0,
+        "metadataFilesWritten": 2
+      },
+      "currentCandidateResumeWorkflow": {
+        "name": "R125 manual candidate resume (quota-safe by default)",
+        "trigger": "workflow_dispatch only",
+        "scheduleTriggerPresent": false,
+        "runTranslationsDefault": false,
+        "repairCandidatesDefault": false,
+        "repositoryLatest100ActiveRuns": 0,
+        "repositoryWorkflowDispatchRunCount": 5,
+        "candidateResumeWorkflowDispatchRunFound": false,
+        "candidateWritesDeferred": true,
+        "note": "No active candidate-resume run found in the inspected Actions window; latest known matching run #150 is completed and on a legacy revision. The current workflow remains manual-only."
+      },
+      "latestR125StaticAudit": {
+        "run": 144,
+        "id": 44661446764,
+        "status": "completed",
+        "conclusion": "failure",
+        "createdAt": "2026-11-20T02:31:48Z",
+        "headSha": "48c65731076e464622fb3fa30a226e2fd220bcdb",
+        "applications": 2646,
+        "languages": 98,
+        "sections": "27/27",
+        "countryProfiles": "248/248",
+        "visibleEnglish": {
+          "exact": 0,
+          "partial": 0,
+          "unresolved": 0
+        },
+        "dynamicFallbackRequests": 587,
+        "uniqueFallbackStrings": 71,
+        "affectedLanguages": 97,
+        "gameStringsPresentInCandidateSource": 60,
+        "sellerPlanStringsAbsentFromCandidateSource": 11,
+        "missingSellerPlanStrings": [
+          "30 days",
+          "Annual business plan with expanded listing allowance.",
+          "Basic 30-day listing. Moderated before going live.",
+          "Business profile, more active listings and stronger visibility.",
+          "Featured badge and stronger placement for 30 days.",
+          "Higher visibility in category and search results for 7 days.",
+          "Priority placement above standard ads for 7 days.",
+          "Up to 100 active ads",
+          "Up to 3 active ads",
+          "Up to 50 active ads",
+          "one time"
+        ],
+        "blockedRequests": {
+          "ai": 0,
+          "translation": 587,
+          "pollinations": 0
+        },
+        "quotaUsed": 0
+      },
+      "latestR105": {
+        "run": 228,
+        "id": 44661446719,
+        "conclusion": "success",
+        "createdAt": "2026-11-20T02:31:48Z",
+        "healthEndpoint": {
+          "ok": true,
+          "aiBinding": true,
+          "centralSafetyGate": "enabled",
+          "failClosed": true
+        },
+        "liveAiGeneration": "skipped-by-policy",
+        "countryIntent": "skipped-by-policy"
+      },
+      "latestR123": {
+        "run": 171,
+        "id": 44661402845,
+        "conclusion": "success",
+        "programmaticTTS": "passed",
+        "voiceAcknowledgement": "passed",
+        "dynamicVoicePlaceholders": "passed",
+        "productionAudioAssetVerification": "skipped",
+        "liveASR": "skipped",
+        "physicalDevicesCertified": false
+      },
+      "latestR9e": {
+        "run": 138,
+        "id": 44593451053,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "moroccoPriority": "passed",
+        "worldwidePriority": "passed",
+        "currencyFallback": "passed",
+        "liveAiProbes": "skipped-by-policy",
+        "programmaticASR": "skipped"
+      },
+      "latestSafety": {
+        "run": 92,
+        "id": 44593451109,
+        "conclusion": "success",
+        "blocked": [
+          "weapons_or_explosives",
+          "explicit_sexual_content",
+          "stolen_counterfeit_or_fake_documents",
+          "ownership_or_consent_problem"
+        ],
+        "benignLand": "allowed_pending_human_review"
+      },
+      "latestPages": {
+        "run": 1985,
+        "id": 44684124829,
+        "conclusion": "success",
+        "createdAt": "2026-11-20T05:54:30Z",
+        "headSha": "8cd3ed0f1d1caacbd2686d383d648bf9d3d0ada2",
+        "build": "success",
+        "deploy": "success"
+      }
+    },
+    "candidateState": {
+      "structural": "98/98",
+      "savedQualityGate": "97/98",
+      "remainingQualityGate": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "divehiDuplicateGroups4plus": 2,
+      "divehiDuplicateKeysAffected": 19,
+      "productionSourceCount": 1045,
+      "candidateSourceCount": 1118,
+      "candidateOnlyKeys": 73,
+      "candidateOnlyUiVoiceKeysOutsideR125Matrix": 13,
+      "publishedPacks": 0,
+      "linguisticallyCertifiedPacks": 0
+    },
+    "ai": {
+      "binding": true,
+      "health": "production /api/health passed in R105 #228 at 2026-11-20T02:32Z",
+      "liveChatAvailability": "unknown_not_probed",
+      "liveTranslationAvailability": "unknown_not_probed",
+      "blockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable",
+        "Dhivehi read timeouts",
+        "three unparseable Workers AI outputs"
+      ],
+      "translationRequestsThisPass": 0,
+      "aiQuotaUsedThisPass": 0,
+      "quotaBypassAttempts": 0
+    },
+    "voice": {
+      "programmaticTTS": "passed",
+      "voiceAcknowledgement": "passed",
+      "dynamicPlaceholders": "passed",
+      "liveASR": "not_verified_skipped",
+      "productionMultilingualAudioAssets": "not_verified_skipped",
+      "physicalMicrophonesSpeakers": "not_certified"
+    },
+    "checkout": "inactive_pending_merchant_configuration_and_end_to_end_payment_refund_settlement_webhook_verification",
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataFilesWritten": 1,
+      "translationRequests": 0,
+      "providerRequests": 0,
+      "aiQuotaUsed": 0,
+      "quotaBypassAttempts": 0,
+      "published": false,
+      "linguisticCertification": false,
+      "repairDecision": "No product localization was fabricated: all 11 seller-plan strings are absent from candidate source; no verified 98-language translations exist. Publishing partial packs, English placeholders, or no-translate suppressions was rejected."
     },
     "decision": "NO-GO"
   }
