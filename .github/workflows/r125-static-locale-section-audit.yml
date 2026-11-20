@@ -88,6 +88,7 @@ jobs:
                 await writeFile('/tmp/r125-index.html', homeBody, 'utf8');
                 const assets = [
                   ['games_html', '/games.html?locale_audit=20261117', '/tmp/r125-games.html'],
+                  ['seller_plans', '/seller-plans.html?locale_audit=20261120-plan-source-map', '/tmp/r125-seller-plans.html'],
                   ['global_ui', '/' + process.env.R125_GLOBAL_UI_REF, '/tmp/r125-global-ui.js'],
                   ['games_js', '/' + process.env.R125_GAMES_JS_REF, '/tmp/r125-games.js'],
                   ['i18n_ui', '/' + process.env.R125_I18N_UI_REF, '/tmp/r125-i18n-ui.js']
@@ -114,6 +115,8 @@ jobs:
               && grep -Fq "$GLOBAL_UI_REF" /tmp/r125-index.html \
               && grep -Fq "$GAMES_JS_REF" /tmp/r125-games.html \
               && grep -Fq "$I18N_UI_REF" /tmp/r125-index.html \
+              && grep -Fq 'PLAN_NAME_SOURCE' /tmp/r125-seller-plans.html \
+              && grep -Fq 'BILLING_PERIOD_SOURCE' /tmp/r125-seller-plans.html \
               && grep -Fq 'sv-control-caption-label' /tmp/r125-global-ui.js \
               && grep -Fq 'alreadyLocalizedValue' /tmp/r125-i18n-ui.js \
               && grep -Fq "'Sprachantwort'" /tmp/r125-i18n-ui.js \
