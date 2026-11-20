@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-20T08:58:07Z",
+  "checkedAt": "2026-11-20T09:31:51Z",
   "sourceHash": "6a1126e6a2ce5629",
   "completed": [
     "en",
@@ -334,279 +334,196 @@
     "linguisticCertification": false
   },
   "latestContinuationCheck": {
-    "checkedAt": "2026-11-17T04:51:39.845Z",
-    "latestPages": {
-      "run": 1620,
-      "id": 44019889958,
-      "status": "completed",
-      "conclusion": "success",
-      "createdAt": "2026-11-17T04:50:09Z",
-      "updatedAt": "2026-11-17T04:51:05Z",
-      "headSha": "e885f0c58757037a0b53f6c9342bf60cf1cf6d8d",
-      "jobs": {
-        "build": "success",
-        "reportBuildStatus": "success",
-        "deploy": "success"
-      },
-      "scope": "GitHub Pages documentation/checkpoint deployment; not product E2E certification"
-    },
-    "siteHealth": {
-      "run": 329,
-      "id": 44000337747,
-      "conclusion": "success",
-      "scope": "Official domain API health, robots/sitemap and 18 named public pages returned HTTP 200"
-    },
-    "actions": {
-      "totalCount": 5526,
-      "returnedRuns": 100,
-      "activeOrQueuedAtLastCheck": 0,
-      "latestR125InLatest50": false,
-      "currentR125Run": null,
-      "latestR105": {
-        "run": 97,
-        "id": 44000363183,
-        "status": "completed",
-        "conclusion": "success",
-        "sourceValidation": "success",
-        "all98LanguageNames": "success",
-        "quotaBoundaryTests": "success",
-        "workerDeploy": "success",
-        "productionHealth": "success",
-        "liveAiProbes": "skipped-by-policy"
-      },
-      "latestR123": {
-        "run": 70,
-        "id": 44000336356,
-        "status": "completed",
-        "conclusion": "success",
-        "audioValidation": "success",
-        "workerDeploy": "success",
-        "categoryTranslations": "success",
-        "voiceAcknowledgement": "success",
-        "dynamicVoicePlaceholders": "success",
-        "liveASR": "skipped",
-        "physicalAudio": "not-certified"
-      },
-      "latestSafetySmoke": {
-        "run": 31,
-        "id": 44000336570,
-        "status": "completed",
-        "conclusion": "success",
-        "blockedCases": 4,
-        "legalLand": "allowed_pending_human_review"
-      },
-      "latestSiteHealth": {
-        "run": 329,
-        "id": 44000337747,
-        "status": "completed",
-        "conclusion": "success",
-        "pagesChecked": 18
-      },
-      "latestPages": {
-        "run": 1609,
-        "id": 44000362278,
-        "status": "completed",
-        "conclusion": "success"
-      },
-      "latestR125": {
-        "run": 150,
-        "id": 38971104197,
-        "status": "completed",
-        "conclusion": "success",
-        "resume": "skipped",
-        "audit": "success",
-        "candidatePackChanges": 0,
-        "translationRequests": 0,
-        "aiQuotaUsed": 0,
-        "active": false
-      },
-      "activeR125Runs": 0,
-      "latestR125InLatest100": false
-    },
-    "latestR125": {
-      "run": 150,
-      "id": 38971104197,
-      "status": "completed",
-      "conclusion": "success",
-      "event": "push on legacy workflow revision",
-      "resume": "skipped",
-      "audit": "success",
-      "candidatePackChanges": 0,
-      "translationRequests": 0,
-      "aiQuotaUsed": 0,
-      "active": false
-    },
-    "workflow": {
-      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
-      "triggers": [
-        "workflow_dispatch"
-      ],
-      "scheduleTriggerPresent": false,
-      "pushTriggerPresent": false,
-      "runTranslationsDefault": false,
-      "repairCandidatesDefault": false,
-      "translationRequiresExplicitOptIn": true,
-      "auditOnlyPersistentCandidatePackWrites": false,
-      "repairModeMayWriteCandidatePacks": true,
-      "exactCandidateKeySetTestAdded": true,
-      "exactCandidateKeySetTestRun": "pending-next-manual-R125",
-      "quotaStopTestAdded": true,
-      "quotaStopTestRun": "pending next manual R125",
-      "quotaStopTestCopiedFromMain": true,
-      "quotaStopTestCommand": "PYTHONPATH=. python tools/test-locale-quota-stop.py",
-      "languageNameTestCopyFix": true,
-      "languageNameTestCopyFixCommit": "3260aac056299e07bd684ab6f85e35bc5e75a082"
-    },
+    "checkedAt": "2026-11-20T09:31:51Z",
+    "mainHead": "6f43b210938bb7bc7e24f3099886dba013188e45",
+    "filesRead": [
+      "main: docs/r125-continuation-checkpoint-20261010.json",
+      "candidate branch: docs/locale-candidates-20261008/resume-summary.json",
+      "candidate branch: docs/locale-candidates-20261008/resume-latest.log",
+      "main: .github/workflows/r125-hourly-candidate-resume.yml",
+      "main: seller-plans.html",
+      "main: i18n-r32-source.json",
+      "main: tools/r125_static_locale_section_audit.mjs"
+    ],
     "candidateState": {
-      "structural": 98,
+      "structurallyComplete": 98,
       "total": 98,
-      "keysPerPack": 1118,
-      "sourceHash": "6a1126e6a2ce5629",
-      "qualityCandidates": 97,
-      "remaining": [
+      "qualityGatePassing": 97,
+      "qualityGateRemaining": [
         "dv"
       ],
-      "divehiEnglishOverlap": 58,
-      "full98QualityAudit": false,
-      "nativeCertification": 0,
-      "published": false,
-      "linguisticCertification": false,
-      "freshPackReadback": {
-        "packsRead": 98,
-        "missingFiles": 0,
-        "extraFiles": 0,
-        "sourceHashMatches": 98,
-        "qualityPolicyMatches": 98,
-        "exactKeySets": 98,
-        "missingKeys": 0,
-        "extraKeys": 0,
-        "emptyValues": 0
+      "divehiEnglishOverlapFindings": 58,
+      "sourceKeysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "publishedPacks": 0,
+      "linguisticallyCertifiedPacks": 0
+    },
+    "latestCandidateResumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "blobSha": "f6ec68401846226a37b61b5dd908ab85fe61de99",
+      "trigger": "workflow_dispatch only",
+      "scheduleTriggerPresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestLocatedRun": {
+        "number": 150,
+        "id": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "event": "push",
+        "workflowRevision": "legacy",
+        "resume": "skipped",
+        "audit": "success",
+        "candidatePackWrites": 0,
+        "metadataFilesWritten": 2
+      },
+      "latest100RepositoryRuns": {
+        "totalCount": 6636,
+        "returnedRuns": 100,
+        "matchingResumeRuns": 0,
+        "activeOrQueuedRuns": 0
+      },
+      "candidateWritesThisPass": 0,
+      "candidateWritesDeferred": true
+    },
+    "latestR125StaticAudit": {
+      "run": 153,
+      "runId": 44703845681,
+      "createdAt": "2026-11-20T08:36:04Z",
+      "completedAt": "2026-11-20T08:41:12Z",
+      "status": "completed",
+      "conclusion": "failure",
+      "headSha": "6b4b768e86f006263ccf135e476c5bb1afaf3ff5",
+      "localePacks": "98/98",
+      "homeLanguageMatrix": "98/98",
+      "sections": "27/27",
+      "applications": 2646,
+      "countryProfiles": "248/248",
+      "visibleEnglish": {
+        "exact": 0,
+        "partial": 0,
+        "unresolved": 0
+      },
+      "dynamicFallbackRequests": 551,
+      "dynamicFallbackLanguages": 97,
+      "uniqueFallbackStrings": 63,
+      "gameStrings": 60,
+      "sellerPlanStrings": 3,
+      "remainingSellerPlanStrings": [
+        "Up to 100 active ads",
+        "Up to 3 active ads",
+        "Up to 50 active ads"
+      ],
+      "blockedRequests": {
+        "ai": 0,
+        "translation": 551,
+        "pollinations": 0,
+        "externalProvider": 0
+      },
+      "quotaUsed": 0,
+      "failureReason": "No-dynamic-fallback gate failed; visible-English checks passed."
+    },
+    "sellerPlanAudit": {
+      "cldrDuration": {
+        "nonEnglishLocaleTags": 97,
+        "localizedCLDRDayUnitTags": 87,
+        "standardizedDaySymbolTags": 10,
+        "english30DaysFallback": "not emitted",
+        "evidence": "R105 #243"
+      },
+      "oneTimeCadence": "hidden while checkout inactive",
+      "remainingLimitStringsAbsentFromProductionAndCandidateSource": true,
+      "noEquivalentExistingSourceKeyFound": true,
+      "noDataNoTranslateBypassAdded": true,
+      "databaseWrites": 0
+    },
+    "latestProductionChecks": {
+      "r105": {
+        "run": 243,
+        "runId": 44703845640,
+        "conclusion": "success",
+        "workerDeployed": true,
+        "aiBinding": true,
+        "productionHealth": "passed",
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "liveAiProbes": "skipped-by-policy",
+        "countryIntentProbe": "skipped-by-policy"
+      },
+      "audio": {
+        "run": 178,
+        "runId": 44703668265,
+        "conclusion": "success",
+        "programmaticTTS": "passed",
+        "voiceAcknowledgement": "passed",
+        "dynamicVoicePlaceholders": "passed",
+        "liveASR": "not-verified-skipped",
+        "productionMultilingualAudioAssets": "not-verified-skipped",
+        "physicalMicrophonesSpeakers": "not-certified"
+      },
+      "countryCurrency": {
+        "run": 138,
+        "runId": 44593451053,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "moroccoPriority": "passed",
+        "worldwidePriority": "passed",
+        "currencyFallback": "passed",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "safety": {
+        "run": 92,
+        "runId": 44593451109,
+        "conclusion": "success",
+        "blockedCases": 4,
+        "benignLand": "allowed-pending-human-review"
+      },
+      "pages": {
+        "run": 2005,
+        "runId": 44708342034,
+        "conclusion": "success",
+        "headSha": "6f43b210938bb7bc7e24f3099886dba013188e45"
       }
     },
-    "ai": {
-      "chat": "unknown-not-probed",
-      "translation": "unknown-not-probed",
-      "quotaRequests": 0,
-      "quotaUsed": 0,
-      "probeSent": false,
-      "quotaBoundaryRegression": "pass R105 #97",
-      "sequentialModelFallbackRegression": "pass R105 #95/#97",
-      "lateQuotaAfterTimeoutRegression": "pass R105 #95/#97",
-      "crossModel429Regression": "pass R105 #95/#97",
-      "nestedAggregateErrorRegression": "pass R105 #97",
+    "aiAvailability": {
+      "binding": true,
+      "productionHealth": "passed",
+      "liveChat": "unknown-not-probed",
+      "liveTranslation": "unknown-not-probed",
+      "liveGenerationProbe": "skipped-by-policy",
       "blockers": [
-        "daily_free_ai_limit remains a real provider quota blocker",
-        "Google HTTP429 remains a real provider rate-limit blocker",
-        "Historical HTTP503 all_translation_backends_unavailable remains unresolved"
-      ]
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable",
+        "Dhivehi read timeouts",
+        "three unparseable Workers AI outputs"
+      ],
+      "probesSent": 0,
+      "translationRequestsSent": 0,
+      "quotaUsed": 0,
+      "quotaBypassAttempts": 0
+    },
+    "branchComparison": {
+      "status": "diverged",
+      "candidateAheadByBeforeMetadata": 612,
+      "candidateBehindByBeforeMetadata": 643,
+      "mergeBase": "320ff472cc8eef5ea573c872f1b0c949a22593d0",
+      "bulkMergeOrCherryPick": "not-performed"
     },
     "thisPass": {
-      "candidatePackWrites": 1,
-      "candidateMetadataPackWrites": 0,
+      "candidatePackWrites": 0,
       "translationRequests": 0,
+      "providerRequests": 0,
       "aiQuotaUsed": 0,
-      "quotaRaceRepairCommitted": true,
-      "baseNestedQuotaClassifierCommitted": true,
-      "exactKeySetAuditGuardCommitted": true,
-      "exactKeySetAuditLocalUnit": "passed",
-      "exactKeySetAuditR125Run": "pending",
+      "databaseWrites": 0,
+      "quotaBypassAttempts": 0,
       "published": false,
       "linguisticCertification": false,
-      "decision": "NO-GO",
-      "freshFull98ExactKeySetReadback": "PASS 98/98",
-      "checkedAt": "2026-11-17T03:01:26Z",
-      "builderQuotaStopRepairCommitted": true,
-      "builderQuotaStopLocalTests": "PASS 10 classifications + 3 mocked terminal no-split cases",
-      "r125Ci": "pending next manual R125",
-      "latestPagesRun": 1618,
-      "latestPagesConclusion": "success",
-      "workflowTestCopyFix": true,
-      "hindiFooterRepairCommitted": true,
-      "r125LanguageNameTestCopyFixCommitted": true,
-      "freshReadOnly98PackScreen": "98/98 structural; 58 English-overlap in dv; 27 duplicate groups in 10 languages; 0 script-pattern mismatches after Hindi footer repair",
-      "officialR125AuditRun": "pending"
-    },
-    "latestR105": {
-      "run": 85,
-      "id": 43975276337,
-      "status": "completed",
-      "conclusion": "success",
-      "headSha": "4f299ac397c8b0e8c03a26a400f7b2702efc3473",
-      "sourceValidation": "success",
-      "quotaBoundaryTests": "success",
-      "all98LanguageNames": "success",
-      "workerDeploy": "success",
-      "productionHealth": "success",
-      "liveAiProbes": "skipped-by-policy"
-    },
-    "latestR123": {
-      "run": 67,
-      "id": 43975276258,
-      "status": "completed",
-      "conclusion": "success",
-      "headSha": "4f299ac397c8b0e8c03a26a400f7b2702efc3473",
-      "audioValidation": "success",
-      "workerDeploy": "success",
-      "liveAudioTtsAsr": "skipped-by-opt-in",
-      "categoryTranslations": "success",
-      "voiceAcknowledgement": "success",
-      "dynamicVoicePlaceholders": "success"
-    },
-    "mainCheckpoint": {
-      "commit": "5152a5265d5a6c440d27148bed485d9674a79b94",
-      "readBack": "pass",
-      "finalApproval": false
-    },
-    "latestPagesAfterCheckpoint": {
-      "run": 1595,
-      "id": 43975599293,
-      "status": "completed",
-      "conclusion": "success",
-      "headSha": "5152a5265d5a6c440d27148bed485d9674a79b94"
-    },
-    "latestSafetySmoke": {
-      "run": 30,
-      "id": 43975276247,
-      "status": "completed",
-      "conclusion": "success",
-      "blockedCases": 4,
-      "benignLand": "allowed_pending_human_review",
-      "marketplaceFailClosed": "success"
-    },
-    "latestSiteHealth": {
-      "run": 328,
-      "id": 43975276221,
-      "status": "completed",
-      "conclusion": "success",
-      "scope": "official domain API health, robots/sitemap and 18 named public pages"
-    },
-    "latestAiFallback": {
-      "run": 57,
-      "id": 43975276177,
-      "status": "completed",
-      "conclusion": "success"
-    },
-    "currentR125Run": null,
-    "production": {
-      "pagesRun": 1609,
-      "pagesConclusion": "success",
-      "siteHealthRun": 329,
-      "siteHealthConclusion": "success",
-      "siteHealthPages": 18,
-      "safetySmokeRun": 31,
-      "safetySmokeConclusion": "success",
-      "blockedCases": 4,
-      "legalLand": "allowed_pending_human_review",
-      "countryChangeIceland": "passed in R105 #97",
-      "currencyFallback": "passed in R123 #70",
-      "fullCountryCurrencyMatrix": "not certified",
-      "programmaticTTS": "passed",
-      "voiceAcknowledgement": "passed",
-      "liveASR": "skipped",
-      "physicalAudio": "pending",
-      "checkout": "inactive"
-    },
-    "activeR125Runs": 0
+      "candidateWritesDeferred": true,
+      "decision": "NO-GO"
+    }
   },
   "latestContinuationVerification": {
     "checkedAt": "2026-11-16T11:06:00Z",
@@ -4391,7 +4308,7 @@
     "r125Ci": "pending next manual run",
     "candidatePacksChanged": 0
   },
-  "updatedAt": "2026-11-20T08:58:07Z",
+  "updatedAt": "2026-11-20T09:31:51Z",
   "latestBuilderQuotaStopRepair": {
     "checkedAt": "2026-11-17T02:57:08Z",
     "finding": "The locale builder stopped the entire language loop only when the error text contained the literal daily_free_ai_limit. Google HTTP429/provider_rate_limited and all_translation_backends_unavailable were terminal inside translate_small, but the outer loop could continue to the next language; the 503 backend-unavailable response could also fall through to recursive batch splitting.",
@@ -4966,7 +4883,7 @@
       "validation": "Read back all 64 touched packs: 1,118 translation keys each and matching sourceHash; all changed Payoneer/Paystack/WhatsApp brand strings now exact. This is deterministic brand normalization, not native-language certification."
     }
   ],
-  "lastUpdatedAt": "2026-11-20T07:58:40Z",
+  "lastUpdatedAt": "2026-11-20T09:31:51Z",
   "candidateCountReconciliation": {
     "checkedAt": "2026-11-20T04:32:14.142Z",
     "sourceHash": "6a1126e6a2ce5629",
@@ -5891,6 +5808,198 @@
       "headSha": "efc5e231a77a3ea262c64dc854d97122dbd6807c",
       "build": "success",
       "deploy": "success"
+    }
+  },
+  "latestContinuationCheck20261120Turn26": {
+    "checkedAt": "2026-11-20T09:31:51Z",
+    "mainHead": "6f43b210938bb7bc7e24f3099886dba013188e45",
+    "filesRead": [
+      "main: docs/r125-continuation-checkpoint-20261010.json",
+      "candidate branch: docs/locale-candidates-20261008/resume-summary.json",
+      "candidate branch: docs/locale-candidates-20261008/resume-latest.log",
+      "main: .github/workflows/r125-hourly-candidate-resume.yml",
+      "main: seller-plans.html",
+      "main: i18n-r32-source.json",
+      "main: tools/r125_static_locale_section_audit.mjs"
+    ],
+    "candidateState": {
+      "structurallyComplete": 98,
+      "total": 98,
+      "qualityGatePassing": 97,
+      "qualityGateRemaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlapFindings": 58,
+      "sourceKeysPerPack": 1118,
+      "sourceHash": "6a1126e6a2ce5629",
+      "publishedPacks": 0,
+      "linguisticallyCertifiedPacks": 0
+    },
+    "latestCandidateResumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "blobSha": "f6ec68401846226a37b61b5dd908ab85fe61de99",
+      "trigger": "workflow_dispatch only",
+      "scheduleTriggerPresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestLocatedRun": {
+        "number": 150,
+        "id": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "event": "push",
+        "workflowRevision": "legacy",
+        "resume": "skipped",
+        "audit": "success",
+        "candidatePackWrites": 0,
+        "metadataFilesWritten": 2
+      },
+      "latest100RepositoryRuns": {
+        "totalCount": 6636,
+        "returnedRuns": 100,
+        "matchingResumeRuns": 0,
+        "activeOrQueuedRuns": 0
+      },
+      "candidateWritesThisPass": 0,
+      "candidateWritesDeferred": true
+    },
+    "latestR125StaticAudit": {
+      "run": 153,
+      "runId": 44703845681,
+      "createdAt": "2026-11-20T08:36:04Z",
+      "completedAt": "2026-11-20T08:41:12Z",
+      "status": "completed",
+      "conclusion": "failure",
+      "headSha": "6b4b768e86f006263ccf135e476c5bb1afaf3ff5",
+      "localePacks": "98/98",
+      "homeLanguageMatrix": "98/98",
+      "sections": "27/27",
+      "applications": 2646,
+      "countryProfiles": "248/248",
+      "visibleEnglish": {
+        "exact": 0,
+        "partial": 0,
+        "unresolved": 0
+      },
+      "dynamicFallbackRequests": 551,
+      "dynamicFallbackLanguages": 97,
+      "uniqueFallbackStrings": 63,
+      "gameStrings": 60,
+      "sellerPlanStrings": 3,
+      "remainingSellerPlanStrings": [
+        "Up to 100 active ads",
+        "Up to 3 active ads",
+        "Up to 50 active ads"
+      ],
+      "blockedRequests": {
+        "ai": 0,
+        "translation": 551,
+        "pollinations": 0,
+        "externalProvider": 0
+      },
+      "quotaUsed": 0,
+      "failureReason": "No-dynamic-fallback gate failed; visible-English checks passed."
+    },
+    "sellerPlanAudit": {
+      "cldrDuration": {
+        "nonEnglishLocaleTags": 97,
+        "localizedCLDRDayUnitTags": 87,
+        "standardizedDaySymbolTags": 10,
+        "english30DaysFallback": "not emitted",
+        "evidence": "R105 #243"
+      },
+      "oneTimeCadence": "hidden while checkout inactive",
+      "remainingLimitStringsAbsentFromProductionAndCandidateSource": true,
+      "noEquivalentExistingSourceKeyFound": true,
+      "noDataNoTranslateBypassAdded": true,
+      "databaseWrites": 0
+    },
+    "latestProductionChecks": {
+      "r105": {
+        "run": 243,
+        "runId": 44703845640,
+        "conclusion": "success",
+        "workerDeployed": true,
+        "aiBinding": true,
+        "productionHealth": "passed",
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "liveAiProbes": "skipped-by-policy",
+        "countryIntentProbe": "skipped-by-policy"
+      },
+      "audio": {
+        "run": 178,
+        "runId": 44703668265,
+        "conclusion": "success",
+        "programmaticTTS": "passed",
+        "voiceAcknowledgement": "passed",
+        "dynamicVoicePlaceholders": "passed",
+        "liveASR": "not-verified-skipped",
+        "productionMultilingualAudioAssets": "not-verified-skipped",
+        "physicalMicrophonesSpeakers": "not-certified"
+      },
+      "countryCurrency": {
+        "run": 138,
+        "runId": 44593451053,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "moroccoPriority": "passed",
+        "worldwidePriority": "passed",
+        "currencyFallback": "passed",
+        "liveAiProbes": "skipped-by-policy"
+      },
+      "safety": {
+        "run": 92,
+        "runId": 44593451109,
+        "conclusion": "success",
+        "blockedCases": 4,
+        "benignLand": "allowed-pending-human-review"
+      },
+      "pages": {
+        "run": 2005,
+        "runId": 44708342034,
+        "conclusion": "success",
+        "headSha": "6f43b210938bb7bc7e24f3099886dba013188e45"
+      }
+    },
+    "aiAvailability": {
+      "binding": true,
+      "productionHealth": "passed",
+      "liveChat": "unknown-not-probed",
+      "liveTranslation": "unknown-not-probed",
+      "liveGenerationProbe": "skipped-by-policy",
+      "blockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable",
+        "Dhivehi read timeouts",
+        "three unparseable Workers AI outputs"
+      ],
+      "probesSent": 0,
+      "translationRequestsSent": 0,
+      "quotaUsed": 0,
+      "quotaBypassAttempts": 0
+    },
+    "branchComparison": {
+      "status": "diverged",
+      "candidateAheadByBeforeMetadata": 612,
+      "candidateBehindByBeforeMetadata": 643,
+      "mergeBase": "320ff472cc8eef5ea573c872f1b0c949a22593d0",
+      "bulkMergeOrCherryPick": "not-performed"
+    },
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "translationRequests": 0,
+      "providerRequests": 0,
+      "aiQuotaUsed": 0,
+      "databaseWrites": 0,
+      "quotaBypassAttempts": 0,
+      "published": false,
+      "linguisticCertification": false,
+      "candidateWritesDeferred": true,
+      "decision": "NO-GO"
     }
   }
 }
