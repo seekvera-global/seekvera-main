@@ -341,13 +341,23 @@ async function main(){
  assert(sellerPlans.includes("if(code==='boost_7'||code==='top_7')appendPlanText(d,'div','small',localized('7 days',language),'7 days')"),'seven-day promotion plans must use the reviewed 7 days source key');
  assert(sellerPlans.includes("else if(code==='featured_30')appendPlanText(d,'div','small',localized('30 days',language),'30 days')"),'featured promotion must retain its explicit 30-day duration');
  assert(sellerPlans.includes("else if(!PLAN_NAME_SOURCE[code])appendPlanText(d,'div','small',localized(durationSource,language),durationSource)"),'unknown future plans must retain an auditable duration fallback');
- assert(sellerPlans.includes('localized(x.description,language)'),'seller plan descriptions must remain translatable');
+ const planDescriptionMap=readSellerPlanMap('PLAN_DESCRIPTION_SOURCE');
+ assert.deepEqual({...planDescriptionMap},{
+  free:'New ads are moderated before they appear publicly. Featured placement is available separately.',
+  boost_7:'Keep basic ads free. Upgrade only when you want stronger placement, more listings or business visibility.',
+  top_7:'Keep basic ads free. Upgrade only when you want stronger placement, more listings or business visibility.',
+  business_monthly:'For companies, dealers, agencies and professional sellers that need more listings and visibility.',
+  business_yearly:'For companies, dealers, agencies and professional sellers that need more listings and visibility.',
+  featured_30:'Keep basic ads free. Upgrade only when you want stronger placement, more listings or business visibility.'
+ });
+ assert(sellerPlans.includes('localized(descriptionSource,language)'),'seller plan descriptions must remain translatable from canonical source keys');
+ assert(!sellerPlans.includes('localized(x.description,language)'),'database descriptions must not bypass canonical source localization');
  assert(sellerPlans.includes('localized(limitSource,language)'),'active-ad limits must remain translatable');
  assert(sellerPlans.includes("billingPeriod.replace(/_/g,' ')"),'one-time billing cadence must remain visible for audit');
  assert(sellerPlans.includes('!nameSource.toLowerCase().includes(periodSource.toLowerCase())'),'billing badge must not duplicate cadence already shown in the plan name');
  const localeManifest=JSON.parse(fs.readFileSync('i18n-r32/manifest.json','utf8'));
  const localeSource=JSON.parse(fs.readFileSync('i18n-r32-source.json','utf8'));
- const canonicalPlanKeys=[...new Set([...Object.values(planNameMap),...Object.values(billingPeriodMap),'7 days'])];
+ const canonicalPlanKeys=[...new Set([...Object.values(planNameMap),...Object.values(billingPeriodMap),...Object.values(planDescriptionMap),'7 days'])];
  for(const key of canonicalPlanKeys)assert(localeSource.strings.includes(key),'canonical seller-plan key missing from production source: '+key);
  assert.equal(localeManifest.packs,98,'production locale manifest must contain 98 packs');
  assert.equal(localeManifest.languages.length,98,'production locale manifest must list 98 languages');
