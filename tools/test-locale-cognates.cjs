@@ -41,14 +41,25 @@ vm.createContext(durationContext);
 vm.runInContext(sellerDurationPage.slice(durationStart,durationEnd)+';globalThis.localizedPlanDuration=localizedPlanDuration;',durationContext);
 const localeManifest=JSON.parse(fs.readFileSync('i18n-r32/manifest.json','utf8'));
 const normalizeDuration=value=>String(value).replace(/\p{N}+/gu,'#').replace(/\s+/g,' ').trim();
-const englishDuration=normalizeDuration(new Intl.NumberFormat('en',{style:'unit',unit:'day',unitDisplay:'long'}).format(30));
-let cldrLocalizedDurationCount=0;
+const unitDisplays=['long','short','narrow'];
+let cldrLocalizedDurationCount=0,standardizedDaySymbolCount=0;
 for(const locale of localeManifest.languages){
- const cldrValue=new Intl.NumberFormat(locale,{style:'unit',unit:'day',unitDisplay:'long'}).format(30);
- const expected=normalizeDuration(cldrValue)!==englishDuration?cldrValue:'30 days';
- assert.equal(durationContext.localizedPlanDuration(30,locale),expected,locale);
- if(expected!=='30 days')cldrLocalizedDurationCount++;
+ let expected='30 d';
+ if(locale==='en')expected='30 days';
+ else{
+  for(const unitDisplay of unitDisplays){
+   const cldrValue=new Intl.NumberFormat(locale,{style:'unit',unit:'day',unitDisplay}).format(30);
+   const englishValue=new Intl.NumberFormat('en',{style:'unit',unit:'day',unitDisplay}).format(30);
+   if(normalizeDuration(cldrValue)!==normalizeDuration(englishValue)){expected=cldrValue;break;}
+  }
+  if(expected!=='30 d')cldrLocalizedDurationCount++;
+  else standardizedDaySymbolCount++;
+ }
+ const actual=durationContext.localizedPlanDuration(30,locale);
+ assert.equal(actual,expected,locale);
+ if(locale!=='en')assert.notEqual(actual,'30 days',locale+' must not fall back to an English duration phrase');
 }
+assert.equal(durationContext.localizedPlanDuration(30,'en'),'30 days');
 assert.equal(durationContext.localizedPlanDuration(0,'ar'),'');
 for(const [locale,expected] of [['ar','30 يومًا'],['fr','30 jours'],['ru','30 дней'],['zh','30天']]){
  assert.equal(durationContext.localizedPlanDuration(30,locale),expected,locale);
@@ -63,5 +74,5 @@ assert.equal(periodContext.billingPeriodSourceFor('one_time'),'');
 assert.equal(periodContext.billingPeriodSourceFor('free'),'Free');
 assert.equal(periodContext.billingPeriodSourceFor('monthly'),'Business Monthly');
 assert.equal(periodContext.billingPeriodSourceFor('yearly'),'Business Yearly');
-console.log(`PASS: CLDR day-unit formatting avoids a dynamic translation for ${cldrLocalizedDurationCount}/${localeManifest.languages.length} locale tags; unsupported locale units retain the existing quota-guarded fallback.`);
+console.log(`PASS: CLDR day-unit formatting localizes ${cldrLocalizedDurationCount}/${localeManifest.languages.length-1} non-English locale tags; ${standardizedDaySymbolCount} use the standardized “d” day symbol without an English fallback.`);
 console.log('PASS: one-time cadence is not advertised while checkout is inactive; free/monthly/yearly billing labels remain.');
