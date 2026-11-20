@@ -331,15 +331,15 @@ async function main(){
  const billingPeriodMap=readSellerPlanMap('BILLING_PERIOD_SOURCE');
  assert.deepEqual({...planNameMap},{free:'Free · 30 days',boost_7:'Boost · optional',top_7:'Top Ad · optional',business_monthly:'Business Monthly',business_yearly:'Business Yearly',featured_30:'Featured · optional'});
  assert.deepEqual({...billingPeriodMap},{free:'Free',monthly:'Business Monthly',yearly:'Business Yearly'});
- assert(!Object.hasOwn(billingPeriodMap,'one_time'),'one-time cadence must remain visible and auditable until it has a reviewed static key');
+ assert(!Object.hasOwn(billingPeriodMap,'one_time'),'one-time cadence must not be advertised while checkout is inactive');
  assert(sellerPlans.includes('localized(nameSource,language)'),'promotion dropdown must use the canonical plan-name source key');
  assert(!sellerPlans.includes('localized(x.name,language)'),'promotion dropdown must not bypass canonical plan-name localization');
  assert(!sellerPlans.includes("localized('Price set at checkout',language)"),'per-card checkout placeholder must not duplicate the global checkout disclosure');
  assert(sellerPlans.includes('Final prices and live checkout require connected merchant accounts.'),'global checkout disclosure must remain visible');
- assert(sellerPlans.includes("localized('7 days',language)")&&sellerPlans.includes("localized('30 days',language)"),'known promotion durations must use exact locale source keys');
+ assert(sellerPlans.includes("localized('7 days',language)")&&sellerPlans.includes('localizedPlanDuration(30,language)'),'known promotion durations must use the reviewed 7-day source key and the CLDR 30-day formatter');
  assert(!sellerPlans.includes("localized('days',language)"),'duration labels must use complete source phrases, not an unlocalized generic suffix');
  assert(sellerPlans.includes("if(code==='boost_7'||code==='top_7')appendPlanText(d,'div','small',localized('7 days',language),'7 days')"),'seven-day promotion plans must use the reviewed 7 days source key');
- assert(sellerPlans.includes("else if(code==='featured_30')appendPlanText(d,'div','small',localized('30 days',language),'30 days')"),'featured promotion must retain its explicit 30-day duration');
+ assert(sellerPlans.includes("else if(code==='featured_30')appendPlanText(d,'div','small',localizedPlanDuration(30,language),'30 days')"),'featured promotion must retain its explicit 30-day duration through the CLDR helper');
  assert(sellerPlans.includes("else if(!PLAN_NAME_SOURCE[code])appendPlanText(d,'div','small',localized(durationSource,language),durationSource)"),'unknown future plans must retain an auditable duration fallback');
  const planDescriptionMap=readSellerPlanMap('PLAN_DESCRIPTION_SOURCE');
  assert.deepEqual({...planDescriptionMap},{
@@ -353,7 +353,8 @@ async function main(){
  assert(sellerPlans.includes('localized(descriptionSource,language)'),'seller plan descriptions must remain translatable from canonical source keys');
  assert(!sellerPlans.includes('localized(x.description,language)'),'database descriptions must not bypass canonical source localization');
  assert(sellerPlans.includes('localized(limitSource,language)'),'active-ad limits must remain translatable');
- assert(sellerPlans.includes("billingPeriod.replace(/_/g,' ')"),'one-time billing cadence must remain visible for audit');
+ assert(sellerPlans.includes("if(billingPeriod==='one_time')return ''"),'one-time cadence must stay hidden while checkout is inactive');
+ assert(sellerPlans.includes("billingPeriod.replace(/_/g,' ')"),'unknown billing cadence values must remain auditable');
  assert(sellerPlans.includes('!nameSource.toLowerCase().includes(periodSource.toLowerCase())'),'billing badge must not duplicate cadence already shown in the plan name');
  const localeManifest=JSON.parse(fs.readFileSync('i18n-r32/manifest.json','utf8'));
  const localeSource=JSON.parse(fs.readFileSync('i18n-r32-source.json','utf8'));
