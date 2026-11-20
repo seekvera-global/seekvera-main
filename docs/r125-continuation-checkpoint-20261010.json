@@ -153,7 +153,8 @@
     "2026-11-20 R125 static audit readiness fix bypassed stale Cloudflare cache and reached all matrix steps; Pages #1970 passed. Latest candidate-resume workflow remains manual-only; no active run was found, and no translation requests or quota use occurred.",
     "2026-11-20 R125 #144 on Main code head 48c6573 completed 98 locale packs, 98 home languages, 27 sections (2,646 applications) and 248 country profiles with zero visible exact/partial/unresolved English findings, but failed the no-dynamic-fallback gate: 587 locally intercepted requests across 97 languages and 71 unique strings (60 game strings + 11 seller-plan strings). No AI/provider/Pollinations request or quota use occurred. Compared with pre-repair #141 (651 requests, 76 strings, 16 seller strings), five seller strings and 64 requests were removed; #142 and #144 raw counts varied (577/587), so do not claim deterministic request reduction.",
     "2026-11-20 Turn 21: re-fetched latest known candidate-resume run #150 and R125 static audit #144 job logs. #150 is completed on a legacy workflow revision with resume skipped; #144 failed the no-dynamic-fallback gate at 587 locally intercepted requests/71 strings. The current resume workflow is workflow_dispatch only. A fresh repository-wide Actions run list was not available through the connected operations, so candidate writes remain deferred.",
-    "2026-11-20 Turn 21: live Supabase read-only verification confirmed six active marketplace plans and the RLS policies. Security advisor INFO findings for marketplace_moderation_audit and marketplace_submission_rate are fail-closed: anon/authenticated privileges are absent. Checkout remains inactive."
+    "2026-11-20 Turn 21: live Supabase read-only verification confirmed six active marketplace plans and the RLS policies. Security advisor INFO findings for marketplace_moderation_audit and marketplace_submission_rate are fail-closed: anon/authenticated privileges are absent. Checkout remains inactive.",
+    "Turn 24: seller-plans now formats the featured 30-day duration with Intl.NumberFormat CLDR day units for 49/98 locale tags and suppresses the one_time cadence badge while checkout is inactive. Three active-ad limit strings remain unresolved, and 49 locale tags still use the quota-guarded 30-day translation fallback. Post-change R125 audit and CI are pending."
   ],
   "knownTranslationFailures": [
     "dv"
@@ -3042,7 +3043,7 @@
     ],
     "validation": "Fetched each edited pack after commit; values exact, 1,118 keys and sourceHash unchanged. Deterministic brand normalization only; no language certification."
   },
-  "updatedAt": "2026-11-20T00:46:00Z",
+  "updatedAt": "2026-11-20T08:04:19Z",
   "latestReadOnlyFull98Audit": {
     "checkedAt": "2026-11-15T01:40:00Z",
     "languagesFetched": 98,
@@ -20419,6 +20420,244 @@
       "published": false,
       "linguisticCertification": false,
       "repairDecision": "No product localization was fabricated: all 11 seller-plan strings are absent from candidate source; no verified 98-language translations exist. Publishing partial packs, English placeholders, or no-translate suppressions was rejected."
+    },
+    "decision": "NO-GO"
+  },
+  "latestContinuationCheck20261120Turn24": {
+    "checkedAt": "2026-11-20T08:04:19Z",
+    "mainHeadBeforeCheckpoint": "c2e9f08b5d7be6d22e2ab5276788243119ceb46b",
+    "filesRead": [
+      "main: docs/r125-continuation-checkpoint-20261010.json",
+      "candidate branch: docs/locale-candidates-20261008/resume-summary.json",
+      "candidate branch: docs/locale-candidates-20261008/resume-latest.log",
+      "main: .github/workflows/r125-hourly-candidate-resume.yml",
+      "main: seller-plans.html",
+      "main: i18n-r32-source.json",
+      "main: i18n-r32/manifest.json",
+      "main: tools/test-locale-cognates.cjs",
+      "main: .github/workflows/r125-static-locale-section-audit.yml",
+      "main: .github/workflows/r105-final-release.yml",
+      "main: .github/workflows/r123-production-cert.yml"
+    ],
+    "candidateBranchComparison": {
+      "status": "diverged",
+      "candidateAheadBy": 609,
+      "candidateBehindBy": 633,
+      "mergeBase": "320ff472cc8eef5ea573c872f1b0c949a22593d0",
+      "mergeOrBulkCherryPick": "not performed"
+    },
+    "resumeWorkflow": {
+      "name": "R125 manual candidate resume (quota-safe by default)",
+      "trigger": "workflow_dispatch only; no schedule",
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestKnownMatchingRun": {
+        "run": 150,
+        "runId": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "workflowRevision": "legacy",
+        "resume": "skipped",
+        "audit": "success",
+        "candidatePackWrites": 0,
+        "metadataFilesWritten": 2,
+        "logVerified": true
+      },
+      "currentWorkflowCanResume": true,
+      "currentWorkflowCanWriteCandidatePacksOnlyWhenExplicitOptIn": true,
+      "latestRepositoryActiveRunObservation": "last saved latest-100 check at 2026-11-20T07:58:40Z reported zero active runs; no newer matching run could be enumerated with the current connected Actions reads",
+      "candidateWritesThisPass": 0,
+      "candidateWritesDeferred": true
+    },
+    "latestKnownActions": {
+      "r125StaticAudit": {
+        "run": 146,
+        "runId": 44698123124,
+        "createdAt": "2026-11-20T07:52:06Z",
+        "conclusion": "failure",
+        "applications": 2646,
+        "languages": 98,
+        "sections": "27/27",
+        "countryProfiles": "248/248",
+        "visibleEnglish": {
+          "exact": 0,
+          "partial": 0,
+          "unresolved": 0
+        },
+        "dynamicFallbackRequests": 567,
+        "uniqueFallbackStrings": 65,
+        "gameStrings": 60,
+        "sellerPlanStrings": 5,
+        "blockedRequests": {
+          "ai": 0,
+          "translation": 567,
+          "pollinations": 0
+        },
+        "quotaUsed": 0,
+        "postTurn24RepairReaudit": "pending"
+      },
+      "r105": {
+        "run": 232,
+        "runId": 44698835123,
+        "conclusion": "success",
+        "workerDeployed": true,
+        "health": "R107_DEPLOY_HEALTH_PASS",
+        "aiBinding": true,
+        "centralSafetyGate": "enabled",
+        "failClosed": true,
+        "liveAiProbes": "skipped-by-policy",
+        "countryIntentProbe": "skipped-by-policy"
+      },
+      "audioAuthority": {
+        "run": 174,
+        "runId": 44698835048,
+        "conclusion": "success",
+        "validation": "passed",
+        "liveCategoryTranslations": "passed",
+        "voiceAcknowledgement": "passed",
+        "dynamicVoicePlaceholders": "passed",
+        "productionMultilingualAudioAssets": "skipped",
+        "liveASR": "not_verified",
+        "physicalMicrophonesSpeakers": "not_certified"
+      },
+      "pages": {
+        "run": 1990,
+        "runId": 44698833027,
+        "conclusion": "success",
+        "build": "success",
+        "deploy": "success"
+      },
+      "countryCurrency": {
+        "run": 138,
+        "runId": 44593451053,
+        "conclusion": "success",
+        "countryProfiles": "248/248",
+        "localizedPages": "44/44",
+        "moroccoPriority": "passed",
+        "worldwidePriority": "passed",
+        "currencyFallback": "passed",
+        "runtimeChangedSinceAudit": false
+      },
+      "safety": {
+        "run": 92,
+        "runId": 44593451109,
+        "conclusion": "success",
+        "blocked": [
+          "weapons_or_explosives",
+          "explicit_sexual_content",
+          "stolen_counterfeit_or_fake_documents",
+          "ownership_or_consent_problem"
+        ],
+        "benignLand": "allowed_pending_human_review"
+      }
+    },
+    "sellerPlanRepair": {
+      "supabaseReadOnlyCurrentRows": {
+        "project": "nrdpyydfrpmqedtzmbyw",
+        "activePlans": 6,
+        "codes": [
+          "free",
+          "boost_7",
+          "top_7",
+          "business_monthly",
+          "business_yearly",
+          "featured_30"
+        ],
+        "databaseWrites": 0
+      },
+      "latestKnownFallbacksBeforeThisPass": [
+        "30 days",
+        "Up to 100 active ads",
+        "Up to 3 active ads",
+        "Up to 50 active ads",
+        "one time"
+      ],
+      "mainCommits": [
+        "6c07c65a59fe8f53024961f3a6820468a6428f6d",
+        "d18544ab2f751f742d8fbfe3539003beaa0f7216",
+        "4f7459b6b1a1e4e66d6f6464d891f7d85c0b9737",
+        "ba627da86ef94b87c80ed4033142aaa5ea5cf500",
+        "c2e9f08b5d7be6d22e2ab5276788243119ceb46b"
+      ],
+      "changes": [
+        "Featured 30-day duration now uses Intl.NumberFormat CLDR day-unit output when it differs from English; the existing quota-guarded translation fallback remains for unsupported locales.",
+        "The one_time billing-period badge is not shown while checkout is inactive; free/monthly/yearly period labels remain.",
+        "No data-no-translate suppression was added for unresolved active-ad limits."
+      ],
+      "cldrDurationLocales": 49,
+      "totalLocaleTags": 98,
+      "cldrExamples": {
+        "ar": "30 يومًا",
+        "fr": "30 jours",
+        "ru": "30 дней",
+        "zh": "30天"
+      },
+      "fallbackDurationLocales": 49,
+      "remainingSellerPlanDynamicStrings": [
+        "Up to 100 active ads",
+        "Up to 3 active ads",
+        "Up to 50 active ads",
+        "30 days for locale tags without a localized CLDR day unit"
+      ],
+      "note": "CLDR coverage was checked in the current V8/Intl runtime. The R125 production browser re-audit is still pending; do not treat this as all-98 localization certification."
+    },
+    "candidateState": {
+      "structural": "98/98",
+      "savedQualityGate": "97/98",
+      "remainingQualityGate": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "divehiDuplicateGroups4plus": 2,
+      "divehiDuplicateKeysAffected": 19,
+      "productionSourceCount": 1045,
+      "candidateSourceCount": 1118,
+      "candidateOnlyKeys": 73,
+      "candidateOnlyUiVoiceKeysOutsideR125Matrix": 13,
+      "publishedPacks": 0,
+      "linguisticallyCertifiedPacks": 0
+    },
+    "ai": {
+      "binding": true,
+      "latestHealth": "R105 #232 production deploy health passed at 2026-11-20T07:58Z",
+      "liveChatAvailability": "unknown_not_probed",
+      "liveTranslationAvailability": "unknown_not_probed",
+      "liveAiGeneration": "skipped-by-policy",
+      "blockers": [
+        "daily_free_ai_limit",
+        "Google HTTP429",
+        "HTTP503 all_translation_backends_unavailable",
+        "Dhivehi read timeouts",
+        "three unparseable Workers AI outputs"
+      ],
+      "translationRequestsThisPass": 0,
+      "aiQuotaUsedThisPass": 0,
+      "quotaBypassAttempts": 0
+    },
+    "voice": {
+      "programmaticAudioAuthority": "R123 #174 passed",
+      "productionMultilingualAudioAssets": "not_verified_skipped",
+      "liveASR": "not_verified_skipped",
+      "physicalMicrophonesSpeakers": "not_certified"
+    },
+    "checkout": "inactive_pending_merchant_configuration_and_end_to_end_payment_refund_settlement_webhook_verification",
+    "thisPass": {
+      "candidatePackWrites": 0,
+      "candidateMetadataWrites": 0,
+      "translationRequests": 0,
+      "providerRequests": 0,
+      "aiQuotaUsed": 0,
+      "databaseWrites": 0,
+      "quotaBypassAttempts": 0,
+      "published": false,
+      "linguisticCertification": false,
+      "sellerPlanPageInlineSyntax": "passed",
+      "localeCognatesTestSyntax": "passed",
+      "CLDRRuntimeCheck": "49/98 locale tags format 30 days without English fallback; 49/98 retain existing dynamic fallback",
+      "regressionCoverageAdded": "test-locale-cognates.cjs checks all 98 locale tags, four CLDR examples, invalid duration and billing-period display guard",
+      "postCommitCI": "pending; R125/R105/R123/Pages path filters include the modified files",
+      "intermediatePatchIssue": "A literal escaped newline and over-escaped Unicode regex were caught during readback and corrected in later commits; current seller-plans inline script and test file parse successfully."
     },
     "decision": "NO-GO"
   }
