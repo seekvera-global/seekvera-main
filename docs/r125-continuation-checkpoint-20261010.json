@@ -13673,7 +13673,7 @@
       "checkout is inactive pending merchant configuration"
     ]
   },
-  "lastUpdatedAt": "2026-11-20T01:48:58.998Z",
+  "lastUpdatedAt": "2026-11-20T02:33:40.841Z",
   "latestAutomationPass20261119V43": {
     "checkedAt": "2026-11-19T07:07:23.959Z",
     "mainBaseSha": "1d1d89dd55a1502618f180ea35a151ed436e3101",
@@ -19208,5 +19208,295 @@
     "published": false,
     "linguisticCertification": false,
     "nativeReviewRequired": true
+  },
+  "latestSupabaseSellerPlanAudit20261120": {
+    "checkedAt": "2026-11-20T02:33:40.841Z",
+    "projectStatus": "ACTIVE_HEALTHY",
+    "table": "public.marketplace_plans",
+    "rlsEnabled": true,
+    "activeRows": 6,
+    "rows": [
+      {
+        "code": "free",
+        "name": "Free Ad",
+        "billingPeriod": "free",
+        "durationDays": 30,
+        "maxActiveAds": 3,
+        "active": true,
+        "description": "Basic 30-day listing. Moderated before going live."
+      },
+      {
+        "code": "boost_7",
+        "name": "Boost 7 Days",
+        "billingPeriod": "one_time",
+        "durationDays": 7,
+        "maxActiveAds": null,
+        "active": true,
+        "description": "Higher visibility in category and search results for 7 days."
+      },
+      {
+        "code": "top_7",
+        "name": "Top Ad 7 Days",
+        "billingPeriod": "one_time",
+        "durationDays": 7,
+        "maxActiveAds": null,
+        "active": true,
+        "description": "Priority placement above standard ads for 7 days."
+      },
+      {
+        "code": "business_monthly",
+        "name": "Business Monthly",
+        "billingPeriod": "monthly",
+        "durationDays": 30,
+        "maxActiveAds": 50,
+        "active": true,
+        "description": "Business profile, more active listings and stronger visibility."
+      },
+      {
+        "code": "business_yearly",
+        "name": "Business Yearly",
+        "billingPeriod": "yearly",
+        "durationDays": 365,
+        "maxActiveAds": 100,
+        "active": true,
+        "description": "Annual business plan with expanded listing allowance."
+      },
+      {
+        "code": "featured_30",
+        "name": "Featured 30 Days",
+        "billingPeriod": "one_time",
+        "durationDays": 30,
+        "maxActiveAds": null,
+        "active": true,
+        "description": "Featured badge and stronger placement for 30 days."
+      }
+    ],
+    "policies": {
+      "marketplacePlans": "RLS enabled; anon/authenticated SELECT only for is_active=true",
+      "paymentRequests": "RLS enabled; anon INSERT only when status=initiated and provider_reference IS NULL",
+      "upgradeRequests": "RLS enabled; INSERT only when status=pending, ad_ref matches SV format, and plan is active",
+      "businessRequests": "RLS enabled; INSERT only for pending business_monthly/business_yearly requests"
+    },
+    "interpretation": "Six active stable plan codes confirmed from live Supabase rows. Existing canonical plan-name/billing keys cover all six names and free/monthly/yearly cadence; one_time remains intentionally visible and requires a reviewed source key. Public payment requests cannot mark themselves paid or set a provider reference."
+  },
+  "latestSellerPlanRepair20261120Turn18": {
+    "checkedAt": "2026-11-20T02:33:40.841Z",
+    "commits": [
+      {
+        "sha": "7e3f0110d5e7c5b42155ed0ec7f9f00f15aa0722",
+        "file": "seller-plans.html",
+        "change": "Use canonical plan-name source keys in promotion options; remove repeated per-card 'Price set at checkout' placeholder while retaining the global checkout disclosure; render exact '7 days'/'30 days' phrases for known promotion plans; avoid repeating durations already expressed by Free/Monthly/Yearly names."
+      },
+      {
+        "sha": "0019cf09f3c4abcde65eb08b78b4155ffc6a68a2",
+        "file": "tools/test-ui-translation-quota-session-guard.cjs",
+        "change": "Added seller-plan regression assertions."
+      },
+      {
+        "sha": "f427f6d03c671ab57cda9e569850b5e9a680cf48",
+        "file": "tools/test-locale-cognates.cjs",
+        "change": "Updated stale assertion to require canonical option name source rather than raw Supabase name."
+      },
+      {
+        "sha": "48c65731076e464622fb3fa30a226e2fd220bcdb",
+        "file": "tools/test-ui-translation-quota-session-guard.cjs",
+        "change": "Added exact duration-key assertions and require '7 days' to be present/nonempty in all 98 production locale packs."
+      }
+    ],
+    "validation": {
+      "liveSupabaseRowsRead": 6,
+      "databaseWrites": 0,
+      "candidateBranchWrites": 0,
+      "translationRequests": 0,
+      "aiQuotaUsed": 0,
+      "r105Run226": "failed on stale test-locale-cognates assertion after the first seller UI change",
+      "correction": "Updated stale assertion in f427f6d and added explicit duration regression coverage in 48c6573",
+      "r105Run228": {
+        "id": 44661446719,
+        "number": 228,
+        "headSha": "48c65731076e464622fb3fa30a226e2fd220bcdb",
+        "status": "completed",
+        "conclusion": "success",
+        "productionSourceValidation": "passed",
+        "all98LocaleNames": "passed",
+        "quotaGateRegression": "passed",
+        "workerDeploy": "passed",
+        "productionHealth": "passed"
+      },
+      "pagesRun1975": {
+        "id": 44661446545,
+        "number": 1975,
+        "headSha": "48c65731076e464622fb3fa30a226e2fd220bcdb",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      "r125Run142": {
+        "id": 44661306615,
+        "number": 142,
+        "headSha": "7e3f0110d5e7c5b42155ed0ec7f9f00f15aa0722",
+        "status": "in_progress",
+        "currentStep": "Install Chromium and system dependencies"
+      },
+      "r125Run144": {
+        "id": 44661446764,
+        "number": 144,
+        "headSha": "48c65731076e464622fb3fa30a226e2fd220bcdb",
+        "status": "pending"
+      },
+      "dynamicFallbackReduction": "not yet measured; R125 #141 is the pre-repair baseline (651 intercepted requests, 76 unique strings, 60 game + 16 seller strings)"
+    },
+    "note": "The repair preserves plan descriptions, active-ad limits, explicit one-time cadence, and the global checkout disclosure. It does not hide untranslated descriptive content or enable checkout."
+  },
+  "latestRuntimeVerification20261120Turn18": {
+    "checkedAt": "2026-11-20T02:33:40.841Z",
+    "r105": {
+      "run": 228,
+      "runId": 44661446719,
+      "headSha": "48c65731076e464622fb3fa30a226e2fd220bcdb",
+      "status": "success",
+      "sourceValidation": "passed",
+      "all98LocaleNames": "passed",
+      "quotaGateRegression": "passed",
+      "workerDeployment": "success",
+      "productionHealth": "success",
+      "aiBinding": true,
+      "centralSafetyGate": "enabled",
+      "failClosed": true,
+      "liveAiProbes": false,
+      "countryIntentProbe": "not run",
+      "translationBackendAvailability": "not tested"
+    },
+    "r123": {
+      "run": 171,
+      "runId": 44661402845,
+      "headSha": "f427f6d03c671ab57cda9e569850b5e9a680cf48",
+      "status": "success",
+      "programmaticAudio": "passed",
+      "voiceAcknowledgement": "passed",
+      "dynamicVoicePlaceholders": "passed",
+      "categoryTranslationTests": "passed",
+      "productionAssetMultilingualAudio": "skipped",
+      "liveASR": "not verified",
+      "physicalMicrophoneSpeakerCertification": false
+    },
+    "r9e": {
+      "run": 138,
+      "runId": 44593451053,
+      "headSha": "dac26d2c87e78add075755bd95fc84cb080a2184",
+      "status": "success",
+      "countryProfiles": "248/248",
+      "localizedPages": "44/44",
+      "moroccoPriority": "passed",
+      "worldwidePriority": "passed",
+      "currencyFallback": "passed"
+    },
+    "safety": {
+      "run": 92,
+      "runId": 44593451109,
+      "status": "success",
+      "blockedCategories": 4,
+      "benignLand": "allowed_pending_human_review"
+    },
+    "checkout": "inactive; live Supabase RLS allows only initiated payment requests with provider_reference null; no merchant or payment settlement flow verified",
+    "aiAvailability": "binding and production health confirmed; live generation and translation backend availability remain unknown because no live AI request was sent"
+  },
+  "latestActionsObservation20261120Turn18": {
+    "checkedAt": "2026-11-20T02:33:40.841Z",
+    "mainHead": "48c65731076e464622fb3fa30a226e2fd220bcdb",
+    "candidateBranchHead": "51e395153d8ca01026eca3bdddb37fd0df2aaf10",
+    "candidateResumeWorkflow": {
+      "path": ".github/workflows/r125-hourly-candidate-resume.yml",
+      "workflowBlobSha": "b1f1d6bd68e676b20bfc3cd6ef8ca0177514f5e2",
+      "trigger": "workflow_dispatch only",
+      "schedulePresent": false,
+      "runTranslationsDefault": false,
+      "repairCandidatesDefault": false,
+      "latestMatchingRun": {
+        "number": 150,
+        "id": 38971104197,
+        "createdAt": "2026-10-16T21:41:54Z",
+        "status": "completed",
+        "conclusion": "success",
+        "revision": "legacy",
+        "resume": "skipped",
+        "audit": "success",
+        "candidatePackWrites": 0
+      },
+      "latest100RepositoryRuns": "no candidate-resume workflow run found",
+      "activeCandidateResumeRuns": 0,
+      "candidateWritesThisPass": 0
+    },
+    "r125StaticAudit": {
+      "lastCompleted": {
+        "number": 141,
+        "id": 44655215569,
+        "headSha": "ce26d1b731fcbb6fd46a8107e448e9f25b5e3f57",
+        "conclusion": "failure",
+        "dynamicFallbackRequests": 651,
+        "uniqueStrings": 76,
+        "affectedLanguages": 97,
+        "gameStrings": 60,
+        "sellerPlanStrings": 16,
+        "providerRequests": 0,
+        "aiRequests": 0,
+        "pollinationsRequests": 0
+      },
+      "activeRun": {
+        "number": 142,
+        "id": 44661306615,
+        "headSha": "7e3f0110d5e7c5b42155ed0ec7f9f00f15aa0722",
+        "status": "in_progress",
+        "step": "Install Chromium and system dependencies"
+      },
+      "pendingRun": {
+        "number": 144,
+        "id": 44661446764,
+        "headSha": "48c65731076e464622fb3fa30a226e2fd220bcdb",
+        "status": "pending"
+      }
+    },
+    "candidateBranch": {
+      "summaryCheckedAt": "2026-11-17T09:53:12Z",
+      "summaryBlobSha": "3ee90814f02ab641cf3adbea01db90c8e8b7ed89",
+      "latestLogBlobSha": "a6888c7673def0f715bbb746003fd2f8c054c6e7",
+      "logRepairAt": "2026-11-20T01:46:37.609Z",
+      "structural": "98/98",
+      "savedQualityGate": "97/98",
+      "remaining": [
+        "dv"
+      ],
+      "divehiEnglishOverlap": 58,
+      "published": 0,
+      "linguisticCertification": 0
+    },
+    "pages": {
+      "run": 1975,
+      "id": 44661446545,
+      "headSha": "48c65731076e464622fb3fa30a226e2fd220bcdb",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  },
+  "latestAutomationPass20261120Turn18": {
+    "checkedAt": "2026-11-20T02:33:40.841Z",
+    "changes": [
+      "Audited live Supabase marketplace_plans rows and RLS policies read-only.",
+      "Repaired seller-plan localization: canonical option names, exact known duration keys, removed duplicate per-card checkout placeholder while preserving global checkout disclosure.",
+      "Fixed the pre-existing locale-cognates test assertion exposed by R105 #226; added 98-pack '7 days' coverage."
+    ],
+    "candidatePackWrites": 0,
+    "candidateMetadataWrites": 0,
+    "databaseWrites": 0,
+    "translationRequests": 0,
+    "aiQuotaUsed": 0,
+    "quotaBypassAttempts": 0,
+    "packsPublished": false,
+    "linguisticCertification": 0,
+    "r105Run228": "success",
+    "r123Run171": "success; physical device audio not certified",
+    "pagesRun1975": "success",
+    "r125Run142": "in progress",
+    "r125Run144": "pending",
+    "decision": "NO-GO"
   }
 }
