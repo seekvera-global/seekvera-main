@@ -6,3 +6,5 @@ SPLIT_RETRY Dhivehi 2 HTTP Error 503: Service Unavailable {"ok":false,"error":"U
 SPLIT_RETRY Dhivehi 2 The read operation timed out
 DELTA_FAILURE dv HTTP Error 503: Service Unavailable {"ok":false,"error":"UI translation temporarily unavailable","retryable":true,"reason":"all_translation_backends_unavailable","backendErrors":["workers-ai:@cf/qwen/qwen3-30b-a3b-fp8:unparseable","workers-ai:@cf/google/gemma-4-26b-a4b-it:unparseable","workers-ai:@cf/meta/llama-3.1-8b-instruct-fast:unparseable"]}
 STAGED_ONLY 0 FAILED 1
+
+2026-11-20T01:46:37.609Z QUOTA_NEUTRAL_REPAIR Divehi: copied four provisional quick UI labels (Back, Page navigation, Voice reply, Voice) from the existing main i18n-ui.js QUICK.dv map. Readback PASS: 1,118 keys and sourceHash 6a1126e6a2ce5629 preserved. No translation requests; AI quota used 0; not published; not linguistically certified; native review still required.
